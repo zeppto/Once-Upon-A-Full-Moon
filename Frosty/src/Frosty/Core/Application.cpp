@@ -1,0 +1,125 @@
+#include "fypch.hpp"
+#include "Application.hpp"
+
+#include <glad/glad.h>
+
+namespace Frosty
+{
+	Application* Application::s_Instance = nullptr;
+
+	Application::Application()
+	{
+		// TODO: Error handling?
+		s_Instance = this;
+
+		Log::Init();
+		FY_CORE_INFO("Logger initialized..");
+
+		m_Window = std::make_unique<Window>(Window());
+
+		EventBus::GetEventBus()->Subscribe<Application, BaseEvent>(this, &Application::OnEvent);
+
+		m_ImGuiLayer = new ImGuiLayer();
+		PushOverlay(m_ImGuiLayer);
+	}
+
+	Application::~Application()
+	{
+		EventBus::GetEventBus()->Delete();
+		glfwTerminate();
+	}
+
+	void Application::Run()
+	{
+		while (m_Running)
+		{
+			/// Input
+
+			/// Update
+			for (Layer* layer : m_LayerHandler)
+				layer->OnUpdate();
+
+			/// Render
+			glClearColor(1, 0, 1, 1);
+			glClear(GL_COLOR_BUFFER_BIT);
+
+			m_ImGuiLayer->Begin();
+			for (Layer* layer : m_LayerHandler)
+			{
+				if (layer->IsActive())
+				{
+					layer->OnImGuiRender();
+				}
+			}
+			m_ImGuiLayer->End();
+
+			m_Window->OnUpdate();
+		}
+
+		//glfwTerminate();
+	}
+
+	void Application::PushLayer(Layer* layer)
+	{
+		m_LayerHandler.PushLayer(layer);
+		layer->OnAttach();
+	}
+
+	void Application::PushOverlay(Layer* layer)
+	{
+		m_LayerHandler.PushOverlay(layer);
+		layer->OnAttach();
+	}
+
+	void Application::PopLayer(Layer * layer)
+	{
+		if (layer != nullptr)
+		{
+			layer->OnDetach();
+			m_LayerHandler.PopLayer(layer);
+		}
+		delete layer;
+	}
+
+	void Application::PopOverlay(Layer * layer)
+	{
+		if (layer != nullptr)
+		{
+			layer->OnDetach();
+			m_LayerHandler.PopOverlay(layer);
+		}
+		delete layer;
+	}
+
+	void Application::OnEvent(BaseEvent& e)
+	{
+		switch (e.GetEventType())
+		{
+		case Frosty::EventType::WindowClose:
+			OnWindowCloseEvent(static_cast<WindowCloseEvent&>(e));
+			break;
+		case Frosty::EventType::KeyPressed:
+			OnKeyPressedEvent(static_cast<KeyPressedEvent&>(e));
+			break;
+		default:
+			break;
+		}
+
+		m_Window->OnEvent(e);
+	}
+
+	void Application::OnWindowCloseEvent(WindowCloseEvent& e)
+	{
+		FY_CORE_TRACE("Stopping application.");
+		m_Running = false;
+	}
+
+	void Application::OnKeyPressedEvent(KeyPressedEvent& e)
+	{
+		if (e.GetKeyCode() == GLFW_KEY_ESCAPE)
+		{
+			m_Running = false;
+		}
+	}
+
+}
