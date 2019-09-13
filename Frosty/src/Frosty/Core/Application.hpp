@@ -5,7 +5,7 @@
 #include "LayerHandler.hpp"
 #include "EventSystem.hpp"
 #include "Frosty/ImGui/ImGuiLayer.hpp"
-
+#include "Frosty/RenderEngine/RenderEngine.hpp"
 namespace Frosty
 {
 	class Application
@@ -24,6 +24,9 @@ namespace Frosty
 		void PopLayer(Layer* layer);
 		void PopOverlay(Layer* layer);
 
+		// RenderEngine
+		RenderEngine* GetRenderEngine() { return m_RenderEngine; }
+
 		inline Window& GetWindow() { return *m_Window; }
 		static inline Application& Get() { return *s_Instance; }
 
@@ -38,6 +41,8 @@ namespace Frosty
 		LayerHandler m_LayerHandler;
 
 		std::unique_ptr<Window> m_Window;
+
+		RenderEngine* m_RenderEngine;
 
 		static Application* s_Instance;
 	};
