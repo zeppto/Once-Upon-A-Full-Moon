@@ -21,10 +21,12 @@ namespace Frosty
 
 		m_ImGuiLayer = new ImGuiLayer();
 		PushOverlay(m_ImGuiLayer);
+		m_RenderEngine = new RenderEngine();
 	}
 
 	Application::~Application()
 	{
+		delete m_RenderEngine;
 		EventBus::GetEventBus()->Delete();
 		glfwTerminate();
 	}
@@ -33,15 +35,15 @@ namespace Frosty
 	{
 		while (m_Running)
 		{
-			/// Input
+			/// Input			
 
 			/// Update
 			for (Layer* layer : m_LayerHandler)
 				layer->OnUpdate();
 
 			/// Render
-			glClearColor(1, 0, 1, 1);
-			glClear(GL_COLOR_BUFFER_BIT);
+			m_RenderEngine->Render();
+			
 
 			m_ImGuiLayer->Begin();
 			for (Layer* layer : m_LayerHandler)
