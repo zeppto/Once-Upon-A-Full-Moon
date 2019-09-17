@@ -1,7 +1,8 @@
 #ifndef ASSETHOLDER_H
 #define ASSETHOLDER_H
 #include "fypch.hpp"
-#include<Luna.h>
+#include "ModelTemplate.hpp"
+#include <Luna/include/Luna.h> // temp
 
 namespace Frosty
 {
@@ -26,8 +27,8 @@ namespace Frosty
 
 	private:	//Variables
 
-		std::unordered_map<int, Luna::Model> m_ModelMap;
-		std::unordered_map<int, Luna::Material> m_MaterialMap;
+		std::unordered_map<uint16_t, ModelTemplate> m_ModelMap;
+		std::unordered_map<uint16_t, Luna::Material> m_MaterialMap;
 
 
 

@@ -19,6 +19,9 @@ namespace Frosty
 	public:		//Functions
 
 		static Assetmanager* getAssetmanager();
+		bool LoadFile(std::string FilePath, std::string PreFabKey);
+		bool LoadFile(std::string FilePath);
+
 
 		
 
