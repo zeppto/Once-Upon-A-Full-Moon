@@ -199,7 +199,7 @@ namespace Frosty
 			glUniformMatrix4fv(1, 1, GL_FALSE, &m_Camera->GetView()[0][0]);
 			glUniformMatrix4fv(2, 1, GL_FALSE, &m_Camera->GetProjection()[0][0]);
 			glm::mat4 world = glm::mat4(1.0f);
-			//om i är 0 behandla som player
+			//om i ï¿½r 0 behandla som player
 			if (i == 0)
 			{
 				world = glm::translate(world, m_Camera->GetPos());
