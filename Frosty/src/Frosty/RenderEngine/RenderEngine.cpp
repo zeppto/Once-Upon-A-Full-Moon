@@ -88,43 +88,28 @@ namespace Frosty
 	}
 	RenderEngine::RenderEngine()
 	{
-		CreateAllShaderPrograms();
-		//CreateBaseModelTemplates();		
-		UpdateInfoFromWindow();
-		m_TheCamera = new TestCamera;
-		CreateTriangle();
-		//InitBuffers();
-		//CreateQuad();
+		CreateAllShaderPrograms();		
+		UpdateInfoFromWindow();		
+		m_Camera = new Camera;
+		CreateTriangle();		
 	}
 	RenderEngine::~RenderEngine()
-	{
-		delete m_TheCamera;
+	{		
+		delete m_Camera;
 	}
 	void RenderEngine::Render()
 	{
-		UpdateInfoFromWindow();
-
-		//RenderPassOne();
-		//RenderPassShadow();
-
-		/*if (m_RenderPointLights)
-		{
-			RenderPointLights();
-		}*/
-		
-		//RenderPassTwo();
-		//RenderRectangles();
+		UpdateInfoFromWindow();		
 
 		m_TestMode = true;
 		if (m_TestMode)
 		{
 			RenderTestTriangle();
+
+
+
 		}
-
-
-
 	}
-
 	void RenderEngine::CreateTriangle()
 	{
 		struct TriangleVertex
@@ -163,15 +148,20 @@ namespace Frosty
 	{
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		glEnable(GL_DEPTH_TEST);
-
-		glUniformMatrix4fv(1, 1, GL_FALSE, &m_TheCamera->GetView()[0][0]);
-		glUniformMatrix4fv(2, 1, GL_FALSE, &m_TheCamera->GetProjection()[0][0]);
+		glEnable(GL_DEPTH_TEST);		
+		
+		glUniformMatrix4fv(1, 1, GL_FALSE, &m_Camera->GetView()[0][0]);
+		glUniformMatrix4fv(2, 1, GL_FALSE, &m_Camera->GetProjection()[0][0]);
 
 		glUseProgram(m_ShaderProgramVector.at(TEST_SHAPE));
 
 		glBindVertexArray(this->m_testTriangleVBO);
 
 		glDrawArrays(GL_TRIANGLES, 0, 3);
+	}
+	void RenderEngine::UpdateCamera()
+	{
+		auto window = static_cast<GLFWwindow*>(Application::Get().GetWindow().GetNativeWindow());
+		m_Camera->CameraPositionUpdate(window);
 	}
 }

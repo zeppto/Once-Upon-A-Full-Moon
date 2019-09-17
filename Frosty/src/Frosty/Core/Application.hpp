@@ -1,11 +1,11 @@
 #ifndef APPLICATION_HPP
 #define APPLICATION_HPP
-
 #include "Window.hpp"
 #include "LayerHandler.hpp"
 #include "EventSystem.hpp"
 #include "Frosty/ImGui/ImGuiLayer.hpp"
 #include "Frosty/RenderEngine/RenderEngine.hpp"
+
 namespace Frosty
 {
 	class Application

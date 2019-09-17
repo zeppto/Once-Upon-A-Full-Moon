@@ -1,6 +1,6 @@
 #ifndef RENDERENGINE_HPP
 #define RENDERENGINE_HPP
-#include "Frosty/Core/Camera/TestCamera.h"
+#include "Frosty/Core/Camera/Camera.hpp"
 #define BUFFER_OFFSET(i) ((char *)nullptr + (i))
 
 namespace Frosty
@@ -15,13 +15,11 @@ namespace Frosty
 	private:
 		//Window Information 
 		unsigned int m_WindowWidth = 0;
-		unsigned int m_WindowHeight = 0;
-		TestCamera* m_TheCamera = nullptr;
+		unsigned int m_WindowHeight = 0;		
+		Camera* m_Camera = nullptr;
 		//glm::vec3 m_MouseRay{ 0, 0, 0 };
 
-		//FrameBuffers 
-		unsigned int m_FirstPassFramebuffer = 0;
-		unsigned int m_ShadowMapFBO = 0;
+		//FrameBuffers 		
 
 		//Render Textures 
 
@@ -35,17 +33,7 @@ namespace Frosty
 		void UpdateInfoFromWindow();
 
 		//Render Functions
-		//void RenderModelTemplate(ModelTemplate& modelTemplate, ObjectHolder& GameObjectVector);
-		//void RenderObject(const glm::mat4& UniformMatrix, const unsigned int& ModelSize);
-		//void RenderPassShadow();
-		//void RenderModelTemplateShadows(ModelTemplate& modelTemplate, ObjectHolder& GameObjectVector);
-		//void RenderShadows();
-		//void RenderPassTwo();
-		//void RenderRectangles();
-		//void RenderPointLights();
-		//void RenderPassOne();
-		//void RenderLightSpheres();
-
+		
 		//Create Functions 
 		void CreateAllShaderPrograms();
 		void CreateShaderProgram(std::string VertexShaderPath, std::string FragmentShaderPath, ShaderProgramsEnum Program);
@@ -58,19 +46,12 @@ namespace Frosty
 		RenderEngine();
 		virtual ~RenderEngine();
 
-		void Render();
-		//void InitiateStaticModelTemplates();
-		void ClearBackground();
-
-		//void InitiateShape();
-		//void AddTextureToShape(TextureInfo& textureInfo);
-		//void DestroyTexture(TextureInfo& textureInfo);
-
-		//inline void SetRenderPointLights(const bool& aBool) { m_RenderPointLights = aBool; }
-
+		void Render();	
+		
 		// For Testing
 		void CreateTriangle();		
 		void RenderTestTriangle();
+		void UpdateCamera();
 	};
 }
 #endif 

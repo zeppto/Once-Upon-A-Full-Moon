@@ -41,6 +41,7 @@ namespace Frosty
 			for (Layer* layer : m_LayerHandler)
 				layer->OnUpdate();
 
+			m_RenderEngine->UpdateCamera();
 			/// Render
 			m_RenderEngine->Render();
 			
