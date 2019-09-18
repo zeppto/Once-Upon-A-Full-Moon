@@ -12,11 +12,13 @@ namespace Frosty
 		m_WindowHeight = app->GetHeight();
 		m_WindowWidth = app->GetWidth();
 	}
+
 	void RenderEngine::CreateAllShaderPrograms()
 	{
 		CreateShaderProgram(FY_SHADER_TESTSHAPE_VERTEX_SHADER, FY_SHADER_TESTSHAPE_FRAGMENT_SHADER, TEST_SHAPE);
-
+		CreateShaderProgram(FY_SHADER_TESTLIGHT_VERTEX_SHADER, FY_SHADER_TESTLIGHT_FRAGMENT_SHADER, TEST_LIGHT);
 	}
+	
 	void RenderEngine::CreateShaderProgram(std::string VertexShaderPath, std::string FragmentShaderPath, ShaderProgramsEnum Program)
 	{
 		GLuint tempProgram;
@@ -86,6 +88,7 @@ namespace Frosty
 
 		m_ShaderProgramVector.insert(m_ShaderProgramVector.begin() + Program, tempProgram);
 	}
+	
 	RenderEngine::RenderEngine()
 	{
 		CreateAllShaderPrograms();
@@ -96,10 +99,12 @@ namespace Frosty
 		//InitBuffers();
 		//CreateQuad();
 	}
+	
 	RenderEngine::~RenderEngine()
 	{
 		delete m_TheCamera;
 	}
+	
 	void RenderEngine::Render()
 	{
 		UpdateInfoFromWindow();
@@ -120,9 +125,6 @@ namespace Frosty
 		{
 			RenderTestTriangle();
 		}
-
-
-
 	}
 
 	void RenderEngine::CreateTriangle()
@@ -134,11 +136,15 @@ namespace Frosty
 			float u, v;
 		};
 
-		TriangleVertex triangleVertices[3] =
+		TriangleVertex triangleVertices[6] =
 		{
-			{ 0.5f, 0.5f, 0.0f,		1.0f, 1.0f, 0.0f,	 1.0f, 0.0f },
-			{ 0.5f, -0.5f, 0.0f,	 1.0f, 0.0f, 1.0f,	 1.0f, 1.0f},
-			{-0.5f, -0.5f, 0.0f,	 1.0f, 0.0f, 0.0f,	0.0f, 1.0f},
+			{ 2.f, 2.f, 0.0f,	1.0f, 1.0f, 0.0f,	 1.0f, 0.0f },
+			{ 2.f, -2.f, 0.0f,	1.0f, 0.0f, 1.0f,	 1.0f, 1.0f},
+			{-2.f, -2.f, 0.0f,	1.0f, 0.0f, 0.0f,	 0.0f, 1.0f},
+
+			{ 2.f, 2.f, 0.0f,	1.0f, 1.0f, 0.0f,	 1.0f, 0.0f },
+			{-2.f, -2.f, 0.0f,	1.0f, 0.0f, 0.0f,	 0.0f, 1.0f },
+			{- 2.f, 2.f, 0.0f,	1.0f, 0.0f, 1.0f,	 1.0f, 1.0f },
 
 		};
 
@@ -159,6 +165,7 @@ namespace Frosty
 		glBindVertexArray(0);
 
 	}	
+	
 	void RenderEngine::RenderTestTriangle()
 	{
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -168,10 +175,60 @@ namespace Frosty
 		glUniformMatrix4fv(1, 1, GL_FALSE, &m_TheCamera->GetView()[0][0]);
 		glUniformMatrix4fv(2, 1, GL_FALSE, &m_TheCamera->GetProjection()[0][0]);
 
-		glUseProgram(m_ShaderProgramVector.at(TEST_SHAPE));
+		// <<<<<< TESTING LIGHTS IN SHADER	>>>>>>		~ W-_-W ~
+		struct Light
+		{
+			Light(glm::vec3 newPosition, glm::vec4 newColor, float newStrength, glm::vec2 lin_Quad) 
+			{ position = newPosition; color = newColor;  strength = newStrength; linear_Quadratic = lin_Quad; }
+			Light(glm::vec4 newColor, float newStrength, glm::vec3 newDirection)
+			{ color = newColor;  strength = newStrength; direction = newDirection; }
+
+			glm::vec3 position;
+			glm::vec4 color;
+			float strength;
+			glm::vec2 linear_Quadratic;
+			glm::vec3 direction;
+		};
+		// Point Lights
+		std::vector<Light> lights;
+		glm::vec3 pos = { 0.f, 0.f, 1.f };
+		Light l(pos, { 1.f, 1.f, 1.f, 1.f }, 1.f, {0.07f, 0.017f});
+		Light l2(pos, { 1.f, 1.f, 1.f, 1.f }, 1.f, { 0.7f, 1.8f });
+		lights.emplace_back(l);
+		lights.emplace_back(l2);
+
+		glUniform1ui(glGetUniformLocation(m_ShaderProgramVector[1], "nrOfPointLights"), lights.size());
+		for (int i = 0; i < lights.size(); i++)
+		{
+			glUniform3fv(glGetUniformLocation(m_ShaderProgramVector[1], ("pointLights[" + std::to_string(i) + "].position").c_str()), 1, &lights[i].position[0]);
+			glUniform4fv(glGetUniformLocation(m_ShaderProgramVector[1], ("pointLights[" + std::to_string(i) + "].color").c_str()), 1, &lights[i].color[0]);
+			glUniform1fv(glGetUniformLocation(m_ShaderProgramVector[1], ("pointLights[" + std::to_string(i) + "].strength").c_str()), 1, &lights[i].strength);
+			glUniform2fv(glGetUniformLocation(m_ShaderProgramVector[1], ("pointLights[" + std::to_string(i) + "].linear_Quadratic").c_str()), 1, &lights[i].linear_Quadratic[0]);
+		}
+
+		// Directional Light
+		lights.clear();
+		Light l3({ 0.f, 0.3f, 0.7f, 1.f }, 0.3f, { 0.f, 0.f, -1.f });
+		Light l4({ 0.2f, 0.1f, 0.1f, 1.f }, 0.2f, { 0.f, -5.f, -1.f });
+		lights.emplace_back(l3);
+		lights.emplace_back(l4);
+
+		glUniform1ui(glGetUniformLocation(m_ShaderProgramVector[1], "nrOfDirLights"), lights.size());
+		for (int i = 0; i < lights.size(); i++)
+		{
+			glUniform4fv(glGetUniformLocation(m_ShaderProgramVector[1], ("dirLights[" + std::to_string(i) + "].color").c_str()), 1, &lights[i].color[0]);
+			glUniform1fv(glGetUniformLocation(m_ShaderProgramVector[1], ("dirLights[" + std::to_string(i) + "].strength").c_str()), 1, &lights[i].strength);
+			glUniform3fv(glGetUniformLocation(m_ShaderProgramVector[1], ("dirLights[" + std::to_string(i) + "].direction").c_str()), 1, &lights[i].direction[0]);
+		}
+
+
+		glUseProgram(m_ShaderProgramVector.at(TEST_LIGHT));
+		// <<<<<< END OF LIGHTS TESTING	>>>>>>
+
+		//glUseProgram(m_ShaderProgramVector.at(TEST_SHAPE));
 
 		glBindVertexArray(this->m_testTriangleVBO);
 
-		glDrawArrays(GL_TRIANGLES, 0, 3);
+		glDrawArrays(GL_TRIANGLES, 0, 6);
 	}
 }

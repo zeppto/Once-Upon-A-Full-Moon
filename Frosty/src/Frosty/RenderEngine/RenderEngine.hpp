@@ -7,7 +7,8 @@ namespace Frosty
 {	
 	enum ShaderProgramsEnum
 	{
-		TEST_SHAPE = 0
+		TEST_SHAPE,
+		TEST_LIGHT
 	};
 		
 	class RenderEngine
@@ -30,6 +31,7 @@ namespace Frosty
 		// For Testing 
 		bool m_TestMode = false;		
 		unsigned int m_testTriangleVBO = 0;
+
 	private:
 		//Update Functions
 		void UpdateInfoFromWindow();
@@ -51,7 +53,6 @@ namespace Frosty
 		void CreateShaderProgram(std::string VertexShaderPath, std::string FragmentShaderPath, ShaderProgramsEnum Program);
 
 		//For Testing
-
 	public:
 
 	public:

@@ -8,8 +8,8 @@ namespace Frosty
 		m_Direction = { 0.f, -1.f, 0.f };
 	}
 
-	DirectionalLight::DirectionalLight(glm::vec3 position, glm::vec3 color, float strength, glm::vec3 direction)
-		: LightBase(position, color, strength)
+	DirectionalLight::DirectionalLight(glm::vec4 color, float strength, glm::vec3 direction)
+		: LightBase(color, strength)
 	{
 		if (direction == glm::vec3(0.f, 0.f, 0.f))
 		{

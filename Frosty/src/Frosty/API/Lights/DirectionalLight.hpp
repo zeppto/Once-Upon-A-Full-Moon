@@ -13,7 +13,7 @@ namespace Frosty
 
 	public:
 		DirectionalLight();
-		DirectionalLight(glm::vec3 position, glm::vec3 color, float strength, glm::vec3 direction = { 0.f, -1.f, 0.f });
+		DirectionalLight(glm::vec4 color, float strength, glm::vec3 direction = { 0.f, -1.f, 0.f });
 		virtual ~DirectionalLight() {};
 		DirectionalLight(const DirectionalLight& other);
 		DirectionalLight& operator=(const DirectionalLight& other);
