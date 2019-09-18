@@ -307,9 +307,8 @@ namespace Frosty
 		}
 	}
 	void RenderEngine::UpdateCamera()
-	{
-		auto window = static_cast<GLFWwindow*>(Application::Get().GetWindow().GetNativeWindow());
-		m_Camera->CameraPositionUpdate(window);
+	{		
+		m_Camera->CameraPositionUpdate();
 	}
 	void RenderEngine::CreateTriangle()
 	{
