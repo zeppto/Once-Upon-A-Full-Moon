@@ -65,7 +65,7 @@ namespace Frosty
 	//Funcs
 	public:
 		ModelTemplate();
-		~ModelTemplate();
+		virtual ~ModelTemplate();
 		ModelTemplate(const ModelTemplate& other);
 		ModelTemplate& operator =(ModelTemplate& other);
 

@@ -5,7 +5,6 @@
 #include "LayerHandler.hpp"
 #include "EventSystem.hpp"
 #include "Frosty/ImGui/ImGuiLayer.hpp"
-#include<Luna.h>
 
 namespace Frosty
 {
@@ -14,6 +13,8 @@ namespace Frosty
 
 	class Application
 	{
+		
+
 	public:
 		Application();
 		virtual ~Application();
@@ -28,14 +29,13 @@ namespace Frosty
 		void PopLayer(Layer* layer);
 		void PopOverlay(Layer* layer);
 
-		Luna::Mesh hh;
-
 		inline Window& GetWindow() { return *m_Window; }
 		static inline Application& Get() { return *s_Instance; }
 
 	private:
 		void OnWindowCloseEvent(WindowCloseEvent& e);
 		void OnKeyPressedEvent(KeyPressedEvent& e);
+
 
 	private:
 		bool m_Running = true;

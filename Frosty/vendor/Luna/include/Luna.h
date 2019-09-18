@@ -103,20 +103,6 @@ namespace Luna {
 
 
 
-	struct Model
-	{
-		Luna::Skeleton skeleton;
-		Luna::Animation animation;
-		std::vector<Luna::Mesh> meshes;
-		std::vector<Luna::Joint> joints;
-		std::vector<Luna::BoundingBox> boundingBoxes;
-		std::vector<Luna::Vertex*> meshVertices;
-		std::vector<Luna::Index*> meshIndices;
-		std::vector<Luna::Weights*> weights;
-		std::vector<Luna::Keyframe*> keyframes;
-
-	};
-
 
 
 }

@@ -19,11 +19,11 @@ namespace Frosty
 
 
 	private: //variables
-
+		static MotherLoader* m_Instance;
 
 
 	public: //functions
-		MotherLoader();
+		static MotherLoader* GetMotherLoader();
 		~MotherLoader();
 
 		bool Loadfile(std::string FilePath, ModelTemplate Mod, std::vector<Luna::Material>& Mats);

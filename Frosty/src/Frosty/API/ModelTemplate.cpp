@@ -37,6 +37,11 @@ namespace Frosty
 		return &m_MeshInfoMap;
 	}
 
+	std::unordered_map<uint16_t, std::vector<Luna::Keyframe>>* ModelTemplate::getKeyframeMap()
+	{
+		return &m_KeyframeMap;
+	}
+
 	ModelTemplate::MeshInfo* ModelTemplate::getMeshInfo(uint16_t meshId)
 	{
 		return &m_MeshInfoMap[meshId];

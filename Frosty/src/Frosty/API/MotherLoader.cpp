@@ -5,6 +5,26 @@
 namespace Frosty
 {
 
+	MotherLoader* MotherLoader::m_Instance = nullptr;
+
+
+	MotherLoader* MotherLoader::GetMotherLoader()
+	{
+		if (m_Instance == nullptr) 
+		{
+			m_Instance = new MotherLoader;
+		}
+
+		return m_Instance;
+	}
+
+	MotherLoader::~MotherLoader()
+	{
+		if (m_Instance != nullptr)
+		{
+			delete m_Instance;
+		}
+	}
 
 	bool MotherLoader::Loadfile(std::string FilePath, ModelTemplate Mod, std::vector<Luna::Material>& Mats)
 	{
