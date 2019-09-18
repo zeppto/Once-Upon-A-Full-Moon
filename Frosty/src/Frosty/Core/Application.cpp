@@ -41,10 +41,10 @@ namespace Frosty
 			for (Layer* layer : m_LayerHandler)
 				layer->OnUpdate();
 
+			m_RenderEngine->UpdateCamera();
 			/// Render
 			m_RenderEngine->Render();
 			
-
 			m_ImGuiLayer->Begin();
 			for (Layer* layer : m_LayerHandler)
 			{
