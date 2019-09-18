@@ -7,10 +7,10 @@ namespace Frosty
 {	
 	enum ShaderProgramsEnum
 	{
-		TEST_LIGHT
 		TEST_SHAPE = 0,
-		FIRSTPASS = 1,
-		SECONDPASS = 2
+		TEST_LIGHT = 1,
+		FIRSTPASS = 2,
+		SECONDPASS = 3
 	};
 	
 	class RenderEngine
