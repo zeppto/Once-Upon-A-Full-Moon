@@ -45,7 +45,6 @@ namespace Frosty
 			/// Render
 			m_RenderEngine->Render();
 			
-
 			m_ImGuiLayer->Begin();
 			for (Layer* layer : m_LayerHandler)
 			{

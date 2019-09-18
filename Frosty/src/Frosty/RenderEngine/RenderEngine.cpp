@@ -175,7 +175,6 @@ namespace Frosty
 	void RenderEngine::CreateAllShaderPrograms()
 	{
 		CreateShaderProgram(FY_SHADER_TESTSHAPE_VERTEX_SHADER, FY_SHADER_TESTSHAPE_FRAGMENT_SHADER, TEST_SHAPE);
-
 	}
 	void RenderEngine::CreateShaderProgram(std::string VertexShaderPath, std::string FragmentShaderPath, ShaderProgramsEnum Program)
 	{
@@ -295,15 +294,11 @@ namespace Frosty
 		UpdateInfoFromWindow();		
 		//RenderPassOne();
 		//RenderPassTwo();
-
-
+		
 		m_TestMode = true;
 		if (m_TestMode)
 		{
 			RenderTestTriangle();
-
-
-
 		}
 	}
 	void RenderEngine::UpdateCamera()
@@ -346,7 +341,7 @@ namespace Frosty
 	{
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		glEnable(GL_DEPTH_TEST);		
+		glEnable(GL_DEPTH_TEST);	
 		
 		glUniformMatrix4fv(1, 1, GL_FALSE, &m_Camera->GetView()[0][0]);
 		glUniformMatrix4fv(2, 1, GL_FALSE, &m_Camera->GetProjection()[0][0]);
