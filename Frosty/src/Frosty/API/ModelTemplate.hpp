@@ -48,10 +48,10 @@ namespace Frosty
 
 	//Variables
 	private:
+		uint16_t m_SelfID;
+		static uint16_t s_ModelTemplateCounter;
 
 
-
-//		Luna::Scene scene;
 		Luna::Skeleton m_Skeleton;
 		Luna::Animation m_Animation;
 
@@ -68,6 +68,8 @@ namespace Frosty
 		virtual ~ModelTemplate();
 		ModelTemplate(const ModelTemplate& other);
 		ModelTemplate& operator =(ModelTemplate& other);
+		bool operator == (ModelTemplate& other);
+		bool operator == (uint16_t& otherID);
 
 		//maybe needed?
 		//void set(uint16_t meshID, )
@@ -77,12 +79,14 @@ namespace Frosty
 		std::vector<Luna::Mesh>* getMeshVector();
 		std::vector<Luna::Joint>* getJointVector();
 
-		ModelTemplate::MeshInfo* getMeshInfo(uint16_t meshId);
-		std::vector<Luna::Keyframe>* getKeyframes(uint16_t jointId);
+		ModelTemplate::MeshInfo* getMeshInfo(const uint16_t& meshId);
+		std::vector<Luna::Keyframe>* getKeyframes(const uint16_t& jointId);
 
 		std::unordered_map<uint16_t, MeshInfo>* getMeshInfoMap();
 		std::unordered_map<uint16_t, std::vector<Luna::Keyframe>>* getKeyframeMap();
-
+		
+		const uint16_t& GetId() const;
+		const uint16_t& GetNumberOfModelTemplates() const;
 
 
 
@@ -114,7 +118,6 @@ namespace Frosty
 
 
 	};
-
 
 }
 

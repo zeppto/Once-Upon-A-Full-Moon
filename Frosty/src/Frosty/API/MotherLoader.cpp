@@ -1,5 +1,5 @@
-#include "MotherLoader.hpp"
 #include <fypch.hpp>
+#include "MotherLoader.hpp"
 
 
 namespace Frosty
@@ -45,7 +45,7 @@ namespace Frosty
 
 		Luna::Reader tempFile;
 
-		tempFile.readFile(FilePath.c_str); //check if failed reading???
+		tempFile.readFile(FilePath.c_str()); //check if failed reading???
 
 		if (1) //read file check
 		{

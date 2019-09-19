@@ -4,18 +4,64 @@
 
 namespace Frosty
 {
+
+	uint16_t ModelTemplate::s_ModelTemplateCounter = 0;
+
 	ModelTemplate::ModelTemplate()
 	{
+		m_SelfID = s_ModelTemplateCounter++;
 	}
 	ModelTemplate::~ModelTemplate()
 	{
+		s_ModelTemplateCounter--;
+
+		m_MeshInfoMap.erase(m_MeshInfoMap.begin(), m_MeshInfoMap.end());
+		m_Meshes.erase(m_Meshes.begin(), m_Meshes.end());
+		m_Joints.erase(m_Joints.begin(), m_Joints.end());
+		m_KeyframeMap.erase(m_KeyframeMap.begin(), m_KeyframeMap.end());
 	}
 	ModelTemplate::ModelTemplate(const ModelTemplate& other)
 	{
+		if (this != &other)
+		{
+			m_SelfID = s_ModelTemplateCounter++;
+		}
+
+		m_Skeleton = other.m_Skeleton;
+		m_Animation = other.m_Animation;
+		m_Meshes = other.m_Meshes;
+		m_Joints = other.m_Joints;
+		m_MeshInfoMap = other.m_MeshInfoMap;
+		m_KeyframeMap = other.m_KeyframeMap;
+
 	}
 	ModelTemplate& ModelTemplate::operator=(ModelTemplate& other)
 	{
 		// TODO: insert return statement here
+		if (this != &other)
+		{
+			m_SelfID = s_ModelTemplateCounter++;
+		}
+
+		m_Skeleton = other.m_Skeleton;
+		m_Animation = other.m_Animation;
+		m_Meshes = other.m_Meshes;
+		m_Joints = other.m_Joints;
+		m_MeshInfoMap = other.m_MeshInfoMap;
+		m_KeyframeMap = other.m_KeyframeMap;
+
+
+		return *this;
+	}
+	bool ModelTemplate::operator==(ModelTemplate& other)
+	{
+		
+		// What to compare?
+		return false;
+	}
+	bool ModelTemplate::operator==(uint16_t& otherID)
+	{
+		return (otherID == m_SelfID) ? 1 : 0;
 	}
 	Luna::Skeleton* Frosty::ModelTemplate::getSkeleton()
 	{
@@ -42,12 +88,27 @@ namespace Frosty
 		return &m_KeyframeMap;
 	}
 
-	ModelTemplate::MeshInfo* ModelTemplate::getMeshInfo(uint16_t meshId)
+
+
+	const uint16_t& ModelTemplate::GetId() const
+	{
+		return m_SelfID;
+	}
+
+	const uint16_t& ModelTemplate::GetNumberOfModelTemplates() const
+	{
+		return s_ModelTemplateCounter;
+	}
+
+
+
+
+	ModelTemplate::MeshInfo* ModelTemplate::getMeshInfo(const uint16_t& meshId)
 	{
 		return &m_MeshInfoMap[meshId];
 	}
 
-	std::vector<Luna::Keyframe>* ModelTemplate::getKeyframes(uint16_t jointId)
+	std::vector<Luna::Keyframe>* ModelTemplate::getKeyframes(const uint16_t& jointId)
 	{
 		return &m_KeyframeMap[jointId];
 	}
