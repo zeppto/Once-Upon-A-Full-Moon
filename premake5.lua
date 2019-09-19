@@ -18,6 +18,7 @@ IncludeDir["GLFW"] = "Frosty/vendor/GLFW/include"
 IncludeDir["Glad"] = "Frosty/vendor/Glad/include"
 IncludeDir["ImGui"] = "Frosty/vendor/imgui"
 IncludeDir["glm"] = "Frosty/vendor/glm"
+IncludeDir["Luna"] = "Frosty/vendor/Luna"
 
 group "Dependencies"
 	include "Frosty/vendor/GLFW"
@@ -55,12 +56,14 @@ project "Frosty"
 		"%{IncludeDir.GLFW}",
 		"%{IncludeDir.Glad}",
 		"%{IncludeDir.ImGui}",
+		"%{IncludeDir.Luna}",
 		"%{IncludeDir.glm}"
 	}
 
 	libdirs
 	{
-		"%{prj.name}/vendor/GLFW/lib"
+		"%{prj.name}/vendor/GLFW/lib",
+		"%{prj.name}/vendor/Luna/lib"
 	}
 
 	links
@@ -68,7 +71,8 @@ project "Frosty"
 		"GLFW",
 		"Glad",
 		"ImGui",
-		"opengl32.lib"
+		"opengl32.lib",
+		"Luna_release.lib"
 	}
 
 	filter "system:windows"
