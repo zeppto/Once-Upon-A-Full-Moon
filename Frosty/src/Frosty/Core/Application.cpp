@@ -21,6 +21,10 @@ namespace Frosty
 		m_ImGuiLayer = new ImGuiLayer();
 		PushOverlay(m_ImGuiLayer);
 		m_RenderEngine = new RenderEngine();
+
+		//test
+		auto tempManager = Assetmanager::GetAssetmanager();
+		tempManager->LoadFile("FbxAztec.fbx");
 	}
 
 	Application::~Application()
