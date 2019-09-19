@@ -418,6 +418,36 @@ namespace Frosty
 		glBindVertexArray(this->m_testTriangleVBO);
 
 		glDrawArrays(GL_TRIANGLES, 0, 6);
+
+
+		if (m_RenderTestModel)
+		{
+			glBindVertexArray(this->m_testModelVBO);
+			glDrawArrays(GL_TRIANGLES, 0, m_VertexSizeOfTempModel);
+		}
+
+	}
+
+	void RenderEngine::CreateTempModelData(ModelTemplate& testModel)
+	{
+		m_RenderTestModel = true;
+		m_VertexSizeOfTempModel = testModel.getMeshInfo(0)->m_MeshVertices.size();
+
+		glGenVertexArrays(1, &this->m_testModelVBO);
+		glBindVertexArray(this->m_testModelVBO);
+
+		glEnableVertexAttribArray(0);
+		glEnableVertexAttribArray(1);
+		glEnableVertexAttribArray(2);
+
+		glGenBuffers(1, &this->m_testTriangleVBO);
+		glBindBuffer(GL_ARRAY_BUFFER, this->m_testModelVBO);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(testModel.getMeshInfo(0)->m_MeshVertices), testModel.getMeshInfo(0)->m_MeshVertices.data(), GL_STATIC_DRAW);
+
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Luna::Vertex), BUFFER_OFFSET(0));
+		glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(Luna::Vertex), BUFFER_OFFSET(sizeof(Luna::Vertex::position)));
+		glBindVertexArray(0);
+
 	}
 
 }
