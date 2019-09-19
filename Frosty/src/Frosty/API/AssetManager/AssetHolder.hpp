@@ -1,8 +1,6 @@
 #ifndef ASSETHOLDER_H
 #define ASSETHOLDER_H
-#include "fypch.hpp"
 #include "ModelTemplate.hpp"
-#include <Luna/include/Luna.h> // temp
 
 namespace Frosty
 {
@@ -29,8 +27,11 @@ namespace Frosty
 		AssetHolder();
 		virtual ~AssetHolder();
 
-		ModelTemplate* GetModeltemplate(uint16_t key);
-		Luna::Material* GetMaterial(uint16_t key);
+		ModelTemplate* GetModeltemplate(const uint16_t& AssetId);
+		ModelTemplate* GetModeltemplate(uint16_t& AssetId);
+		
+		Luna::Material* GetMaterial(const uint16_t& AssetId);
+		Luna::Material* GetMaterial(uint16_t& AssetId);
 
 	private:	//Functions
 

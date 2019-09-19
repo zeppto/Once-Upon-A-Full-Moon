@@ -5,6 +5,9 @@
 #include "EventSystem.hpp"
 #include "Frosty/ImGui/ImGuiLayer.hpp"
 #include "Frosty/RenderEngine/RenderEngine.hpp"
+#include "Frosty/API/AssetManager/Assetmanager.hpp"
+
+
 
 namespace Frosty
 {

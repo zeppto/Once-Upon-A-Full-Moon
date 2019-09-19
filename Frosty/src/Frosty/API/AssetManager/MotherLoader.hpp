@@ -1,9 +1,7 @@
 #ifndef  MOTHERLOADER_H
 #define MOTHERLOADER_H
-#include<Luna/include/Luna.h> // temp
 #include "ModelTemplate.hpp"
-#include<fypch.hpp>
-#include<Luna/include/Reader.h> // temp
+#include<Luna/include/Reader.h>
 
 
 

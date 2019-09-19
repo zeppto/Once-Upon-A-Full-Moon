@@ -1,6 +1,7 @@
 #ifndef RENDERENGINE_HPP
 #define RENDERENGINE_HPP
 #include "Frosty/Core/Camera/Camera.hpp"
+#include "Frosty/API/AssetManager/Assetmanager.hpp"
 #define BUFFER_OFFSET(i) ((char *)nullptr + (i))
 
 namespace Frosty
@@ -67,6 +68,7 @@ namespace Frosty
 		// For Testing
 		void CreateTriangle();		
 		void RenderTestTriangle();
+		void CreateModelData();
 	};
 }
 #endif 

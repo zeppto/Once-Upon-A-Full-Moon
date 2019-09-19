@@ -35,7 +35,7 @@ namespace Frosty
 		m_KeyframeMap = other.m_KeyframeMap;
 
 	}
-	ModelTemplate& ModelTemplate::operator=(ModelTemplate& other)
+	ModelTemplate& ModelTemplate::operator=(const ModelTemplate& other)
 	{
 		// TODO: insert return statement here
 		if (this != &other)
@@ -53,13 +53,13 @@ namespace Frosty
 
 		return *this;
 	}
-	bool ModelTemplate::operator==(ModelTemplate& other)
+	bool ModelTemplate::operator==(const ModelTemplate& other)
 	{
 		
 		// What to compare?
 		return false;
 	}
-	bool ModelTemplate::operator==(uint16_t& otherID)
+	bool ModelTemplate::operator==(const uint16_t& otherID)
 	{
 		return (otherID == m_SelfID) ? 1 : 0;
 	}
@@ -95,7 +95,7 @@ namespace Frosty
 		return m_SelfID;
 	}
 
-	const uint16_t& ModelTemplate::GetNumberOfModelTemplates() const
+	const uint16_t& ModelTemplate::GetNumberOfModelTemplates() 
 	{
 		return s_ModelTemplateCounter;
 	}

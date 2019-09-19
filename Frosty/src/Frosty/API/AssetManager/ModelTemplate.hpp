@@ -1,7 +1,6 @@
 #ifndef MODELTEMPLATE_H
 #define MODELTEMPLATE_H
-#include<fypch.hpp>
-#include<Luna/include/Luna.h> // temp
+#include<Luna/include/Luna.h>
 
 
 namespace Frosty
@@ -67,9 +66,9 @@ namespace Frosty
 		ModelTemplate();
 		virtual ~ModelTemplate();
 		ModelTemplate(const ModelTemplate& other);
-		ModelTemplate& operator =(ModelTemplate& other);
-		bool operator == (ModelTemplate& other);
-		bool operator == (uint16_t& otherID);
+		ModelTemplate& operator =(const ModelTemplate& other);
+		bool operator == (const ModelTemplate& other);
+		bool operator == (const uint16_t& otherID);
 
 		//maybe needed?
 		//void set(uint16_t meshID, )
@@ -86,7 +85,7 @@ namespace Frosty
 		std::unordered_map<uint16_t, std::vector<Luna::Keyframe>>* getKeyframeMap();
 		
 		const uint16_t& GetId() const;
-		const uint16_t& GetNumberOfModelTemplates() const;
+		static const uint16_t& GetNumberOfModelTemplates();
 
 
 
