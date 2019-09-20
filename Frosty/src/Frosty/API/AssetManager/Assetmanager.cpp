@@ -25,7 +25,7 @@ namespace Frosty
 
 			Loader->Loadfile(
 				FilePath,
-				*m_AssetHolder.GetModeltemplate(ModelTemplate::GetNumberOfModelTemplates()),
+				*m_AssetHolder.GetModeltemplate(0),
 				tempMaterialVector
 				);
 
@@ -51,6 +51,11 @@ namespace Frosty
 	bool Assetmanager::LoadFile(std::string FilePath, const std::string& set_Prefabkey)
 	{
 		return false;
+	}
+
+	ModelTemplate* Assetmanager::GetModelTemplate()
+	{
+		return m_AssetHolder.GetModeltemplate(0);
 	}
 
 	Frosty::Assetmanager::~Assetmanager()

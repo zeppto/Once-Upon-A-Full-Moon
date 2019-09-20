@@ -291,6 +291,13 @@ namespace Frosty
 		InitBuffers();
 		CreateTriangle();	
 		CreateQuad();
+		auto tempManager = Assetmanager::GetAssetmanager();
+		
+		// Temp load
+		//tempManager->LoadFile("File path here");
+		//ModelTemplate ll = *tempManager->GetModelTemplate();
+
+		//CreateTempModelData(*Assetmanager::GetAssetmanager()->GetModelTemplate());
 
 		m_Camera = new Camera;
 	}
@@ -440,12 +447,12 @@ namespace Frosty
 		glEnableVertexAttribArray(1);
 		glEnableVertexAttribArray(2);
 
-		glGenBuffers(1, &this->m_testTriangleVBO);
+		glGenBuffers(1, &this->m_testModelVBO);
 		glBindBuffer(GL_ARRAY_BUFFER, this->m_testModelVBO);
-		glBufferData(GL_ARRAY_BUFFER, sizeof(testModel.getMeshInfo(0)->m_MeshVertices), testModel.getMeshInfo(0)->m_MeshVertices.data(), GL_STATIC_DRAW);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(Luna::Vertex) * testModel.getMeshInfo(0)->m_MeshVertices.size(), testModel.getMeshInfo(0)->m_MeshVertices.data(), GL_STATIC_DRAW);
 
 		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Luna::Vertex), BUFFER_OFFSET(0));
-		glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(Luna::Vertex), BUFFER_OFFSET(sizeof(Luna::Vertex::position)));
+		glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(Luna::Vertex), BUFFER_OFFSET(sizeof(float) * 3));
 		glBindVertexArray(0);
 
 	}

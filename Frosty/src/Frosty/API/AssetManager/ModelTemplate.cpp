@@ -13,7 +13,6 @@ namespace Frosty
 	}
 	ModelTemplate::~ModelTemplate()
 	{
-		s_ModelTemplateCounter--;
 
 		m_MeshInfoMap.erase(m_MeshInfoMap.begin(), m_MeshInfoMap.end());
 		m_Meshes.erase(m_Meshes.begin(), m_Meshes.end());

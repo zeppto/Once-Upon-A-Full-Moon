@@ -30,7 +30,7 @@ namespace Frosty
 		//Not initialized yet
 		bool LoadFile(std::string FilePath, const std::string& set_Prefabkey);
 
-
+		ModelTemplate* GetModelTemplate();
 
 	private:	//Functions
 

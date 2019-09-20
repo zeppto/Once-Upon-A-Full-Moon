@@ -2,6 +2,7 @@
 #include "MotherLoader.hpp"
 
 
+
 namespace Frosty
 {
 
@@ -26,7 +27,7 @@ namespace Frosty
 		}
 	}
 
-	bool MotherLoader::Loadfile(std::string FilePath, ModelTemplate Mod, std::vector<Luna::Material>& Mats)
+	bool MotherLoader::Loadfile(std::string& FilePath, ModelTemplate& Mod, std::vector<Luna::Material>& Mats)
 	{
 		bool returnValue = false;
 
@@ -45,7 +46,10 @@ namespace Frosty
 
 		Luna::Reader tempFile;
 
+		//tempFile.readFile(FilePath.c_str()); //check if failed reading???
 		tempFile.readFile(FilePath.c_str()); //check if failed reading???
+
+
 
 		if (1) //read file check
 		{

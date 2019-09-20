@@ -23,8 +23,7 @@ namespace Frosty
 		m_RenderEngine = new RenderEngine();
 
 		//test
-		auto tempManager = Assetmanager::GetAssetmanager();
-		tempManager->LoadFile("testyBOOOOX.lu");
+
 	}
 
 	Application::~Application()

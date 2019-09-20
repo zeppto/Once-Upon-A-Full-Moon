@@ -40,7 +40,7 @@ namespace Frosty
 		// For Testing 
 		bool m_TestMode = false;		
 		unsigned int m_testTriangleVBO = 0;
-		bool m_RenderTestModel = false;
+		bool m_RenderTestModel = true;
 		int m_VertexSizeOfTempModel = 0;
 		unsigned int m_testModelVBO = 0;
 
