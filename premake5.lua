@@ -35,7 +35,7 @@ project "Frosty"
 	staticruntime "on"
 
 	targetdir ("bin/" .. outputdir .. "/%{prj.name}")
-	objdir ("bin-int/" .. outputdir .. "/%{prj.name}") 
+	objdir ("bin-int/" .. outputdir .. "/%{prj.name}")
 	
 	pchheader "fypch.hpp"
 	pchsource "Frosty/src/fypch.cpp"
@@ -71,8 +71,7 @@ project "Frosty"
 		"GLFW",
 		"Glad",
 		"ImGui",
-		"opengl32.lib",
-		"Luna.lib"
+		"opengl32.lib"
 	}
 
 	filter "system:windows"
@@ -87,16 +86,31 @@ project "Frosty"
 		defines "FY_DEBUG"
 		runtime "Debug"
 		symbols "on"
+		
+
+	links
+	{
+		"Luna.lib"
+	}
 
 	filter "configurations:Release"
 		defines "FY_RELEASE"
 		runtime "Release"
 		optimize "on"
 
+	links
+	{
+		"Luna_release.lib"
+	}
+
 	filter "configurations:Dist"
 		defines "FY_DIST"
 		runtime "Release"
 		optimize "on"
+	links
+	{
+		"Luna_release.lib"
+	}
 
 project "Sandbox"
 	location "Sandbox"

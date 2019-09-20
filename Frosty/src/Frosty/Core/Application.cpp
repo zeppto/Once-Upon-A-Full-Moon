@@ -24,7 +24,7 @@ namespace Frosty
 
 		//test
 		auto tempManager = Assetmanager::GetAssetmanager();
-	//	tempManager->LoadFile("FbxAztec.fbx");
+		tempManager->LoadFile("testyBOOOOX.lu");
 	}
 
 	Application::~Application()
