@@ -72,7 +72,7 @@ project "Frosty"
 		"Glad",
 		"ImGui",
 		"opengl32.lib",
-		"Luna_release.lib"
+		"Luna.lib"
 	}
 
 	filter "system:windows"
