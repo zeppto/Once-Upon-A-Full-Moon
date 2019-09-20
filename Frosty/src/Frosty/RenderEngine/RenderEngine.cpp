@@ -16,7 +16,7 @@ namespace Frosty
 	void RenderEngine::RenderPassOne()
 	{
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);		
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		glBindFramebuffer(GL_FRAMEBUFFER, m_FirstPassFramebuffer);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -73,12 +73,12 @@ namespace Frosty
 		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_PositionRenderTexture, 0);
 
 		if (glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE)
-		{			
+		{
 			FY_CORE_INFO("Success Generation of Framebuffer for Position Texture");
 			gBufferAttachments[0] = GL_COLOR_ATTACHMENT0;
 		}
 		else
-		{			
+		{
 			FY_CORE_ERROR("Fault Genereting Position Texture to Framebuffer");
 		}
 
@@ -89,7 +89,7 @@ namespace Frosty
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, m_NormalRenderTexture, 0);
-		
+
 		if (glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE)
 		{
 			gBufferAttachments[1] = GL_COLOR_ATTACHMENT1;
@@ -117,7 +117,7 @@ namespace Frosty
 		{
 			FY_CORE_ERROR("Fault Genereting Position Texture to Framebuffer");
 		}
-		
+
 		//	Albedo Original
 		glGenTextures(1, &m_AlbedoOrginalTexture);
 		glBindTexture(GL_TEXTURE_2D, m_AlbedoOrginalTexture);
@@ -135,7 +135,7 @@ namespace Frosty
 		{
 			FY_CORE_ERROR("Fault Genereting Position Texture to Framebuffer");
 		}
-		
+
 		//	Albedo Final
 		glGenTextures(1, &m_FinalTexture);
 		glBindTexture(GL_TEXTURE_2D, m_FinalTexture);
@@ -153,7 +153,7 @@ namespace Frosty
 		{
 			FY_CORE_ERROR("Fault Genereting Final Texture to Framebuffer");
 		}
-		
+
 		glGenTextures(1, &m_DepthRenderTexture);
 		glBindTexture(GL_TEXTURE_2D, m_DepthRenderTexture);
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, m_WindowWidth, m_WindowHeight, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
@@ -162,7 +162,7 @@ namespace Frosty
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, m_DepthRenderTexture, 0);
-		
+
 		if (glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE)
 		{
 			FY_CORE_INFO("Success Generation of Framebuffer for Depth Texture");
@@ -286,26 +286,29 @@ namespace Frosty
 
 	RenderEngine::RenderEngine()
 	{
-		CreateAllShaderPrograms();		
+		CreateAllShaderPrograms();
 		UpdateInfoFromWindow();
 		InitBuffers();
-		CreateTriangle();	
+		CreateTriangle();
 		CreateQuad();
+
+		m_Transform.setTranslate(glm::vec3(1.0f, 0.0f, -2.0f));
+		//m_Transform.setRotate(glm::vec3(30.0f, 30.0f, 30.0f));
 
 		m_Camera = new Camera;
 	}
-	
+
 	RenderEngine::~RenderEngine()
-	{		
+	{
 		delete m_Camera;
 	}
-	
+
 	void RenderEngine::Render()
 	{
-		UpdateInfoFromWindow();		
+		UpdateInfoFromWindow();
 		//RenderPassOne();
 		//RenderPassTwo();
-		
+
 		m_TestMode = true;
 		if (m_TestMode)
 		{
@@ -314,7 +317,7 @@ namespace Frosty
 	}
 
 	void RenderEngine::UpdateCamera()
-	{		
+	{
 		m_Camera->CameraPositionUpdate();
 	}
 
@@ -335,7 +338,7 @@ namespace Frosty
 
 			{ 2.f, 2.f, 0.0f,	1.0f, 1.0f, 0.0f,	 1.0f, 0.0f },
 			{-2.f, -2.f, 0.0f,	1.0f, 0.0f, 0.0f,	 0.0f, 1.0f },
-			{- 2.f, 2.f, 0.0f,	1.0f, 0.0f, 1.0f,	 1.0f, 1.0f },
+			{-2.f, 2.f, 0.0f,	1.0f, 0.0f, 1.0f,	 1.0f, 1.0f },
 		};
 
 		glGenVertexArrays(1, &this->m_testTriangleVBO);
@@ -347,30 +350,39 @@ namespace Frosty
 
 		glGenBuffers(1, &this->m_testTriangleVBO);
 		glBindBuffer(GL_ARRAY_BUFFER, this->m_testTriangleVBO);
-		glBufferData(GL_ARRAY_BUFFER, sizeof(triangleVertices)*3, triangleVertices, GL_STATIC_DRAW);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(triangleVertices) * 3, triangleVertices, GL_STATIC_DRAW);
 
 		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(TriangleVertex), BUFFER_OFFSET(0));
 		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(TriangleVertex), BUFFER_OFFSET(sizeof(float) * 3));
 		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(TriangleVertex), BUFFER_OFFSET(sizeof(float) * 6));
 		glBindVertexArray(0);
-	}	
-	
+	}
+
 	void RenderEngine::RenderTestTriangle()
 	{
+
+		m_Transform.setRotate(glm::vec3(0.0f, m_Rotation += 0.1, 0.0f));//Temp
+
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		glEnable(GL_DEPTH_TEST);	
-		
+		glEnable(GL_DEPTH_TEST);
+
+		glUniformMatrix4fv(0, 1, GL_FALSE, &m_Transform.getModel()[0][0]); //Temp
+
 		glUniformMatrix4fv(1, 1, GL_FALSE, &m_Camera->GetView()[0][0]);
 		glUniformMatrix4fv(2, 1, GL_FALSE, &m_Camera->GetProjection()[0][0]);
-		
+
 		// <<<<<< TESTING LIGHTS IN SHADER	>>>>>>		~ W-_-W ~
 		struct Light
 		{
-			Light(glm::vec3 newPosition, glm::vec4 newColor, float newStrength, glm::vec2 lin_Quad) 
-			{ position = newPosition; color = newColor;  strength = newStrength; linear_Quadratic = lin_Quad; }
+			Light(glm::vec3 newPosition, glm::vec4 newColor, float newStrength, glm::vec2 lin_Quad)
+			{
+				position = newPosition; color = newColor;  strength = newStrength; linear_Quadratic = lin_Quad;
+			}
 			Light(glm::vec4 newColor, float newStrength, glm::vec3 newDirection)
-			{ color = newColor;  strength = newStrength; direction = newDirection; }		
+			{
+				color = newColor;  strength = newStrength; direction = newDirection;
+			}
 
 			glm::vec3 position;
 			glm::vec4 color;
@@ -381,7 +393,8 @@ namespace Frosty
 		// Point Lights
 		std::vector<Light> lights;
 		glm::vec3 pos = { 0.f, 0.f, 1.f };
-		Light l(pos, { 1.f, 1.f, 1.f, 1.f }, 1.f, {0.07f, 0.017f});
+		//Light l(pos, { 1.f, 1.f, 1.f, 1.f }, 1.f, { 0.07f, 0.017f });
+		Light l(m_Transform.getTranslate(), { 1.f, 1.f, 1.f, 1.f }, 1.f, { 0.07f, 0.017f });//temp
 		Light l2(pos, { 1.f, 1.f, 1.f, 1.f }, 1.f, { 0.7f, 1.8f });
 		lights.emplace_back(l);
 		lights.emplace_back(l2);
@@ -389,6 +402,7 @@ namespace Frosty
 		glUniform1ui(glGetUniformLocation(m_ShaderProgramVector[TEST_LIGHT], "nrOfPointLights"), lights.size());
 		for (int i = 0; i < lights.size(); i++)
 		{
+
 			glUniform3fv(glGetUniformLocation(m_ShaderProgramVector[TEST_LIGHT], ("pointLights[" + std::to_string(i) + "].position").c_str()), 1, &lights[i].position[0]);
 			glUniform4fv(glGetUniformLocation(m_ShaderProgramVector[TEST_LIGHT], ("pointLights[" + std::to_string(i) + "].color").c_str()), 1, &lights[i].color[0]);
 			glUniform1fv(glGetUniformLocation(m_ShaderProgramVector[TEST_LIGHT], ("pointLights[" + std::to_string(i) + "].strength").c_str()), 1, &lights[i].strength);
@@ -409,7 +423,7 @@ namespace Frosty
 			glUniform1fv(glGetUniformLocation(m_ShaderProgramVector[TEST_LIGHT], ("dirLights[" + std::to_string(i) + "].strength").c_str()), 1, &lights[i].strength);
 			glUniform3fv(glGetUniformLocation(m_ShaderProgramVector[TEST_LIGHT], ("dirLights[" + std::to_string(i) + "].direction").c_str()), 1, &lights[i].direction[0]);
 		}
-				
+
 		glUseProgram(m_ShaderProgramVector.at(TEST_LIGHT));
 		// <<<<<< END OF LIGHTS TESTING	>>>>>>
 
