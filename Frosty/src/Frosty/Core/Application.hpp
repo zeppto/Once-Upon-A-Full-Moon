@@ -45,6 +45,13 @@ namespace Frosty
 		RenderEngine* m_RenderEngine;
 
 		static Application* s_Instance;
+
+		/// New ...
+		//-------------------------------------------------------------------------
+
+		unsigned int m_VertexArray;
+		unsigned int m_VertexBuffer;
+		unsigned int m_IndexBuffer;
 	};
 }
 #endif // !APPLICATION_HPP

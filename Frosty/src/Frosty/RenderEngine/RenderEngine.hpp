@@ -19,8 +19,7 @@ namespace Frosty
 		//Window Information 
 		unsigned int m_WindowWidth = 0;
 		unsigned int m_WindowHeight = 0;		
-		Camera* m_Camera = nullptr;
-		//glm::vec3 m_MouseRay{ 0, 0, 0 };
+		Camera* m_Camera = nullptr;		
 
 		//FrameBuffers 		
 		unsigned int m_FirstPassFramebuffer = 0;
@@ -45,15 +44,11 @@ namespace Frosty
 		void UpdateInfoFromWindow();
 
 		//Render Functions
-		void RenderPassOne();
-		void RenderPassTwo();
-		//Create Functions 
-		void InitBuffers();
-		void CreateFirstPassFrameBuffer();
+
+		//Create Functions 		
 		void CreateAllShaderPrograms();
 		void CreateShaderProgram(std::string VertexShaderPath, std::string FragmentShaderPath, ShaderProgramsEnum Program);
 
-		void CreateQuad();
 		//For Testing
 	public:
 
@@ -69,4 +64,4 @@ namespace Frosty
 		void RenderTestTriangle();
 	};
 }
-#endif 
+#endif
