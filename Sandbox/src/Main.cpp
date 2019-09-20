@@ -11,7 +11,8 @@ int main(int argc, char** argv)
 	app->Run();
 	delete app;
 
-	std::cout << "Hello Leo" << std::endl;
+
+	std::cout << "HelloWorld" << std::endl;
 
 	system("pause");
 	return 0;
