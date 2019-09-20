@@ -1,6 +1,7 @@
 #ifndef RENDERENGINE_HPP
 #define RENDERENGINE_HPP
 #include "Frosty/Core/Camera/Camera.hpp"
+#include "Frosty/API/Transform.h"
 #define BUFFER_OFFSET(i) ((char *)nullptr + (i))
 
 namespace Frosty
@@ -20,6 +21,9 @@ namespace Frosty
 		unsigned int m_WindowWidth = 0;
 		unsigned int m_WindowHeight = 0;		
 		Camera* m_Camera = nullptr;
+
+		Transform m_Transform;		//Testing 
+		float m_Rotation = 0; //Testing 
 		//glm::vec3 m_MouseRay{ 0, 0, 0 };
 
 		//FrameBuffers 		
