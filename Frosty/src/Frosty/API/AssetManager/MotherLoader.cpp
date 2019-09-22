@@ -1,5 +1,6 @@
 #include <fypch.hpp>
 #include "MotherLoader.hpp"
+#include "Assetmanager.hpp"
 
 
 
@@ -61,11 +62,11 @@ namespace Frosty
 			// for nr of meshes
 			for (uint16_t i = 0; i < tempFile.getMeshCount(); i++)
 			{
-				Mod.getMeshVector()->emplace_back(tempFile.getMesh(i));
+				Mod.GetMeshVector()->emplace_back(tempFile.getMesh(i));
 				
-				uint16_t tempMeshId = Mod.getMeshVector()->back().id;
+				uint16_t tempMeshId = Mod.GetMeshVector()->back().id;
 
-				ModelTemplate::MeshInfo* tempMeshInfo_Ptr = Mod.getMeshInfo(tempMeshId);
+				ModelTemplate::MeshInfo* tempMeshInfo_Ptr = Mod.GetMeshInfo(tempMeshId);
 					
 				tempMeshInfo_Ptr->m_BoundingBox = tempFile.getBoundingBox(tempMeshId);
 				
@@ -78,15 +79,15 @@ namespace Frosty
 
 
 			//nr of models
-			*Mod.getAnimation() = tempFile.getAnimation();
-			*Mod.getSkeleton() = tempFile.getSkeleton();
+			*Mod.GetAnimation() = tempFile.getAnimation();
+			*Mod.GetSkeleton() = tempFile.getSkeleton();
 	
 			//vector fills
-			tempFile.getJoints(*Mod.getJointVector());
+			tempFile.getJoints(*Mod.GetJointVector());
 
-			for (uint16_t i = 0; i < Mod.getJointVector()->size(); i++)
+			for (uint16_t i = 0; i < Mod.GetJointVector()->size(); i++)
 			{
-				tempFile.getKeyframes(Mod.getJointVector()->at(i).jointID, *Mod.getKeyframes(Mod.getJointVector()->at(i).jointID));
+				tempFile.getKeyframes(Mod.GetJointVector()->at(i).jointID, *Mod.GetKeyframes(Mod.GetJointVector()->at(i).jointID));
 			}
 
 
@@ -106,6 +107,76 @@ namespace Frosty
 
 
 		return returnValue;
+	}
+
+	bool MotherLoader::Loadfile(std::string& FilePath, bool Reload)
+	{
+
+		auto temp_AssetManager = Assetmanager::GetAssetmanager();
+
+		std::string TempFileName = GetFileName(FilePath);
+		if (!temp_AssetManager->FileLoaded(TempFileName))
+		{
+			ModelTemplate* mod_ptr;
+			temp_AssetManager->AddNewModelTemplate(mod_ptr,TempFileName);
+
+
+			//Fill modeltemplate
+
+
+
+
+
+
+
+
+
+
+
+			//Check if material Exist and Fill
+
+
+
+		}
+		else
+		{
+			if (Reload)
+			{
+
+
+			}
+			else
+			{
+				FY_CORE_INFO("File Already Loaded, File: {0}",TempFileName);
+			}
+
+
+		}
+
+
+
+		return false;
+	}
+
+	std::string MotherLoader::GetFileName(const std::string& FilePath)
+	{
+
+		std::string temp_str = "";
+
+
+		size_t count = (FilePath.size() - 1);
+		while (FilePath[count] != (char)".")
+		{
+			count--;
+		}
+
+		count--;
+		while (FilePath[count] != (char)"/")
+		{
+			temp_str.push_back(FilePath[count--]);
+		}
+		temp_str.reserve();
+		return temp_str;
 	}
 
 

@@ -48,6 +48,7 @@ namespace Frosty
 	//Variables
 	private:
 		uint16_t m_SelfID;
+		static uint16_t s_ModelTemplateID;
 		static uint16_t s_ModelTemplateCounter;
 
 
@@ -72,24 +73,24 @@ namespace Frosty
 
 		//maybe needed?
 		//void set(uint16_t meshID, )
-		Luna::Skeleton* getSkeleton();
-		Luna::Animation* getAnimation();
+		Luna::Skeleton* GetSkeleton();
+		Luna::Animation* GetAnimation();
 
-		std::vector<Luna::Mesh>* getMeshVector();
-		std::vector<Luna::Joint>* getJointVector();
+		std::vector<Luna::Mesh>* GetMeshVector();
+		std::vector<Luna::Joint>* GetJointVector();
 
-		ModelTemplate::MeshInfo* getMeshInfo(const uint16_t& meshId);
-		std::vector<Luna::Keyframe>* getKeyframes(const uint16_t& jointId);
+		ModelTemplate::MeshInfo* GetMeshInfo(const uint16_t& meshId);
+		std::vector<Luna::Keyframe>* GetKeyframes(const uint16_t& jointId);
 
-		std::unordered_map<uint16_t, MeshInfo>* getMeshInfoMap();
-		std::unordered_map<uint16_t, std::vector<Luna::Keyframe>>* getKeyframeMap();
+		std::unordered_map<uint16_t, MeshInfo>* GetMeshInfoMap();
+		std::unordered_map<uint16_t, std::vector<Luna::Keyframe>>* GetKeyframeMap();
 		
 		const uint16_t& GetId() const;
 		static const uint16_t& GetNumberOfModelTemplates();
 
 
 
-		void addMeshInfo(
+		void AddMeshInfo(
 			const uint16_t& meshId,
 			const Luna::BoundingBox& BoundingBox,
 			const std::vector<Luna::Vertex>& MeshVertices,

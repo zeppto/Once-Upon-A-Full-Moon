@@ -53,10 +53,42 @@ namespace Frosty
 		return false;
 	}
 
+	void Assetmanager::AddNewModelTemplate(ModelTemplate* ModelTemplate, const std::string& FileName)
+	{
+
+
+
+	}
+
 	ModelTemplate* Assetmanager::GetModelTemplate()
 	{
 		return m_AssetHolder.GetModeltemplate(0);
 	}
+
+	bool Assetmanager::FileLoaded(std::string FileName)
+	{
+		bool returnValue = false;
+
+		for (int i = 0; i < m_Material_FileName_Vector.size() && returnValue == false; i++)
+		{
+			if (m_Material_FileName_Vector.at(i) == FileName)
+			{
+				returnValue = true;
+			}
+		}
+
+
+		for (int i = 0; i < m_Model_FileName_Vector.size() && returnValue == false; i++)
+		{
+			if (m_Model_FileName_Vector.at(i) == FileName)
+			{
+				returnValue = true;
+			}
+		}
+		
+		return returnValue;
+	}
+
 
 	Frosty::Assetmanager::~Assetmanager()
 	{

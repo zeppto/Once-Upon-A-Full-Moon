@@ -15,23 +15,26 @@ namespace Frosty
 
 
 
-
 	private: //variables
 		static MotherLoader* m_Instance;
+
+		bool m_AutoLoader = true;
 
 
 	public: //functions
 		static MotherLoader* GetMotherLoader();
 		~MotherLoader();
-
+		
 		bool Loadfile(std::string& FilePath, ModelTemplate& Mod, std::vector<Luna::Material>& Mats);
+		bool Loadfile(std::string& FilePath,bool Reload = false);
+		void LoadFilesFromFile();
 
 
 	private: //functions
 
 
 
-
+		std::string GetFileName(const std::string& FilePath);
 
 	};
 

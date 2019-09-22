@@ -12,6 +12,7 @@ namespace Frosty
 	};
 
 
+
 	class AssetHolder
 	{
 
@@ -28,10 +29,8 @@ namespace Frosty
 		virtual ~AssetHolder();
 
 		ModelTemplate* GetModeltemplate(const uint16_t& AssetId);
-		ModelTemplate* GetModeltemplate(uint16_t& AssetId);
 		
 		Luna::Material* GetMaterial(const uint16_t& AssetId);
-		Luna::Material* GetMaterial(uint16_t& AssetId);
 
 	private:	//Functions
 

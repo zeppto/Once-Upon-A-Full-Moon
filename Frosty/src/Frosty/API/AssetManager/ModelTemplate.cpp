@@ -5,11 +5,13 @@
 namespace Frosty
 {
 
+	uint16_t ModelTemplate::s_ModelTemplateID = 0;
 	uint16_t ModelTemplate::s_ModelTemplateCounter = 0;
 
 	ModelTemplate::ModelTemplate()
 	{
-		m_SelfID = s_ModelTemplateCounter++;
+		m_SelfID = s_ModelTemplateID++;
+		s_ModelTemplateCounter++;
 	}
 	ModelTemplate::~ModelTemplate()
 	{
@@ -18,12 +20,14 @@ namespace Frosty
 		m_Meshes.erase(m_Meshes.begin(), m_Meshes.end());
 		m_Joints.erase(m_Joints.begin(), m_Joints.end());
 		m_KeyframeMap.erase(m_KeyframeMap.begin(), m_KeyframeMap.end());
+		s_ModelTemplateCounter--;
 	}
 	ModelTemplate::ModelTemplate(const ModelTemplate& other)
 	{
 		if (this != &other)
 		{
-			m_SelfID = s_ModelTemplateCounter++;
+			m_SelfID = s_ModelTemplateID++;
+			s_ModelTemplateCounter++;
 		}
 
 		m_Skeleton = other.m_Skeleton;
@@ -39,7 +43,8 @@ namespace Frosty
 		// TODO: insert return statement here
 		if (this != &other)
 		{
-			m_SelfID = s_ModelTemplateCounter++;
+			m_SelfID = s_ModelTemplateID++;
+			s_ModelTemplateCounter++;
 		}
 
 		m_Skeleton = other.m_Skeleton;
@@ -60,29 +65,29 @@ namespace Frosty
 	}
 	bool ModelTemplate::operator==(const uint16_t& otherID)
 	{
-		return (otherID == m_SelfID) ? 1 : 0;
+		return (otherID == m_SelfID);
 	}
-	Luna::Skeleton* Frosty::ModelTemplate::getSkeleton()
+	Luna::Skeleton* Frosty::ModelTemplate::GetSkeleton()
 	{
 		return &m_Skeleton;
 	}
 
-	Luna::Animation* ModelTemplate::getAnimation()
+	Luna::Animation* ModelTemplate::GetAnimation()
 	{
 		return &m_Animation;
 	}
 
-	std::vector<Luna::Mesh>* ModelTemplate::getMeshVector()
+	std::vector<Luna::Mesh>* ModelTemplate::GetMeshVector()
 	{
 		return &m_Meshes;
 	}
 
-	std::unordered_map<uint16_t, ModelTemplate::MeshInfo>* ModelTemplate::getMeshInfoMap()
+	std::unordered_map<uint16_t, ModelTemplate::MeshInfo>* ModelTemplate::GetMeshInfoMap()
 	{
 		return &m_MeshInfoMap;
 	}
 
-	std::unordered_map<uint16_t, std::vector<Luna::Keyframe>>* ModelTemplate::getKeyframeMap()
+	std::unordered_map<uint16_t, std::vector<Luna::Keyframe>>* ModelTemplate::GetKeyframeMap()
 	{
 		return &m_KeyframeMap;
 	}
@@ -102,18 +107,18 @@ namespace Frosty
 
 
 
-	ModelTemplate::MeshInfo* ModelTemplate::getMeshInfo(const uint16_t& meshId)
+	ModelTemplate::MeshInfo* ModelTemplate::GetMeshInfo(const uint16_t& meshId)
 	{
 		return &m_MeshInfoMap[meshId];
 	}
 
-	std::vector<Luna::Keyframe>* ModelTemplate::getKeyframes(const uint16_t& jointId)
+	std::vector<Luna::Keyframe>* ModelTemplate::GetKeyframes(const uint16_t& jointId)
 	{
 		return &m_KeyframeMap[jointId];
 	}
 
 
-	std::vector<Luna::Joint>* ModelTemplate::getJointVector()
+	std::vector<Luna::Joint>* ModelTemplate::GetJointVector()
 	{
 		return &m_Joints;
 	}
