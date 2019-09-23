@@ -49,7 +49,7 @@ namespace Frosty
 		void Render();	
 		
 		// For Testing
-		void CreateTestModel();		
+		void CreateTestModel( glm::vec3 color = glm::vec3(0.0f, 1.0f, 0.0f));
 		void RenderAllTestModels();
 		void RenderTestModel();
 		void UpdateCamera();

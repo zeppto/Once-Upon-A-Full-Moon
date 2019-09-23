@@ -110,7 +110,7 @@ namespace Frosty
 
 		}
 	}
-	void RenderEngine::CreateTestModel()
+	void RenderEngine::CreateTestModel(glm::vec3 color)
 	{
 		struct TriangleVertex
 		{
@@ -118,54 +118,53 @@ namespace Frosty
 			float r, g, b;
 			float u, v;
 		};
-
 		TriangleVertex triangleVertices[] =
 		{
 			//{ 0.5f, 0.5f, 0.0f,		1.0f, 1.0f, 0.0f,	 1.0f, 0.0f },
 			//{ 0.5f, -0.5f, 0.0f,	 1.0f, 0.0f, 1.0f,	 1.0f, 1.0f},
 			//{-0.5f, -0.5f, 0.0f,	 1.0f, 0.0f, 0.0f,	0.0f, 1.0f},
 
-			-0.5f, -0.5f, -0.5f, 1.0f, 0.0f, 0.0f,  0.0f, 0.0f,
-			 0.5f, -0.5f, -0.5f, 1.0f, 0.0f, 0.0f,  1.0f, 0.0f,
-			 0.5f,  0.5f, -0.5f, 1.0f, 0.0f, 0.0f,  1.0f, 1.0f,
-			 0.5f,  0.5f, -0.5f, 1.0f, 0.0f, 0.0f,  1.0f, 1.0f,
-			-0.5f,  0.5f, -0.5f, 1.0f, 0.0f, 0.0f,  0.0f, 1.0f,
-			-0.5f, -0.5f, -0.5f, 1.0f, 0.0f, 0.0f,  0.0f, 0.0f,
+			-0.5f, -0.5f, -0.5f, color[0], color[1], color[2], 0.0f, 0.0f,
+			 0.5f, -0.5f, -0.5f, color[0], color[1], color[2], 1.0f, 0.0f,
+			 0.5f,  0.5f, -0.5f, color[0], color[1], color[2], 1.0f, 1.0f,
+			 0.5f,  0.5f, -0.5f, color[0], color[1], color[2], 1.0f, 1.0f,
+			-0.5f,  0.5f, -0.5f, color[0], color[1], color[2], 0.0f, 1.0f,
+			-0.5f, -0.5f, -0.5f, color[0], color[1], color[2], 0.0f, 0.0f,
 
-			-0.5f, -0.5f,  0.5f, 1.0f, 0.0f, 0.0f,  0.0f, 0.0f,
-			 0.5f, -0.5f,  0.5f, 1.0f, 0.0f, 0.0f,  1.0f, 0.0f,
-			 0.5f,  0.5f,  0.5f, 1.0f, 0.0f, 0.0f,  1.0f, 1.0f,
-			 0.5f,  0.5f,  0.5f, 1.0f, 0.0f, 0.0f,  1.0f, 1.0f,
-			-0.5f,  0.5f,  0.5f, 1.0f, 0.0f, 0.0f,  0.0f, 1.0f,
-			-0.5f, -0.5f,  0.5f, 1.0f, 0.0f, 0.0f,  0.0f, 0.0f,
+			-0.5f, -0.5f,  0.5f, color[0], color[1], color[2], 0.0f, 0.0f,
+			 0.5f, -0.5f,  0.5f, color[0], color[1], color[2], 1.0f, 0.0f,
+			 0.5f,  0.5f,  0.5f, color[0], color[1], color[2], 1.0f, 1.0f,
+			 0.5f,  0.5f,  0.5f, color[0], color[1], color[2], 1.0f, 1.0f,
+			-0.5f,  0.5f,  0.5f, color[0], color[1], color[2], 0.0f, 1.0f,
+			-0.5f, -0.5f,  0.5f, color[0], color[1], color[2], 0.0f, 0.0f,
 
-			-0.5f,  0.5f,  0.5f, 1.0f, 0.0f, 0.0f,  1.0f, 0.0f,
-			-0.5f,  0.5f, -0.5f, 1.0f, 0.0f, 0.0f,  1.0f, 1.0f,
-			-0.5f, -0.5f, -0.5f, 1.0f, 0.0f, 0.0f,  0.0f, 1.0f,
-			-0.5f, -0.5f, -0.5f, 1.0f, 0.0f, 0.0f,  0.0f, 1.0f,
-			-0.5f, -0.5f,  0.5f, 1.0f, 0.0f, 0.0f,  0.0f, 0.0f,
-			-0.5f,  0.5f,  0.5f, 1.0f, 0.0f, 0.0f,  1.0f, 0.0f,
+			-0.5f,  0.5f,  0.5f, color[0], color[1], color[2], 1.0f, 0.0f,
+			-0.5f,  0.5f, -0.5f, color[0], color[1], color[2], 1.0f, 1.0f,
+			-0.5f, -0.5f, -0.5f, color[0], color[1], color[2], 0.0f, 1.0f,
+			-0.5f, -0.5f, -0.5f, color[0], color[1], color[2], 0.0f, 1.0f,
+			-0.5f, -0.5f,  0.5f, color[0], color[1], color[2], 0.0f, 0.0f,
+			-0.5f,  0.5f,  0.5f, color[0], color[1], color[2], 1.0f, 0.0f,
 
-			 0.5f,  0.5f,  0.5f, 1.0f, 0.0f, 0.0f,  1.0f, 0.0f,
-			 0.5f,  0.5f, -0.5f, 1.0f, 0.0f, 0.0f,  1.0f, 1.0f,
-			 0.5f, -0.5f, -0.5f, 1.0f, 0.0f, 0.0f,  0.0f, 1.0f,
-			 0.5f, -0.5f, -0.5f, 1.0f, 0.0f, 0.0f,  0.0f, 1.0f,
-			 0.5f, -0.5f,  0.5f, 1.0f, 0.0f, 0.0f,  0.0f, 0.0f,
-			 0.5f,  0.5f,  0.5f, 1.0f, 0.0f, 0.0f,  1.0f, 0.0f,
+			 0.5f,  0.5f,  0.5f, color[0], color[1], color[2], 1.0f, 0.0f,
+			 0.5f,  0.5f, -0.5f, color[0], color[1], color[2], 1.0f, 1.0f,
+			 0.5f, -0.5f, -0.5f, color[0], color[1], color[2], 0.0f, 1.0f,
+			 0.5f, -0.5f, -0.5f, color[0], color[1], color[2], 0.0f, 1.0f,
+			 0.5f, -0.5f,  0.5f, color[0], color[1], color[2], 0.0f, 0.0f,
+			 0.5f,  0.5f,  0.5f, color[0], color[1], color[2], 1.0f, 0.0f,
 
-			-0.5f, -0.5f, -0.5f, 1.0f, 0.0f, 0.0f,  0.0f, 1.0f,
-			 0.5f, -0.5f, -0.5f, 1.0f, 0.0f, 0.0f,  1.0f, 1.0f,
-			 0.5f, -0.5f,  0.5f, 1.0f, 0.0f, 0.0f,  1.0f, 0.0f,
-			 0.5f, -0.5f,  0.5f, 1.0f, 0.0f, 0.0f,  1.0f, 0.0f,
-			-0.5f, -0.5f,  0.5f, 1.0f, 0.0f, 0.0f,  0.0f, 0.0f,
-			-0.5f, -0.5f, -0.5f, 1.0f, 0.0f, 0.0f,  0.0f, 1.0f,
+			-0.5f, -0.5f, -0.5f, color[0], color[1], color[2], 0.0f, 1.0f,
+			 0.5f, -0.5f, -0.5f, color[0], color[1], color[2], 1.0f, 1.0f,
+			 0.5f, -0.5f,  0.5f, color[0], color[1], color[2], 1.0f, 0.0f,
+			 0.5f, -0.5f,  0.5f, color[0], color[1], color[2], 1.0f, 0.0f,
+			-0.5f, -0.5f,  0.5f, color[0], color[1], color[2], 0.0f, 0.0f,
+			-0.5f, -0.5f, -0.5f, color[0], color[1], color[2], 0.0f, 1.0f,
 
-			-0.5f,  0.5f, -0.5f, 1.0f, 0.0f, 0.0f,  0.0f, 1.0f,
-			 0.5f,  0.5f, -0.5f, 1.0f, 0.0f, 0.0f,  1.0f, 1.0f,
-			 0.5f,  0.5f,  0.5f, 1.0f, 0.0f, 0.0f,  1.0f, 0.0f,
-			 0.5f,  0.5f,  0.5f, 1.0f, 0.0f, 0.0f,  1.0f, 0.0f,
-			-0.5f,  0.5f,  0.5f, 1.0f, 0.0f, 0.0f,  0.0f, 0.0f,
-			-0.5f,  0.5f, -0.5f, 1.0f, 0.0f, 0.0f,  0.0f, 1.0f
+			-0.5f,  0.5f, -0.5f, color[0], color[1], color[2], 0.0f, 1.0f,
+			 0.5f,  0.5f, -0.5f, color[0], color[1], color[2], 1.0f, 1.0f,
+			 0.5f,  0.5f,  0.5f, color[0], color[1], color[2], 1.0f, 0.0f,
+			 0.5f,  0.5f,  0.5f, color[0], color[1], color[2], 1.0f, 0.0f,
+			-0.5f,  0.5f,  0.5f, color[0], color[1], color[2], 0.0f, 0.0f,
+			-0.5f,  0.5f, -0.5f, color[0], color[1], color[2], 0.0f, 1.0f
 
 		};
 
