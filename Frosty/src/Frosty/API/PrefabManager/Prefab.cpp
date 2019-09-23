@@ -33,7 +33,7 @@ namespace Frosty
 
 	void Prefab::SetModelKey(KeyLabel<ModelTemplate> modelKey)
 	{
-		m_ModelKey = modelKey
+		m_ModelKey = modelKey;
 	}
 
 	void Prefab::SetMaterialKey(KeyLabel<Luna::Material> materialKey)
@@ -41,25 +41,29 @@ namespace Frosty
 		m_MaterialKey = materialKey;
 	}
 
-	KeyLabel<ModelTemplate> Frosty::Prefab::GetModelKey()
+	KeyLabel<ModelTemplate> Prefab::GetModelKey() 
 	{
 		return m_ModelKey;
 	}
 
-	KeyLabel<Luna::Material> Frosty::Prefab::GetMaterialKey()
+	KeyLabel<Luna::Material> Prefab::GetMaterialKey()
 	{
 		return m_MaterialKey;
+	}
+	std::string Prefab::GetName()
+	{
+		return n_Name;
 	}
 	bool Prefab::SetData(std::string modelName, std::string materialName)
 	{
 		bool returnValue = true;
 
-		if (!Assetmanager::GetAssetmanager()->CreateModelKey(std::string, &m_ModelKey))
+		if (!Assetmanager::GetAssetmanager()->CreateModelKey(modelName, &m_ModelKey))
 		{
 			returnValue = false;
 		}
 
-		if (!Assetmanager::GetAssetmanager()->CreateMaterialKey(std::string, &m_MaterialKey))
+		if (!Assetmanager::GetAssetmanager()->CreateMaterialKey(materialName, &m_MaterialKey))
 		{
 			returnValue = false;
 		}

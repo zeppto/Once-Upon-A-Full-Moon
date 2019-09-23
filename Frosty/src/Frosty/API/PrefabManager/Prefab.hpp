@@ -11,6 +11,9 @@ namespace Frosty
 		
 
 	private:	//Variables
+		std::string n_Name;
+
+
 		uint32_t m_PrefabID = 0;
 		static uint32_t s_Unique_ID;
 		static uint32_t s_NrOf_Prefabs;
@@ -31,6 +34,7 @@ namespace Frosty
 
 		KeyLabel<ModelTemplate> GetModelKey();
 		KeyLabel<Luna::Material> GetMaterialKey();
+		std::string GetName();
 
 		bool SetData(std::string modelName, std::string materialName);
 
