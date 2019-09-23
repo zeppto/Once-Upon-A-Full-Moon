@@ -313,6 +313,7 @@ namespace Frosty
 		if (m_TestMode)
 		{
 			RenderTestTriangle();
+
 		}
 	}
 
