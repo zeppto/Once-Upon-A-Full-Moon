@@ -8,7 +8,7 @@ namespace Frosty
 	private:
 		struct CameraData
 		{
-			float FoV = glm::radians(90.0f);
+			float FoV = glm::radians(60.0f);
 			float AspRatio = 0.0f;
 			float NearPlane = 0.1f;
 			float FarPlane = 100.0f;
@@ -16,7 +16,7 @@ namespace Frosty
 			glm::mat4 View;
 			glm::mat4 Projection;
 
-			glm::vec3 Pos = glm::vec3(0.0f, 0.0f, 2.0f);
+			glm::vec3 Pos = glm::vec3(0.0f, 0.0f, 4.0f);
 			glm::vec3 LookAtVec = glm::vec3(0.0f, 0.0f, -1.0f);
 			glm::vec3 UpVec = glm::vec3(0.0f, 1.0f, 0.0f);
 
