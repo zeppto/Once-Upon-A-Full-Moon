@@ -9,11 +9,11 @@ namespace Frosty
 
 	Application::Application()
 	{
-		// TODO: Error handling?
-		s_Instance = this;
-
 		Log::Init();
 		FY_CORE_INFO("Logger initialized..");
+
+		// TODO: Error handling?
+		s_Instance = this;
 
 		m_Window = std::make_unique<Window>(Window());
 
@@ -22,6 +22,8 @@ namespace Frosty
 		m_ImGuiLayer = new ImGuiLayer();
 		PushOverlay(m_ImGuiLayer);
 		m_RenderEngine = new RenderEngine();
+
+		auto& entity = m_EntityManager.CreateEntity();
 	}
 
 	Application::~Application()

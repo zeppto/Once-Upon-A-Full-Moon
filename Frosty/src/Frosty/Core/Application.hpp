@@ -1,5 +1,6 @@
 #ifndef APPLICATION_HPP
 #define APPLICATION_HPP
+#include "ECS.hpp"
 #include "Window.hpp"
 #include "LayerHandler.hpp"
 #include "EventSystem.hpp"
@@ -45,6 +46,9 @@ namespace Frosty
 		RenderEngine* m_RenderEngine;
 
 		static Application* s_Instance;
+
+		// ECS stuff
+		ECS::EntityManager m_EntityManager;
 	};
 }
 #endif // !APPLICATION_HPP
