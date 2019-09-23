@@ -111,20 +111,36 @@ namespace Frosty
 
 	bool MotherLoader::Loadfile(std::string& FilePath, bool Reload)
 	{
+		bool returnValue = false;
+
 
 		auto temp_AssetManager = Assetmanager::GetAssetmanager();
 
 		std::string TempFileName = GetFileName(FilePath);
-		if (!temp_AssetManager->FileLoaded(TempFileName))
+		ModelTemplate* mod_ptr = nullptr;
+
+
+		Luna::Reader tempFile;
+
+		tempFile.readFile(FilePath.c_str()); //check if failed reading???
+
+		if (1) //check if loading went well
 		{
-			ModelTemplate* mod_ptr;
-			temp_AssetManager->AddNewModelTemplate(mod_ptr,TempFileName);
 
-
-			//Fill modeltemplate
+			std::string Temp_MT_Asset_Name;
 
 
 
+	
+
+
+
+			if (temp_AssetManager->AddNewModelTemplate(mod_ptr, TempFileName))
+			{
+
+
+
+				//Fill modeltemplate
 
 
 
@@ -133,29 +149,104 @@ namespace Frosty
 
 
 
-			//Check if material Exist and Fill
+
+
+
+				//Check if material Exist and Fill
+
+
+
+			}
+			else
+			{
+				if (Reload)
+				{
+
+					FY_CORE_INFO("Trying To Reload a ModelTemplate: {0}", TempFileName);
+
+
+				}
+				else
+				{
+					FY_CORE_INFO("ModelTemplate Already Loaded, File: {0}", TempFileName);
+				}
+
+
+			}
+
+			//Materials
+
+
+
+
+
+
+			if (temp_AssetManager->AddNewModelTemplate(mod_ptr, TempFileName))
+			{
+
+
+
+				//Fill modeltemplate
+
+
+
+			}
+			else
+			{
+				if (Reload)
+				{
+					FY_CORE_INFO("Trying To Reload a ModelTemplate: {0}", TempFileName);
+				}
+				else
+				{
+					FY_CORE_INFO("ModelTemplate Already Loaded, File: {0}", TempFileName);
+				}
+			}
+
+			if (temp_AssetManager->AddNewMaterialTemplate(mod_ptr, TempFileName))
+			{
+
+
+
+				//Fill modeltemplate
+
+
+
+			}
+			else
+			{
+				if (Reload)
+				{
+					FY_CORE_INFO("Trying To Reload a ModelTemplate: {0}", TempFileName);
+				}
+				else
+				{
+					FY_CORE_INFO("ModelTemplate Already Loaded, File: {0}", TempFileName);
+				}
+			}
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
 		}
 		else
 		{
-			if (Reload)
-			{
-
-
-			}
-			else
-			{
-				FY_CORE_INFO("File Already Loaded, File: {0}",TempFileName);
-			}
-
-
+			FY_CORE_INFO("Failed To Load File, File: {0}", TempFileName);
 		}
 
 
-
-		return false;
+		return returnValue;
 	}
 
 	std::string MotherLoader::GetFileName(const std::string& FilePath)

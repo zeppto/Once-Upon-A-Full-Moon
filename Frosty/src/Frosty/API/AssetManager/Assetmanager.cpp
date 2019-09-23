@@ -53,11 +53,25 @@ namespace Frosty
 		return false;
 	}
 
-	void Assetmanager::AddNewModelTemplate(ModelTemplate* ModelTemplate, const std::string& FileName)
+	bool Assetmanager::AddNewModelTemplate(ModelTemplate* ModelTemplate, const std::string& AssetName)
 	{
+		bool returnValue = false;
 
+		if (!ModelTemplateLoaded(AssetName))
+		{
+			returnValue = true;
 
+			m_ModelTemplate_Asset_Name_Vector.emplace_back(AssetName);
 
+			AssetMetaData<Frosty::ModelTemplate>* tempMetaData = &m_MT_MetaData_Map[AssetName];
+
+			tempMetaData->SetRefData(*m_AssetHolder.GetModeltemplate(tempMetaData->GetAssetId()), FileName);
+
+			
+
+		}
+
+		return returnValue;
 	}
 
 	ModelTemplate* Assetmanager::GetModelTemplate()
@@ -65,27 +79,80 @@ namespace Frosty
 		return m_AssetHolder.GetModeltemplate(0);
 	}
 
-	bool Assetmanager::FileLoaded(std::string FileName)
+	bool Assetmanager::CreateModelKey(std::string AssetName, KeyLabel<ModelTemplate>* In_Key)
+	{
+		return false;
+	}
+
+	bool Assetmanager::CreateMaterialKey(std::string AssetName, KeyLabel<Luna::Material>* In_Key)
+	{
+		return false;
+	}
+
+	bool Assetmanager::FileLoaded(const std::string& FileName)
 	{
 		bool returnValue = false;
 
-		for (int i = 0; i < m_Material_FileName_Vector.size() && returnValue == false; i++)
+		for (int i = 0; i < m_FileName_Vector.size() && returnValue == false; i++)
 		{
-			if (m_Material_FileName_Vector.at(i) == FileName)
+			if (m_FileName_Vector.at(i) == FileName)
 			{
 				returnValue = true;
 			}
 		}
 
-
-		for (int i = 0; i < m_Model_FileName_Vector.size() && returnValue == false; i++)
-		{
-			if (m_Model_FileName_Vector.at(i) == FileName)
-			{
-				returnValue = true;
-			}
-		}
 		
+		return returnValue;
+	}
+
+	bool Assetmanager::AssetLoaded(const std::string& AssetName)
+	{
+		bool returnValue = false;
+
+		for (int i = 0; i < m_Material_Asset_Name_Vector.size() && returnValue == false; i++)
+		{
+			if (m_Material_Asset_Name_Vector.at(i) == AssetName)
+			{
+				returnValue = true;
+			}
+		}
+
+		for (int i = 0; i < m_ModelTemplate_Asset_Name_Vector.size() && returnValue == false; i++)
+		{
+			if (m_ModelTemplate_Asset_Name_Vector.at(i) == AssetName)
+			{
+				returnValue = true;
+			}
+		}
+
+		return returnValue;
+	}
+
+	bool Assetmanager::MaterialLoaded(const std::string& AssetName)
+	{
+		bool returnValue = false;
+
+		for (int i = 0; i < m_Material_Asset_Name_Vector.size() && returnValue == false; i++)
+		{
+			if (m_Material_Asset_Name_Vector.at(i) == AssetName)
+			{
+				returnValue = true;
+			}
+		}
+		return returnValue;
+	}
+
+	bool Assetmanager::ModelTemplateLoaded(const std::string& AssetName)
+	{
+		bool returnValue = false;
+		for (int i = 0; i < m_ModelTemplate_Asset_Name_Vector.size() && returnValue == false; i++)
+		{
+			if (m_ModelTemplate_Asset_Name_Vector.at(i) == AssetName)
+			{
+				returnValue = true;
+			}
+		}
+
 		return returnValue;
 	}
 
