@@ -23,6 +23,7 @@ namespace Frosty
 		//Functions
 	public:
 
+		KeyLabel() : BaseKey(), m_MetaData_ptr(nullptr) {};
 		KeyLabel(T& data) : BaseKey(), m_MetaData_ptr(&data) {};
 		KeyLabel(KeyLabel& other) : BaseKey(other) { m_MetaData_ptr(other.m_MetaData_ptr); };
 		virtual ~KeyLabel() {};

@@ -27,8 +27,10 @@ namespace Frosty
 		std::unordered_map<std::string, AssetMetaData<ModelTemplate>>  m_MT_MetaData_Map;
 		std::unordered_map<std::string, AssetMetaData<Luna::Material>>  m_MAT_MetaData_Map;
 
-		std::vector<std::string> m_Model_FileName_Vector; // same as material
-		std::vector<std::string> m_Material_FileName_Vector; 
+		//Not really needed, string information are also stored in the unordered maps above
+		std::vector<std::string> m_FileName_Vector; 
+		std::vector<std::string> m_Material_Asset_Name_Vector; //Same as file name for now
+		std::vector<std::string> m_ModelTemplate_Asset_Name_Vector;
 	
 
 	public:		//Functions
@@ -41,17 +43,30 @@ namespace Frosty
 		//Not initialized yet
 		bool LoadFile(std::string FilePath, const std::string& set_Label);
 
-		void AddNewModelTemplate(ModelTemplate* ModelTemplate,const std::string& FileName);
-		void AddNewMaterialTemplate(ModelTemplate* ModelTemplate,const std::string& FileName);
+		bool AddNewModelTemplate(ModelTemplate* ModelTemplate,const std::string& AssetName);
+		bool AddNewMaterialTemplate(ModelTemplate* ModelTemplate,const std::string& AssetName);
 
-		AssetMetaData<ModelTemplate> const* GetModeltemplateMetaData(const std::string& FileName);
-		AssetMetaData<Luna::Material> const* GetMaterialMetaData(const std::string& FileName);
+		AssetMetaData<ModelTemplate> const* GetModeltemplateMetaData(const std::string& AssetName,);
+		AssetMetaData<Luna::Material> const* GetMaterialMetaData(const std::string& AssetName);
 
 		ModelTemplate* GetModelTemplate();
 
-		bool FileLoaded(std::string FileName);
+
+		//KeyLabel<ModelTemplate>& CreateModelKey(std::string AssetName);
+		//KeyLabel<Luna::Material>& CreateMaterialKey(std::string AssetName);
+
+		bool CreateModelKey(std::string AssetName, KeyLabel<ModelTemplate>* In_Key);
+		bool CreateMaterialKey(std::string AssetName, KeyLabel<Luna::Material>* In_Key);
+
 
 	private:	//Functions
+		
+		bool FileLoaded(const std::string& FileName);
+		bool AssetLoaded(const std::string& AssetName);
+
+		bool MaterialLoaded(const std::string& AssetName);
+		bool ModelTemplateLoaded(const std::string& AssetName);
+		
 		bool CheckIfMetaDataExist(std::string FileName);
 
 
