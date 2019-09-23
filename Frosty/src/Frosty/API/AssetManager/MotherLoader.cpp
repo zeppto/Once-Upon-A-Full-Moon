@@ -189,7 +189,7 @@ namespace Frosty
 			std::vector<Luna::Material> tempMatVector;
 			tempFile.getMaterials(tempMatVector);
 
-			Luna::Material* tempMatPtr;
+			Luna::Material* tempMatPtr = nullptr;
 
 			//Add Materials to holder
 			for (int i = 0; i < tempMatVector.size(); i++)
@@ -232,17 +232,19 @@ namespace Frosty
 
 
 		size_t count = (FilePath.size() - 1);
-		while (FilePath[count] != (char)".")
+		while (FilePath[count] != '.')
 		{
 			count--;
 		}
 
 		count--;
-		while (FilePath[count] != (char)"/")
+		while (FilePath[count] != (char)'/')
 		{
 			temp_str.push_back(FilePath[count--]);
 		}
-		temp_str.reserve();
+
+		std::reverse(temp_str.begin(), temp_str.end());
+
 		return temp_str;
 	}
 

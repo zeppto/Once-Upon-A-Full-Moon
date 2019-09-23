@@ -40,13 +40,14 @@ namespace Frosty
 
 		bool operator ==(const AssetMetaData& other) { return (m_FileName == other.m_FileName); };
 
-		T const* GetData();
-		bool GetData(T const* inPtr);
+		T* GetData() const;
+		//bool GetData(T const* inPtr);
 
-		const unsigned int& GetTimesVisited() { return m_GetCounter; };
-		const unsigned long int& GetTotalTimesVisited() { return m_TotalGetCounter; };
+		
+		unsigned int& GetTimesVisited() const { return m_GetCounter; };
+		const unsigned long int& GetTotalTimesVisited() const { return m_TotalGetCounter; };
 		const std::string& GetFileName() { return m_FileName; };
-		const int32_t GetAssetId() { return m_AssetID; };
+		const int32_t& GetAssetId() const { return m_AssetID; };
 
 		void SetNewAssetID() { m_AssetID = s_Asset_ID++; };
 
@@ -113,28 +114,28 @@ namespace Frosty
 	}
 
 	template<class T>
-	inline T const* AssetMetaData<T>::GetData()
+	inline T* AssetMetaData<T>::GetData() const
 	{
-		m_GetCounter++;
-		m_TotalGetCounter++;
+	//	m_GetCounter++;
+	//	m_TotalGetCounter++;
 		return *m_data_ptr;
 	}
 
-	template<class T>
-	inline bool AssetMetaData<T>::GetData(T const* inPtr)
-	{
-		bool returnValue = false;
-		if (*m_data_ptr != nullptr)
-		{
-			inPtr = *m_data_ptr
-				returnValue = true;
-		}
+	//template<class T>
+	//inline bool AssetMetaData<T>::GetData(T const* inPtr)
+	//{
+	//	bool returnValue = false;
+	//	if (*m_data_ptr != nullptr)
+	//	{
+	//		inPtr = *m_data_ptr
+	//			returnValue = true;
+	//	}
 
-		m_GetCounter++;
-		m_TotalGetCounter++;
+	//	m_GetCounter++;
+	//	m_TotalGetCounter++;
 
-		return returnValue;
-	}
+	//	return returnValue;
+	//}
 
 
 	template<class T>
@@ -166,4 +167,4 @@ namespace Frosty
 
 }
 
-#endif // !ASSETMETADATA_HPP
+

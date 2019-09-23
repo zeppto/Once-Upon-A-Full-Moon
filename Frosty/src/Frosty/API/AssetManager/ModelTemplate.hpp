@@ -79,7 +79,7 @@ namespace Frosty
 		std::vector<Luna::Mesh>* GetMeshVector();
 		std::vector<Luna::Joint>* GetJointVector();
 
-		ModelTemplate::MeshInfo* GetMeshInfo(const uint16_t& meshId);
+		ModelTemplate::MeshInfo * GetMeshInfo(const uint16_t& meshId);
 		std::vector<Luna::Keyframe>* GetKeyframes(const uint16_t& jointId);
 
 		std::unordered_map<uint16_t, MeshInfo>* GetMeshInfoMap();

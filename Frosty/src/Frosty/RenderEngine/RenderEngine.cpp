@@ -294,10 +294,13 @@ namespace Frosty
 		auto tempManager = Assetmanager::GetAssetmanager();
 		
 		// Temp load
-		//tempManager->LoadFile("File path here");
-		//ModelTemplate ll = *tempManager->GetModelTemplate();
+		tempManager->LoadFile(FY_TEST_LOAD_MODEL);
+		//= *tempManager->GetModelTemplate();
 
-		//CreateTempModelData(*Assetmanager::GetAssetmanager()->GetModelTemplate());
+		AssetMetaData<ModelTemplate> * kk = tempManager->GetModeltemplateMetaData("fox_character_attack");
+		ModelTemplate* ll = kk->GetData();
+
+		CreateTempModelData(*ll);
 
 		m_Camera = new Camera;
 	}
@@ -438,7 +441,13 @@ namespace Frosty
 	void RenderEngine::CreateTempModelData(ModelTemplate& testModel)
 	{
 		m_RenderTestModel = true;
-		m_VertexSizeOfTempModel = testModel.GetMeshInfo(0)->m_MeshVertices.size();
+
+		int i = testModel.GetId();
+		
+
+
+		uint16_t j = 0;
+		m_VertexSizeOfTempModel =  testModel.GetMeshInfo(j)->m_MeshVertices.size();
 
 		glGenVertexArrays(1, &this->m_testModelVBO);
 		glBindVertexArray(this->m_testModelVBO);
