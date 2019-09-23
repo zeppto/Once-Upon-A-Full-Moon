@@ -23,26 +23,33 @@ namespace Frosty
 		//Functions
 	public:
 
-		KeyLabel() : BaseKey(), m_MetaData_ptr(nullptr) {};
-		KeyLabel(T& data) : BaseKey(), m_MetaData_ptr(&data) {};
-		KeyLabel(KeyLabel& other) : BaseKey(other) { m_MetaData_ptr(other.m_MetaData_ptr); };
-		virtual ~KeyLabel() {};
+		KeyLabel() : BaseKey(), m_MetaData_ptr(nullptr) {}
+		KeyLabel(T& data) : BaseKey(), m_MetaData_ptr(&data) {}
+		KeyLabel(KeyLabel& other) : BaseKey(other) { m_MetaData_ptr(other.m_MetaData_ptr); }
+		virtual ~KeyLabel() {}
 
-		bool operator ==(const KeyLabel& other) { return (m_MetaData_ptr == other.m_MetaData_ptr);};
+		bool operator ==(const KeyLabel& other) { return (m_MetaData_ptr == other.m_MetaData_ptr);}
 		
 		KeyLabel& operator = (const KeyLabel& other) 
 		{
 			m_MetaData_ptr(other.m_MetaData_ptr);
 			m_Label(other.m_Label);
-			return *this; };
+			return *this; 
+		}
 
-		void SetLabel(const std::string& Label) { m_Label = Label; };
-		const std::string& GetLabel() { return m_Label; };
+		void SetLabel(const std::string& Label) { m_Label = Label; }
+		const std::string& GetLabel() { return m_Label; }
 
-		const T& GetKeyData() {return m_MetaData_ptr};
-		const T& SetKeyData(const T& data) { m_MetaData_ptr = data;};
-		const uint32_t& GetKeyID() { return m_Key_ID; };
-		const uint32_t& GetKeyCount() { return s_NrOf_Keys; };
+		const T& GetKeyData() {return m_MetaData_ptr}
+
+
+		//template<class M>
+		//void SetKeyData(M<T>& data) {m_MetaData_ptr = &data;}
+
+
+		//void SetKeyData(AssetMetaData<T>* ptr) { m_MetaData_ptr = ptr;};
+		const uint32_t& GetKeyID() { return m_Key_ID; }
+		const uint32_t& GetKeyCount() { return s_NrOf_Keys; }
 
 
 
