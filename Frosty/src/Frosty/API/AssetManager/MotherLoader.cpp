@@ -116,9 +116,9 @@ namespace Frosty
 
 		auto temp_AssetManager = Assetmanager::GetAssetmanager();
 
-		std::string TempFileName = GetFileName(FilePath);
 		ModelTemplate* mod_ptr = nullptr;
 
+		std::string TempFileName = GetFileName(FilePath);
 
 		Luna::Reader tempFile;
 
@@ -127,33 +127,42 @@ namespace Frosty
 		if (1) //check if loading went well
 		{
 
-			std::string Temp_MT_Asset_Name;
+			std::string Temp_MT_Asset_Name = TempFileName; //ModelName?
 
-
-
-	
-
-
-
-			if (temp_AssetManager->AddNewModelTemplate(mod_ptr, TempFileName))
+			//ModelTemplate
+			if (temp_AssetManager->AddNewModelTemplate(mod_ptr, Temp_MT_Asset_Name,TempFileName))
 			{
-
-
-
 				//Fill modeltemplate
 
+				// for nr of meshes
+				for (uint16_t i = 0; i < tempFile.getMeshCount(); i++)
+				{
+					mod_ptr->GetMeshVector()->emplace_back(tempFile.getMesh(i));
 
+					uint16_t tempMeshId = mod_ptr->GetMeshVector()->back().id;
 
+					ModelTemplate::MeshInfo* tempMeshInfo_Ptr = mod_ptr->GetMeshInfo(tempMeshId);
 
+					tempMeshInfo_Ptr->m_BoundingBox = tempFile.getBoundingBox(tempMeshId);
 
+					tempFile.getIndices(tempMeshId, tempMeshInfo_Ptr->m_MeshIndices);
+					tempFile.getWeights(tempMeshId, tempMeshInfo_Ptr->m_Weights);
+					tempFile.getVertices(tempMeshId, tempMeshInfo_Ptr->m_MeshVertices);
+					//Mod->getBoundingBoxVector()->emplace_back(tempFile.getBoundingBox(i));
 
+				}
 
+				//nr of models
+				*mod_ptr->GetAnimation() = tempFile.getAnimation();
+				*mod_ptr->GetSkeleton() = tempFile.getSkeleton();
 
+				//vector fills
+				tempFile.getJoints(*mod_ptr->GetJointVector());
 
-
-
-				//Check if material Exist and Fill
-
+				for (uint16_t i = 0; i < mod_ptr->GetJointVector()->size(); i++)
+				{
+					tempFile.getKeyframes(mod_ptr->GetJointVector()->at(i).jointID, *mod_ptr->GetKeyframes(mod_ptr->GetJointVector()->at(i).jointID));
+				}
 
 
 			}
@@ -174,71 +183,38 @@ namespace Frosty
 
 			}
 
-			//Materials
 
 
+			//Get Material Names
+			std::vector<Luna::Material> tempMatVector;
+			tempFile.getMaterials(tempMatVector);
 
+			Luna::Material* tempMatPtr;
 
-
-
-			if (temp_AssetManager->AddNewModelTemplate(mod_ptr, TempFileName))
+			//Add Materials to holder
+			for (int i = 0; i < tempMatVector.size(); i++)
 			{
 
+				//tempMatVector.at(i).diffuseTexPath Chop Name???
 
-
-				//Fill modeltemplate
-
-
-
-			}
-			else
-			{
-				if (Reload)
+				//Materials
+				if (temp_AssetManager->AddNewMaterialTemplate(tempMatPtr, tempMatVector.at(i).diffuseTexPath,TempFileName))
 				{
-					FY_CORE_INFO("Trying To Reload a ModelTemplate: {0}", TempFileName);
+					//Fill Material
+					*tempMatPtr = tempMatVector.at(i);
 				}
 				else
 				{
-					FY_CORE_INFO("ModelTemplate Already Loaded, File: {0}", TempFileName);
+					if (Reload)
+					{
+						FY_CORE_INFO("Trying To Reload a Material: {0}", TempFileName);
+					}
+					else
+					{
+						FY_CORE_INFO("Material Already Loaded, File: {0}", TempFileName);
+					}
 				}
 			}
-
-			if (temp_AssetManager->AddNewMaterialTemplate(mod_ptr, TempFileName))
-			{
-
-
-
-				//Fill modeltemplate
-
-
-
-			}
-			else
-			{
-				if (Reload)
-				{
-					FY_CORE_INFO("Trying To Reload a ModelTemplate: {0}", TempFileName);
-				}
-				else
-				{
-					FY_CORE_INFO("ModelTemplate Already Loaded, File: {0}", TempFileName);
-				}
-			}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 		}
 		else
 		{

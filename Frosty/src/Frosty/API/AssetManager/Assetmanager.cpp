@@ -18,31 +18,32 @@ namespace Frosty
 	bool Assetmanager::LoadFile(std::string FilePath)
 	{
 
-		if (1) //check if asset already exist
-		{
-			auto Loader = MotherLoader::GetMotherLoader();
-			std::vector<Luna::Material> tempMaterialVector;
+		//if (1) //check if asset already exist
+		//{
+		//	auto Loader = MotherLoader::GetMotherLoader();
+		//	std::vector<Luna::Material> tempMaterialVector;
 
-			Loader->Loadfile(
-				FilePath,
-				*m_AssetHolder.GetModeltemplate(0),
-				tempMaterialVector
-				);
-
-
-
-			if (1)// check if material exists
-			{
-
-				// Temp Function for testing
-				for (int i = 0; i < tempMaterialVector.size(); i++)
-				{
-					*m_AssetHolder.GetMaterial(m_NrOfMaterial++) = tempMaterialVector.at(i);
-				}
-			}
+		//	Loader->Loadfile(
+		//		FilePath,
+		//		*m_AssetHolder.GetModeltemplate(0),
+		//		tempMaterialVector
+		//		);
 
 
-		}
+
+		//	if (1)// check if material exists
+		//	{
+
+		//		// Temp Function for testing
+		//		for (int i = 0; i < tempMaterialVector.size(); i++)
+		//		{
+		//			*m_AssetHolder.GetMaterial(m_NrOfMaterial++) = tempMaterialVector.at(i);
+		//		}
+		//	}
+
+		MotherLoader::GetMotherLoader()->Loadfile(FilePath);
+
+	//	}
 
 
 		return true;
@@ -53,7 +54,7 @@ namespace Frosty
 		return false;
 	}
 
-	bool Assetmanager::AddNewModelTemplate(ModelTemplate* ModelTemplate, const std::string& AssetName)
+	bool Assetmanager::AddNewModelTemplate(ModelTemplate* ModelTemplate, const std::string& AssetName, const std::string& FileName)
 	{
 		bool returnValue = false;
 
@@ -65,29 +66,93 @@ namespace Frosty
 
 			AssetMetaData<Frosty::ModelTemplate>* tempMetaData = &m_MT_MetaData_Map[AssetName];
 
-			tempMetaData->SetRefData(*m_AssetHolder.GetModeltemplate(tempMetaData->GetAssetId()), FileName);
+			tempMetaData->SetRefAllData(*m_AssetHolder.GetModeltemplate(tempMetaData->GetAssetId()), AssetName, FileName);
 
-			
+			ModelTemplate = m_AssetHolder.GetModeltemplate(tempMetaData->GetAssetId());
 
+		}
+		else
+		{
+			FY_CORE_WARN("Found Already Existing ModelTemplate with Asset Name: {0}", AssetName);
+		}
+		return returnValue;
+	}
+
+	bool Assetmanager::AddNewMaterialTemplate(Luna::Material* Material, const std::string& AssetName, const std::string& FileName)
+	{
+		bool returnValue = false;
+
+		if (!MaterialLoaded(AssetName))
+		{
+			returnValue = true;
+
+			m_Material_Asset_Name_Vector.emplace_back(AssetName);
+
+			AssetMetaData<Luna::Material>* tempMetaData = &m_MAT_MetaData_Map[AssetName];
+
+			tempMetaData->SetRefAllData(*m_AssetHolder.GetMaterial(tempMetaData->GetAssetId()), AssetName, FileName);
+
+			Material = m_AssetHolder.GetMaterial(tempMetaData->GetAssetId());
+
+		}
+		else
+		{
+			FY_CORE_WARN("Found Already Existing Material with Asset Name: {0}", AssetName);
+		}
+		return returnValue;
+	}
+
+	AssetMetaData<ModelTemplate> const* Assetmanager::GetModeltemplateMetaData(const std::string& AssetName)
+	{
+		if (ModelTemplateLoaded(AssetName))
+		{
+			return &m_MT_MetaData_Map[AssetName];
+		}
+		else
+		{
+			FY_CORE_WARN("Tried to fetch a non loaded ModelTemplate with AssetName: {0}", AssetName);
+		}
+		return nullptr;
+	}
+
+	AssetMetaData<Luna::Material> const* Assetmanager::GetMaterialMetaData(const std::string& AssetName)
+	{
+		if (MaterialLoaded(AssetName))
+		{
+			return &m_MAT_MetaData_Map[AssetName];
+		}
+		else
+		{
+			FY_CORE_WARN("Tried to fetch a non loaded material with AssetName: {0}", AssetName);
+		}
+		return nullptr;
+	}
+
+
+
+	bool Assetmanager::LinkModelKey(const std::string& AssetName, KeyLabel<AssetMetaData<ModelTemplate>>* In_Key)
+	{
+
+		bool returnValue = false;
+
+		if (ModelTemplateLoaded(AssetName)) {
+			In_Key->SetKeyData(m_MT_MetaData_Map[AssetName]);
 		}
 
 		return returnValue;
 	}
 
-	ModelTemplate* Assetmanager::GetModelTemplate()
+	bool Assetmanager::LinkMaterialKey(const std::string& AssetName, KeyLabel<AssetMetaData<Luna::Material>>* In_Key)
 	{
-		return m_AssetHolder.GetModeltemplate(0);
+		bool returnValue = false;
+
+		if (ModelTemplateLoaded(AssetName)) {
+			In_Key->SetKeyData(m_MAT_MetaData_Map[AssetName]);
+		}
+		return returnValue;
 	}
 
-	bool Assetmanager::CreateModelKey(std::string AssetName, KeyLabel<ModelTemplate>* In_Key)
-	{
-		return false;
-	}
 
-	bool Assetmanager::CreateMaterialKey(std::string AssetName, KeyLabel<Luna::Material>* In_Key)
-	{
-		return false;
-	}
 
 	bool Assetmanager::FileLoaded(const std::string& FileName)
 	{
