@@ -33,6 +33,7 @@ namespace Frosty
 
 	void Application::Run()
 	{
+		//
 		while (m_Running)
 		{
 			/// Input			
