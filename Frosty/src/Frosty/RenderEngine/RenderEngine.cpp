@@ -34,14 +34,33 @@ namespace Frosty
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	}
 
-	void RenderEngine::RenderPassTwo()
+	void RenderEngine::RenderPassGUI()
+	{
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+		glBindFramebuffer(GL_FRAMEBUFFER, m_GUIPassFramebuffer);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+		glUseProgram(m_ShaderProgramVector.at(SECONDPASS));
+
+		//glEnable(GL_DEPTH_TEST);
+		//glDepthMask(GL_TRUE);
+		//glDisable(GL_BLEND);
+
+		// Render Data
+
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	}
+
+	void RenderEngine::RenderPassQuad()
 	{
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
 
 
-		glUseProgram(m_ShaderProgramVector.at(SECONDPASS));
+		glUseProgram(m_ShaderProgramVector.at(THIRDPASS));
 		glBindVertexArray(m_QuadVbo);
 
 		glDepthMask(GL_TRUE);
@@ -55,103 +74,32 @@ namespace Frosty
 	void RenderEngine::InitBuffers()
 	{
 		CreateFirstPassFrameBuffer();
+		CreateGUIPassFramebuffer();
 	}
 
 	void RenderEngine::CreateFirstPassFrameBuffer()
 	{
-		unsigned int gBufferAttachments[6];
+		unsigned int gBufferAttachments[2];
 
 		glGenFramebuffers(1, &m_FirstPassFramebuffer);
 		glBindFramebuffer(GL_FRAMEBUFFER, m_FirstPassFramebuffer);
 
-		// Position 
-		glGenTextures(1, &m_PositionRenderTexture);
-		glBindTexture(GL_TEXTURE_2D, m_PositionRenderTexture);
+		// Colour 
+		glGenTextures(1, &m_ColourRenderTexture);
+		glBindTexture(GL_TEXTURE_2D, m_ColourRenderTexture);
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, m_WindowWidth, m_WindowHeight, 0, GL_RGB, GL_FLOAT, NULL);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_PositionRenderTexture, 0);
+		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_ColourRenderTexture, 0);
 
 		if (glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE)
 		{
-			FY_CORE_INFO("Success Generation of Framebuffer for Position Texture");
+			FY_CORE_INFO("Success Generation of Framebuffer for Colour Texture");
 			gBufferAttachments[0] = GL_COLOR_ATTACHMENT0;
 		}
 		else
 		{
-			FY_CORE_ERROR("Fault Genereting Position Texture to Framebuffer");
-		}
-
-		// Normal 
-		glGenTextures(1, &m_NormalRenderTexture);
-		glBindTexture(GL_TEXTURE_2D, m_NormalRenderTexture);
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, m_WindowWidth, m_WindowHeight, 0, GL_RGB, GL_FLOAT, NULL);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, m_NormalRenderTexture, 0);
-
-		if (glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE)
-		{
-			gBufferAttachments[1] = GL_COLOR_ATTACHMENT1;
-			FY_CORE_INFO("Success Generation of Framebuffer for Normal Texture");
-		}
-		else
-		{
-			FY_CORE_ERROR("Fault Genereting Normal Texture to Framebuffer");
-		}
-
-		//	Albedo 
-		glGenTextures(1, &m_AlbedoRenderTexture);
-		glBindTexture(GL_TEXTURE_2D, m_AlbedoRenderTexture);
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, m_WindowWidth, m_WindowHeight, 0, GL_RGBA, GL_FLOAT, NULL);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, GL_TEXTURE_2D, m_AlbedoRenderTexture, 0);
-
-		if (glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE)
-		{
-			FY_CORE_INFO("Success Generation of Framebuffer for Albedo Texture");
-			gBufferAttachments[2] = GL_COLOR_ATTACHMENT2;
-		}
-		else
-		{
-			FY_CORE_ERROR("Fault Genereting Position Texture to Framebuffer");
-		}
-
-		//	Albedo Original
-		glGenTextures(1, &m_AlbedoOrginalTexture);
-		glBindTexture(GL_TEXTURE_2D, m_AlbedoOrginalTexture);
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, m_WindowWidth, m_WindowHeight, 0, GL_RGBA, GL_FLOAT, NULL);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT3, GL_TEXTURE_2D, m_AlbedoOrginalTexture, 0);
-
-		if (glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE)
-		{
-			FY_CORE_INFO("Success Generation of Framebuffer for Albedo Texture");
-			gBufferAttachments[3] = GL_COLOR_ATTACHMENT3;
-		}
-		else
-		{
-			FY_CORE_ERROR("Fault Genereting Position Texture to Framebuffer");
-		}
-
-		//	Albedo Final
-		glGenTextures(1, &m_FinalTexture);
-		glBindTexture(GL_TEXTURE_2D, m_FinalTexture);
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, m_WindowWidth, m_WindowHeight, 0, GL_RGBA, GL_FLOAT, NULL);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT4, GL_TEXTURE_2D, m_FinalTexture, 0);
-
-		if (glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE)
-		{
-			FY_CORE_INFO("Success Generation of Framebuffer for Final Texture");
-			gBufferAttachments[4] = GL_COLOR_ATTACHMENT4;
-		}
-		else
-		{
-			FY_CORE_ERROR("Fault Genereting Final Texture to Framebuffer");
+			FY_CORE_ERROR("Fault Genereting Colour Texture to Framebuffer");
 		}
 
 		glGenTextures(1, &m_DepthRenderTexture);
@@ -166,15 +114,44 @@ namespace Frosty
 		if (glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE)
 		{
 			FY_CORE_INFO("Success Generation of Framebuffer for Depth Texture");
-			gBufferAttachments[5] = GL_DEPTH_ATTACHMENT;
+			gBufferAttachments[1] = GL_DEPTH_ATTACHMENT;
 		}
 		else
 		{
 			FY_CORE_ERROR("Fault Genereting Position Texture to Framebuffer");
 		}
 
-		glDrawBuffers(5, gBufferAttachments);
+		glDrawBuffers(2, gBufferAttachments);
 		glDeleteBuffers(1, &m_FirstPassFramebuffer);
+	}
+
+	void RenderEngine::CreateGUIPassFramebuffer()
+	{
+		unsigned int gBufferAttachments[1];
+
+		glGenFramebuffers(1, &m_GUIPassFramebuffer);
+		glBindFramebuffer(GL_FRAMEBUFFER, m_GUIPassFramebuffer);
+
+		// Colour
+		glGenTextures(1, &m_GUIRenderTexture);
+		glBindTexture(GL_TEXTURE_2D, m_GUIRenderTexture);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, m_WindowWidth, m_WindowHeight, 0, GL_RGB, GL_FLOAT, NULL);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_GUIRenderTexture, 0);
+
+		if (glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE)
+		{
+			FY_CORE_INFO("Success Generation of Texture for GUI-Framebuffer");
+			gBufferAttachments[0] = GL_COLOR_ATTACHMENT0;
+		}
+		else
+		{
+			FY_CORE_ERROR("Fault Genereting Texture to GUI-Framebuffer");
+		}
+
+		glDrawBuffers(1, gBufferAttachments);
+		glDeleteBuffers(1, &m_GUIRenderTexture);
 	}
 
 	void RenderEngine::CreateAllShaderPrograms()
