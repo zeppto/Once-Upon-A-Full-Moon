@@ -23,7 +23,13 @@ namespace Frosty
 		m_RenderEngine = new RenderEngine();
 
 		//test
+<<<<<<< Updated upstream
 
+=======
+		Assetmanager::GetAssetmanager();
+		//Assetmanager::GetAssetmanager()->LoadFile("FbxAztec.fbx");
+		//tempManager->LoadFile("FbxAztec.fbx");
+>>>>>>> Stashed changes
 	}
 
 	Application::~Application()
