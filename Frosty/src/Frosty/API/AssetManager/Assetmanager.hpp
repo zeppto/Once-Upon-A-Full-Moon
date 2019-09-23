@@ -29,8 +29,8 @@ namespace Frosty
 
 		//Not really needed, string information are also stored in the unordered maps above
 		std::vector<std::string> m_FileName_Vector; 
-		std::vector<std::string> m_Material_Asset_Name_Vector; //Same as file name for now
-		std::vector<std::string> m_ModelTemplate_Asset_Name_Vector;
+		std::vector<std::string> m_Material_Asset_Name_Vector; // Diffuse File Path
+		std::vector<std::string> m_ModelTemplate_Asset_Name_Vector; // Same as file name for now
 	
 
 	public:		//Functions
@@ -43,20 +43,25 @@ namespace Frosty
 		//Not initialized yet
 		bool LoadFile(std::string FilePath, const std::string& set_Label);
 
-		bool AddNewModelTemplate(ModelTemplate* ModelTemplate,const std::string& AssetName);
-		bool AddNewMaterialTemplate(ModelTemplate* ModelTemplate,const std::string& AssetName);
+		bool AddNewModelTemplate(ModelTemplate* ModelTemplate,const std::string& AssetName, const std::string& FileName);
+		bool AddNewMaterialTemplate(Luna::Material* Material,const std::string& AssetName, const std::string& FileName);
 
-		AssetMetaData<ModelTemplate> const* GetModeltemplateMetaData(const std::string& AssetName,);
+		/*insert reload functions if needed here
+		.
+		.
+		.
+		.
+		*/
+
+		AssetMetaData<ModelTemplate> const* GetModeltemplateMetaData(const std::string& AssetName);
 		AssetMetaData<Luna::Material> const* GetMaterialMetaData(const std::string& AssetName);
-
-		ModelTemplate* GetModelTemplate();
 
 
 		//KeyLabel<ModelTemplate>& CreateModelKey(std::string AssetName);
 		//KeyLabel<Luna::Material>& CreateMaterialKey(std::string AssetName);
 
-		bool CreateModelKey(std::string AssetName, KeyLabel<ModelTemplate>* In_Key);
-		bool CreateMaterialKey(std::string AssetName, KeyLabel<Luna::Material>* In_Key);
+		bool LinkModelKey(const std::string& AssetName, KeyLabel<AssetMetaData<ModelTemplate>>* In_Key);
+		bool LinkMaterialKey(const std::string& AssetName, KeyLabel<AssetMetaData<Luna::Material>>* In_Key);
 
 
 	private:	//Functions
