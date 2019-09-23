@@ -50,7 +50,7 @@ namespace Frosty
 
 		struct WindowData
 		{
-			std::string Title{ "Frosty Engine" };
+			std::string Title{ "Frosty Engine 2" };
 			unsigned int Width, Height;
 			unsigned int PositionX, PositionY;
 		};
