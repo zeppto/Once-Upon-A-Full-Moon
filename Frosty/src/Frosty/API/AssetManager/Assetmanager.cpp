@@ -136,7 +136,8 @@ namespace Frosty
 		bool returnValue = false;
 
 		if (ModelTemplateLoaded(AssetName)) {
-			In_Key->SetKeyData(m_MT_MetaData_Map[AssetName]);
+		//	In_Key->SetKeyData(m_MT_MetaData_Map[AssetName]);
+			FY_CORE_WARN("Not initialized");
 		}
 
 		return returnValue;
@@ -147,7 +148,8 @@ namespace Frosty
 		bool returnValue = false;
 
 		if (ModelTemplateLoaded(AssetName)) {
-			In_Key->SetKeyData(m_MAT_MetaData_Map[AssetName]);
+			//In_Key->SetKeyData(m_MAT_MetaData_Map[AssetName]);
+			FY_CORE_WARN("Not initialized");
 		}
 		return returnValue;
 	}
