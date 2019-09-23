@@ -28,6 +28,7 @@ namespace Frosty
 
 		BaseKey();
 		BaseKey(BaseKey& other);
+
 		virtual ~BaseKey();
 
 		void SetRefKey(uint32_t ref_id) { m_Key_ReferenceID = ref_id; };
@@ -36,7 +37,7 @@ namespace Frosty
 		bool operator ==(BaseKey& other) { return(m_Key_ReferenceID == other.m_Key_ReferenceID); }
 
 
-		virtual const uint32_t GetKeyID() = 0;
+		virtual const uint32_t& GetKeyID() = 0;
 
 
 		//Functions
