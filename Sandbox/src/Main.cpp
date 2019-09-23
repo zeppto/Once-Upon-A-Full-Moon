@@ -12,7 +12,7 @@ int main(int argc, char** argv)
 	delete app;
 
 
-	std::cout << "HelloWorld" << std::endl;
+
 
 	system("pause");
 	return 0;
