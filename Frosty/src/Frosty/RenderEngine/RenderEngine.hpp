@@ -35,7 +35,7 @@ namespace Frosty
 		std::vector<unsigned int> m_ShaderProgramVector;		
 		unsigned int m_QuadVbo = 0;
 
-		// For Testing 
+		// For Testing
 		bool m_TestMode = false;		
 		unsigned int m_testTriangleVBO = 0;
 

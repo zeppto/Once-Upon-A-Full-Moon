@@ -1,6 +1,5 @@
 #include "fypch.hpp"
 #include "Application.hpp"
-
 #include <glad/glad.h>
 
 namespace Frosty
@@ -27,10 +26,7 @@ namespace Frosty
 		//-------------------------------------------------------------------------
 
 		glGenVertexArrays(1, &m_VertexArray);
-		glBindVertexArray(m_VertexArray);
-
-		glGenBuffers(1, &m_VertexBuffer);
-		glBindBuffer(GL_ARRAY_BUFFER, m_VertexBuffer);
+		glBindVertexArray(m_VertexArray);		
 
 		float vertices[3 * 3] = 
 		{
@@ -39,16 +35,42 @@ namespace Frosty
 			 0.0f,  0.5f, 0.0f
 		};
 
-		glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+		m_VertexBuffer.reset(VertexBuffer::Create(vertices, sizeof(vertices)));		
 
 		glEnableVertexAttribArray(0);
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), nullptr);
-		
-		glGenBuffers(1, &m_IndexBuffer);
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_IndexBuffer);
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), nullptr);		
 
-		unsigned int indices[3] = { 0, 1, 2 };
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+		uint32_t indices[3] = { 0, 1, 2 };
+		m_IndexBuffer.reset(IndexBuffer::Create(indices, sizeof(indices) / sizeof(uint32_t)));
+
+		std::string VertexSrc = R"(
+			#version 440 core
+			
+			layout(location = 0) in vec3 vsInPos;
+			
+			out vec3 vsOutPos;
+			
+			void main()
+			{
+				gl_Position = vec4(vsInPos, 1.0f);
+				vsOutPos = vsInPos;
+			}
+		)";
+		std::string FragmentSrc = R"(
+			#version 440 core
+
+			in vec3 vsOutPos;			
+
+			layout(location = 0) out vec4 fsOutCol;
+			
+			void main()
+			{
+				//fsOutCol = vec4(0.8f, 0.2f, 0.3f, 1.0f);
+				fsOutCol = vec4(vsOutPos, 1.0f);				
+			}
+		)";
+
+		m_Shader.reset(new Shader(VertexSrc, FragmentSrc));
 	}
 
 	Application::~Application()
@@ -61,17 +83,22 @@ namespace Frosty
 	void Application::Run()
 	{
 		while (m_Running)
-		{
-			/// New
-			// -------------------
+		{			
+			glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+			glClear(GL_COLOR_BUFFER_BIT);
+			m_Shader->Bind();
+
 			glBindVertexArray(m_VertexArray);
+			//glDrawElements(GL_TRIANGLES, m_IndexBuffer->GetSize(), GL_UNSIGNED_INT, nullptr);
 			glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, nullptr);
-			
-			/// Input			
+
+			/// Input		
 
 			/// Update
 			for (Layer* layer : m_LayerHandler)
+			{
 				layer->OnUpdate();
+			}
 
 			//m_RenderEngine->UpdateCamera();
 			/// Render
@@ -85,7 +112,7 @@ namespace Frosty
 					layer->OnImGuiRender();
 				}
 			}
-			m_ImGuiLayer->End();
+			m_ImGuiLayer->End();			
 
 			m_Window->OnUpdate();
 		}		

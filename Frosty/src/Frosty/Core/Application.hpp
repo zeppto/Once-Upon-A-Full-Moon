@@ -5,6 +5,8 @@
 #include "EventSystem.hpp"
 #include "Frosty/ImGui/ImGuiLayer.hpp"
 #include "Frosty/RenderEngine/RenderEngine.hpp"
+#include "Frosty/RenderEngine/Shader.hpp"
+#include "Frosty/RenderEngine/Buffer.hpp"
 
 namespace Frosty
 {
@@ -25,15 +27,14 @@ namespace Frosty
 		void PopOverlay(Layer* layer);
 
 		// RenderEngine
-		RenderEngine* GetRenderEngine() { return m_RenderEngine; }
+		//RenderEngine* GetRenderEngine() { return m_RenderEngine; }
 
 		inline Window& GetWindow() { return *m_Window; }
 		static inline Application& Get() { return *s_Instance; }
 
 	private:
 		void OnWindowCloseEvent(WindowCloseEvent& e);
-		void OnKeyPressedEvent(KeyPressedEvent& e);
-
+		void OnKeyPressedEvent(KeyPressedEvent& e);	
 	private:
 		bool m_Running = true;
 
@@ -42,16 +43,18 @@ namespace Frosty
 
 		std::unique_ptr<Window> m_Window;
 
-		RenderEngine* m_RenderEngine;
+		//RenderEngine* m_RenderEngine;
 
 		static Application* s_Instance;
 
 		/// New ...
 		//-------------------------------------------------------------------------
 
-		unsigned int m_VertexArray;
-		unsigned int m_VertexBuffer;
-		unsigned int m_IndexBuffer;
+		unsigned int m_VertexArray;		
+
+		std::unique_ptr<Shader> m_Shader;
+		std::unique_ptr<VertexBuffer> m_VertexBuffer;
+		std::unique_ptr<IndexBuffer> m_IndexBuffer;
 	};
 }
 #endif // !APPLICATION_HPP
