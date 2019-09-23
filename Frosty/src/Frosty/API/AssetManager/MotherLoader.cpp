@@ -7,24 +7,24 @@
 namespace Frosty
 {
 
-	MotherLoader* MotherLoader::m_Instance = nullptr;
+	MotherLoader* MotherLoader::s_Instance = nullptr;
 
 
 	MotherLoader* MotherLoader::GetMotherLoader()
 	{
-		if (m_Instance == nullptr) 
+		if (s_Instance == nullptr) 
 		{
-			m_Instance = new MotherLoader;
+			s_Instance = new MotherLoader;
 		}
 
-		return m_Instance;
+		return s_Instance;
 	}
 
 	MotherLoader::~MotherLoader()
 	{
-		if (m_Instance != nullptr)
+		if (s_Instance != nullptr)
 		{
-			delete m_Instance;
+			delete s_Instance;
 		}
 	}
 

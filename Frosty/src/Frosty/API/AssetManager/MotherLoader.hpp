@@ -16,7 +16,7 @@ namespace Frosty
 
 
 	private: //variables
-		static MotherLoader* m_Instance;
+		static MotherLoader* s_Instance;
 
 		bool m_AutoLoader = true;
 
