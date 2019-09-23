@@ -27,7 +27,7 @@ namespace Frosty
 	{
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 	}
-
+	
 	VertexBuffer * VertexBuffer::Create(float * vertices, uint32_t size)
 	{
 		return new VertexBuffer(vertices, size);

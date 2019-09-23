@@ -37,9 +37,14 @@ namespace Frosty
 
 		m_VertexBuffer.reset(VertexBuffer::Create(vertices, sizeof(vertices)));		
 
-		glEnableVertexAttribArray(0);
+		BufferLayout layout = 
+		{			
+			//{ShaderDataType::Float3, "vsInPos" }			
+		};
+		
+		glEnableVertexAttribArray(0);	
 		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), nullptr);		
-
+		
 		uint32_t indices[3] = { 0, 1, 2 };
 		m_IndexBuffer.reset(IndexBuffer::Create(indices, sizeof(indices) / sizeof(uint32_t)));
 
