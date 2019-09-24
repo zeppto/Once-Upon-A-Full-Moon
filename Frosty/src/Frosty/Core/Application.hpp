@@ -5,11 +5,19 @@
 #include "EventSystem.hpp"
 #include "Frosty/ImGui/ImGuiLayer.hpp"
 #include "Frosty/RenderEngine/RenderEngine.hpp"
+#include "Frosty/API/AssetManager/Assetmanager.hpp"
+
+
 
 namespace Frosty
 {
+
+
+
 	class Application
 	{
+		
+
 	public:
 		Application();
 		virtual ~Application();
@@ -33,6 +41,7 @@ namespace Frosty
 	private:
 		void OnWindowCloseEvent(WindowCloseEvent& e);
 		void OnKeyPressedEvent(KeyPressedEvent& e);
+
 
 	private:
 		bool m_Running = true;

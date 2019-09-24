@@ -1,6 +1,7 @@
 #ifndef RENDERENGINE_HPP
 #define RENDERENGINE_HPP
 #include "Frosty/Core/Camera/Camera.hpp"
+#include "Frosty/API/AssetManager/Assetmanager.hpp"
 #include "Frosty/API/Transform.h"
 #define BUFFER_OFFSET(i) ((char *)nullptr + (i))
 
@@ -43,6 +44,9 @@ namespace Frosty
 		// For Testing 
 		bool m_TestMode = false;		
 		unsigned int m_testTriangleVBO = 0;
+		bool m_RenderTestModel = true;
+		int m_VertexSizeOfTempModel = 0;
+		unsigned int m_testModelVBO = 0;
 
 	private:
 		//Update Functions
@@ -73,6 +77,7 @@ namespace Frosty
 		// For Testing
 		void CreateTriangle();		
 		void RenderTestTriangle();
+		void CreateTempModelData(ModelTemplate& testModel);
 	};
 }
 #endif 

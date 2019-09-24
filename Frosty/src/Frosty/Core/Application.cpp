@@ -1,6 +1,5 @@
 #include "fypch.hpp"
 #include "Application.hpp"
-
 #include <glad/glad.h>
 
 namespace Frosty
@@ -22,6 +21,13 @@ namespace Frosty
 		m_ImGuiLayer = new ImGuiLayer();
 		PushOverlay(m_ImGuiLayer);
 		m_RenderEngine = new RenderEngine();
+
+		//test
+
+		//Assetmanager::GetAssetmanager();
+		//Assetmanager::GetAssetmanager()->LoadFile("FbxAztec.fbx");
+		//tempManager->LoadFile("FbxAztec.fbx");
+
 	}
 
 	Application::~Application()
@@ -29,6 +35,7 @@ namespace Frosty
 		delete m_RenderEngine;
 		EventBus::GetEventBus()->Delete();
 		glfwTerminate();
+		Assetmanager::Delete();
 	}
 
 	void Application::Run()
