@@ -66,5 +66,5 @@ namespace Frosty
 	IndexBuffer * IndexBuffer::Create(uint32_t * indices, uint32_t size)
 	{
 		return new IndexBuffer(indices, size);
-	}
+	}	
 }

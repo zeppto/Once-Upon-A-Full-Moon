@@ -5,7 +5,7 @@
 namespace Frosty
 {
 	Application* Application::s_Instance = nullptr;
-
+	
 	Application::Application()
 	{
 		// TODO: Error handling?
@@ -24,27 +24,27 @@ namespace Frosty
 
 		/// New ...
 		//-------------------------------------------------------------------------
-
-		glGenVertexArrays(1, &m_VertexArray);
-		glBindVertexArray(m_VertexArray);		
-
-		float vertices[3 * 3] = 
+				
+		m_VertexArray.reset(VertexArray::Create());
+		
+		float vertices[3 * 7] = 
 		{
-			-0.5f, -0.5f, 0.0f,
-			 0.5f, -0.5f, 0.0f,
-			 0.0f,  0.5f, 0.0f
+			-0.5f, -0.5f, 0.0f, 0.8f, 0.0f, 0.8f, 1.0f,
+			 0.5f, -0.5f, 0.0f, 0.2f, 0.3f, 0.8f, 1.0f,
+			 0.0f,  0.5f, 0.0f, 0.8f, 0.8f, 0.2f, 1.0f
 		};
-
+		
 		m_VertexBuffer.reset(VertexBuffer::Create(vertices, sizeof(vertices)));		
-
+		
 		BufferLayout layout = 
 		{			
-			//{ShaderDataType::Float3, "vsInPos" }			
+			{ ShaderDataType::Float3, "vsInPos" },
+			{ ShaderDataType::Float4, "vsInCol" }
 		};
-		
-		glEnableVertexAttribArray(0);	
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), nullptr);		
-		
+
+		m_VertexBuffer->SetLayout(layout);
+		m_VertexArray->AddVertexBuffer(m_VertexBuffer);
+
 		uint32_t indices[3] = { 0, 1, 2 };
 		m_IndexBuffer.reset(IndexBuffer::Create(indices, sizeof(indices) / sizeof(uint32_t)));
 
@@ -52,26 +52,31 @@ namespace Frosty
 			#version 440 core
 			
 			layout(location = 0) in vec3 vsInPos;
+			layout(location = 1) in vec4 vsInCol;
 			
 			out vec3 vsOutPos;
+			out vec4 vsOutCol;
 			
 			void main()
 			{
 				gl_Position = vec4(vsInPos, 1.0f);
 				vsOutPos = vsInPos;
+				vsOutCol = vsInCol;
 			}
 		)";
 		std::string FragmentSrc = R"(
 			#version 440 core
 
-			in vec3 vsOutPos;			
+			in vec3 vsOutPos;
+			in vec4 vsOutCol;
 
 			layout(location = 0) out vec4 fsOutCol;
 			
 			void main()
 			{
 				//fsOutCol = vec4(0.8f, 0.2f, 0.3f, 1.0f);
-				fsOutCol = vec4(vsOutPos, 1.0f);				
+				//fsOutCol = vec4(vsOutPos + 0.5f, 1.0f);				
+				fsOutCol = vsOutCol;
 			}
 		)";
 
@@ -93,7 +98,7 @@ namespace Frosty
 			glClear(GL_COLOR_BUFFER_BIT);
 			m_Shader->Bind();
 
-			glBindVertexArray(m_VertexArray);
+			//glBindVertexArray(m_VertexArray);
 			//glDrawElements(GL_TRIANGLES, m_IndexBuffer->GetSize(), GL_UNSIGNED_INT, nullptr);
 			glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, nullptr);
 

@@ -187,7 +187,7 @@ namespace Frosty
 		lights.emplace_back(l);
 		lights.emplace_back(l2);
 
-		glUniform1ui(glGetUniformLocation(m_ShaderProgramVector[TEST_LIGHT], "nrOfPointLights"), lights.size());
+		glUniform1ui(glGetUniformLocation(m_ShaderProgramVector[TEST_LIGHT], "nrOfPointLights"), (GLuint)lights.size());
 		for (int i = 0; i < lights.size(); i++)
 		{
 			glUniform3fv(glGetUniformLocation(m_ShaderProgramVector[TEST_LIGHT], ("pointLights[" + std::to_string(i) + "].position").c_str()), 1, &lights[i].position[0]);
@@ -203,7 +203,7 @@ namespace Frosty
 		lights.emplace_back(l3);
 		lights.emplace_back(l4);
 
-		glUniform1ui(glGetUniformLocation(m_ShaderProgramVector[TEST_LIGHT], "nrOfDirLights"), lights.size());
+		glUniform1ui(glGetUniformLocation(m_ShaderProgramVector[TEST_LIGHT], "nrOfDirLights"), (GLuint)lights.size());
 		for (int i = 0; i < lights.size(); i++)
 		{
 			glUniform4fv(glGetUniformLocation(m_ShaderProgramVector[TEST_LIGHT], ("dirLights[" + std::to_string(i) + "].color").c_str()), 1, &lights[i].color[0]);
