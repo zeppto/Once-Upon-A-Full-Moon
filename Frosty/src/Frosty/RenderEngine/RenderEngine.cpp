@@ -277,7 +277,7 @@ namespace Frosty
 		MotherLoader::GetMotherLoader()->LoadFiles();
 		//= *tempManager->GetModelTemplate();
 
-		AssetMetaData<ModelTemplate> * kk = tempManager->GetModeltemplateMetaData("table");
+		AssetMetaData<ModelTemplate> * kk = tempManager->GetModeltemplateMetaData("clock");
 		ModelTemplate* ll = kk->GetData();
 
 		CreateTempModelData(*ll);
