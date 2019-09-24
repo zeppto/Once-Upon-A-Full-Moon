@@ -43,11 +43,9 @@ namespace Frosty
 		const T& GetKeyData() {return m_MetaData_ptr}
 
 
-		//template<class M>
-		//void SetKeyData(M<T>& data) {m_MetaData_ptr = &data;}
 
+		void SetKeyData(AssetMetaData<T>& data) {m_MetaData_ptr = &data;}
 
-		//void SetKeyData(AssetMetaData<T>* ptr) { m_MetaData_ptr = ptr;};
 		const uint32_t& GetKeyID() { return m_Key_ID; }
 		const uint32_t& GetKeyCount() { return s_NrOf_Keys; }
 

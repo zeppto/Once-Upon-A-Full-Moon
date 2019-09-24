@@ -45,7 +45,7 @@ namespace Frosty
 		bool AddNewModelTemplate(ModelTemplate*& ModelTemplate,const std::string& AssetName, const std::string& FileName);
 		bool AddNewMaterialTemplate(Luna::Material*& Material,const std::string& AssetName, const std::string& FileName);
 
-		/*insert reload functions if needed here
+		/*insert reload functions (if needed) here
 		.
 		.
 		.
@@ -59,8 +59,8 @@ namespace Frosty
 		//KeyLabel<ModelTemplate>& CreateModelKey(std::string AssetName);
 		//KeyLabel<Luna::Material>& CreateMaterialKey(std::string AssetName);
 
-		bool LinkModelKey(const std::string& AssetName, KeyLabel<AssetMetaData<ModelTemplate>>* In_Key);
-		bool LinkMaterialKey(const std::string& AssetName, KeyLabel<AssetMetaData<Luna::Material>>* In_Key);
+		bool LinkModelKey(const std::string& AssetName, KeyLabel<ModelTemplate>* In_Key);
+		bool LinkMaterialKey(const std::string& AssetName, KeyLabel<Luna::Material>* In_Key);
 
 
 	private:	//Functions

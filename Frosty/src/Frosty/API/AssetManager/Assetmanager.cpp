@@ -1,5 +1,6 @@
 #include "fypch.hpp"
 #include "Assetmanager.hpp"
+#include "..\"
 
 namespace Frosty
 {
@@ -51,6 +52,11 @@ namespace Frosty
 
 	bool Assetmanager::LoadFile(std::string FilePath, const std::string& set_Prefabkey)
 	{
+
+		MotherLoader::GetMotherLoader()->Loadfile(FilePath);
+
+		//prefab manager here
+
 		return false;
 	}
 
@@ -130,26 +136,26 @@ namespace Frosty
 
 
 
-	bool Assetmanager::LinkModelKey(const std::string& AssetName, KeyLabel<AssetMetaData<ModelTemplate>>* In_Key)
+	bool Assetmanager::LinkModelKey(const std::string& AssetName, KeyLabel<ModelTemplate>* In_Key)
 	{
 
 		bool returnValue = false;
 
 		if (ModelTemplateLoaded(AssetName)) {
-		//	In_Key->SetKeyData(m_MT_MetaData_Map[AssetName]);
-			FY_CORE_WARN("Not initialized");
+			In_Key->SetKeyData(m_MT_MetaData_Map[AssetName]);
+		//	FY_CORE_WARN("Not initialized");
 		}
 
 		return returnValue;
 	}
 
-	bool Assetmanager::LinkMaterialKey(const std::string& AssetName, KeyLabel<AssetMetaData<Luna::Material>>* In_Key)
+	bool Assetmanager::LinkMaterialKey(const std::string& AssetName, KeyLabel<Luna::Material>* In_Key)
 	{
 		bool returnValue = false;
 
 		if (ModelTemplateLoaded(AssetName)) {
-			//In_Key->SetKeyData(m_MAT_MetaData_Map[AssetName]);
-			FY_CORE_WARN("Not initialized");
+			In_Key->SetKeyData(m_MAT_MetaData_Map[AssetName]);
+		//	FY_CORE_WARN("Not initialized");
 		}
 		return returnValue;
 	}
