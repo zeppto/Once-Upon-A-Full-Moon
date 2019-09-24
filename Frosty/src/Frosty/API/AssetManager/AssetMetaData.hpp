@@ -21,7 +21,7 @@ namespace Frosty
 		static int32_t s_Asset_ID;
 		static int32_t s_Asset_Counter;
 
-		T** const m_data_ptr = new T*;
+		T** const m_data_ptr = FY_NEW T*;
 		int32_t m_AssetID;						// Asset ID set for container or other way around?
 
 		std::string m_FileName;
