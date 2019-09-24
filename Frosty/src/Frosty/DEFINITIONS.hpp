@@ -20,5 +20,9 @@
 
 // Luna files
 #define FY_TEST_LOAD_MODEL PROJECT_LUNAFILES_FOLDER_ROOT "fox_character_attack.lu"
+#define FY_TEST1_LOAD_MODEL PROJECT_LUNAFILES_FOLDER_ROOT "clock.lu"
+#define FY_TEST2_LOAD_MODEL PROJECT_LUNAFILES_FOLDER_ROOT "table.lu"
+
+
 
 #endif // !DEFINITIONS_HPP

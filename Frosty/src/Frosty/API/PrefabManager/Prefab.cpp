@@ -59,12 +59,23 @@ namespace Frosty
 	{
 		bool returnValue = true;
 
-		if (!Assetmanager::GetAssetmanager()->LinkModelKey(modelName, &m_ModelKey))
+		//if (!Assetmanager::GetAssetmanager()->LinkModelKey(modelName, &m_ModelKey))
+		//{
+		//	returnValue = false;
+		//}
+
+		//if (!Assetmanager::GetAssetmanager()->LinkMaterialKey(materialName, &m_MaterialKey))
+		//{
+		//	returnValue = false;
+		//}
+
+		if (!Assetmanager::GetAssetmanager()->LinkKey(modelName, &m_ModelKey))
 		{
 			returnValue = false;
 		}
 
-		if (!Assetmanager::GetAssetmanager()->LinkMaterialKey(materialName, &m_MaterialKey))
+
+		if (!Assetmanager::GetAssetmanager()->LinkKey(materialName, &m_MaterialKey))
 		{
 			returnValue = false;
 		}
