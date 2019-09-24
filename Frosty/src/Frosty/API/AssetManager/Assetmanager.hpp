@@ -45,7 +45,7 @@ namespace Frosty
 		bool AddNewModelTemplate(ModelTemplate*& ModelTemplate,const std::string& AssetName, const std::string& FileName);
 		bool AddNewMaterialTemplate(Luna::Material*& Material,const std::string& AssetName, const std::string& FileName);
 
-		/*insert reload functions if needed here
+		/*insert reload functions (if needed) here
 		.
 		.
 		.
