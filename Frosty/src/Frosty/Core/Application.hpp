@@ -6,6 +6,8 @@
 #include "Frosty/ImGui/ImGuiLayer.hpp"
 #include "Frosty/RenderEngine/RenderEngine.hpp"
 #include "Frosty/StateMachine/StateMachine.hpp"
+#include "Frosty/Core/InputManager.hpp"
+#include "Frosty/StateMachine/MainMenuState.h"
 
 namespace Frosty
 {
@@ -29,6 +31,7 @@ namespace Frosty
 		RenderEngine* GetRenderEngine() { return m_RenderEngine; }
 
 		inline Window& GetWindow() { return *m_Window; }
+		inline InputManager& GetInputManager() { return m_InputManager; }
 		static inline Application& Get() { return *s_Instance; }
 
 	private:
@@ -36,6 +39,7 @@ namespace Frosty
 		void OnKeyPressedEvent(KeyPressedEvent& e);
 
 	private:
+		InputManager m_InputManager;
 		bool m_Running = true;
 
 		ImGuiLayer* m_ImGuiLayer;

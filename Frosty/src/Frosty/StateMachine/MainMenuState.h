@@ -2,16 +2,18 @@
 #define MAIN_MENU_STATE_HPP
 
 #include "Frosty/StateMachine/State.hpp"
+#include "Frosty/Core/Application.hpp"
 
 namespace Frosty
 {
 	class MainMenuState:public State {
 	public:
-		MainMenuState();
+		MainMenuState(Application * app);
 		void Initiate();
 		void OnInput();
 		void OnUpdate();
 	private:
+		Application *app;
 	};
 }
 

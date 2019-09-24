@@ -33,9 +33,16 @@ namespace Frosty
 
 	void Application::Run()
 	{
-		//
+		StateMachine states;
+
+		states.AddState(Frosty::StateRef(new MainMenuState(s_Instance)), false);
+		states.ProcessStateChanges();
+
+
 		while (m_Running)
 		{
+			states.GetActiveState()->OnUpdate();
+			states.ProcessStateChanges();
 			/// Input			
 
 			/// Update
