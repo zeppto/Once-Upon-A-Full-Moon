@@ -48,7 +48,7 @@ namespace Frosty
 		
 		//bool Loadfile(const std::string& FilePath,const bool& Reload = false);
 		bool Loadfile(const std::string& FilePath,const  std::string& PrefabName = "",const bool& Reload = false);
-		void LoadFilesFromFile();
+		void LoadFiles();
 
 
 	private: //functions

@@ -2,6 +2,7 @@
 #include "MotherLoader.hpp"
 #include "Assetmanager.hpp"
 #include "..\PrefabManager\PrefabManager.h"
+#include"..\..\DEFINITIONS.hpp"
 
 
 namespace Frosty
@@ -175,6 +176,16 @@ namespace Frosty
 		}
 
 		return returnValue;
+	}
+
+	void MotherLoader::LoadFiles()
+	{
+		using recursive_directory_iterator = std::filesystem::recursive_directory_iterator;
+
+		for (const auto& dirEntry : recursive_directory_iterator(PROJECT_LUNAFILES_FOLDER_ROOT))
+		{
+			Loadfile(PROJECT_LUNAFILES_FOLDER_ROOT + dirEntry.path().filename().string());
+		}
 	}
 
 	bool MotherLoader::GetFileInformation(FileNameInfo& FileNameInformation)

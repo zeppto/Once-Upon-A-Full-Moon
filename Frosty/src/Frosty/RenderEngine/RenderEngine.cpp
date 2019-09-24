@@ -271,9 +271,10 @@ namespace Frosty
 		auto tempManager = Assetmanager::GetAssetmanager();
 		
 		// Temp load
-		tempManager->LoadFile(FY_TEST_LOAD_MODEL,"RavJavel");
-		tempManager->LoadFile(FY_TEST1_LOAD_MODEL,"clock");
-		tempManager->LoadFile(FY_TEST2_LOAD_MODEL,"bord");
+		//tempManager->LoadFile(FY_TEST_LOAD_MODEL,"RavJavel");
+		//tempManager->LoadFile(FY_TEST1_LOAD_MODEL,"clock");
+		//tempManager->LoadFile(FY_TEST2_LOAD_MODEL,"bord");
+		MotherLoader::GetMotherLoader()->LoadFiles();
 		//= *tempManager->GetModelTemplate();
 
 		AssetMetaData<ModelTemplate> * kk = tempManager->GetModeltemplateMetaData("table");

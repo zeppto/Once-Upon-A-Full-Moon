@@ -20,7 +20,8 @@ namespace Frosty
 
 	private:	//Variables
 
-		int32_t m_Container_Slot_Counter;
+		//Is this class needed?
+		int32_t m_Container_Slot_Counter; // Need another for the diffrent maps(The map use same counter for the moment)
 
 		std::unordered_map<int32_t, ModelTemplate> m_ModelMap;
 		std::unordered_map<int32_t, Luna::Material> m_MaterialMap;
@@ -33,7 +34,7 @@ namespace Frosty
 		AssetHolder();
 		virtual ~AssetHolder();
 
-		const int32_t& GetEmptyContainerSlot() { return m_Container_Slot_Counter++; };
+		const int32_t GetEmptyContainerSlot() { return m_Container_Slot_Counter++; };
 
 		ModelTemplate* GetModeltemplate(const int32_t& Container_Slot);
 		Luna::Material* GetMaterial(const int32_t& Container_Slot);
