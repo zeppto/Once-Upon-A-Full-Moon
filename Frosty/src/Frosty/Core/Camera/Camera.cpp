@@ -30,7 +30,8 @@ namespace Frosty
 		m_CameraData.LastFrame = m_CameraData.CurrentFrame;
 		m_CameraData.CamSpeed = 2.0f * m_CameraData.DeltaTime;
 
-		if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+		if (glfwGetKey(window, GLFW_KEY_W
+		) == GLFW_PRESS)
 		{
 			if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
 			{

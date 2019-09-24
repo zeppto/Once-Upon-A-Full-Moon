@@ -92,6 +92,11 @@ namespace Frosty
 		UpdateInfoFromWindow();		
 		m_Camera = new Camera;
 		CreateTestModel();
+		m_TestBox.SetUp();
+		m_TestPlayer.SetColor(glm::vec3(0.0f, 0.0f, 1.0f));
+		m_TestPlayer.SetPosition(glm::vec3(0.0f, 2.0f, -1.0f));
+		m_TestPlayer.SetUp();
+		m_TestPlayer.SetIsPlayer(true);
 	}
 	RenderEngine::~RenderEngine()
 	{		
@@ -104,7 +109,14 @@ namespace Frosty
 		m_TestMode = true;
 		if (m_TestMode)
 		{
+			m_TestBox.SetShaderProgram(m_ShaderProgramVector.at(TEST_SHAPE));
+			m_TestPlayer.SetShaderProgram(m_ShaderProgramVector.at(TEST_SHAPE));
 			RenderAllTestModels();
+			m_TestBox.Update(glm::vec3(2, 0, -1), glm::vec3(0.0f), glm::vec3(1.0f));
+			//m_TestPlayer.Update(glm::vec3(0.0f, 3.0f, -3.0f) + m_Camera->GetPos(), glm::vec3(0.0f), glm::vec3(1.0f));
+			m_TestPlayer.Update();
+			m_TestBox.Render(m_Camera->GetView(), m_Camera->GetProjection());
+			m_TestPlayer.Render(m_Camera->GetView(), m_Camera->GetProjection());
 
 
 
@@ -193,21 +205,15 @@ namespace Frosty
 		
 		glUseProgram(m_ShaderProgramVector.at(TEST_SHAPE));
 		
-		for (int i = 0; i < 3; i++)
+		for (int i = 0; i < 4; i++)
 		{
 			glUniformMatrix4fv(1, 1, GL_FALSE, &m_Camera->GetView()[0][0]);
 			glUniformMatrix4fv(2, 1, GL_FALSE, &m_Camera->GetProjection()[0][0]);
 			glm::mat4 world = glm::mat4(1.0f);
-			//om i �r 0 behandla som player
-			if (i == 0)
-			{
-				world = glm::translate(world, m_Camera->GetPos());
-				world = glm::translate(world, glm::vec3(0.0f, 0.0f, -3.0f));
-			}
-			else
-			{
-				world = glm::translate(world, glm::vec3(i, i, -2));
-			}
+			world = glm::translate(world, glm::vec3(0, 0, -2));
+			world = glm::scale(world, glm::vec3(10.0f, 10.0f, 0.0f));
+
+
 			glUniformMatrix4fv(3, 1, GL_FALSE, glm::value_ptr(world));
 
 
