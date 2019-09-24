@@ -59,8 +59,8 @@ namespace Frosty
 		//KeyLabel<ModelTemplate>& CreateModelKey(std::string AssetName);
 		//KeyLabel<Luna::Material>& CreateMaterialKey(std::string AssetName);
 
-		bool LinkModelKey(const std::string& AssetName, KeyLabel<AssetMetaData<ModelTemplate>>* In_Key);
-		bool LinkMaterialKey(const std::string& AssetName, KeyLabel<AssetMetaData<Luna::Material>>* In_Key);
+		bool LinkModelKey(const std::string& AssetName, KeyLabel<ModelTemplate>* In_Key);
+		bool LinkMaterialKey(const std::string& AssetName, KeyLabel<Luna::Material>* In_Key);
 
 
 	private:	//Functions
