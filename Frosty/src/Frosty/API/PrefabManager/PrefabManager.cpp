@@ -4,6 +4,9 @@
 namespace Frosty
 {
 	
+	PrefabManager* PrefabManager::s_Instance = nullptr;
+
+
 	PrefabManager* Frosty::PrefabManager::GetPrefabManager()
 	{
 		if (s_Instance == nullptr)
@@ -18,7 +21,7 @@ namespace Frosty
 	{
 	}
 	//Modifies the Prefab with the given name. If no prefab exists with that name, a new one will be created.
-	bool PrefabManager::setPrefab( std::string& prefabName, const std::string& modelName, const std::string& materialName)
+	bool PrefabManager::setPrefab(const std::string& prefabName, const std::string& modelName, const std::string& materialName)
 	{
 		bool returnValue;
 		/*if (CheckIfPrefabExists(prefabName))

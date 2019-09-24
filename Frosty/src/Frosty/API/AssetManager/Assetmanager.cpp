@@ -2,6 +2,7 @@
 #include "Assetmanager.hpp"
 
 
+
 namespace Frosty
 {
 	Assetmanager* Assetmanager::m_Instance = nullptr;
@@ -53,9 +54,15 @@ namespace Frosty
 	bool Assetmanager::LoadFile(std::string FilePath, const std::string& set_Prefabkey)
 	{
 
-		MotherLoader::GetMotherLoader()->Loadfile(FilePath);
+		if (MotherLoader::GetMotherLoader()->Loadfile(FilePath, set_Prefabkey))
+		{
+			FY_CORE_INFO("SUCCESS LOADING FILE: {0}" , FilePath);
+		}
+		else
+		{
+			FY_CORE_INFO("FAILED TO LOAD FILE: {0}", FilePath);
+		}
 
-		//prefab manager here
 
 		return false;
 	}
@@ -143,6 +150,7 @@ namespace Frosty
 
 		if (ModelTemplateLoaded(AssetName)) {
 			In_Key->SetKeyData(m_MT_MetaData_Map[AssetName]);
+			returnValue = true;
 		//	FY_CORE_WARN("Not initialized");
 		}
 
@@ -155,6 +163,7 @@ namespace Frosty
 
 		if (ModelTemplateLoaded(AssetName)) {
 			In_Key->SetKeyData(m_MAT_MetaData_Map[AssetName]);
+			returnValue = true;
 		//	FY_CORE_WARN("Not initialized");
 		}
 		return returnValue;

@@ -25,15 +25,15 @@ namespace Frosty
 
 		KeyLabel() : BaseKey(), m_MetaData_ptr(nullptr) {}
 		KeyLabel(T& data) : BaseKey(), m_MetaData_ptr(&data) {}
-		KeyLabel(KeyLabel& other) : BaseKey(other) { m_MetaData_ptr(other.m_MetaData_ptr); }
+		KeyLabel(KeyLabel& other) : BaseKey(other) , m_MetaData_ptr(other.m_MetaData_ptr) {}
 		virtual ~KeyLabel() {}
 
 		bool operator ==(const KeyLabel& other) { return (m_MetaData_ptr == other.m_MetaData_ptr);}
 		
 		KeyLabel& operator = (const KeyLabel& other) 
 		{
-			m_MetaData_ptr(other.m_MetaData_ptr);
-			m_Label(other.m_Label);
+			m_MetaData_ptr = other.m_MetaData_ptr;
+			m_Label = other.m_Label;
 			return *this; 
 		}
 

@@ -20,7 +20,7 @@ namespace Frosty
 	public:		//Functions
 		static PrefabManager* GetPrefabManager();
 		~PrefabManager();
-		bool setPrefab( std::string& prefabName, const std::string& modelName, const std::string& materialName);
+		bool setPrefab(const std::string& prefabName, const std::string& modelName, const std::string& materialName);
 	private:	//Functions
 
 		bool CheckIfPrefabExists(std::string prefabName);

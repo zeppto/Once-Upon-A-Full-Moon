@@ -3,7 +3,8 @@
 
 namespace Frosty
 {
-	
+	uint32_t Prefab::s_NrOf_Prefabs = 0;
+	uint32_t Prefab::s_Unique_ID = 0;
 
 	
 
@@ -74,6 +75,7 @@ namespace Frosty
 	{
 		m_MaterialKey = other.m_MaterialKey;
 		m_ModelKey = other.m_ModelKey;
+		return *this;
 	}
 	bool Prefab::operator==(Prefab& other)
 	{

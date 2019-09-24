@@ -294,7 +294,7 @@ namespace Frosty
 		auto tempManager = Assetmanager::GetAssetmanager();
 		
 		// Temp load
-		tempManager->LoadFile(FY_TEST_LOAD_MODEL);
+		tempManager->LoadFile(FY_TEST_LOAD_MODEL,"RävJävel");
 		//= *tempManager->GetModelTemplate();
 
 		AssetMetaData<ModelTemplate> * kk = tempManager->GetModeltemplateMetaData("fox_character_attack");

@@ -25,8 +25,8 @@ namespace Frosty
 		static MotherLoader* GetMotherLoader();
 		~MotherLoader();
 		
-		bool Loadfile(std::string& FilePath, ModelTemplate& Mod, std::vector<Luna::Material>& Mats);
-		bool Loadfile(std::string& FilePath,bool Reload = false);
+		bool Loadfile(const std::string& FilePath,const bool& Reload = false);
+		bool Loadfile(const std::string& FilePath,const  std::string& PrefabKey,bool Reload = false);
 		void LoadFilesFromFile();
 
 
