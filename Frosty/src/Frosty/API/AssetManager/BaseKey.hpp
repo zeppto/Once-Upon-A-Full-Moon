@@ -28,7 +28,6 @@ namespace Frosty
 
 		BaseKey();
 		BaseKey(BaseKey& other);
-
 		virtual ~BaseKey();
 
 		void SetRefKey(uint32_t ref_id) { m_Key_ReferenceID = ref_id; };

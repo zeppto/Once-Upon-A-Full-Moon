@@ -24,6 +24,10 @@ namespace Frosty
 
 		//test
 
+		//Assetmanager::GetAssetmanager();
+		//Assetmanager::GetAssetmanager()->LoadFile("FbxAztec.fbx");
+		//tempManager->LoadFile("FbxAztec.fbx");
+
 	}
 
 	Application::~Application()

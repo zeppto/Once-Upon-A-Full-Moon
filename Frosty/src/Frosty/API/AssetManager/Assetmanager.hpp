@@ -7,7 +7,6 @@
 
 
 
-
 namespace Frosty
 {
 
@@ -43,8 +42,8 @@ namespace Frosty
 		//Not initialized yet
 		bool LoadFile(std::string FilePath, const std::string& set_Label);
 
-		bool AddNewModelTemplate(ModelTemplate* ModelTemplate,const std::string& AssetName, const std::string& FileName);
-		bool AddNewMaterialTemplate(Luna::Material* Material,const std::string& AssetName, const std::string& FileName);
+		bool AddNewModelTemplate(ModelTemplate*& ModelTemplate,const std::string& AssetName, const std::string& FileName);
+		bool AddNewMaterialTemplate(Luna::Material*& Material,const std::string& AssetName, const std::string& FileName);
 
 		/*insert reload functions if needed here
 		.
@@ -53,7 +52,7 @@ namespace Frosty
 		.
 		*/
 
-		AssetMetaData<ModelTemplate> const* GetModeltemplateMetaData(const std::string& AssetName);
+		AssetMetaData<ModelTemplate> * GetModeltemplateMetaData(const std::string& AssetName);
 		AssetMetaData<Luna::Material> const* GetMaterialMetaData(const std::string& AssetName);
 
 
