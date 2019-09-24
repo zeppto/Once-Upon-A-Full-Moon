@@ -28,90 +28,6 @@ namespace Frosty
 		//}
 	}
 
-	/*
-
-	//bool MotherLoader::Loadfile(std::string& FilePath, ModelTemplate& Mod, std::vector<Luna::Material>& Mats)
-	//{
-	//	bool returnValue = false;
-
-	//	//if (Mod != nullptr)
-	//	//{
-	//	//	delete Mod;
-	//	//	Mod = nullptr;
-	//	//}
-
-
-	//	for (uint16_t i = 0; i < Mats.size(); i++)
-	//	{
-	//		Mats.erase(Mats.begin() + i);
-	//	}
-
-
-	//	Luna::Reader tempFile;
-
-	//	//tempFile.readFile(FilePath.c_str()); //check if failed reading???
-	//	tempFile.readFile(FilePath.c_str()); //check if failed reading???
-
-
-
-	//	if (1) //read file check
-	//	{
-
-
-
-	//		Mod =  ModelTemplate();
-
-	//		// for nr of meshes
-	//		for (uint16_t i = 0; i < tempFile.getMeshCount(); i++)
-	//		{
-	//			Mod.GetMeshVector()->emplace_back(tempFile.getMesh(i));
-	//			
-	//			uint16_t tempMeshId = Mod.GetMeshVector()->back().id;
-
-	//			ModelTemplate::MeshInfo* tempMeshInfo_Ptr = Mod.GetMeshInfo(tempMeshId);
-	//				
-	//			tempMeshInfo_Ptr->m_BoundingBox = tempFile.getBoundingBox(tempMeshId);
-	//			
-	//			tempFile.getIndices(tempMeshId, tempMeshInfo_Ptr->m_MeshIndices);
-	//			tempFile.getWeights(tempMeshId, tempMeshInfo_Ptr->m_Weights);
-	//			tempFile.getVertices(tempMeshId, tempMeshInfo_Ptr->m_MeshVertices);
-	//			//Mod->getBoundingBoxVector()->emplace_back(tempFile.getBoundingBox(i));
-
-	//		}
-
-
-	//		//nr of models
-	//		*Mod.GetAnimation() = tempFile.getAnimation();
-	//		*Mod.GetSkeleton() = tempFile.getSkeleton();
-	//
-	//		//vector fills
-	//		tempFile.getJoints(*Mod.GetJointVector());
-
-	//		for (uint16_t i = 0; i < Mod.GetJointVector()->size(); i++)
-	//		{
-	//			tempFile.getKeyframes(Mod.GetJointVector()->at(i).jointID, *Mod.GetKeyframes(Mod.GetJointVector()->at(i).jointID));
-	//		}
-
-
-
-
-	//		//mats
-	//		tempFile.getMaterials(Mats);
-
-	//		returnValue = true;
-	//	}
-	//	else
-	//	{
-	//		FY_CORE_ERROR("Error Reading File: {0}", FilePath);
-	//	}
-
-
-
-
-	//	return returnValue;
-	//}
-
-	*/
 
 	bool MotherLoader::Loadfile(const std::string& FilePath, const bool& Reload)
 	{
@@ -126,18 +42,16 @@ namespace Frosty
 
 		Luna::Reader tempFile;
 
-		tempFile.readFile(FilePath.c_str()); //check if failed reading???
-
-		if (1) //check if loading went well
+		if (tempFile.readFile(FilePath.c_str())) //check if loading went well
 		{
 
 			std::string Temp_MT_Asset_Name = TempFileName; //ModelName?
 
 			//ModelTemplate
-			if (temp_AssetManager->AddNewModelTemplate(mod_ptr, Temp_MT_Asset_Name,TempFileName))
+			if (temp_AssetManager->AddNewModelTemplate(mod_ptr, Temp_MT_Asset_Name, TempFileName))
 			{
 				//Fill modeltemplate
-
+				returnValue = true;
 				// for nr of meshes
 				for (uint16_t i = 0; i < tempFile.getMeshCount(); i++)
 				{
@@ -202,7 +116,7 @@ namespace Frosty
 				//tempMatVector.at(i).diffuseTexPath Chop Name???
 
 				//Materials
-				if (temp_AssetManager->AddNewMaterialTemplate(tempMatPtr, tempMatVector.at(i).diffuseTexPath,TempFileName))
+				if (temp_AssetManager->AddNewMaterialTemplate(tempMatPtr, tempMatVector.at(i).diffuseTexPath, TempFileName))
 				{
 					//Fill Material
 					*tempMatPtr = tempMatVector.at(i);
@@ -222,7 +136,7 @@ namespace Frosty
 		}
 		else
 		{
-			FY_CORE_INFO("Failed To Load File, File: {0}", TempFileName);
+			FY_CORE_WARN("Failed To Load File, File: {0}", TempFileName);
 		}
 
 
@@ -244,9 +158,8 @@ namespace Frosty
 		Luna::Reader tempFile;
 		std::string TempFileName = GetFileName(FilePath);
 
-		tempFile.readFile(FilePath.c_str()); //check if failed reading???
 
-		if (1) //check if loading went well
+		if (tempFile.readFile(FilePath.c_str())) //check if loading went well
 		{
 
 
@@ -257,6 +170,9 @@ namespace Frosty
 			{
 				//Fill modeltemplate
 
+				returnValue = true;
+				bool modelHasSkeleton = false;
+
 				// for nr of meshes
 				for (uint16_t i = 0; i < tempFile.getMeshCount(); i++)
 				{
@@ -266,18 +182,38 @@ namespace Frosty
 
 					ModelTemplate::MeshInfo* tempMeshInfo_Ptr = mod_ptr->GetMeshInfo(tempMeshId);
 
-					tempMeshInfo_Ptr->m_BoundingBox = tempFile.getBoundingBox(tempMeshId);
+					if (mod_ptr->GetMeshVector()->back().hasSkeleton)
+					{
+						tempFile.getWeights(tempMeshId, tempMeshInfo_Ptr->m_Weights);
+						modelHasSkeleton = true;
+					}
+
+					if (mod_ptr->GetMeshVector()->back().hasBoundingBox)
+					{
+						tempMeshInfo_Ptr->m_BoundingBox = tempFile.getBoundingBox(tempMeshId);
+					}
 
 					tempFile.getIndices(tempMeshId, tempMeshInfo_Ptr->m_MeshIndices);
-					tempFile.getWeights(tempMeshId, tempMeshInfo_Ptr->m_Weights);
 					tempFile.getVertices(tempMeshId, tempMeshInfo_Ptr->m_MeshVertices);
+
 					//Mod->getBoundingBoxVector()->emplace_back(tempFile.getBoundingBox(i));
 
 				}
 
+				if (modelHasSkeleton)
+				{
+					*mod_ptr->GetSkeleton() = tempFile.getSkeleton();
+
+				}
+
+				if (tempFile.animationExist())
+				{
+					*mod_ptr->GetAnimation() = tempFile.getAnimation();
+
+				}
+
 				//nr of models
-				*mod_ptr->GetAnimation() = tempFile.getAnimation();
-				*mod_ptr->GetSkeleton() = tempFile.getSkeleton();
+
 
 				//vector fills
 				tempFile.getJoints(*mod_ptr->GetJointVector());
@@ -333,7 +269,7 @@ namespace Frosty
 
 					//saving lates material name for prefab(If Needed, build so the prefab can support more materials)
 					MaterialAssetName = tempMatVector.at(i).diffuseTexPath;
-			
+
 				}
 				else
 				{
@@ -350,13 +286,13 @@ namespace Frosty
 
 
 
-			PrefabManager::GetPrefabManager()->setPrefab(PrefabKey,TempFileName, MaterialAssetName);
+			PrefabManager::GetPrefabManager()->setPrefab(PrefabKey, TempFileName, MaterialAssetName);
 
 
 		}
 		else
 		{
-			FY_CORE_INFO("Failed To Load File, File: {0}", TempFileName);
+			FY_CORE_WARN("Failed To Load File, File: {0}", TempFileName);
 		}
 
 

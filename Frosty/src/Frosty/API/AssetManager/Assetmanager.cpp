@@ -54,17 +54,20 @@ namespace Frosty
 	bool Assetmanager::LoadFile(std::string FilePath, const std::string& set_Prefabkey)
 	{
 
+		bool returnValue = false;
+
 		if (MotherLoader::GetMotherLoader()->Loadfile(FilePath, set_Prefabkey))
 		{
 			FY_CORE_INFO("SUCCESS LOADING FILE: {0}" , FilePath);
+			returnValue = true;
 		}
 		else
 		{
-			FY_CORE_INFO("FAILED TO LOAD FILE: {0}", FilePath);
+			FY_CORE_WARN("FAILED TO LOAD FILE: {0}", FilePath);
 		}
 
 
-		return false;
+		return returnValue;
 	}
 
 	bool Assetmanager::AddNewModelTemplate(ModelTemplate*& ModelTemplate, const std::string& AssetName, const std::string& FileName)
