@@ -16,6 +16,7 @@ namespace Frosty
 
 		std::unordered_map<std::string, Prefab> m_Prefabs;
 		
+		friend class Assetmanager;
 
 	public:		//Functions
 		static PrefabManager* GetPrefabManager();
@@ -24,6 +25,8 @@ namespace Frosty
 	private:	//Functions
 
 		bool CheckIfPrefabExists(std::string prefabName);
+
+		inline static void Delete() { if (s_Instance != nullptr) { delete s_Instance; } }
 	};
 
 	

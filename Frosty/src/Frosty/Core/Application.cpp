@@ -35,6 +35,7 @@ namespace Frosty
 		delete m_RenderEngine;
 		EventBus::GetEventBus()->Delete();
 		glfwTerminate();
+		Assetmanager::Delete();
 	}
 
 	void Application::Run()

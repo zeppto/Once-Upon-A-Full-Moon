@@ -1,20 +1,20 @@
 #include "fypch.hpp"
 #include "Assetmanager.hpp"
-
+#include"..\PrefabManager\PrefabManager.h"
 
 
 namespace Frosty
 {
-	Assetmanager* Assetmanager::m_Instance = nullptr;
+	Assetmanager* Assetmanager::s_Instance = nullptr;
 
 	Assetmanager* Frosty::Assetmanager::GetAssetmanager()
 	{
-		if (!m_Instance)
+		if (!s_Instance)
 		{
-			m_Instance = new Assetmanager;
-			m_Instance->m_NrOfMaterial = 0;
+			s_Instance = new Assetmanager;
+			s_Instance->m_NrOfMaterial = 0;
 		}
-			return m_Instance;
+			return s_Instance;
 	}
 
 	bool Assetmanager::LoadFile(std::string FilePath)
@@ -241,10 +241,14 @@ namespace Frosty
 
 	Frosty::Assetmanager::~Assetmanager()
 	{
-		if (m_Instance != nullptr)
-		{
-		delete m_Instance;
-		}
+		//if (s_Instance != nullptr)
+		//{
+		//delete s_Instance;
+		//}
+		MotherLoader::Delete();
+		PrefabManager::Delete();
+		
+	
 	}
 
 

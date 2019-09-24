@@ -21,6 +21,7 @@ namespace Frosty
 		KeyLabel<ModelTemplate> m_ModelKey;
 		KeyLabel<Luna::Material> m_MaterialKey;
 
+
 	public:		//Functions
 		Prefab();
 		Prefab(Prefab &other);

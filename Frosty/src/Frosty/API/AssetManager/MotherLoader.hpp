@@ -16,9 +16,11 @@ namespace Frosty
 
 
 	private: //variables
-		static MotherLoader* m_Instance;
+		static MotherLoader* s_Instance;
 
 		bool m_AutoLoader = true;
+
+		friend class Assetmanager;
 
 
 	public: //functions
@@ -33,7 +35,7 @@ namespace Frosty
 	private: //functions
 
 
-
+		inline static void Delete() {if (s_Instance != nullptr)	{delete s_Instance;}}
 		std::string GetFileName(const std::string& FilePath);
 
 	};

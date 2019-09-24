@@ -18,7 +18,7 @@ namespace Frosty
 	public:		//Variables
 
 	private:	//Variables
-		static Assetmanager* m_Instance;
+		static Assetmanager* s_Instance;
 		AssetHolder m_AssetHolder;
 
 		uint16_t m_NrOfMaterial;
@@ -31,6 +31,7 @@ namespace Frosty
 		std::vector<std::string> m_Material_Asset_Name_Vector; // Diffuse File Path
 		std::vector<std::string> m_ModelTemplate_Asset_Name_Vector; // Same as file name for now
 	
+		friend class Application;
 
 	public:		//Functions
 
@@ -73,6 +74,8 @@ namespace Frosty
 		
 		bool CheckIfMetaDataExist(std::string FileName);
 
+
+		inline static void Delete() { if (s_Instance != nullptr) { delete s_Instance; } }
 
 	};
 
