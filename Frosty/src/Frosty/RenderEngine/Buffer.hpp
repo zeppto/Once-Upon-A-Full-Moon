@@ -154,18 +154,18 @@ namespace Frosty
 	class IndexBuffer
 	{
 	public:
-		IndexBuffer(uint32_t* indices, uint32_t size);
+		IndexBuffer(uint32_t* indices, uint32_t count);
 		virtual ~IndexBuffer();
 
 		void Bind()const;
 		void Unbind()const;
 
-		uint32_t GetSize()const;
+		uint32_t GetCount()const;
 
-		static IndexBuffer* Create(uint32_t* indices, uint32_t size);
+		static IndexBuffer* Create(uint32_t* indices, uint32_t count);
 	private:
 		uint32_t m_RendererID;
-		uint32_t m_Size;		
+		uint32_t m_Count;		
 	};
 }
 #endif

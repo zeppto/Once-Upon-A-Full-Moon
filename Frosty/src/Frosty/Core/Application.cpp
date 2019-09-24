@@ -20,7 +20,7 @@ namespace Frosty
 
 		m_ImGuiLayer = new ImGuiLayer();
 		PushOverlay(m_ImGuiLayer);
-		//m_RenderEngine = new RenderEngine();
+		m_RenderEngine = new RenderEngine();
 
 		/// New ...
 		//-------------------------------------------------------------------------
@@ -34,6 +34,7 @@ namespace Frosty
 			 0.0f,  0.5f, 0.0f, 0.8f, 0.8f, 0.2f, 1.0f
 		};
 		
+		std::shared_ptr<VertexBuffer> m_VertexBuffer;
 		m_VertexBuffer.reset(VertexBuffer::Create(vertices, sizeof(vertices)));		
 		
 		BufferLayout layout = 
@@ -46,7 +47,9 @@ namespace Frosty
 		m_VertexArray->AddVertexBuffer(m_VertexBuffer);
 
 		uint32_t indices[3] = { 0, 1, 2 };
-		m_IndexBuffer.reset(IndexBuffer::Create(indices, sizeof(indices) / sizeof(uint32_t)));
+		std::shared_ptr<IndexBuffer> m_IndexBuffer;
+		m_IndexBuffer.reset(IndexBuffer::Create(indices, sizeof(indices) / sizeof(uint32_t)));		
+		m_VertexArray->SetIndexBuffer(m_IndexBuffer);
 
 		std::string VertexSrc = R"(
 			#version 440 core
@@ -85,7 +88,7 @@ namespace Frosty
 
 	Application::~Application()
 	{
-		//delete m_RenderEngine;
+		delete m_RenderEngine;
 		EventBus::GetEventBus()->Delete();
 		glfwTerminate();
 	}
@@ -93,17 +96,16 @@ namespace Frosty
 	void Application::Run()
 	{
 		while (m_Running)
-		{			
-			glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
-			glClear(GL_COLOR_BUFFER_BIT);
+		{
+			m_RenderEngine->SetClearColor({ 0.1f, 0.1f, 0.1f, 1.0f });
+			m_RenderEngine->Clear();
+
 			m_Shader->Bind();
+			m_VertexArray->Bind();
 
-			//glBindVertexArray(m_VertexArray);
-			//glDrawElements(GL_TRIANGLES, m_IndexBuffer->GetSize(), GL_UNSIGNED_INT, nullptr);
-			glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, nullptr);
+			glDrawElements(GL_TRIANGLES, m_VertexArray->GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, nullptr);
 
-			/// Input		
-
+			/// Input			
 			/// Update
 			for (Layer* layer : m_LayerHandler)
 			{
@@ -125,7 +127,7 @@ namespace Frosty
 			m_ImGuiLayer->End();			
 
 			m_Window->OnUpdate();
-		}		
+		}
 	}
 
 	void Application::PushLayer(Layer* layer)

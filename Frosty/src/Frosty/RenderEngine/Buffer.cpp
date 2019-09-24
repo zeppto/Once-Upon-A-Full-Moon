@@ -35,12 +35,13 @@ namespace Frosty
 
 	// Indexbuffer --------------------------------------------------------------------
 
-	IndexBuffer::IndexBuffer(uint32_t* indices, uint32_t size)
+	IndexBuffer::IndexBuffer(uint32_t* indices, uint32_t count)
+		:	m_Count(count)
 	{
 		//glCreateBuffers(1, &m_RendererID);
 		glGenBuffers(1, &m_RendererID);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_RendererID);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, size * sizeof(uint32_t), indices, GL_STATIC_DRAW);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, count * sizeof(uint32_t), indices, GL_STATIC_DRAW);
 	}
 
 	IndexBuffer::~IndexBuffer()
@@ -58,13 +59,13 @@ namespace Frosty
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 	}
 
-	uint32_t IndexBuffer::GetSize() const
+	uint32_t IndexBuffer::GetCount() const
 	{
-		return m_Size;
+		return m_Count;
 	}
 
-	IndexBuffer * IndexBuffer::Create(uint32_t * indices, uint32_t size)
+	IndexBuffer * IndexBuffer::Create(uint32_t * indices, uint32_t count)
 	{
-		return new IndexBuffer(indices, size);
+		return new IndexBuffer(indices, count);
 	}	
 }

@@ -1,6 +1,7 @@
 #ifndef RENDERENGINE_HPP
 #define RENDERENGINE_HPP
 #include "Frosty/Core/Camera/Camera.hpp"
+#include "Frosty/RenderEngine/VertexArray.hpp"
 #define BUFFER_OFFSET(i) ((char *)nullptr + (i))
 
 namespace Frosty
@@ -24,19 +25,12 @@ namespace Frosty
 		//FrameBuffers 		
 		unsigned int m_FirstPassFramebuffer = 0;
 
-		//Render Textures 
-		unsigned int m_PositionRenderTexture = 0;
-		unsigned int m_NormalRenderTexture = 0;
-		unsigned int m_AlbedoRenderTexture = 0;
-		unsigned int m_AlbedoOrginalTexture = 0;
-		unsigned int m_DepthRenderTexture = 0;
-		unsigned int m_FinalTexture = 0;
-
+		//Render Textures 		
 		std::vector<unsigned int> m_ShaderProgramVector;		
 		unsigned int m_QuadVbo = 0;
 
 		// For Testing
-		bool m_TestMode = false;		
+		bool m_TestMode = false;	
 		unsigned int m_testTriangleVBO = 0;
 
 	private:
@@ -55,6 +49,10 @@ namespace Frosty
 	public:
 		RenderEngine();
 		virtual ~RenderEngine();
+
+		void SetClearColor(const glm::vec4& color);
+		void Clear();
+		void DrawIndexed(const std::shared_ptr<VertexArray>& VertexArray);
 
 		void Render();
 		void UpdateCamera();

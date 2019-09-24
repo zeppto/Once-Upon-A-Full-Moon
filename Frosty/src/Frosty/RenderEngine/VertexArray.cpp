@@ -36,7 +36,8 @@ namespace Frosty
 	}
 
 	VertexArray::~VertexArray()
-	{		
+	{
+		glDeleteVertexArrays(1, &m_RendererID);
 	}
 
 	void VertexArray::Bind() const
@@ -56,8 +57,7 @@ namespace Frosty
 		glBindVertexArray(m_RendererID);
 		vertexBuffer->Bind();
 
-		uint32_t index = 0;
-		//const auto& layout = vertexBuffer->GetLayout();
+		uint32_t index = 0;		
 		for (const auto& element : vertexBuffer->GetLayout())
 		{
 			glEnableVertexAttribArray(index);
@@ -70,7 +70,6 @@ namespace Frosty
 		}
 
 		m_VertexBuffer.push_back(vertexBuffer);
-
 	}
 
 	void VertexArray::SetIndexBuffer(const std::shared_ptr<IndexBuffer>& indexBuffer)
@@ -78,7 +77,17 @@ namespace Frosty
 		glBindVertexArray(m_RendererID);
 		indexBuffer->Bind();
 
-		m_IndexBuffer = indexBuffer;
+		m_IndexBuffer = indexBuffer;		
+	}
+
+	const std::vector<std::shared_ptr<VertexBuffer>>& VertexArray::GetVertexBuffer() const
+	{
+		return m_VertexBuffer;
+	}
+
+	const std::shared_ptr<IndexBuffer>& VertexArray::GetIndexBuffer() const
+	{
+		return m_IndexBuffer;
 	}
 
 	VertexArray * VertexArray::Create()

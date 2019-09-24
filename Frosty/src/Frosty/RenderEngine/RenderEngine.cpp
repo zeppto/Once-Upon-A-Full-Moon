@@ -102,6 +102,21 @@ namespace Frosty
 	{		
 		delete m_Camera;
 	}
+
+	void RenderEngine::SetClearColor(const glm::vec4 & color)
+	{
+		glClearColor(color.r, color.g, color.b, color.a);
+	}
+
+	void RenderEngine::Clear()
+	{
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	}
+
+	void RenderEngine::DrawIndexed(const std::shared_ptr<VertexArray>& VertexArray)
+	{
+		glDrawElements(GL_TRIANGLES, VertexArray->GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, nullptr);
+	}
 	
 	void RenderEngine::Render()
 	{

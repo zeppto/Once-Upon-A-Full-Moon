@@ -28,7 +28,7 @@ namespace Frosty
 		void PopOverlay(Layer* layer);
 
 		// RenderEngine
-		//RenderEngine* GetRenderEngine() { return m_RenderEngine; }
+		RenderEngine* GetRenderEngine() { return m_RenderEngine; }
 
 		inline Window& GetWindow() { return *m_Window; }
 		static inline Application& Get() { return *s_Instance; }
@@ -44,7 +44,7 @@ namespace Frosty
 
 		std::unique_ptr<Window> m_Window;
 
-		//RenderEngine* m_RenderEngine;
+		RenderEngine* m_RenderEngine;
 
 		static Application* s_Instance;
 
@@ -53,8 +53,6 @@ namespace Frosty
 		
 		std::shared_ptr<Shader> m_Shader;
 		std::shared_ptr<VertexArray> m_VertexArray;
-		std::shared_ptr<VertexBuffer> m_VertexBuffer;
-		std::shared_ptr<IndexBuffer> m_IndexBuffer;
 	};
 }
 #endif // !APPLICATION_HPP
