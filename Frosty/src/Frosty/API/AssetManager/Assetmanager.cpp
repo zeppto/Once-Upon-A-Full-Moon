@@ -1,6 +1,6 @@
 #include "fypch.hpp"
 #include "Assetmanager.hpp"
-#include "..\"
+
 
 namespace Frosty
 {
