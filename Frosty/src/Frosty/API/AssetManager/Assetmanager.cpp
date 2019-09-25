@@ -10,9 +10,11 @@ namespace Frosty
 	Assetmanager* Frosty::Assetmanager::GetAssetmanager()
 	{
 		if (!s_Instance)
+
+
 		{
 			s_Instance = new Assetmanager;
-			s_Instance->m_NrOfMaterial = 0;
+			s_Instance->m_Total_Nr_Assets = 0;
 		}
 			return s_Instance;
 	}

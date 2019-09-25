@@ -9,7 +9,9 @@ namespace Frosty
 {
 
 	MotherLoader* MotherLoader::s_Instance = nullptr;
-
+	uint16_t MotherLoader::s_Failed_Loading_Attempts = 0;
+	uint16_t MotherLoader::s_Total_Loading_Attempts = 0;
+	uint16_t MotherLoader::s_Success_Loading_Attempts = 0;
 
 	MotherLoader* MotherLoader::GetMotherLoader()
 	{
@@ -62,13 +64,13 @@ namespace Frosty
 
 		if (returnValue) 
 		{
-			m_Success_Loading_Attempts++;
+			s_Success_Loading_Attempts++;
 		}
 		else 
 		{
-			m_Failed_Loading_Attempts++;
+			s_Failed_Loading_Attempts++;
 		}
-		m_Total_Loading_Attempts++;
+		s_Total_Loading_Attempts++;
 
 		return returnValue;
 	}
@@ -85,9 +87,9 @@ namespace Frosty
 
 	void MotherLoader::PrintLoadingAttemptInformation() const
 	{
-		FY_CORE_INFO("MotherLoader, Total Loading Attempts: {0}",m_Total_Loading_Attempts);
-		FY_CORE_INFO("MotherLoader, Success Loading Attempts: {0}",m_Success_Loading_Attempts);
-		FY_CORE_INFO("MotherLoader, Failed Loading Attempts: {0}",m_Failed_Loading_Attempts);
+		FY_CORE_INFO("MotherLoader, Total Loading Attempts: {0}",s_Total_Loading_Attempts);
+		FY_CORE_INFO("MotherLoader, Success Loading Attempts: {0}",s_Success_Loading_Attempts);
+		FY_CORE_INFO("MotherLoader, Failed Loading Attempts: {0}",s_Failed_Loading_Attempts);
 	}
 
 	bool MotherLoader::GetFileInformation(FileNameInfo& FileNameInformation)

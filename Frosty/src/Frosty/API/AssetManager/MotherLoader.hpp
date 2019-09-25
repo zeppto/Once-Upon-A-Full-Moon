@@ -39,9 +39,9 @@ namespace Frosty
 
 		static MotherLoader* s_Instance;
 
-		uint16_t m_Total_Loading_Attempts;
-		uint16_t m_Failed_Loading_Attempts;
-		uint16_t m_Success_Loading_Attempts;
+		static uint16_t s_Total_Loading_Attempts;
+		static uint16_t s_Failed_Loading_Attempts;
+		static uint16_t s_Success_Loading_Attempts;
 
 		friend class Assetmanager;
 
@@ -54,9 +54,9 @@ namespace Frosty
 		bool Loadfile(const std::string& FilePath,const  std::string& PrefabName = "",const bool& Reload = false);
 		void LoadFiles();
 
-		const uint16_t& GetNrOfFailedAttempts() const { return m_Failed_Loading_Attempts; }
-		const uint16_t& GetNrOfSuccessAttempts() const { return m_Success_Loading_Attempts; }
-		const uint16_t& GetNrOfTotalAttempts() const { return m_Total_Loading_Attempts; }
+		const uint16_t& GetNrOfFailedAttempts() const { return s_Failed_Loading_Attempts; }
+		const uint16_t& GetNrOfSuccessAttempts() const { return s_Success_Loading_Attempts; }
+		const uint16_t& GetNrOfTotalAttempts() const { return s_Total_Loading_Attempts; }
 
 		void PrintLoadingAttemptInformation() const;
 
