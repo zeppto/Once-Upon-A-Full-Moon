@@ -278,10 +278,10 @@ namespace Frosty
 		MotherLoader::GetMotherLoader()->PrintLoadingAttemptInformation();
 		//= *tempManager->GetModelTemplate();
 
-		AssetMetaData<ModelTemplate> * kk = tempManager->GetModeltemplateMetaData("clock");
-		ModelTemplate* ll = kk->GetData();
+		AssetMetaData<ModelTemplate>* kk = tempManager->GetModeltemplateMetaData("clock");
+		std::shared_ptr<ModelTemplate> ll = kk->GetData();
 
-		CreateTempModelData(*ll);
+		CreateTempModelData(ll);
 
 		m_Transform.setTranslate(glm::vec3(1.0f, 0.0f, -2.0f));
 		//m_Transform.setRotate(glm::vec3(30.0f, 30.0f, 30.0f));
@@ -433,16 +433,16 @@ namespace Frosty
 
 	}
 
-	void RenderEngine::CreateTempModelData(ModelTemplate& testModel)
+	void RenderEngine::CreateTempModelData(std::shared_ptr<ModelTemplate> testModel)
 	{
 		m_RenderTestModel = true;
 
-		int i = testModel.GetId();
+		int i = testModel->GetId();
 		
 
 
 		uint16_t j = 0;
-		m_VertexSizeOfTempModel =  testModel.GetMeshInfo(j)->m_MeshVertices.size();
+		m_VertexSizeOfTempModel = testModel->GetMeshInfoConst(0)->m_MeshVertices.size();
 
 		glGenVertexArrays(1, &this->m_testModelVBO);
 		glBindVertexArray(this->m_testModelVBO);
@@ -453,7 +453,7 @@ namespace Frosty
 
 		glGenBuffers(1, &this->m_testModelVBO);
 		glBindBuffer(GL_ARRAY_BUFFER, this->m_testModelVBO);
-		glBufferData(GL_ARRAY_BUFFER, sizeof(Luna::Vertex) * testModel.GetMeshInfo(0)->m_MeshVertices.size(), testModel.GetMeshInfo(0)->m_MeshVertices.data(), GL_STATIC_DRAW);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(Luna::Vertex) * testModel->GetMeshInfo(0)->m_MeshVertices.size(), testModel->GetMeshInfo(0)->m_MeshVertices.data(), GL_STATIC_DRAW);
 
 		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Luna::Vertex), BUFFER_OFFSET(0));
 		glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(Luna::Vertex), BUFFER_OFFSET(sizeof(float) * 3));

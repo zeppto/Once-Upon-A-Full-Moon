@@ -58,8 +58,8 @@ namespace Frosty
 		std::vector<Luna::Mesh> m_Meshes;
 		std::vector<Luna::Joint> m_Joints;
 		
-		std::unordered_map<uint16_t, MeshInfo> m_MeshInfoMap;
-		std::unordered_map<uint16_t, std::vector<Luna::Keyframe>> m_KeyframeMap;
+		std::map<uint16_t, MeshInfo> m_MeshInfoMap;
+		std::map<uint16_t, std::vector<Luna::Keyframe>> m_KeyframeMap;
 
 
 	//Funcs
@@ -82,8 +82,25 @@ namespace Frosty
 		ModelTemplate::MeshInfo * GetMeshInfo(const uint16_t& meshId);
 		std::vector<Luna::Keyframe>* GetKeyframes(const uint16_t& jointId);
 
-		std::unordered_map<uint16_t, MeshInfo>* GetMeshInfoMap();
-		std::unordered_map<uint16_t, std::vector<Luna::Keyframe>>* GetKeyframeMap();
+		std::map<uint16_t, MeshInfo>* GetMeshInfoMap();
+		std::map<uint16_t, std::vector<Luna::Keyframe>>* GetKeyframeMap();
+
+
+
+
+
+		const Luna::Skeleton* GetSkeletonConst() { return &m_Skeleton; }
+		const Luna::Animation* GetAnimationConst() { return &m_Animation; };
+
+		const std::vector<Luna::Mesh>* GetMeshVectorConst() { return &m_Meshes; }
+		const std::vector<Luna::Joint>* GetJointVectorConst() { return &m_Joints; }
+
+		const ModelTemplate::MeshInfo* GetMeshInfoConst(const uint16_t& meshId) { return &m_MeshInfoMap[meshId];}
+		const std::vector<Luna::Keyframe>* GetKeyframesConst(const uint16_t& jointId) { return &m_KeyframeMap[jointId];}
+
+		const std::map<uint16_t, MeshInfo>* GetMeshInfoMapConst() { return &m_MeshInfoMap; }
+		const std::map<uint16_t, std::vector<Luna::Keyframe>>* GetKeyframeMapConst() { return &m_KeyframeMap; }
+
 		
 		const uint16_t& GetId() const;
 		static const uint16_t& GetNumberOfModelTemplates();

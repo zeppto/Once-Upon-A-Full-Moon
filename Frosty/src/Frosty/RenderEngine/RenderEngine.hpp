@@ -77,7 +77,7 @@ namespace Frosty
 		// For Testing
 		void CreateTriangle();		
 		void RenderTestTriangle();
-		void CreateTempModelData(ModelTemplate& testModel);
+		void CreateTempModelData(std::shared_ptr<ModelTemplate> testModel);
 	};
 }
 #endif 

@@ -9,6 +9,7 @@
 #define FILE_TYPE_JPG "jpg"
 #define FILE_TYPE_PNG "png"
 #define FILE_TYPE_LUNA "lu"
+#define STBI_NO_PNG
 
 
 namespace Frosty
@@ -39,7 +40,6 @@ namespace Frosty
 
 		static MotherLoader* s_Instance;
 
-		static uint16_t s_Total_Loading_Attempts;
 		static uint16_t s_Failed_Loading_Attempts;
 		static uint16_t s_Success_Loading_Attempts;
 
@@ -56,7 +56,7 @@ namespace Frosty
 
 		const uint16_t& GetNrOfFailedAttempts() const { return s_Failed_Loading_Attempts; }
 		const uint16_t& GetNrOfSuccessAttempts() const { return s_Success_Loading_Attempts; }
-		const uint16_t& GetNrOfTotalAttempts() const { return s_Total_Loading_Attempts; }
+		const uint16_t GetNrOfTotalAttempts() const { return s_Success_Loading_Attempts + s_Failed_Loading_Attempts; }
 
 		void PrintLoadingAttemptInformation() const;
 

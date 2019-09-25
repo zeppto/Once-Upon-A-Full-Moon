@@ -73,7 +73,7 @@ namespace Frosty
 	//	return returnValue;
 	//}
 
-	bool Assetmanager::AddNewModelTemplate(ModelTemplate*& ModelTemplate, const std::string& FileName, const std::string& FilePath)
+	bool Assetmanager::AddNewModelTemplate(std::shared_ptr<ModelTemplate>& ModelTemplate, const std::string& FileName, const std::string& FilePath)
 	{
 		bool returnValue = false;
 
@@ -88,7 +88,7 @@ namespace Frosty
 			tempMetaData->SetFileName(FileName);
 			tempMetaData->SetFilePath(FilePath);
 			tempMetaData->SetContainerSlot(m_AssetHolder.GetEmptyContainerSlot());
-			tempMetaData->SetRefData(*m_AssetHolder.GetModeltemplate(tempMetaData->GetAssetContainerSlot()));
+			tempMetaData->SetRefData(Frosty::ModelTemplate());
 
 			//Material = m_AssetHolder.GetMaterial(tempMetaData->GetAssetContainerSlot());
 			ModelTemplate = tempMetaData->GetData();
@@ -106,7 +106,7 @@ namespace Frosty
 		return returnValue;
 	}
 
-	bool Assetmanager::AddNewMaterialTemplate(Luna::Material*& Material, const std::string& FileName, const std::string& FilePath)
+	bool Assetmanager::AddNewMaterialTemplate(std::shared_ptr<Luna::Material>& Material, const std::string& FileName, const std::string& FilePath)
 	{
 		
 		bool returnValue = false;

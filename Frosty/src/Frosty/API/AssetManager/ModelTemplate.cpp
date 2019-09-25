@@ -10,6 +10,7 @@ namespace Frosty
 
 	ModelTemplate::ModelTemplate()
 	{
+
 		m_SelfID = s_ModelTemplateID++;
 		s_ModelTemplateCounter++;
 	}
@@ -82,17 +83,15 @@ namespace Frosty
 		return &m_Meshes;
 	}
 
-	std::unordered_map<uint16_t, ModelTemplate::MeshInfo>* ModelTemplate::GetMeshInfoMap()
+	std::map<uint16_t, ModelTemplate::MeshInfo>* ModelTemplate::GetMeshInfoMap()
 	{
 		return &m_MeshInfoMap;
 	}
 
-	std::unordered_map<uint16_t, std::vector<Luna::Keyframe>>* ModelTemplate::GetKeyframeMap()
+	std::map<uint16_t, std::vector<Luna::Keyframe>>* ModelTemplate::GetKeyframeMap()
 	{
 		return &m_KeyframeMap;
 	}
-
-
 
 	const uint16_t& ModelTemplate::GetId() const
 	{

@@ -3,6 +3,7 @@
 #include "Assetmanager.hpp"
 #include "..\PrefabManager\PrefabManager.h"
 #include"..\..\DEFINITIONS.hpp"
+#include"stb_image.hpp"
 
 
 namespace Frosty
@@ -10,7 +11,6 @@ namespace Frosty
 
 	MotherLoader* MotherLoader::s_Instance = nullptr;
 	uint16_t MotherLoader::s_Failed_Loading_Attempts = 0;
-	uint16_t MotherLoader::s_Total_Loading_Attempts = 0;
 	uint16_t MotherLoader::s_Success_Loading_Attempts = 0;
 
 	MotherLoader* MotherLoader::GetMotherLoader()
@@ -70,7 +70,6 @@ namespace Frosty
 		{
 			s_Failed_Loading_Attempts++;
 		}
-		s_Total_Loading_Attempts++;
 
 		return returnValue;
 	}
@@ -87,9 +86,12 @@ namespace Frosty
 
 	void MotherLoader::PrintLoadingAttemptInformation() const
 	{
-		FY_CORE_INFO("MotherLoader, Total Loading Attempts: {0}",s_Total_Loading_Attempts);
+		FY_CORE_INFO("________________________________________________________");
 		FY_CORE_INFO("MotherLoader, Success Loading Attempts: {0}",s_Success_Loading_Attempts);
-		FY_CORE_INFO("MotherLoader, Failed Loading Attempts: {0}",s_Failed_Loading_Attempts);
+		FY_CORE_INFO("MotherLoader, Failed Loading Attempts : {0}",s_Failed_Loading_Attempts);
+		FY_CORE_INFO("-----------------------------------------=--------------");
+		FY_CORE_INFO("MotherLoader, Total Loading Attempts  : {0}", (s_Success_Loading_Attempts + s_Failed_Loading_Attempts));
+		FY_CORE_INFO("¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯");
 	}
 
 	bool MotherLoader::GetFileInformation(FileNameInfo& FileNameInformation)
@@ -169,7 +171,7 @@ namespace Frosty
 
 			auto temp_AssetManager = Assetmanager::GetAssetmanager();
 
-			ModelTemplate* mod_ptr = nullptr;
+			std::shared_ptr<ModelTemplate> mod_ptr = nullptr;
 
 
 			//std::string Temp_MT_Asset_Name = TempFileName; //ModelName?
@@ -257,7 +259,7 @@ namespace Frosty
 			std::vector<Luna::Material> tempMatVector;
 			tempFile.getMaterials(tempMatVector);
 
-			Luna::Material* tempMatPtr = nullptr;
+			std::shared_ptr<Luna::Material> tempMatPtr = nullptr;
 
 
 
@@ -312,6 +314,7 @@ namespace Frosty
 	{
 		bool returnValue = false;
 
+		
 
 		return returnValue;
 	}
