@@ -275,6 +275,7 @@ namespace Frosty
 		//tempManager->LoadFile(FY_TEST1_LOAD_MODEL,"clock");
 		//tempManager->LoadFile(FY_TEST2_LOAD_MODEL,"bord");
 		MotherLoader::GetMotherLoader()->LoadFiles();
+		MotherLoader::GetMotherLoader()->PrintLoadingAttemptInformation();
 		//= *tempManager->GetModelTemplate();
 
 		AssetMetaData<ModelTemplate> * kk = tempManager->GetModeltemplateMetaData("clock");

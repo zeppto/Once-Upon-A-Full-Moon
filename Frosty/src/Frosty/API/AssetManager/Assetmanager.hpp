@@ -21,7 +21,11 @@ namespace Frosty
 		static Assetmanager* s_Instance;
 		AssetHolder m_AssetHolder;
 
-		uint16_t m_NrOfMaterial;
+		uint16_t m_Total_Nr_Assets;
+
+
+
+
 	
 		std::unordered_map<std::string, AssetMetaData<ModelTemplate>>  m_MT_MetaData_Map;
 		std::unordered_map<std::string, AssetMetaData<Luna::Material>>  m_MAT_MetaData_Map;
