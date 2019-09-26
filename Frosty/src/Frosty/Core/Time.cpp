@@ -5,36 +5,27 @@
 
 namespace Frosty
 {
-	Time* Time::s_Instance = nullptr;
+	float Time::m_DeltaTime = 0.0f;
+	float Time::m_LastFrame = 0.0f;
+	int Time::m_CurrentFPS = 0;
+	int Time::m_LastFPS = 0;
+	float Time::m_FPSResetCounter = 1.0f;
+	int Time::m_FPSCounter = 0;
+	std::stack<float> Time::m_Timers;
 
-	Time::Time()
-	{
-		m_LastFrame = (float)glfwGetTime();
-	}
-
-	Time & Time::Get()
-	{
-		if (s_Instance == nullptr)
-		{
-			// Initiate
-			s_Instance = new Time();
-		}
-
-		return *s_Instance;
-	}
 	
 	void Time::StartTimer(const std::string& func)
 	{
 		FY_CORE_TRACE("Timer started for '{0}'!", func);
 		m_Timers.emplace((float)glfwGetTime());
 	}
-
+	
 	void Time::EndTimer(const std::string& func)
 	{
 		float currentTime = (float)glfwGetTime();
 		float resultTime = currentTime - m_Timers.top();
 		m_Timers.pop();
-
+	
 		FY_CORE_TRACE("Timer for '{0}' stopped at {1} seconds.", func, resultTime);
 	}
 

@@ -28,7 +28,6 @@ namespace Frosty
 	Application::~Application()
 	{
 		delete m_RenderEngine;
-		Time::Get().Delete();
 		EventBus::GetEventBus()->Delete();
 		glfwTerminate();
 		Assetmanager::Delete();
@@ -38,10 +37,12 @@ namespace Frosty
 	{
 		while (m_Running)
 		{
+			/// Frame Start
+			Time::OnUpdate();
+
 			/// Input			
 
 			/// Update
-			Time::Get().OnUpdate();
 			for (Layer* layer : m_LayerHandler)
 				layer->OnUpdate();
 
