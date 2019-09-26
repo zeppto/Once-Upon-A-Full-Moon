@@ -132,23 +132,6 @@ namespace Frosty
 		return (m_Data_ptr == nullptr);
 	}
 
-	//template<class T>
-	//inline bool AssetMetaData<T>::GetData(T const* inPtr)
-	//{
-	//	bool returnValue = false;
-	//	if (*m_data_ptr != nullptr)
-	//	{
-	//		inPtr = *m_data_ptr
-	//			returnValue = true;
-	//	}
-
-	//	m_GetCounter++;
-	//	m_TotalGetCounter++;
-
-	//	return returnValue;
-	//}
-
-
 	template<class T>
 	inline void AssetMetaData<T>::SetAllRefData(const T& newRefData, const std::string& FileName, const std::string& FilePath)
 	{

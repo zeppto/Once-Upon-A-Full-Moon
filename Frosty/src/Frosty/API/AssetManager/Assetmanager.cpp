@@ -19,59 +19,22 @@ namespace Frosty
 			return s_Instance;
 	}
 
+	Frosty::Assetmanager::~Assetmanager()
+	{
+		//if (s_Instance != nullptr)
+		//{
+		//delete s_Instance;
+		//}
+		MotherLoader::Delete();
+		PrefabManager::Delete();
+
+
+	}
+
 	bool Assetmanager::LoadFile(const std::string& FilePath, const std::string& PreFab_Name)
 	{
 		return MotherLoader::GetMotherLoader()->Loadfile(FilePath, PreFab_Name);
-
-
-		//if (1) //check if asset already exist
-		//{
-		//	auto Loader = MotherLoader::GetMotherLoader();
-		//	std::vector<Luna::Material> tempMaterialVector;
-
-		//	Loader->Loadfile(
-		//		FilePath,
-		//		*m_AssetHolder.GetModeltemplate(0),
-		//		tempMaterialVector
-		//		);
-
-
-
-		//	if (1)// check if material exists
-		//	{
-
-		//		// Temp Function for testing
-		//		for (int i = 0; i < tempMaterialVector.size(); i++)
-		//		{
-		//			*m_AssetHolder.GetMaterial(m_NrOfMaterial++) = tempMaterialVector.at(i);
-		//		}
-		//	}
-
-
-	//	}
-
-
-	//	return true;
 	}
-
-	//bool Assetmanager::LoadFile(std::string FilePath, const std::string& set_Prefabkey)
-	//{
-
-	//	bool returnValue = false;
-
-	//	if (MotherLoader::GetMotherLoader()->Loadfile(FilePath, set_Prefabkey))
-	//	{
-	//		FY_CORE_INFO("SUCCESS LOADING FILE: {0}" , FilePath);
-	//		returnValue = true;
-	//	}
-	//	else
-	//	{
-	//		FY_CORE_WARN("FAILED TO LOAD FILE: {0}", FilePath);
-	//	}
-
-
-	//	return returnValue;
-	//}
 
 	bool Assetmanager::AddNewModelTemplate(std::shared_ptr<ModelTemplate>& ModelTemplate, const std::string& FileName, const std::string& FilePath)
 	{
@@ -280,15 +243,4 @@ namespace Frosty
 		return returnValue;
 	}
 
-	Frosty::Assetmanager::~Assetmanager()
-	{
-		//if (s_Instance != nullptr)
-		//{
-		//delete s_Instance;
-		//}
-		MotherLoader::Delete();
-		PrefabManager::Delete();
-		
-	
-	}
 }

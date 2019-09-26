@@ -25,16 +25,16 @@ namespace Frosty
 				std::vector<Luna::Index> MeshIndices,
 				std::vector<Luna::Weights> Weights
 			)
-				: m_BoundingBox(BoundingBox),
-				m_MeshVertices(MeshVertices),
-				m_MeshIndices(MeshIndices),
-				m_Weights(Weights) {};
+				: BoundingBox(BoundingBox),
+				MeshVertices(MeshVertices),
+				MeshIndices(MeshIndices),
+				Weights(Weights) {};
 
 			//	std::vector<Luna::Material> materials;
-			Luna::BoundingBox m_BoundingBox;
-			std::vector<Luna::Vertex> m_MeshVertices;
-			std::vector<Luna::Index> m_MeshIndices;
-			std::vector<Luna::Weights> m_Weights;
+			Luna::BoundingBox BoundingBox;
+			std::vector<Luna::Vertex> MeshVertices;
+			std::vector<Luna::Index> MeshIndices;
+			std::vector<Luna::Weights> Weights;
 		};
 
 

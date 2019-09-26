@@ -6,6 +6,63 @@
 #include"stb_image.hpp"
 
 
+bool GetImageSize(const char* fn, int* x, int* y)
+{
+	FILE* f = fopen(fn, "rb"); if (f == 0) return false;
+	fseek(f, 0, SEEK_END); long len = ftell(f); fseek(f, 0, SEEK_SET);
+	if (len < 24) { fclose(f); return false; }
+
+	// Strategy:
+	// reading GIF dimensions requires the first 10 bytes of the file
+	// reading PNG dimensions requires the first 24 bytes of the file
+	// reading JPEG dimensions requires scanning through jpeg chunks
+	// In all formats, the file is at least 24 bytes big, so we'll read that always
+	unsigned char buf[24]; fread(buf, 1, 24, f);
+
+	// For JPEGs, we need to read the first 12 bytes of each chunk.
+	// We'll read those 12 bytes at buf+2...buf+14, i.e. overwriting the existing buf.
+	if (buf[0] == 0xFF && buf[1] == 0xD8 && buf[2] == 0xFF && buf[3] == 0xE0 && buf[6] == 'J' && buf[7] == 'F' && buf[8] == 'I' && buf[9] == 'F')
+	{
+		long pos = 2;
+		while (buf[2] == 0xFF)
+		{
+			if (buf[3] == 0xC0 || buf[3] == 0xC1 || buf[3] == 0xC2 || buf[3] == 0xC3 || buf[3] == 0xC9 || buf[3] == 0xCA || buf[3] == 0xCB) break;
+			pos += 2 + (buf[4] << 8) + buf[5];
+			if (pos + 12 > len) break;
+			fseek(f, pos, SEEK_SET); fread(buf + 2, 1, 12, f);
+		}
+	}
+
+	fclose(f);
+
+	// JPEG: (first two bytes of buf are first two bytes of the jpeg file; rest of buf is the DCT frame
+	if (buf[0] == 0xFF && buf[1] == 0xD8 && buf[2] == 0xFF)
+	{
+		*y = (buf[7] << 8) + buf[8];
+		*x = (buf[9] << 8) + buf[10];
+		return true;
+	}
+
+	// GIF: first three bytes say "GIF", next three give version number. Then dimensions
+	if (buf[0] == 'G' && buf[1] == 'I' && buf[2] == 'F')
+	{
+		*x = buf[6] + (buf[7] << 8);
+		*y = buf[8] + (buf[9] << 8);
+		return true;
+	}
+
+	// PNG: the first frame is by definition an IHDR frame, which gives dimensions
+	if (buf[0] == 0x89 && buf[1] == 'P' && buf[2] == 'N' && buf[3] == 'G' && buf[4] == 0x0D && buf[5] == 0x0A && buf[6] == 0x1A && buf[7] == 0x0A
+		&& buf[12] == 'I' && buf[13] == 'H' && buf[14] == 'D' && buf[15] == 'R')
+	{
+		*x = (buf[16] << 24) + (buf[17] << 16) + (buf[18] << 8) + (buf[19] << 0);
+		*y = (buf[20] << 24) + (buf[21] << 16) + (buf[22] << 8) + (buf[23] << 0);
+		return true;
+	}
+
+	return false;
+}
+
 namespace Frosty
 {
 
@@ -36,12 +93,12 @@ namespace Frosty
 		bool returnValue = false;
 
 		FileNameInfo TempFileInfo;
-		TempFileInfo.m_FilePath = FilePath;
-		TempFileInfo.m_PreFab_Name = PrefabName;
+		TempFileInfo.FilePath = FilePath;
+		TempFileInfo.PreFab_Name = PrefabName;
 
 		if (GetFileInformation(TempFileInfo))
 		{
-			switch (TempFileInfo.m_type)
+			switch (TempFileInfo.Type)
 			{
 			case JPG:
 				returnValue = LoadGraphicFile(TempFileInfo,Reload);
@@ -57,7 +114,7 @@ namespace Frosty
 				break;
 
 			default:
-				FY_CORE_WARN("Unknown fileformat, Filepath: {0}", TempFileInfo.m_FilePath);
+				FY_CORE_WARN("Unknown fileformat, Filepath: {0}", TempFileInfo.FilePath);
 				break;
 			}
 		}
@@ -103,25 +160,25 @@ namespace Frosty
 		std::string temp_Type = "";
 
 
-		size_t count = (FileNameInformation.m_FilePath.size() - 1);
-		while (FileNameInformation.m_FilePath[count] != '.' && count > 0)
+		size_t count = (FileNameInformation.FilePath.size() - 1);
+		while (FileNameInformation.FilePath[count] != '.' && count > 0)
 		{
 
-			temp_Type.push_back(FileNameInformation.m_FilePath[count]);
+			temp_Type.push_back(FileNameInformation.FilePath[count]);
 			count--;
 		}
 		std::reverse(temp_Type.begin(), temp_Type.end());
 
-		FileNameInformation.m_type = GetFileType(temp_Type);
+		FileNameInformation.Type = GetFileType(temp_Type);
 
 		if (count > 0) {
 
 			returnValue = true;
 
 			count--;
-			while (FileNameInformation.m_FilePath[count] != (char)'/')
+			while (FileNameInformation.FilePath[count] != (char)'/')
 			{
-				temp_Name.push_back(FileNameInformation.m_FilePath[count--]);
+				temp_Name.push_back(FileNameInformation.FilePath[count--]);
 
 				if (count < 0)
 				{
@@ -131,11 +188,11 @@ namespace Frosty
 			}
 
 			std::reverse(temp_Name.begin(), temp_Name.end());
-			FileNameInformation.m_FileName = temp_Name;
+			FileNameInformation.FileName = temp_Name;
 		}
 		else
 		{
-			FY_CORE_WARN("File Has No Name, Filepath {0}", FileNameInformation.m_FilePath);
+			FY_CORE_WARN("File Has No Name, Filepath {0}", FileNameInformation.FilePath);
 		}
 		return returnValue;
 	}
@@ -165,7 +222,7 @@ namespace Frosty
 
 		Luna::Reader tempFile;
 
-		if (tempFile.readFile(FileNameInformation.m_FilePath.c_str()))
+		if (tempFile.readFile(FileNameInformation.FilePath.c_str()))
 		{
 
 
@@ -177,7 +234,7 @@ namespace Frosty
 			//std::string Temp_MT_Asset_Name = TempFileName; //ModelName?
 
 			//ModelTemplate
-			if (temp_AssetManager->AddNewModelTemplate(mod_ptr, FileNameInformation.m_FileName, FileNameInformation.m_FilePath))
+			if (temp_AssetManager->AddNewModelTemplate(mod_ptr, FileNameInformation.FileName, FileNameInformation.FilePath))
 			{
 				//Fill modeltemplate
 
@@ -195,17 +252,17 @@ namespace Frosty
 
 					if (mod_ptr->GetMeshVector()->back().hasSkeleton)
 					{
-						tempFile.getWeights(tempMeshId, tempMeshInfo_Ptr->m_Weights);
+						tempFile.getWeights(tempMeshId, tempMeshInfo_Ptr->Weights);
 						modelHasSkeleton = true;
 					}
 
 					if (mod_ptr->GetMeshVector()->back().hasBoundingBox)
 					{
-						tempMeshInfo_Ptr->m_BoundingBox = tempFile.getBoundingBox(tempMeshId);
+						tempMeshInfo_Ptr->BoundingBox = tempFile.getBoundingBox(tempMeshId);
 					}
 
-					tempFile.getIndices(tempMeshId, tempMeshInfo_Ptr->m_MeshIndices);
-					tempFile.getVertices(tempMeshId, tempMeshInfo_Ptr->m_MeshVertices);
+					tempFile.getIndices(tempMeshId, tempMeshInfo_Ptr->MeshIndices);
+					tempFile.getVertices(tempMeshId, tempMeshInfo_Ptr->MeshVertices);
 
 					//Mod->getBoundingBoxVector()->emplace_back(tempFile.getBoundingBox(i));
 
@@ -241,13 +298,13 @@ namespace Frosty
 				if (Reload)
 				{
 
-					FY_CORE_INFO("Trying To Reload a ModelTemplate: {0}", FileNameInformation.m_FileName);
+					FY_CORE_INFO("Trying To Reload a ModelTemplate: {0}", FileNameInformation.FileName);
 
 
 				}
 				else
 				{
-					FY_CORE_INFO("ModelTemplate Already Loaded, File: {0}", FileNameInformation.m_FileName);
+					FY_CORE_INFO("ModelTemplate Already Loaded, File: {0}", FileNameInformation.FileName);
 				}
 
 
@@ -273,7 +330,7 @@ namespace Frosty
 				//tempMatVector.at(i).diffuseTexPath Chop Name???
 
 				//Materials
-				if (temp_AssetManager->AddNewMaterialTemplate(tempMatPtr, tempMatVector.at(i).diffuseTexPath, FileNameInformation.m_FileName))
+				if (temp_AssetManager->AddNewMaterialTemplate(tempMatPtr, tempMatVector.at(i).diffuseTexPath, FileNameInformation.FileName))
 				{
 					//Fill Material
 					*tempMatPtr = tempMatVector.at(i);
@@ -286,18 +343,18 @@ namespace Frosty
 				{
 					if (Reload)
 					{
-						FY_CORE_INFO("Trying To Reload a Material: {0}", FileNameInformation.m_FileName);
+						FY_CORE_INFO("Trying To Reload a Material: {0}", FileNameInformation.FileName);
 					}
 					else
 					{
-						FY_CORE_INFO("Material Already Loaded, File: {0}", FileNameInformation.m_FileName);
+						FY_CORE_INFO("Material Already Loaded, File: {0}", FileNameInformation.FileName);
 					}
 				}
 			}
 
-			if (FileNameInformation.m_PreFab_Name != "")
+			if (FileNameInformation.PreFab_Name != "")
 			{
-			PrefabManager::GetPrefabManager()->setPrefab(FileNameInformation.m_PreFab_Name, FileNameInformation.m_FileName, MaterialAssetName);
+			PrefabManager::GetPrefabManager()->setPrefab(FileNameInformation.PreFab_Name, FileNameInformation.FileName, MaterialAssetName);
 			}
 
 
@@ -305,7 +362,7 @@ namespace Frosty
 		}
 		else
 		{
-			FY_CORE_WARN("Luna Failed to load file, FilePath: {0}", FileNameInformation.m_FilePath);
+			FY_CORE_WARN("Luna Failed to load file, FilePath: {0}", FileNameInformation.FilePath);
 		}
 		return returnValue;
 	}
@@ -313,16 +370,71 @@ namespace Frosty
 	bool MotherLoader::LoadGraphicFile(const FileNameInfo& FileNameInformation, const bool& Reload)
 	{
 		bool returnValue = false;
+		int comp;
 
-		
+		std::ifstream in(FileNameInformation.FilePath.c_str());
+
+		 //int width, height;
+
+
+		 //if (GetImageSize(FileNameInformation.FilePath.c_str(),&width,&height))
+		 //{
+			// FY_CORE_INFO("x: {0} y: {1}",width,height);
+		 //}
+		 //
+
+		//in.seekg(16);
+		//in.read((char*)& width, 4);
+		//in.read((char*)& height, 4);
+		//
+		//width = ntohl(width);
+		//height = ntohl(height);
+
+	//	stbi_uc* tempTextuere = stbi_load(FileNameInformation.FilePath.c_str(), &width, &height, &comp, STBI_rgb);
+
+		int width, height;
+
+
+
+		int  channels;
+	//	stbi_set_flip_vertically_on_load(true);
+
+
+		std::string temp = FileNameInformation.FilePath;
+		temp.erase(FileNameInformation.FilePath.size() - 4, 4);
+
+		FY_CORE_INFO("Temp :{0}", temp);
+
+		unsigned char* image = stbi_load(temp.c_str(),
+			&width,
+			&height,
+			&channels,
+			STBI_rgb_alpha);
+
+		// ... do something with the image
+
+
+
+		if (image != nullptr)
+		{
+			FY_CORE_INFO("hh");
+		}
+		else
+		{
+			FY_CORE_WARN("STBI Could not load image, FilePath: {0}", FileNameInformation.FilePath);
+		}
+
+
+		stbi_image_free(image);
+
+
+
+
+
+
 
 		return returnValue;
 	}
-
-
-
-
-
 
 }
 

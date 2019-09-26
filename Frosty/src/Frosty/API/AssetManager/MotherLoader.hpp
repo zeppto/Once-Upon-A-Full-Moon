@@ -32,10 +32,17 @@ namespace Frosty
 		};
 		struct FileNameInfo
 		{
-			int8_t m_type = -1;
-			std::string m_FilePath = "";
-			std::string m_FileName = "";
-			std::string m_PreFab_Name = "";
+			int8_t Type = -1;
+			std::string FilePath = "";
+			std::string FileName = "";
+			std::string PreFab_Name = "";
+		};
+		struct ImageFileInformation
+		{
+
+			uint16_t Image_Width = 0;
+			uint16_t Image_Height = 0;
+
 		};
 
 		static MotherLoader* s_Instance;
