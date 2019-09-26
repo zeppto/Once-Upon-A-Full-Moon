@@ -33,10 +33,10 @@ namespace Frosty
 		inline unsigned int GetPositionY() const { return m_Data.PositionY; }
 		std::pair<unsigned int, unsigned int> GetPosition() const;
 
-		inline void* GetNativeWindow() const { return m_Window; }
-
 		void OnEvent(BaseEvent& e);
 		void OnUpdate();
+
+		inline void* GetNativeWindow() const { return m_Window; }
 
 	private:
 		void Init(const WindowProps& props);
@@ -50,7 +50,8 @@ namespace Frosty
 
 		struct WindowData
 		{
-			std::string Title{ "Frosty Engine 2" };
+			std::string Title{ "Frosty Engine" };
+			int Maximized;
 			unsigned int Width, Height;
 			unsigned int PositionX, PositionY;
 		};
