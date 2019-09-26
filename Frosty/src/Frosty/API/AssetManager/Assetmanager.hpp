@@ -47,8 +47,9 @@ namespace Frosty
 		//Not initialized yet
 	//	bool LoadFile(std::string FilePath, const std::string& set_Label);
 
-		bool AddNewModelTemplate(std::shared_ptr<ModelTemplate>& ModelTemplate,const std::string& FileName, const std::string& FilePath);
-		bool AddNewMaterialTemplate(std::shared_ptr<Luna::Material>& Material,const std::string& FileName, const std::string& FilePath);
+		bool AddNewModelTemplate(std::shared_ptr<ModelTemplate>& ModelTemplate, const FileNameInfo& FileInformation);
+		bool AddNewTextureTemplate(std::shared_ptr<TextureFile>& Texture,const FileNameInfo& FileInformation);
+		bool AddNewMaterialTemplate(std::shared_ptr<Luna::Material>& Material, const FileNameInfo& FileInformation);
 
 		/* if needed insert reload functions here
 		.

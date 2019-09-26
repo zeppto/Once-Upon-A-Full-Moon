@@ -92,8 +92,8 @@ namespace Frosty
 	{
 		bool returnValue = false;
 
-		FileNameInfo TempFileInfo;
-		TempFileInfo.FilePath = FilePath;
+		FileMetaData TempFileInfo;
+		TempFileInfo.FullFilePath = FilePath;
 		TempFileInfo.PreFab_Name = PrefabName;
 
 		if (GetFileInformation(TempFileInfo))
@@ -151,7 +151,7 @@ namespace Frosty
 		FY_CORE_INFO("¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯");
 	}
 
-	bool MotherLoader::GetFileInformation(FileNameInfo& FileNameInformation)
+	bool MotherLoader::GetFileInformation(FileMetaData& FileNameInformation)
 	{
 		bool returnValue = false;
 
@@ -189,6 +189,7 @@ namespace Frosty
 
 			std::reverse(temp_Name.begin(), temp_Name.end());
 			FileNameInformation.FileName = temp_Name;
+			FileNameInformation.FilePath = temp_Name + "." + temp_Type;
 		}
 		else
 		{
@@ -215,7 +216,7 @@ namespace Frosty
 		return -1;
 	}
 
-	bool MotherLoader::LoadLunaFile(const FileNameInfo& FileNameInformation, const bool& Reload)
+	bool MotherLoader::LoadLunaFile(const FileMetaData& FileNameInformation, const bool& Reload)
 	{
 
 		bool returnValue = false;
@@ -234,7 +235,7 @@ namespace Frosty
 			//std::string Temp_MT_Asset_Name = TempFileName; //ModelName?
 
 			//ModelTemplate
-			if (temp_AssetManager->AddNewModelTemplate(mod_ptr, FileNameInformation.FileName, FileNameInformation.FilePath))
+			if (temp_AssetManager->AddNewModelTemplate(mod_ptr, FileNameInformation))
 			{
 				//Fill modeltemplate
 
@@ -329,8 +330,10 @@ namespace Frosty
 
 				//tempMatVector.at(i).diffuseTexPath Chop Name???
 
+				//Load Textures to materials
+
 				//Materials
-				if (temp_AssetManager->AddNewMaterialTemplate(tempMatPtr, tempMatVector.at(i).diffuseTexPath, FileNameInformation.FileName))
+				if (temp_AssetManager->AddNewMaterialTemplate(tempMatPtr, FileNameInformation))
 				{
 					//Fill Material
 					*tempMatPtr = tempMatVector.at(i);
@@ -367,12 +370,12 @@ namespace Frosty
 		return returnValue;
 	}
 
-	bool MotherLoader::LoadGraphicFile(const FileNameInfo& FileNameInformation, const bool& Reload)
+	bool MotherLoader::LoadGraphicFile(const FileMetaData& FileNameInformation, const bool& Reload)
 	{
 		bool returnValue = false;
-		int comp;
+	//	int comp;
 
-		std::ifstream in(FileNameInformation.FilePath.c_str());
+	//	std::ifstream in(FileNameInformation.FilePath.c_str());
 
 		 //int width, height;
 
@@ -392,45 +395,45 @@ namespace Frosty
 
 	//	stbi_uc* tempTextuere = stbi_load(FileNameInformation.FilePath.c_str(), &width, &height, &comp, STBI_rgb);
 
-		int width, height;
+	//	int width, height;
 
 
 
-		int  channels;
+	//	int  channels;
 	//	stbi_set_flip_vertically_on_load(true);
 
 
-		std::string temp = FileNameInformation.FilePath;
+	//	std::string temp = FileNameInformation.FilePath;
 		//temp.erase(FileNameInformation.FilePath.size() - 4, 4);
 
-		FY_CORE_INFO("Temp :{0}", temp);
+		//FY_CORE_INFO("Temp :{0}", temp);
 
-		unsigned char* image = stbi_load(temp.c_str(),
-			&width,
-			&height,
-			&channels,
-			STBI_rgb_alpha);
+		//unsigned char* image = stbi_load(temp.c_str(),
+		//	&width,
+		//	&height,
+		//	&channels,
+		//	STBI_rgb_alpha);
 
 
 
 
 		int textureWidth, textureHeight, components;
-		unsigned char* imageData = stbi_load((FileNameInformation.FilePath.c_str()), &textureWidth, &textureHeight, &components, 4);
-		if (imageData == NULL)
+		unsigned char* imageData = stbi_load((FileNameInformation.FilePath.c_str()), &textureWidth, &textureHeight, &components, STBI_rgb_alpha);
+		
+		if (imageData == nullptr)
 		{
 			//	std::cout << "Image failed to load in." << std::endl;
 			//	FatalError();
-			FY_CORE_INFO("uu");
+			FY_CORE_WARN("Stbi Was unable to load Filepath: {0}", FileNameInformation.FilePath);
 		}
 
 
-		// ... do something with the image
 
 
 
-		if (image != nullptr)
+		if (imageData != nullptr)
 		{
-			FY_CORE_INFO("hh");
+			FY_CORE_INFO("Width: {0}, Height {1}", textureWidth,textureHeight);
 		}
 		else
 		{
@@ -438,7 +441,7 @@ namespace Frosty
 		}
 
 
-		stbi_image_free(image);
+		stbi_image_free(imageData);
 
 
 

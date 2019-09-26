@@ -3,17 +3,40 @@
 #include "ModelTemplate.hpp"
 #include<Luna/include/Reader.h>
 
-//or enums?
+
 // should be inside definitions?
 //File types
 #define FILE_TYPE_JPG "jpg"
 #define FILE_TYPE_PNG "png"
 #define FILE_TYPE_LUNA "lu"
-//#define STBI_NO_PNG
+
 
 
 namespace Frosty
 {
+
+	enum FileType
+	{
+		JPG,
+		PNG,
+		LUNA
+	};
+	struct FileNameInfo
+	{
+		int8_t Type = -1;
+		std::string FileName = "";
+		std::string FilePath = "";
+		std::string PreFab_Name = "";
+		std::string FullFilePath = "";
+	};
+	struct TextureFile
+	{
+		std::unique_ptr<unsigned char> Image_Data_Ptr = nullptr;
+		uint16_t Image_Width = 0;
+		uint16_t Image_Height = 0;
+
+	};
+
 
 
 	class MotherLoader
@@ -24,26 +47,6 @@ namespace Frosty
 
 	private: //variables
 
-		enum FileType
-		{
-			JPG,
-			PNG,
-			LUNA
-		};
-		struct FileNameInfo
-		{
-			int8_t Type = -1;
-			std::string FilePath = "";
-			std::string FileName = "";
-			std::string PreFab_Name = "";
-		};
-		struct ImageFileInformation
-		{
-
-			uint16_t Image_Width = 0;
-			uint16_t Image_Height = 0;
-
-		};
 
 		static MotherLoader* s_Instance;
 

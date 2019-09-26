@@ -24,8 +24,10 @@ namespace Frosty
 		int32_t m_Asset_ID;
 		int32_t m_Asset_Container_Slot;
 
-		std::string m_FileName;
-		std::string m_FilePath;
+		/*std::string m_FileName;
+		std::string m_FilePath;*/
+
+		FileMetaData m_FileMetaData;
 
 		unsigned int m_GetCounter = 0; //For Current Object
 		unsigned long int m_TotalGetCounter = 0;
@@ -43,9 +45,10 @@ namespace Frosty
 		std::shared_ptr<T> GetData();
 		bool GetData(std::shared_ptr<T> inPtr);
 
-		const std::string& GetFileName() const { return m_FileName; }
-		const std::string& GetFilePath() const { return m_FilePath; }
-		const int32_t& GetAssetContainerSlot() const { return m_Asset_Container_Slot; }
+		//const std::string& GetFileName() const { return m_FileName; }
+		//const std::string& GetFilePath() const { return m_FilePath; }
+		//const int32_t& GetAssetContainerSlot() const { return m_Asset_Container_Slot; }
+		const FileMetaData& GetFileMetaData() { return m_FileMetaData; }
 
 		//Asset Id
 		const int32_t& GetAssetId() const { return m_AssetID; }
@@ -60,10 +63,11 @@ namespace Frosty
 		//void SetRefData(const int& newRefData) { int m_Dar = FY_NEW newRefData; }
 
 		void SetRefData(const T& newRefData);
-		void SetFileName(const std::string & FileName) { m_FileName = FileName; }
-		void SetFilePath(const std::string & FilePath) { m_FilePath = FilePath; }
-		void SetContainerSlot(const int32_t& NewSlot) { m_Asset_Container_Slot = NewSlot; }
-		void SetAllRefData(const T & newRefData, const std::string & FileName, const std::string & FilePath);
+		//void SetFileName(const std::string & FileName) { m_FileName = FileName; }
+		//void SetFilePath(const std::string & FilePath) { m_FilePath = FilePath; }
+		//void SetContainerSlot(const int32_t& NewSlot) { m_Asset_Container_Slot = NewSlot; }
+
+		void SetAllRefData(const T & newRefData, const FileMetaData& MetaData);
 
 		//Functions
 	private:
@@ -133,7 +137,7 @@ namespace Frosty
 	}
 
 	template<class T>
-	inline void AssetMetaData<T>::SetAllRefData(const T& newRefData, const std::string& FileName, const std::string& FilePath)
+	inline void AssetMetaData<T>::SetAllRefData(const T& newRefData, const FileMetaData& MetaData)
 	{
 		m_GetCounter = 0;
 		//m_Data_ptr = FY_NEW T(newRefData);
@@ -147,11 +151,12 @@ namespace Frosty
 	template<class T>
 	inline void AssetMetaData<T>::SetMetaDataToNull()
 	{
-		m_FileName = "";
-		m_FilePath = "";
+	//	m_FileName = "";
+	//	m_FilePath = "";
+		m_FileMetaData = FileMetaData();
 		m_GetCounter = 0;
 		m_Data_ptr = nullptr;
-		m_Asset_Container_Slot = -1;
+	//	m_Asset_Container_Slot = -1;
 	}
 
 	template<class T>
