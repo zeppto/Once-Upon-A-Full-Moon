@@ -9,7 +9,7 @@
 #define FILE_TYPE_JPG "jpg"
 #define FILE_TYPE_PNG "png"
 #define FILE_TYPE_LUNA "lu"
-#define STBI_NO_PNG
+//#define STBI_NO_PNG
 
 
 namespace Frosty

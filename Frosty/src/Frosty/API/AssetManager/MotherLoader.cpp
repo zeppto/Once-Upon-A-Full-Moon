@@ -401,7 +401,7 @@ namespace Frosty
 
 
 		std::string temp = FileNameInformation.FilePath;
-		temp.erase(FileNameInformation.FilePath.size() - 4, 4);
+		//temp.erase(FileNameInformation.FilePath.size() - 4, 4);
 
 		FY_CORE_INFO("Temp :{0}", temp);
 
@@ -410,6 +410,19 @@ namespace Frosty
 			&height,
 			&channels,
 			STBI_rgb_alpha);
+
+
+
+
+		int textureWidth, textureHeight, components;
+		unsigned char* imageData = stbi_load((FileNameInformation.FilePath.c_str()), &textureWidth, &textureHeight, &components, 4);
+		if (imageData == NULL)
+		{
+			//	std::cout << "Image failed to load in." << std::endl;
+			//	FatalError();
+			FY_CORE_INFO("uu");
+		}
+
 
 		// ... do something with the image
 
