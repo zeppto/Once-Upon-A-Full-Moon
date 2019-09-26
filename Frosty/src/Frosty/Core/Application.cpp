@@ -8,11 +8,11 @@ namespace Frosty
 
 	Application::Application()
 	{
-		// TODO: Error handling?
-		s_Instance = this;
-
 		Log::Init();
 		FY_CORE_INFO("Logger initialized..");
+
+		// TODO: Error handling?
+		s_Instance = this;
 
 		m_Window = std::make_unique<Window>(Window());
 
@@ -22,17 +22,13 @@ namespace Frosty
 		PushOverlay(m_ImGuiLayer);
 		m_RenderEngine = new RenderEngine();
 
-		//test
-
-		//Assetmanager::GetAssetmanager();
-		//Assetmanager::GetAssetmanager()->LoadFile("FbxAztec.fbx");
-		//tempManager->LoadFile("FbxAztec.fbx");
-
+		ECS::ComponentManager<ECS::CTransform> cManager;
 	}
 
 	Application::~Application()
 	{
 		delete m_RenderEngine;
+		Time::Get().Delete();
 		EventBus::GetEventBus()->Delete();
 		glfwTerminate();
 		Assetmanager::Delete();
@@ -45,6 +41,7 @@ namespace Frosty
 			/// Input			
 
 			/// Update
+			Time::Get().OnUpdate();
 			for (Layer* layer : m_LayerHandler)
 				layer->OnUpdate();
 
@@ -115,6 +112,17 @@ namespace Frosty
 		}
 
 		m_Window->OnEvent(e);
+
+		// Goes through all our layers and calls the OnEvent function in all layers
+		// We iterate from the back when handling events
+		for (auto it = m_LayerHandler.end(); it != m_LayerHandler.begin(); )
+		{
+			// We need to break the loop when an event has been handled so we don't handle all layer events
+			if ((*--it)->OnEvent(e))
+			{
+				break;
+			}
+		}
 	}
 
 	void Application::OnWindowCloseEvent(WindowCloseEvent& e)

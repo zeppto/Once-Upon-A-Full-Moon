@@ -5,8 +5,7 @@
 
 namespace Frosty
 {
-	class DirectionalLight 
-		: public LightBase
+	class DirectionalLight : public LightBase
 	{
 	private:
 		glm::vec3 m_Direction;

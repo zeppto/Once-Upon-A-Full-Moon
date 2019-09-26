@@ -6,19 +6,22 @@ namespace Frosty
 {
 	Frosty::Camera::Camera()
 	{
-		m_CameraData.AspRatio = Application::Get().GetWindow().GetWidth() / Application::Get().GetWindow().GetHeight();
-		m_CameraData.LastX = Application::Get().GetWindow().GetWidth() / 2;
-		m_CameraData.LastY = Application::Get().GetWindow().GetHeight() / 2;
+		m_CameraData.AspRatio = Application::Get().GetWindow().GetWidth() / (float)Application::Get().GetWindow().GetHeight();
+		m_CameraData.LastX = Application::Get().GetWindow().GetWidth() / 2.0f;
+		m_CameraData.LastY = Application::Get().GetWindow().GetHeight() / 2.0f;
 		m_CameraData.Projection = glm::perspective(m_CameraData.FoV, m_CameraData.AspRatio, m_CameraData.NearPlane, m_CameraData.FarPlane);
 		m_CameraData.View = glm::lookAt(m_CameraData.Pos, m_CameraData.Pos + m_CameraData.LookAtVec, m_CameraData.UpVec);
 	}
+
 	Frosty::Camera::~Camera()
 	{
 	}
+
 	glm::mat4 Frosty::Camera::GetView()
 	{
 		return m_CameraData.View;
 	}
+
 	glm::mat4 Frosty::Camera::GetProjection()
 	{
 		return m_CameraData.Projection;
@@ -28,7 +31,7 @@ namespace Frosty
 		Application& app = Application::Get();
 		GLFWwindow* window = static_cast<GLFWwindow*>(app.GetWindow().GetNativeWindow());
 
-		m_CameraData.CurrentFrame = glfwGetTime();
+		m_CameraData.CurrentFrame = (float)glfwGetTime();
 		m_CameraData.DeltaTime = m_CameraData.CurrentFrame - m_CameraData.LastFrame;
 		m_CameraData.LastFrame = m_CameraData.CurrentFrame;
 		m_CameraData.CamSpeed = 2.0f * m_CameraData.DeltaTime;
@@ -73,8 +76,8 @@ namespace Frosty
 			if (m_CameraData.MouseState == -1)
 			{
 				glfwSetCursorPos(window, Application::Get().GetWindow().GetWidth() / 2, Application::Get().GetWindow().GetHeight() / 2);
-				m_CameraData.LastX = Application::Get().GetWindow().GetWidth() / 2;
-				m_CameraData.LastY = Application::Get().GetWindow().GetHeight() / 2;
+				m_CameraData.LastX = Application::Get().GetWindow().GetWidth() / 2.0f;
+				m_CameraData.LastY = Application::Get().GetWindow().GetHeight() / 2.0f;
 				m_CameraData.MouseState = 1;
 			}
 			CameraRotationUpdate(m_CameraData.MousePosX, m_CameraData.MousePosY);
@@ -95,10 +98,10 @@ namespace Frosty
 
 		if (m_CameraData.MouseState != 1)
 		{
-			m_CameraData.XOffset = xpos - m_CameraData.LastX;
-			m_CameraData.YOffset = m_CameraData.LastY - ypos;
-			m_CameraData.LastX = xpos;
-			m_CameraData.LastY = ypos;
+			m_CameraData.XOffset = (float)xpos - m_CameraData.LastX;
+			m_CameraData.YOffset = m_CameraData.LastY - (float)ypos;
+			m_CameraData.LastX = (float)xpos;
+			m_CameraData.LastY = (float)ypos;
 
 			m_CameraData.XOffset *= m_CameraData.Sensitivity;
 			m_CameraData.YOffset *= m_CameraData.Sensitivity;

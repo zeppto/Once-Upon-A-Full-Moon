@@ -1,5 +1,7 @@
 #ifndef APPLICATION_HPP
 #define APPLICATION_HPP
+
+#include "ECS.hpp"
 #include "Window.hpp"
 #include "LayerHandler.hpp"
 #include "EventSystem.hpp"
@@ -7,17 +9,10 @@
 #include "Frosty/RenderEngine/RenderEngine.hpp"
 #include "Frosty/API/AssetManager/Assetmanager.hpp"
 
-
-
 namespace Frosty
 {
-
-
-
 	class Application
 	{
-		
-
 	public:
 		Application();
 		virtual ~Application();
@@ -38,6 +33,10 @@ namespace Frosty
 		inline Window& GetWindow() { return *m_Window; }
 		static inline Application& Get() { return *s_Instance; }
 
+		// ECS Stuff (TEMPORARY)
+		const ECS::EntityManager& GetEntityManager() const { return m_EntityManager; }
+		std::shared_ptr<ECS::Entity>& CreateEntity() { return m_EntityManager.CreateEntity(); }
+
 	private:
 		void OnWindowCloseEvent(WindowCloseEvent& e);
 		void OnKeyPressedEvent(KeyPressedEvent& e);
@@ -54,6 +53,11 @@ namespace Frosty
 		RenderEngine* m_RenderEngine;
 
 		static Application* s_Instance;
+
+		// ECS stuff (TEMPORARY)
+		ECS::EntityManager m_EntityManager;
+		//std::unique_ptr<ECS::BaseComponentManager> m_TransformManager;
+
 	};
 }
 #endif // !APPLICATION_HPP

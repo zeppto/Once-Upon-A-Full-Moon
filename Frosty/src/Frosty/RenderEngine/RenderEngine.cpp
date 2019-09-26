@@ -460,5 +460,4 @@ namespace Frosty
 		glBindVertexArray(0);
 
 	}
-
 }
