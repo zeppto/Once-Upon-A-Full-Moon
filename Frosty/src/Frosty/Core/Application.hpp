@@ -1,6 +1,5 @@
 #ifndef APPLICATION_HPP
 #define APPLICATION_HPP
-
 #include "ECS.hpp"
 #include "Window.hpp"
 #include "LayerHandler.hpp"
@@ -8,7 +7,6 @@
 #include "Frosty/ImGui/ImGuiLayer.hpp"
 #include "Frosty/API/AssetManager/Assetmanager.hpp"
 #include "Frosty/RenderEngine/Shader.hpp"
-#include "Frosty/RenderEngine/Buffer.hpp"
 #include "Frosty/RenderEngine/VertexArray.hpp"
 
 namespace Frosty
@@ -31,10 +29,7 @@ namespace Frosty
 		void PushLayer(Layer* layer);
 		void PushOverlay(Layer* layer);
 		void PopLayer(Layer* layer);
-		void PopOverlay(Layer* layer);
-
-		// RenderEngine
-		//RenderEngine* GetRenderEngine() { return m_RenderEngine; }
+		void PopOverlay(Layer* layer);		
 
 		inline Window& GetWindow() { return *m_Window; }
 		static inline Application& Get() { return *s_Instance; }
@@ -53,18 +48,12 @@ namespace Frosty
 		LayerHandler m_LayerHandler;
 
 		std::unique_ptr<Window> m_Window;
-
-		//RenderEngine* m_RenderEngine;
-
+		
 		static Application* s_Instance;
 
 		// ECS stuff (TEMPORARY)
 		ECS::EntityManager m_EntityManager;
 		//std::unique_ptr<ECS::BaseComponentManager> m_TransformManager;
-
-
-		/// New ...
-		//-------------------------------------------------------------------------
 		
 		std::shared_ptr<Shader> m_Shader;
 		std::shared_ptr<VertexArray> m_VertexArray;		

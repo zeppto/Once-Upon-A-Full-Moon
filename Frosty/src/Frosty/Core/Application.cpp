@@ -1,6 +1,5 @@
 #include "fypch.hpp"
 #include "Application.hpp"
-#include <glad/glad.h>
 #include "Frosty/RenderEngine/Renderer.hpp"
 
 namespace Frosty
@@ -23,13 +22,13 @@ namespace Frosty
 		PushOverlay(m_ImGuiLayer);
 
 		ECS::ComponentManager<ECS::CTransform> cManager;
+
 		InitPrefabBuffers();
 		InitShaders();
 	}
 
 	Application::~Application()
-	{
-		//delete m_RenderEngine;
+	{		
 		EventBus::GetEventBus()->Delete();
 		glfwTerminate();
 		Assetmanager::Delete();
@@ -55,7 +54,17 @@ namespace Frosty
 			{ ShaderDataType::Float4, "vsInCol" }
 		};
 
-		m_VertexBuffer->SetLayout(layout);
+		BufferLayout layout2 =
+		{
+			{ ShaderDataType::Float3, "vsInPos" },
+			{ ShaderDataType::Float4, "vsInCol" },
+			{ ShaderDataType::Mat4, "view" },
+			{ ShaderDataType::Mat4, "projection" }
+		};
+
+
+		//m_VertexBuffer->SetLayout(layout);
+		m_VertexBuffer->SetLayout(layout2);
 		m_VertexArray->AddVertexBuffer(m_VertexBuffer);
 
 		uint32_t indices[3] = { 0, 1, 2 };
@@ -98,7 +107,40 @@ namespace Frosty
 			}
 		)";
 
-		m_Shader.reset(new Shader(VertexSrc, FragmentSrc));
+		std::string VertexSrc2 = R"(
+			#version 440 core
+			
+			layout(location = 0) in vec3 vsInPos;
+			layout(location = 1) in vec4 vsInCol;
+			
+			out vec3 vsOutPos;
+			out vec4 vsOutCol;
+			
+			void main()
+			{
+				gl_Position = vec4(vsInPos, 1.0f);
+				vsOutPos = vsInPos;
+				vsOutCol = vsInCol;
+			}
+		)";
+		std::string FragmentSrc2 = R"(
+			#version 440 core
+
+			in vec3 vsOutPos;
+			in vec4 vsOutCol;
+
+			layout(location = 0) out vec4 fsOutCol;
+			
+			void main()
+			{
+				//fsOutCol = vec4(0.8f, 0.2f, 0.3f, 1.0f);
+				//fsOutCol = vec4(vsOutPos + 0.5f, 1.0f);				
+				fsOutCol = vsOutCol;
+			}
+		)";
+
+		//m_Shader.reset(new Shader(VertexSrc, FragmentSrc));
+		m_Shader.reset(new Shader(VertexSrc2, FragmentSrc2));
 	}
 
 	void Application::Run()
@@ -108,7 +150,7 @@ namespace Frosty
 			/// Frame Start
 			Time::OnUpdate();
 
-			/// Input			
+			/// Input
 			
 			RenderCommand::SetClearColor({ 0.1f, 0.1f, 0.1f, 1.0f });
 			RenderCommand::Clear();

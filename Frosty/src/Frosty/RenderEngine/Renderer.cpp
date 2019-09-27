@@ -14,9 +14,6 @@ namespace Frosty
 	
 	void Renderer::Submit(const std::shared_ptr<VertexArray>& vertexArray)
 	{
-		//vertexArray->Bind();
-		//DrawIndexed(vertexArray);
-
 		vertexArray->Bind();
 		RenderCommand::DrawIndexed(vertexArray);
 	}
