@@ -93,6 +93,7 @@ namespace Frosty
 		m_Camera = new Camera;
 		CreateTestModel();
 		m_TestBox.SetUp();
+		m_TestBox2.SetUp();
 		m_TestPlayer.SetColor(glm::vec3(0.0f, 0.0f, 1.0f));
 		m_TestPlayer.SetPosition(glm::vec3(0.0f, 2.0f, -1.0f));
 		m_TestPlayer.SetUp();
@@ -110,14 +111,35 @@ namespace Frosty
 		if (m_TestMode)
 		{
 			m_TestBox.SetShaderProgram(m_ShaderProgramVector.at(TEST_SHAPE));
+			m_TestBox2.SetShaderProgram(m_ShaderProgramVector.at(TEST_SHAPE));
 			m_TestPlayer.SetShaderProgram(m_ShaderProgramVector.at(TEST_SHAPE));
 			RenderAllTestModels();
-			m_TestBox.Update(glm::vec3(2, 0, -1), glm::vec3(0.0f), glm::vec3(1.0f));
+			m_TestBox.Update(glm::vec3(3, 0, -1), glm::vec3(0.0f), glm::vec3(1.0f));
+			m_TestBox2.Update(glm::vec3(-2, -1, -1), glm::vec3(0.0f), glm::vec3(1.0f));
 			//m_TestPlayer.Update(glm::vec3(0.0f, 3.0f, -3.0f) + m_Camera->GetPos(), glm::vec3(0.0f), glm::vec3(1.0f));
 			m_TestPlayer.Update();
-			m_TestBox.Render(m_Camera->GetView(), m_Camera->GetProjection());
-			m_TestPlayer.Render(m_Camera->GetView(), m_Camera->GetProjection());
+			if (m_CollisionDetection.AABBIntersect(m_TestPlayer.GetHitBoxLength(),
+				m_TestPlayer.GetHitBoxCenter(), m_TestBox.GetHitBoxLength(), m_TestBox.GetHitBoxCenter()))
+				m_TestBox.SetShouldRender(false);
+			else
+				m_TestBox.SetShouldRender(true);
 
+			//glm::vec3 testNewPos = m_TestPlayer.GetPos();
+			//glm::vec3 temp = m_CollisionDetection.AABBIntersecPushback(m_TestPlayer.GetHitBoxLength(),
+			//	m_TestPlayer.GetHitBoxCenter(), m_TestBox2.GetHitBoxLength(), m_TestBox2.GetHitBoxCenter());
+			//testNewPos -= temp;
+			//m_TestPlayer.SetPosition(testNewPos);
+
+			m_TestPlayer.SetPosition(m_TestPlayer.GetPos() - m_CollisionDetection.AABBIntersecPushback(m_TestPlayer.GetHitBoxLength(),
+				m_TestPlayer.GetHitBoxCenter(), m_TestBox2.GetHitBoxLength(), m_TestBox2.GetHitBoxCenter()));
+			//if (m_CollisionDetection.AABBIntersect(m_TestPlayer.GetHitBoxLength(),
+			//	m_TestPlayer.GetHitBoxCenter(), m_TestBox2.GetHitBoxLength(), m_TestBox2.GetHitBoxCenter()))
+			//	m_TestBox2.SetShouldRender(false);
+			//else
+			//	m_TestBox2.SetShouldRender(true);
+			m_TestBox.Render(m_Camera->GetView(), m_Camera->GetProjection());
+			m_TestBox2.Render(m_Camera->GetView(), m_Camera->GetProjection());
+			m_TestPlayer.Render(m_Camera->GetView(), m_Camera->GetProjection());
 
 
 		}

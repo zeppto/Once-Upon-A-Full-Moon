@@ -40,6 +40,15 @@ namespace Frosty
 		{
 			movment += speed * glm::vec3(1.5f, 0.0f, 0.0f);
 		}
+		//ta port sen
+		if (myImputManager.IsKeyPressed(GLFW_KEY_DOWN))
+		{
+			movment -= speed * glm::vec3(0.0f, 0.0f, 1.5f);
+		}
+		if (myImputManager.IsKeyPressed(GLFW_KEY_UP))
+		{
+			movment += speed * glm::vec3(0.0f, 0.0f, 1.5f);
+		}
 		return movment;
 	}
 }

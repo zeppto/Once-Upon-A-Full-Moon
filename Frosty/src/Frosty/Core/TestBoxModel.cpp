@@ -17,21 +17,25 @@ namespace Frosty
 		this->m_ShaderProgram = 0;
 
 		this->m_IsPlayer = false;
+		this->m_ShouldRender = true;
 
-		m_World = glm::mat4(1.0f);
+		this->m_World = glm::mat4(1.0f);
 		Update(position, rotation, scale);
 
-		m_Min = m_World * glm::vec4(glm::vec3(-0.5f), 1);
-		m_Max = m_World * glm::vec4(glm::vec3(0.5f), 1);
-		for (int i = 0; i < 3; i++)
-		{
-			if (m_Min[i] > m_Max[i])
-			{
-				float tempMax = m_Max[i];
-				m_Max[i] = m_Min[i];
-				m_Min[i] = tempMax;
-			}
-		}
+		this->m_HitBoxCenter = glm::vec3(0.0f);
+		this->m_HitBoxLength = glm::vec3(0.5f);
+
+		//m_Min = m_World * glm::vec4(glm::vec3(-0.5f), 1);
+		//m_Max = m_World * glm::vec4(glm::vec3(0.5f), 1);
+		//for (int i = 0; i < 3; i++)
+		//{
+		//	if (m_Min[i] > m_Max[i])
+		//	{
+		//		float tempMax = m_Max[i];
+		//		m_Max[i] = m_Min[i];
+		//		m_Min[i] = tempMax;
+		//	}
+		//}
 	}
 
 	TestBoxModel::~TestBoxModel()
@@ -118,18 +122,21 @@ namespace Frosty
 		//glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		//glEnable(GL_DEPTH_TEST);
+		if (m_ShouldRender)
+		{
 
-		glUseProgram(m_ShaderProgram);
-		glBindVertexArray(this->m_TestBoxVBO);
+			glUseProgram(m_ShaderProgram);
+			glBindVertexArray(this->m_TestBoxVBO);
 
-		glUniformMatrix4fv(1, 1, GL_FALSE, glm::value_ptr(viewMatrix));
-		glUniformMatrix4fv(2, 1, GL_FALSE, glm::value_ptr(projectionMatrix));
-		glUniformMatrix4fv(3, 1, GL_FALSE, glm::value_ptr(m_World));
+			glUniformMatrix4fv(1, 1, GL_FALSE, glm::value_ptr(viewMatrix));
+			glUniformMatrix4fv(2, 1, GL_FALSE, glm::value_ptr(projectionMatrix));
+			glUniformMatrix4fv(3, 1, GL_FALSE, glm::value_ptr(m_World));
 
 
-		glBindVertexArray(this->m_TestBoxVBO);
+			glBindVertexArray(this->m_TestBoxVBO);
 
-		glDrawArrays(GL_TRIANGLES, 0, 36);
+			glDrawArrays(GL_TRIANGLES, 0, 36);
+		}
 	}
 
 	void TestBoxModel::SetShaderProgram(unsigned int shaderProgram)
@@ -147,9 +154,30 @@ namespace Frosty
 		this->m_IsPlayer = isPlayer;
 	}
 
+	void TestBoxModel::SetShouldRender(bool shouldRender)
+	{
+		m_ShouldRender = shouldRender;
+	}
+
 	void TestBoxModel::SetPosition(glm::vec3 pos)
 	{
 		this->m_Pos = pos;
+	}
+
+	glm::vec3 TestBoxModel::GetHitBoxLength()
+	{
+		//rotatin? scaler?
+		return m_HitBoxLength * m_Scale;
+	}
+
+	glm::vec3 TestBoxModel::GetHitBoxCenter()
+	{
+		return m_HitBoxCenter + m_Pos;
+	}
+
+	glm::vec3 TestBoxModel::GetPos()
+	{
+		return m_Pos;
 	}
 
 	void TestBoxModel::Update(glm::vec3 position, glm::vec3 rotation, glm::vec3 scale)
@@ -162,6 +190,10 @@ namespace Frosty
 		m_World = glm::rotate(m_World, glm::radians(rotation.y), glm::vec3(0.0f, 1.0f, 0.0f));
 		m_World = glm::rotate(m_World, glm::radians(rotation.z), glm::vec3(0.0f, 0.0f, 1.0f));
 		m_World = glm::scale(m_World, scale);
+
+		m_Pos = position;
+		m_Rotation = rotation;
+		m_Scale = scale;
 	}
 	void TestBoxModel::Update()
 	{
