@@ -1,8 +1,6 @@
 #ifndef ECS_HPP
 #define ECS_HPP
 
-#include <fypch.hpp>
-
 namespace Frosty
 {
 	namespace utils
@@ -91,16 +89,35 @@ namespace Frosty
 
 
 #pragma region Declarations
+
 		struct BaseComponent;
 
 		using EntityID = size_t;				// Unique ID of the entity
 		using ComponentID = size_t;				// Unique ID of the component type (not component itself)
 		using ComponentArrayIndex = size_t;		// An index to where in the component array the component is stored for a specific entity
 		using ComponentBitset = std::bitset<MAX_COMPONENTS>;
+
 #pragma endregion
 
 
 #pragma region Utilities
+
+		struct ComponentInfo
+		{
+			std::unordered_map<ComponentID, std::string> s_ComponentNames;
+		
+			inline std::string& GetComponentNameById(ComponentID cid)
+			{
+				FY_CORE_ASSERT(!s_ComponentNames[cid].empty(), "Can't retrieve information about a component before it has been added once at least.");
+				return s_ComponentNames[cid];
+			}
+		
+			inline void SetComponentNameById(ComponentID cid, const std::string& name)
+			{
+				if (s_ComponentNames[cid].empty())
+					s_ComponentNames[cid] = name;
+			}
+		};
 
 		namespace Internal
 		{
@@ -116,9 +133,10 @@ namespace Frosty
 		{
 			static_assert(std::is_base_of<BaseComponent, ComponentType>::value,
 				"ComponentType must inherit from BaseComponent");
-			//FY_CORE_ASSERT(std::is_base_of<BaseComponent, ComponentType>::value, "ComponentType must inherit from BaseComponent");
 
 			static ComponentID typeCID{ Internal::getComponentUniqueID() };
+			ComponentInfo::SetComponentNameById(typeCID, ComponentType::NAME);
+
 			return typeCID;
 		}
 
@@ -177,7 +195,7 @@ namespace Frosty
 			inline std::shared_ptr<Entity>& CreateEntity()
 			{
 				FY_CORE_INFO("Creating a new entity..");
-				m_Entities.emplace_back(new Entity());
+				m_Entities.emplace_back(FY_NEW Entity());
 				return m_Entities.back();
 			}
 
@@ -240,6 +258,7 @@ namespace Frosty
 		template<typename ComponentType>
 		class ComponentManager : public BaseComponentManager
 		{
+		public:
 			// TODO:
 				// RemoveComponent() - Make sure to update the entity bitset. Either handle it here or inside EntityManager
 		public:
@@ -298,6 +317,7 @@ namespace Frosty
 
 		struct CTransform : public BaseComponent
 		{
+			static std::string NAME;
 			glm::vec3 Position{ 0.0f };
 			glm::vec3 Rotation{ 0.0f };
 			glm::vec3 Scale{ 1.0f };

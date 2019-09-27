@@ -1,5 +1,6 @@
 #include "fypch.hpp"
 #include "Window.hpp"
+#include "Frosty/DEFINITIONS.hpp"
 
 #include <glad/glad.h>
 
@@ -12,14 +13,8 @@ namespace Frosty
 		FY_CORE_ERROR("GLFW Error ({0}): {1}", error, description);
 	}
 
-	Window::Window(const WindowProps& props)
+	Window::Window()
 	{
-		Init(props);
-	}
-
-	std::pair<unsigned int, unsigned int> Window::GetPosition() const
-	{
-		return { m_Data.PositionX, m_Data.PositionY };
 	}
 
 	void Window::Init(const WindowProps & props)
@@ -57,6 +52,8 @@ namespace Frosty
 		glViewport(0, 0, m_Data.Width, m_Data.Height);
 
 		InitCallbacks();
+
+		glfwMaximizeWindow(m_Window);
 	}
 
 	void Window::InitCallbacks()
@@ -64,6 +61,15 @@ namespace Frosty
 		glfwSetWindowCloseCallback(m_Window, [](GLFWwindow* window)
 		{
 			EventBus::GetEventBus()->Publish<WindowCloseEvent>(WindowCloseEvent());
+		});
+
+		glfwSetWindowMaximizeCallback(m_Window, [](GLFWwindow* window, int maximize)
+		{
+			auto& data = *((WindowData*)glfwGetWindowUserPointer(window));
+
+			data.Maximized = maximize;
+
+			EventBus::GetEventBus()->Publish<WindowMaximizeEvent>(WindowMaximizeEvent(maximize));
 		});
 
 		glfwSetWindowSizeCallback(m_Window, [](GLFWwindow* window, int width, int height)
@@ -136,6 +142,30 @@ namespace Frosty
 
 	}
 
+	void Window::SetVSync(bool enabled)
+	{
+		if (enabled)
+			glfwSwapInterval(1);
+		else
+			glfwSwapInterval(0);
+
+		m_Data.VSync = enabled;
+	}
+
+	bool Window::IsVSync()
+	{
+		return m_Data.VSync;
+	}
+
+	void Window::UpdateViewport()
+	{
+		glViewport(
+			EDITOR_EXPLORER_WIDTH,													// Start from left side
+			EDITOR_ASSETS_HEIGHT,													// Start from bottom
+			m_Data.Width - EDITOR_INSPECTOR_WIDTH - EDITOR_EXPLORER_WIDTH,			// Width
+			m_Data.Height - EDITOR_ASSETS_HEIGHT - EDITOR_MAIN_MENU_BAR_HEIGHT);	// Height
+	}
+
 	void Window::OnUpdate()
 	{
 		glfwPollEvents();
@@ -161,11 +191,15 @@ namespace Frosty
 	{
 		m_Data.Width = e.GetWidth();
 		m_Data.Height = e.GetHeight();
+
+		UpdateViewport();
 	}
 
 	void Window::OnWindowMovedEvent(WindowMovedEvent & e)
 	{
 		m_Data.PositionX = e.GetXPos();
 		m_Data.PositionY = e.GetYPos();
+
+		UpdateViewport();
 	}
 }

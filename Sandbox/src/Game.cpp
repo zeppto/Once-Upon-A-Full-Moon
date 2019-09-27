@@ -1,12 +1,15 @@
 #include <mcspch.hpp>
 #include "Game.hpp"
 
-Game::Game()
+namespace MCS
 {
-	//PushLayer(new ExampleLayerA());
-}
+	Game::Game()
+	{
+		PushLayer(FY_NEW InspectorLayer());
+	}
 
-Game::~Game()
-{
+	Game::~Game()
+	{
 
+	}
 }

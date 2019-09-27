@@ -3,6 +3,12 @@
 
 /// Very careful when changing solution settings on where the path starts from
 
+// Window/Editor settings (might be moved to a file, settings.txt or something)
+#define EDITOR_EXPLORER_WIDTH 300
+#define EDITOR_INSPECTOR_WIDTH 300
+#define EDITOR_ASSETS_HEIGHT 250
+#define EDITOR_MAIN_MENU_BAR_HEIGHT 19
+
 // Folder roots
 #define PROJECT_FOLDER_ROOT "../../../"
 #define PROJECT_VENDOR_FOLDER_ROOT PROJECT_FOLDER_ROOT "vendor/"

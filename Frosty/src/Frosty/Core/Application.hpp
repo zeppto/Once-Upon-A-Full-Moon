@@ -1,8 +1,8 @@
 #ifndef APPLICATION_HPP
 #define APPLICATION_HPP
 
-#include "ECS.hpp"
 #include "Window.hpp"
+#include "ECS.hpp"
 #include "LayerHandler.hpp"
 #include "EventSystem.hpp"
 #include "Frosty/ImGui/ImGuiLayer.hpp"
@@ -56,7 +56,10 @@ namespace Frosty
 
 		// ECS stuff (TEMPORARY)
 		ECS::EntityManager m_EntityManager;
-		//std::unique_ptr<ECS::BaseComponentManager> m_TransformManager;
+
+	public:
+		std::array<std::shared_ptr<ECS::BaseComponentManager>, ECS::MAX_COMPONENTS> m_ComponentManagers;
+		unsigned int m_TotalComponentManagers{ 0 };
 
 	};
 }

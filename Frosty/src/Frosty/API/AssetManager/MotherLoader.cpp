@@ -17,7 +17,7 @@ namespace Frosty
 	{
 		if (s_Instance == nullptr)
 		{
-			s_Instance = new MotherLoader;
+			s_Instance = FY_NEW MotherLoader;
 		}
 
 		return s_Instance;

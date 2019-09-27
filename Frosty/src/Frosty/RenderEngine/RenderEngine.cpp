@@ -286,7 +286,7 @@ namespace Frosty
 		m_Transform.setTranslate(glm::vec3(1.0f, 0.0f, -2.0f));
 		//m_Transform.setRotate(glm::vec3(30.0f, 30.0f, 30.0f));
 
-		m_Camera = new Camera;
+		m_Camera = FY_NEW Camera;
 	}
 
 	RenderEngine::~RenderEngine()

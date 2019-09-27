@@ -11,7 +11,7 @@ namespace Frosty
 	{
 		if (s_Instance == nullptr)
 		{
-			s_Instance = new PrefabManager;
+			s_Instance = FY_NEW PrefabManager;
 		}
 
 		return s_Instance;

@@ -23,15 +23,25 @@ namespace Frosty
 	class Window
 	{
 	public:
-		Window(const WindowProps& props = WindowProps());
+		Window();
+		Window(const Window& org) { FY_CORE_ASSERT(false, "Copy constructor in Window called."); }
 		virtual ~Window() { }
+
+		// Operators
+		Window& operator=(const Window& org) { FY_CORE_ASSERT(false, "Assignment operator in Window called."); return *this; }
 
 		inline std::string GetTitle() const { return m_Data.Title; }
 		inline unsigned int GetWidth() const { return m_Data.Width; }
 		inline unsigned int GetHeight() const { return m_Data.Height; }
 		inline unsigned int GetPositionX() const { return m_Data.PositionX; }
 		inline unsigned int GetPositionY() const { return m_Data.PositionY; }
-		std::pair<unsigned int, unsigned int> GetPosition() const;
+		std::pair<unsigned int, unsigned int> GetPosition() const { return { m_Data.PositionX, m_Data.PositionY }; }
+
+		bool IsMaximized() const { return m_Data.Maximized; }
+		void Maximize() { glfwMaximizeWindow(m_Window); }
+
+		void SetVSync(bool enabled);
+		bool IsVSync();
 
 		void OnEvent(BaseEvent& e);
 		void OnUpdate();
@@ -39,8 +49,12 @@ namespace Frosty
 		inline void* GetNativeWindow() const { return m_Window; }
 
 	private:
-		void Init(const WindowProps& props);
+		void Init(const WindowProps& props = WindowProps());
 		void InitCallbacks();
+
+		void Shutdown() { glfwTerminate(); }
+
+		void UpdateViewport();
 
 		void OnWindowResizeEvent(WindowResizeEvent& e);
 		void OnWindowMovedEvent(WindowMovedEvent& e);
@@ -51,10 +65,14 @@ namespace Frosty
 		struct WindowData
 		{
 			std::string Title{ "Frosty Engine" };
+			int Maximized;
 			unsigned int Width, Height;
 			unsigned int PositionX, PositionY;
+			bool VSync;
 		};
 		WindowData m_Data;
+
+		friend class Application;
 	};
 }
 

@@ -14,22 +14,30 @@ namespace Frosty
 		// TODO: Error handling?
 		s_Instance = this;
 
-		m_Window = std::make_unique<Window>(Window());
-
 		EventBus::GetEventBus()->Subscribe<Application, BaseEvent>(this, &Application::OnEvent);
 
-		m_ImGuiLayer = new ImGuiLayer();
-		PushOverlay(m_ImGuiLayer);
-		m_RenderEngine = new RenderEngine();
+		m_Window.reset(FY_NEW Window());
+		m_Window->Init();
 
-		ECS::ComponentManager<ECS::CTransform> cManager;
+		m_ImGuiLayer = FY_NEW ImGuiLayer();
+		PushOverlay(m_ImGuiLayer);
+		m_RenderEngine = FY_NEW RenderEngine();
+
+		//ECS::ComponentManager<ECS::CTransform> cManager;
+
+		//m_ComponentManagers[m_TotalComponentManagers++].reset(new ECS::ComponentManager<ECS::CTransform>);
+
+		//auto entity = m_EntityManager.CreateEntity();
+		//cManager.AddComponent(entity);
+
+		//FY_CORE_TRACE("{0}", ECS::ComponentInfo::GetComponentNameById(ECS::getComponentTypeID<ECS::CTransform>()));
 	}
 
 	Application::~Application()
 	{
 		delete m_RenderEngine;
 		EventBus::GetEventBus()->Delete();
-		glfwTerminate();
+		m_Window->Shutdown();
 		Assetmanager::Delete();
 	}
 
@@ -39,6 +47,10 @@ namespace Frosty
 		{
 			/// Frame Start
 			Time::OnUpdate();
+
+			// TEMPORARY
+			glClearColor(1.0f, 0.0f, 1.0f, 1.0f);
+			glClear(GL_DEPTH_BITS);
 
 			/// Input			
 

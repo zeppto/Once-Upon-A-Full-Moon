@@ -13,7 +13,7 @@ namespace Frosty
 
 
 		{
-			s_Instance = new Assetmanager;
+			s_Instance = FY_NEW Assetmanager;
 			s_Instance->m_Total_Nr_Assets = 0;
 		}
 			return s_Instance;
