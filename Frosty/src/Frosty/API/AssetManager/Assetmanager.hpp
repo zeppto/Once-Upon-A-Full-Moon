@@ -64,7 +64,7 @@ namespace Frosty
 
 		AssetMetaData<ModelTemplate> * GetModeltemplateMetaData(const std::string& FileName);
 		AssetMetaData<Luna::Material> * GetMaterialMetaData(const std::string& FileName);
-		AssetMetaData<Luna::Material> * GetTextureMetaData(const std::string& FileName);
+		AssetMetaData<TextureFile> * GetTextureMetaData(const std::string& FileName);
 
 
 		//KeyLabel<ModelTemplate>& CreateModelKey(std::string AssetName);

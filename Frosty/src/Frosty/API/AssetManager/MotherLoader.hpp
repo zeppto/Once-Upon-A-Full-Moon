@@ -27,30 +27,33 @@ namespace Frosty
 	struct TextureFile
 	{
 
-		std::shared_ptr<unsigned char> Image_Data_Ptr;
+		//std::shared_ptr<unsigned char> Image_Data_Ptr;
+		unsigned char* Image_Data_Ptr;
 		uint16_t Image_Width;
 		uint16_t Image_Height;
 
-		TextureFile() 
+		TextureFile()
 		{
-			 Image_Data_Ptr = nullptr;
-			 Image_Width = 0;
-			 Image_Height = 0;
+			Image_Data_Ptr = nullptr;
+			Image_Width = 0;
+			Image_Height = 0;
 		}
 
 		TextureFile(const TextureFile& other)
 		{
-			Image_Data_Ptr = std::make_shared<unsigned char>(*other.Image_Data_Ptr);
+			//Image_Data_Ptr = std::make_shared<unsigned char>(*other.Image_Data_Ptr);
+			Image_Data_Ptr = other.Image_Data_Ptr;
 			Image_Height = other.Image_Height;
 			Image_Width = other.Image_Width;
 		}
 		TextureFile& operator = (const TextureFile& other)
 		{
-			if(this != &other)
-			{ 
-			Image_Data_Ptr = std::make_shared<unsigned char>(*other.Image_Data_Ptr);
-			Image_Height = other.Image_Height;
-			Image_Width = other.Image_Width;
+			if (this != &other)
+			{
+				//Image_Data_Ptr = std::make_shared<unsigned char>(*other.Image_Data_Ptr);
+				Image_Data_Ptr = other.Image_Data_Ptr;
+				Image_Height = other.Image_Height;
+				Image_Width = other.Image_Width;
 			}
 
 			return *this;
@@ -81,9 +84,9 @@ namespace Frosty
 	public: //functions
 		static MotherLoader* GetMotherLoader();
 		~MotherLoader();
-		
+
 		//bool Loadfile(const std::string& FilePath,const bool& Reload = false);
-		bool Loadfile(const std::string& FilePath,const  std::string& PrefabName = "",const bool& Reload = false);
+		bool Loadfile(const std::string& FilePath, const  std::string& PrefabName = "", const bool& Reload = false);
 		void LoadFiles();
 
 		const uint16_t& GetNrOfFailedAttempts() const { return s_Failed_Loading_Attempts; }
@@ -93,10 +96,12 @@ namespace Frosty
 		void PrintLoadingAttemptInformation() const;
 
 
+
+
 	private: //functions
 
 
-		inline static void Delete() {if (s_Instance != nullptr)	{delete s_Instance;}}
+		inline static void Delete() { if (s_Instance != nullptr) { delete s_Instance; } }
 		bool GetFileInformation(FileMetaData& FileNameInformation);
 		int8_t GetFileType(const std::string& fileType) const;
 

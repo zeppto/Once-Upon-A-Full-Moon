@@ -164,6 +164,19 @@ namespace Frosty
 		return nullptr;
 	}
 
+	AssetMetaData<TextureFile>* Assetmanager::GetTextureMetaData(const std::string& FileName)
+	{
+		if (TextureLoaded(FileName))
+		{
+			return &m_Texture_MetaData_Map[FileName];
+		}
+		else
+		{
+			FY_CORE_WARN("Tried to fetch a non loaded texture with AssetName: {0}", FileName);
+		}
+		return nullptr;
+	}
+
 	bool Assetmanager::LinkModelKey(const std::string& FileName, KeyLabel<ModelTemplate>* In_Key)
 	{
 

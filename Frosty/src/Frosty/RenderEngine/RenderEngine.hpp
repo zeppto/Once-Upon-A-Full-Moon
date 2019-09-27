@@ -45,8 +45,10 @@ namespace Frosty
 		bool m_TestMode = false;		
 		unsigned int m_testTriangleVBO = 0;
 		bool m_RenderTestModel = true;
-		int m_VertexSizeOfTempModel = 0;
+		int m_VertexSizeOfTestModel = 0;
 		unsigned int m_testModelVBO = 0;
+		unsigned int m_testModelTexture = 0;
+
 
 	private:
 		//Update Functions
@@ -77,7 +79,10 @@ namespace Frosty
 		// For Testing
 		void CreateTriangle();		
 		void RenderTestTriangle();
-		void CreateTempModelData(std::shared_ptr<ModelTemplate> testModel);
+		void CreateTestModelData(std::shared_ptr<ModelTemplate> testModel);
+		void CreateTestTextureData(unsigned char* testTexture);
+
+
 	};
 }
 #endif 

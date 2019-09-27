@@ -4,6 +4,8 @@
 #include "Frosty/Core/Application.hpp"
 #include "Frosty/DEFINITIONS.hpp"
 
+//#include <stb_image.hpp>
+
 namespace Frosty
 {
 	void RenderEngine::UpdateInfoFromWindow()
@@ -278,10 +280,16 @@ namespace Frosty
 		MotherLoader::GetMotherLoader()->PrintLoadingAttemptInformation();
 		//= *tempManager->GetModelTemplate();
 
-		AssetMetaData<ModelTemplate>* kk = tempManager->GetModeltemplateMetaData("clock");
-		std::shared_ptr<ModelTemplate> ll = kk->GetData();
+		AssetMetaData<ModelTemplate>* metaModel = tempManager->GetModeltemplateMetaData("clock");
+		std::shared_ptr<ModelTemplate> model = metaModel->GetData();
 
-		CreateTempModelData(ll);
+		CreateTestModelData(model);
+
+		AssetMetaData<TextureFile>* metaTexture = tempManager->GetTextureMetaData("pCube10_diffuse");
+
+		std::shared_ptr<TextureFile> texture = metaTexture->GetData();
+
+		//CreateTestTextureData(texture);
 
 		m_Transform.setTranslate(glm::vec3(1.0f, 0.0f, -2.0f));
 		//m_Transform.setRotate(glm::vec3(30.0f, 30.0f, 30.0f));
@@ -317,19 +325,19 @@ namespace Frosty
 		struct TriangleVertex
 		{
 			float x, y, z;
-			float r, g, b;
 			float u, v;
+			float r, g, b;
 		};
 
 		TriangleVertex triangleVertices[6] =
 		{
-			{ 2.f, 2.f, 0.0f,	1.0f, 1.0f, 0.0f,	 1.0f, 0.0f },
-			{ 2.f, -2.f, 0.0f,	1.0f, 0.0f, 1.0f,	 1.0f, 1.0f},
-			{-2.f, -2.f, 0.0f,	1.0f, 0.0f, 0.0f,	 0.0f, 1.0f},
+			{ 2.f, 2.f, 0.0f,	1.0f, 0.0f,		1.0f, 1.0f, 0.0f},
+			{ 2.f, -2.f, 0.0f,	1.0f, 1.0f,		1.0f, 0.0f, 1.0f},
+			{-2.f, -2.f, 0.0f,	0.0f, 1.0f,		1.0f, 0.0f, 0.0f},
 
-			{ 2.f, 2.f, 0.0f,	1.0f, 1.0f, 0.0f,	 1.0f, 0.0f },
-			{-2.f, -2.f, 0.0f,	1.0f, 0.0f, 0.0f,	 0.0f, 1.0f },
-			{-2.f, 2.f, 0.0f,	1.0f, 0.0f, 1.0f,	 1.0f, 1.0f },
+			{ 2.f, 2.f, 0.0f, 	1.0f, 0.0f,		1.0f, 1.0f, 0.0f},
+			{-2.f, -2.f, 0.0f,  0.0f, 1.0f,		1.0f, 0.0f, 0.0f},
+			{-2.f, 2.f, 0.0f,	1.0f, 1.0f,		1.0f, 0.0f, 1.0f},
 		};
 
 		glGenVertexArrays(1, &this->m_testTriangleVBO);
@@ -344,8 +352,8 @@ namespace Frosty
 		glBufferData(GL_ARRAY_BUFFER, sizeof(triangleVertices) * 3, triangleVertices, GL_STATIC_DRAW);
 
 		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(TriangleVertex), BUFFER_OFFSET(0));
-		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(TriangleVertex), BUFFER_OFFSET(sizeof(float) * 3));
-		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(TriangleVertex), BUFFER_OFFSET(sizeof(float) * 6));
+		glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(TriangleVertex), BUFFER_OFFSET(sizeof(float) * 3));
+		glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(TriangleVertex), BUFFER_OFFSET(sizeof(float) * 5));
 		glBindVertexArray(0);
 	}
 
@@ -428,12 +436,14 @@ namespace Frosty
 		if (m_RenderTestModel)
 		{
 			glBindVertexArray(this->m_testModelVBO);
-			glDrawArrays(GL_TRIANGLES, 0, m_VertexSizeOfTempModel);
+			glActiveTexture(GL_TEXTURE0);
+			glBindTexture(GL_TEXTURE_2D, 4);
+			glDrawArrays(GL_TRIANGLES, 0, m_VertexSizeOfTestModel);
 		}
 
 	}
 
-	void RenderEngine::CreateTempModelData(std::shared_ptr<ModelTemplate> testModel)
+	void RenderEngine::CreateTestModelData(std::shared_ptr<ModelTemplate> testModel)
 	{
 		m_RenderTestModel = true;
 
@@ -441,8 +451,8 @@ namespace Frosty
 		
 
 
-		uint16_t j = 0;
-		m_VertexSizeOfTempModel = testModel->GetMeshInfoConst(0)->MeshVertices.size();
+		uint16_t j = 0;//???
+		m_VertexSizeOfTestModel = testModel->GetMeshInfoConst(0)->MeshVertices.size();
 
 		glGenVertexArrays(1, &this->m_testModelVBO);
 		glBindVertexArray(this->m_testModelVBO);
@@ -457,8 +467,30 @@ namespace Frosty
 
 		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Luna::Vertex), BUFFER_OFFSET(0));
 		glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(Luna::Vertex), BUFFER_OFFSET(sizeof(float) * 3));
+		glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(Luna::Vertex), BUFFER_OFFSET(sizeof(float) * 5));
+
 		glBindVertexArray(0);
 
+	}
+
+	void RenderEngine::CreateTestTextureData(unsigned char* testTexture)
+	{
+		unsigned int test = 0;
+		glGenTextures(1, &test);
+		glActiveTexture(test);
+		glBindTexture(GL_TEXTURE_2D, test);
+		//int i = sizeof(testTexture->Image_Data_Ptr);
+
+
+		//std::string hh = "";
+		//hh += PROJECT_LUNAFILES_FOLDER_ROOT;
+		//hh += "pCube10_diffuse.png";
+		//int x, y, c;
+
+		//stbi_uc* data = stbi_load(hh.c_str(), &x, &y, &c, 0);
+		
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA,1024, 1024, 0, GL_RGBA, GL_UNSIGNED_BYTE, testTexture);
+		glGenerateMipmap(GL_TEXTURE_2D);
 	}
 
 }

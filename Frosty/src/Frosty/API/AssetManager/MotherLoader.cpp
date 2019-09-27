@@ -4,6 +4,7 @@
 #include "..\PrefabManager\PrefabManager.h"
 #include"..\..\DEFINITIONS.hpp"
 #include"stb_image.hpp"
+#include "Frosty/Core/Application.hpp"
 
 
 bool GetImageSize(const char* fn, int* x, int* y)
@@ -427,11 +428,19 @@ namespace Frosty
 		{
 			//FY_CORE_INFO("Width: {0}, Height {1}", textureWidth,textureHeight);
 			//Temp can be better
+
+			int g = sizeof(*imageData);
+
 			TextureFile temp;
-			temp.Image_Data_Ptr = std::make_shared<unsigned char>(*imageData);
+			temp.Image_Width = textureWidth;
+			temp.Image_Height = textureHeight;
+			//temp.Image_Data_Ptr = std::make_shared<unsigned char>(*imageData);
+			temp.Image_Data_Ptr = imageData;
+			int y = sizeof(*temp.Image_Data_Ptr);
 
 			returnValue = Assetmanager::GetAssetmanager()->AddNewTextureTemplate(temp,FileNameInformation);
 
+			Application::Get().GetRenderEngine()->CreateTestTextureData(imageData);
 		}
 		else
 		{
