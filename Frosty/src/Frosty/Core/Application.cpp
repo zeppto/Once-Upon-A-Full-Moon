@@ -114,8 +114,10 @@ namespace Frosty
 			RenderCommand::Clear();
 
 			Renderer::BeginScene();
+
 			m_Shader->Bind();
 			Renderer::Submit(m_VertexArray);
+
 			Renderer::EndScene();
 
 			/// Input
