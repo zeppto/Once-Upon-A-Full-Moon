@@ -4,7 +4,6 @@
 #include "LayerHandler.hpp"
 #include "EventSystem.hpp"
 #include "Frosty/ImGui/ImGuiLayer.hpp"
-#include "Frosty/RenderEngine/RenderEngine.hpp"
 #include "Frosty/RenderEngine/Shader.hpp"
 #include "Frosty/RenderEngine/Buffer.hpp"
 #include "Frosty/RenderEngine/VertexArray.hpp"
@@ -16,6 +15,10 @@ namespace Frosty
 	public:
 		Application();
 		virtual ~Application();
+		
+		// Temporary function (Testing)
+		void InitPrefabBuffers();
+		void InitShaders();
 
 		void Run();
 
@@ -28,7 +31,7 @@ namespace Frosty
 		void PopOverlay(Layer* layer);
 
 		// RenderEngine
-		RenderEngine* GetRenderEngine() { return m_RenderEngine; }
+		//RenderEngine* GetRenderEngine() { return m_RenderEngine; }
 
 		inline Window& GetWindow() { return *m_Window; }
 		static inline Application& Get() { return *s_Instance; }
@@ -44,7 +47,7 @@ namespace Frosty
 
 		std::unique_ptr<Window> m_Window;
 
-		RenderEngine* m_RenderEngine;
+		//RenderEngine* m_RenderEngine;
 
 		static Application* s_Instance;
 
@@ -52,7 +55,7 @@ namespace Frosty
 		//-------------------------------------------------------------------------
 		
 		std::shared_ptr<Shader> m_Shader;
-		std::shared_ptr<VertexArray> m_VertexArray;
+		std::shared_ptr<VertexArray> m_VertexArray;		
 	};
 }
-#endif // !APPLICATION_HPP
+#endif 
