@@ -26,6 +26,7 @@ namespace Frosty
 	{
 		return m_CameraData.Projection;
 	}
+
 	void Frosty::Camera::CameraPositionUpdate()
 	{
 		Application& app = Application::Get();
@@ -90,6 +91,7 @@ namespace Frosty
 
 		m_CameraData.View = glm::lookAt(m_CameraData.Pos, m_CameraData.Pos + m_CameraData.LookAtVec, m_CameraData.UpVec);
 	}
+
 	void Frosty::Camera::CameraRotationUpdate(double xpos, double ypos)
 	{
 		Application& app = Application::Get();

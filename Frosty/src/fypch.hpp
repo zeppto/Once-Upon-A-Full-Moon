@@ -1,6 +1,5 @@
 #ifndef FY_PCH_HPP
 #define FY_PCH_HPP
-
 #define _CRT_SECURE_NO_WARNINGS
 #include <iostream>
 #include <memory>
@@ -29,7 +28,4 @@
 #include <Frosty/Core/Log.hpp>
 #include <Frosty/Core/EventSystem.hpp>
 #include <Frosty/Core/Time.hpp>
-
-
-
-#endif // !BH_PCH_HPP
+#endif

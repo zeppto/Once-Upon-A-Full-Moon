@@ -7,6 +7,7 @@ namespace Frosty
 	Application* Application::s_Instance = nullptr;
 	
 	Application::Application()
+		: m_OrtoCamera(-1.6f, 1.6f, -0.9f, 0.9f)
 	{
 		Log::Init();
 		FY_CORE_INFO("Logger initialized..");
@@ -48,23 +49,20 @@ namespace Frosty
 		std::shared_ptr<VertexBuffer> m_VertexBuffer;
 		m_VertexBuffer.reset(VertexBuffer::Create(vertices, sizeof(vertices)));
 
-		BufferLayout layout =
+		/*BufferLayout layout =
+		{
+			{ ShaderDataType::Float3, "vsInPos" },
+			{ ShaderDataType::Float4, "vsInCol" }
+		};*/
+
+		BufferLayout layout2 =
 		{
 			{ ShaderDataType::Float3, "vsInPos" },
 			{ ShaderDataType::Float4, "vsInCol" }
 		};
 
-		BufferLayout layout2 =
-		{
-			{ ShaderDataType::Float3, "vsInPos" },
-			{ ShaderDataType::Float4, "vsInCol" },
-			{ ShaderDataType::Mat4, "view" },
-			{ ShaderDataType::Mat4, "projection" }
-		};
-
-
-		//m_VertexBuffer->SetLayout(layout);
-		m_VertexBuffer->SetLayout(layout2);
+		//m_VertexBuffer->SetLayout(layout);		
+		m_VertexBuffer->SetLayout(layout2);		
 		m_VertexArray->AddVertexBuffer(m_VertexBuffer);
 
 		uint32_t indices[3] = { 0, 1, 2 };
@@ -75,7 +73,7 @@ namespace Frosty
 
 	void Application::InitShaders()
 	{
-		std::string VertexSrc = R"(
+		/*std::string VertexSrc = R"(
 			#version 440 core
 			
 			layout(location = 0) in vec3 vsInPos;
@@ -105,22 +103,27 @@ namespace Frosty
 				//fsOutCol = vec4(vsOutPos + 0.5f, 1.0f);				
 				fsOutCol = vsOutCol;
 			}
-		)";
+		)";*/
 
+		//m_Shader.reset(new Shader(VertexSrc, FragmentSrc));
+
+		//----------------------------------------------------------------------
 		std::string VertexSrc2 = R"(
 			#version 440 core
 			
 			layout(location = 0) in vec3 vsInPos;
 			layout(location = 1) in vec4 vsInCol;
 			
+			uniform mat4 u_ViewProjection;
+			
 			out vec3 vsOutPos;
 			out vec4 vsOutCol;
 			
 			void main()
 			{
-				gl_Position = vec4(vsInPos, 1.0f);
 				vsOutPos = vsInPos;
 				vsOutCol = vsInCol;
+				gl_Position = u_ViewProjection * vec4(vsInPos, 1.0f);
 			}
 		)";
 		std::string FragmentSrc2 = R"(
@@ -139,8 +142,7 @@ namespace Frosty
 			}
 		)";
 
-		//m_Shader.reset(new Shader(VertexSrc, FragmentSrc));
-		m_Shader.reset(new Shader(VertexSrc2, FragmentSrc2));
+		m_Shader.reset(new Shader(VertexSrc2, FragmentSrc2));		
 	}
 
 	void Application::Run()
@@ -152,16 +154,6 @@ namespace Frosty
 
 			/// Input
 			
-			RenderCommand::SetClearColor({ 0.1f, 0.1f, 0.1f, 1.0f });
-			RenderCommand::Clear();
-
-			Renderer::BeginScene();
-			m_Shader->Bind();
-			Renderer::Submit(m_VertexArray);
-			Renderer::EndScene();
-
-			/// Input
-
 			/// Update
 			for (Layer* layer : m_LayerHandler)
 			{
@@ -170,7 +162,14 @@ namespace Frosty
 
 			//m_RenderEngine->UpdateCamera();
 			/// Render
-			//m_RenderEngine->Render();
+			RenderCommand::SetClearColor({ 0.1f, 0.1f, 0.1f, 1.0f });
+			RenderCommand::Clear();
+
+			Renderer::BeginScene(m_OrtoCamera);
+			//m_Shader->Bind();
+			//m_Shader->UploadUniforMat4("u_ViewProjection", m_OrtoCamera.GetViewProjectionMatrix());
+			Renderer::Submit(m_Shader, m_VertexArray);
+			Renderer::EndScene();
 
 			m_ImGuiLayer->Begin();
 			for (Layer* layer : m_LayerHandler)

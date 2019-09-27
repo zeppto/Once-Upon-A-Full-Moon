@@ -8,6 +8,7 @@
 #include "Frosty/API/AssetManager/Assetmanager.hpp"
 #include "Frosty/RenderEngine/Shader.hpp"
 #include "Frosty/RenderEngine/VertexArray.hpp"
+#include "Frosty/Core/Camera/OrtoCamera.hpp"
 
 namespace Frosty
 {
@@ -56,7 +57,9 @@ namespace Frosty
 		//std::unique_ptr<ECS::BaseComponentManager> m_TransformManager;
 		
 		std::shared_ptr<Shader> m_Shader;
-		std::shared_ptr<VertexArray> m_VertexArray;		
+		std::shared_ptr<VertexArray> m_VertexArray;	
+
+		OrtoCamera m_OrtoCamera;
 	};
 }
 #endif 

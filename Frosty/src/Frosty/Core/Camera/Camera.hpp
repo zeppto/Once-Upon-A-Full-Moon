@@ -52,4 +52,4 @@ namespace Frosty
 		void CameraRotationUpdate(double xpos, double ypos);
 	};
 }
-#endif // !CAMERA_HPP
+#endif
