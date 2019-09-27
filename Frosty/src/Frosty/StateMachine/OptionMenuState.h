@@ -1,0 +1,6 @@
+#ifndef OPTION_MENU_STATE_HPP
+#define OPTION_MENU_STATE_HPP
+
+
+
+#endif // !OPTION_MENU_STATE_HPP

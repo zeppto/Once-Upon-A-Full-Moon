@@ -42,6 +42,8 @@ void Frosty::MainMenuState::OnUpdate()
 	{
 		//TODO: Actual state for options menu here.
 		std::cout << "Options was clicked!!" << std::endl;
+
+		app->getStateMachine().AddState(Frosty::StateRef(FY_NEW ))
 	}
 
 	if (app->GetInputManager().IsKeyPressed(GLFW_KEY_S))

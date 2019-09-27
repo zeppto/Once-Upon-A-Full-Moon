@@ -34,6 +34,8 @@ namespace Frosty
 		inline InputManager& GetInputManager() { return m_InputManager; }
 		static inline Application& Get() { return *s_Instance; }
 
+		inline StateMachine& getStateMachine() { return &states; }
+
 	private:
 		void OnWindowCloseEvent(WindowCloseEvent& e);
 		void OnKeyPressedEvent(KeyPressedEvent& e);
@@ -50,6 +52,8 @@ namespace Frosty
 		RenderEngine* m_RenderEngine;
 
 		static Application* s_Instance;
+
+		StateMachine states;
 	};
 }
 #endif // !APPLICATION_HPP
