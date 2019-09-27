@@ -17,7 +17,7 @@ namespace Frosty
 
 		m_Window = std::make_unique<Window>(Window());
 
-		EventBus::GetEventBus()->Subscribe<Application, BaseEvent>(this, &Application::OnEvent);
+		EventBus::GetEventBus()->Subscribe<Application, BaseEvent>(this, &Application::OnEvent)     ;
 
 		m_ImGuiLayer = new ImGuiLayer();
 		PushOverlay(m_ImGuiLayer);
@@ -130,6 +130,11 @@ namespace Frosty
 		{
 			m_Running = false;
 		}
+
+		//if (e.GetKeyCode() == GLFW_KEY_O)
+		//{
+		//	std::cout << "Options was clicked!!" << std::endl;
+		//}
 	}
 
 }

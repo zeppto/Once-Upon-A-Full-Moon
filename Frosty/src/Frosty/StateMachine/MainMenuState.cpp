@@ -4,7 +4,7 @@
 Frosty::MainMenuState::MainMenuState(Application * app)
 {
 	this->app = app;
-	//auto stuffsies = &Frosty::Application::Get();
+	/*auto stuffsies = &Frosty::Application::Get();*/
 
 	Initiate();
 }
@@ -37,9 +37,16 @@ void Frosty::MainMenuState::OnInput()
 
 void Frosty::MainMenuState::OnUpdate()
 {
+	//TODO: Replace keys with button inputs later.
 	if (app->GetInputManager().IsKeyPressed(GLFW_KEY_O))
 	{
+		//TODO: Actual state for options menu here.
 		std::cout << "Options was clicked!!" << std::endl;
 	}
-	//TODO: Check if button clicked? Could just be done with input
+
+	if (app->GetInputManager().IsKeyPressed(GLFW_KEY_S))
+	{
+		//TODO: Actual state for Game Start here.
+		std::cout << "Start was clicked!!" << std::endl;
+	}
 }

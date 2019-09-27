@@ -8,7 +8,7 @@ namespace Frosty
 {
 	class MainMenuState:public State {
 	public:
-		MainMenuState(Application * app);
+		MainMenuState(Application * app); 
 		void Initiate();
 		void OnInput();
 		void OnUpdate();
