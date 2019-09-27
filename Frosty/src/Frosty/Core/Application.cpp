@@ -1,11 +1,12 @@
 #include "fypch.hpp"
 #include "Application.hpp"
 #include <glad/glad.h>
+#include "Frosty/RenderEngine/Renderer.hpp"
 
 namespace Frosty
 {
 	Application* Application::s_Instance = nullptr;
-
+	
 	Application::Application()
 	{
 		Log::Init();
@@ -21,7 +22,6 @@ namespace Frosty
 
 		m_ImGuiLayer = FY_NEW ImGuiLayer();
 		PushOverlay(m_ImGuiLayer);
-		m_RenderEngine = FY_NEW RenderEngine();
 
 		//ECS::ComponentManager<ECS::CTransform> cManager;
 
@@ -31,14 +31,84 @@ namespace Frosty
 		//cManager.AddComponent(entity);
 
 		//FY_CORE_TRACE("{0}", ECS::ComponentInfo::GetComponentNameById(ECS::getComponentTypeID<ECS::CTransform>()));
+
+		ECS::ComponentManager<ECS::CTransform> cManager;
+		InitPrefabBuffers();
+		InitShaders();
 	}
 
 	Application::~Application()
 	{
-		delete m_RenderEngine;
+		//delete m_RenderEngine;
 		EventBus::GetEventBus()->Delete();
 		m_Window->Shutdown();
 		Assetmanager::Delete();
+	}
+		
+	void Application::InitPrefabBuffers()
+	{
+		m_VertexArray.reset(VertexArray::Create());
+
+		float vertices[3 * 7] =
+		{
+			-0.5f, -0.5f, 0.0f, 0.8f, 0.0f, 0.8f, 1.0f,
+			 0.5f, -0.5f, 0.0f, 0.2f, 0.3f, 0.8f, 1.0f,
+			 0.0f,  0.5f, 0.0f, 0.8f, 0.8f, 0.2f, 1.0f
+		};
+
+		std::shared_ptr<VertexBuffer> m_VertexBuffer;
+		m_VertexBuffer.reset(VertexBuffer::Create(vertices, sizeof(vertices)));
+
+		BufferLayout layout =
+		{
+			{ ShaderDataType::Float3, "vsInPos" },
+			{ ShaderDataType::Float4, "vsInCol" }
+		};
+
+		m_VertexBuffer->SetLayout(layout);
+		m_VertexArray->AddVertexBuffer(m_VertexBuffer);
+
+		uint32_t indices[3] = { 0, 1, 2 };
+		std::shared_ptr<IndexBuffer> m_IndexBuffer;
+		m_IndexBuffer.reset(IndexBuffer::Create(indices, sizeof(indices) / sizeof(uint32_t)));
+		m_VertexArray->SetIndexBuffer(m_IndexBuffer);
+	}
+
+	void Application::InitShaders()
+	{
+		std::string VertexSrc = R"(
+			#version 440 core
+			
+			layout(location = 0) in vec3 vsInPos;
+			layout(location = 1) in vec4 vsInCol;
+			
+			out vec3 vsOutPos;
+			out vec4 vsOutCol;
+			
+			void main()
+			{
+				gl_Position = vec4(vsInPos, 1.0f);
+				vsOutPos = vsInPos;
+				vsOutCol = vsInCol;
+			}
+		)";
+		std::string FragmentSrc = R"(
+			#version 440 core
+
+			in vec3 vsOutPos;
+			in vec4 vsOutCol;
+
+			layout(location = 0) out vec4 fsOutCol;
+			
+			void main()
+			{
+				//fsOutCol = vec4(0.8f, 0.2f, 0.3f, 1.0f);
+				//fsOutCol = vec4(vsOutPos + 0.5f, 1.0f);				
+				fsOutCol = vsOutCol;
+			}
+		)";
+
+		m_Shader.reset(new Shader(VertexSrc, FragmentSrc));
 	}
 
 	void Application::Run()
@@ -53,15 +123,29 @@ namespace Frosty
 			glClear(GL_DEPTH_BITS);
 
 			/// Input			
+			
+			RenderCommand::SetClearColor({ 0.1f, 0.1f, 0.1f, 1.0f });
+			RenderCommand::Clear();
+
+			Renderer::BeginScene();
+
+			m_Shader->Bind();
+			Renderer::Submit(m_VertexArray);
+
+			Renderer::EndScene();
+
+			/// Input
 
 			/// Update
 			for (Layer* layer : m_LayerHandler)
+			{
 				layer->OnUpdate();
+			}
 
-			m_RenderEngine->UpdateCamera();
+			//m_RenderEngine->UpdateCamera();
 			/// Render
-			m_RenderEngine->Render();
-			
+			//m_RenderEngine->Render();
+
 			m_ImGuiLayer->Begin();
 			for (Layer* layer : m_LayerHandler)
 			{
@@ -70,12 +154,10 @@ namespace Frosty
 					layer->OnImGuiRender();
 				}
 			}
-			m_ImGuiLayer->End();
+			m_ImGuiLayer->End();			
 
 			m_Window->OnUpdate();
 		}
-
-		//glfwTerminate();
 	}
 
 	void Application::PushLayer(Layer* layer)
@@ -151,5 +233,4 @@ namespace Frosty
 			m_Running = false;
 		}
 	}
-
 }

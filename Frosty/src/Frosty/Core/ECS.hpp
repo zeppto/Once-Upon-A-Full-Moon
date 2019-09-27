@@ -102,22 +102,22 @@ namespace Frosty
 
 #pragma region Utilities
 
-		struct ComponentInfo
-		{
-			std::unordered_map<ComponentID, std::string> s_ComponentNames;
-		
-			inline std::string& GetComponentNameById(ComponentID cid)
-			{
-				FY_CORE_ASSERT(!s_ComponentNames[cid].empty(), "Can't retrieve information about a component before it has been added once at least.");
-				return s_ComponentNames[cid];
-			}
-		
-			inline void SetComponentNameById(ComponentID cid, const std::string& name)
-			{
-				if (s_ComponentNames[cid].empty())
-					s_ComponentNames[cid] = name;
-			}
-		};
+		//struct ComponentInfo
+		//{
+		//	std::unordered_map<ComponentID, std::string> s_ComponentNames;
+		//
+		//	inline std::string& GetComponentNameById(ComponentID cid)
+		//	{
+		//		FY_CORE_ASSERT(!s_ComponentNames[cid].empty(), "Can't retrieve information about a component before it has been added once at least.");
+		//		return s_ComponentNames[cid];
+		//	}
+		//
+		//	inline void SetComponentNameById(ComponentID cid, const std::string& name)
+		//	{
+		//		if (s_ComponentNames[cid].empty())
+		//			s_ComponentNames[cid] = name;
+		//	}
+		//};
 
 		namespace Internal
 		{
@@ -135,7 +135,7 @@ namespace Frosty
 				"ComponentType must inherit from BaseComponent");
 
 			static ComponentID typeCID{ Internal::getComponentUniqueID() };
-			ComponentInfo::SetComponentNameById(typeCID, ComponentType::NAME);
+			//ComponentInfo::SetComponentNameById(typeCID, ComponentType::NAME);
 
 			return typeCID;
 		}
