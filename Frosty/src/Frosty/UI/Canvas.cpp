@@ -9,6 +9,7 @@ namespace Frosty
 		this->anchor = glm::vec2(size.x / 2, size.y / 2);
 		this->pos = glm::vec2(size.x / 2, size.y / 2);
 		this->size = glm::vec2(size.x, size.y);
+		//Test
 	}
 
 	Canvas::~Canvas()

@@ -158,6 +158,7 @@ namespace Frosty
 	{
 		CreateShaderProgram(FY_SHADER_TESTSHAPE_VERTEX_SHADER, FY_SHADER_TESTSHAPE_FRAGMENT_SHADER, TEST_SHAPE);
 		CreateShaderProgram(FY_SHADER_TESTLIGHT_VERTEX_SHADER, FY_SHADER_TESTLIGHT_FRAGMENT_SHADER, TEST_LIGHT);
+		CreateShaderProgram(FY_SHADER_TESTTEXTURE_VERTEX_SHADER, FY_SHADER_TESTTEXTURE_FRAGMENT_SHADER, TEST_TEXTURE);
 	}
 
 	void RenderEngine::CreateShaderProgram(std::string VertexShaderPath, std::string FragmentShaderPath, ShaderProgramsEnum Program)
@@ -267,11 +268,11 @@ namespace Frosty
 		UpdateInfoFromWindow();
 		InitBuffers();
 		CreateTriangle();
-		CreateQuad();
+		//CreateQuad();
 
-		m_Transform.setTranslate(glm::vec3(1.0f, 0.0f, -2.0f));
+		//m_Transform.setTranslate(glm::vec3(1.0f, 0.0f, -2.0f));
 		//m_Transform.setRotate(glm::vec3(30.0f, 30.0f, 30.0f));
-
+		
 		m_Camera = new Camera;
 	}
 
