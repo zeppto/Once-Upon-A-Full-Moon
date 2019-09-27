@@ -29,6 +29,7 @@ namespace Frosty
 	
 		std::unordered_map<std::string, AssetMetaData<ModelTemplate>>  m_MT_MetaData_Map;
 		std::unordered_map<std::string, AssetMetaData<Luna::Material>>  m_MAT_MetaData_Map;
+		std::unordered_map<std::string, AssetMetaData<TextureFile>>  m_Texture_MetaData_Map;
 
 		//may not be needed, string information are also stored in the unordered maps above
 		std::vector<std::string> m_FilePath_Vector; 
@@ -51,7 +52,7 @@ namespace Frosty
 		//Can be combined: (Later task if needed)
 
 		bool AddNewModelTemplate(std::shared_ptr<ModelTemplate>& ModelTemplate, const FileMetaData& MetaData);
-		bool AddNewTextureTemplate(std::shared_ptr<TextureFile>& Texture,const FileMetaData& MetaData);
+		bool AddNewTextureTemplate(const TextureFile& Texture,const FileMetaData& MetaData);
 		bool AddNewMaterialTemplate(const Luna::Material& Material, const FileMetaData& MetaData);
 
 		/* if needed insert reload functions here
@@ -63,6 +64,7 @@ namespace Frosty
 
 		AssetMetaData<ModelTemplate> * GetModeltemplateMetaData(const std::string& FileName);
 		AssetMetaData<Luna::Material> * GetMaterialMetaData(const std::string& FileName);
+		AssetMetaData<Luna::Material> * GetTextureMetaData(const std::string& FileName);
 
 
 		//KeyLabel<ModelTemplate>& CreateModelKey(std::string AssetName);
@@ -75,7 +77,7 @@ namespace Frosty
 
 	private:	//Functions
 		
-		bool ConnectMaterialWithTexture(Luna::Material& Material, const FileMetaData& MetaData);
+		bool ConnectMaterialWithTexture(const Luna::Material& Material, const FileMetaData& MetaData);
 
 		bool FileLoaded(const std::string& FilePath);
 		bool AssetLoaded(const std::string& FileName);
@@ -87,7 +89,8 @@ namespace Frosty
 		//bool CheckIfMetaDataExist(const std::string& FilePath);
 
 		const std::string CutFileExtentionFromString(const char* in_char_ptr);
-
+		//const std::string CharToTring(const char* in_char_ptr);
+		
 
 		inline static void Delete() { if (s_Instance != nullptr) { delete s_Instance; } }
 

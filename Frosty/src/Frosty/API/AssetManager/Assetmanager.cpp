@@ -41,17 +41,18 @@ namespace Frosty
 	{
 		bool returnValue = false;
 
-		if (!ModelTemplateLoaded(FileName))
+		if (!ModelTemplateLoaded(MetaData.FileName))
 		{
 			returnValue = true;
 
-			m_ModelTemplate_File_Name_Vector.emplace_back(FileName);
+			m_ModelTemplate_File_Name_Vector.emplace_back(MetaData.FileName);
 
-			AssetMetaData<Frosty::ModelTemplate>* tempMetaData = &m_MT_MetaData_Map[FileName];
+			AssetMetaData<Frosty::ModelTemplate>* tempMetaData = &m_MT_MetaData_Map[MetaData.FileName];
 
-			tempMetaData->SetFileName(FileName);
-			tempMetaData->SetFilePath(FilePath);
-			tempMetaData->SetContainerSlot(m_AssetHolder.GetEmptyContainerSlot());
+			tempMetaData->SetFileMetaData(MetaData);
+			//tempMetaData->SetFileName(FileName);
+			//tempMetaData->SetFilePath(FilePath);
+			//tempMetaData->SetContainerSlot(m_AssetHolder.GetEmptyContainerSlot());
 			tempMetaData->SetRefData(Frosty::ModelTemplate());
 
 			//Material = m_AssetHolder.GetMaterial(tempMetaData->GetAssetContainerSlot());
@@ -65,15 +66,43 @@ namespace Frosty
 		}
 		else
 		{
-			FY_CORE_WARN("Found Already Existing ModelTemplate with Asset Name: {0}", FileName);
+			FY_CORE_WARN("Found Already Existing ModelTemplate with Asset Name: {0}", MetaData.FileName);
 		}
 		return returnValue;
 	}
 
-	bool Assetmanager::AddNewTextureTemplate(std::shared_ptr<TextureFile>& Texture, const FileMetaData& MetaData)
+	bool Assetmanager::AddNewTextureTemplate(const TextureFile& Texture, const FileMetaData& MetaData)
 	{
-		//START HERE
-		return false;
+
+		bool returnValue = false;
+
+		if (!TextureLoaded(MetaData.FileName))
+		{
+
+			//this can be better
+
+			returnValue = true;
+			m_Texture_File_Name_Vector.emplace_back(MetaData.FileName);
+			
+			AssetMetaData<Frosty::TextureFile>* tempTextureMetaData = &m_Texture_MetaData_Map[MetaData.FileName];
+			tempTextureMetaData->SetFileMetaData(MetaData);
+
+			tempTextureMetaData->SetRefData(Texture);
+
+
+
+		}
+		else
+		{
+			FY_CORE_WARN("Texture are already loaded, FIleName: {0}", MetaData.FileName);
+		}
+
+
+
+
+
+
+		return returnValue;
 	}
 
 	bool Assetmanager::AddNewMaterialTemplate(const Luna::Material& Material, const FileMetaData& MetaData)
@@ -94,7 +123,7 @@ namespace Frosty
 			//tempMetaData->SetContainerSlot(m_AssetHolder.GetEmptyContainerSlot());
 			tempMetaData->SetRefData(Material);
 
-			if (!ConnectMaterialWithTexture(Material))
+			if (!ConnectMaterialWithTexture(Material, MetaData))
 			{
 				FY_CORE_WARN("One Or More Textures coul not connect with Material FileName: {0}", MetaData.FileName);
 			}
@@ -204,7 +233,7 @@ namespace Frosty
 
 		if(!TextureLoaded(temp_fileName))
 		{
-			returnValue = MotherLoader::GetMotherLoader()->Loadfile((PROJECT_LUNAFILES_FOLDER_ROOT + *Material.diffuseTexPath));
+			returnValue = MotherLoader::GetMotherLoader()->Loadfile((PROJECT_LUNAFILES_FOLDER_ROOT + std::string(Material.diffuseTexPath)));
 		}
 
 		return returnValue;
@@ -305,5 +334,21 @@ namespace Frosty
 		}
 		return returnString;
 	}
+
+	//const std::string Assetmanager::CharToTring(const char* in_char_ptr)
+	//{
+
+	//	uint16_t count = 0;
+
+	//	std::string aString(in_char_ptr);
+
+	//	std::string returnString = "";
+	//	while (in_char_ptr[0] != '\0')
+	//	{
+	//		returnString += in_char_ptr[count++];
+	//	}
+
+	//	return returnString;
+	//}
 
 }

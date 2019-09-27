@@ -160,11 +160,13 @@ namespace Frosty
 		std::string temp_Type = "";
 
 
-		size_t count = (FileNameInformation.FilePath.size() - 1);
-		while (FileNameInformation.FilePath[count] != '.' && count > 0)
+		std::string jj = FileNameInformation.FullFilePath;
+
+		size_t count = (FileNameInformation.FullFilePath.size()-1);
+		while (FileNameInformation.FullFilePath[count] != '.' && count > 0)
 		{
 
-			temp_Type.push_back(FileNameInformation.FilePath[count]);
+			temp_Type.push_back(FileNameInformation.FullFilePath[count]);
 			count--;
 		}
 		std::reverse(temp_Type.begin(), temp_Type.end());
@@ -176,9 +178,9 @@ namespace Frosty
 			returnValue = true;
 
 			count--;
-			while (FileNameInformation.FilePath[count] != (char)'/')
+			while (FileNameInformation.FullFilePath[count] != (char)'/')
 			{
-				temp_Name.push_back(FileNameInformation.FilePath[count--]);
+				temp_Name.push_back(FileNameInformation.FullFilePath[count--]);
 
 				if (count < 0)
 				{
@@ -223,7 +225,7 @@ namespace Frosty
 
 		Luna::Reader tempFile;
 
-		if (tempFile.readFile(FileNameInformation.FilePath.c_str()))
+		if (tempFile.readFile(FileNameInformation.FullFilePath.c_str()))
 		{
 
 
@@ -333,10 +335,9 @@ namespace Frosty
 				//Load Textures to materials
 
 				//Materials
-				if (temp_AssetManager->AddNewMaterialTemplate(tempMatPtr, FileNameInformation))
+				if (temp_AssetManager->AddNewMaterialTemplate(tempMatVector.at(i), FileNameInformation))
 				{
 					//Fill Material
-					*tempMatPtr = tempMatVector.at(i);
 
 					//saving lates material name for prefab(If Needed, build so the prefab can support more materials)
 					MaterialAssetName = "Mat_" + std::to_string(i) + ":" + FileNameInformation.FileName;
@@ -418,13 +419,18 @@ namespace Frosty
 
 
 		int textureWidth, textureHeight, components;
-		unsigned char* imageData = stbi_load((FileNameInformation.FilePath.c_str()), &textureWidth, &textureHeight, &components, STBI_rgb_alpha);
+		unsigned char* imageData = stbi_load((FileNameInformation.FullFilePath.c_str()), &textureWidth, &textureHeight, &components, STBI_rgb_alpha);
 
 
 
 		if (imageData != nullptr)
 		{
 			//FY_CORE_INFO("Width: {0}, Height {1}", textureWidth,textureHeight);
+			//Temp can be better
+			TextureFile temp;
+			temp.Image_Data_Ptr = std::make_shared<unsigned char>(*imageData);
+
+			returnValue = Assetmanager::GetAssetmanager()->AddNewTextureTemplate(temp,FileNameInformation);
 
 		}
 		else

@@ -4,6 +4,16 @@
 namespace Frosty
 {
 
+
+	struct FileMetaData
+	{
+		int8_t Type = -1;
+		std::string FileName = "";
+		std::string FilePath = "";
+		std::string PreFab_Name = "";
+		std::string FullFilePath = "";
+	};
+
 	template<class T>
 	class AssetMetaData
 	{
@@ -22,7 +32,7 @@ namespace Frosty
 		std::shared_ptr<T> m_Data_ptr = nullptr;
 
 		int32_t m_Asset_ID;
-		int32_t m_Asset_Container_Slot;
+		//int32_t m_Asset_Container_Slot;
 
 		/*std::string m_FileName;
 		std::string m_FilePath;*/
@@ -85,10 +95,11 @@ namespace Frosty
 	{
 		m_Data_ptr = nullptr;
 		m_Asset_ID = s_Asset_ID++;
-		m_FileName = "";
-		m_FilePath = "";
+		//m_FileName = "";
+		//m_FilePath = "";
+		//
 		s_Asset_Counter++;
-		m_Asset_Container_Slot = -1;
+		//m_Asset_Container_Slot = -1;
 	}
 
 

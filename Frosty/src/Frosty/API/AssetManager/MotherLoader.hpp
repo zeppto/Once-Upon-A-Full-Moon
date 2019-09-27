@@ -15,31 +15,32 @@
 namespace Frosty
 {
 
+	extern 	struct FileMetaData;
+
 	enum FileType
 	{
 		JPG,
 		PNG,
 		LUNA
 	};
-	struct FileMetaData
-	{
-		int8_t Type = -1;
-		std::string FileName = "";
-		std::string FilePath = "";
-		std::string PreFab_Name = "";
-		std::string FullFilePath = "";
-	};
+
 	struct TextureFile
 	{
 
+		std::shared_ptr<unsigned char> Image_Data_Ptr;
+		uint16_t Image_Width;
+		uint16_t Image_Height;
 
-		std::shared_ptr<unsigned char> Image_Data_Ptr = nullptr;
-		uint16_t Image_Width = 0;
-		uint16_t Image_Height = 0;
+		TextureFile() 
+		{
+			 Image_Data_Ptr = nullptr;
+			 Image_Width = 0;
+			 Image_Height = 0;
+		}
 
 		TextureFile(const TextureFile& other)
 		{
-			Image_Data_Ptr = other.Image_Data_Ptr;
+			Image_Data_Ptr = std::make_shared<unsigned char>(*other.Image_Data_Ptr);
 			Image_Height = other.Image_Height;
 			Image_Width = other.Image_Width;
 		}
@@ -47,8 +48,7 @@ namespace Frosty
 		{
 			if(this != &other)
 			{ 
-
-			Image_Data_Ptr = other.Image_Data_Ptr;
+			Image_Data_Ptr = std::make_shared<unsigned char>(*other.Image_Data_Ptr);
 			Image_Height = other.Image_Height;
 			Image_Width = other.Image_Width;
 			}

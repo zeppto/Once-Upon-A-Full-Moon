@@ -14,6 +14,7 @@ namespace Frosty
 		Log::Init();
 		FY_CORE_INFO("Logger initialized..");
 
+
 		m_Window = std::make_unique<Window>(Window());
 
 		EventBus::GetEventBus()->Subscribe<Application, BaseEvent>(this, &Application::OnEvent);
