@@ -109,10 +109,6 @@ namespace Frosty
 			Time::OnUpdate();
 
 			/// Input			
-
-			m_RenderEngine->Begin();
-			m_Shader->Bind();
-			m_RenderEngine->Submit(m_VertexArray);*/
 			
 			RenderCommand::SetClearColor({ 0.1f, 0.1f, 0.1f, 1.0f });
 			RenderCommand::Clear();
