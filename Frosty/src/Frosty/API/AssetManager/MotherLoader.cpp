@@ -321,7 +321,7 @@ namespace Frosty
 
 
 
-			std::string MaterialAssetName = "HejHej Fel Fel";
+			std::string MaterialAssetName = "Could not Load Material";
 
 
 			//Add Materials to holder
@@ -339,7 +339,7 @@ namespace Frosty
 					*tempMatPtr = tempMatVector.at(i);
 
 					//saving lates material name for prefab(If Needed, build so the prefab can support more materials)
-					MaterialAssetName = tempMatVector.at(i).diffuseTexPath;
+					MaterialAssetName = "Mat_" + std::to_string(i) + ":" + FileNameInformation.FileName;
 
 				}
 				else
@@ -419,21 +419,13 @@ namespace Frosty
 
 		int textureWidth, textureHeight, components;
 		unsigned char* imageData = stbi_load((FileNameInformation.FilePath.c_str()), &textureWidth, &textureHeight, &components, STBI_rgb_alpha);
-		
-		if (imageData == nullptr)
-		{
-			//	std::cout << "Image failed to load in." << std::endl;
-			//	FatalError();
-			FY_CORE_WARN("Stbi Was unable to load Filepath: {0}", FileNameInformation.FilePath);
-		}
-
-
 
 
 
 		if (imageData != nullptr)
 		{
-			FY_CORE_INFO("Width: {0}, Height {1}", textureWidth,textureHeight);
+			//FY_CORE_INFO("Width: {0}, Height {1}", textureWidth,textureHeight);
+
 		}
 		else
 		{

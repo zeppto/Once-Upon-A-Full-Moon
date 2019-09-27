@@ -21,7 +21,7 @@ namespace Frosty
 		PNG,
 		LUNA
 	};
-	struct FileNameInfo
+	struct FileMetaData
 	{
 		int8_t Type = -1;
 		std::string FileName = "";
@@ -31,9 +31,31 @@ namespace Frosty
 	};
 	struct TextureFile
 	{
-		std::unique_ptr<unsigned char> Image_Data_Ptr = nullptr;
+
+
+		std::shared_ptr<unsigned char> Image_Data_Ptr = nullptr;
 		uint16_t Image_Width = 0;
 		uint16_t Image_Height = 0;
+
+		TextureFile(const TextureFile& other)
+		{
+			Image_Data_Ptr = other.Image_Data_Ptr;
+			Image_Height = other.Image_Height;
+			Image_Width = other.Image_Width;
+		}
+		TextureFile& operator = (const TextureFile& other)
+		{
+			if(this != &other)
+			{ 
+
+			Image_Data_Ptr = other.Image_Data_Ptr;
+			Image_Height = other.Image_Height;
+			Image_Width = other.Image_Width;
+			}
+
+			return *this;
+		}
+
 
 	};
 
@@ -75,12 +97,12 @@ namespace Frosty
 
 
 		inline static void Delete() {if (s_Instance != nullptr)	{delete s_Instance;}}
-		bool GetFileInformation(FileNameInfo& FileNameInformation);
+		bool GetFileInformation(FileMetaData& FileNameInformation);
 		int8_t GetFileType(const std::string& fileType) const;
 
 		//AssetManager Filler Functions
-		bool LoadLunaFile(const FileNameInfo& FileNameInformation, const bool& Reload = false);
-		bool LoadGraphicFile(const FileNameInfo& FileNameInformation, const bool& Reload = false);
+		bool LoadLunaFile(const FileMetaData& FileNameInformation, const bool& Reload = false);
+		bool LoadGraphicFile(const FileMetaData& FileNameInformation, const bool& Reload = false);
 
 	};
 

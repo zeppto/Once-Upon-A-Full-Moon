@@ -32,6 +32,7 @@ namespace Frosty
 
 		//may not be needed, string information are also stored in the unordered maps above
 		std::vector<std::string> m_FilePath_Vector; 
+		std::vector<std::string> m_Texture_File_Name_Vector;
 		std::vector<std::string> m_Material_File_Name_Vector; // Diffuse File Path
 		std::vector<std::string> m_ModelTemplate_File_Name_Vector; // Same as file name for now
 	
@@ -47,9 +48,11 @@ namespace Frosty
 		//Not initialized yet
 	//	bool LoadFile(std::string FilePath, const std::string& set_Label);
 
-		bool AddNewModelTemplate(std::shared_ptr<ModelTemplate>& ModelTemplate, const FileNameInfo& FileInformation);
-		bool AddNewTextureTemplate(std::shared_ptr<TextureFile>& Texture,const FileNameInfo& FileInformation);
-		bool AddNewMaterialTemplate(std::shared_ptr<Luna::Material>& Material, const FileNameInfo& FileInformation);
+		//Can be combined: (Later task if needed)
+
+		bool AddNewModelTemplate(std::shared_ptr<ModelTemplate>& ModelTemplate, const FileMetaData& MetaData);
+		bool AddNewTextureTemplate(std::shared_ptr<TextureFile>& Texture,const FileMetaData& MetaData);
+		bool AddNewMaterialTemplate(const Luna::Material& Material, const FileMetaData& MetaData);
 
 		/* if needed insert reload functions here
 		.
@@ -72,13 +75,18 @@ namespace Frosty
 
 	private:	//Functions
 		
+		bool ConnectMaterialWithTexture(Luna::Material& Material, const FileMetaData& MetaData);
+
 		bool FileLoaded(const std::string& FilePath);
 		bool AssetLoaded(const std::string& FileName);
 
 		bool MaterialLoaded(const std::string& FileName);
 		bool ModelTemplateLoaded(const std::string& FileName);
+		bool TextureLoaded(const std::string& FileName);
 		
-		bool CheckIfMetaDataExist(const std::string& FilePath);
+		//bool CheckIfMetaDataExist(const std::string& FilePath);
+
+		const std::string CutFileExtentionFromString(const char* in_char_ptr);
 
 
 		inline static void Delete() { if (s_Instance != nullptr) { delete s_Instance; } }

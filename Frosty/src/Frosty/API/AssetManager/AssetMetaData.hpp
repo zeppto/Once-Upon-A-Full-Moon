@@ -48,6 +48,8 @@ namespace Frosty
 		//const std::string& GetFileName() const { return m_FileName; }
 		//const std::string& GetFilePath() const { return m_FilePath; }
 		//const int32_t& GetAssetContainerSlot() const { return m_Asset_Container_Slot; }
+
+		void SetFileMetaData(const FileMetaData& MetaData) { m_FileMetaData = MetaData; }
 		const FileMetaData& GetFileMetaData() { return m_FileMetaData; }
 
 		//Asset Id

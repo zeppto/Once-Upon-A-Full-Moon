@@ -1,6 +1,7 @@
 #include "fypch.hpp"
 #include "Assetmanager.hpp"
 #include"..\PrefabManager\PrefabManager.h"
+#include "..\..\DEFINITIONS.hpp"
 
 
 namespace Frosty
@@ -36,7 +37,7 @@ namespace Frosty
 		return MotherLoader::GetMotherLoader()->Loadfile(FilePath, PreFab_Name);
 	}
 
-	bool Assetmanager::AddNewModelTemplate(std::shared_ptr<ModelTemplate>& ModelTemplate, const std::string& FileName, const std::string& FilePath)
+	bool Assetmanager::AddNewModelTemplate(std::shared_ptr<ModelTemplate>& ModelTemplate, const FileMetaData& MetaData)
 	{
 		bool returnValue = false;
 
@@ -69,30 +70,41 @@ namespace Frosty
 		return returnValue;
 	}
 
-	bool Assetmanager::AddNewMaterialTemplate(std::shared_ptr<Luna::Material>& Material, const std::string& FileName, const std::string& FilePath)
+	bool Assetmanager::AddNewTextureTemplate(std::shared_ptr<TextureFile>& Texture, const FileMetaData& MetaData)
+	{
+		//START HERE
+		return false;
+	}
+
+	bool Assetmanager::AddNewMaterialTemplate(const Luna::Material& Material, const FileMetaData& MetaData)
 	{
 		
 		bool returnValue = false;
 
-		if (!MaterialLoaded(FileName))
+		if (!MaterialLoaded(MetaData.FileName))
 		{
 			returnValue = true;
 
-			m_Material_File_Name_Vector.emplace_back(FileName);
+			m_Material_File_Name_Vector.emplace_back(MetaData.FileName);
 
-			AssetMetaData<Luna::Material>* tempMetaData = &m_MAT_MetaData_Map[FileName];
+			AssetMetaData<Luna::Material>* tempMetaData = &m_MAT_MetaData_Map[MetaData.FileName];
 
-			tempMetaData->SetFileName(FileName);
-			tempMetaData->SetFilePath(FilePath);
-			tempMetaData->SetContainerSlot(m_AssetHolder.GetEmptyContainerSlot());
-			tempMetaData->SetRefData(*m_AssetHolder.GetMaterial(tempMetaData->GetAssetContainerSlot()));
+			tempMetaData->SetFileMetaData(MetaData);
+			//tempMetaData->SetFilePath(MetaData.FullFilePath);
+			//tempMetaData->SetContainerSlot(m_AssetHolder.GetEmptyContainerSlot());
+			tempMetaData->SetRefData(Material);
+
+			if (!ConnectMaterialWithTexture(Material))
+			{
+				FY_CORE_WARN("One Or More Textures coul not connect with Material FileName: {0}", MetaData.FileName);
+			}
 
 			//Material = m_AssetHolder.GetMaterial(tempMetaData->GetAssetContainerSlot());
-			Material = tempMetaData->GetData();
+			//Material = tempMetaData->GetData();
 		}
 		else
 		{
-			FY_CORE_WARN("Found Already Existing Material with File Name: {0}", FileName);
+			FY_CORE_WARN("Found Already Existing Material with File Name: {0}", MetaData.FileName);
 		}
 		return returnValue;
 	}
@@ -178,6 +190,26 @@ namespace Frosty
 		return returnValue;
 	}
 
+	bool Assetmanager::ConnectMaterialWithTexture(const Luna::Material& Material, const FileMetaData& MetaData)
+	{
+
+
+	//	if(Material.hasNormalMap)
+
+		//Check if loaded
+
+		bool returnValue = true;
+		// this needs to be saved MARK for later
+		std::string temp_fileName = CutFileExtentionFromString(Material.diffuseTexPath);
+
+		if(!TextureLoaded(temp_fileName))
+		{
+			returnValue = MotherLoader::GetMotherLoader()->Loadfile((PROJECT_LUNAFILES_FOLDER_ROOT + *Material.diffuseTexPath));
+		}
+
+		return returnValue;
+	}
+
 	bool Assetmanager::FileLoaded(const std::string& FilePath)
 	{
 		bool returnValue = false;
@@ -241,6 +273,37 @@ namespace Frosty
 		}
 
 		return returnValue;
+	}
+
+	bool Assetmanager::TextureLoaded(const std::string& FileName)
+	{
+		bool returnValue = false;
+		for (int i = 0; i < m_Texture_File_Name_Vector.size() && returnValue == false; i++)
+		{
+			if (m_Texture_File_Name_Vector.at(i) == FileName)
+			{
+				returnValue = true;
+			}
+		}
+
+		return returnValue;
+	}
+
+	const std::string Assetmanager::CutFileExtentionFromString(const char* in_char_ptr)
+	{
+		std::string returnString = "";
+		for (uint16_t i = 0; i < sizeof(*in_char_ptr); i++)
+		{
+			if (in_char_ptr[i] != '.')
+			{
+				returnString.push_back(in_char_ptr[i]);
+			}
+			else
+			{
+				break;
+			}
+		}
+		return returnString;
 	}
 
 }
