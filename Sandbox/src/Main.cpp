@@ -1,7 +1,10 @@
-#include "Game.hpp"
+#include <mcspch.hpp>
 #define _CRTDBG_MAP_ALLOC
 #include <stdlib.h>
 #include <crtdbg.h>
+
+#include "Game.hpp"
+
 
 int main(int argc, char** argv)
 {
@@ -11,9 +14,5 @@ int main(int argc, char** argv)
 	app->Run();
 	delete app;
 
-
-	std::cout << "HelloWorld" << std::endl;
-
-	system("pause");
 	return 0;
 }
