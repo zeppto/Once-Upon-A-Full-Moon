@@ -2,7 +2,8 @@
 #include "Assetmanager.hpp"
 #include"..\PrefabManager\PrefabManager.h"
 #include "..\..\DEFINITIONS.hpp"
-
+#include"Glad/glad.h"
+#include"stb_image.hpp"
 
 namespace Frosty
 {
@@ -76,20 +77,20 @@ namespace Frosty
 
 		bool returnValue = false;
 
+
 		if (!TextureLoaded(MetaData.FileName))
 		{
 
-			//this can be better
-
-			returnValue = true;
 			m_Texture_File_Name_Vector.emplace_back(MetaData.FileName);
-			
-			AssetMetaData<Frosty::TextureFile>* tempTextureMetaData = &m_Texture_MetaData_Map[MetaData.FileName];
-			tempTextureMetaData->SetFileMetaData(MetaData);
 
+			AssetMetaData<TextureFile>* tempTextureMetaData = &m_Texture_MetaData_Map[MetaData.FileName];
+			tempTextureMetaData->SetFileMetaData(MetaData);
 			tempTextureMetaData->SetRefData(Texture);
 
-
+			if (tempTextureMetaData->GetData()->LoadToGpu())
+			{
+				returnValue = true;
+			}
 
 		}
 		else
@@ -97,7 +98,7 @@ namespace Frosty
 			FY_CORE_WARN("Texture are already loaded, FIleName: {0}", MetaData.FileName);
 		}
 
-
+		return returnValue;
 
 
 
@@ -146,10 +147,15 @@ namespace Frosty
 			//this can be better
 			m_Texture_File_Name_Vector.emplace_back(MetaData.FileName);
 
-			AssetMetaData<Frosty::TextureFile>* tempTextureMetaData = &m_Texture_MetaData_Map[MetaData.FileName];
+			AssetMetaData<TextureFile>* tempTextureMetaData = &m_Texture_MetaData_Map[MetaData.FileName];
 			tempTextureMetaData->SetFileMetaData(MetaData);
-			tempTextureMetaData->SetRefData(TextureFile());
-			returnValue = tempTextureMetaData->GetData();
+			tempTextureMetaData->SetRefData(TextureFile(MetaData.FullFilePath));
+
+			if (tempTextureMetaData->GetData()->LoadToGpu())
+			{
+				returnValue = tempTextureMetaData->GetData();
+			}
+
 		}
 		else
 		{
@@ -268,6 +274,7 @@ namespace Frosty
 		{
 			if (!TextureLoaded(Material.Diffuse_File_Name))
 			{
+				//can be shorted
 				DiffuseLoadSuccess = MotherLoader::GetMotherLoader()->Loadfile((PROJECT_LUNAFILES_FOLDER_ROOT + std::string(Material.LunaMaterial.diffuseTexPath)));
 				if (DiffuseLoadSuccess)
 				{

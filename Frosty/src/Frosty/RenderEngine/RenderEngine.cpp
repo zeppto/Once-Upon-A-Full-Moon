@@ -4,6 +4,8 @@
 #include "Frosty/Core/Application.hpp"
 #include "Frosty/DEFINITIONS.hpp"
 
+
+
 //#include <stb_image.hpp>
 
 namespace Frosty
@@ -283,7 +285,6 @@ namespace Frosty
 		AssetMetaData<ModelTemplate>* metaModel = tempManager->GetModeltemplateMetaData("clock");
 		std::shared_ptr<ModelTemplate> model = metaModel->GetData();
 
-		CreateTestModelData(model);
 
 		AssetMetaData<TextureFile>* metaTexture = tempManager->GetTextureMetaData("pCube10_diffuse");
 
@@ -435,65 +436,13 @@ namespace Frosty
 
 		if (m_RenderTestModel)
 		{
-			glBindVertexArray(this->m_testModelVBO);
+			glBindVertexArray(Assetmanager::GetAssetmanager()->GetModeltemplateMetaData("clock")->GetData()->GetVBO(0));
 			glActiveTexture(GL_TEXTURE0);
-			glBindTexture(GL_TEXTURE_2D, Assetmanager::GetAssetmanager()->GetMaterialMetaData("clock")->GetData()->Diffuse_Texture_MetaData_Ptr->GetData()->Buffer_ID);
-			glDrawArrays(GL_TRIANGLES, 0, m_VertexSizeOfTestModel);
+			glBindTexture(GL_TEXTURE_2D, Assetmanager::GetAssetmanager()->GetMaterialMetaData("Mat_0:clock")->GetData()->Diffuse_Texture_MetaData_Ptr->GetData()->GetBufferID());
+			glDrawArrays(GL_TRIANGLES, 0, Assetmanager::GetAssetmanager()->GetModeltemplateMetaData("clock")->GetData()->GetMeshConst(0).vertexCount);
 		}
 
 	}
 
-	void RenderEngine::CreateTestModelData(std::shared_ptr<ModelTemplate> testModel)
-	{
-		m_RenderTestModel = true;
-
-		int i = testModel->GetId();
-		
-
-
-		uint16_t j = 0;//???
-		m_VertexSizeOfTestModel = testModel->GetMeshInfoConst(0)->MeshVertices.size();
-
-		glGenVertexArrays(1, &this->m_testModelVBO);
-		glBindVertexArray(this->m_testModelVBO);
-
-		glEnableVertexAttribArray(0);
-		glEnableVertexAttribArray(1);
-		glEnableVertexAttribArray(2);
-
-		glGenBuffers(1, &this->m_testModelVBO);
-		glBindBuffer(GL_ARRAY_BUFFER, this->m_testModelVBO);
-		glBufferData(GL_ARRAY_BUFFER, sizeof(Luna::Vertex) * testModel->GetMeshInfo(0)->MeshVertices.size(), testModel->GetMeshInfo(0)->MeshVertices.data(), GL_STATIC_DRAW);
-
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Luna::Vertex), BUFFER_OFFSET(0));
-		glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(Luna::Vertex), BUFFER_OFFSET(sizeof(float) * 3));
-		glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(Luna::Vertex), BUFFER_OFFSET(sizeof(float) * 5));
-
-		glBindVertexArray(0);
-
-	}
-
-	void RenderEngine::CreateTestTextureData(unsigned char* Texture_Data, TextureFile& Texture_File)
-	{
-
-		//unsigned int temp = 0;
-		glGenTextures(1, &Texture_File.Buffer_ID);
-		glActiveTexture(Texture_File.Buffer_ID);
-		glBindTexture(GL_TEXTURE_2D, Texture_File.Buffer_ID);
-		//int i = sizeof(testTexture->Image_Data_Ptr);
-
-		//std::string hh = "";
-		//hh += PROJECT_LUNAFILES_FOLDER_ROOT;
-		//hh += "pCube10_diffuse.png";
-		//int x, y, c;
-
-		//stbi_uc* data = stbi_load(hh.c_str(), &x, &y, &c, 0);
-		
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, Texture_File.Image_Width, Texture_File.Image_Height, 0, GL_RGBA, GL_UNSIGNED_BYTE, Texture_Data);
-		glGenerateMipmap(GL_TEXTURE_2D);
-
-		//if Loaded succes check?
-		Texture_File.Loaded_In_Gpu = true;
-	}
 
 }

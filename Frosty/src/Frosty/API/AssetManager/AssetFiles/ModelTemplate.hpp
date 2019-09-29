@@ -57,6 +57,10 @@ namespace Frosty
 		std::vector<Luna::Mesh> m_Meshes;
 		std::vector<Luna::Joint> m_Joints;
 
+		std::vector<unsigned int> m_VBOs;
+
+		bool m_Dumped_Info;
+
 	
 		
 		std::map<uint16_t, MeshInfo> m_MeshInfoMap;
@@ -89,18 +93,25 @@ namespace Frosty
 
 
 
+		std::vector<unsigned int>* GetVboVector() { return &m_VBOs; }
+		const unsigned int& GetVBO(const uint16_t& meshId) { return m_VBOs.at(meshId); }
 
-		const Luna::Skeleton* GetSkeletonConst() { return &m_Skeleton; }
-		const Luna::Animation* GetAnimationConst() { return &m_Animation; };
 
-		const std::vector<Luna::Mesh>* GetMeshVectorConst() { return &m_Meshes; }
-		const std::vector<Luna::Joint>* GetJointVectorConst() { return &m_Joints; }
+		const Luna::Skeleton& GetSkeletonConst() { return m_Skeleton; }
+		const Luna::Animation& GetAnimationConst() { return m_Animation; }
 
-		const ModelTemplate::MeshInfo* GetMeshInfoConst(const uint16_t& meshId) { return &m_MeshInfoMap[meshId];}
-		const std::vector<Luna::Keyframe>* GetKeyframesConst(const uint16_t& jointId) { return &m_KeyframeMap[jointId];}
+		const Luna::Mesh& GetMeshConst(const uint16_t& meshId) {return m_Meshes.at(meshId);}
+		
 
-		const std::map<uint16_t, MeshInfo>* GetMeshInfoMapConst() { return &m_MeshInfoMap; }
-		const std::map<uint16_t, std::vector<Luna::Keyframe>>* GetKeyframeMapConst() { return &m_KeyframeMap; }
+
+		const ModelTemplate::MeshInfo& GetMeshInfoConst(const uint16_t& meshId) { return m_MeshInfoMap[meshId];}
+
+		const std::vector<Luna::Mesh>& GetMeshVectorConst() { return m_Meshes; }
+		const std::vector<Luna::Joint>& GetJointVectorConst() { return m_Joints; }
+		const std::vector<Luna::Keyframe>& GetKeyframesConst(const uint16_t& jointId) { return m_KeyframeMap[jointId];}
+
+		const std::map<uint16_t, MeshInfo>& GetMeshInfoMapConst() { return m_MeshInfoMap; }
+		const std::map<uint16_t, std::vector<Luna::Keyframe>>& GetKeyframeMapConst() { return m_KeyframeMap; }
 
 		
 		const uint16_t& GetId() const;
@@ -114,6 +125,9 @@ namespace Frosty
 			const std::vector<Luna::Vertex>& MeshVertices,
 			const std::vector<Luna::Index>& MeshIndices,
 			const std::vector<Luna::Weights>& Weights);
+
+
+		bool LoadModelToGpu(const bool& DumpData = false);
 
 
 

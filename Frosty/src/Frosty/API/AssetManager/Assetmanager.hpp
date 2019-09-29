@@ -2,8 +2,9 @@
 #define ASSETMANAGER_H
 
 #include"MotherLoader.hpp"
-#include"AssetHolder.hpp"
 #include"KeyLabel.hpp"
+
+
 
 
 
@@ -55,8 +56,6 @@ namespace Frosty
 
 	private:	//Variables
 		static Assetmanager* s_Instance;
-		AssetHolder m_AssetHolder;
-
 		uint16_t m_Total_Nr_Assets;
 
 		std::unordered_map<std::string, AssetMetaData<ModelTemplate>>  m_MT_MetaData_Map;
@@ -85,6 +84,7 @@ namespace Frosty
 
 		bool AddNewModelTemplate(std::shared_ptr<ModelTemplate>& ModelTemplate, const FileMetaData& MetaData);
 		bool AddNewTextureTemplate(const TextureFile& Texture,const FileMetaData& MetaData);
+		//bool AddNewTextureTemplate(const FileMetaData& MetaData);
 		bool AddNewMaterialTemplate(const Luna::Material& Material, const FileMetaData& MetaData);
 
 		std::shared_ptr<TextureFile> AddNewTextureTemplate(const FileMetaData& MetaData);
@@ -118,6 +118,9 @@ namespace Frosty
 		bool MaterialLoaded(const std::string& FileName);
 		bool ModelTemplateLoaded(const std::string& FileName);
 		bool TextureLoaded(const std::string& FileName);
+
+		unsigned int LoadGraphicFileToGPU(const std::string& FilePath);
+		unsigned int LoadModelToGPU(ModelTemplate& ModelTemplate);
 		
 		//bool CheckIfMetaDataExist(const std::string& FilePath);
 

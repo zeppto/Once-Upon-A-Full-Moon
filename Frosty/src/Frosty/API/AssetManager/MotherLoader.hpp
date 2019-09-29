@@ -1,7 +1,8 @@
 #ifndef  MOTHERLOADER_H
 #define MOTHERLOADER_H
-#include "ModelTemplate.hpp"
+#include"AssetFiles/ModelTemplate.hpp"
 #include<Luna/include/Reader.h>
+#include"AssetFiles/TextureFile.hpp"
 
 
 
@@ -26,19 +27,6 @@ namespace Frosty
 		PNG,
 		LUNA
 	};
-
-	struct TextureFile
-	{
-
-		//std::shared_ptr<unsigned char> Image_Data_Ptr;
-		bool Loaded_In_Gpu = false;
-		//Open gl needed an unsigned int
-		unsigned int  Buffer_ID;
-		uint16_t Image_Width;
-		uint16_t Image_Height;
-
-	};
-
 
 
 	class MotherLoader
@@ -85,8 +73,6 @@ namespace Frosty
 		//AssetManager Filler Functions
 		bool LoadLunaFile(const FileMetaData& FileNameInformation, const bool& Reload = false);
 		bool LoadGraphicFile(const FileMetaData& FileNameInformation, const bool& Reload = false);
-
-		bool LoadGraphicFileToGPU(unsigned char* Texture_Data, TextureFile& Texture_File);
 
 	};
 

@@ -3,9 +3,7 @@
 #include "Assetmanager.hpp"
 #include "..\PrefabManager\PrefabManager.h"
 #include"..\..\DEFINITIONS.hpp"
-#include"stb_image.hpp"
 #include "Frosty/Core/Application.hpp"
-#include"Glad/glad.h"
 
 namespace Frosty
 {
@@ -236,6 +234,10 @@ namespace Frosty
 				}
 
 
+
+
+				mod_ptr->LoadModelToGpu();
+
 			}
 			else
 			{
@@ -276,12 +278,16 @@ namespace Frosty
 				//Load Textures to materials
 
 				//Materials
-				if (temp_AssetManager->AddNewMaterialTemplate(tempMatVector.at(i), FileNameInformation))
+
+				FileMetaData TempMatMetaData = FileNameInformation;
+				TempMatMetaData.FileName = "Mat_" + std::to_string(i) + ":" + FileNameInformation.FileName;
+
+				if (temp_AssetManager->AddNewMaterialTemplate(tempMatVector.at(i), TempMatMetaData))
 				{
 					//Fill Material
 
-					//saving lates material name for prefab(If Needed, build so the prefab can support more materials)
-					MaterialAssetName = "Mat_" + std::to_string(i) + ":" + FileNameInformation.FileName;
+					//saving latest material name for prefab(If Needed, build so the prefab can support more materials)
+					MaterialAssetName = TempMatMetaData.FileName;
 
 				}
 				else
@@ -316,22 +322,13 @@ namespace Frosty
 	{
 		bool returnValue = false;
 
-		int textureWidth, textureHeight, components;
-		unsigned char* imageData = stbi_load((FileNameInformation.FullFilePath.c_str()), &textureWidth, &textureHeight, &components, STBI_rgb_alpha);
 
 
-
-		if (imageData != nullptr)
-		{
 			std::shared_ptr<TextureFile> tempTexturePtr = Assetmanager::GetAssetmanager()->AddNewTextureTemplate(FileNameInformation);
 
 			if (tempTexturePtr != nullptr)
 			{
-
-				tempTexturePtr->Image_Height = textureHeight;
-				tempTexturePtr->Image_Width = textureWidth;
-
-				if (LoadGraphicFileToGPU(imageData, *tempTexturePtr))
+				if (tempTexturePtr->LoadToGpu())
 				{
 					returnValue = true;
 				}
@@ -344,37 +341,10 @@ namespace Frosty
 			{
 				FY_CORE_WARN("Could not load Image, Name: {0}" , FileNameInformation.FileName);
 			}
-		}
-		else
-		{
-			FY_CORE_WARN("STBI Could not load image, FilePath: {0}", FileNameInformation.FilePath);
-		}
-
-
-		stbi_image_free(imageData);
-
-
-
-
-
+		
 
 
 		return returnValue;
-	}
-
-	bool MotherLoader::LoadGraphicFileToGPU(unsigned char* Texture_Data, TextureFile& Texture_File)
-	{
-
-		glGenTextures(1, &Texture_File.Buffer_ID);
-		glActiveTexture(Texture_File.Buffer_ID);
-		glBindTexture(GL_TEXTURE_2D, Texture_File.Buffer_ID);
-
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, Texture_File.Image_Width, Texture_File.Image_Height, 0, GL_RGBA, GL_UNSIGNED_BYTE, Texture_Data);
-		glGenerateMipmap(GL_TEXTURE_2D);
-
-		//if Loaded succes check?
-		Texture_File.Loaded_In_Gpu = true;
-		return true;
 	}
 
 }
