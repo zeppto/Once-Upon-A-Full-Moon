@@ -116,14 +116,12 @@ namespace Frosty
 
 			m_Material_File_Name_Vector.emplace_back(MetaData.FileName);
 
-			AssetMetaData<Luna::Material>* tempMetaData = &m_MAT_MetaData_Map[MetaData.FileName];
+			AssetMetaData<LinkedMaterial>* tempMetaData = &m_MAT_MetaData_Map[MetaData.FileName];
 
 			tempMetaData->SetFileMetaData(MetaData);
-			//tempMetaData->SetFilePath(MetaData.FullFilePath);
-			//tempMetaData->SetContainerSlot(m_AssetHolder.GetEmptyContainerSlot());
-			tempMetaData->SetRefData(Material);
+			tempMetaData->SetRefData(LinkedMaterial(Material));
 
-			if (!ConnectMaterialWithTexture(Material, MetaData))
+			if (!ConnectMaterialWithTexture(*tempMetaData->GetData(), MetaData))
 			{
 				FY_CORE_WARN("One Or More Textures coul not connect with Material FileName: {0}", MetaData.FileName);
 			}
@@ -136,6 +134,31 @@ namespace Frosty
 			FY_CORE_WARN("Found Already Existing Material with File Name: {0}", MetaData.FileName);
 		}
 		return returnValue;
+	}
+
+	std::shared_ptr<TextureFile> Assetmanager::AddNewTextureTemplate(const FileMetaData& MetaData)
+	{
+		std::shared_ptr<TextureFile> returnValue = nullptr;
+
+		if (!TextureLoaded(MetaData.FileName))
+		{
+
+			//this can be better
+			m_Texture_File_Name_Vector.emplace_back(MetaData.FileName);
+
+			AssetMetaData<Frosty::TextureFile>* tempTextureMetaData = &m_Texture_MetaData_Map[MetaData.FileName];
+			tempTextureMetaData->SetFileMetaData(MetaData);
+			tempTextureMetaData->SetRefData(TextureFile());
+			returnValue = tempTextureMetaData->GetData();
+		}
+		else
+		{
+			FY_CORE_WARN("Texture are already loaded, FIleName: {0}", MetaData.FileName);
+		}
+
+		return returnValue;
+
+
 	}
 
 	AssetMetaData<ModelTemplate> * Assetmanager::GetModeltemplateMetaData(const std::string& FileName)
@@ -151,7 +174,7 @@ namespace Frosty
 		return nullptr;
 	}
 
-	AssetMetaData<Luna::Material>* Assetmanager::GetMaterialMetaData(const std::string& FileName)
+	AssetMetaData<LinkedMaterial>* Assetmanager::GetMaterialMetaData(const std::string& FileName)
 	{
 		if (MaterialLoaded(FileName))
 		{
@@ -194,7 +217,7 @@ namespace Frosty
 		return returnValue;
 	}
 
-	bool Assetmanager::LinkMaterialKey(const std::string& FileName, KeyLabel<Luna::Material>* In_Key)
+	bool Assetmanager::LinkMaterialKey(const std::string& FileName, KeyLabel<LinkedMaterial>* In_Key)
 	{
 		bool returnValue = false;
 
@@ -221,7 +244,7 @@ namespace Frosty
 		}
 		else if (MaterialLoaded(FileName))
 		{
-			KeyLabel<Luna::Material>* temp_mt_ptr = static_cast<KeyLabel<Luna::Material>*>(In_Key);
+			KeyLabel<LinkedMaterial>* temp_mt_ptr = static_cast<KeyLabel<LinkedMaterial>*>(In_Key);
 			temp_mt_ptr->SetKeyData(m_MAT_MetaData_Map[FileName]);
 			returnValue = true;
 		}
@@ -232,22 +255,108 @@ namespace Frosty
 		return returnValue;
 	}
 
-	bool Assetmanager::ConnectMaterialWithTexture(const Luna::Material& Material, const FileMetaData& MetaData)
+	bool Assetmanager::ConnectMaterialWithTexture(LinkedMaterial& Material, const FileMetaData& MetaData)
 	{
-
-
-	//	if(Material.hasNormalMap)
-
-		//Check if loaded
-
 		bool returnValue = true;
-		// this needs to be saved MARK for later
-		std::string temp_fileName = CutFileExtentionFromString(Material.diffuseTexPath);
+		bool GlowLoadSuccess = true;
+		bool NormalLoadSuccess = true;
+		bool DiffuseLoadSuccess = true;
 
-		if(!TextureLoaded(temp_fileName))
+		//Diffuse Linking
+		Material.Diffuse_File_Name = CutFileExtentionFromString(Material.LunaMaterial.diffuseTexPath);
+		if (Material.Diffuse_File_Name != "")
 		{
-			returnValue = MotherLoader::GetMotherLoader()->Loadfile((PROJECT_LUNAFILES_FOLDER_ROOT + std::string(Material.diffuseTexPath)));
+			if (!TextureLoaded(Material.Diffuse_File_Name))
+			{
+				DiffuseLoadSuccess = MotherLoader::GetMotherLoader()->Loadfile((PROJECT_LUNAFILES_FOLDER_ROOT + std::string(Material.LunaMaterial.diffuseTexPath)));
+				if (DiffuseLoadSuccess)
+				{
+					Material.Diffuse_Texture_MetaData_Ptr = GetTextureMetaData(Material.Diffuse_File_Name);
+				}
+				else
+				{
+					FY_CORE_WARN("Diffuse Material Name: {0} Could not be loaded, File Path: {1}" , Material.Diffuse_File_Name, MetaData.FilePath);
+				}
+
+			}
+			else
+			{
+				Material.Diffuse_Texture_MetaData_Ptr = GetTextureMetaData(Material.Diffuse_File_Name);
+			}
 		}
+		else
+		{
+			FY_CORE_WARN("Diffuse Material has no name, File Path: {0}", MetaData.FilePath);
+		}
+
+
+		if (Material.LunaMaterial.hasNormalMap)
+		{
+			//Normal Linking
+			Material.Normal_File_Name = CutFileExtentionFromString(Material.LunaMaterial.normalTexPath);
+			if (Material.Normal_File_Name != "")
+			{
+				if (!TextureLoaded(Material.Normal_File_Name))
+				{
+					NormalLoadSuccess = MotherLoader::GetMotherLoader()->Loadfile((PROJECT_LUNAFILES_FOLDER_ROOT + std::string(Material.LunaMaterial.normalTexPath)));
+					if (NormalLoadSuccess)
+					{
+						Material.Normal_Texture_MetaData_Ptr = GetTextureMetaData(Material.Normal_File_Name);
+					}
+					else
+					{
+						FY_CORE_WARN("Normal Material Name: {0} Could not be loaded, File Path: {1}", Material.Normal_File_Name, MetaData.FilePath);
+					}
+				}
+				else
+				{
+					Material.Normal_Texture_MetaData_Ptr = GetTextureMetaData(Material.Normal_File_Name);
+				}
+			}
+			else
+			{
+				FY_CORE_WARN("Normal Material has no name, File Path: {0}", MetaData.FilePath);
+			}
+
+		}
+
+		if (Material.LunaMaterial.hasGlowMap)
+		{
+
+			//Glow Linking
+			Material.Glow_File_Name = CutFileExtentionFromString(Material.LunaMaterial.glowTexPath);
+			if (Material.Glow_File_Name != "")
+			{
+				if (!TextureLoaded(Material.Glow_File_Name))
+				{
+					GlowLoadSuccess = MotherLoader::GetMotherLoader()->Loadfile((PROJECT_LUNAFILES_FOLDER_ROOT + std::string(Material.LunaMaterial.glowTexPath)));
+					if (GlowLoadSuccess)
+					{
+						Material.Glow_Texture_MetaData_Ptr = GetTextureMetaData(Material.Glow_File_Name);
+					}
+					else
+					{
+						FY_CORE_WARN("Glow Material Name: {0} Could not be loaded, File Path: {1}", Material.Glow_File_Name, MetaData.FilePath);
+					}
+
+				}
+				else
+				{
+					Material.Glow_Texture_MetaData_Ptr = GetTextureMetaData(Material.Glow_File_Name);
+				}
+			}
+			else
+			{
+				FY_CORE_WARN("Glow Material has no name, File Path: {0}", MetaData.FilePath);
+			}
+
+		}
+
+		if (!(GlowLoadSuccess && NormalLoadSuccess && DiffuseLoadSuccess))
+		{
+			returnValue = false;
+		}
+
 
 		return returnValue;
 	}
@@ -334,16 +443,28 @@ namespace Frosty
 	const std::string Assetmanager::CutFileExtentionFromString(const char* in_char_ptr)
 	{
 		std::string returnString = "";
-		for (uint16_t i = 0; i < sizeof(*in_char_ptr); i++)
+
+
+		if (*in_char_ptr != '\0')
 		{
-			if (in_char_ptr[i] != '.')
+
+			uint8_t count = 0;
+			while (in_char_ptr[count] != '\0')
 			{
-				returnString.push_back(in_char_ptr[i]);
+				if (in_char_ptr[count] != '.')
+				{
+					returnString.push_back(in_char_ptr[count]);
+				}
+				else
+				{
+					break;
+				}
+				count++;
 			}
-			else
-			{
-				break;
-			}
+		}
+		else
+		{
+			FY_CORE_WARN("Trying to cut a file extention from a emtpy char ptr");
 		}
 		return returnString;
 	}

@@ -4,6 +4,7 @@
 #include<Luna/include/Reader.h>
 
 
+
 // should be inside definitions?
 //File types
 #define FILE_TYPE_JPG "jpg"
@@ -17,6 +18,8 @@ namespace Frosty
 
 	extern 	struct FileMetaData;
 
+
+
 	enum FileType
 	{
 		JPG,
@@ -28,37 +31,11 @@ namespace Frosty
 	{
 
 		//std::shared_ptr<unsigned char> Image_Data_Ptr;
-		unsigned char* Image_Data_Ptr;
+		bool Loaded_In_Gpu = false;
+		//Open gl needed an unsigned int
+		unsigned int  Buffer_ID;
 		uint16_t Image_Width;
 		uint16_t Image_Height;
-
-		TextureFile()
-		{
-			Image_Data_Ptr = nullptr;
-			Image_Width = 0;
-			Image_Height = 0;
-		}
-
-		TextureFile(const TextureFile& other)
-		{
-			//Image_Data_Ptr = std::make_shared<unsigned char>(*other.Image_Data_Ptr);
-			Image_Data_Ptr = other.Image_Data_Ptr;
-			Image_Height = other.Image_Height;
-			Image_Width = other.Image_Width;
-		}
-		TextureFile& operator = (const TextureFile& other)
-		{
-			if (this != &other)
-			{
-				//Image_Data_Ptr = std::make_shared<unsigned char>(*other.Image_Data_Ptr);
-				Image_Data_Ptr = other.Image_Data_Ptr;
-				Image_Height = other.Image_Height;
-				Image_Width = other.Image_Width;
-			}
-
-			return *this;
-		}
-
 
 	};
 
@@ -108,6 +85,8 @@ namespace Frosty
 		//AssetManager Filler Functions
 		bool LoadLunaFile(const FileMetaData& FileNameInformation, const bool& Reload = false);
 		bool LoadGraphicFile(const FileMetaData& FileNameInformation, const bool& Reload = false);
+
+		bool LoadGraphicFileToGPU(unsigned char* Texture_Data, TextureFile& Texture_File);
 
 	};
 

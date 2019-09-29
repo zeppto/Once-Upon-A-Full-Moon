@@ -80,7 +80,7 @@ namespace Frosty
 		void CreateTriangle();		
 		void RenderTestTriangle();
 		void CreateTestModelData(std::shared_ptr<ModelTemplate> testModel);
-		void CreateTestTextureData(unsigned char* testTexture);
+		void CreateTestTextureData(unsigned char* Texture_Data, TextureFile& Texture_File);
 
 
 	};

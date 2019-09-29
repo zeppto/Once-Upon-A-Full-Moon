@@ -103,9 +103,6 @@ namespace Frosty
 		return s_ModelTemplateCounter;
 	}
 
-
-
-
 	ModelTemplate::MeshInfo* ModelTemplate::GetMeshInfo(const uint16_t& meshId)
 	{
 		return &m_MeshInfoMap[meshId];
@@ -115,7 +112,6 @@ namespace Frosty
 	{
 		return &m_KeyframeMap[jointId];
 	}
-
 
 	std::vector<Luna::Joint>* ModelTemplate::GetJointVector()
 	{

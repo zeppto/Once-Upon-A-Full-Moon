@@ -13,7 +13,6 @@ namespace Frosty
 	class ModelTemplate
 	{
 
-	//Priv Struct
 	public:
 		struct MeshInfo
 		{
@@ -57,6 +56,8 @@ namespace Frosty
 
 		std::vector<Luna::Mesh> m_Meshes;
 		std::vector<Luna::Joint> m_Joints;
+
+	
 		
 		std::map<uint16_t, MeshInfo> m_MeshInfoMap;
 		std::map<uint16_t, std::vector<Luna::Keyframe>> m_KeyframeMap;

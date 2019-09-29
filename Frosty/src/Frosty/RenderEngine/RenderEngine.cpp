@@ -287,7 +287,7 @@ namespace Frosty
 
 		AssetMetaData<TextureFile>* metaTexture = tempManager->GetTextureMetaData("pCube10_diffuse");
 
-		std::shared_ptr<TextureFile> texture = metaTexture->GetData();
+		//std::shared_ptr<TextureFile> texture = metaTexture->GetData();
 
 		//CreateTestTextureData(texture);
 
@@ -437,7 +437,7 @@ namespace Frosty
 		{
 			glBindVertexArray(this->m_testModelVBO);
 			glActiveTexture(GL_TEXTURE0);
-			glBindTexture(GL_TEXTURE_2D, 4);
+			glBindTexture(GL_TEXTURE_2D, Assetmanager::GetAssetmanager()->GetMaterialMetaData("clock")->GetData()->Diffuse_Texture_MetaData_Ptr->GetData()->Buffer_ID);
 			glDrawArrays(GL_TRIANGLES, 0, m_VertexSizeOfTestModel);
 		}
 
@@ -473,14 +473,14 @@ namespace Frosty
 
 	}
 
-	void RenderEngine::CreateTestTextureData(unsigned char* testTexture)
+	void RenderEngine::CreateTestTextureData(unsigned char* Texture_Data, TextureFile& Texture_File)
 	{
-		unsigned int test = 0;
-		glGenTextures(1, &test);
-		glActiveTexture(test);
-		glBindTexture(GL_TEXTURE_2D, test);
-		//int i = sizeof(testTexture->Image_Data_Ptr);
 
+		//unsigned int temp = 0;
+		glGenTextures(1, &Texture_File.Buffer_ID);
+		glActiveTexture(Texture_File.Buffer_ID);
+		glBindTexture(GL_TEXTURE_2D, Texture_File.Buffer_ID);
+		//int i = sizeof(testTexture->Image_Data_Ptr);
 
 		//std::string hh = "";
 		//hh += PROJECT_LUNAFILES_FOLDER_ROOT;
@@ -489,8 +489,11 @@ namespace Frosty
 
 		//stbi_uc* data = stbi_load(hh.c_str(), &x, &y, &c, 0);
 		
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA,1024, 1024, 0, GL_RGBA, GL_UNSIGNED_BYTE, testTexture);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, Texture_File.Image_Width, Texture_File.Image_Height, 0, GL_RGBA, GL_UNSIGNED_BYTE, Texture_Data);
 		glGenerateMipmap(GL_TEXTURE_2D);
+
+		//if Loaded succes check?
+		Texture_File.Loaded_In_Gpu = true;
 	}
 
 }

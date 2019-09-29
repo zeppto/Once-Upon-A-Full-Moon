@@ -10,6 +10,42 @@
 namespace Frosty
 {
 
+	struct LinkedMaterial
+	{
+		Luna::Material LunaMaterial;
+
+		std::string Glow_File_Name;
+		std::string Normal_File_Name;
+		std::string Diffuse_File_Name;
+
+		Frosty::AssetMetaData<Frosty::TextureFile>* Glow_Texture_MetaData_Ptr;
+		Frosty::AssetMetaData<Frosty::TextureFile>* Normal_Texture_MetaData_Ptr;
+		Frosty::AssetMetaData<Frosty::TextureFile>* Diffuse_Texture_MetaData_Ptr;
+
+		LinkedMaterial() {
+
+			std::string Glow_File_Name = "";
+			std::string Normal_File_Name = "";
+			std::string Diffuse_File_Name = "";
+
+			Glow_Texture_MetaData_Ptr = nullptr;
+			Normal_Texture_MetaData_Ptr = nullptr;
+			Diffuse_Texture_MetaData_Ptr = nullptr;
+
+		};
+		LinkedMaterial(const Luna::Material& LunaMat) : LunaMaterial(LunaMat) {
+			std::string Glow_File_Name = "";
+			std::string Normal_File_Name = "";
+			std::string Diffuse_File_Name = "";
+
+			Glow_Texture_MetaData_Ptr = nullptr;
+			Normal_Texture_MetaData_Ptr = nullptr;
+			Diffuse_Texture_MetaData_Ptr = nullptr;
+		};
+
+	};
+
+
 	
 
 	class Assetmanager {
@@ -23,12 +59,8 @@ namespace Frosty
 
 		uint16_t m_Total_Nr_Assets;
 
-
-
-
-	
 		std::unordered_map<std::string, AssetMetaData<ModelTemplate>>  m_MT_MetaData_Map;
-		std::unordered_map<std::string, AssetMetaData<Luna::Material>>  m_MAT_MetaData_Map;
+		std::unordered_map<std::string, AssetMetaData<LinkedMaterial>>  m_MAT_MetaData_Map;
 		std::unordered_map<std::string, AssetMetaData<TextureFile>>  m_Texture_MetaData_Map;
 
 		//may not be needed, string information are also stored in the unordered maps above
@@ -55,6 +87,7 @@ namespace Frosty
 		bool AddNewTextureTemplate(const TextureFile& Texture,const FileMetaData& MetaData);
 		bool AddNewMaterialTemplate(const Luna::Material& Material, const FileMetaData& MetaData);
 
+		std::shared_ptr<TextureFile> AddNewTextureTemplate(const FileMetaData& MetaData);
 		/* if needed insert reload functions here
 		.
 		.
@@ -63,7 +96,7 @@ namespace Frosty
 		*/
 
 		AssetMetaData<ModelTemplate> * GetModeltemplateMetaData(const std::string& FileName);
-		AssetMetaData<Luna::Material> * GetMaterialMetaData(const std::string& FileName);
+		AssetMetaData<LinkedMaterial> * GetMaterialMetaData(const std::string& FileName);
 		AssetMetaData<TextureFile> * GetTextureMetaData(const std::string& FileName);
 
 
@@ -71,13 +104,13 @@ namespace Frosty
 		//KeyLabel<Luna::Material>& CreateMaterialKey(std::string AssetName);
 
 		bool LinkModelKey(const std::string& FileName, KeyLabel<ModelTemplate>* In_Key);
-		bool LinkMaterialKey(const std::string& FileName, KeyLabel<Luna::Material>* In_Key);
+		bool LinkMaterialKey(const std::string& FileName, KeyLabel<LinkedMaterial>* In_Key);
 
 		bool LinkKey(const std::string& FileName, BaseKey* In_Key);
 
 	private:	//Functions
 		
-		bool ConnectMaterialWithTexture(const Luna::Material& Material, const FileMetaData& MetaData);
+		bool ConnectMaterialWithTexture(LinkedMaterial& Material, const FileMetaData& MetaData);
 
 		bool FileLoaded(const std::string& FilePath);
 		bool AssetLoaded(const std::string& FileName);
