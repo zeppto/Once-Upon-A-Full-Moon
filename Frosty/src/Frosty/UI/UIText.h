@@ -7,6 +7,9 @@
 #include "FreeType/freetype.h"
 
 #include "UIElement.h"
+//	copy freetype.dll from "freetype-windows-binaries-master\freetype-windows-binaries-master\win64"
+//	
+//	and paste in "SS - Project - master\bin\Debug - x86_64\Sandbox"
 
 namespace Frosty
 {
