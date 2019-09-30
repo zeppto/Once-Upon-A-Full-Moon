@@ -1,6 +1,8 @@
 #include "fypch.hpp"
 #include "ModelTemplate.hpp"
+#include"Glad/glad.h"
 
+#define BUFFER_OFFSET(i) ((char *)nullptr + (i))
 
 namespace Frosty
 {
@@ -10,6 +12,7 @@ namespace Frosty
 
 	ModelTemplate::ModelTemplate()
 	{
+		m_Dumped_Info = false;
 		m_SelfID = s_ModelTemplateID++;
 		s_ModelTemplateCounter++;
 	}
@@ -29,7 +32,7 @@ namespace Frosty
 			m_SelfID = s_ModelTemplateID++;
 			s_ModelTemplateCounter++;
 		}
-
+		m_Dumped_Info = other.m_Dumped_Info;
 		m_Skeleton = other.m_Skeleton;
 		m_Animation = other.m_Animation;
 		m_Meshes = other.m_Meshes;
@@ -82,17 +85,15 @@ namespace Frosty
 		return &m_Meshes;
 	}
 
-	std::unordered_map<uint16_t, ModelTemplate::MeshInfo>* ModelTemplate::GetMeshInfoMap()
+	std::map<uint16_t, ModelTemplate::MeshInfo>* ModelTemplate::GetMeshInfoMap()
 	{
 		return &m_MeshInfoMap;
 	}
 
-	std::unordered_map<uint16_t, std::vector<Luna::Keyframe>>* ModelTemplate::GetKeyframeMap()
+	std::map<uint16_t, std::vector<Luna::Keyframe>>* ModelTemplate::GetKeyframeMap()
 	{
 		return &m_KeyframeMap;
 	}
-
-
 
 	const uint16_t& ModelTemplate::GetId() const
 	{
@@ -104,8 +105,57 @@ namespace Frosty
 		return s_ModelTemplateCounter;
 	}
 
+	bool  ModelTemplate::LoadModelToGpu(const bool& DumpData)
+	{
+		bool returnValue = true;
+		if (!m_Dumped_Info)
+		{
+			std::vector<unsigned int> temp_VBO_Vector;
+
+			for (uint8_t i = 0; i < m_Meshes.size(); i++)
+			{
+
+				unsigned int TempID = -1;
 
 
+				glGenVertexArrays(1, &TempID);
+				glBindVertexArray(TempID);
+
+				glEnableVertexAttribArray(0);
+				glEnableVertexAttribArray(1);
+				glEnableVertexAttribArray(2);
+
+				glGenBuffers(1, &TempID);
+				glBindBuffer(GL_ARRAY_BUFFER, TempID);
+				glBufferData(GL_ARRAY_BUFFER, sizeof(Luna::Vertex) * m_Meshes.at(i).vertexCount, m_MeshInfoMap[i].MeshVertices.data(), GL_STATIC_DRAW);
+
+				glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Luna::Vertex), BUFFER_OFFSET(0));
+				glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(Luna::Vertex), BUFFER_OFFSET(sizeof(float) * 3));
+				glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(Luna::Vertex), BUFFER_OFFSET(sizeof(float) * 5));
+
+				glBindVertexArray(0);
+
+				temp_VBO_Vector.emplace_back(TempID);
+
+			}
+
+
+			//Erase all loaded data here
+			if (DumpData)
+			{
+
+				m_Dumped_Info = true;
+			}
+
+			m_VBOs = temp_VBO_Vector;
+		}
+		else
+		{
+			returnValue = false;
+			FY_CORE_WARN("Could not load ModelTemplate into Gpu, The Data has been Released");
+		}
+		return returnValue;
+	}
 
 	ModelTemplate::MeshInfo* ModelTemplate::GetMeshInfo(const uint16_t& meshId)
 	{
@@ -116,7 +166,6 @@ namespace Frosty
 	{
 		return &m_KeyframeMap[jointId];
 	}
-
 
 	std::vector<Luna::Joint>* ModelTemplate::GetJointVector()
 	{

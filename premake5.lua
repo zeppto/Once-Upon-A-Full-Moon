@@ -19,6 +19,7 @@ IncludeDir["Glad"] = "Frosty/vendor/Glad/include"
 IncludeDir["ImGui"] = "Frosty/vendor/imgui"
 IncludeDir["glm"] = "Frosty/vendor/glm"
 IncludeDir["Luna"] = "Frosty/vendor/Luna"
+IncludeDir["stb_image"] = "Frosty/vendor/stb_image"
 
 group "Dependencies"
 	include "Frosty/vendor/GLFW"
@@ -45,7 +46,9 @@ project "Frosty"
 		"%{prj.name}/src/**.h",
 		"%{prj.name}/src/**.c",
 		"%{prj.name}/src/**.hpp",
-		"%{prj.name}/src/**.cpp"
+		"%{prj.name}/src/**.cpp",
+		"%{prj.name}/vendor/stb_image/**.h",
+		"%{prj.name}/vendor/stb_image/**.cpp"
 	}
 
 	includedirs
@@ -53,12 +56,12 @@ project "Frosty"
 		"%{prj.name}/src",
 		"%{prj.name}/vendor",
 		"%{prj.name}/vendor/spdlog/include",
-		"%{prj.name}/vendor/STB/include",
 		"%{IncludeDir.GLFW}",
 		"%{IncludeDir.Glad}",
 		"%{IncludeDir.ImGui}",
 		"%{IncludeDir.Luna}",
-		"%{IncludeDir.glm}"
+		"%{IncludeDir.glm}",
+		"%{IncludeDir.stb_image}"
 	}
 
 	libdirs
