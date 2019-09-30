@@ -1,6 +1,6 @@
 #ifndef BUFFER_HPP
 #define BUFFER_HPP
-
+#include<Luna/include/Luna.h>
 namespace Frosty
 {
 	enum class ShaderDataType
@@ -136,7 +136,8 @@ namespace Frosty
 	class VertexBuffer
 	{
 	public:
-		VertexBuffer(float* vertices, uint32_t size);
+		VertexBuffer(float* vertices, uint32_t nrOfFloats);
+		VertexBuffer(std::vector<Luna::Vertex>* vertices, uint32_t nrOfFloats);
 		virtual ~VertexBuffer();
 
 		void Bind()const;
@@ -145,7 +146,9 @@ namespace Frosty
 		BufferLayout GetLayout()const { return m_Layout; }
 		void SetLayout(const BufferLayout& layout) { m_Layout = layout; }
 
-		static VertexBuffer* Create(float* vertices, uint32_t size);
+		static VertexBuffer* Create(float* vertices, uint32_t count);
+		static  VertexBuffer* Create(std::vector<Luna::Vertex>* vertices, uint32_t nrOfVertices);
+
 	private:
 		uint32_t m_RendererID;
 		BufferLayout m_Layout;

@@ -7,7 +7,7 @@ namespace Frosty
 {
 
 
-	
+	extern class VertexArray;
 
 
 	class ModelTemplate
@@ -57,7 +57,10 @@ namespace Frosty
 		std::vector<Luna::Mesh> m_Meshes;
 		std::vector<Luna::Joint> m_Joints;
 
-		std::vector<unsigned int> m_VBOs;
+		std::vector<std::shared_ptr<VertexArray>> m_VertexArrays;
+		
+
+
 
 		bool m_Dumped_Info;
 
@@ -93,8 +96,8 @@ namespace Frosty
 
 
 
-		std::vector<unsigned int>* GetVboVector() { return &m_VBOs; }
-		const unsigned int& GetVBO(const uint16_t& meshId) { return m_VBOs.at(meshId); }
+		std::vector<std::shared_ptr<VertexArray>>* GetAllVertexArrays() { return &m_VertexArrays; }
+		std::shared_ptr<VertexArray> GetVertexArray(const uint16_t& meshId) { return m_VertexArrays.at(meshId); }
 
 
 		const Luna::Skeleton& GetSkeletonConst() { return m_Skeleton; }

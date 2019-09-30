@@ -70,6 +70,7 @@ namespace Frosty
 		}
 
 		m_VertexBuffer.push_back(vertexBuffer);
+		vertexBuffer->Unbind();
 	}
 
 	void VertexArray::SetIndexBuffer(const std::shared_ptr<IndexBuffer>& indexBuffer)

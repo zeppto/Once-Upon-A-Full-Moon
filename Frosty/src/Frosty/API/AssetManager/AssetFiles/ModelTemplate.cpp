@@ -1,6 +1,8 @@
 #include "fypch.hpp"
 #include "ModelTemplate.hpp"
 #include"Glad/glad.h"
+#include "Frosty/RenderEngine/VertexArray.hpp"
+
 
 #define BUFFER_OFFSET(i) ((char *)nullptr + (i))
 
@@ -108,17 +110,20 @@ namespace Frosty
 	bool  ModelTemplate::LoadModelToGpu(const bool& DumpData)
 	{
 		bool returnValue = true;
+
 		if (!m_Dumped_Info)
 		{
-			std::vector<unsigned int> temp_VBO_Vector;
+			//std::vector<unsigned int> temp_VBO_Vector;
+
+			
 
 			for (uint8_t i = 0; i < m_Meshes.size(); i++)
 			{
 
-				unsigned int TempID = -1;
+				//unsigned int TempID = -1;
 
 
-				glGenVertexArrays(1, &TempID);
+			/*	glGenVertexArrays(1, &TempID);
 				glBindVertexArray(TempID);
 
 				glEnableVertexAttribArray(0);
@@ -133,10 +138,68 @@ namespace Frosty
 				glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(Luna::Vertex), BUFFER_OFFSET(sizeof(float) * 3));
 				glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(Luna::Vertex), BUFFER_OFFSET(sizeof(float) * 5));
 
-				glBindVertexArray(0);
+				glBindVertexArray(0);*/
 
-				temp_VBO_Vector.emplace_back(TempID);
 
+				
+				
+				//m_VertexArrays.reset(FY_NEW std::vector<std::shared_ptr<VertexArray>>);
+
+				uint32_t nrOfVertices = m_Meshes.at(i).vertexCount;
+
+
+				std::shared_ptr<VertexArray> tempVertexArray;
+				tempVertexArray.reset(VertexArray::Create());
+
+				std::vector<Luna::Vertex>* vertices = &m_MeshInfoMap[i].MeshVertices;
+
+				std::shared_ptr<VertexBuffer> tempVertexBuffer;
+				tempVertexBuffer.reset(VertexBuffer::Create(&m_MeshInfoMap[i].MeshVertices, nrOfVertices));
+				
+				//TESTING
+				/*float vertices[3 * 8] =
+				{
+					-0.5f,  0.5f, 0.0f,		0.0f, 1.0f,		0.8f, 0.0f, 0.8f,
+					 0.0f, -0.5f, 0.0f,		0.5f, 0.0f,		0.2f, 0.3f, 0.8f,
+					 0.5f,  0.5f, 0.0f,		1.0f, 1.0f,		0.8f, 0.8f, 0.2f
+				};*/
+
+
+				//TESTING
+				//tempVertexBuffer.reset(VertexBuffer::Create(vertices, 3*nrOfVertices));
+
+
+				BufferLayout layout =
+				{
+					{ ShaderDataType::Float3, "vsInPos" },
+					{ ShaderDataType::Float2, "vsInUV" },
+					{ ShaderDataType::Float3, "vsInNormal" }
+				};
+
+				tempVertexBuffer->SetLayout(layout);
+				tempVertexArray->AddVertexBuffer(tempVertexBuffer);
+				
+				
+				
+
+				uint32_t* indices = new uint32_t[nrOfVertices];
+				for (int x = 0; x < nrOfVertices; x++)
+				{
+					indices[x] = x;
+				}
+
+				std::shared_ptr<IndexBuffer> tempIndexBuffer;
+				tempIndexBuffer.reset(IndexBuffer::Create(indices, nrOfVertices));
+				tempVertexArray->SetIndexBuffer(tempIndexBuffer);
+				
+				
+
+				//m_VertexArrays.emplace_back(std::make_shared<VertexArray>(*tempVertexArray));
+				m_VertexArrays.emplace_back(tempVertexArray);
+
+				//temp_VBO_Vector.emplace_back(TempID);
+
+				delete[] indices;
 			}
 
 
@@ -147,7 +210,7 @@ namespace Frosty
 				m_Dumped_Info = true;
 			}
 
-			m_VBOs = temp_VBO_Vector;
+			//m_VBOs = temp_VBO_Vector;
 		}
 		else
 		{

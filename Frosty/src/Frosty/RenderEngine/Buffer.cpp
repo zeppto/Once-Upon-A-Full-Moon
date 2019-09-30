@@ -1,16 +1,25 @@
 #include "fypch.hpp"
 #include "Buffer.hpp"
 #include <glad/glad.h>
+//#include<Luna/include/Luna.h>
 
 namespace Frosty
 {
 	// Vertexbuffer --------------------------------------------------------------------
 
-	VertexBuffer::VertexBuffer(float * vertices, uint32_t size)
+	VertexBuffer::VertexBuffer(float * vertices, uint32_t nrOfFloats)
 	{
 		glGenBuffers(1, &m_RendererID);
 		glBindBuffer(GL_ARRAY_BUFFER, m_RendererID);
-		glBufferData(GL_ARRAY_BUFFER, size, vertices, GL_STATIC_DRAW);
+		glBufferData(GL_ARRAY_BUFFER, nrOfFloats * sizeof(float), vertices, GL_STATIC_DRAW);
+	}
+
+	VertexBuffer::VertexBuffer(std::vector<Luna::Vertex>* vertices, uint32_t nrOfVertices)
+	{
+		glGenBuffers(1, &m_RendererID);
+		glBindBuffer(GL_ARRAY_BUFFER, m_RendererID);
+
+		glBufferData(GL_ARRAY_BUFFER, nrOfVertices * sizeof(Luna::Vertex), vertices->data(), GL_STATIC_DRAW);
 	}
 
 	VertexBuffer::~VertexBuffer()
@@ -28,10 +37,16 @@ namespace Frosty
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 	}
 	
-	VertexBuffer * VertexBuffer::Create(float * vertices, uint32_t size)
+	VertexBuffer * VertexBuffer::Create(float * vertices, uint32_t count)
 	{
-		return new VertexBuffer(vertices, size);
+		return new VertexBuffer(vertices, count);
 	}
+
+	VertexBuffer* VertexBuffer::Create(std::vector<Luna::Vertex>* vertices, uint32_t count)
+	{
+		return new VertexBuffer(vertices, count);
+	}
+
 
 	// Indexbuffer --------------------------------------------------------------------
 

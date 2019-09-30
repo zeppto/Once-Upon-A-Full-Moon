@@ -23,7 +23,12 @@ namespace Frosty
 		PushOverlay(m_ImGuiLayer);
 
 		ECS::ComponentManager<ECS::CTransform> cManager;
+
 		InitPrefabBuffers();
+
+		MotherLoader::GetMotherLoader()->LoadFiles();
+		MotherLoader::GetMotherLoader()->PrintLoadingAttemptInformation();
+
 		InitShaders();
 	}
 
@@ -37,22 +42,23 @@ namespace Frosty
 		
 	void Application::InitPrefabBuffers()
 	{
-		m_VertexArray.reset(VertexArray::Create());
+		/*m_VertexArray.reset(VertexArray::Create());
 
-		float vertices[3 * 7] =
+		float vertices[3 * 8] =
 		{
-			-0.5f, -0.5f, 0.0f, 0.8f, 0.0f, 0.8f, 1.0f,
-			 0.5f, -0.5f, 0.0f, 0.2f, 0.3f, 0.8f, 1.0f,
-			 0.0f,  0.5f, 0.0f, 0.8f, 0.8f, 0.2f, 1.0f
+					-0.5f, -0.5f, 0.0f,		0.0f, 0.0f,		1.0f, 0.0f, 0.0f,
+					 0.5f, -0.5f, 0.0f,		1.0f, 0.0f,		0.0f, 1.0f, 0.0f,
+					 0.0f,  0.5f, 0.0f,		0.5f, 1.0f,		0.0f, 0.0f, 1.0f
 		};
 
 		std::shared_ptr<VertexBuffer> m_VertexBuffer;
-		m_VertexBuffer.reset(VertexBuffer::Create(vertices, sizeof(vertices)));
+		m_VertexBuffer.reset(VertexBuffer::Create(vertices, 3*8));
 
 		BufferLayout layout =
 		{
-			{ ShaderDataType::Float3, "vsInPos" },
-			{ ShaderDataType::Float4, "vsInCol" }
+				{ ShaderDataType::Float3, "vsInPos" },
+				{ ShaderDataType::Float2, "vsInUV" },
+				{ ShaderDataType::Float3, "vsInNormal" }
 		};
 
 		m_VertexBuffer->SetLayout(layout);
@@ -60,8 +66,20 @@ namespace Frosty
 
 		uint32_t indices[3] = { 0, 1, 2 };
 		std::shared_ptr<IndexBuffer> m_IndexBuffer;
-		m_IndexBuffer.reset(IndexBuffer::Create(indices, sizeof(indices) / sizeof(uint32_t)));
+		m_IndexBuffer.reset(IndexBuffer::Create(indices, 3));
 		m_VertexArray->SetIndexBuffer(m_IndexBuffer);
+
+		auto tempManager = Assetmanager::GetAssetmanager();
+
+		m_VertexArray->Unbind();*/
+
+		/*AssetMetaData<ModelTemplate>* metaModel = tempManager->GetModeltemplateMetaData("clock");
+		std::shared_ptr<ModelTemplate> model = metaModel->GetData();
+
+
+		AssetMetaData<TextureFile>* metaTexture = tempManager->GetTextureMetaData("pCube10_diffuse");*/
+
+
 	}
 
 	void Application::InitShaders()
@@ -70,31 +88,32 @@ namespace Frosty
 			#version 440 core
 			
 			layout(location = 0) in vec3 vsInPos;
-			layout(location = 1) in vec4 vsInCol;
+			layout(location = 1) in vec2 vsInUV;
+			layout(location = 2) in vec3 vsInNormal;
 			
 			out vec3 vsOutPos;
-			out vec4 vsOutCol;
+			out vec3 vsOutNormal;
 			
 			void main()
 			{
 				gl_Position = vec4(vsInPos, 1.0f);
 				vsOutPos = vsInPos;
-				vsOutCol = vsInCol;
+				vsOutNormal = vsInNormal;
 			}
 		)";
 		std::string FragmentSrc = R"(
 			#version 440 core
 
 			in vec3 vsOutPos;
-			in vec4 vsOutCol;
+			in vec3 vsOutNormal;
 
 			layout(location = 0) out vec4 fsOutCol;
 			
 			void main()
 			{
-				//fsOutCol = vec4(0.8f, 0.2f, 0.3f, 1.0f);
+				//fsOutCol = vec4(0.0f, 1.0f, 1.0f, 1.0f);
 				//fsOutCol = vec4(vsOutPos + 0.5f, 1.0f);				
-				fsOutCol = vsOutCol;
+				fsOutCol = vec4(vsOutNormal, 1.0f);
 			}
 		)";
 
@@ -116,8 +135,10 @@ namespace Frosty
 			Renderer::BeginScene();
 
 			m_Shader->Bind();
-			Renderer::Submit(m_VertexArray);
+			//Renderer::Submit(m_VertexArray);
+			Renderer::Submit(Assetmanager::GetAssetmanager()->GetModeltemplateMetaData("clock")->GetData()->GetVertexArray(0));
 
+		
 			Renderer::EndScene();
 
 			/// Input
