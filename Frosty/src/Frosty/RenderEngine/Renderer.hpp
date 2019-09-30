@@ -13,8 +13,7 @@ namespace Frosty
 		static void BeginScene(const std::shared_ptr<Camera>& m_Camera);		
 		static void EndScene();
 
-		static void Submit(const std::shared_ptr<Shader>& shader, const std::shared_ptr<VertexArray>& vertexArray);
-		
+		static void Submit(const std::shared_ptr<Shader>& shader, const std::shared_ptr<VertexArray>& vertexArray);		
 		static void DeleteSceneData();
 	private:
 		struct SceneData

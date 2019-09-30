@@ -34,7 +34,7 @@ namespace Frosty
 		EventBus::GetEventBus()->Delete();
 		glfwTerminate();
 		Assetmanager::Delete();
-		Renderer::DeleteSceneData();
+		Renderer::DeleteSceneData();		
 	}
 	
 	void Application::InitPrefabBuffers()
