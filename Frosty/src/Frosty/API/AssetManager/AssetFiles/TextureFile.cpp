@@ -1,6 +1,6 @@
 #include "fypch.hpp"
 #include "TextureFile.hpp"
-#include"stb_image.hpp"
+#include"stb_image/stb_image.h"
 #include"Glad/glad.h"
 
 namespace Frosty

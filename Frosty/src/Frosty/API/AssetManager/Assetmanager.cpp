@@ -3,11 +3,11 @@
 #include"..\PrefabManager\PrefabManager.h"
 #include "..\..\DEFINITIONS.hpp"
 #include"Glad/glad.h"
-#include"stb_image.hpp"
 
 namespace Frosty
 {
 	Assetmanager* Assetmanager::s_Instance = nullptr;
+	uint16_t Assetmanager::s_Total_Nr_Assets = 0;
 
 	Assetmanager* Frosty::Assetmanager::GetAssetmanager()
 	{
@@ -16,7 +16,7 @@ namespace Frosty
 
 		{
 			s_Instance = new Assetmanager;
-			s_Instance->m_Total_Nr_Assets = 0;
+			//s_Instance->m_Total_Nr_Assets = 0;
 		}
 			return s_Instance;
 	}
