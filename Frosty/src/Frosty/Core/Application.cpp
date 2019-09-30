@@ -1,3 +1,4 @@
+
 #include "fypch.hpp"
 #include "Application.hpp"
 #include <glad/glad.h>
@@ -17,14 +18,16 @@ namespace Frosty
 		// TODO: Error handling?
 		s_Instance = this;
 
-		m_Sprite = FY_NEW Sprite();
-
 		m_Window = std::make_unique<Window>(Window());
 
 		EventBus::GetEventBus()->Subscribe<Application, BaseEvent>(this, &Application::OnEvent);
 
 		m_ImGuiLayer = new ImGuiLayer();
 		PushOverlay(m_ImGuiLayer);
+
+		//Here
+
+		m_Sprite = FY_NEW Sprite();
 
 		ECS::ComponentManager<ECS::CTransform> cManager;
 		InitPrefabBuffers();
@@ -43,6 +46,7 @@ namespace Frosty
 		Assetmanager::Delete();
 	}
 		
+
 	void Application::InitPrefabBuffers()
 	{
 		m_VertexArray.reset(VertexArray::Create());
@@ -301,3 +305,4 @@ namespace Frosty
 		}
 	}
 }
+
