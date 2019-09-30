@@ -15,12 +15,7 @@ namespace Frosty
 	Camera::~Camera()
 	{
 	}
-
-	float Camera::GetAspRatio() const
-	{
-		return m_CameraData.AspRatio;
-	}
-
+	
 	glm::mat4 Frosty::Camera::GetView()
 	{
 		return m_CameraData.View;
@@ -40,9 +35,7 @@ namespace Frosty
 	{
 		Application& app = Application::Get();
 		GLFWwindow* window = static_cast<GLFWwindow*>(app.GetWindow().GetNativeWindow());
-
-		m_CameraData.AspRatio = Application::Get().GetWindow().GetWidth() / (float)Application::Get().GetWindow().GetHeight();
-
+		
 		float CamSpeed = 0.0f;
 		float DeltaTime = 0.0f;
 		float CurrentFrame = 0.0f;

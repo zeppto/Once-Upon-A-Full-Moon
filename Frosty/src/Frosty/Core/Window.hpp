@@ -45,6 +45,7 @@ namespace Frosty
 		void OnWindowResizeEvent(WindowResizeEvent& e);
 		void OnWindowMovedEvent(WindowMovedEvent& e);
 
+		void UpdateViewPort();
 	private:
 		GLFWwindow* m_Window;
 

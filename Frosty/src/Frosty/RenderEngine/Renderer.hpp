@@ -19,8 +19,7 @@ namespace Frosty
 	private:
 		struct SceneData
 		{
-			glm::mat4 ViewProjectionMatrix;
-			float AspRatio;
+			glm::mat4 ViewProjectionMatrix;			
 		};
 		static SceneData* m_SceneData;
 	};

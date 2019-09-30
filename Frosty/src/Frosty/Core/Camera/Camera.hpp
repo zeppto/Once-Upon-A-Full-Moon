@@ -41,11 +41,9 @@ namespace Frosty
 		Camera();
 		virtual ~Camera();
 
-		float GetAspRatio()const;
-
 		glm::mat4 GetView();
 		glm::mat4 GetProjection();
-		glm::mat4 GetViewProjection();
+		glm::mat4 GetViewProjection();		
 		
 		void CameraPositionUpdate();
 		void CameraRotationUpdate(double xpos, double ypos);
