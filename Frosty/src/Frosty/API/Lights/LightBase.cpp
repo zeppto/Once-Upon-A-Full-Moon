@@ -62,7 +62,7 @@ namespace Frosty
 		return m_Strength;
 	}
 	
-	const uint8_t LightBase::GetID()
+	const uint16_t LightBase::GetID()
 	{
 		return m_ID;
 	}

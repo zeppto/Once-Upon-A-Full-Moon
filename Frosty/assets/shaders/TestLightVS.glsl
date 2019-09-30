@@ -12,7 +12,7 @@ out vec3 fragColor;
 
 void main()
 {
-	worldPos =   vec3(model * vec4(vsPosIn, 1.0f));
+	worldPos = vsPosIn;
 	fragColor = vsColorIn;
 	gl_Position = projection * view * model *vec4(vsPosIn, 1.0f);
 }
