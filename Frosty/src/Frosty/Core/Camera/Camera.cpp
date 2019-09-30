@@ -44,7 +44,7 @@ namespace Frosty
 			{
 				m_CameraData.CamSpeed = m_CameraData.CamSpeed * 3.0f;
 			}
-			m_CameraData.Pos += m_CameraData.CamSpeed * m_CameraData.LookAtVec;
+			m_CameraData.Pos += m_CameraData.CamSpeed * glm::vec3(0.0f, 0.0f, -1.5f);
 		}
 		if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
 		{
@@ -52,7 +52,7 @@ namespace Frosty
 			{
 				m_CameraData.CamSpeed = m_CameraData.CamSpeed * 3.0f;
 			}
-			m_CameraData.Pos -= m_CameraData.CamSpeed * m_CameraData.LookAtVec;
+			m_CameraData.Pos -= m_CameraData.CamSpeed * glm::vec3(0.0f, 0.0f, -1.5f);
 		}
 		if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
 		{

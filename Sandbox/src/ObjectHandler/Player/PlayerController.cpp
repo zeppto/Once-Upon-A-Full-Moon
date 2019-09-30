@@ -26,11 +26,11 @@ namespace Frosty
 
 		if (myImputManager.IsKeyPressed(GLFW_KEY_W))
 		{
-			movment += speed * glm::vec3(0.0f, 1.5f, 0.0f);
+			movment -= speed * glm::vec3(0.0f, 0.0f, 1.5f);
 		}
 		if (myImputManager.IsKeyPressed(GLFW_KEY_S))
 		{
-			movment -= speed * glm::vec3(0.0f, 1.5f, 0.0f);
+			movment += speed * glm::vec3(0.0f, 0.0f, 1.5f);
 		}
 		if (myImputManager.IsKeyPressed(GLFW_KEY_A))
 		{
@@ -43,11 +43,11 @@ namespace Frosty
 		//ta port sen
 		if (myImputManager.IsKeyPressed(GLFW_KEY_DOWN))
 		{
-			movment -= speed * glm::vec3(0.0f, 0.0f, 1.5f);
+			movment -= speed * glm::vec3(0.0f, 1.5f, 0.0f);
 		}
 		if (myImputManager.IsKeyPressed(GLFW_KEY_UP))
 		{
-			movment += speed * glm::vec3(0.0f, 0.0f, 1.5f);
+			movment += speed * glm::vec3(0.0f, 1.5f, 0.0f);
 		}
 		return movment;
 	}

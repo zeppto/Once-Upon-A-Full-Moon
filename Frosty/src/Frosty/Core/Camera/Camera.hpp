@@ -16,8 +16,8 @@ namespace Frosty
 			glm::mat4 View;
 			glm::mat4 Projection;
 
-			glm::vec3 Pos = glm::vec3(0.0f, 0.0f, 2.0f);
-			glm::vec3 LookAtVec = glm::vec3(0.0f, 0.0f, -1.0f);
+			glm::vec3 Pos = glm::vec3(1.3f, 6.5f, 3.0f);
+			glm::vec3 LookAtVec = glm::vec3(0.0f, -1.0f, -0.3f);
 			glm::vec3 UpVec = glm::vec3(0.0f, 1.0f, 0.0f);
 
 			float CamSpeed = 0.0f;

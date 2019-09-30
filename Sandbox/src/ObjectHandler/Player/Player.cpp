@@ -1,12 +1,11 @@
-#include "fypch.hpp"
 #include "Player.hpp"
 
 
 	Player::Player(glm::vec3 color, glm::vec3 position, glm::vec3 rotation, glm::vec3 scale)
 	{
 		
-		m_renderData.model_ptr = Frosty::Assetmanager::GetAssetmanager()->GetModeltemplateMetaData("clock")->GetData();
-		m_renderData.material_Ptr = Frosty::Assetmanager::GetAssetmanager()->GetMaterialMetaData("Mat_0:clock")->GetData();
+		m_renderData.model_ptr = Frosty::Assetmanager::GetAssetmanager()->GetModeltemplateMetaData("tempPlayer")->GetData();
+		m_renderData.material_Ptr = Frosty::Assetmanager::GetAssetmanager()->GetMaterialMetaData("Mat_0:tempPlayer")->GetData();
 		
 
 
