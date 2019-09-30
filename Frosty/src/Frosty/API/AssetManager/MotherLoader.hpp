@@ -3,13 +3,7 @@
 #include"AssetFiles/ModelTemplate.hpp"
 #include<Luna/include/Reader.h>
 #include"AssetFiles/TextureFile.hpp"
-
-
-
-#include "ft2build.h"
-#include FT_FREETYPE_H
-
-#include "FreeType/freetype.h"
+#include "AssetFiles/TrueTypeFile.hpp"
 
 //or enums?
 
@@ -27,8 +21,6 @@ namespace Frosty
 
 	extern 	struct FileMetaData;
 
-
-
 	enum FileType
 	{
 		JPG,
@@ -36,12 +28,9 @@ namespace Frosty
 		LUNA
 	};
 
-
 	class MotherLoader
 	{
 	public: //variables
-
-
 
 	private: //variables
 
@@ -67,7 +56,6 @@ namespace Frosty
 
 		friend class Assetmanager;
 
-
 	public: //functions
 		static MotherLoader* GetMotherLoader();
 		~MotherLoader();
@@ -82,11 +70,7 @@ namespace Frosty
 
 		void PrintLoadingAttemptInformation() const;
 
-
-
-
 	private: //functions
-
 
 		inline static void Delete() { if (s_Instance != nullptr) { delete s_Instance; } }
 		bool GetFileInformation(FileMetaData& FileNameInformation);
@@ -94,15 +78,10 @@ namespace Frosty
 
 		//AssetManager Filler Functions
 
-		bool LoadFontFile(const FileNameInfo& FileNameInformation, const bool& Reload = false);
+		bool LoadFontFile(const FileMetaData& FileNameInformation, const bool& Reload = false);
 		bool LoadLunaFile(const FileMetaData& FileNameInformation, const bool& Reload = false);
 		bool LoadGraphicFile(const FileMetaData& FileNameInformation, const bool& Reload = false);
-
-
 	};
-
-
-
 }
 
 

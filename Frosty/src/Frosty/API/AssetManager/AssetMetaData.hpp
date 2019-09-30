@@ -17,12 +17,10 @@ namespace Frosty
 	template<class T>
 	class AssetMetaData
 	{
-		//Variables
+	//Variables
 	public:
 
-
-
-		//Variables
+	//Variables
 	private:
 
 		static int32_t s_Asset_ID;
@@ -83,7 +81,6 @@ namespace Frosty
 
 		//Functions
 	private:
-
 
 	};
 

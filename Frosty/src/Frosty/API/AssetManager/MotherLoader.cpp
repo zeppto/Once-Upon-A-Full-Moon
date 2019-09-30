@@ -53,7 +53,7 @@ namespace Frosty
 				break;
 
 			case TTF:
-				//returnValue = LoadFontFile(TempFileInfo, Reload);
+				returnValue = LoadFontFile(TempFileInfo, Reload);
 				break;
 
 			default:
@@ -98,14 +98,12 @@ namespace Frosty
 	{
 		bool returnValue = false;
 
-
 		std::string temp_Name = "";
 		std::string temp_Type = "";
 
 		size_t count = (FileNameInformation.FullFilePath.size() - 1);
 		while (FileNameInformation.FullFilePath[count] != '.' && count > 0)
 		{
-
 			temp_Type.push_back(FileNameInformation.FullFilePath[count]);
 			count--;
 		}
@@ -126,10 +124,9 @@ namespace Frosty
 				{
 					break;
 				}
-
 			}
 
-			//std::reverse(temp_Name.begin(), temp_Name.end());
+			std::reverse(temp_Name.begin(), temp_Name.end());
 			FileNameInformation.FileName = temp_Name;
 			FileNameInformation.FilePath = temp_Name + "." + temp_Type;
 		}
@@ -154,21 +151,22 @@ namespace Frosty
 		{
 			return LUNA;
 		}
+		else if (fileType == FILE_TYPE_TTF)
+		{
+			return TTF;
+		}
 
 		return -1;
 	}
 
 	bool MotherLoader::LoadLunaFile(const FileMetaData& FileNameInformation, const bool& Reload)
 	{
-
 		bool returnValue = false;
 
 		Luna::Reader tempFile;
 
 		if (tempFile.readFile(FileNameInformation.FullFilePath.c_str()))
 		{
-
-
 			auto temp_AssetManager = Assetmanager::GetAssetmanager();
 
 			std::shared_ptr<ModelTemplate> mod_ptr = nullptr;
@@ -233,31 +231,19 @@ namespace Frosty
 				{
 					tempFile.getKeyframes(mod_ptr->GetJointVector()->at(i).jointID, *mod_ptr->GetKeyframes(mod_ptr->GetJointVector()->at(i).jointID));
 				}
-
-
-
-
 				mod_ptr->LoadModelToGpu();
-
 			}
 			else
 			{
 				if (Reload)
 				{
-
 					FY_CORE_INFO("Trying To Reload a ModelTemplate: {0}", FileNameInformation.FileName);
-
-
 				}
 				else
 				{
 					FY_CORE_INFO("ModelTemplate Already Loaded, File: {0}", FileNameInformation.FileName);
 				}
-
-
 			}
-
-
 
 			//Get Material Names
 			std::vector<Luna::Material> tempMatVector;
@@ -265,15 +251,11 @@ namespace Frosty
 
 			std::shared_ptr<LinkedMaterial> tempMatPtr = nullptr;
 
-
-
 			std::string MaterialAssetName = "Could not Load Material";
-
 
 			//Add Materials to holder
 			for (int i = 0; i < tempMatVector.size(); i++)
 			{
-
 				//tempMatVector.at(i).diffuseTexPath Chop Name???
 
 				//Load Textures to materials
@@ -308,9 +290,6 @@ namespace Frosty
 			{
 				PrefabManager::GetPrefabManager()->setPrefab(FileNameInformation.PreFab_Name, FileNameInformation.FileName, MaterialAssetName);
 			}
-
-
-
 		}
 		else
 		{
@@ -321,75 +300,33 @@ namespace Frosty
 
 	bool MotherLoader::LoadGraphicFile(const FileMetaData& FileNameInformation, const bool& Reload)
 	{
-		bool returnValue = false;
+		bool returnValue = true;
 
 		std::shared_ptr<TextureFile> tempTexturePtr = Assetmanager::GetAssetmanager()->AddNewTextureTemplate(FileNameInformation);
 
-		if (tempTexturePtr != nullptr)
-		{
-			if (tempTexturePtr->LoadToGpu())
-			{
-				returnValue = true;
-			}
-			else
-			{
-				FY_CORE_WARN("Could not load Image to GPU, Name: {0}", FileNameInformation.FileName);
-			}
-		}
-		else
+		if (tempTexturePtr == nullptr)
 		{
 			FY_CORE_WARN("Could not load Image, Name: {0}", FileNameInformation.FileName);
+			returnValue = false;
 		}
 
 		return returnValue;
 	}
 
-	bool MotherLoader::LoadFontFile(const FileNameInfo& FileNameInformation, const bool& Reload)
+	bool MotherLoader::LoadFontFile(const FileMetaData& FileNameInformation, const bool& Reload)
 	{
-		bool returnValue = false;
+		bool returnValue = true;
 
-		//FT_Library freetype;
-		//FT_Face m_face;
-		//if (FT_Init_FreeType(&freetype))
-		//{
-		//	FY_CORE_ERROR("ERROR::FREETYPE: FreeType library could not be initialized.");
-		//	return false;
-		//}
-		//else
-		//{
-		//	FY_CORE_INFO("INFO::FREETYPE: FreeType successfully initialized.");
-		//}
+		std::shared_ptr<TrueTypeFile> tempTrueTypePtr = Assetmanager::GetAssetmanager()->AddNewFontTemplate(FileNameInformation);
 
-		//std::string path = FY_FONTS_FOLDER_ROOT;
-		//if (FT_New_Face(freetype, FileNameInformation.m_FilePath, 0, &m_face))
-		//{
-		//	FY_CORE_ERROR("ERROR::FREETYPE: Failed to load font.");
-		//	return false;
-		//}
-		//else
-		//{
-		//	FY_CORE_INFO("INFO::FREETYPE: Font successfully loaded.");
-		//}
-
-		//FT_Set_Pixel_Sizes(m_face, 0, m_fontSize);
-
-		//if (FT_Load_Char(m_face, 'X', FT_LOAD_RENDER))
-		//{
-		//	FY_CORE_ERROR("ERROR::FREETYPE: Failed to load glyph.");
-		//}
-		//else
-		//{
-		//	FY_CORE_INFO("INFO::FREETYPE: Glyph successfully loaded.");
-		//}
-
-		//FT_Done_Face(m_face);
-		//FT_Done_FreeType(freetype);
+		if (tempTrueTypePtr == nullptr)
+		{
+			FY_CORE_WARN("Could not load font, Name: {0}", FileNameInformation.FileName);
+			returnValue = false;
+		}
 
 		return returnValue;
 	}
-
-
-
 }
 
 

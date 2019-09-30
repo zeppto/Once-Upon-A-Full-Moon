@@ -137,6 +137,31 @@ namespace Frosty
 		return returnValue;
 	}
 
+	std::shared_ptr<TrueTypeFile> Assetmanager::AddNewFontTemplate(const FileMetaData& MetaData)
+	{
+		std::shared_ptr<TrueTypeFile> returnValue = nullptr;
+
+		if (!FontLoaded(MetaData.FileName))
+		{
+			m_Font_Name_Vector.emplace_back(MetaData.FileName);
+
+			AssetMetaData<TrueTypeFile>* tempTrueTypeMetadata = &m_Font_MetaData_Map[MetaData.FileName];
+			tempTrueTypeMetadata->SetFileMetaData(MetaData);
+			tempTrueTypeMetadata->SetRefData(TrueTypeFile(MetaData.FullFilePath));
+
+			if (tempTrueTypeMetadata->GetData()->LoadFont())
+			{
+				returnValue = tempTrueTypeMetadata->GetData();
+			}
+		}
+		else
+		{
+			FY_CORE_WARN("Font already loaded, filename: {0}", MetaData.FileName);
+		}
+
+		return returnValue;
+	}
+
 	std::shared_ptr<TextureFile> Assetmanager::AddNewTextureTemplate(const FileMetaData& MetaData)
 	{
 		std::shared_ptr<TextureFile> returnValue = nullptr;
@@ -440,6 +465,18 @@ namespace Frosty
 		{
 			if (m_Texture_File_Name_Vector.at(i) == FileName)
 			{
+				returnValue = true;
+			}
+		}
+
+		return returnValue;
+	}
+
+	bool Assetmanager::FontLoaded(const std::string& FileName)
+	{
+		bool returnValue = false;
+		for (int i = 0; i < m_Font_Name_Vector.size(); i++) {
+			if (m_Font_Name_Vector.at(i) == FileName) {
 				returnValue = true;
 			}
 		}

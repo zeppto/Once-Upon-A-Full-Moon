@@ -32,9 +32,7 @@ namespace Frosty
 		ECS::ComponentManager<ECS::CTransform> cManager;
 		InitPrefabBuffers();
 		InitShaders();
-
-		UIText test;
-		test.LoadFont();
+		MotherLoader::GetMotherLoader()->LoadFiles();
 	}
 
 	Application::~Application()

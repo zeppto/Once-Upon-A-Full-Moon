@@ -31,9 +31,9 @@ namespace Frosty
 		glm::vec2 m_pos;
 		uint32_t m_fontSize;
 
-		FT_Face m_face;
+		//FT_Face m_face;
 
-		std::map<char, Character> m_characters;
+		//std::map<char, Character> m_characters;
 
 	public:
 		UIText(std::string text = "test", std::string font = "Gabriola.ttf", uint32_t fontSize = 32);
