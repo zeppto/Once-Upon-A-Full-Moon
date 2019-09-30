@@ -10,6 +10,7 @@
 
 #define FY_PROJECT_FOLDER_ROOT "../../../Frosty/"
 #define FY_ASSETS_FOLDER_ROOT FY_PROJECT_FOLDER_ROOT "assets/"
+#define FY_FONTS_FOLDER_ROOT FY_ASSETS_FOLDER_ROOT "Fonts/"
 #define FY_SHADERS_FOLDER_ROOT FY_ASSETS_FOLDER_ROOT "shaders/"
 
 // Shaders

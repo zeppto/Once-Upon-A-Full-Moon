@@ -3,6 +3,8 @@
 #include <glad/glad.h>
 #include "Frosty/RenderEngine/Renderer.hpp"
 
+#include "Frosty/UI/UIText.h"
+
 namespace Frosty
 {
 	Application* Application::s_Instance = nullptr;
@@ -25,6 +27,9 @@ namespace Frosty
 		ECS::ComponentManager<ECS::CTransform> cManager;
 		InitPrefabBuffers();
 		InitShaders();
+
+		UIText test;
+		test.LoadFont();
 	}
 
 	Application::~Application()

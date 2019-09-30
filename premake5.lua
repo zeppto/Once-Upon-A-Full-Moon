@@ -19,6 +19,8 @@ IncludeDir["Glad"] = "Frosty/vendor/Glad/include"
 IncludeDir["ImGui"] = "Frosty/vendor/imgui"
 IncludeDir["glm"] = "Frosty/vendor/glm"
 IncludeDir["Luna"] = "Frosty/vendor/Luna"
+IncludeDir["stb_image"] = "Frosty/vendor/stb_image"
+IncludeDir["FreeType"] = "Frosty/vendor/FreeType/include"
 
 group "Dependencies"
 	include "Frosty/vendor/GLFW"
@@ -45,7 +47,9 @@ project "Frosty"
 		"%{prj.name}/src/**.h",
 		"%{prj.name}/src/**.c",
 		"%{prj.name}/src/**.hpp",
-		"%{prj.name}/src/**.cpp"
+		"%{prj.name}/src/**.cpp",
+		"%{prj.name}/vendor/stb_image/**.h",
+		"%{prj.name}/vendor/stb_image/**.cpp"
 	}
 
 	includedirs
@@ -53,18 +57,20 @@ project "Frosty"
 		"%{prj.name}/src",
 		"%{prj.name}/vendor",
 		"%{prj.name}/vendor/spdlog/include",
-		"%{prj.name}/vendor/STB/include",
 		"%{IncludeDir.GLFW}",
 		"%{IncludeDir.Glad}",
 		"%{IncludeDir.ImGui}",
 		"%{IncludeDir.Luna}",
-		"%{IncludeDir.glm}"
+		"%{IncludeDir.glm}",
+		"%{IncludeDir.stb_image}",
+		"%{IncludeDir.FreeType}"
 	}
 
 	libdirs
 	{
 		"%{prj.name}/vendor/GLFW/lib",
-		"%{prj.name}/vendor/Luna/lib"
+		"%{prj.name}/vendor/Luna/lib",
+		"%{prj.name}/vendor/FreeType/lib"
 	}
 
 	links
@@ -72,7 +78,8 @@ project "Frosty"
 		"GLFW",
 		"Glad",
 		"ImGui",
-		"opengl32.lib"
+		"opengl32.lib",
+		"freetype.lib"
 	}
 
 	filter "system:windows"
@@ -144,7 +151,8 @@ project "Sandbox"
 		"%{IncludeDir.GLFW}",
 		"%{IncludeDir.Glad}",
 		"%{IncludeDir.ImGui}",
-		"%{IncludeDir.glm}"
+		"%{IncludeDir.glm}",
+		"%{IncludeDir.FreeType}"
 	}
 
 	links
