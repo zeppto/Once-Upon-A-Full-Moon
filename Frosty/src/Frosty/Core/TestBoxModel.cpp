@@ -5,9 +5,10 @@
 
 namespace Frosty
 {
-	TestBoxModel::TestBoxModel(glm::vec3 color, glm::vec3 position, glm::vec3 rotation, glm::vec3 scale)
+	TestBoxModel::TestBoxModel(glm::vec3 color, glm::vec3 position, glm::vec3 rotation, glm::vec3 scale, int maxHp)
 	{
 		this->m_Color = color;
+		//this->m_Color.g = 0.0f;
 
 		this->m_Rotation = rotation;
 		this->m_Pos = position;
@@ -20,7 +21,6 @@ namespace Frosty
 		this->m_ShouldRender = true;
 
 		this->m_World = glm::mat4(1.0f);
-		Update(position, rotation, scale);
 
 		this->m_HitBoxCenter = glm::vec3(0.0f);
 		this->m_HitBoxLength = glm::vec3(0.5f);
@@ -36,6 +36,11 @@ namespace Frosty
 		//		m_Min[i] = tempMax;
 		//	}
 		//}
+		this->m_MaxHp = maxHp;
+		this->m_Hp = m_MaxHp;
+
+		Update(position, rotation, scale);
+
 	}
 
 	TestBoxModel::~TestBoxModel()
@@ -131,6 +136,7 @@ namespace Frosty
 			glUniformMatrix4fv(1, 1, GL_FALSE, glm::value_ptr(viewMatrix));
 			glUniformMatrix4fv(2, 1, GL_FALSE, glm::value_ptr(projectionMatrix));
 			glUniformMatrix4fv(3, 1, GL_FALSE, glm::value_ptr(m_World));
+			glUniform3fv(4, 1, glm::value_ptr(m_Color));
 
 
 			glBindVertexArray(this->m_TestBoxVBO);
@@ -164,6 +170,39 @@ namespace Frosty
 		this->m_Pos = pos;
 	}
 
+	void TestBoxModel::SetHp(int hp)
+	{
+		m_Hp = hp;
+	}
+
+	void TestBoxModel::SetMaxHp(int maxHp)
+	{
+		m_MaxHp = maxHp;
+	}
+
+	int TestBoxModel::GetHp()
+	{
+		return m_Hp;
+	}
+
+	void TestBoxModel::IsAttacked(bool isAttacked)
+	{
+		if (isAttacked)
+			m_Hp--;
+	}
+
+	bool TestBoxModel::Attacked()
+	{
+		if (m_IsPlayer)
+		{
+			return m_TheAttacks.playerCanAttack;
+		}
+		else
+		{
+			return false;
+		}
+	}
+
 	glm::vec3 TestBoxModel::GetHitBoxLength()
 	{
 		//rotatin? scaler?
@@ -194,14 +233,23 @@ namespace Frosty
 		m_Pos = position;
 		m_Rotation = rotation;
 		m_Scale = scale;
+
+		m_Color.g = 1 - ((float)m_Hp / m_MaxHp);
+
+		if (m_Hp <= 0)
+			m_ShouldRender = false;
 	}
 	void TestBoxModel::Update()
 	{
 		//if Player get movment
 		if (m_IsPlayer)
 		{
-			m_Pos += m_PlayerController.PlayerControllerUpdate();
+			m_Pos += m_PlayerController.PlayerControllerMovement();
+
+			m_TheAttacks = m_PlayerController.PlayerControllerAttacks();
 		}
+		if (m_TheAttacks.enemyCanAttack)
+			m_Hp--;
 
 		m_World = glm::mat4(1.0f);
 		m_World = glm::translate(m_World, m_Pos);
@@ -209,6 +257,11 @@ namespace Frosty
 		m_World = glm::rotate(m_World, glm::radians(m_Rotation.y), glm::vec3(0.0f, 1.0f, 0.0f));
 		m_World = glm::rotate(m_World, glm::radians(m_Rotation.z), glm::vec3(0.0f, 0.0f, 1.0f));
 		m_World = glm::scale(m_World, m_Scale);
+
+		m_Color.g = 1 - ((float)m_Hp / m_MaxHp);
+
+		if (m_Hp <= 0)
+			m_ShouldRender = false;
 
 	}
 }

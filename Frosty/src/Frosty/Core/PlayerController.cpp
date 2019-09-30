@@ -15,7 +15,7 @@ namespace Frosty
 	{
 	}
 
-	glm::vec3 PlayerController::PlayerControllerUpdate()
+	glm::vec3 PlayerController::PlayerControllerMovement()
 	{
 		InputManager myImputManager;
 		glm::vec3 movment(0.0f);
@@ -50,5 +50,37 @@ namespace Frosty
 			movment += speed * glm::vec3(0.0f, 0.0f, 1.5f);
 		}
 		return movment;
+	}
+	Attacks PlayerController::PlayerControllerAttacks()
+	{
+		Attacks myAttack;
+		InputManager myImputManager;
+		m_EnemyCooldown -= m_DeltaTime;
+		m_PlayerCooldown -= m_DeltaTime;
+		if (myImputManager.IsKeyPressed(GLFW_KEY_ENTER))
+		{
+			myAttack.enemyIsAttacking = true;
+			if (m_EnemyCooldown < 0)
+			{
+				myAttack.enemyCanAttack = true;
+				m_EnemyCooldown = 0.5f;
+			}
+			else
+				myAttack.enemyCanAttack = false;
+		}
+
+		if (myImputManager.IsKeyPressed(GLFW_KEY_SPACE))
+		{
+			myAttack.playerIsAttacking = true;
+			if (m_PlayerCooldown < 0)
+			{
+				myAttack.playerCanAttack = true;
+				m_PlayerCooldown = 0.5f;
+			}
+			else
+				myAttack.playerCanAttack = false;
+		}
+
+		return myAttack;
 	}
 }

@@ -8,7 +8,7 @@ namespace Frosty
 	{
 	public:
 		TestBoxModel(glm::vec3 color = glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3 position = glm::vec3(0.0f, 0.0f, 0.0f),
-			glm::vec3 rotation = glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3 scale = glm::vec3(1.0f, 1.0f, 1.0f));
+			glm::vec3 rotation = glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3 scale = glm::vec3(1.0f, 1.0f, 1.0f), int maxHp = 10);
 		~TestBoxModel();
 
 		void SetUp();
@@ -19,6 +19,14 @@ namespace Frosty
 		void SetIsPlayer(bool isPlayer);
 		void SetShouldRender(bool shouldRender);
 		void SetPosition(glm::vec3 pos);
+		//hp flytta
+		void SetHp(int hp);
+		void SetMaxHp(int maxHp);
+
+		int GetHp();
+
+		void IsAttacked(bool isAttacked);
+		bool Attacked();
 
 		//glm::vec3 GetMax();
 		//glm::vec3 GetMin();
@@ -37,6 +45,11 @@ namespace Frosty
 		glm::mat4 m_World;
 		bool m_IsPlayer, m_ShouldRender;
 		PlayerController m_PlayerController;
+		//flytta (saker för hp)
+		int m_Hp, m_MaxHp;
+		bool m_IsHit;
+		float m_timeLeftAfterHit;
+		Attacks m_TheAttacks;
 	};
 }
 

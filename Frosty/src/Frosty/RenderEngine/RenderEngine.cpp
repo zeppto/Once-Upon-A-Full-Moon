@@ -94,6 +94,7 @@ namespace Frosty
 		CreateTestModel();
 		m_TestBox.SetUp();
 		m_TestBox2.SetUp();
+		m_TestBox3.SetUp();
 		m_TestPlayer.SetColor(glm::vec3(0.0f, 0.0f, 1.0f));
 		m_TestPlayer.SetPosition(glm::vec3(0.0f, 2.0f, -1.0f));
 		m_TestPlayer.SetUp();
@@ -112,10 +113,12 @@ namespace Frosty
 		{
 			m_TestBox.SetShaderProgram(m_ShaderProgramVector.at(TEST_SHAPE));
 			m_TestBox2.SetShaderProgram(m_ShaderProgramVector.at(TEST_SHAPE));
+			m_TestBox3.SetShaderProgram(m_ShaderProgramVector.at(TEST_SHAPE));
 			m_TestPlayer.SetShaderProgram(m_ShaderProgramVector.at(TEST_SHAPE));
 			RenderAllTestModels();
 			m_TestBox.Update(glm::vec3(3, 0, -1), glm::vec3(0.0f), glm::vec3(1.0f));
 			m_TestBox2.Update(glm::vec3(-2, -1, -1), glm::vec3(0.0f), glm::vec3(1.0f));
+			m_TestBox3.Update(glm::vec3(-1, -2, -1), glm::vec3(0.0f), glm::vec3(1.0f));
 			//m_TestPlayer.Update(glm::vec3(0.0f, 3.0f, -3.0f) + m_Camera->GetPos(), glm::vec3(0.0f), glm::vec3(1.0f));
 			m_TestPlayer.Update();
 			if (m_CollisionDetection.AABBIntersect(m_TestPlayer.GetHitBoxLength(),
@@ -132,13 +135,18 @@ namespace Frosty
 
 			m_TestPlayer.SetPosition(m_TestPlayer.GetPos() - m_CollisionDetection.AABBIntersecPushback(m_TestPlayer.GetHitBoxLength(),
 				m_TestPlayer.GetHitBoxCenter(), m_TestBox2.GetHitBoxLength(), m_TestBox2.GetHitBoxCenter()));
+			m_TestPlayer.SetPosition(m_TestPlayer.GetPos() - m_CollisionDetection.AABBIntersecPushback(m_TestPlayer.GetHitBoxLength(),
+				m_TestPlayer.GetHitBoxCenter(), m_TestBox3.GetHitBoxLength(), m_TestBox3.GetHitBoxCenter()));
 			//if (m_CollisionDetection.AABBIntersect(m_TestPlayer.GetHitBoxLength(),
 			//	m_TestPlayer.GetHitBoxCenter(), m_TestBox2.GetHitBoxLength(), m_TestBox2.GetHitBoxCenter()))
 			//	m_TestBox2.SetShouldRender(false);
 			//else
 			//	m_TestBox2.SetShouldRender(true);
+			m_TestBox2.IsAttacked(m_TestPlayer.Attacked());
+
 			m_TestBox.Render(m_Camera->GetView(), m_Camera->GetProjection());
 			m_TestBox2.Render(m_Camera->GetView(), m_Camera->GetProjection());
+			m_TestBox3.Render(m_Camera->GetView(), m_Camera->GetProjection());
 			m_TestPlayer.Render(m_Camera->GetView(), m_Camera->GetProjection());
 
 
@@ -227,16 +235,16 @@ namespace Frosty
 		
 		glUseProgram(m_ShaderProgramVector.at(TEST_SHAPE));
 		
-		for (int i = 0; i < 4; i++)
+		for (int i = 0; i < 1; i++)
 		{
 			glUniformMatrix4fv(1, 1, GL_FALSE, &m_Camera->GetView()[0][0]);
 			glUniformMatrix4fv(2, 1, GL_FALSE, &m_Camera->GetProjection()[0][0]);
 			glm::mat4 world = glm::mat4(1.0f);
 			world = glm::translate(world, glm::vec3(0, 0, -2));
 			world = glm::scale(world, glm::vec3(10.0f, 10.0f, 0.0f));
-
-
 			glUniformMatrix4fv(3, 1, GL_FALSE, glm::value_ptr(world));
+			glm::vec3 color = glm::vec3(0.0f, 1.0f, 0.0f);
+			glUniform3fv(4, 1, glm::value_ptr(color));
 
 
 			glBindVertexArray(this->m_testTriangleVBO);

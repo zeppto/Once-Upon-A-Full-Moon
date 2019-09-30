@@ -32,6 +32,7 @@ namespace Frosty
 		unsigned int m_testTriangleVBO = 0;
 		TestBoxModel m_TestBox;
 		TestBoxModel m_TestBox2;
+		TestBoxModel m_TestBox3;
 		TestBoxModel m_TestPlayer;
 		CollisionDetection m_CollisionDetection;
 
