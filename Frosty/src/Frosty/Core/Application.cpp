@@ -3,6 +3,8 @@
 #include <glad/glad.h>
 #include "Frosty/RenderEngine/Renderer.hpp"
 
+#include "Frosty/UI/UIText.h"
+
 namespace Frosty
 {
 	Application* Application::s_Instance = nullptr;
@@ -19,7 +21,7 @@ namespace Frosty
 
 		m_Window = std::make_unique<Window>(Window());
 
-		EventBus::GetEventBus()->Subscribe<Application, BaseEvent>(this, &Application::OnEvent)     ;
+		EventBus::GetEventBus()->Subscribe<Application, BaseEvent>(this, &Application::OnEvent);
 
 		m_ImGuiLayer = new ImGuiLayer();
 		PushOverlay(m_ImGuiLayer);
@@ -27,6 +29,9 @@ namespace Frosty
 		ECS::ComponentManager<ECS::CTransform> cManager;
 		InitPrefabBuffers();
 		InitShaders();
+
+		UIText test;
+		test.LoadFont();
 	}
 
 	Application::~Application()
@@ -152,7 +157,6 @@ namespace Frosty
 
 	void Application::Run()
 	{
-		StateMachine states;
 
 		states.AddState(Frosty::StateRef(new MainMenuState(s_Instance)), false);
 		states.ProcessStateChanges();
@@ -162,6 +166,11 @@ namespace Frosty
 		{
 
 			states.GetActiveState()->OnUpdate();
+			if (mainMenuReturn == true)
+			{
+				states.AddState(Frosty::StateRef(new MainMenuState(s_Instance)), true);
+				mainMenuReturn = false;
+			}
 			states.ProcessStateChanges();
 
 			/// Frame Start
@@ -286,5 +295,9 @@ namespace Frosty
 		//{
 		//	std::cout << "Options was clicked!!" << std::endl;
 		//}
+		if (e.GetKeyCode() == GLFW_KEY_M)
+		{
+			states.GetActiveState()->OnInput();
+		}
 	}
 }

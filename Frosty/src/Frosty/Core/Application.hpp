@@ -49,6 +49,11 @@ namespace Frosty
 		inline InputManager& GetInputManager() { return m_InputManager; }
 		static inline Application& Get() { return *s_Instance; }
 
+		//~~ States stuff, temp
+		inline StateMachine& getStateMachine() { return states; }
+		void setMainMenuReturn(bool ret) { mainMenuReturn = ret; }
+		bool getMainMenuReturn() { return mainMenuReturn; }
+
 		// ECS Stuff (TEMPORARY)
 		const ECS::EntityManager& GetEntityManager() const { return m_EntityManager; }
 		std::shared_ptr<ECS::Entity>& CreateEntity() { return m_EntityManager.CreateEntity(); }
@@ -68,6 +73,10 @@ namespace Frosty
 		//RenderEngine* m_RenderEngine;
 
 		static Application* s_Instance;
+
+		//~~ States stuff (temp)
+		StateMachine states;
+		bool mainMenuReturn;
 
 		// ECS stuff (TEMPORARY)
 		ECS::EntityManager m_EntityManager;
