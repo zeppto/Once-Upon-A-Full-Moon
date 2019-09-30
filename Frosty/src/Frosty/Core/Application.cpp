@@ -6,8 +6,7 @@ namespace Frosty
 {
 	Application* Application::s_Instance = nullptr;
 	
-	Application::Application()
-		: m_OrtoCamera(-1.6f, 1.6f, -0.9f, 0.9f)
+	Application::Application()		
 	{
 		Log::Init();
 		FY_CORE_INFO("Logger initialized..");
@@ -26,6 +25,7 @@ namespace Frosty
 
 		InitPrefabBuffers();
 		InitShaders();
+		m_Camera = new Camera();
 	}
 
 	Application::~Application()
@@ -33,6 +33,7 @@ namespace Frosty
 		EventBus::GetEventBus()->Delete();
 		glfwTerminate();
 		Assetmanager::Delete();
+		delete m_Camera;
 	}
 		
 	void Application::InitPrefabBuffers()
@@ -148,27 +149,22 @@ namespace Frosty
 	void Application::Run()
 	{
 		while (m_Running)
-		{
+		{			
 			/// Frame Start
 			Time::OnUpdate();
-
 			/// Input
-			
+
 			/// Update
 			for (Layer* layer : m_LayerHandler)
 			{
 				layer->OnUpdate();
 			}
-
-			//m_RenderEngine->UpdateCamera();
+			
 			/// Render
 			RenderCommand::SetClearColor({ 0.1f, 0.1f, 0.1f, 1.0f });
-			RenderCommand::Clear();			
+			RenderCommand::Clear();
 
-			m_OrtoCamera.SetPosition({ 0.5f, 0.5f, 0.0f });
-			m_OrtoCamera.SetRotation(45.0f);
-
-			Renderer::BeginScene(m_OrtoCamera);
+			Renderer::BeginScene(m_Camera);			
 			Renderer::Submit(m_Shader, m_VertexArray);
 			Renderer::EndScene();
 

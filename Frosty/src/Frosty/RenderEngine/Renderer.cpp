@@ -3,12 +3,13 @@
 #include "Renderer.hpp"
 
 namespace Frosty
-{	
+{
 	Renderer::SceneData* Renderer::m_SceneData = new Renderer::SceneData;
 
-	void Renderer::BeginScene(OrtoCamera& m_OrtoCamera)
+	void Renderer::BeginScene(Camera* m_Camera)
 	{
-		m_SceneData->ViewProjectionMatrix = m_OrtoCamera.GetViewProjectionMatrix();
+		m_SceneData->ViewProjectionMatrix = m_Camera->GetViewProjection();
+		m_Camera->CameraPositionUpdate();
 	}
 
 	void Renderer::EndScene()

@@ -9,6 +9,7 @@
 #include "Frosty/RenderEngine/Shader.hpp"
 #include "Frosty/RenderEngine/VertexArray.hpp"
 #include "Frosty/Core/Camera/OrtoCamera.hpp"
+#include "Frosty/Core/Camera/Camera.hpp"
 
 namespace Frosty
 {
@@ -58,8 +59,11 @@ namespace Frosty
 		
 		std::shared_ptr<Shader> m_Shader;
 		std::shared_ptr<VertexArray> m_VertexArray;	
+		//std::shared_ptr<Camera> m_Camera;
+		Camera* m_Camera;
 
-		OrtoCamera m_OrtoCamera;
+		//OrtoCamera m_OrtoCamera;
+		//Camera m_Camera;
 	};
 }
 #endif 
