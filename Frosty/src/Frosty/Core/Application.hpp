@@ -2,7 +2,6 @@
 #define APPLICATION_HPP
 
 #include "Window.hpp"
-#include "ECS.hpp"
 #include "LayerHandler.hpp"
 #include "EventSystem.hpp"
 #include "Frosty/ImGui/ImGuiLayer.hpp"
@@ -10,6 +9,8 @@
 #include "Frosty/RenderEngine/Shader.hpp"
 #include "Frosty/RenderEngine/Buffer.hpp"
 #include "Frosty/RenderEngine/VertexArray.hpp"
+#include "Frosty/RenderEngine/Texture.hpp"
+#include "Frosty/API/Scene.hpp"
 
 namespace Frosty
 {
@@ -27,21 +28,20 @@ namespace Frosty
 
 		void OnEvent(BaseEvent& e);
 
-		// Layer functions
+		// Layer Functions
 		void PushLayer(Layer* layer);
 		void PushOverlay(Layer* layer);
 		void PopLayer(Layer* layer);
 		void PopOverlay(Layer* layer);
-
-		// RenderEngine
-		//RenderEngine* GetRenderEngine() { return m_RenderEngine; }
+		
+		// Scene Functions
+		std::unique_ptr<Scene>& CreateScene();
+		void DestroyScene();
+		std::unique_ptr<Scene>& GetScene();
+		const std::unique_ptr<Scene>& GetScene() const;
 
 		inline Window& GetWindow() { return *m_Window; }
 		static inline Application& Get() { return *s_Instance; }
-
-		// ECS Stuff (TEMPORARY)
-		const ECS::EntityManager& GetEntityManager() const { return m_EntityManager; }
-		std::shared_ptr<ECS::Entity>& CreateEntity() { return m_EntityManager.CreateEntity(); }
 
 	private:
 		void OnWindowCloseEvent(WindowCloseEvent& e);
@@ -51,26 +51,17 @@ namespace Frosty
 
 		ImGuiLayer* m_ImGuiLayer;
 		LayerHandler m_LayerHandler;
+		std::unique_ptr<Scene> m_Scene;
 
 		std::unique_ptr<Window> m_Window;
 
-		//RenderEngine* m_RenderEngine;
-
 		static Application* s_Instance;
 
-		// ECS stuff (TEMPORARY)
-		ECS::EntityManager m_EntityManager;
-
-	public:
-		std::array<std::shared_ptr<ECS::BaseComponentManager>, ECS::MAX_COMPONENTS> m_ComponentManagers;
-		unsigned int m_TotalComponentManagers{ 0 };
-
-
-		/// New ...
-		//-------------------------------------------------------------------------
-		
+		// Renderer Stuff (TEMPORARY)
 		std::shared_ptr<Shader> m_Shader;
-		std::shared_ptr<VertexArray> m_VertexArray;		
+		std::shared_ptr<VertexArray> m_VertexArray;
+		std::shared_ptr<Texture2D> m_Texture;
+
 	};
 }
 #endif 

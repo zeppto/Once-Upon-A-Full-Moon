@@ -3,16 +3,18 @@
 #include <glad/glad.h>
 #include "Frosty/RenderEngine/Renderer.hpp"
 
+
+
 namespace Frosty
 {
 	Application* Application::s_Instance = nullptr;
-	
+
 	Application::Application()
 	{
 		Log::Init();
 		FY_CORE_INFO("Logger initialized..");
 
-		// TODO: Error handling?
+		FY_CORE_ASSERT(!s_Instance, "Application already exists!");
 		s_Instance = this;
 
 		EventBus::GetEventBus()->Subscribe<Application, BaseEvent>(this, &Application::OnEvent);
@@ -23,23 +25,15 @@ namespace Frosty
 		m_ImGuiLayer = FY_NEW ImGuiLayer();
 		PushOverlay(m_ImGuiLayer);
 
-		//ECS::ComponentManager<ECS::CTransform> cManager;
+		m_Scene.reset(FY_NEW Scene());
+		m_Scene->Init();
 
-		//m_ComponentManagers[m_TotalComponentManagers++].reset(new ECS::ComponentManager<ECS::CTransform>);
-
-		//auto entity = m_EntityManager.CreateEntity();
-		//cManager.AddComponent(entity);
-
-		//FY_CORE_TRACE("{0}", ECS::ComponentInfo::GetComponentNameById(ECS::getComponentTypeID<ECS::CTransform>()));
-
-		ECS::ComponentManager<ECS::CTransform> cManager;
 		InitPrefabBuffers();
 		InitShaders();
 	}
 
 	Application::~Application()
 	{
-		//delete m_RenderEngine;
 		EventBus::GetEventBus()->Delete();
 		m_Window->Shutdown();
 		Assetmanager::Delete();
@@ -49,11 +43,12 @@ namespace Frosty
 	{
 		m_VertexArray.reset(VertexArray::Create());
 
-		float vertices[3 * 7] =
+		float vertices[4 * 5] =
 		{
-			-0.5f, -0.5f, 0.0f, 0.8f, 0.0f, 0.8f, 1.0f,
-			 0.5f, -0.5f, 0.0f, 0.2f, 0.3f, 0.8f, 1.0f,
-			 0.0f,  0.5f, 0.0f, 0.8f, 0.8f, 0.2f, 1.0f
+			-0.5f, -0.5f, 0.0f, 0.0f, 0.0,
+			 0.5f, -0.5f, 0.0f, 1.0f, 0.0,
+			 0.5f,  0.5f, 0.0f, 1.0f, 1.0,
+			-0.5f,  0.5f, 0.0f, 0.0f, 1.0
 		};
 
 		std::shared_ptr<VertexBuffer> m_VertexBuffer;
@@ -61,14 +56,17 @@ namespace Frosty
 
 		BufferLayout layout =
 		{
-			{ ShaderDataType::Float3, "vsInPos" },
-			{ ShaderDataType::Float4, "vsInCol" }
+			{ ShaderDataType::Float3, "a_Position" },
+			{ ShaderDataType::Float2, "a_TexCoord" }
 		};
 
 		m_VertexBuffer->SetLayout(layout);
 		m_VertexArray->AddVertexBuffer(m_VertexBuffer);
 
-		uint32_t indices[3] = { 0, 1, 2 };
+		uint32_t indices[2 * 3] = {
+			0, 1, 2,
+			2, 3, 0
+		};
 		std::shared_ptr<IndexBuffer> m_IndexBuffer;
 		m_IndexBuffer.reset(IndexBuffer::Create(indices, sizeof(indices) / sizeof(uint32_t)));
 		m_VertexArray->SetIndexBuffer(m_IndexBuffer);
@@ -79,36 +77,38 @@ namespace Frosty
 		std::string VertexSrc = R"(
 			#version 440 core
 			
-			layout(location = 0) in vec3 vsInPos;
-			layout(location = 1) in vec4 vsInCol;
+			layout(location = 0) in vec3 a_Position;
+			layout(location = 1) in vec2 a_TexCoord;
 			
-			out vec3 vsOutPos;
-			out vec4 vsOutCol;
-			
+			out vec2 v_TexCoord;
+
 			void main()
 			{
-				gl_Position = vec4(vsInPos, 1.0f);
-				vsOutPos = vsInPos;
-				vsOutCol = vsInCol;
+				v_TexCoord = a_TexCoord;
+				gl_Position = vec4(a_Position, 1.0f);
 			}
 		)";
 		std::string FragmentSrc = R"(
 			#version 440 core
 
-			in vec3 vsOutPos;
-			in vec4 vsOutCol;
-
-			layout(location = 0) out vec4 fsOutCol;
+			layout(location = 0) out vec4 color;
 			
+			uniform sampler2D u_Texture;
+
+			in vec2 v_TexCoord;
+
 			void main()
 			{
-				//fsOutCol = vec4(0.8f, 0.2f, 0.3f, 1.0f);
-				//fsOutCol = vec4(vsOutPos + 0.5f, 1.0f);				
-				fsOutCol = vsOutCol;
+				color = texture(u_Texture, v_TexCoord);
 			}
 		)";
 
 		m_Shader.reset(new Shader(VertexSrc, FragmentSrc));
+
+		m_Texture.reset(FY_NEW Texture2D("assets/textures/Checkerboard.png"));
+
+		m_Shader->Bind();
+		m_Shader->UploadUniformInt("u_Texture", 0);
 	}
 
 	void Application::Run()
@@ -118,23 +118,8 @@ namespace Frosty
 			/// Frame Start
 			Time::OnUpdate();
 
-			// TEMPORARY
-			glClearColor(1.0f, 0.0f, 1.0f, 1.0f);
-			glClear(GL_DEPTH_BITS);
-
 			/// Input			
 			
-			RenderCommand::SetClearColor({ 0.1f, 0.1f, 0.1f, 1.0f });
-			RenderCommand::Clear();
-
-			Renderer::BeginScene();
-
-			m_Shader->Bind();
-			Renderer::Submit(m_VertexArray);
-
-			Renderer::EndScene();
-
-			/// Input
 
 			/// Update
 			for (Layer* layer : m_LayerHandler)
@@ -142,9 +127,17 @@ namespace Frosty
 				layer->OnUpdate();
 			}
 
-			//m_RenderEngine->UpdateCamera();
 			/// Render
-			//m_RenderEngine->Render();
+			RenderCommand::SetClearColor({ 0.2f, 0.2f, 0.2f, 1.0f });
+			RenderCommand::Clear();
+
+			Renderer::BeginScene();
+
+			m_Texture->Bind();
+			m_Shader->Bind();
+			Renderer::Submit(m_VertexArray);
+
+			Renderer::EndScene();
 
 			m_ImGuiLayer->Begin();
 			for (Layer* layer : m_LayerHandler)
@@ -190,6 +183,33 @@ namespace Frosty
 			m_LayerHandler.PopOverlay(layer);
 		}
 		delete layer;
+	}
+
+	std::unique_ptr<Scene>& Application::CreateScene()
+	{
+		m_Scene.reset(FY_NEW Scene());
+
+		return m_Scene;
+	}
+
+	void Application::DestroyScene()
+	{
+		if (!m_Shader)
+		{
+			m_Scene.reset();;
+		}
+	}
+
+	std::unique_ptr<Scene>& Application::GetScene()
+	{
+		FY_CORE_ASSERT(m_Scene, "Scene needs to be created before it get retrieved.");
+		return m_Scene;
+	}
+
+	const std::unique_ptr<Scene>& Application::GetScene() const
+	{
+		FY_CORE_ASSERT(m_Scene, "Scene needs to be created before it get retrieved.");
+		return m_Scene;
 	}
 
 	void Application::OnEvent(BaseEvent& e)

@@ -30,6 +30,8 @@ namespace MCS
 
 	void InspectorLayer::OnImGuiRender()
 	{
+		auto& scene = m_App->GetScene();
+
 		static ImGuiDockNodeFlags opt_flags = ImGuiDockNodeFlags_None;
 		ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse;
 
@@ -52,25 +54,20 @@ namespace MCS
 			}
 			if (ImGui::Button("Create Entity", ImVec2(100.0f, 20.0f)))
 			{
-				m_App->CreateEntity();
-			}
-
-			if (ImGui::Button("Print Entities", ImVec2(100.0f, 20.0f)))
-			{
-				FY_TRACE("{0}", m_App->GetEntityManager());
+				scene->CreateEntity();
 			}
 
 			static int selection_mask = 0;
 			int node_clicked = -1;
-			for (size_t i = 0; i < m_App->GetEntityManager().GetTotalEntities(); i++)
+			for (size_t i = 0; i < scene->GetTotalEntities(); i++)
 			{
 				ImGuiTreeNodeFlags node_flags = ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen | ((selection_mask & (1 << i)) ? ImGuiTreeNodeFlags_Selected : 0); // ImGuiTreeNodeFlags_Bullet
-				Frosty::ECS::EntityID eid = m_App->GetEntityManager().At(i)->Id;
+				Frosty::ECS::EntityID eid = scene->At(i)->Id;
 				ImGui::TreeNodeEx((void*)(intptr_t)i, node_flags, "Entity (%d)", eid);
 				if (ImGui::IsItemClicked())
 				{
 					node_clicked = (int)i;
-					m_SelectedEntity = m_App->GetEntityManager().At(i);
+					m_SelectedEntity = scene->At(i);
 				}
 			}
 			if (node_clicked != -1)
@@ -78,7 +75,7 @@ namespace MCS
 				// Update selection state. Process outside of tree loop to avoid visual inconsistencies during the clicking-frame.
 				if (ImGui::GetIO().MouseClicked)
 					selection_mask = (1 << node_clicked);
-
+			
 				if (ImGui::GetIO().KeyCtrl)
 					selection_mask ^= (1 << node_clicked);          // CTRL+click to toggle
 				//else if (ImGui::GetIO().MouseClicked)

@@ -130,6 +130,18 @@ namespace Frosty
 		glUseProgram(0);
 	}
 
+	void Shader::UploadUniformInt(const std::string& name, int value)
+	{
+		GLuint location = glGetUniformLocation(m_RendererID, name.c_str());
+		glUniform1i(location, value);
+	}
+
+	void Shader::UploadUniformFloat2(const std::string& name, const glm::vec2& value)
+	{
+		GLuint location = glGetUniformLocation(m_RendererID, name.c_str());
+		glUniform2f(location, value.x, value.y);
+	}
+
 	void Shader::UploadUniformFloat4(const std::string & name, const glm::vec4 & value)
 	{
 		GLint location = glGetUniformLocation(m_RendererID, name.c_str());

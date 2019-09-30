@@ -192,14 +192,14 @@ namespace Frosty
 
 			inline const std::shared_ptr<Entity>& At(size_t index) const { return m_Entities.at(index); }
 
-			inline std::shared_ptr<Entity>& CreateEntity()
+			inline std::shared_ptr<Entity>& Create()
 			{
 				FY_CORE_INFO("Creating a new entity..");
 				m_Entities.emplace_back(FY_NEW Entity());
 				return m_Entities.back();
 			}
 
-			inline bool RemoveEntity(std::shared_ptr<Entity>& entity)
+			inline bool Remove(std::shared_ptr<Entity>& entity)
 			{
 				FY_CORE_INFO("Removing an entity..");
 
@@ -253,6 +253,7 @@ namespace Frosty
 			// Operators
 			BaseComponentManager& operator=(const BaseComponentManager& e) { FY_CORE_ASSERT(false, "Assignment operator in BaseComponentManager called."); return *this; }
 
+			virtual void Remove(std::shared_ptr<Entity>& entity) = 0;
 		};
 
 		template<typename ComponentType>
@@ -262,14 +263,14 @@ namespace Frosty
 			// TODO:
 				// RemoveComponent() - Make sure to update the entity bitset. Either handle it here or inside EntityManager
 		public:
-			ComponentManager() { FY_CORE_INFO("A new component manager({0}) was successfully created.", getComponentTypeID<ComponentType>()); }
+			ComponentManager() : BaseComponentManager() { FY_CORE_INFO("A new component manager({0}) was successfully created.", getComponentTypeID<ComponentType>()); }
 			ComponentManager(const ComponentManager& obj) : BaseComponentManager(obj) { FY_CORE_ASSERT(false, "Copy constructor in ComponentManager({0}) called.", getComponentTypeID<ComponentType>()); }
 			virtual ~ComponentManager() { }
 
 			// Operators
 			ComponentManager& operator=(const ComponentManager& e) { FY_CORE_ASSERT(false, "Assignment operator in ComponentManager({0}) called.", getComponentTypeID<ComponentType>()); return *this; }
 
-			inline ComponentType& GetComponent(const std::shared_ptr<Entity>& entity)
+			inline ComponentType& Get(const std::shared_ptr<Entity>& entity)
 			{
 				ComponentArrayIndex tempIndex = EntityMap.at(entity);
 
@@ -277,7 +278,7 @@ namespace Frosty
 			}
 
 			template<typename... TArgs>
-			inline ComponentType& AddComponent(std::shared_ptr<Entity>& entity, TArgs&&... mArgs)
+			inline ComponentType& Add(std::shared_ptr<Entity>& entity, TArgs&&... mArgs)
 			{
 				FY_CORE_ASSERT(Total < MAX_ENTITIES_PER_COMPONENT,
 					"Maximum number of entities for this specific component({0}) is reached.", getComponentTypeID<ComponentType>());
@@ -290,7 +291,7 @@ namespace Frosty
 				return m_Data[Total++];
 			}
 
-			inline void RemoveComponent(std::shared_ptr<Entity>& entity)
+			inline void Remove(std::shared_ptr<Entity>& entity) 
 			{
 				ComponentArrayIndex index = EntityMap.at(entity);
 
@@ -307,7 +308,7 @@ namespace Frosty
 				EntityMap.erase(entity);
 				entity->Bitset.flip(getComponentTypeID<ComponentType>());
 			}
-
+			
 		private:
 			std::array<ComponentType, MAX_ENTITIES_PER_COMPONENT> m_Data;
 

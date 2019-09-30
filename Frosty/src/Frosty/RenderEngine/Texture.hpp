@@ -1,7 +1,7 @@
 #ifndef TEXTURE_HPP
 #define TEXTURE_HPP
 
-namespace Banshee
+namespace Frosty
 {
 	class Texture
 	{
