@@ -3,12 +3,21 @@
 #include "Frosty/Core/Camera/Camera.hpp"
 #include "Frosty/API/AssetManager/Assetmanager.hpp"
 #include "Frosty/API/Transform.h"
-//#include "Frosty/Core/TestBoxModel.hpp"
-//#include "Frosty/Core/CollisionDetection.hpp"
 #define BUFFER_OFFSET(i) ((char *)nullptr + (i))
 
 namespace Frosty
 {	
+
+	struct TempRender
+	{
+
+		std::shared_ptr<ModelTemplate> model_ptr;
+		std::shared_ptr<LinkedMaterial> material_Ptr;
+		glm::mat4 worldPosition;
+
+	};
+
+
 	enum ShaderProgramsEnum
 	{
 		TEST_SHAPE = 0,
@@ -43,6 +52,7 @@ namespace Frosty
 		std::vector<unsigned int> m_ShaderProgramVector;
 		unsigned int m_QuadVbo = 0;
 
+
 		// For Testing 
 		bool m_TestMode = false;		
 		unsigned int m_testTriangleVBO = 0;
@@ -50,6 +60,7 @@ namespace Frosty
 		int m_VertexSizeOfTestModel = 0;
 		unsigned int m_testModelVBO = 0;
 		unsigned int m_testModelTexture = 0;
+		std::vector<TempRender*> m_Temp_RenderList;
 		//TestBoxModel m_TestBox;
 		//TestBoxModel m_TestBox2;
 		//TestBoxModel m_TestBox3;
@@ -88,6 +99,10 @@ namespace Frosty
 		void RenderTestTriangle();
 		void CreateTestModel( glm::vec3 color = glm::vec3(0.0f, 1.0f, 0.0f));
 		void RenderAllTestModels();
+
+		void AddToRenderList(TempRender* obj);
+
+		void RenderTest(ModelTemplate* modTP, LinkedMaterial* Mat,const glm::mat4& matrix);
 
 
 	};

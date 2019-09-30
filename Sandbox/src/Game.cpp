@@ -2,7 +2,7 @@
 
 Game::Game()
 {
-	//PushLayer(new ExampleLayerA());
+	PushLayer(new ExampleLayerA());
 }
 
 Game::~Game()

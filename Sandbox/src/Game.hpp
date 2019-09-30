@@ -4,19 +4,34 @@
 #include <Frosty.h>
 #include <iostream>
 #include "imgui/imgui.h"
+#include "ObjectHandler/Player/Player.hpp"
+
+
 
 class ExampleLayerA : public Frosty::Layer
 {
+
+private:
+	Player m_Player;
+	Player m_Player2;
+
 public:
 	ExampleLayerA()
 		: Layer("Example")
 	{
 
 	}
-
 	void OnUpdate() override
 	{
-		//FY_INFO("ExampleLayer::Update");
+
+
+
+		m_Player.UpdatePlayer();
+
+
+
+
+	//	FY_INFO("ExampleLayer::Update");
 	}
 	virtual void OnImGuiRender() override
 	{

@@ -1,6 +1,5 @@
 #ifndef PLAYERCONTROLLER_HPP
 #define PLAYERCONTROLLER_HPP
-
 namespace Frosty
 {
 	struct Attacks

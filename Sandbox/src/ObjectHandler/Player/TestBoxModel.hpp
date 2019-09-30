@@ -1,9 +1,8 @@
 #ifndef TESTBOXMODEL_HPP
 #define TESTBOXMODEL_HPP
-#include "Frosty/Core/PlayerController.hpp"
+#include "PlayerController.hpp"
 
-namespace Frosty
-{
+
 	class TestBoxModel
 	{
 	public:
@@ -44,13 +43,13 @@ namespace Frosty
 		unsigned int m_TestBoxVBO, m_ShaderProgram;
 		glm::mat4 m_World;
 		bool m_IsPlayer, m_ShouldRender;
-		PlayerController m_PlayerController;
+		Frosty::PlayerController m_PlayerController;
 		//flytta (saker för hp)
 		int m_Hp, m_MaxHp;
 		bool m_IsHit;
 		float m_timeLeftAfterHit;
-		Attacks m_TheAttacks;
+		Frosty::Attacks m_TheAttacks;
 	};
-}
+
 
 #endif

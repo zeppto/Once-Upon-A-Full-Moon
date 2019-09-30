@@ -332,51 +332,51 @@ namespace Frosty
 	/*void RenderEngine::Render()
 	{
 		UpdateInfoFromWindow();		
+*/
+		//m_TestMode = true;
+		//if (m_TestMode)
+		//{
+		//	m_TestBox.SetShaderProgram(m_ShaderProgramVector.at(TEST_SHAPE));
+		//	m_TestBox2.SetShaderProgram(m_ShaderProgramVector.at(TEST_SHAPE));
+		//	m_TestBox3.SetShaderProgram(m_ShaderProgramVector.at(TEST_SHAPE));
+		//	m_TestPlayer.SetShaderProgram(m_ShaderProgramVector.at(TEST_SHAPE));
+		//	RenderAllTestModels();
+		//	m_TestBox.Update(glm::vec3(3, 0, -1), glm::vec3(0.0f), glm::vec3(1.0f));
+		//	m_TestBox2.Update(glm::vec3(-2, -1, -1), glm::vec3(0.0f), glm::vec3(1.0f));
+		//	m_TestBox3.Update(glm::vec3(-1, -2, -1), glm::vec3(0.0f), glm::vec3(1.0f));
+		//	//m_TestPlayer.Update(glm::vec3(0.0f, 3.0f, -3.0f) + m_Camera->GetPos(), glm::vec3(0.0f), glm::vec3(1.0f));
+		//	m_TestPlayer.Update();
+		//	if (m_CollisionDetection.AABBIntersect(m_TestPlayer.GetHitBoxLength(),
+		//		m_TestPlayer.GetHitBoxCenter(), m_TestBox.GetHitBoxLength(), m_TestBox.GetHitBoxCenter()))
+		//		m_TestBox.SetShouldRender(false);
+		//	else
+		//		m_TestBox.SetShouldRender(true);
 
-		m_TestMode = true;
-		if (m_TestMode)
-		{
-			m_TestBox.SetShaderProgram(m_ShaderProgramVector.at(TEST_SHAPE));
-			m_TestBox2.SetShaderProgram(m_ShaderProgramVector.at(TEST_SHAPE));
-			m_TestBox3.SetShaderProgram(m_ShaderProgramVector.at(TEST_SHAPE));
-			m_TestPlayer.SetShaderProgram(m_ShaderProgramVector.at(TEST_SHAPE));
-			RenderAllTestModels();
-			m_TestBox.Update(glm::vec3(3, 0, -1), glm::vec3(0.0f), glm::vec3(1.0f));
-			m_TestBox2.Update(glm::vec3(-2, -1, -1), glm::vec3(0.0f), glm::vec3(1.0f));
-			m_TestBox3.Update(glm::vec3(-1, -2, -1), glm::vec3(0.0f), glm::vec3(1.0f));
-			//m_TestPlayer.Update(glm::vec3(0.0f, 3.0f, -3.0f) + m_Camera->GetPos(), glm::vec3(0.0f), glm::vec3(1.0f));
-			m_TestPlayer.Update();
-			if (m_CollisionDetection.AABBIntersect(m_TestPlayer.GetHitBoxLength(),
-				m_TestPlayer.GetHitBoxCenter(), m_TestBox.GetHitBoxLength(), m_TestBox.GetHitBoxCenter()))
-				m_TestBox.SetShouldRender(false);
-			else
-				m_TestBox.SetShouldRender(true);
+		//	//glm::vec3 testNewPos = m_TestPlayer.GetPos();
+		//	//glm::vec3 temp = m_CollisionDetection.AABBIntersecPushback(m_TestPlayer.GetHitBoxLength(),
+		//	//	m_TestPlayer.GetHitBoxCenter(), m_TestBox2.GetHitBoxLength(), m_TestBox2.GetHitBoxCenter());
+		//	//testNewPos -= temp;
+		//	//m_TestPlayer.SetPosition(testNewPos);
 
-			//glm::vec3 testNewPos = m_TestPlayer.GetPos();
-			//glm::vec3 temp = m_CollisionDetection.AABBIntersecPushback(m_TestPlayer.GetHitBoxLength(),
-			//	m_TestPlayer.GetHitBoxCenter(), m_TestBox2.GetHitBoxLength(), m_TestBox2.GetHitBoxCenter());
-			//testNewPos -= temp;
-			//m_TestPlayer.SetPosition(testNewPos);
+		//	m_TestPlayer.SetPosition(m_TestPlayer.GetPos() - m_CollisionDetection.AABBIntersecPushback(m_TestPlayer.GetHitBoxLength(),
+		//		m_TestPlayer.GetHitBoxCenter(), m_TestBox2.GetHitBoxLength(), m_TestBox2.GetHitBoxCenter()));
+		//	m_TestPlayer.SetPosition(m_TestPlayer.GetPos() - m_CollisionDetection.AABBIntersecPushback(m_TestPlayer.GetHitBoxLength(),
+		//		m_TestPlayer.GetHitBoxCenter(), m_TestBox3.GetHitBoxLength(), m_TestBox3.GetHitBoxCenter()));
+		//	//if (m_CollisionDetection.AABBIntersect(m_TestPlayer.GetHitBoxLength(),
+		//	//	m_TestPlayer.GetHitBoxCenter(), m_TestBox2.GetHitBoxLength(), m_TestBox2.GetHitBoxCenter()))
+		//	//	m_TestBox2.SetShouldRender(false);
+		//	//else
+		//	//	m_TestBox2.SetShouldRender(true);
+		//	m_TestBox2.IsAttacked(m_TestPlayer.Attacked());
 
-			m_TestPlayer.SetPosition(m_TestPlayer.GetPos() - m_CollisionDetection.AABBIntersecPushback(m_TestPlayer.GetHitBoxLength(),
-				m_TestPlayer.GetHitBoxCenter(), m_TestBox2.GetHitBoxLength(), m_TestBox2.GetHitBoxCenter()));
-			m_TestPlayer.SetPosition(m_TestPlayer.GetPos() - m_CollisionDetection.AABBIntersecPushback(m_TestPlayer.GetHitBoxLength(),
-				m_TestPlayer.GetHitBoxCenter(), m_TestBox3.GetHitBoxLength(), m_TestBox3.GetHitBoxCenter()));
-			//if (m_CollisionDetection.AABBIntersect(m_TestPlayer.GetHitBoxLength(),
-			//	m_TestPlayer.GetHitBoxCenter(), m_TestBox2.GetHitBoxLength(), m_TestBox2.GetHitBoxCenter()))
-			//	m_TestBox2.SetShouldRender(false);
-			//else
-			//	m_TestBox2.SetShouldRender(true);
-			m_TestBox2.IsAttacked(m_TestPlayer.Attacked());
-
-			m_TestBox.Render(m_Camera->GetView(), m_Camera->GetProjection());
-			m_TestBox2.Render(m_Camera->GetView(), m_Camera->GetProjection());
-			m_TestBox3.Render(m_Camera->GetView(), m_Camera->GetProjection());
-			m_TestPlayer.Render(m_Camera->GetView(), m_Camera->GetProjection());
+		//	m_TestBox.Render(m_Camera->GetView(), m_Camera->GetProjection());
+		//	m_TestBox2.Render(m_Camera->GetView(), m_Camera->GetProjection());
+		//	m_TestBox3.Render(m_Camera->GetView(), m_Camera->GetProjection());
+		//	m_TestPlayer.Render(m_Camera->GetView(), m_Camera->GetProjection());
 
 
-		}
-	}*/
+	//	}
+	//}
 
 	void RenderEngine::UpdateCamera()
 	{
@@ -498,10 +498,24 @@ namespace Frosty
 
 		if (m_RenderTestModel)
 		{
-			glBindVertexArray(Assetmanager::GetAssetmanager()->GetModeltemplateMetaData("clock")->GetData()->GetVBO(0));
-			glActiveTexture(GL_TEXTURE0);
-			glBindTexture(GL_TEXTURE_2D, Assetmanager::GetAssetmanager()->GetMaterialMetaData("Mat_0:clock")->GetData()->Diffuse_Texture_MetaData_Ptr->GetData()->GetBufferID());
-			glDrawArrays(GL_TRIANGLES, 0, Assetmanager::GetAssetmanager()->GetModeltemplateMetaData("clock")->GetData()->GetMeshConst(0).vertexCount);
+
+			for (int i = 0; i < m_Temp_RenderList.size(); i++)
+			{
+
+				glBindVertexArray(m_Temp_RenderList.at(i)->model_ptr->GetVBO(0));
+				glUniformMatrix4fv(0, 1, GL_FALSE, &m_Temp_RenderList.at(i)->worldPosition[0][0]); 
+				glActiveTexture(GL_TEXTURE0);
+				glBindTexture(GL_TEXTURE_2D, m_Temp_RenderList.at(i)->material_Ptr->Diffuse_Texture_MetaData_Ptr->GetData()->GetBufferID());
+				glDrawArrays(GL_TRIANGLES, 0, m_Temp_RenderList.at(i)->model_ptr->GetMeshConst(0).vertexCount);
+
+				glBindTexture(GL_TEXTURE_2D,0);
+				//glBindVertexArray(Assetmanager::GetAssetmanager()->GetModeltemplateMetaData("clock")->GetData()->GetVBO(0));
+			//	glBindTexture(GL_TEXTURE_2D, Assetmanager::GetAssetmanager()->GetMaterialMetaData("Mat_0:clock")->GetData()->Diffuse_Texture_MetaData_Ptr->GetData()->GetBufferID());
+				//glDrawArrays(GL_TRIANGLES, 0, Assetmanager::GetAssetmanager()->GetModeltemplateMetaData("clock")->GetData()->GetMeshConst(0).vertexCount);
+
+			}
+
+
 		}
 
 	}
@@ -616,6 +630,15 @@ namespace Frosty
 
 		//glDrawArrays(GL_TRIANGLES, 0, 36);
 	}
+
+	void RenderEngine::AddToRenderList(TempRender* obj)
+	{
+
+		m_Temp_RenderList.emplace_back(obj);
+
+	}
+
+
 
 
 }

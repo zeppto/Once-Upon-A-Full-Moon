@@ -1,10 +1,8 @@
 ﻿#include "fypch.hpp"
 #include "TestBoxModel.hpp"
 #include "Glad/glad.h"
-#define BUFFER_OFFSET(i) ((char *)nullptr + (i))
 
-namespace Frosty
-{
+
 	TestBoxModel::TestBoxModel(glm::vec3 color, glm::vec3 position, glm::vec3 rotation, glm::vec3 scale, int maxHp)
 	{
 		this->m_Color = color;
@@ -267,5 +265,5 @@ namespace Frosty
 			m_ShouldRender = false;
 
 	}
-}
+
 

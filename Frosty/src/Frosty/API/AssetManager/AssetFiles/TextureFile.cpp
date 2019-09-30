@@ -64,6 +64,8 @@ namespace Frosty
 			m_Components = (uint8_t)components;
 			m_Loaded_In_Gpu = true;
 
+			glBindTexture(GL_TEXTURE_2D, 0);
+
 		}
 		else
 		{
