@@ -8,5 +8,3 @@ bin-int/
 *.vcxproj
 *.filters
 *.user
-Frosty/vendor/GLFW
-Frosty/vendor/imgui
