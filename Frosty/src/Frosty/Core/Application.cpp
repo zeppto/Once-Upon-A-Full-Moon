@@ -163,11 +163,12 @@ namespace Frosty
 			//m_RenderEngine->UpdateCamera();
 			/// Render
 			RenderCommand::SetClearColor({ 0.1f, 0.1f, 0.1f, 1.0f });
-			RenderCommand::Clear();
+			RenderCommand::Clear();			
+
+			m_OrtoCamera.SetPosition({ 0.5f, 0.5f, 0.0f });
+			m_OrtoCamera.SetRotation(45.0f);
 
 			Renderer::BeginScene(m_OrtoCamera);
-			//m_Shader->Bind();
-			//m_Shader->UploadUniforMat4("u_ViewProjection", m_OrtoCamera.GetViewProjectionMatrix());
 			Renderer::Submit(m_Shader, m_VertexArray);
 			Renderer::EndScene();
 

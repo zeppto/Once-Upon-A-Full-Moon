@@ -10,7 +10,7 @@ namespace Frosty
 	class Renderer
 	{
 	public:
-		static void BeginScene(OrtoCamera m_OrtoCamera);
+		static void BeginScene(OrtoCamera& m_OrtoCamera);
 		static void EndScene();
 
 		static void Submit(const std::shared_ptr<Shader>& shader, const std::shared_ptr<VertexArray>& vertexArray);

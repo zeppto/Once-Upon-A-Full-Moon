@@ -6,7 +6,7 @@ namespace Frosty
 {	
 	Renderer::SceneData* Renderer::m_SceneData = new Renderer::SceneData;
 
-	void Renderer::BeginScene(OrtoCamera m_OrtoCamera)
+	void Renderer::BeginScene(OrtoCamera& m_OrtoCamera)
 	{
 		m_SceneData->ViewProjectionMatrix = m_OrtoCamera.GetViewProjectionMatrix();
 	}
