@@ -22,10 +22,11 @@ namespace Frosty
 		PushOverlay(m_ImGuiLayer);
 
 		ECS::ComponentManager<ECS::CTransform> cManager;
-
+		
 		InitPrefabBuffers();
 		InitShaders();
-		m_Camera = new Camera();
+		
+		m_Camera.reset(FY_NEW Camera());
 	}
 
 	Application::~Application()
@@ -33,11 +34,11 @@ namespace Frosty
 		EventBus::GetEventBus()->Delete();
 		glfwTerminate();
 		Assetmanager::Delete();
-		delete m_Camera;
+		Renderer::DeleteSceneData();
 	}
-		
+	
 	void Application::InitPrefabBuffers()
-	{
+	{		
 		m_VertexArray.reset(VertexArray::Create());
 
 		float vertices[3 * 7] =
@@ -50,20 +51,13 @@ namespace Frosty
 		std::shared_ptr<VertexBuffer> m_VertexBuffer;
 		m_VertexBuffer.reset(VertexBuffer::Create(vertices, sizeof(vertices)));
 
-		/*BufferLayout layout =
-		{
-			{ ShaderDataType::Float3, "vsInPos" },
-			{ ShaderDataType::Float4, "vsInCol" }
-		};*/
-
-		BufferLayout layout2 =
+		BufferLayout layout =
 		{
 			{ ShaderDataType::Float3, "vsInPos" },
 			{ ShaderDataType::Float4, "vsInCol" }
 		};
-
-		//m_VertexBuffer->SetLayout(layout);		
-		m_VertexBuffer->SetLayout(layout2);		
+		
+		m_VertexBuffer->SetLayout(layout);		
 		m_VertexArray->AddVertexBuffer(m_VertexBuffer);
 
 		uint32_t indices[3] = { 0, 1, 2 };
@@ -147,7 +141,7 @@ namespace Frosty
 	}
 
 	void Application::Run()
-	{
+	{		
 		while (m_Running)
 		{			
 			/// Frame Start

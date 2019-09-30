@@ -1,18 +1,24 @@
 #include "fypch.hpp"
 #include "Camera.hpp"
 #include "Frosty/Core/Application.hpp"
+#include "Frosty/Core/Time.hpp"
 
 namespace Frosty
 {
-	Frosty::Camera::Camera()
+	Camera::Camera()
 	{
 		m_CameraData.AspRatio = Application::Get().GetWindow().GetWidth() / (float)Application::Get().GetWindow().GetHeight();
 		m_CameraData.Projection = glm::perspective(m_CameraData.FoV, m_CameraData.AspRatio, m_CameraData.NearPlane, m_CameraData.FarPlane);
 		m_CameraData.View = glm::lookAt(m_CameraTranslationData.Pos, m_CameraTranslationData.Pos + m_CameraTranslationData.LookAtVec, m_CameraTranslationData.UpVec);		
 	}
 
-	Frosty::Camera::~Camera()
+	Camera::~Camera()
 	{
+	}
+
+	float Camera::GetAspRatio() const
+	{
+		return m_CameraData.AspRatio;
 	}
 
 	glm::mat4 Frosty::Camera::GetView()
@@ -34,6 +40,8 @@ namespace Frosty
 	{
 		Application& app = Application::Get();
 		GLFWwindow* window = static_cast<GLFWwindow*>(app.GetWindow().GetNativeWindow());
+
+		m_CameraData.AspRatio = Application::Get().GetWindow().GetWidth() / (float)Application::Get().GetWindow().GetHeight();
 
 		float CamSpeed = 0.0f;
 		float DeltaTime = 0.0f;
