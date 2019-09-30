@@ -31,9 +31,8 @@ namespace Frosty
 
 	Application::~Application()
 	{
-		SAFE_DELETE(m_Sprite);
-
 		//delete m_RenderEngine;
+		//SAFE_DELETE(m_Sprite);
 		EventBus::GetEventBus()->Delete();
 		glfwTerminate();
 		Assetmanager::Delete();
@@ -42,15 +41,13 @@ namespace Frosty
 	void Application::InitPrefabBuffers()
 	{
 		m_VertexArray.reset(VertexArray::Create());
-
-		float vertices[3 * 9] =
-		{
-			-0.5f, -0.5f, 0.0f, 0.8f, 0.0f, 0.8f, 1.0f, -0.5f, 0.5f,
-			 0.5f, -0.5f, 0.0f, 0.2f, 0.3f, 0.8f, 1.0f, -0.5f, 0.5f,
-			 0.0f,  0.5f, 0.0f, 0.8f, 0.8f, 0.2f, 1.0f, -0.5f, 0.5f
-		};
-
-		//m_Sprite->Init();
+		
+		//Sprite test
+		m_Sprite->setColor(glm::vec4(0.2, 0.2, 0.2, 1.0));
+		m_Sprite->GetTransform().setScale(glm::vec3(0.2, 0.2, 0.2));
+		m_Sprite->GetTransform().setTranslate(glm::vec3(0.7, -0.7, 0.0));
+		m_Sprite->Init();
+		//
 
 		std::shared_ptr<VertexBuffer> m_VertexBuffer;
 		m_VertexBuffer.reset(VertexBuffer::Create(m_Sprite->GetQuad(), m_Sprite->GetSize()));
@@ -114,15 +111,20 @@ namespace Frosty
 			layout(location = 0) in vec3 vsInPos;
 			layout(location = 1) in vec4 vsInCol;
 			layout(location = 2) in vec2 vsInUV;			
+			
+			uniform mat4 model;
 
 			out vec3 vsOutPos;
 			out vec4 vsOutCol;
+			out vec2 vsOutUV;
 			
 			void main()
 			{
-				gl_Position = vec4(vsInPos, 1.0f);
+
+				gl_Position = model * vec4(vsInPos, 1.0f);
 				vsOutPos = vsInPos;
 				vsOutCol = vsInCol;
+				vsOutUV = vsInUV;
 			}
 		)";
 		std::string FragmentSrc2 = R"(
@@ -130,14 +132,18 @@ namespace Frosty
 
 			in vec3 vsOutPos;
 			in vec4 vsOutCol;
+			in vec2 vsOutUV;			
+
+			uniform sampler2D sprite_Texture;
 
 			layout(location = 0) out vec4 fsOutCol;
 			
 			void main()
 			{
 				//fsOutCol = vec4(0.8f, 0.2f, 0.3f, 1.0f);
-				//fsOutCol = vec4(vsOutPos + 0.5f, 1.0f);				
-				fsOutCol = vsOutCol;
+				//fsOutCol = vec4(vsOutPos + 0.5f, 1.0f);
+				vec3 tex = texture(sprite_Texture, vsOutUV).rgb;				
+				fsOutCol = vec4(tex, 1);
 			}
 		)";
 		m_Shader.reset(new Shader(VertexSrc2, FragmentSrc2));
@@ -161,7 +167,6 @@ namespace Frosty
 			/// Frame Start
 			Time::OnUpdate();
 
-
 			/// Input			
 			
 			RenderCommand::SetClearColor({ 0.1f, 0.1f, 0.1f, 1.0f });
@@ -173,6 +178,12 @@ namespace Frosty
 			Renderer::EndScene();
 
 			/// Input
+
+			//TEST SPRITE
+			m_Shader->UploadUniformInt(m_Sprite->GetTexure().name, 0);
+			glActiveTexture(GL_TEXTURE);
+			glBindTexture(GL_TEXTURE_2D, m_Sprite->GetTexure().id);
+			m_Shader->UploadUniforMat4("model", m_Sprite->GetTransform().getModel());
 
 			/// Update
 			for (Layer* layer : m_LayerHandler)

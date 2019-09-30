@@ -6,14 +6,19 @@
 
 namespace Frosty
 {
+	struct Texture {
+		unsigned int id;
+		std::string name;
+	};
+
 	class Sprite
 	{
 	private:
 		Transform m_Transform;
-		unsigned int m_TextureID;
+		Texture m_Texture;
 		unsigned int m_QuadVbo;
 
-		float vertices[9*6] =
+		float vertices[9 * 6] =
 		{
 			-1.0f, -1.0f, 0.0f, 0.8f, 0.0f, 0.8f, 1.0f, -1.0f, -1.0f,
 			 1.0f, -1.0f, 0.0f, 0.2f, 0.3f, 0.8f, 1.0f, 1.0f, -1.0f,
@@ -32,10 +37,12 @@ namespace Frosty
 		bool Init();
 
 		unsigned int LoadTexture();
-		
-		float *GetQuad();
+
+		void setColor(glm::vec4 color);
+		float* GetQuad();
 		int GetSize();
-		unsigned int GetTexureID();
+		Texture GetTexure();
+		Transform &GetTransform();
 	};
 }
 

@@ -6,18 +6,26 @@ namespace Frosty
 {
 	Sprite::Sprite()
 	{
-		this->m_TextureID = 0;
-		this->m_QuadVbo = 0;
-		vertices;
+
 	}
 
 	Sprite::~Sprite()
 	{
+		delete(this);
 	}
 
 	bool Sprite::Init()
 	{
-		return m_TextureID = LoadTexture();;
+		try
+		{
+			this->m_Texture.id = LoadTexture();
+			this->m_Texture.name = "sprite_Texture";
+			return true;
+		}
+		catch (const std::exception&)
+		{
+			return false;
+		}
 	}
 
 	unsigned int Sprite::LoadTexture()
@@ -26,7 +34,7 @@ namespace Frosty
 		glGenTextures(1, &textureID);
 
 		/*unsigned char* data = new unsigned char[4];*/
-		glm::vec4 data { 0 };
+		unsigned char* data = new unsigned char[4];
 
 		// Allocate the needed space.
 		int width = 1;
@@ -42,10 +50,15 @@ namespace Frosty
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, &data);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
 		glGenerateMipmap(GL_TEXTURE_2D);
 
 		return textureID;
+	}
+
+	void Sprite::setColor(glm::vec4 color)
+	{
+		this->color = color;
 	}
 
 	float *Sprite::GetQuad()
@@ -59,9 +72,14 @@ namespace Frosty
 		return sizeof(vertices);
 	}
 
-	unsigned int Sprite::GetTexureID()
+	Texture Sprite::GetTexure()
 	{
-		return m_TextureID;
+		return m_Texture;
+	}
+
+	Transform &Sprite::GetTransform()
+	{
+		return m_Transform;
 	}
 
 }
