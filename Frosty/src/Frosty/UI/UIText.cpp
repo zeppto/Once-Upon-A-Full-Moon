@@ -52,6 +52,9 @@ namespace Frosty
 			FY_CORE_INFO("INFO::FREETYPE: Glyph successfully loaded.");
 		}
 
+		FT_Done_Face(m_face);
+		FT_Done_FreeType(freetype);
+
 		return true;
 	}
 

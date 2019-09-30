@@ -53,7 +53,10 @@ namespace Frosty
 
 			case LUNA:
 				returnValue = LoadLunaFile(TempFileInfo,Reload);
-				
+				break;
+
+			case TTF:
+				returnValue = LoadFontFile(TempFileInfo, Reload);
 				break;
 
 			default:
@@ -316,7 +319,49 @@ namespace Frosty
 		return returnValue;
 	}
 
+	bool MotherLoader::LoadFontFile(const FileNameInfo& FileNameInformation, const bool& Reload)
+	{
+		bool returnValue = false;
 
+		//FT_Library freetype;
+		//FT_Face m_face;
+		//if (FT_Init_FreeType(&freetype))
+		//{
+		//	FY_CORE_ERROR("ERROR::FREETYPE: FreeType library could not be initialized.");
+		//	return false;
+		//}
+		//else
+		//{
+		//	FY_CORE_INFO("INFO::FREETYPE: FreeType successfully initialized.");
+		//}
+
+		//std::string path = FY_FONTS_FOLDER_ROOT;
+		//if (FT_New_Face(freetype, FileNameInformation.m_FilePath, 0, &m_face))
+		//{
+		//	FY_CORE_ERROR("ERROR::FREETYPE: Failed to load font.");
+		//	return false;
+		//}
+		//else
+		//{
+		//	FY_CORE_INFO("INFO::FREETYPE: Font successfully loaded.");
+		//}
+
+		//FT_Set_Pixel_Sizes(m_face, 0, m_fontSize);
+
+		//if (FT_Load_Char(m_face, 'X', FT_LOAD_RENDER))
+		//{
+		//	FY_CORE_ERROR("ERROR::FREETYPE: Failed to load glyph.");
+		//}
+		//else
+		//{
+		//	FY_CORE_INFO("INFO::FREETYPE: Glyph successfully loaded.");
+		//}
+
+		//FT_Done_Face(m_face);
+		//FT_Done_FreeType(freetype);
+
+		return returnValue;
+	}
 
 
 

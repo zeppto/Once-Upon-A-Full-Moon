@@ -3,12 +3,18 @@
 #include "ModelTemplate.hpp"
 #include<Luna/include/Reader.h>
 
+#include "ft2build.h"
+#include FT_FREETYPE_H
+
+#include "FreeType/freetype.h"
+
 //or enums?
 // should be inside definitions?
 //File types
 #define FILE_TYPE_JPG "jpg"
 #define FILE_TYPE_PNG "png"
 #define FILE_TYPE_LUNA "lu"
+#define FILE_TYPE_TTF "ttf"
 
 
 namespace Frosty
@@ -27,7 +33,8 @@ namespace Frosty
 		{
 			JPG,
 			PNG,
-			LUNA
+			LUNA,
+			TTF
 		};
 		struct FileNameInfo
 		{
@@ -71,6 +78,7 @@ namespace Frosty
 		//AssetManager Filler Functions
 		bool LoadLunaFile(const FileNameInfo& FileNameInformation, const bool& Reload = false);
 		bool LoadGraphicFile(const FileNameInfo& FileNameInformation, const bool& Reload = false);
+		bool LoadFontFile(const FileNameInfo& FileNameInformation, const bool& Reload = false);
 
 	};
 
