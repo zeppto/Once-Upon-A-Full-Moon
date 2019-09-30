@@ -323,7 +323,23 @@ namespace Frosty
 	{
 		bool returnValue = false;
 
+		std::shared_ptr<TextureFile> tempTexturePtr = Assetmanager::GetAssetmanager()->AddNewTextureTemplate(FileNameInformation);
 
+		if (tempTexturePtr != nullptr)
+		{
+			if (tempTexturePtr->LoadToGpu())
+			{
+				returnValue = true;
+			}
+			else
+			{
+				FY_CORE_WARN("Could not load Image to GPU, Name: {0}", FileNameInformation.FileName);
+			}
+		}
+		else
+		{
+			FY_CORE_WARN("Could not load Image, Name: {0}", FileNameInformation.FileName);
+		}
 
 		return returnValue;
 	}
@@ -373,29 +389,6 @@ namespace Frosty
 	}
 
 
-	std::shared_ptr<TextureFile> tempTexturePtr = Assetmanager::GetAssetmanager()->AddNewTextureTemplate(FileNameInformation);
-
-
-	if (tempTexturePtr != nullptr)
-	{
-		if (tempTexturePtr->LoadToGpu())
-		{
-			returnValue = true;
-		}
-		else
-		{
-			FY_CORE_WARN("Could not load Image to GPU, Name: {0}", FileNameInformation.FileName);
-		}
-	}
-	else
-	{
-		FY_CORE_WARN("Could not load Image, Name: {0}", FileNameInformation.FileName);
-	}
-
-
-
-	return returnValue;
-}
 
 }
 
