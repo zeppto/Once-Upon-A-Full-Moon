@@ -7,7 +7,6 @@ namespace Frosty
 	{
 	protected:
 		Time() = default;
-
 	public:
 		Time(const Time&) = delete;
 		Time& operator=(const Time&) = delete;
@@ -19,10 +18,8 @@ namespace Frosty
 		static void EndTimer(const std::string& func);
 
 		static void OnUpdate();
-
 	public:
 		static const int MAX_FPS_COUNTER = 10000;
-
 	private:
 		static float m_DeltaTime;
 		static float m_LastFrame;
@@ -31,8 +28,6 @@ namespace Frosty
 		static float m_FPSResetCounter;
 		static int m_FPSCounter;
 		static std::stack<float> m_Timers;
-
 	};
 }
-
-#endif // !TIME_HPP
+#endif

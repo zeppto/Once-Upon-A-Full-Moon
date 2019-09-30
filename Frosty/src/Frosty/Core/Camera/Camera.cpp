@@ -35,47 +35,39 @@ namespace Frosty
 	{
 		Application& app = Application::Get();
 		GLFWwindow* window = static_cast<GLFWwindow*>(app.GetWindow().GetNativeWindow());
+		m_CameraTranslationData.CamSpeed = 2.0f * Time::DeltaTime();
 		
-		float CamSpeed = 0.0f;
-		float DeltaTime = 0.0f;
-		float CurrentFrame = 0.0f;
-
-		CurrentFrame = (float)glfwGetTime();
-		DeltaTime = CurrentFrame - m_CameraTranslationData.LastFrame;
-		m_CameraTranslationData.LastFrame = CurrentFrame;
-		CamSpeed = 2.0f * DeltaTime;
-
 		if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
 		{
 			if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
 			{
-				CamSpeed = CamSpeed * 3.0f;
+				m_CameraTranslationData.CamSpeed = m_CameraTranslationData.CamSpeed * 3.0f;
 			}
-			m_CameraTranslationData.Pos += CamSpeed * m_CameraTranslationData.LookAtVec;
+			m_CameraTranslationData.Pos += m_CameraTranslationData.CamSpeed * m_CameraTranslationData.LookAtVec;
 		}
 		if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
 		{
 			if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
 			{
-				CamSpeed = CamSpeed * 3.0f;
+				m_CameraTranslationData.CamSpeed = m_CameraTranslationData.CamSpeed * 3.0f;
 			}
-			m_CameraTranslationData.Pos -= CamSpeed * m_CameraTranslationData.LookAtVec;
+			m_CameraTranslationData.Pos -= m_CameraTranslationData.CamSpeed * m_CameraTranslationData.LookAtVec;
 		}
 		if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
 		{
 			if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
 			{
-				CamSpeed = CamSpeed * 3.0f;
+				m_CameraTranslationData.CamSpeed = m_CameraTranslationData.CamSpeed * 3.0f;
 			}
-			m_CameraTranslationData.Pos -= glm::normalize(glm::cross(m_CameraTranslationData.LookAtVec, m_CameraTranslationData.UpVec)) * CamSpeed;
+			m_CameraTranslationData.Pos -= glm::normalize(glm::cross(m_CameraTranslationData.LookAtVec, m_CameraTranslationData.UpVec)) * m_CameraTranslationData.CamSpeed;
 		}
 		if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
 		{
 			if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
 			{
-				CamSpeed = CamSpeed * 3.0f;
+				m_CameraTranslationData.CamSpeed = m_CameraTranslationData.CamSpeed * 3.0f;
 			}
-			m_CameraTranslationData.Pos += glm::normalize(glm::cross(m_CameraTranslationData.LookAtVec, m_CameraTranslationData.UpVec)) * CamSpeed;
+			m_CameraTranslationData.Pos += glm::normalize(glm::cross(m_CameraTranslationData.LookAtVec, m_CameraTranslationData.UpVec)) * m_CameraTranslationData.CamSpeed;
 		}
 
 		if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS)

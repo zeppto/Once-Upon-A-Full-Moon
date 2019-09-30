@@ -22,7 +22,7 @@ namespace Frosty
 			glm::vec3 LookAtVec = glm::vec3(0.0f, 0.0f, -1.0f);
 			glm::vec3 UpVec = glm::vec3(0.0f, 1.0f, 0.0f);
 
-			float LastFrame = 0.0f;			
+			float CamSpeed = 0.0f;
 		};
 		struct CameraRotationData
 		{
