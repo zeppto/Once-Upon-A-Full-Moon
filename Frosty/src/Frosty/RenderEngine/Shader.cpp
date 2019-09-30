@@ -4,6 +4,8 @@
 
 namespace Frosty
 {
+	static GLenum Shader
+
 	Shader::Shader(const std::string & filepath)
 	{
 		std::string ShaderSource = ReadFile(filepath);
@@ -225,13 +227,10 @@ namespace Frosty
 
 			size_t nextLinePos = source.find_first_not_of("\r\n", eol);
 			pos = source.find(typeToken, nextLinePos);
-			//shaderSources[ShaderTypeFromString(type)] = source.substr(nextLinePos, pos - (nextLinePos == std::string::npos ? source.size() - 1 : nextLinePos));
+			shaderSources[ShaderTypeFromString(type)] = source.substr(nextLinePos, pos - (nextLinePos == std::string::npos ? source.size() - 1 : nextLinePos));
 		}
 
-		return std::unordered_map<GLenum, std::string>();
+		return shaderSources;
 	}
 
-	void Shader::Compile(const std::unordered_map<GLenum, std::string>& shaderSources)
-	{
-	}	
 }
