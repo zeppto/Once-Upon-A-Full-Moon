@@ -34,7 +34,9 @@ namespace Frosty
 		inline InputManager& GetInputManager() { return m_InputManager; }
 		static inline Application& Get() { return *s_Instance; }
 
-		inline StateMachine& getStateMachine() { return &states; }
+		inline StateMachine& getStateMachine() { return states; }
+		void setMainMenuReturn(bool ret) { mainMenuReturn = ret; }
+		bool getMainMenuReturn() { return mainMenuReturn; }
 
 	private:
 		void OnWindowCloseEvent(WindowCloseEvent& e);
@@ -54,6 +56,7 @@ namespace Frosty
 		static Application* s_Instance;
 
 		StateMachine states;
+		bool mainMenuReturn;
 	};
 }
 #endif // !APPLICATION_HPP

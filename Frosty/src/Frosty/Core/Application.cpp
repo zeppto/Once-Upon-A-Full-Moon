@@ -17,7 +17,7 @@ namespace Frosty
 
 		m_Window = std::make_unique<Window>(Window());
 
-		EventBus::GetEventBus()->Subscribe<Application, BaseEvent>(this, &Application::OnEvent)     ;
+		EventBus::GetEventBus()->Subscribe<Application, BaseEvent>(this, &Application::OnEvent);
 
 		m_ImGuiLayer = new ImGuiLayer();
 		PushOverlay(m_ImGuiLayer);
@@ -41,6 +41,11 @@ namespace Frosty
 		while (m_Running)
 		{
 			states.GetActiveState()->OnUpdate();
+			if (mainMenuReturn == true)
+			{
+				states.AddState(Frosty::StateRef(new MainMenuState(s_Instance)), true);
+				mainMenuReturn = false;
+			}
 			states.ProcessStateChanges();
 			/// Input			
 
@@ -134,6 +139,10 @@ namespace Frosty
 		//{
 		//	std::cout << "Options was clicked!!" << std::endl;
 		//}
+		if (e.GetKeyCode() == GLFW_KEY_M)
+		{
+			states.GetActiveState()->OnInput();
+		}
 	}
 
 }

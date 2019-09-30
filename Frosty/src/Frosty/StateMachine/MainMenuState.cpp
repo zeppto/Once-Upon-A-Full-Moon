@@ -9,6 +9,10 @@ Frosty::MainMenuState::MainMenuState(Application * app)
 	Initiate();
 }
 
+Frosty::MainMenuState::~MainMenuState()
+{
+}
+
 void Frosty::MainMenuState::Initiate()
 {
 	//TODO:
@@ -43,12 +47,13 @@ void Frosty::MainMenuState::OnUpdate()
 		//TODO: Actual state for options menu here.
 		std::cout << "Options was clicked!!" << std::endl;
 
-		app->getStateMachine().AddState(Frosty::StateRef(FY_NEW ))
+		app->getStateMachine().AddState(Frosty::StateRef(FY_NEW OptionMenuState()));
 	}
 
 	if (app->GetInputManager().IsKeyPressed(GLFW_KEY_S))
 	{
 		//TODO: Actual state for Game Start here.
 		std::cout << "Start was clicked!!" << std::endl;
+		app->getStateMachine().AddState(Frosty::StateRef(FY_NEW PlayingState()));
 	}
 }
