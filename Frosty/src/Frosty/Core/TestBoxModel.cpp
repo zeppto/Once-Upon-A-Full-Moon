@@ -39,6 +39,9 @@ namespace Frosty
 		this->m_MaxHp = maxHp;
 		this->m_Hp = m_MaxHp;
 
+		this->m_IsHit = false;
+		this->m_timeLeftAfterHit = false;
+
 		Update(position, rotation, scale);
 
 	}

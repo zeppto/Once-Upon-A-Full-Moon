@@ -376,7 +376,7 @@ namespace Frosty
 
 
 		}
-	}/*
+	}*/
 
 	void RenderEngine::UpdateCamera()
 	{

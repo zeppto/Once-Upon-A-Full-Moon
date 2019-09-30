@@ -3,8 +3,8 @@
 #include "Frosty/Core/Camera/Camera.hpp"
 #include "Frosty/API/AssetManager/Assetmanager.hpp"
 #include "Frosty/API/Transform.h"
-#include "Frosty/Core/TestBoxModel.hpp"
-#include "Frosty/Core/CollisionDetection.hpp"
+//#include "Frosty/Core/TestBoxModel.hpp"
+//#include "Frosty/Core/CollisionDetection.hpp"
 #define BUFFER_OFFSET(i) ((char *)nullptr + (i))
 
 namespace Frosty
@@ -50,11 +50,11 @@ namespace Frosty
 		int m_VertexSizeOfTestModel = 0;
 		unsigned int m_testModelVBO = 0;
 		unsigned int m_testModelTexture = 0;
-		TestBoxModel m_TestBox;
-		TestBoxModel m_TestBox2;
-		TestBoxModel m_TestBox3;
-		TestBoxModel m_TestPlayer;
-		CollisionDetection m_CollisionDetection;
+		//TestBoxModel m_TestBox;
+		//TestBoxModel m_TestBox2;
+		//TestBoxModel m_TestBox3;
+		//TestBoxModel m_TestPlayer;
+		//CollisionDetection m_CollisionDetection;
 
 
 	private:
@@ -74,8 +74,6 @@ namespace Frosty
 
 		void CreateQuad();
 		//For Testing
-		void CreateTestModel( glm::vec3 color = glm::vec3(0.0f, 1.0f, 0.0f));
-		void RenderAllTestModels();
 	public:
 
 	public:
@@ -88,6 +86,8 @@ namespace Frosty
 		// For Testing
 		void CreateTriangle();		
 		void RenderTestTriangle();
+		void CreateTestModel( glm::vec3 color = glm::vec3(0.0f, 1.0f, 0.0f));
+		void RenderAllTestModels();
 
 
 	};
