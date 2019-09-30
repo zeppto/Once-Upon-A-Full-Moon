@@ -18,6 +18,7 @@ IncludeDir["GLFW"] = "Frosty/vendor/GLFW/include"
 IncludeDir["Glad"] = "Frosty/vendor/Glad/include"
 IncludeDir["ImGui"] = "Frosty/vendor/imgui"
 IncludeDir["glm"] = "Frosty/vendor/glm"
+IncludeDir["Luna"] = "Frosty/vendor/Luna"
 
 group "Dependencies"
 	include "Frosty/vendor/GLFW"
@@ -34,7 +35,7 @@ project "Frosty"
 	staticruntime "on"
 
 	targetdir ("bin/" .. outputdir .. "/%{prj.name}")
-	objdir ("bin-int/" .. outputdir .. "/%{prj.name}") 
+	objdir ("bin-int/" .. outputdir .. "/%{prj.name}")
 	
 	pchheader "fypch.hpp"
 	pchsource "Frosty/src/fypch.cpp"
@@ -52,15 +53,18 @@ project "Frosty"
 		"%{prj.name}/src",
 		"%{prj.name}/vendor",
 		"%{prj.name}/vendor/spdlog/include",
+		"%{prj.name}/vendor/STB/include",
 		"%{IncludeDir.GLFW}",
 		"%{IncludeDir.Glad}",
 		"%{IncludeDir.ImGui}",
+		"%{IncludeDir.Luna}",
 		"%{IncludeDir.glm}"
 	}
 
 	libdirs
 	{
-		"%{prj.name}/vendor/GLFW/lib"
+		"%{prj.name}/vendor/GLFW/lib",
+		"%{prj.name}/vendor/Luna/lib"
 	}
 
 	links
@@ -83,16 +87,31 @@ project "Frosty"
 		defines "FY_DEBUG"
 		runtime "Debug"
 		symbols "on"
+		
+
+	links
+	{
+		"Luna.lib"
+	}
 
 	filter "configurations:Release"
 		defines "FY_RELEASE"
 		runtime "Release"
 		optimize "on"
 
+	links
+	{
+		"Luna_release.lib"
+	}
+
 	filter "configurations:Dist"
 		defines "FY_DIST"
 		runtime "Release"
 		optimize "on"
+	links
+	{
+		"Luna_release.lib"
+	}
 
 project "Sandbox"
 	location "Sandbox"

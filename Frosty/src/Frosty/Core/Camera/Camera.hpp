@@ -1,7 +1,5 @@
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/type_ptr.hpp>
-#include <GLFW/glfw3.h>
+#ifndef CAMERA_HPP
+#define CAMERA_HPP
 
 namespace Frosty
 {
@@ -10,9 +8,8 @@ namespace Frosty
 	private:
 		struct CameraData
 		{
-			float FoV = glm::radians(90.0f);
-			//float AspRatio = Application::Get().GetWindow().GetWidth() / Application::Get().GetWindow().GetHeight();
-			float AspRatio = 1280 / 720;
+			float FoV = glm::radians(60.0f);
+			float AspRatio = 0.0f;
 			float NearPlane = 0.1f;
 			float FarPlane = 100.0f;
 
@@ -27,23 +24,23 @@ namespace Frosty
 			float DeltaTime = 0.0f;
 			float CurrentFrame = 0.0f;
 			float LastFrame = 0.0f;
-			float Sensitivity = 0.0f;
+			float Sensitivity = 0.5f;
 
 			double MousePosX = 0;
 			double MousePosY = 0;
 
 			float LastX = 0.0f;
 			float LastY = 0.0f;
-			float Yaw = 0.0f;
+			float Yaw = -90.0f;
 			float Pitch = 0.0f;
 
 			float XOffset = 0.0f;
 			float YOffset = 0.0f;
 
-			int MouseState = 0;
+			int MouseState = -1;
 		};
 
-		CameraData m_CameraData;		
+		CameraData m_CameraData;
 	public:
 		Camera();
 		virtual ~Camera();
@@ -52,7 +49,8 @@ namespace Frosty
 		glm::mat4 GetProjection();
 		glm::vec3 GetPos();
 
-		void CameraPositionUpdate(GLFWwindow * window);
-		void CameraRotationUpdate(GLFWwindow * window, double xpos, double ypos);
+		void CameraPositionUpdate();
+		void CameraRotationUpdate(double xpos, double ypos);
 	};
 }
+#endif // !CAMERA_HPP

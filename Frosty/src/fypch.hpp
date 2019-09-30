@@ -8,6 +8,8 @@
 #include <algorithm>
 #include <functional>
 #include <Windows.h>
+#include <filesystem>
+#include <winsock.h>
 
 #include <fstream>
 

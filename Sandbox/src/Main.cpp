@@ -15,6 +15,8 @@ int main(int argc, char** argv)
 	app->Run();
 	delete app;
 
+	std::cout << "HelloWorld" << std::endl;
+
 	system("pause");
 	glfwTerminate();
 	return 0;

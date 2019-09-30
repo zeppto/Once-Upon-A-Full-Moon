@@ -1,6 +1,5 @@
 #include "fypch.hpp"
 #include "Application.hpp"
-
 #include <glad/glad.h>
 
 namespace Frosty
@@ -15,6 +14,7 @@ namespace Frosty
 		Log::Init();
 		FY_CORE_INFO("Logger initialized..");
 
+
 		m_Window = std::make_unique<Window>(Window());
 
 		EventBus::GetEventBus()->Subscribe<Application, BaseEvent>(this, &Application::OnEvent);
@@ -22,6 +22,13 @@ namespace Frosty
 		m_ImGuiLayer = new ImGuiLayer();
 		PushOverlay(m_ImGuiLayer);
 		m_RenderEngine = new RenderEngine();
+
+		//test
+
+		//Assetmanager::GetAssetmanager();
+		//Assetmanager::GetAssetmanager()->LoadFile("FbxAztec.fbx");
+		//tempManager->LoadFile("FbxAztec.fbx");
+
 	}
 
 	Application::~Application()
@@ -29,6 +36,7 @@ namespace Frosty
 		delete m_RenderEngine;
 		EventBus::GetEventBus()->Delete();
 		glfwTerminate();
+		Assetmanager::Delete();
 	}
 
 	void Application::Run()
@@ -45,7 +53,6 @@ namespace Frosty
 			/// Render
 			m_RenderEngine->Render();
 			
-
 			m_ImGuiLayer->Begin();
 			for (Layer* layer : m_LayerHandler)
 			{
