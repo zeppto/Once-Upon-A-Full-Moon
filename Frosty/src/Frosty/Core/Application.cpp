@@ -27,7 +27,7 @@ namespace Frosty
 
 		// <<< FORWARD PLUS >>>
 		
-		FrustumGrid grid;
+		//FrustumGrid grid;
 
 		// 4) send the three buffers to a frgament shader
 
@@ -45,12 +45,11 @@ namespace Frosty
 	}
 
 	void Application::Run()
-	{
-		//Renderer::ShaderInit(m_Shader);
+	{		
 		while (m_Running)
 		{
 			/// Frame Start
-			//m_RenderEngine->ClearBackground();
+			m_RenderEngine->ClearColor();
 			Time::OnUpdate();
 			/// Input
 
@@ -62,6 +61,7 @@ namespace Frosty
 			
 			/// Render
 			m_RenderEngine->Render();
+			m_RenderEngine->UpdateCamera();
 
 			m_ImGuiLayer->Begin();
 			for (Layer* layer : m_LayerHandler)

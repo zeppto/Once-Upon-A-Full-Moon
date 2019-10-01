@@ -18,39 +18,23 @@ namespace Frosty
 		//Window Information 
 		unsigned int m_WindowWidth = 0;
 		unsigned int m_WindowHeight = 0;
-		//Camera* m_Camera = nullptr;
-		//glm::vec3 m_MouseRay{ 0, 0, 0 };
-
-		//FrameBuffers 		
-		unsigned int m_FirstPassFramebuffer = 0;
-
-		//Render Textures 
-		unsigned int m_PositionRenderTexture = 0;
-		unsigned int m_NormalRenderTexture = 0;
-		unsigned int m_AlbedoRenderTexture = 0;
-		unsigned int m_AlbedoOrginalTexture = 0;
-		unsigned int m_DepthRenderTexture = 0;
-		unsigned int m_FinalTexture = 0;
+		Camera m_Camera;
 
 		std::vector<unsigned int> m_ShaderProgramVector;
-		unsigned int m_QuadVbo = 0;
-
-		// For Testing 
-		bool m_TestMode = false;
 		unsigned int m_testTriangleVBO = 0;
 	private:
 		//Update Functions
 		void UpdateInfoFromWindow();
 
-		//Render Functions		
+		//Render Functions	
+
 		//Create Functions 
 		void InitBuffers();
-		void CreateFirstPassFrameBuffer();
+		
 		void CreateAllShaderPrograms();
 		void CreateShaderProgram(std::string VertexShaderPath, std::string FragmentShaderPath, ShaderProgramsEnum Program);
 
-		void CreateQuad();
-		//For Testing
+		
 
 	public:
 
@@ -58,12 +42,13 @@ namespace Frosty
 		RenderEngine();
 		virtual ~RenderEngine();
 
+		void ClearColor();
 		void Render();
 		void UpdateCamera();
 
 		// For Testing
 		void CreateTriangle();
-		void RenderTestTriangle();
+		void RenderTriangle();
 	};
 }
 #endif 
