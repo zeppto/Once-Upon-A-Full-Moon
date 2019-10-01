@@ -115,31 +115,36 @@ namespace Frosty
 		{
 			//std::vector<unsigned int> temp_VBO_Vector;
 
-			
+			unsigned int TempID;
 
 			for (uint8_t i = 0; i < m_Meshes.size(); i++)
 			{
 
-				//unsigned int TempID = -1;
+		
+				/*glGenVertexArrays(1, &TempID);
+				glBindVertexArray(TempID);
+
+				glGenBuffers(1, &TempID);
+				glBindBuffer(GL_ARRAY_BUFFER, TempID);
+				glBufferData(GL_ARRAY_BUFFER, sizeof(Luna::Vertex) * m_Meshes.at(i).vertexCount, m_MeshInfoMap[i].MeshVertices.data(), GL_STATIC_DRAW);
 
 
-			/*	glGenVertexArrays(1, &TempID);
+				glBindVertexArray(0);
+
+
+
 				glBindVertexArray(TempID);
 
 				glEnableVertexAttribArray(0);
 				glEnableVertexAttribArray(1);
 				glEnableVertexAttribArray(2);
 
-				glGenBuffers(1, &TempID);
-				glBindBuffer(GL_ARRAY_BUFFER, TempID);
-				glBufferData(GL_ARRAY_BUFFER, sizeof(Luna::Vertex) * m_Meshes.at(i).vertexCount, m_MeshInfoMap[i].MeshVertices.data(), GL_STATIC_DRAW);
 
 				glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Luna::Vertex), BUFFER_OFFSET(0));
 				glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(Luna::Vertex), BUFFER_OFFSET(sizeof(float) * 3));
 				glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(Luna::Vertex), BUFFER_OFFSET(sizeof(float) * 5));
 
 				glBindVertexArray(0);*/
-
 
 				
 				
@@ -155,7 +160,7 @@ namespace Frosty
 
 				std::shared_ptr<VertexBuffer> tempVertexBuffer;
 				tempVertexBuffer.reset(VertexBuffer::Create(&m_MeshInfoMap[i].MeshVertices, nrOfVertices));
-				
+				tempVertexArray->AddVertexBuffer(tempVertexBuffer);
 				//TESTING
 				/*float vertices[3 * 8] =
 				{
@@ -169,18 +174,19 @@ namespace Frosty
 				//tempVertexBuffer.reset(VertexBuffer::Create(vertices, 3*nrOfVertices));
 
 
-				BufferLayout layout =
+				/*BufferLayout layout =
 				{
 					{ ShaderDataType::Float3, "vsInPos" },
 					{ ShaderDataType::Float2, "vsInUV" },
 					{ ShaderDataType::Float3, "vsInNormal" }
 				};
 
-				tempVertexBuffer->SetLayout(layout);
-				tempVertexArray->AddVertexBuffer(tempVertexBuffer);
+				tempVertexBuffer->SetLayout(layout);*/
+			
 				
 				
 				
+
 
 				uint32_t* indices = new uint32_t[nrOfVertices];
 				for (int x = 0; x < nrOfVertices; x++)
@@ -188,13 +194,19 @@ namespace Frosty
 					indices[x] = x;
 				}
 
+				//for (int x = nrOfVertices-1; x >= 0; x--)
+				//{
+				//	indices[x] = x;
+				//}
+
+
 				std::shared_ptr<IndexBuffer> tempIndexBuffer;
 				tempIndexBuffer.reset(IndexBuffer::Create(indices, nrOfVertices));
 				tempVertexArray->SetIndexBuffer(tempIndexBuffer);
 				
 				
 
-				//m_VertexArrays.emplace_back(std::make_shared<VertexArray>(*tempVertexArray));
+				m_VertexArrays.emplace_back(std::make_shared<VertexArray>(*tempVertexArray));
 				m_VertexArrays.emplace_back(tempVertexArray);
 
 				//temp_VBO_Vector.emplace_back(TempID);

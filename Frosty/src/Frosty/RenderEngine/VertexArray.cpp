@@ -2,6 +2,8 @@
 #include <glad/glad.h>
 #include "Frosty/RenderEngine/VertexArray.hpp"
 
+#define BUFFER_OFFSET(i) ((char *)nullptr + (i))
+
 namespace Frosty
 {
 	static GLenum ShaderDataTypeToOpenGLBaseType(ShaderDataType Type)
@@ -52,12 +54,21 @@ namespace Frosty
 
 	void VertexArray::AddVertexBuffer(const std::shared_ptr<VertexBuffer>& vertexBuffer)
 	{
-		FY_CORE_ASSERT(vertexBuffer->GetLayout().GetElements().size(), "Vertex buffer has no layout!");
+		//FY_CORE_ASSERT(vertexBuffer->GetLayout().GetElements().size(), "Vertex buffer has no layout!");
 	
-		glBindVertexArray(m_RendererID);
+	
 		vertexBuffer->Bind();
 
-		uint32_t index = 0;		
+
+		/*glEnableVertexAttribArray(0);
+		glEnableVertexAttribArray(1);
+		glEnableVertexAttribArray(2);
+
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Luna::Vertex), BUFFER_OFFSET(0));
+		glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(Luna::Vertex), BUFFER_OFFSET(sizeof(float) * 3));
+		glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(Luna::Vertex), BUFFER_OFFSET(sizeof(float) * 5));
+*/
+		/*uint32_t index = 0;		
 		for (const auto& element : vertexBuffer->GetLayout())
 		{
 			glEnableVertexAttribArray(index);
@@ -67,7 +78,7 @@ namespace Frosty
 				vertexBuffer->GetLayout().GetStride(),
 				(const void*)element.Offset);
 			index++;
-		}
+		}*/
 
 		m_VertexBuffer.push_back(vertexBuffer);
 		vertexBuffer->Unbind();

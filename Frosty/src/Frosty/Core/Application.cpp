@@ -42,7 +42,7 @@ namespace Frosty
 		
 	void Application::InitPrefabBuffers()
 	{
-		/*m_VertexArray.reset(VertexArray::Create());
+	/*	m_VertexArray.reset(VertexArray::Create());
 
 		float vertices[3 * 8] =
 		{
