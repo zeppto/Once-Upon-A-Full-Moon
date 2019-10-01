@@ -10,6 +10,9 @@
 #include "Frosty/RenderEngine/VertexArray.hpp"
 #include "Frosty/Core/Camera/Camera.hpp"
 
+// test
+#include "Frosty/RenderEngine/ForwardPlus.hpp"
+
 namespace Frosty
 {
 	class Application

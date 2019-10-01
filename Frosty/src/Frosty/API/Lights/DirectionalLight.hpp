@@ -1,5 +1,5 @@
-#ifndef DIRECTIONALLIGHT_H
-#define DIRECTIONALLIGHT_H
+#ifndef DIRECTIONALLIGHT_HPP
+#define DIRECTIONALLIGHT_HPP
 
 #include "LightBase.hpp"
 
@@ -11,7 +11,7 @@ namespace Frosty
 		glm::vec3 m_Direction;
 
 	public:
-		DirectionalLight();
+		//DirectionalLight();
 		DirectionalLight(glm::vec4 color, float strength, glm::vec3 direction = { 0.f, -1.f, 0.f });
 		virtual ~DirectionalLight() {};
 		DirectionalLight(const DirectionalLight& other);

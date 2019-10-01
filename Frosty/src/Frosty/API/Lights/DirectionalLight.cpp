@@ -3,10 +3,10 @@
 
 namespace Frosty
 {
-	DirectionalLight::DirectionalLight() : LightBase()
-	{
-		m_Direction = { 0.f, -1.f, 0.f };
-	}
+	//DirectionalLight::DirectionalLight() : LightBase()
+	//{
+	//	m_Direction = { 0.f, -1.f, 0.f };
+	//}
 
 	DirectionalLight::DirectionalLight(glm::vec4 color, float strength, glm::vec3 direction)
 		: LightBase(color, strength)
@@ -26,6 +26,8 @@ namespace Frosty
 		: LightBase(other)
 	{
 		m_Direction = other.m_Direction;
+
+		FY_CORE_ASSERT(false, "Copy constructor is used in class 'DirectionalLight'.");
 	}
 
 	DirectionalLight& DirectionalLight::operator=(const DirectionalLight& other)
@@ -34,6 +36,8 @@ namespace Frosty
 		{
 			LightBase::operator=(other);		// honestly idk		~ W-_-W ~
 			m_Direction = other.m_Direction;
+
+			FY_CORE_ASSERT(false, "Assignment operator is used in class 'DirectionalLight'.");
 		}
 		return *this;
 	}

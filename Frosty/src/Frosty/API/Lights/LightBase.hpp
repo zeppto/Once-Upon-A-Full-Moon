@@ -1,5 +1,5 @@
-#ifndef LIGHTBASE_H
-#define LIGHTBASE
+#ifndef LIGHTBASE_HPP
+#define LIGHTBASE_HPP
 
 #include <glm/glm.hpp>
 
