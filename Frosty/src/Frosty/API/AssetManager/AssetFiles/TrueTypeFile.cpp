@@ -1,5 +1,6 @@
 #include "fypch.hpp"
 #include "TrueTypeFile.hpp"
+#include"Glad/glad.h"
 
 namespace Frosty
 {
@@ -40,13 +41,37 @@ namespace Frosty
 
 		FT_Set_Pixel_Sizes(m_face, 0, FONTSIZE);
 
-		if (FT_Load_Char(m_face, 'X', FT_LOAD_RENDER))
+		glPixelStorei(GL_UNPACK_ALIGNMENT, 1); // Disable byte-alignment restriction
+		for (GLubyte c = 0; c < 128; c++)
 		{
-			FY_CORE_ERROR("ERROR::FREETYPE: Failed to load glyph.");
-		}
-		else
-		{
-			FY_CORE_INFO("INFO::FREETYPE: Glyph successfully loaded.");
+			if (FT_Load_Char(m_face, c, FT_LOAD_RENDER)) //Load glyph
+			{
+				FY_CORE_ERROR("ERROR::FREETYPE: Failed to load glyph.");
+				continue;
+			}
+
+			//Generate texture
+			uint32_t texture;
+			glGenTextures(1, &texture);
+			glBindTexture(GL_TEXTURE_2D, texture);
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, m_face->glyph->bitmap.width, m_face->glyph->bitmap.rows, 0, GL_RED, GL_UNSIGNED_BYTE, m_face->glyph->bitmap.buffer);
+
+			//Texture settings
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+			//Store the information
+			Character character =
+			{
+				texture,
+				glm::ivec2(m_face->glyph->bitmap.width, m_face->glyph->bitmap.rows),
+				glm::ivec2(m_face->glyph->bitmap_left, m_face->glyph->bitmap_top),
+				m_face->glyph->advance.x
+			};
+
+			m_characters.insert(std::pair<char, Character>(c, character));
 		}
 
 		FT_Done_Face(m_face);

@@ -16,6 +16,7 @@
 #include "Frosty/RenderEngine/Buffer.hpp"
 #include "Frosty/RenderEngine/VertexArray.hpp"
 #include "Frosty/UI/Sprite.h"
+#include "Frosty/DEFINITIONS.hpp"
 
 #define SAFE_RELEASE(x) if(x) x->release(), x = nullptr
 #define SAFE_DELETE(x) if(x) delete x, x = nullptr
@@ -31,6 +32,7 @@ namespace Frosty
 		// Temporary function (Testing)
 		void InitPrefabBuffers();
 		void InitShaders();
+		bool loadShaderSource(std::string src);
 
 		void Run();
 
@@ -89,6 +91,7 @@ namespace Frosty
 		Sprite *m_Sprite = nullptr;
 
 		std::shared_ptr<Shader> m_Shader;
+		std::shared_ptr<Shader> m_textShader;
 		std::shared_ptr<VertexArray> m_VertexArray;		
 	};
 }
