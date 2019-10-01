@@ -6,9 +6,7 @@
 #include "EventSystem.hpp"
 #include "Frosty/ImGui/ImGuiLayer.hpp"
 #include "Frosty/API/AssetManager/Assetmanager.hpp"
-#include "Frosty/RenderEngine/Shader.hpp"
-#include "Frosty/RenderEngine/VertexArray.hpp"
-#include "Frosty/Core/Camera/Camera.hpp"
+#include "Frosty/RenderEngine/RenderEngine.hpp"
 
 // test
 #include "Frosty/RenderEngine/ForwardPlus.hpp"
@@ -20,10 +18,6 @@ namespace Frosty
 	public:
 		Application();
 		virtual ~Application();
-		
-		// Temporary function (Testing)
-		void InitPrefabBuffers();
-		void InitShaders();
 
 		void Run();
 
@@ -57,11 +51,9 @@ namespace Frosty
 
 		// ECS stuff (TEMPORARY)
 		ECS::EntityManager m_EntityManager;
-		//std::unique_ptr<ECS::BaseComponentManager> m_TransformManager;
+		//std::unique_ptr<ECS::BaseComponentManager> m_TransformManager;		
 		
-		std::shared_ptr<Shader> m_Shader;
-		std::shared_ptr<VertexArray> m_VertexArray;	
-		std::shared_ptr<Camera> m_Camera;
+		RenderEngine* m_RenderEngine;
 	};
 }
-#endif 
+#endif
