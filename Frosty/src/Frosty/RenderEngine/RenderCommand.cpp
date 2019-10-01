@@ -18,6 +18,7 @@ namespace Frosty
 	{		
 		//glDrawElements(GL_TRIANGLES, vertexArray->GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, nullptr);		
 		//glDrawArrays(GL_TRIANGLES, vertexArray->GetVertexBuffer().size(), GL_UNSIGNED_INT);		
-		glDrawArrays(GL_TRIANGLES, 0, 3);		
+		//glDrawArrays(GL_TRIANGLES, 0, 3);		
+		glDrawArrays(GL_TRIANGLES, 0, sizeof(vertexArray));		
 	}
 }

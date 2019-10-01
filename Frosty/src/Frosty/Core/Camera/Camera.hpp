@@ -10,7 +10,7 @@ namespace Frosty
 		{
 			float FoV = glm::radians(60.0f);			
 			float AspRatio = 0.0f;			
-			float NearPlane = 0.1f;
+			float NearPlane = 0.f;
 			float FarPlane = 100.0f;
 
 			glm::mat4 View;

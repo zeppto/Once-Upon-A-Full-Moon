@@ -5,14 +5,8 @@
 
 namespace Frosty
 {
-
-
-	
-
-
 	class ModelTemplate
 	{
-
 	public:
 		struct MeshInfo
 		{
@@ -35,9 +29,6 @@ namespace Frosty
 			std::vector<Luna::Index> MeshIndices;
 			std::vector<Luna::Weights> Weights;
 		};
-
-
-
 
 	//Variables
 	public:
@@ -154,4 +145,3 @@ namespace Frosty
 }
 
 #endif // !MODELTEMPLATE_H
-

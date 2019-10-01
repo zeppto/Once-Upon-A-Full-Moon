@@ -55,9 +55,18 @@ namespace Frosty
 		FY_CORE_ASSERT(vertexBuffer->GetLayout().GetElements().size(), "Vertex buffer has no layout!");
 	
 		glBindVertexArray(m_RendererID);
-		vertexBuffer->Bind();
+		vertexBuffer->Bind();		
 
-		uint32_t index = 0;		
+		glEnableVertexAttribArray(0);
+		glEnableVertexAttribArray(1);
+		glEnableVertexAttribArray(2);		
+
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, vertexBuffer->GetLayout().GetStride(), BUFFER_OFFSET(0));
+		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, vertexBuffer->GetLayout().GetStride(), BUFFER_OFFSET(sizeof(float) * 3));
+		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, vertexBuffer->GetLayout().GetStride(), BUFFER_OFFSET(sizeof(float) * 6));
+		glBindVertexArray(0);		
+
+		/*uint32_t index = 0;		
 		for (const auto& element : vertexBuffer->GetLayout())
 		{
 			glEnableVertexAttribArray(index);
@@ -67,7 +76,7 @@ namespace Frosty
 				vertexBuffer->GetLayout().GetStride(),
 				(const void*)element.Offset);
 			index++;
-		}
+		}*/
 
 		m_VertexBuffer.push_back(vertexBuffer);
 	}

@@ -1,6 +1,7 @@
 #ifndef VERTEXARRAY_HPP
 #define VERTEXARRAY_HPP
 #include "Frosty/RenderEngine/Buffer.hpp"
+#define BUFFER_OFFSET(i) ((char *)nullptr + (i))
 
 namespace Frosty
 {
