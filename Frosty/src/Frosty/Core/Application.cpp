@@ -27,7 +27,6 @@ namespace Frosty
 		//InitShaders();
 		
 		m_Camera.reset(FY_NEW Camera());
-		m_RenderEngine = new RenderEngine();
 
 		// <<< FORWARD PLUS >>>
 		
