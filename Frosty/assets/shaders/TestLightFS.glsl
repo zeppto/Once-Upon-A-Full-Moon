@@ -38,7 +38,7 @@ vec3 CalcPointLight(PointLight light, vec3 normal, vec3 fragPos)
     float distance = length(light.position - fragPos);
 	//float attenuation = 1.0 / (1.f + light.linear_Quadratic.x * distance + light.linear_Quadratic.y * (distance * distance));
 	float attenuation = smoothstep(light.radius * 2, -1, distance); // perform Hermite interpolation between two values		seems ok so far... ~ W-_-W ~
-	vec3 diffuse = fragColor * light.color.rgb * diff * light.strength * attenuation /*(1.f/distance)*/;
+	vec3 diffuse = vsOutNormal * light.color.rgb * diff * light.strength * attenuation /*(1.f/distance)*/;
 
 	return (diffuse);
 }
