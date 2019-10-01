@@ -7,6 +7,7 @@ namespace Frosty
 	// Vertexbuffer --------------------------------------------------------------------
 
 	VertexBuffer::VertexBuffer(float * vertices, uint32_t size)
+		:m_Size(size)
 	{
 		glGenBuffers(1, &m_RendererID);
 		glBindBuffer(GL_ARRAY_BUFFER, m_RendererID);
@@ -26,6 +27,11 @@ namespace Frosty
 	void VertexBuffer::Unbind() const
 	{
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
+	}
+
+	uint32_t VertexBuffer::GetSize() const
+	{
+		return m_Size;
 	}
 	
 	VertexBuffer * VertexBuffer::Create(float * vertices, uint32_t size)

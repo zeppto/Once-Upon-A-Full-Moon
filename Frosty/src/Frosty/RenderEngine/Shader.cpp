@@ -4,16 +4,9 @@
 
 namespace Frosty
 {
-	static GLenum Shader
-
-	Shader::Shader(const std::string & filepath)
-	{
-		std::string ShaderSource = ReadFile(filepath);
-	}
-
 	Shader::Shader(const std::string& vertexSrc, const std::string& fragmentSrc)
 	{
-		// Create an empty vertex shader handle
+		/*// Create an empty vertex shader handle
 		GLuint vertexShader = glCreateShader(GL_VERTEX_SHADER);
 
 		// Send the vertex shader source code to GL
@@ -119,7 +112,9 @@ namespace Frosty
 
 		// Always detach shaders after a successful link.
 		glDetachShader(program, vertexShader);
-		glDetachShader(program, fragmentShader);
+		glDetachShader(program, fragmentShader);*/
+		
+		CreateAllShaderPrograms();
 	}
 
 	Shader::~Shader()
@@ -178,59 +173,94 @@ namespace Frosty
 		GLint location = glGetUniformLocation(m_RendererID, name.c_str());
 		glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(matrix));
 	}
-
-	Shader * Shader::Create(const std::string & filepath)
+	
+	std::string Shader::GetShaderProgramEnumString(ShaderProgramsEnum theEnum)
 	{
-		return new Shader(filepath);
-	}
-
-	Shader * Shader::Create(const std::string & vertexSrc, const std::string & fragmentSrc)
-	{
-		return new Shader(vertexSrc, fragmentSrc);
-	}
-
-	std::string Shader::ReadFile(const std::string & filepath)
-	{
-		std::string walker;
-		std::fstream in(filepath, std::ios::in, std::ios::binary);
-
-		if (in)
+		switch (theEnum)
 		{
-			in.seekg(0, std::ios::end);
-			walker.resize(in.tellg());
-			in.seekg(0, std::ios::beg);
-			in.read(&walker[0], walker.size());
-			in.close();
+			case STANDARD: return "STANDARD";
+		}		
+		return std::string();
+	}
+
+	Shader * Shader::CreateShader(const std::string vertexShaderPath, const std::string fragmentShaderPath)
+	{
+		return new Shader(vertexShaderPath, fragmentShaderPath);
+	}
+
+	void Shader::CreateShaderProgram(const std::string vertexShaderPath, const std::string fragmentShaderPath, ShaderProgramsEnum program)
+	{
+		char buff[1024];
+		memset(buff, 0, 1024);
+		GLint compileResult = 0;
+
+		GLuint vs = glCreateShader(GL_VERTEX_SHADER);
+		std::ifstream shaderFile(vertexShaderPath);
+		std::string shaderText((std::istreambuf_iterator<char>(shaderFile)), std::istreambuf_iterator<char>());
+		shaderFile.close();
+
+		const char* shaderTextPtr = shaderText.c_str();
+
+		glShaderSource(vs, 1, &shaderTextPtr, nullptr);
+		glCompileShader(vs);
+		glGetShaderiv(vs, GL_COMPILE_STATUS, &compileResult);
+		if (compileResult == GL_FALSE)
+		{
+			glGetShaderInfoLog(vs, 1024, nullptr, buff);
+			OutputDebugStringA(buff);
+			FY_CORE_ERROR("GLFW Error ({0}) \n Shader: ({1}) \n Program: ({2})", buff, vertexShaderPath, GetShaderProgramEnumString(program));
+		}
+
+		GLuint fs = glCreateShader(GL_FRAGMENT_SHADER);
+		shaderFile.open(fragmentShaderPath);
+		shaderText.assign((std::istreambuf_iterator<char>(shaderFile)), std::istreambuf_iterator<char>());
+		shaderFile.close();
+
+		shaderTextPtr = shaderText.c_str();
+
+		glShaderSource(fs, 1, &shaderTextPtr, nullptr);
+		glCompileShader(fs);
+		compileResult = GL_FALSE;
+		glGetShaderiv(fs, GL_COMPILE_STATUS, &compileResult);
+		if (compileResult == GL_FALSE)
+		{
+			memset(buff, 0, 1024);
+			glGetShaderInfoLog(fs, 1024, nullptr, buff);
+			OutputDebugStringA(buff);
+			FY_CORE_ERROR("GLFW Error ({0}) \n Shader: ({1}) \n Program: ({2})", buff, fragmentShaderPath, GetShaderProgramEnumString(program));
+		}
+
+		m_RendererID = glCreateProgram();
+		GLuint tempProgram = m_RendererID;
+		glAttachShader(tempProgram, vs);
+
+		glAttachShader(tempProgram, fs);
+		glLinkProgram(tempProgram);
+
+		compileResult = GL_FALSE;
+		glGetProgramiv(tempProgram, GL_LINK_STATUS, &compileResult);
+		if (compileResult == GL_FALSE)
+		{
+			memset(buff, 0, 1024);
+			glGetProgramInfoLog(tempProgram, 1024, nullptr, buff);
+			OutputDebugStringA(buff);
+			FY_CORE_ERROR("GLFW Error \n CompileProgram Fail Msg: ({0}) \n Program: ({1})", buff, GetShaderProgramEnumString(program));
 		}
 		else
 		{
-			FY_CORE_ERROR("Could not open the shader file '{0}'", filepath);
+			FY_CORE_INFO("Success Generation of ({0}) Program)", GetShaderProgramEnumString(program));
 		}
-		return walker;
+
+		glDetachShader(tempProgram, vs);
+		glDetachShader(tempProgram, fs);
+		glDeleteShader(vs);
+		glDeleteShader(fs);
+		
+		m_ShaderProgramVector.insert(m_ShaderProgramVector.begin() + program, tempProgram);
 	}
 
-	std::unordered_map<GLenum, std::string> Shader::PreProcess(const std::string & source)
+	void Shader::CreateAllShaderPrograms()
 	{
-		std::unordered_map<GLenum, std::string> shaderSources;
-
-		const char* typeToken = "#type";
-		size_t typeTokenLength = strlen(typeToken);
-		size_t pos = source.find(typeToken, 0);
-
-		while (pos != std::string::npos)
-		{
-			size_t eol = source.find_first_of("\r\n", pos);
-			FY_CORE_ASSERT(eol != std::string::npos, "Syntax Error");
-			size_t begin = pos + typeTokenLength + 1;
-			std::string type = source.substr(begin, eol - begin);
-			FY_CORE_ASSERT(type == "vertex" || type == "fragment" || type == "pixel", "Invalid shader type!");
-
-			size_t nextLinePos = source.find_first_not_of("\r\n", eol);
-			pos = source.find(typeToken, nextLinePos);
-			shaderSources[ShaderTypeFromString(type)] = source.substr(nextLinePos, pos - (nextLinePos == std::string::npos ? source.size() - 1 : nextLinePos));
-		}
-
-		return shaderSources;
+		CreateShaderProgram(FY_SHADER_VERTEX_SHADER, FY_SHADER_FRAGMENT_SHADER, STANDARD);
 	}
-
 }

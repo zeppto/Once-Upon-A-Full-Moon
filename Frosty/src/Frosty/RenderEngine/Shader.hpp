@@ -1,12 +1,16 @@
 #ifndef SHADER_HPP
 #define SHADER_HPP
+#include "Frosty/DEFINITIONS.hpp"
 
 namespace Frosty
 {
+	enum ShaderProgramsEnum
+	{
+		STANDARD = 0		
+	};
 	class Shader
 	{
-	public:
-		Shader(const std::string& filePath);
+	public:		
 		Shader(const std::string& vertexSrc, const std::string& fragmentSrc);
 		virtual ~Shader();
 
@@ -22,15 +26,17 @@ namespace Frosty
 		void UploadUniforMat4(const std::string& name, const glm::mat4& matrix);
 
 		void UploadVSRendererUniformBuffer();
+		
+		std::string GetShaderProgramEnumString(ShaderProgramsEnum theEnum);
 
-		static Shader* Create(const std::string& filepath);
-		static Shader* Create(const std::string& vertexSrc, const std::string& fragmentSrc);
+		//static Shader* CreateShader(const std::string& vertexSrc, const std::string& fragmentSrc);
+		static Shader* CreateShader(const std::string vertexShaderPath, const std::string fragmentShaderPath);
 	private:
-		std::string ReadFile(const std::string& filepath);
-		std::unordered_map<GLenum, std::string> PreProcess(const std::string& source);
-		void Compile(const std::unordered_map<GLenum, std::string>& shaderSources);
+		void CreateShaderProgram(const std::string vertexShaderPath, const std::string fragmentShaderPath, ShaderProgramsEnum program);
+		void CreateAllShaderPrograms();
 	private:
 		uint32_t m_RendererID;
+		std::vector<unsigned int> m_ShaderProgramVector;
 	};
 }
 #endif

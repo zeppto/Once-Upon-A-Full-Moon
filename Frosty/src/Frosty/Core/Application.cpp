@@ -24,7 +24,7 @@ namespace Frosty
 		ECS::ComponentManager<ECS::CTransform> cManager;
 		
 		InitPrefabBuffers();
-		InitShaders();
+		//InitShaders();
 		
 		m_Camera.reset(FY_NEW Camera());
 	}
@@ -137,13 +137,14 @@ namespace Frosty
 			}
 		)";
 
-		m_Shader.reset(new Shader(VertexSrc2, FragmentSrc2));		
+		//m_Shader.reset(new Shader(VertexSrc2, FragmentSrc2));		
 	}
 
 	void Application::Run()
-	{		
+	{
+		Renderer::ShaderInit(m_Shader);
 		while (m_Running)
-		{			
+		{
 			/// Frame Start
 			Time::OnUpdate();
 			/// Input

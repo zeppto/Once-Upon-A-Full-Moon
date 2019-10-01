@@ -16,6 +16,11 @@ namespace Frosty
 	{
 	}
 	
+	void Renderer::ShaderInit(std::shared_ptr<Shader>& shader)
+	{
+		shader.reset(new Shader(FY_SHADER_VERTEX_SHADER, FY_SHADER_FRAGMENT_SHADER));
+	}
+
 	void Renderer::Submit(const std::shared_ptr<Shader>& shader, const std::shared_ptr<VertexArray>& vertexArray)
 	{
 		shader->Bind();
