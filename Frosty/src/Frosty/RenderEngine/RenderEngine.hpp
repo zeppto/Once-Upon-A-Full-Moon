@@ -1,6 +1,8 @@
 #ifndef RENDERENGINE_HPP
 #define RENDERENGINE_HPP
 #include "Frosty/Core/Camera/Camera.hpp"
+#include "Frosty/API/AssetManager/Assetmanager.hpp"
+#include "Frosty/API/Transform.h"
 #define BUFFER_OFFSET(i) ((char *)nullptr + (i))
 
 namespace Frosty
@@ -19,6 +21,9 @@ namespace Frosty
 		unsigned int m_WindowWidth = 0;
 		unsigned int m_WindowHeight = 0;
 		Camera m_Camera;
+
+		Transform m_Transform; //Testing 
+		float m_Rotation = 0; //Testing 
 
 		std::vector<unsigned int> m_ShaderProgramVector;
 		unsigned int m_testTriangleVBO = 0;
@@ -49,6 +54,7 @@ namespace Frosty
 		// For Testing
 		void CreateTriangle();
 		void RenderTriangle();
+		void RenderModel(const unsigned int& VBO, const unsigned int& nrOfVertices, const glm::mat4& modelMatrix, const unsigned int& textureID);
 	};
 }
 #endif 

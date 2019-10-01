@@ -407,6 +407,19 @@ namespace Frosty
 	{
 		CreateAllShaderPrograms();
 		CreateTriangle();
+
+		////TEMP//LOAD//FILES////
+		auto tempAssetsManager = Assetmanager::GetAssetmanager();
+		MotherLoader::GetMotherLoader()->LoadFiles();
+		MotherLoader::GetMotherLoader()->PrintLoadingAttemptInformation();
+
+		AssetMetaData<ModelTemplate>* metaModel = tempAssetsManager->GetModeltemplateMetaData("clock");
+		std::shared_ptr<ModelTemplate> model = metaModel->GetData();
+
+		AssetMetaData<TextureFile>* metaTexture = tempAssetsManager->GetTextureMetaData("pCube10_diffuse");
+
+		glBindTexture(GL_TEXTURE_2D, 0);
+		////////
 	}
 
 	RenderEngine::~RenderEngine()
@@ -421,8 +434,29 @@ namespace Frosty
 
 	void RenderEngine::Render()
 	{
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		glEnable(GL_DEPTH_TEST);
+
+
 		UpdateInfoFromWindow();
-		RenderTriangle();		
+
+		m_Transform.setRotate(glm::vec3(0.0f, m_Rotation += 100 * Time::DeltaTime(), 0.0f));//Temp
+
+		RenderTriangle();
+
+		auto tempAssetsManager = Assetmanager::GetAssetmanager();
+
+		RenderModel
+		(
+			tempAssetsManager->GetModeltemplateMetaData("clock")->GetData()->GetVBO(0),
+			tempAssetsManager->GetModeltemplateMetaData("clock")->GetData()->GetMeshConst(0).vertexCount,
+			m_Transform.getModel(),
+			tempAssetsManager->GetMaterialMetaData("Mat_0:clock")->GetData()->Diffuse_Texture_MetaData_Ptr->GetData()->GetBufferID()
+		);
+
+		
+
 	}
 
 	void RenderEngine::UpdateCamera()
@@ -441,9 +475,9 @@ namespace Frosty
 
 		TriangleVertex triangleVertices[3] =
 		{
-			{ 0.5f, 0.5f, 0.0f,		1.0f, 1.0f, 0.0f,	 1.0f, 0.0f },
-			{ 0.5f, -0.5f, 0.0f,	 1.0f, 0.0f, 1.0f,	 1.0f, 1.0f},
-			{-0.5f, -0.5f, 0.0f,	 1.0f, 0.0f, 0.0f,	0.0f, 1.0f},
+			{ 0.5f, 0.5f, 0.0f,		 1.0f, 0.0f,	1.0f, 1.0f, 0.0f, },
+			{ 0.5f, -0.5f, 0.0f,	 1.0f, 1.0f,	1.0f, 0.0f, 1.0f},
+			{-0.5f, -0.5f, 0.0f,	 0.0f, 1.0f,	1.0f, 0.0f, 0.0f,},
 		};
 
 		glGenVertexArrays(1, &this->m_testTriangleVBO);
@@ -458,23 +492,43 @@ namespace Frosty
 		glBufferData(GL_ARRAY_BUFFER, sizeof(triangleVertices) * 3, triangleVertices, GL_STATIC_DRAW);
 
 		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(TriangleVertex), BUFFER_OFFSET(0));
-		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(TriangleVertex), BUFFER_OFFSET(sizeof(float) * 3));
-		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(TriangleVertex), BUFFER_OFFSET(sizeof(float) * 6));
+		glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(TriangleVertex), BUFFER_OFFSET(sizeof(float) * 3));
+		glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(TriangleVertex), BUFFER_OFFSET(sizeof(float) * 5));
 		glBindVertexArray(0);
 	}
 
 	void RenderEngine::RenderTriangle()
 	{
-		glBindFramebuffer(GL_FRAMEBUFFER, 0);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		glEnable(GL_DEPTH_TEST);		
+		
+
+		glUniformMatrix4fv(0, 1, GL_FALSE, &m_Transform.getModel()[0][0]); //Temp
 
 		glUniformMatrix4fv(1, 1, GL_FALSE, &m_Camera.GetView()[0][0]);
 		glUniformMatrix4fv(2, 1, GL_FALSE, &m_Camera.GetProjection()[0][0]);
+		glUniform1i(3, false); //Render without texture
 
 		glUseProgram(m_ShaderProgramVector.at(TEST_SHAPE));
 		glBindVertexArray(this->m_testTriangleVBO);
 		glDrawArrays(GL_TRIANGLES, 0, 3);
+		glBindVertexArray(0);
 	}
+
+	void RenderEngine::RenderModel(const unsigned int& VBO, const unsigned int& nrOfVertices, const glm::mat4& modelMatrix, const unsigned int& textureID)
+	{
+		
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, textureID);
+	
+		glUniformMatrix4fv(0, 1, GL_FALSE, &modelMatrix[0][0]); //Temp
+		glUniformMatrix4fv(1, 1, GL_FALSE, &m_Camera.GetView()[0][0]);
+		glUniformMatrix4fv(2, 1, GL_FALSE, &m_Camera.GetProjection()[0][0]);
+		glUniform1i(3, true); //Render with texture
+
+		glUseProgram(m_ShaderProgramVector.at(TEST_SHAPE));
+		glBindVertexArray(VBO);
+		glDrawArrays(GL_TRIANGLES, 0, nrOfVertices);
+		glBindVertexArray(0);
+	}
+
 
 }
