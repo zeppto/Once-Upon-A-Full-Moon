@@ -22,6 +22,18 @@ namespace Frosty
 		m_ImGuiLayer = new ImGuiLayer();
 		PushOverlay(m_ImGuiLayer);
 		m_RenderEngine = new RenderEngine();
+
+		// <<< FORWARD PLUS >>>
+		
+		FrustumGrid grid;
+
+
+		// 4) send the three buffers to a frgament shader
+
+		// 5) find out which cell the pixel belongs to (in screen space)
+
+		// 6) calculate lights as usual (world space)
+
 	}
 
 	Application::~Application()

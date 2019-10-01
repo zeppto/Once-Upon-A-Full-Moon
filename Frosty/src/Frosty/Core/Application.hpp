@@ -5,6 +5,10 @@
 #include "EventSystem.hpp"
 #include "Frosty/ImGui/ImGuiLayer.hpp"
 #include "Frosty/RenderEngine/RenderEngine.hpp"
+#include "Frosty/RenderEngine/Shader.hpp"
+
+// test
+#include "Frosty/RenderEngine/ForwardPlus.hpp"
 
 namespace Frosty
 {
@@ -44,7 +48,11 @@ namespace Frosty
 
 		RenderEngine* m_RenderEngine;
 
+		std::unique_ptr<Shader> m_Shader;
+
 		static Application* s_Instance;
+
+		// Test
 	};
 }
 #endif // !APPLICATION_HPP
