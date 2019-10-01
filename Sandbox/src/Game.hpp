@@ -4,6 +4,7 @@
 #include <Frosty.h>
 #include <iostream>
 #include "imgui/imgui.h"
+#include "Frosty/Core/CollisionDetection.hpp"
 #include "ObjectHandler/Player/Player.hpp"
 #include "ObjectHandler/GameObject.hpp"
 
@@ -11,9 +12,13 @@ class ExampleLayerA : public Frosty::Layer
 {
 
 private:
+	Frosty::CollisionDetection m_CollisionDetection;
 	Player m_Player;
 	//Player m_Player2;
-	GameObject m_ground;
+	GameObject m_Ground = GameObject(glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(10.0f));
+	GameObject m_Collidable1 = GameObject(glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(3.0f, 0.0f, -1.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), "tempPlayer");
+	GameObject m_Collidable2 = GameObject(glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(-2.0f, 0.0f, -1.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), "tempPlayer");
+	GameObject m_Collidable3 = GameObject(glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(-1.0f, 0.0f, -2.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), "tempPlayer");
 
 
 public:
@@ -24,20 +29,22 @@ public:
 	}
 	void OnAttach() override
 	{
-		m_ground.SetScale(glm::vec3(10.0f));
-		m_ground.UpdateWorldMatrix();
 	}
 	void OnUpdate() override
 	{
 
-
-
 		m_Player.UpdatePlayer();
 
+			if (m_CollisionDetection.AABBIntersect(m_Player.GetHitBoxLength(),
+				m_Player.GetHitBoxCenter(), m_Collidable1.GetHitBoxLength(), m_Collidable1.GetHitBoxCenter()))
+				FY_INFO("the player is in box1");
+			else
+				FY_INFO("the player is not in box1");
+			m_Player.SetPos(m_Player.GetPos() - m_CollisionDetection.AABBIntersecPushback(m_Player.GetHitBoxLength(),
+				m_Player.GetHitBoxCenter(), m_Collidable2.GetHitBoxLength(), m_Collidable2.GetHitBoxCenter()));
+			m_Player.SetPos(m_Player.GetPos() - m_CollisionDetection.AABBIntersecPushback(m_Player.GetHitBoxLength(),
+				m_Player.GetHitBoxCenter(), m_Collidable3.GetHitBoxLength(), m_Collidable3.GetHitBoxCenter()));
 
-
-
-	//	FY_INFO("ExampleLayer::Update");
 	}
 	virtual void OnImGuiRender() override
 	{

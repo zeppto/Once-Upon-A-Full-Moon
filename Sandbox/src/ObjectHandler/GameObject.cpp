@@ -1,14 +1,23 @@
 #include "GameObject.hpp"
 
-GameObject::GameObject(glm::vec3 color, glm::vec3 position, glm::vec3 rotation, glm::vec3 scale)
+GameObject::GameObject(glm::vec3 color, glm::vec3 position, glm::vec3 rotation, glm::vec3 scale, std::string modelFilename)
 {
-	m_renderData.model_ptr = Frosty::Assetmanager::GetAssetmanager()->GetModeltemplateMetaData("tempGround")->GetData();
-	m_renderData.material_Ptr = Frosty::Assetmanager::GetAssetmanager()->GetMaterialMetaData("Mat_0:tempGround")->GetData();
+	m_renderData.model_ptr = Frosty::Assetmanager::GetAssetmanager()->GetModeltemplateMetaData(modelFilename)->GetData();
+	m_renderData.material_Ptr = Frosty::Assetmanager::GetAssetmanager()->GetMaterialMetaData("Mat_0:" + modelFilename)->GetData();
+	m_BoundingBox = Frosty::Assetmanager::GetAssetmanager()->GetModeltemplateMetaData(modelFilename)->GetData()->GetMeshInfoConst(0).BoundingBox;
 
+	//temp fix
+	m_BoundingBox.halfSize[0] *= 2;
+	m_BoundingBox.halfSize[1] *= 2;
+	m_BoundingBox.halfSize[2] *= 2;
 
-	m_renderData.worldPosition = glm::mat4(1.0f);
+	m_Pos = position;
+	m_Rotation = rotation;
+	m_Scale = scale;
+	UpdateWorldMatrix();
 
 	Frosty::Application::Get().GetRenderEngine()->AddToRenderList(&m_renderData);
+
 }
 
 GameObject::~GameObject()
@@ -30,6 +39,27 @@ void GameObject::SetRotation(glm::vec3 newRotation)
 	m_Rotation = newRotation;
 }
 
+void GameObject::SetHitBoxLength(glm::vec3 newHitBoxLength)
+{
+	for (int i = 0; i < 3; i++)
+	{
+		m_BoundingBox.halfSize[i] = newHitBoxLength[i];
+	}
+}
+
+void GameObject::SetHitBoxCenter(glm::vec3 newHitBoxCenter)
+{
+	for (int i = 0; i < 3; i++)
+	{
+		m_BoundingBox.pos[i] = newHitBoxCenter[i];
+	}
+}
+
+void GameObject::SetWorldMatrix(glm::mat4 newWorld)
+{
+	m_renderData.worldPosition = newWorld;
+}
+
 glm::vec3 GameObject::GetPos() const
 {
 	return m_Pos;
@@ -43,6 +73,16 @@ glm::vec3 GameObject::GetScale() const
 glm::vec3 GameObject::GetRotation() const
 {
 	return m_Rotation;
+}
+
+glm::vec3 GameObject::GetHitBoxLength() const
+{
+	return glm::vec3(m_BoundingBox.halfSize[0], m_BoundingBox.halfSize[1], m_BoundingBox.halfSize[2]) * m_Scale;
+}
+
+glm::vec3 GameObject::GetHitBoxCenter() const
+{
+	return glm::vec3(m_BoundingBox.pos[0], m_BoundingBox.pos[1], m_BoundingBox.pos[2]) + m_Pos;
 }
 
 void GameObject::UpdateWorldMatrix()

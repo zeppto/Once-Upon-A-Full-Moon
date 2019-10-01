@@ -134,6 +134,7 @@ namespace Frosty
 	{
 		glfwPollEvents();
 		glfwSwapBuffers(m_Window);
+		glViewport(0, 0, m_Data.Width, m_Data.Height);
 	}
 
 	void Window::OnEvent(BaseEvent& e)
