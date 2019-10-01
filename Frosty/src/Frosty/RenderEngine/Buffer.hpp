@@ -142,12 +142,15 @@ namespace Frosty
 		void Bind()const;
 		void Unbind()const;
 
+		uint32_t GetSize()const;
+
 		BufferLayout GetLayout()const { return m_Layout; }
 		void SetLayout(const BufferLayout& layout) { m_Layout = layout; }
 
 		static VertexBuffer* Create(float* vertices, uint32_t size);
 	private:
 		uint32_t m_RendererID;
+		uint32_t m_Size;
 		BufferLayout m_Layout;
 	};
 

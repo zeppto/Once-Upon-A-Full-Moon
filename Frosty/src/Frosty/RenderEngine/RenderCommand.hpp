@@ -15,4 +15,4 @@ namespace Frosty
 		//static Renderer* m_Renderer;
 	};
 }
-#endif // !RENDERCOMMAND_HPP
+#endif

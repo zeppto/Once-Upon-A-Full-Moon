@@ -139,7 +139,7 @@ namespace Frosty
 	void Window::OnUpdate()
 	{
 		glfwPollEvents();
-		glfwSwapBuffers(m_Window);
+		glfwSwapBuffers(m_Window);		
 	}
 
 	void Window::OnEvent(BaseEvent& e)
@@ -161,11 +161,17 @@ namespace Frosty
 	{
 		m_Data.Width = e.GetWidth();
 		m_Data.Height = e.GetHeight();
+		UpdateViewPort();
 	}
 
 	void Window::OnWindowMovedEvent(WindowMovedEvent & e)
 	{
 		m_Data.PositionX = e.GetXPos();
 		m_Data.PositionY = e.GetYPos();
+	}
+
+	void Window::UpdateViewPort()
+	{
+		glViewport(0, 0, m_Data.Width, m_Data.Height);
 	}
 }

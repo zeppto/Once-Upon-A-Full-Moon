@@ -1,13 +1,12 @@
 #include "fypch.hpp"
 #include "Application.hpp"
-#include <glad/glad.h>
 #include "Frosty/RenderEngine/Renderer.hpp"
 
 namespace Frosty
 {
 	Application* Application::s_Instance = nullptr;
 	
-	Application::Application()
+	Application::Application()		
 	{
 		Log::Init();
 		FY_CORE_INFO("Logger initialized..");
@@ -23,20 +22,23 @@ namespace Frosty
 		PushOverlay(m_ImGuiLayer);
 
 		ECS::ComponentManager<ECS::CTransform> cManager;
+		
 		InitPrefabBuffers();
-		InitShaders();
+		//InitShaders();
+		
+		m_Camera.reset(FY_NEW Camera());
 	}
 
 	Application::~Application()
-	{
-		//delete m_RenderEngine;
+	{		
 		EventBus::GetEventBus()->Delete();
 		glfwTerminate();
 		Assetmanager::Delete();
+		Renderer::DeleteSceneData();		
 	}
-		
+	
 	void Application::InitPrefabBuffers()
-	{
+	{		
 		m_VertexArray.reset(VertexArray::Create());
 
 		float vertices[3 * 7] =
@@ -54,8 +56,8 @@ namespace Frosty
 			{ ShaderDataType::Float3, "vsInPos" },
 			{ ShaderDataType::Float4, "vsInCol" }
 		};
-
-		m_VertexBuffer->SetLayout(layout);
+		
+		m_VertexBuffer->SetLayout(layout);		
 		m_VertexArray->AddVertexBuffer(m_VertexBuffer);
 
 		uint32_t indices[3] = { 0, 1, 2 };
@@ -66,7 +68,7 @@ namespace Frosty
 
 	void Application::InitShaders()
 	{
-		std::string VertexSrc = R"(
+		/*std::string VertexSrc = R"(
 			#version 440 core
 			
 			layout(location = 0) in vec3 vsInPos;
@@ -96,30 +98,55 @@ namespace Frosty
 				//fsOutCol = vec4(vsOutPos + 0.5f, 1.0f);				
 				fsOutCol = vsOutCol;
 			}
+		)";*/
+
+		//m_Shader.reset(new Shader(VertexSrc, FragmentSrc));
+
+		//----------------------------------------------------------------------
+		std::string VertexSrc2 = R"(
+			#version 440 core
+			
+			layout(location = 0) in vec3 vsInPos;
+			layout(location = 1) in vec4 vsInCol;
+			
+			uniform mat4 u_ViewProjection;
+			
+			out vec3 vsOutPos;
+			out vec4 vsOutCol;
+			
+			void main()
+			{
+				vsOutPos = vsInPos;
+				vsOutCol = vsInCol;
+				gl_Position = u_ViewProjection * vec4(vsInPos, 1.0f);
+			}
+		)";
+		std::string FragmentSrc2 = R"(
+			#version 440 core
+
+			in vec3 vsOutPos;
+			in vec4 vsOutCol;
+
+			layout(location = 0) out vec4 fsOutCol;
+			
+			void main()
+			{
+				//fsOutCol = vec4(0.8f, 0.2f, 0.3f, 1.0f);
+				//fsOutCol = vec4(vsOutPos + 0.5f, 1.0f);				
+				fsOutCol = vsOutCol;
+			}
 		)";
 
-		m_Shader.reset(new Shader(VertexSrc, FragmentSrc));
+		//m_Shader.reset(new Shader(VertexSrc2, FragmentSrc2));		
 	}
 
 	void Application::Run()
 	{
+		Renderer::ShaderInit(m_Shader);
 		while (m_Running)
 		{
 			/// Frame Start
 			Time::OnUpdate();
-
-			/// Input			
-			
-			RenderCommand::SetClearColor({ 0.1f, 0.1f, 0.1f, 1.0f });
-			RenderCommand::Clear();
-
-			Renderer::BeginScene();
-
-			m_Shader->Bind();
-			Renderer::Submit(m_VertexArray);
-
-			Renderer::EndScene();
-
 			/// Input
 
 			/// Update
@@ -127,10 +154,14 @@ namespace Frosty
 			{
 				layer->OnUpdate();
 			}
-
-			//m_RenderEngine->UpdateCamera();
+			
 			/// Render
-			//m_RenderEngine->Render();
+			RenderCommand::SetClearColor({ 0.1f, 0.1f, 0.1f, 1.0f });
+			RenderCommand::Clear();
+
+			Renderer::BeginScene(m_Camera);			
+			Renderer::Submit(m_Shader, m_VertexArray);
+			Renderer::EndScene();
 
 			m_ImGuiLayer->Begin();
 			for (Layer* layer : m_LayerHandler)
