@@ -3,6 +3,8 @@
 
 namespace Frosty
 {
+
+
 	class CollisionDetection
 	{
 	public:
@@ -15,6 +17,9 @@ namespace Frosty
 		bool AABBIntersect(glm::vec3 length, glm::vec3 center, glm::vec3 otherLength, glm::vec3 otherCenter);
 
 		glm::vec3 AABBIntersecPushback(glm::vec3 pushbackLength, glm::vec3 pushbackCenter, glm::vec3 otherLength, glm::vec3 otherCenter);
+
+
+
 
 
 	private:

@@ -4,7 +4,7 @@
 #include <Frosty.h>
 #include <iostream>
 #include "imgui/imgui.h"
-#include "Frosty/Core/CollisionDetection.hpp"
+#include "Frosty/Core/Collision/CollisionDetection.hpp"
 #include "ObjectHandler/Player/Player.hpp"
 #include "ObjectHandler/GameObject.hpp"
 
