@@ -1,19 +1,18 @@
 #include "fypch.hpp"
 #include "Application.hpp"
-#include <glad/glad.h>
+#include "Frosty/RenderEngine/RenderEngine.hpp"
 
 namespace Frosty
 {
 	Application* Application::s_Instance = nullptr;
-
-	Application::Application()
+	
+	Application::Application()		
 	{
-		// TODO: Error handling?
-		s_Instance = this;
-
 		Log::Init();
 		FY_CORE_INFO("Logger initialized..");
 
+		// TODO: Error handling?
+		s_Instance = this;
 
 		m_Window = std::make_unique<Window>(Window());
 
@@ -21,38 +20,49 @@ namespace Frosty
 
 		m_ImGuiLayer = new ImGuiLayer();
 		PushOverlay(m_ImGuiLayer);
+
+		ECS::ComponentManager<ECS::CTransform> cManager;	
+		
 		m_RenderEngine = new RenderEngine();
 
-		//test
+		// <<< FORWARD PLUS >>>
+		
+		//FrustumGrid grid;
 
-		//Assetmanager::GetAssetmanager();
-		//Assetmanager::GetAssetmanager()->LoadFile("FbxAztec.fbx");
-		//tempManager->LoadFile("FbxAztec.fbx");
+		// 4) send the three buffers to a frgament shader
 
+		// 5) find out which cell the pixel belongs to (in screen space)
+
+		// 6) calculate lights as usual (world space)
 	}
 
 	Application::~Application()
-	{
-		delete m_RenderEngine;
+	{		
 		EventBus::GetEventBus()->Delete();
 		glfwTerminate();
-		Assetmanager::Delete();
+		Assetmanager::Delete();	
+		delete m_RenderEngine;
 	}
 
 	void Application::Run()
-	{
+	{		
 		while (m_Running)
 		{
-			/// Input			
+			/// Frame Start
+			m_RenderEngine->ClearColor();
+			Time::OnUpdate();
+			/// Input
 
 			/// Update
 			for (Layer* layer : m_LayerHandler)
+			{
 				layer->OnUpdate();
-
-			m_RenderEngine->UpdateCamera();
+			}
+			
 			/// Render
 			m_RenderEngine->Render();
-			
+			m_RenderEngine->UpdateCamera();
+
 			m_ImGuiLayer->Begin();
 			for (Layer* layer : m_LayerHandler)
 			{
@@ -61,12 +71,10 @@ namespace Frosty
 					layer->OnImGuiRender();
 				}
 			}
-			m_ImGuiLayer->End();
+			m_ImGuiLayer->End();			
 
 			m_Window->OnUpdate();
 		}
-
-		//glfwTerminate();
 	}
 
 	void Application::PushLayer(Layer* layer)
@@ -116,6 +124,17 @@ namespace Frosty
 		}
 
 		m_Window->OnEvent(e);
+
+		// Goes through all our layers and calls the OnEvent function in all layers
+		// We iterate from the back when handling events
+		for (auto it = m_LayerHandler.end(); it != m_LayerHandler.begin(); )
+		{
+			// We need to break the loop when an event has been handled so we don't handle all layer events
+			if ((*--it)->OnEvent(e))
+			{
+				break;
+			}
+		}
 	}
 
 	void Application::OnWindowCloseEvent(WindowCloseEvent& e)
@@ -131,5 +150,4 @@ namespace Frosty
 			m_Running = false;
 		}
 	}
-
 }

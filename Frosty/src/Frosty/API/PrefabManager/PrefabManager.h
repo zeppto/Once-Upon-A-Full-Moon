@@ -22,6 +22,8 @@ namespace Frosty
 		static PrefabManager* GetPrefabManager();
 		~PrefabManager();
 		bool setPrefab(const std::string& prefabName, const std::string& modelName, const std::string& materialName);
+		std::unordered_map<std::string, Prefab>* GetPrefabMap();
+		Prefab* GetPrefab(std::string prefabName);
 	private:	//Functions
 
 		bool CheckIfPrefabExists(std::string prefabName);

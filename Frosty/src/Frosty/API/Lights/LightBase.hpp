@@ -1,5 +1,5 @@
-#ifndef LIGHTBASE_H
-#define LIGHTBASE
+#ifndef LIGHTBASE_HPP
+#define LIGHTBASE_HPP
 
 #include <glm/glm.hpp>
 
@@ -12,7 +12,7 @@ namespace Frosty
 	private:
 		glm::vec4 m_Color;
 		float m_Strength;
-		uint8_t m_ID;
+		uint16_t m_ID;
 
 	public:
 		LightBase();
@@ -29,7 +29,7 @@ namespace Frosty
 		// Get
 		const glm::vec4 GetColor();
 		const float GetStrength();
-		const uint8_t GetID();
+		const uint16_t GetID();
 	};
 }
 #endif

@@ -56,7 +56,7 @@ namespace Frosty
 
 	private:	//Variables
 		static Assetmanager* s_Instance;
-		uint16_t m_Total_Nr_Assets;
+		static uint16_t s_Total_Nr_Assets;
 
 		std::unordered_map<std::string, AssetMetaData<ModelTemplate>>  m_MT_MetaData_Map;
 		std::unordered_map<std::string, AssetMetaData<LinkedMaterial>>  m_MAT_MetaData_Map;
@@ -119,8 +119,6 @@ namespace Frosty
 		bool ModelTemplateLoaded(const std::string& FileName);
 		bool TextureLoaded(const std::string& FileName);
 
-		unsigned int LoadGraphicFileToGPU(const std::string& FilePath);
-		unsigned int LoadModelToGPU(ModelTemplate& ModelTemplate);
 		
 		//bool CheckIfMetaDataExist(const std::string& FilePath);
 

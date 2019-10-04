@@ -19,7 +19,8 @@ struct PointLight
 	vec3 position;
 	vec4 color;
 	float strength;
-	vec2 linear_Quadratic;
+	float radius;
+	//vec2 linear_Quadratic;
 };
 
 struct DirLight
@@ -40,7 +41,8 @@ vec3 CalcPointLight(PointLight light, vec3 normal, vec3 fragPos)
     vec3 lightDir = normalize(light.position - fragPos);
     float diff = max(dot(normal, lightDir), 0.0);
     float distance = length(light.position - fragPos);
-	float attenuation = 1.0 / (1.f + light.linear_Quadratic.x * distance + light.linear_Quadratic.y * (distance * distance));
+	//float attenuation = 1.0 / (1.f + light.linear_Quadratic.x * distance + light.linear_Quadratic.y * (distance * distance));
+	float attenuation = smoothstep(light.radius * 2, -1, distance); // perform Hermite interpolation between two values		seems ok so far... ~ W-_-W ~
 	vec3 diffuse = vsOutNormal * light.color.rgb * diff * light.strength * attenuation /*(1.f/distance)*/;
 
 	return (diffuse);

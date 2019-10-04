@@ -24,6 +24,8 @@ namespace Frosty
 		m_Color = other.m_Color;
 		m_Strength = other.m_Strength;
 		m_ID = s_LightIDCounter++;
+
+		FY_CORE_ASSERT(false, "Copy constructor is used in class 'LightBase'.");
 	}
 
 	LightBase& Frosty::LightBase::operator=(const LightBase& other)
@@ -34,6 +36,9 @@ namespace Frosty
 			m_Strength = other.m_Strength;
 			m_ID = s_LightIDCounter++;
 		}
+		
+		FY_CORE_ASSERT(false, "Assignment operator is used in class 'LightBase'.");
+
 		return *this;
 	}
 
@@ -62,7 +67,7 @@ namespace Frosty
 		return m_Strength;
 	}
 	
-	const uint8_t LightBase::GetID()
+	const uint16_t LightBase::GetID()
 	{
 		return m_ID;
 	}

@@ -1,8 +1,7 @@
 #include "fypch.hpp"
 #include "Window.hpp"
-//#include "Application.hpp"
+
 #include <glad/glad.h>
-//#include "EventSystem.hpp"
 
 namespace Frosty
 {
@@ -37,15 +36,22 @@ namespace Frosty
 		}
 
 		m_Window = glfwCreateWindow((int)props.Width, (int)props.Height, props.Title.c_str(), nullptr, nullptr);
+
 		glfwSetWindowPos(m_Window, props.PositionX, props.PositionY);
 		m_Data.Title = props.Title;
 		m_Data.Width = props.Width;
 		m_Data.Height = props.Height;
 		m_Data.PositionX = props.PositionX;
 		m_Data.PositionY = props.PositionY;
+
 		glfwMakeContextCurrent(m_Window);
 		int status = gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
 		FY_CORE_ASSERT(status, "Failed to initialize Glad!");
+		FY_CORE_INFO("OpenGL Info:");
+		FY_CORE_INFO("  Vendor: {0}", glGetString(GL_VENDOR));
+		FY_CORE_INFO("  Renderer: {0}", glGetString(GL_RENDERER));
+		FY_CORE_INFO("  Version: {0}", glGetString(GL_VERSION));
+
 		glfwSetWindowUserPointer(m_Window, &m_Data);
 		
 		glViewport(0, 0, m_Data.Width, m_Data.Height);
@@ -133,8 +139,7 @@ namespace Frosty
 	void Window::OnUpdate()
 	{
 		glfwPollEvents();
-		glfwSwapBuffers(m_Window);
-		glViewport(0, 0, m_Data.Width, m_Data.Height);
+		glfwSwapBuffers(m_Window);		
 	}
 
 	void Window::OnEvent(BaseEvent& e)
@@ -156,11 +161,17 @@ namespace Frosty
 	{
 		m_Data.Width = e.GetWidth();
 		m_Data.Height = e.GetHeight();
+		UpdateViewPort();
 	}
 
 	void Window::OnWindowMovedEvent(WindowMovedEvent & e)
 	{
 		m_Data.PositionX = e.GetXPos();
 		m_Data.PositionY = e.GetYPos();
+	}
+
+	void Window::UpdateViewPort()
+	{
+		glViewport(0, 0, m_Data.Width, m_Data.Height);
 	}
 }

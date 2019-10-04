@@ -12,7 +12,6 @@ layout(location = 0) out vec3 vsOutPos;
 layout(location = 1) out vec2 vsOutUV;
 layout(location = 2) out vec3 vsOutNormal; // color/normal
 
-
 void main()
 {
 	vsOutPos =   vec3(model * vec4(vsPosIn, 1.0f));

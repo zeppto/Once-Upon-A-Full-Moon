@@ -40,13 +40,14 @@ namespace Frosty
 		void SetLabel(const std::string& Label) { m_Label = Label; }
 		const std::string& GetLabel() { return m_Label; }
 
-		const T& GetKeyData() {return m_MetaData_ptr}
+		T& GetKeyData() { return *m_MetaData_ptr->GetData(); }
 
 
 
 		void SetKeyData(AssetMetaData<T>& data) {m_MetaData_ptr = &data;}
 
 		const uint32_t& GetKeyID() { return m_Key_ID; }
+
 		const uint32_t& GetKeyCount() { return s_NrOf_Keys; }
 
 

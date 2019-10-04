@@ -33,6 +33,16 @@ namespace Frosty
 		return returnValue;
 	}
 
+	std::unordered_map<std::string, Prefab>* PrefabManager::GetPrefabMap()
+	{
+		return &m_Prefabs;
+	}
+
+	Prefab* PrefabManager::GetPrefab(std::string prefabName)
+	{
+		return &m_Prefabs.at(prefabName);
+	}
+
 	bool PrefabManager::CheckIfPrefabExists(std::string prefabName)
 	{
 		for (std::unordered_map<std::string, Prefab>::iterator it = m_Prefabs.begin(); it != m_Prefabs.end(); ++it)
