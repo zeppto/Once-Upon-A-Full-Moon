@@ -129,7 +129,7 @@ namespace Frosty
 
 			}
 
-			//std::reverse(temp_Name.begin(), temp_Name.end());
+			std::reverse(temp_Name.begin(), temp_Name.end());
 			FileNameInformation.FileName = temp_Name;
 			FileNameInformation.FilePath = temp_Name + "." + temp_Type;
 		}

@@ -27,7 +27,10 @@ namespace Frosty
 
 		//Here
 
-		m_Sprite = FY_NEW Sprite();
+		MotherLoader::GetMotherLoader()->LoadFiles();
+
+		m_Canvas.reset(new Canvas);
+		m_Sprite.reset(new Sprite);
 
 		ECS::ComponentManager<ECS::CTransform> cManager;
 		InitPrefabBuffers();
@@ -40,7 +43,6 @@ namespace Frosty
 	Application::~Application()
 	{
 		//delete m_RenderEngine;
-		//SAFE_DELETE(m_Sprite);
 		EventBus::GetEventBus()->Delete();
 		glfwTerminate();
 		Assetmanager::Delete();
@@ -51,16 +53,18 @@ namespace Frosty
 	{
 		m_VertexArray.reset(VertexArray::Create());
 		
+
+		//Canvas test
+		m_Canvas->SetScale(glm::vec3(0.5, 0.5, 0.5));
+		m_Canvas->SetPosition(glm::vec3(0.0, 0.0, 0.0));
+		m_Canvas->Init();
 		//Sprite test
-		m_Sprite->setColor(glm::vec4(0.2, 0.2, 0.2, 1.0));
-		m_Sprite->GetTransform().setScale(glm::vec3(0.2, 0.2, 0.2));
-		m_Sprite->GetTransform().setTranslate(glm::vec3(0.7, -0.7, 0.0));
-		m_Sprite->Init();
+		//m_Sprite->SetScale(glm::vec3(0.2, 0.2, 0.2));
+		//m_Sprite->SetPosition(glm::vec3(0.7, -0.7, 0.0));
+		//m_Sprite->Init();
 		//
 
-		std::shared_ptr<VertexBuffer> m_VertexBuffer;
-		m_VertexBuffer.reset(VertexBuffer::Create(m_Sprite->GetQuad(), m_Sprite->GetSize()));
-
+		//Layout
 		BufferLayout layout =
 		{
 			{ ShaderDataType::Float3, "vsInPos" },
@@ -68,8 +72,18 @@ namespace Frosty
 			{ ShaderDataType::Float2, "vsInUV" }
 		};
 
-		m_VertexBuffer->SetLayout(layout);
-		m_VertexArray->AddVertexBuffer(m_VertexBuffer);
+		////Sprite quad
+		//std::shared_ptr<VertexBuffer> m_VertexBuffer1;
+		//m_VertexBuffer1.reset(VertexBuffer::Create(m_Sprite->vertices, sizeof(m_Sprite->vertices)));
+		//m_VertexBuffer1->SetLayout(layout);
+		//m_VertexArray->AddVertexBuffer(m_VertexBuffer1); //Add to array
+
+		//Canvas quad
+		std::shared_ptr<VertexBuffer> m_VertexBuffer2;
+		m_VertexBuffer2.reset(VertexBuffer::Create(m_Canvas->m_Vertices, sizeof(m_Canvas->m_Vertices)));
+		m_VertexBuffer2->SetLayout(layout);
+		m_VertexArray->AddVertexBuffer(m_VertexBuffer2); //Add to array
+
 
 		uint32_t indices[6] = { 0, 1, 2, 3, 4, 5};
 		std::shared_ptr<IndexBuffer> m_IndexBuffer;
@@ -165,7 +179,6 @@ namespace Frosty
 		states.AddState(Frosty::StateRef(new MainMenuState(s_Instance)), false);
 		states.ProcessStateChanges();
 
-
 		while (m_Running)
 		{
 
@@ -193,10 +206,11 @@ namespace Frosty
 			/// Input
 
 			//TEST SPRITE
-			m_Shader->UploadUniformInt(m_Sprite->GetTexure().name, 0);
-			glActiveTexture(GL_TEXTURE);
-			glBindTexture(GL_TEXTURE_2D, m_Sprite->GetTexure().id);
-			m_Shader->UploadUniforMat4("model", m_Sprite->GetTransform().getModel());
+			m_Shader->UploadUniformInt(m_Sprite->GetTexture().name, 0);
+
+			glActiveTexture(GL_TEXTURE0);
+			glBindTexture(GL_TEXTURE_2D, m_Canvas->GetTexture());
+			m_Shader->UploadUniforMat4("model", m_Canvas->GetTransform().GetModel());
 
 			/// Update
 			for (Layer* layer : m_LayerHandler)

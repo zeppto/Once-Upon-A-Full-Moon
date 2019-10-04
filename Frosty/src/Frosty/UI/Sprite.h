@@ -1,7 +1,6 @@
 #ifndef SPRITE_H
 #define SPRITE_H
 
-#include "Frosty/Core/Camera/Camera.hpp"
 #include "Frosty/API/Transform.h"
 
 namespace Frosty
@@ -13,20 +12,21 @@ namespace Frosty
 
 	class Sprite
 	{
+
+	public:
+		float vertices[9 * 6] =
+		{
+			-1.0f, -1.0f, 0.0f, 0.8f, 0.0f, 0.8f, 1.0f, 0.0f, 0.0f,
+			 1.0f, -1.0f, 0.0f, 0.2f, 0.3f, 0.8f, 1.0f, 1.0f, 0.0f,
+			 1.0f, 1.0f, 0.0f, 0.8f, 0.8f, 0.2f, 1.0f, 1.0f, 1.0f,
+			 1.0f, 1.0f, 0.0f, 0.8f, 0.8f, 0.2f, 1.0f, 1.0f, 1.0f,
+			 -1.0f, 1.0f, 0.0f, 0.2f, 0.3f, 0.8f, 1.0f, 0.0f, 1.0f,
+			 -1.0f, -1.0f, 0.0f, 0.8f, 0.0f, 0.8f, 1.0f, 0.0f, 0.0f
+		};
 	private:
 		Transform m_Transform;
 		Texture m_Texture;
 		unsigned int m_QuadVbo;
-
-		float vertices[9 * 6] =
-		{
-			-1.0f, -1.0f, 0.0f, 0.8f, 0.0f, 0.8f, 1.0f, -1.0f, -1.0f,
-			 1.0f, -1.0f, 0.0f, 0.2f, 0.3f, 0.8f, 1.0f, 1.0f, -1.0f,
-			 1.0f, 1.0f, 0.0f, 0.8f, 0.8f, 0.2f, 1.0f, 1.0f, 1.0f,
-			 1.0f, 1.0f, 0.0f, 0.8f, 0.8f, 0.2f, 1.0f, 1.0f, 1.0f,
-			 -1.0f, 1.0f, 0.0f, 0.2f, 0.3f, 0.8f, 1.0f, -1.0f, 1.0f,
-			 -1.0f, -1.0f, 0.0f, 0.8f, 0.0f, 0.8f, 1.0f, -1.0f, -1.0f
-		};
 
 		glm::vec4 color = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
 
@@ -38,11 +38,26 @@ namespace Frosty
 
 		unsigned int LoadTexture();
 
-		void setColor(glm::vec4 color);
+		void SetAnchor(glm::vec2 anchor);
+		void SetPosition(glm::vec2 pos);
+		void SetScale(glm::vec2 scale);
+		void SetRotate(glm::vec2 rot);
+
+		glm::vec2 GetAnchor();
+		glm::vec2 GetPosition();
+		glm::vec2 GetScale();
+		glm::vec2 GetRotate();
+
+		void SetColor(glm::vec4 color);
+
 		float* GetQuad();
 		int GetSize();
-		Texture GetTexure();
+
+		Texture GetTexture();
 		Transform &GetTransform();
+
+	private:
+
 	};
 }
 

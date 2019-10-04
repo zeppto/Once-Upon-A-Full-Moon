@@ -339,13 +339,13 @@ namespace Frosty
 	void RenderEngine::RenderTestTriangle()
 	{
 
-		m_Transform.setRotate(glm::vec3(0.0f, m_Rotation += 0.1, 0.0f));//Temp
+		m_Transform.SetRotate(glm::vec3(0.0f, m_Rotation += 0.1, 0.0f));//Temp
 
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glEnable(GL_DEPTH_TEST);
 
-		glUniformMatrix4fv(0, 1, GL_FALSE, &m_Transform.getModel()[0][0]); //Temp
+		glUniformMatrix4fv(0, 1, GL_FALSE, &m_Transform.GetModel()[0][0]); //Temp
 
 		glUniformMatrix4fv(1, 1, GL_FALSE, &m_Camera->GetView()[0][0]);
 		glUniformMatrix4fv(2, 1, GL_FALSE, &m_Camera->GetProjection()[0][0]);
@@ -372,7 +372,7 @@ namespace Frosty
 		std::vector<Light> lights;
 		glm::vec3 pos = { 0.f, 0.f, 1.f };
 		//Light l(pos, { 1.f, 1.f, 1.f, 1.f }, 1.f, { 0.07f, 0.017f });
-		Light l(m_Transform.getTranslate(), { 1.f, 1.f, 1.f, 1.f }, 1.f, { 0.07f, 0.017f });//temp
+		Light l(m_Transform.GetTranslate(), { 1.f, 1.f, 1.f, 1.f }, 1.f, { 0.07f, 0.017f });//temp
 		Light l2(pos, { 1.f, 1.f, 1.f, 1.f }, 1.f, { 0.7f, 1.8f });
 		lights.emplace_back(l);
 		lights.emplace_back(l2);

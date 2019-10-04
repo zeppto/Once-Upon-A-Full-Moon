@@ -16,6 +16,7 @@
 #include "Frosty/RenderEngine/Buffer.hpp"
 #include "Frosty/RenderEngine/VertexArray.hpp"
 #include "Frosty/UI/Sprite.h"
+#include "Frosty/UI/Canvas.h"
 
 #define SAFE_RELEASE(x) if(x) x->release(), x = nullptr
 #define SAFE_DELETE(x) if(x) delete x, x = nullptr
@@ -86,7 +87,8 @@ namespace Frosty
 		/// New ...
 		//-------------------------------------------------------------------------
 		
-		Sprite *m_Sprite = nullptr;
+		std::shared_ptr<Canvas> m_Canvas;
+		std::shared_ptr<Sprite> m_Sprite;
 
 		std::shared_ptr<Shader> m_Shader;
 		std::shared_ptr<VertexArray> m_VertexArray;		

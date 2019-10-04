@@ -6,44 +6,45 @@ namespace Frosty
 {
 	Transform::Transform()
 	{
-		translate_vec3 = glm::vec3(0.0f, 0.0f, 0.0f);
-		rotate_vec3 = glm::vec3(0.0f, 0.0f, 0.0f);
-		scale_vec3 = glm::vec3(1.0f, 1.0f, 1.0f);
+		m_Anchor_vec3 = glm::vec3(0.0f, 0.0f, 0.0f);
+		m_Translate_vec3 = glm::vec3(0.0f, 0.0f, 0.0f);
+		m_Rotate_vec3 = glm::vec3(0.0f, 0.0f, 0.0f);
+		m_Scale_vec3 = glm::vec3(1.0f, 1.0f, 1.0f);
 
-		this->translate_mat4 = glm::mat4(
+		m_Translate_mat4 = glm::mat4(
 			1.0f, 0.0f, 0.0f, 0.0f,
 			0.0f, 1.0f, 0.0f, 0.0f,
 			0.0f, 0.0f, 1.0f, 0.0f,
-			translate_vec3.x, translate_vec3.y, translate_vec3.z, 1.0f
+			m_Translate_vec3.x, m_Translate_vec3.y, m_Translate_vec3.z, 1.0f
 		);
 
 		glm::mat4 rotateX = glm::mat4(
 			1.0f, 0.0f, 0.0f, 0.0f,
-			0.0f, cos(glm::radians(rotate_vec3.x)), -sin(glm::radians(rotate_vec3.x)), 0.0f,
-			0.0f, sin(glm::radians(rotate_vec3.x)), cos(glm::radians(rotate_vec3.x)), 0.0f,
+			0.0f, cos(glm::radians(m_Rotate_vec3.x)), -sin(glm::radians(m_Rotate_vec3.x)), 0.0f,
+			0.0f, sin(glm::radians(m_Rotate_vec3.x)), cos(glm::radians(m_Rotate_vec3.x)), 0.0f,
 			0.0f, 0.0f, 0.0f, 1.0f
 		);
 
 		glm::mat4 rotateY = glm::mat4(
-			cos(glm::radians(rotate_vec3.y)), 0.0f, sin(glm::radians(rotate_vec3.y)), 0.0f,
+			cos(glm::radians(m_Rotate_vec3.y)), 0.0f, sin(glm::radians(m_Rotate_vec3.y)), 0.0f,
 			0.0f, 1.0f, 0.0f, 0.0f,
-			-sin(glm::radians(rotate_vec3.y)), 0.0f, cos(glm::radians(rotate_vec3.y)), 0.0f,
+			-sin(glm::radians(m_Rotate_vec3.y)), 0.0f, cos(glm::radians(m_Rotate_vec3.y)), 0.0f,
 			0.0f, 0.0f, 0.0f, 1.0f
 		);
 
 		glm::mat4 rotateZ = glm::mat4(
-			cos(glm::radians(rotate_vec3.z)), -sin(glm::radians(rotate_vec3.z)), 0.0f, 0.0f,
-			sin(glm::radians(rotate_vec3.z)), cos(glm::radians(rotate_vec3.z)), 0.0f, 0.0f,
+			cos(glm::radians(m_Rotate_vec3.z)), -sin(glm::radians(m_Rotate_vec3.z)), 0.0f, 0.0f,
+			sin(glm::radians(m_Rotate_vec3.z)), cos(glm::radians(m_Rotate_vec3.z)), 0.0f, 0.0f,
 			0.0f, 0.0f, 1.0f, 0.0f,
 			0.0f, 0.0f, 0.0f, 1.0f
 		);
 
-		rotate_mat4 = rotateY * rotateX * rotateZ;
+		m_Rotate_mat4 = rotateY * rotateX * rotateZ;
 
-		scale_mat4 = glm::mat4(
-			scale_vec3.x, 0.0f, 0.0f, 0.0f,
-			0.0f, scale_vec3.y, 0.0f, 0.0f,
-			0.0f, 0.0f, scale_vec3.z, 0.0f,
+		m_Scale_mat4 = glm::mat4(
+			m_Scale_vec3.x, 0.0f, 0.0f, 0.0f,
+			0.0f, m_Scale_vec3.y, 0.0f, 0.0f,
+			0.0f, 0.0f, m_Scale_vec3.z, 0.0f,
 			0.0f, 0.0f, 0.0f, 1.0f
 		);
 	}
@@ -54,11 +55,16 @@ namespace Frosty
 	}
 
 
-	void Transform::setTranslate(glm::vec3 translate)
+	void Transform::SetAnchor(glm::vec3 anchor)
 	{
-		translate_vec3 = translate;
+		m_Anchor_vec3 = anchor;
+	}
 
-		translate_mat4 = glm::mat4(
+	void Transform::SetTranslate(glm::vec3 translate)
+	{
+		m_Translate_vec3 = translate;
+
+		m_Translate_mat4 = glm::mat4(
 			1.0f, 0.0f, 0.0f, 0.0f,
 			0.0f, 1.0f, 0.0f, 0.0f,
 			0.0f, 0.0f, 1.0f, 0.0f,
@@ -66,9 +72,9 @@ namespace Frosty
 		);
 	}
 
-	void Transform::setRotate(glm::vec3 rotate)
+	void Transform::SetRotate(glm::vec3 rotate)
 	{
-		rotate_vec3 = rotate;
+		m_Rotate_vec3 = rotate;
 
 		glm::mat4 rotateX = glm::mat4(
 			1.0f, 0.0f, 0.0f, 0.0f,
@@ -91,15 +97,15 @@ namespace Frosty
 			0.0f, 0.0f, 0.0f, 1.0f
 		);
 
-		rotate_mat4 = rotateY * rotateX * rotateZ;
+		m_Rotate_mat4 = rotateY * rotateX * rotateZ;
 
 	}
 
-	void Transform::setScale(glm::vec3 scale)
+	void Transform::SetScale(glm::vec3 scale)
 	{
-		scale_vec3 = scale;
+		m_Scale_vec3 = scale;
 
-		scale_mat4 = glm::mat4(
+		m_Scale_mat4 = glm::mat4(
 			scale.x, 0.0f, 0.0f, 0.0f,
 			0.0f, scale.y, 0.0f, 0.0f,
 			0.0f, 0.0f, scale.z, 0.0f,
@@ -107,24 +113,29 @@ namespace Frosty
 		);
 	}
 
-	glm::vec3 Transform::getTranslate()
+	glm::vec3 Transform::GetAnchor()
 	{
-		return translate_vec3;
+		return m_Anchor_vec3;
 	}
 
-	glm::vec3 Transform::getRotate()
+	glm::vec3 Transform::GetTranslate()
 	{
-		return rotate_vec3;
+		return m_Translate_vec3;
 	}
 
-	glm::vec3 Transform::getScale()
+	glm::vec3 Transform::GetRotate()
 	{
-		return scale_vec3;
+		return m_Rotate_vec3;
 	}
 
-	glm::mat4 Transform::getModel()
+	glm::vec3 Transform::GetScale()
 	{
-		return (translate_mat4 * rotate_mat4 * scale_mat4);
+		return m_Scale_vec3;
+	}
+
+	glm::mat4 Transform::GetModel()
+	{
+		return (m_Translate_mat4 * m_Rotate_mat4 * m_Scale_mat4);
 	}
 
 }
