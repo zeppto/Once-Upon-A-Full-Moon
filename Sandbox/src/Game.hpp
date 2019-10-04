@@ -16,9 +16,15 @@ private:
 	Player m_Player;
 	//Player m_Player2;
 	GameObject m_Ground = GameObject(glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(10.0f));
-	GameObject m_Collidable1 = GameObject(glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(3.0f, 0.0f, -1.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), "tempPlayer");
-	GameObject m_Collidable2 = GameObject(glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(-2.0f, 0.0f, -1.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), "tempPlayer");
-	GameObject m_Collidable3 = GameObject(glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(-1.0f, 0.0f, -2.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), "tempPlayer");
+	GameObject m_Collidable1 = GameObject(glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(3.0f, 0.0f, -1.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), 10, "tempPlayer");
+	GameObject m_Collidable2 = GameObject(glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(-2.0f, 0.0f, -1.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), 10, "tempPlayer");
+	GameObject m_Collidable3 = GameObject(glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(-1.0f, 0.0f, -2.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), 10, "tempPlayer");
+
+	Frosty::Attacks m_Attacks;
+	Frosty::PlayerController m_GameInput;
+	//temp
+	int m_EnemyDamage = 1;
+	int m_PlayerDamage = 1;
 
 
 public:
@@ -32,18 +38,28 @@ public:
 	}
 	void OnUpdate() override
 	{
+		m_Attacks = m_GameInput.PlayerControllerAttacks();
 
 		m_Player.UpdatePlayer();
 
-			if (m_CollisionDetection.AABBIntersect(m_Player.GetHitBoxLength(),
-				m_Player.GetHitBoxCenter(), m_Collidable1.GetHitBoxLength(), m_Collidable1.GetHitBoxCenter()))
-				FY_INFO("the player is in box1");
-			else
-				FY_INFO("the player is not in box1");
-			m_Player.SetPos(m_Player.GetPos() - m_CollisionDetection.AABBIntersecPushback(m_Player.GetHitBoxLength(),
-				m_Player.GetHitBoxCenter(), m_Collidable2.GetHitBoxLength(), m_Collidable2.GetHitBoxCenter()));
-			m_Player.SetPos(m_Player.GetPos() - m_CollisionDetection.AABBIntersecPushback(m_Player.GetHitBoxLength(),
-				m_Player.GetHitBoxCenter(), m_Collidable3.GetHitBoxLength(), m_Collidable3.GetHitBoxCenter()));
+		if (m_CollisionDetection.AABBIntersect(m_Player.GetHitBoxLength(),
+			m_Player.GetHitBoxCenter(), m_Collidable1.GetHitBoxLength(), m_Collidable1.GetHitBoxCenter()))
+			m_Collidable1.SetShouldRender(false);
+		else if(m_Collidable1.GetHp() > 0)
+			m_Collidable1.SetShouldRender(true);
+		m_Player.SetPos(m_Player.GetPos() - m_CollisionDetection.AABBIntersecPushback(m_Player.GetHitBoxLength(),
+			m_Player.GetHitBoxCenter(), m_Collidable2.GetHitBoxLength(), m_Collidable2.GetHitBoxCenter()));
+		m_Player.SetPos(m_Player.GetPos() - m_CollisionDetection.AABBIntersecPushback(m_Player.GetHitBoxLength(),
+			m_Player.GetHitBoxCenter(), m_Collidable3.GetHitBoxLength(), m_Collidable3.GetHitBoxCenter()));
+
+		if (m_Attacks.enemyCanAttack)
+			m_Player.SetHp(m_Player.GetHp() - m_EnemyDamage);
+		if (m_Attacks.playerCanAttack)
+			m_Collidable2.SetHp(m_Collidable2.GetHp() - m_PlayerDamage);
+		m_Collidable2.UpdateHp();
+		m_Player.UpdateHp();
+
+		m_Player.UpdateWorldMatrix();
 
 	}
 	virtual void OnImGuiRender() override

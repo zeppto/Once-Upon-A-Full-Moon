@@ -4,9 +4,14 @@ layout(binding = 0) uniform sampler2D tex;
 
 out vec4 finalColor;
 
+
+
 layout(location = 0) in vec3 vsOutPos;
 layout(location = 1) in vec2 vsOutUV;
 layout(location = 2) in vec3 vsOutNormal; // color/normal
+
+
+layout(location = 13) uniform vec3 m_Colour;
 
 
 struct PointLight
@@ -70,10 +75,13 @@ void main()
 		result += CalcDirLight(dirLights[i], normal);
 	}
 	// Add Ambient Light
+
+	//m_Colour = vec3(1.0f,1.0f,0.0f);
+
 	result + vec3(ambient);
 
 	//finalColor = diffTexture*vec4(result, 1.f);
-	finalColor = diffTexture;
+	finalColor = diffTexture + m_Colour;
 	//finalColor = diffTexture*vec4(result, 1.f);
 
 

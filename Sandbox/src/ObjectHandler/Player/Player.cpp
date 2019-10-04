@@ -1,7 +1,7 @@
 #include "Player.hpp"
 
 
-	Player::Player(glm::vec3 color, glm::vec3 position, glm::vec3 rotation, glm::vec3 scale, std::string modelFilename) : GameObject(color, position, rotation, scale, modelFilename)
+	Player::Player(glm::vec3 color, glm::vec3 position, glm::vec3 rotation, glm::vec3 scale, int maxHp, std::string modelFilename) : GameObject(color, position, rotation, scale, maxHp, modelFilename)
 	{
 		
 		//m_renderData.model_ptr = Frosty::Assetmanager::GetAssetmanager()->GetModeltemplateMetaData("tempPlayer")->GetData();
@@ -24,7 +24,8 @@
 		SetPos(GetPos() + m_PlayerController.PlayerControllerMovement());
 		//m_Pos += m_PlayerController.PlayerControllerMovement();
 		
-		UpdateWorldMatrix();
+		//UpdateWorldMatrix();
+
 		//glm::mat4 tempWorld = glm::mat4(1.0f);
 		//tempWorld = glm::translate(tempWorld, GetPos());
 		//tempWorld = glm::rotate(tempWorld, glm::radians(GetRotation().x), glm::vec3(1.0f, 0.0f, 0.0f));

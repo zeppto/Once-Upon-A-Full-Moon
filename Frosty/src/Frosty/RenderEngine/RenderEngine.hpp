@@ -14,6 +14,9 @@ namespace Frosty
 		std::shared_ptr<ModelTemplate> model_ptr;
 		std::shared_ptr<LinkedMaterial> material_Ptr;
 		glm::mat4 worldPosition;
+		glm::vec3 m_Render_Colour = glm::vec3(1.0f, 1.0f, 1.0f);
+
+		bool m_Render = true;
 
 	};
 

@@ -502,17 +502,21 @@ namespace Frosty
 			for (int i = 0; i < m_Temp_RenderList.size(); i++)
 			{
 
-				glBindVertexArray(m_Temp_RenderList.at(i)->model_ptr->GetVBO(0));
-				glUniformMatrix4fv(0, 1, GL_FALSE, &m_Temp_RenderList.at(i)->worldPosition[0][0]); 
-				glActiveTexture(GL_TEXTURE0);
-				glBindTexture(GL_TEXTURE_2D, m_Temp_RenderList.at(i)->material_Ptr->Diffuse_Texture_MetaData_Ptr->GetData()->GetBufferID());
-				glDrawArrays(GL_TRIANGLES, 0, m_Temp_RenderList.at(i)->model_ptr->GetMeshConst(0).vertexCount);
+				if (m_Temp_RenderList.at(i)->m_Render)
+				{
 
-				glBindTexture(GL_TEXTURE_2D,0);
-				//glBindVertexArray(Assetmanager::GetAssetmanager()->GetModeltemplateMetaData("clock")->GetData()->GetVBO(0));
-			//	glBindTexture(GL_TEXTURE_2D, Assetmanager::GetAssetmanager()->GetMaterialMetaData("Mat_0:clock")->GetData()->Diffuse_Texture_MetaData_Ptr->GetData()->GetBufferID());
-				//glDrawArrays(GL_TRIANGLES, 0, Assetmanager::GetAssetmanager()->GetModeltemplateMetaData("clock")->GetData()->GetMeshConst(0).vertexCount);
+					glBindVertexArray(m_Temp_RenderList.at(i)->model_ptr->GetVBO(0));
+					glUniformMatrix4fv(0, 1, GL_FALSE, &m_Temp_RenderList.at(i)->worldPosition[0][0]);
+					glUniform3fv(13,1, &m_Temp_RenderList.at(i)->m_Render_Colour[0]);
+					glActiveTexture(GL_TEXTURE0);
+					glBindTexture(GL_TEXTURE_2D, m_Temp_RenderList.at(i)->material_Ptr->Diffuse_Texture_MetaData_Ptr->GetData()->GetBufferID());
+					glDrawArrays(GL_TRIANGLES, 0, m_Temp_RenderList.at(i)->model_ptr->GetMeshConst(0).vertexCount);
 
+					glBindTexture(GL_TEXTURE_2D, 0);
+					//glBindVertexArray(Assetmanager::GetAssetmanager()->GetModeltemplateMetaData("clock")->GetData()->GetVBO(0));
+				//	glBindTexture(GL_TEXTURE_2D, Assetmanager::GetAssetmanager()->GetMaterialMetaData("Mat_0:clock")->GetData()->Diffuse_Texture_MetaData_Ptr->GetData()->GetBufferID());
+					//glDrawArrays(GL_TRIANGLES, 0, Assetmanager::GetAssetmanager()->GetModeltemplateMetaData("clock")->GetData()->GetMeshConst(0).vertexCount);
+				}
 			}
 
 

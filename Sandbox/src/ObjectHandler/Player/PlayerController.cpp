@@ -55,6 +55,9 @@ namespace Frosty
 	{
 		Attacks myAttack;
 		InputManager myImputManager;
+		m_CurrentFrame = glfwGetTime();
+		m_DeltaTime = m_CurrentFrame - m_LastFrame;
+		m_LastFrame = m_CurrentFrame;
 		m_EnemyCooldown -= m_DeltaTime;
 		m_PlayerCooldown -= m_DeltaTime;
 		if (myImputManager.IsKeyPressed(GLFW_KEY_ENTER))
