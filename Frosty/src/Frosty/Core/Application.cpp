@@ -35,9 +35,10 @@ namespace Frosty
 		ECS::ComponentManager<ECS::CTransform> cManager;
 		InitPrefabBuffers();
 		InitShaders();
-
-		UIText test;
-		test.LoadFont();
+		//if (!loadShaderSource()) {
+		//	FY_CORE_ERROR("Could not load shader source.");
+		//}
+		MotherLoader::GetMotherLoader()->LoadFiles();
 	}
 
 	Application::~Application()
@@ -93,84 +94,90 @@ namespace Frosty
 
 	void Application::InitShaders()
 	{
-		{
-			std::string VertexSrc = R"(
-			#version 440 core
-			
-			layout(location = 0) in vec3 vsInPos;
-			layout(location = 1) in vec4 vsInCol;
-			
-			out vec3 vsOutPos;
-			out vec4 vsOutCol;
-			
-			void main()
-			{
-				gl_Position = vec4(vsInPos, 1.0f);
-				vsOutPos = vsInPos;
-				vsOutCol = vsInCol;
-			}
-		)";
-			std::string FragmentSrc = R"(
-			#version 440 core
+		//{
+		//	std::string VertexSrc = R"(
+		//	#version 440 core
+		//	
+		//	layout(location = 0) in vec3 vsInPos;
+		//	layout(location = 1) in vec4 vsInCol;
+		//	
+		//	out vec3 vsOutPos;
+		//	out vec4 vsOutCol;
+		//	
+		//	void main()
+		//	{
+		//		gl_Position = vec4(vsInPos, 1.0f);
+		//		vsOutPos = vsInPos;
+		//		vsOutCol = vsInCol;
+		//	}
+		//)";
+		//	std::string FragmentSrc = R"(
+		//	#version 440 core
 
-			in vec3 vsOutPos;
-			in vec4 vsOutCol;
+		//	in vec3 vsOutPos;
+		//	in vec4 vsOutCol;
 
-			layout(location = 0) out vec4 fsOutCol;
-			
-			void main()
-			{
-				//fsOutCol = vec4(0.8f, 0.2f, 0.3f, 1.0f);
-				//fsOutCol = vec4(vsOutPos + 0.5f, 1.0f);				
-				fsOutCol = vsOutCol;
-			}
-		)";
-			//m_Shader.reset(new Shader(VertexSrc, FragmentSrc));
-		}
+		//	layout(location = 0) out vec4 fsOutCol;
+		//	
+		//	void main()
+		//	{
+		//		//fsOutCol = vec4(0.8f, 0.2f, 0.3f, 1.0f);
+		//		//fsOutCol = vec4(vsOutPos + 0.5f, 1.0f);				
+		//		fsOutCol = vsOutCol;
+		//	}
+		//)";
+		//	//m_Shader.reset(new Shader(VertexSrc, FragmentSrc));
+		//}
+		//
+		//std::string VertexSrc2 = R"(
+		//	#version 440 core
+		//	
+		//	layout(location = 0) in vec3 vsInPos;
+		//	layout(location = 1) in vec4 vsInCol;
+		//	layout(location = 2) in vec2 vsInUV;			
+		//	
+		//	uniform mat4 model;
+
+		//	out vec3 vsOutPos;
+		//	out vec4 vsOutCol;
+		//	out vec2 vsOutUV;
+		//	
+		//	void main()
+		//	{
+
+		//		gl_Position = model * vec4(vsInPos, 1.0f);
+		//		vsOutPos = vsInPos;
+		//		vsOutCol = vsInCol;
+		//		vsOutUV = vsInUV;
+		//	}
+		//)";
+		//std::string FragmentSrc2 = R"(
+		//	#version 440 core
+
+		//	in vec3 vsOutPos;
+		//	in vec4 vsOutCol;
+		//	in vec2 vsOutUV;			
+
+		//	uniform sampler2D sprite_Texture;
+
+		//	layout(location = 0) out vec4 fsOutCol;
+		//	
+		//	void main()
+		//	{
+		//		//fsOutCol = vec4(0.8f, 0.2f, 0.3f, 1.0f);
+		//		//fsOutCol = vec4(vsOutPos + 0.5f, 1.0f);
+		//		vec3 tex = texture(sprite_Texture, vsOutUV).rgb;				
+		//		fsOutCol = vec4(tex, 1);
+		//	}
+		//)";
+		m_Shader.reset(new Shader((std::string(FY_SHADERS_FOLDER_ROOT) + "SpriteVertexShader.glsl"), ((std::string(FY_SHADERS_FOLDER_ROOT) + "SpriteFragmentShader.glsl"))));
 		
-		std::string VertexSrc2 = R"(
-			#version 440 core
-			
-			layout(location = 0) in vec3 vsInPos;
-			layout(location = 1) in vec4 vsInCol;
-			layout(location = 2) in vec2 vsInUV;			
-			
-			uniform mat4 model;
+	}
 
-			out vec3 vsOutPos;
-			out vec4 vsOutCol;
-			out vec2 vsOutUV;
-			
-			void main()
-			{
+	bool Application::loadShaderSource(std::string src)
+	{
 
-				gl_Position = model * vec4(vsInPos, 1.0f);
-				vsOutPos = vsInPos;
-				vsOutCol = vsInCol;
-				vsOutUV = vsInUV;
-			}
-		)";
-		std::string FragmentSrc2 = R"(
-			#version 440 core
-
-			in vec3 vsOutPos;
-			in vec4 vsOutCol;
-			in vec2 vsOutUV;			
-
-			uniform sampler2D sprite_Texture;
-
-			layout(location = 0) out vec4 fsOutCol;
-			
-			void main()
-			{
-				//fsOutCol = vec4(0.8f, 0.2f, 0.3f, 1.0f);
-				//fsOutCol = vec4(vsOutPos + 0.5f, 1.0f);
-				vec3 tex = texture(sprite_Texture, vsOutUV).rgb;				
-				fsOutCol = vec4(tex, 1);
-			}
-		)";
-		m_Shader.reset(new Shader(VertexSrc2, FragmentSrc2));
-		
+		return false;
 	}
 
 	void Application::Run()
