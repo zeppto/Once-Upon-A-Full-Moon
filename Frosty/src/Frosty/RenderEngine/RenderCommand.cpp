@@ -11,13 +11,17 @@ namespace Frosty
 
 	void RenderCommand::Clear()
 	{
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);		
 	}
 
 	void RenderCommand::DrawIndexed(const std::shared_ptr<VertexArray>& vertexArray)
 	{		
-		//glDrawElements(GL_TRIANGLES, vertexArray->GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, nullptr);		
+		//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+		glDrawElements(GL_TRIANGLES, vertexArray->GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, nullptr);
+		//glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+		
+		//glDrawArrays(GL_PATCHES, 0, this->totalVertexSize);
 		//glDrawArrays(GL_TRIANGLES, vertexArray->GetVertexBuffer().size(), GL_UNSIGNED_INT);		
-		glDrawArrays(GL_TRIANGLES, 0, 3);		
+		//glDrawArrays(GL_TRIANGLES, 0, 3);		
 	}
 }

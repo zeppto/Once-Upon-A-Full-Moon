@@ -29,8 +29,8 @@ namespace Frosty
 		
 		std::string GetShaderProgramEnumString(ShaderProgramsEnum theEnum);
 
-		//static Shader* CreateShader(const std::string& vertexSrc, const std::string& fragmentSrc);
 		static Shader* CreateShader(const std::string vertexShaderPath, const std::string fragmentShaderPath);
+		static Shader* CreateShader(const std::string vertexShaderPath, const std::string geometryShaderPath, const std::string fragmentShaderPath);
 	private:
 		void CreateShaderProgram(const std::string vertexShaderPath, const std::string fragmentShaderPath, ShaderProgramsEnum program);
 		void CreateAllShaderPrograms();

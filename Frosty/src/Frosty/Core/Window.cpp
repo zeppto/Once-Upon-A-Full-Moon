@@ -54,6 +54,10 @@ namespace Frosty
 
 		glfwSetWindowUserPointer(m_Window, &m_Data);
 		
+		glEnable(GL_DEPTH_TEST);
+		glDisable(GL_CULL_FACE);
+		glDepthFunc(GL_LESS);
+
 		glViewport(0, 0, m_Data.Width, m_Data.Height);
 
 		InitCallbacks();
