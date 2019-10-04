@@ -30,6 +30,11 @@ namespace Frosty
 	{
 		return m_CameraData.Projection * m_CameraData.View;
 	}
+
+	glm::vec3 Camera::GetPosition()
+	{
+		return m_CameraTranslationData.Pos;
+	}
 	
 	void Frosty::Camera::CameraPositionUpdate()
 	{

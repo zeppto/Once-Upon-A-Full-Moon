@@ -29,16 +29,14 @@ namespace Frosty
 		m_Camera.reset(FY_NEW Camera());
 
 		// <<< FORWARD PLUS >>>
-		
-		FrustumGrid grid;
+		//m_LightManager.reset(FY_NEW LightManager());
+		//m_LightManager->AddPointLight(glm::vec3(2.f, 2.f, 4.5f), glm::vec4(1.f, 1.f, 1.f, 1.f), 1.f, 2.f);
 
-
-		// 4) send the three buffers to a frgament shader
+		// 4) send the four buffers to a frgament shader
 
 		// 5) find out which cell the pixel belongs to (in screen space)
 
 		// 6) calculate lights as usual (world space)
-
 	}
 
 	Application::~Application()
@@ -46,7 +44,7 @@ namespace Frosty
 		EventBus::GetEventBus()->Delete();
 		glfwTerminate();
 		Assetmanager::Delete();
-		Renderer::DeleteSceneData();		
+		Renderer::DeleteSceneData();
 	}
 	
 	void Application::InitPrefabBuffers()
@@ -172,8 +170,10 @@ namespace Frosty
 			RenderCommand::Clear();
 
 			Renderer::BeginScene(m_Camera);			
-			Renderer::Submit(m_Shader, m_VertexArray);
+			//Renderer::Submit(m_Shader, m_VertexArray, m_LightManager);
 			Renderer::EndScene();
+
+
 
 			m_ImGuiLayer->Begin();
 			for (Layer* layer : m_LayerHandler)

@@ -132,16 +132,28 @@ namespace Frosty
 		glUseProgram(0);
 	}
 
-	void Shader::UploadUniformInt(const std::string & name, int value)
+	void Shader::UploadUniformInt(const std::string & name, const int value)
 	{
 		GLint location = glGetUniformLocation(m_RendererID, name.c_str());
 		glUniform1i(location, value);
+	}
+
+	void Shader::UploadUniformUint(const std::string& name, const int value)
+	{
+		GLint location = glGetUniformLocation(m_RendererID, name.c_str());
+		glUniform1ui(location, value);
 	}
 
 	void Shader::UploadUniformFloat(const std::string & name, const float value)
 	{
 		GLint location = glGetUniformLocation(m_RendererID, name.c_str());
 		glUniform1f(location, value);
+	}
+
+	void Shader::UploadUniformFloatArray(const std::string& name, const float value)
+	{
+		GLint location = glGetUniformLocation(m_RendererID, name.c_str());
+		glUniform1fv(location, 1, &value);
 	}
 
 	void Shader::UploadUniformFloat2(const std::string & name, const glm::vec2 & value)
@@ -156,10 +168,22 @@ namespace Frosty
 		glUniform3f(location, value.x, value.y, value.z);
 	}
 
+	void Shader::UploadUniformFloat3Array(const std::string& name, const glm::vec3& value)
+	{
+		GLint location = glGetUniformLocation(m_RendererID, name.c_str());
+		glUniform3fv(location, 1, &value[0]);
+	}
+
 	void Shader::UploadUniformFloat4(const std::string & name, const glm::vec4 & value)
 	{
 		GLint location = glGetUniformLocation(m_RendererID, name.c_str());
 		glUniform4f(location, value.x, value.y, value.z, value.w);
+	}
+
+	void Shader::UploadUniformFloat4Array(const std::string& name, const glm::vec4& value)
+	{
+		GLint location = glGetUniformLocation(m_RendererID, name.c_str());
+		glUniform4fv(location, 1, &value[0]);
 	}
 
 	void Shader::UploadUniforMat3(const std::string & name, const glm::mat3 & matrix)

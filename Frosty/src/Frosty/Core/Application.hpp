@@ -10,8 +10,8 @@
 #include "Frosty/RenderEngine/VertexArray.hpp"
 #include "Frosty/Core/Camera/Camera.hpp"
 
-// test
-#include "Frosty/RenderEngine/ForwardPlus.hpp"
+// Temp
+//#include "Frosty/API/Lights/LightManager.hpp"
 
 namespace Frosty
 {
@@ -62,6 +62,9 @@ namespace Frosty
 		std::shared_ptr<Shader> m_Shader;
 		std::shared_ptr<VertexArray> m_VertexArray;	
 		std::shared_ptr<Camera> m_Camera;
+
+		// Light (TEMPORARY)
+		//std::shared_ptr<LightManager> m_LightManager;
 	};
 }
 #endif 
