@@ -37,7 +37,7 @@ namespace Frosty
 		m_ModelKey = modelKey;
 	}
 
-	void Prefab::SetMaterialKey(KeyLabel<Luna::Material> materialKey)
+	void Prefab::SetMaterialKey(KeyLabel<LinkedMaterial> materialKey)
 	{
 		m_MaterialKey = materialKey;
 	}
@@ -47,7 +47,7 @@ namespace Frosty
 		return m_ModelKey;
 	}
 
-	KeyLabel<Luna::Material> Prefab::GetMaterialKey()
+	KeyLabel<LinkedMaterial> Prefab::GetMaterialKey()
 	{
 		return m_MaterialKey;
 	}
@@ -82,6 +82,7 @@ namespace Frosty
 
 		return returnValue;
 	}
+
 	Prefab& Prefab::operator=(Prefab& other)
 	{
 		m_MaterialKey = other.m_MaterialKey;

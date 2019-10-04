@@ -19,7 +19,7 @@ namespace Frosty
 		static uint32_t s_NrOf_Prefabs;
 	
 		KeyLabel<ModelTemplate> m_ModelKey;
-		KeyLabel<Luna::Material> m_MaterialKey;
+		KeyLabel<LinkedMaterial> m_MaterialKey;
 
 
 	public:		//Functions
@@ -31,13 +31,16 @@ namespace Frosty
 		~Prefab();
 
 		void SetModelKey(KeyLabel<ModelTemplate> modelKey);
-		void SetMaterialKey(KeyLabel<Luna::Material> materialKey);
+		void SetMaterialKey(KeyLabel<LinkedMaterial> materialKey);
 
-		KeyLabel<ModelTemplate> GetModelKey();
-		KeyLabel<Luna::Material> GetMaterialKey();
+		 KeyLabel<ModelTemplate> GetModelKey();
+		KeyLabel<LinkedMaterial> GetMaterialKey();
 		std::string GetName();
 
 		bool SetData(std::string modelName, std::string materialName);
+
+		
+
 
 		Prefab& operator = (Prefab& other);
 		bool operator == (Prefab& other);

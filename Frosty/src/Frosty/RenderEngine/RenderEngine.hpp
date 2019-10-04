@@ -25,6 +25,8 @@ namespace Frosty
 		Transform m_Transform; //Testing 
 		float m_Rotation = 0; //Testing 
 
+		
+
 		std::vector<unsigned int> m_ShaderProgramVector;
 		unsigned int m_testTriangleVBO = 0;
 	private:
@@ -55,6 +57,7 @@ namespace Frosty
 		void CreateTriangle();
 		void RenderTriangle();
 		void RenderModel(const unsigned int& VBO, const unsigned int& nrOfVertices, const glm::mat4& modelMatrix, const unsigned int& textureID);
+		void RenderPrefab(std::string prefabName);
 	};
 }
 #endif 

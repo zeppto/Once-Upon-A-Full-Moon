@@ -3,6 +3,7 @@
 #include "RenderEngine.hpp"
 #include "Frosty/Core/Application.hpp"
 #include "Frosty/DEFINITIONS.hpp"
+#include "Frosty/API/PrefabManager/PrefabManager.h"
 
 namespace Frosty
 {	
@@ -414,9 +415,14 @@ namespace Frosty
 		MotherLoader::GetMotherLoader()->PrintLoadingAttemptInformation();
 
 		AssetMetaData<ModelTemplate>* metaModel = tempAssetsManager->GetModeltemplateMetaData("clock");
-		std::shared_ptr<ModelTemplate> model = metaModel->GetData();
+
 
 		AssetMetaData<TextureFile>* metaTexture = tempAssetsManager->GetTextureMetaData("pCube10_diffuse");
+		
+		auto tempPrefabManager = PrefabManager::GetPrefabManager();
+		
+		tempPrefabManager->setPrefab("TestPrefab1", "clock", "Mat_0:table");
+		tempPrefabManager->setPrefab("TestPrefab2", "table", "Mat_0:clock");
 
 		glBindTexture(GL_TEXTURE_2D, 0);
 		////////
@@ -445,17 +451,9 @@ namespace Frosty
 
 		RenderTriangle();
 
-		auto tempAssetsManager = Assetmanager::GetAssetmanager();
-
-		RenderModel
-		(
-			tempAssetsManager->GetModeltemplateMetaData("clock")->GetData()->GetVBO(0),
-			tempAssetsManager->GetModeltemplateMetaData("clock")->GetData()->GetMeshConst(0).vertexCount,
-			m_Transform.getModel(),
-			tempAssetsManager->GetMaterialMetaData("Mat_0:clock")->GetData()->Diffuse_Texture_MetaData_Ptr->GetData()->GetBufferID()
-		);
-
 		
+		RenderPrefab("TestPrefab1");
+		RenderPrefab("TestPrefab2");
 
 	}
 
@@ -528,6 +526,21 @@ namespace Frosty
 		glBindVertexArray(VBO);
 		glDrawArrays(GL_TRIANGLES, 0, nrOfVertices);
 		glBindVertexArray(0);
+	}
+
+	void RenderEngine::RenderPrefab(std::string prefabName)
+	{
+		auto tempPrefabManager = PrefabManager::GetPrefabManager();
+		Prefab* tempPrefab = tempPrefabManager->GetPrefab(prefabName);
+
+		RenderModel
+		(
+			tempPrefab->GetModelKey().GetKeyData().GetVBO(0),
+			tempPrefab->GetModelKey().GetKeyData().GetMeshConst(0).vertexCount,
+			m_Transform.getModel(), //temp
+			tempPrefab->GetMaterialKey().GetKeyData().Diffuse_Texture_MetaData_Ptr->GetData()->GetBufferID()
+
+		);
 	}
 
 
