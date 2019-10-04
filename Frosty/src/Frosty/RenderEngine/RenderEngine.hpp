@@ -7,6 +7,17 @@
 
 namespace Frosty
 {
+	struct TempRender
+	{
+
+		std::shared_ptr<ModelTemplate> model_ptr;
+		std::shared_ptr<LinkedMaterial> material_Ptr;
+		glm::mat4 worldPosition;
+		glm::vec3 m_Render_Colour = glm::vec3(1.0f, 1.0f, 1.0f);
+
+		bool m_Render = true;
+
+	};
 	enum ShaderProgramsEnum
 	{
 		TEST_SHAPE = 0,
@@ -24,6 +35,7 @@ namespace Frosty
 
 		Transform m_Transform; //Testing 
 		float m_Rotation = 0; //Testing 
+		std::vector<TempRender*> m_Temp_RenderList;
 
 		
 
@@ -58,6 +70,8 @@ namespace Frosty
 		void RenderTriangle();
 		void RenderModel(const unsigned int& VBO, const unsigned int& nrOfVertices, const glm::mat4& modelMatrix, const unsigned int& textureID);
 		void RenderPrefab(std::string prefabName);
+		void AddToRenderList(TempRender* obj);
+		void RenderTempModels();
 	};
 }
 #endif 

@@ -448,12 +448,12 @@ namespace Frosty
 		UpdateInfoFromWindow();
 
 		m_Transform.setRotate(glm::vec3(0.0f, m_Rotation += 100 * Time::DeltaTime(), 0.0f));//Temp
-
-		RenderTriangle();
+		//RenderTriangle();
+		RenderTempModels();
 
 		
-		RenderPrefab("TestPrefab1");
-		RenderPrefab("TestPrefab2");
+		/*RenderPrefab("TestPrefab1");
+		RenderPrefab("TestPrefab2");*/
 
 	}
 
@@ -505,7 +505,7 @@ namespace Frosty
 		glUniformMatrix4fv(2, 1, GL_FALSE, &m_Camera.GetProjection()[0][0]);
 		glUniform1i(3, false); //Render without texture
 
-		glUseProgram(m_ShaderProgramVector.at(TEST_SHAPE));
+		//glUseProgram(m_ShaderProgramVector.at(TEST_SHAPE));
 		glBindVertexArray(this->m_testTriangleVBO);
 		glDrawArrays(GL_TRIANGLES, 0, 3);
 		glBindVertexArray(0);
@@ -543,5 +543,38 @@ namespace Frosty
 		);
 	}
 
+	void RenderEngine::AddToRenderList(TempRender* obj)
+	{
+
+		m_Temp_RenderList.emplace_back(obj);
+
+	}
+
+	void RenderEngine::RenderTempModels()
+	{
+		glUseProgram(m_ShaderProgramVector.at(TEST_SHAPE));
+		for (int i = 0; i < m_Temp_RenderList.size(); i++)
+		{
+
+			if (m_Temp_RenderList.at(i)->m_Render)
+			{
+
+				glBindVertexArray(m_Temp_RenderList.at(i)->model_ptr->GetVBO(0));
+
+				glUniformMatrix4fv(0, 1, GL_FALSE, &m_Temp_RenderList.at(i)->worldPosition[0][0]);
+				glUniformMatrix4fv(1, 1, GL_FALSE, &m_Camera.GetView()[0][0]);
+				glUniformMatrix4fv(2, 1, GL_FALSE, &m_Camera.GetProjection()[0][0]);
+				glUniform3fv(4, 1, &m_Temp_RenderList.at(i)->m_Render_Colour[0]);
+				glUniform1i(3, true); //Render with texture
+
+				glActiveTexture(GL_TEXTURE0);
+				
+				glBindTexture(GL_TEXTURE_2D, m_Temp_RenderList.at(i)->material_Ptr->Diffuse_Texture_MetaData_Ptr->GetData()->GetBufferID());
+				glDrawArrays(GL_TRIANGLES, 0, m_Temp_RenderList.at(i)->model_ptr->GetMeshConst(0).vertexCount);
+
+				glBindTexture(GL_TEXTURE_2D, 0);
+			}
+		}
+	}
 
 }

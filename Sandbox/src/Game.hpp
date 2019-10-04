@@ -71,7 +71,7 @@ public:
 
 	bool OnEvent(Frosty::BaseEvent& event) override
 	{
-		FY_TRACE("ExampleLayerA event handled!");
+		//FY_TRACE("ExampleLayerA event handled!");
 		//FY_TRACE("{0}", event);
 		return true;
 	}

@@ -19,10 +19,11 @@ void main()
 
 	if(hasTexture)
 	{
-		fsColorOut = diffTexture;
+		fsColorOut = diffTexture + vec4(color,0);
 	}
 	else
 	{
 		fsColorOut = vec4(vsOutNormal, 1.0f);
 	}
+
 }

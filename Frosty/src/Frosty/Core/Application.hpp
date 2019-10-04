@@ -27,7 +27,9 @@ namespace Frosty
 		void PushLayer(Layer* layer);
 		void PushOverlay(Layer* layer);
 		void PopLayer(Layer* layer);
-		void PopOverlay(Layer* layer);		
+		void PopOverlay(Layer* layer);	
+
+		RenderEngine* GetRenderEngine() { return m_RenderEngine; }
 
 		inline Window& GetWindow() { return *m_Window; }
 		static inline Application& Get() { return *s_Instance; }
