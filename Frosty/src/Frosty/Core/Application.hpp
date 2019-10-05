@@ -33,7 +33,6 @@ namespace Frosty
 		// Temporary function (Testing)
 		void InitPrefabBuffers();
 		void InitShaders();
-		bool loadShaderSource(std::string src);
 
 		void Run();
 
@@ -94,7 +93,9 @@ namespace Frosty
 
 		std::shared_ptr<Shader> m_Shader;
 		std::shared_ptr<Shader> m_textShader;
-		std::shared_ptr<VertexArray> m_VertexArray;		
+		std::shared_ptr<VertexArray> m_VertexArray;
+		std::shared_ptr<VertexArray> m_TextVertexArray;
+		std::shared_ptr<VertexBuffer> m_textVertBuffer;
 	};
 }
 #endif 

@@ -231,6 +231,19 @@ namespace Frosty
 		return nullptr;
 	}
 
+	AssetMetaData<TrueTypeFile>* Assetmanager::GetFontMetaData(const std::string & FileName)
+	{
+		if (FontLoaded(FileName))
+		{
+			return &m_Font_MetaData_Map[FileName];
+		}
+		else
+		{
+			FY_CORE_WARN("Tried to fetch a non loaded font with AssetName: {0}", FileName);
+		}
+		return nullptr;
+	}
+
 	bool Assetmanager::LinkModelKey(const std::string& FileName, KeyLabel<ModelTemplate>* In_Key)
 	{
 

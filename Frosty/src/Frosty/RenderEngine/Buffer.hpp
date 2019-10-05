@@ -137,6 +137,7 @@ namespace Frosty
 	{
 	public:
 		VertexBuffer(float* vertices, uint32_t size);
+		VertexBuffer();
 		virtual ~VertexBuffer();
 
 		void Bind()const;
@@ -146,6 +147,10 @@ namespace Frosty
 		void SetLayout(const BufferLayout& layout) { m_Layout = layout; }
 
 		static VertexBuffer* Create(float* vertices, uint32_t size);
+		static VertexBuffer* Create();
+
+		void SetData(float* vertices, uint32_t size, uint32_t type);
+
 	private:
 		uint32_t m_RendererID;
 		BufferLayout m_Layout;

@@ -13,6 +13,11 @@ namespace Frosty
 		glBufferData(GL_ARRAY_BUFFER, size, vertices, GL_STATIC_DRAW);
 	}
 
+	VertexBuffer::VertexBuffer()
+	{
+		glGenBuffers(1, &m_RendererID);
+	}
+
 	VertexBuffer::~VertexBuffer()
 	{
 		glDeleteBuffers(1, &m_RendererID);
@@ -31,6 +36,17 @@ namespace Frosty
 	VertexBuffer * VertexBuffer::Create(float * vertices, uint32_t size)
 	{
 		return new VertexBuffer(vertices, size);
+	}
+
+	VertexBuffer * VertexBuffer::Create()
+	{
+		return new VertexBuffer();
+	}
+
+	void VertexBuffer::SetData(float * vertices, uint32_t size, uint32_t type)
+	{
+		glBindBuffer(GL_ARRAY_BUFFER, m_RendererID);
+		glBufferData(GL_ARRAY_BUFFER, size, vertices, type);
 	}
 
 	// Indexbuffer --------------------------------------------------------------------

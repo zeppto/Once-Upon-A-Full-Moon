@@ -102,6 +102,7 @@ namespace Frosty
 		AssetMetaData<ModelTemplate> * GetModeltemplateMetaData(const std::string& FileName);
 		AssetMetaData<LinkedMaterial> * GetMaterialMetaData(const std::string& FileName);
 		AssetMetaData<TextureFile> * GetTextureMetaData(const std::string& FileName);
+		AssetMetaData<TrueTypeFile> * GetFontMetaData(const std::string& FileName);
 
 
 		//KeyLabel<ModelTemplate>& CreateModelKey(std::string AssetName);

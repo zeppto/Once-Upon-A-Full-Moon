@@ -19,5 +19,6 @@ namespace Frosty
 
 		vertexArray->Bind();
 		RenderCommand::DrawIndexed(vertexArray);
+		vertexArray->Unbind();
 	}
 }

@@ -90,6 +90,25 @@ namespace Frosty
 		std::shared_ptr<IndexBuffer> m_IndexBuffer;
 		m_IndexBuffer.reset(IndexBuffer::Create(indices, sizeof(indices) / sizeof(uint32_t)));
 		m_VertexArray->SetIndexBuffer(m_IndexBuffer);
+
+		//m_VertexArray->Unbind();
+		//m_IndexBuffer->Unbind();
+		//m_VertexBuffer2->Unbind();
+
+		//Text
+		m_TextVertexArray.reset(VertexArray::Create());
+		m_textVertBuffer.reset(VertexBuffer::Create());
+		BufferLayout textLayout =
+		{
+			{ ShaderDataType::Float4, "vertex" }
+		};
+		m_textVertBuffer->SetLayout(textLayout);
+		m_TextVertexArray->AddVertexBuffer(m_textVertBuffer);
+
+		uint32_t textIndices[6] = { 0, 1, 2, 3, 4, 5 };
+		std::shared_ptr<IndexBuffer> textIndexBuffer;
+		textIndexBuffer.reset(IndexBuffer::Create(textIndices, sizeof(textIndices) / sizeof(uint32_t)));
+		m_TextVertexArray->SetIndexBuffer(textIndexBuffer);
 	}
 
 	void Application::InitShaders()
@@ -171,13 +190,7 @@ namespace Frosty
 		//	}
 		//)";
 		m_Shader.reset(new Shader((std::string(FY_SHADERS_FOLDER_ROOT) + "SpriteVertexShader.glsl"), ((std::string(FY_SHADERS_FOLDER_ROOT) + "SpriteFragmentShader.glsl"))));
-		
-	}
-
-	bool Application::loadShaderSource(std::string src)
-	{
-
-		return false;
+		m_textShader.reset(new Shader((std::string(FY_SHADERS_FOLDER_ROOT) + "TextVertexShader.glsl"), ((std::string(FY_SHADERS_FOLDER_ROOT) + "TextFragmentShader.glsl"))));
 	}
 
 	void Application::Run()
@@ -208,6 +221,7 @@ namespace Frosty
 			Renderer::BeginScene();
 			m_Shader->Bind();
 			Renderer::Submit(m_VertexArray);
+
 			Renderer::EndScene();
 
 			/// Input
@@ -218,6 +232,57 @@ namespace Frosty
 			glActiveTexture(GL_TEXTURE0);
 			glBindTexture(GL_TEXTURE_2D, m_Canvas->GetTexture());
 			m_Shader->UploadUniforMat4("model", m_Canvas->GetTransform().GetModel());
+			//glBindTexture(GL_TEXTURE_2D, 0);
+			m_Shader->UnBind();
+
+
+			//Render text
+			glEnable(GL_BLEND);
+			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+			std::string tempText = "Hello team";
+
+			glm::mat4 projection = glm::ortho(0.0f, 800.0f, 0.0f, 600.0f);
+			glm::vec3 color = glm::vec3(1.0f, 0.0f, 1.0f);
+			m_textShader->Bind();
+			m_textShader->UploadUniforMat4("projection", projection);
+			m_textShader->UploadUniformInt("text", 1);
+			m_textShader->UploadUniformFloat3("textColor", color);
+			std::string::const_iterator c;
+			float x = 25.0f;
+			float y = 24.0f;
+			float scale = 1.0f;
+			glm::vec3 vec = glm::vec3(0.5f, 0.8f, 0.2f);
+			for (c = tempText.begin(); c != tempText.end(); c++) {
+				Character ch = Assetmanager::GetAssetmanager()->GetFontMetaData("Gabriola")->GetData()->m_characters.at(*c);
+				float xpos = x + ch.bearing.x * scale;
+				float ypos = y - (ch.size.y - ch.bearing.y) * scale;
+				float width = ch.size.x * scale;
+				float height = ch.size.y * scale;
+
+				float verts[6][4]
+				{
+					{ xpos,			ypos + height,	0.0f, 0.0f },
+					{ xpos,			ypos,			0.0f, 1.0f },
+					{ xpos + width,	ypos,			1.0f, 1.0f },
+
+					{ xpos,			ypos + height,	0.0f, 0.0f },
+					{ xpos + width, ypos,			1.0f, 1.0f },
+					{ xpos + width, ypos + height,	1.0f, 0.0f }
+				};
+
+				m_textVertBuffer->Bind();
+				m_textVertBuffer->SetData(*verts, sizeof(verts), GL_DYNAMIC_DRAW);
+
+				glActiveTexture(GL_TEXTURE1);
+				glBindTexture(GL_TEXTURE_2D, ch.textureID);
+
+				Renderer::Submit(m_TextVertexArray);
+				x += (ch.advance >> 6) * scale;
+			}
+			m_textShader->UnBind();
+			//glBindVertexArray(0);
+			//glBindTexture(GL_TEXTURE_2D, 0);
+
 
 			/// Update
 			for (Layer* layer : m_LayerHandler)
@@ -237,7 +302,7 @@ namespace Frosty
 					layer->OnImGuiRender();
 				}
 			}
-			m_ImGuiLayer->End();			
+			m_ImGuiLayer->End();
 
 			m_Window->OnUpdate();
 		}
