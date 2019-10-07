@@ -13,6 +13,9 @@
 #include "Frosty/RenderEngine/Buffer.hpp"
 #include "Frosty/RenderEngine/Shader.hpp"
 #include "Frosty/RenderEngine/VertexArray.hpp"
+#include "Frosty/RenderEngine/Texture.hpp"
+
+#include "Frosty/RenderEngine/OrthographicCamera.hpp"
 // -----------------------------------
 
 #endif

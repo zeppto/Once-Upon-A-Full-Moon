@@ -1,6 +1,7 @@
 #ifndef RENDERCOMMAND_HPP
 #define RENDERCOMMAND_HPP
-#include "Renderer.hpp"
+
+#include "Frosty/RenderEngine/VertexArray.hpp"
 
 namespace Frosty
 {

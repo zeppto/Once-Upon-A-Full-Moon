@@ -1,6 +1,9 @@
 #ifndef ECS_HPP
 #define ECS_HPP
 
+#include "Frosty/RenderEngine/VertexArray.hpp"
+#include "Frosty/RenderEngine/Shader.hpp"
+
 namespace Frosty
 {
 	namespace utils
@@ -79,13 +82,13 @@ namespace Frosty
 #pragma region Settings
 
 		// Let's define a maximum number of unique components:
-		constexpr std::size_t MAX_COMPONENTS{ 32 };
+		constexpr std::size_t MAX_COMPONENTS{ 4 };
 
 		// Let's define a maximum number of entities that
 		// can have the same component type:
 		constexpr std::size_t MAX_ENTITIES_PER_COMPONENT{ 1024 };
 
-#pragma endregion
+#pragma endregion Settings
 
 
 #pragma region Declarations
@@ -97,7 +100,7 @@ namespace Frosty
 		using ComponentArrayIndex = size_t;		// An index to where in the component array the component is stored for a specific entity
 		using ComponentBitset = std::bitset<MAX_COMPONENTS>;
 
-#pragma endregion
+#pragma endregion Declarations
 
 
 #pragma region Utilities
@@ -128,6 +131,7 @@ namespace Frosty
 			}
 		}
 
+
 		template <typename ComponentType>
 		inline ComponentID getComponentTypeID() noexcept
 		{
@@ -140,7 +144,8 @@ namespace Frosty
 			return typeCID;
 		}
 
-#pragma endregion
+
+#pragma endregion Utilities
 
 
 #pragma region Entity
@@ -190,6 +195,7 @@ namespace Frosty
 
 			inline size_t GetTotalEntities() const { return m_Entities.size(); }
 
+			inline std::shared_ptr<Entity>& At(size_t index) { return m_Entities.at(index); }
 			inline const std::shared_ptr<Entity>& At(size_t index) const { return m_Entities.at(index); }
 
 			inline std::shared_ptr<Entity>& Create()
@@ -229,7 +235,7 @@ namespace Frosty
 
 		};
 
-#pragma endregion
+#pragma endregion Entity
 
 
 #pragma region Component
@@ -237,6 +243,8 @@ namespace Frosty
 		struct BaseComponent
 		{
 			std::shared_ptr<Entity> EntityPtr;
+
+			virtual void Func() = 0;
 		};
 
 		struct BaseComponentManager
@@ -252,16 +260,20 @@ namespace Frosty
 
 			// Operators
 			BaseComponentManager& operator=(const BaseComponentManager& e) { FY_CORE_ASSERT(false, "Assignment operator in BaseComponentManager called."); return *this; }
+			
+			static void Init();
+
+			virtual BaseComponent* GetTypeComponent(const std::shared_ptr<Entity>& entity) = 0;
 
 			virtual void Remove(std::shared_ptr<Entity>& entity) = 0;
+
+			//static std::array<std::shared_ptr<BaseComponent>, MAX_COMPONENTS> s_ComponentList;
+
 		};
 
 		template<typename ComponentType>
 		class ComponentManager : public BaseComponentManager
 		{
-		public:
-			// TODO:
-				// RemoveComponent() - Make sure to update the entity bitset. Either handle it here or inside EntityManager
 		public:
 			ComponentManager() : BaseComponentManager() { FY_CORE_INFO("A new component manager({0}) was successfully created.", getComponentTypeID<ComponentType>()); }
 			ComponentManager(const ComponentManager& obj) : BaseComponentManager(obj) { FY_CORE_ASSERT(false, "Copy constructor in ComponentManager({0}) called.", getComponentTypeID<ComponentType>()); }
@@ -270,12 +282,22 @@ namespace Frosty
 			// Operators
 			ComponentManager& operator=(const ComponentManager& e) { FY_CORE_ASSERT(false, "Assignment operator in ComponentManager({0}) called.", getComponentTypeID<ComponentType>()); return *this; }
 
+			virtual BaseComponent* GetTypeComponent(const std::shared_ptr<Entity>& entity) override
+			{
+				ComponentArrayIndex tempIndex = EntityMap.at(entity);
+
+				return &m_Data[tempIndex];
+			}
+
 			inline ComponentType& Get(const std::shared_ptr<Entity>& entity)
 			{
 				ComponentArrayIndex tempIndex = EntityMap.at(entity);
 
 				return m_Data[tempIndex];
 			}
+
+			inline std::array<ComponentType, MAX_ENTITIES_PER_COMPONENT>& GetAll() { return m_Data; }
+			inline const std::array<ComponentType, MAX_ENTITIES_PER_COMPONENT>& GetAll() const { return m_Data; }
 
 			template<typename... TArgs>
 			inline ComponentType& Add(std::shared_ptr<Entity>& entity, TArgs&&... mArgs)
@@ -286,7 +308,7 @@ namespace Frosty
 				EntityMap.emplace(entity, Total);
 				m_Data.at(Total) = ComponentType(std::forward<TArgs>(mArgs)...);
 				entity->Bitset.flip(getComponentTypeID<ComponentType>());
-				m_Data.at(Total).EntityPtr;
+				m_Data.at(Total).EntityPtr = entity;
 
 				return m_Data[Total++];
 			}
@@ -325,9 +347,83 @@ namespace Frosty
 
 			CTransform() = default;
 			CTransform(const glm::vec3& position, const glm::vec3& rotation, const glm::vec3& scale) : Position(position), Rotation(rotation), Scale(scale) { }
+			CTransform(const CTransform& org) { FY_CORE_ASSERT(false, "Copy constructor in CTransform called."); }
+
+			virtual void Func() override { }
 		};
 
-#pragma endregion
+		struct CMesh : public BaseComponent
+		{
+			static std::string NAME;
+			std::shared_ptr<VertexArray> Mesh;
+
+			CMesh() = default;
+			CMesh(std::shared_ptr<VertexArray> mesh) : Mesh(mesh) { }
+
+			virtual void Func() override { }
+		};
+
+		struct CCamera : public BaseComponent
+		{
+			static std::string NAME;
+			float FieldOfView;
+			float Near;
+			float Far;
+			glm::mat4 ViewMatrix;
+			glm::mat4 ProjectionMatrix;
+			glm::mat4 ViewProjectionMatrix;
+
+			CCamera() = default;
+			CCamera(float fov, float aspect, float zNear, float zFar)
+				: FieldOfView(fov), Near(zNear), Far(zFar), ProjectionMatrix(glm::perspective(glm::radians(fov), aspect, zNear, zFar))
+			{
+				ViewMatrix = glm::lookAt(glm::vec3(0.0f, 0.0f, -10.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+				ViewProjectionMatrix = ProjectionMatrix * ViewMatrix;
+			}
+
+			virtual void Func() override { }
+
+		};
+
+		struct CMaterial : public BaseComponent
+		{
+			static std::string NAME;
+			std::shared_ptr<Shader> UseShader;
+			glm::vec4 Albedo{ 1.0f, 0.0f, 1.0f, 1.0f };
+
+			CMaterial() = default;
+			CMaterial(const std::shared_ptr<Shader>& shader) : UseShader(shader) { }
+
+			virtual void Func() override { }
+		};
+
+		static std::string GetComponentName(size_t i)
+		{
+			switch (i)
+			{
+			case 0:		return "Transform";
+			case 1:		return "Mesh";
+			case 2:		return "Camera";
+			case 3:		return "Material";
+			default:	return "";
+			}
+		}
+
+#pragma endregion Component
+
+
+#pragma region System
+
+		class BaseSystem
+		{
+		public:
+
+
+		protected:
+		private:
+		};
+
+#pragma endregion System
 	}
 }
 

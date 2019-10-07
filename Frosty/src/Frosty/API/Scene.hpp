@@ -2,6 +2,7 @@
 #define SCENE_HPP
 
 #include "Frosty/Core/ECS.hpp"
+#include "Frosty/RenderEngine/Renderer.hpp"
 
 namespace Frosty
 {
@@ -22,10 +23,16 @@ namespace Frosty
 		void Render();
 
 		// Entity Functions
+		std::shared_ptr<ECS::Entity>& At(size_t index);
 		const std::shared_ptr<ECS::Entity>& At(size_t index) const;
 		std::shared_ptr<ECS::Entity>& CreateEntity();
 		void RemoveEntity(std::shared_ptr<ECS::Entity>& entity);
 		inline size_t GetTotalEntities() const { return m_EntityManager->GetTotalEntities(); }
+		template<typename ComponentType>
+		inline bool HasComponent(const std::shared_ptr<ECS::Entity>& entity)
+		{
+			return entity->Bitset[ECS::getComponentTypeID<ComponentType>()];
+		}
 
 		// Component Functions
 		template<typename ComponentType>
@@ -41,6 +48,11 @@ namespace Frosty
 			return GetComponentManager<ComponentType>()->Get(entity);
 		}
 
+		inline ECS::BaseComponent* GetComponentById(size_t id, const std::shared_ptr<ECS::Entity>& entity)
+		{
+			return m_ComponentManagers[id]->GetTypeComponent(entity);
+		}
+
 		template<typename ComponentType, typename... TArgs>
 		inline ComponentType& AddComponent(std::shared_ptr<ECS::Entity>& entity, TArgs&&... mArgs)
 		{
@@ -53,7 +65,7 @@ namespace Frosty
 
 			if (!m_ComponentManagers[cId])
 			{
-				m_ComponentManagers[cId].reset(FY_NEW ECS::ComponentManager<ECS::CTransform>());
+				m_ComponentManagers[cId].reset(FY_NEW ECS::ComponentManager<ComponentType>());
 			}
 
 			ComponentType& addedComp = GetComponentManager<ComponentType>()->Add(entity, std::forward<TArgs>(mArgs)...);

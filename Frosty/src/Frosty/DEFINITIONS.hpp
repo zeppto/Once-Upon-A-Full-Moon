@@ -5,7 +5,7 @@
 
 // Window/Editor settings (might be moved to a file, settings.txt or something)
 #define EDITOR_EXPLORER_WIDTH 300
-#define EDITOR_INSPECTOR_WIDTH 300
+#define EDITOR_INSPECTOR_WIDTH 400
 #define EDITOR_ASSETS_HEIGHT 250
 #define EDITOR_MAIN_MENU_BAR_HEIGHT 19
 

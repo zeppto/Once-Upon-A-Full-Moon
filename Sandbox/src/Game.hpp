@@ -12,9 +12,6 @@ namespace MCS
 		Game();
 		virtual ~Game();
 
-	private:
-		Frosty::Application* m_App;
-
 	};
 }
 

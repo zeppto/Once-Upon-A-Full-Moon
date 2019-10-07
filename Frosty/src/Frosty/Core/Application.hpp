@@ -10,6 +10,7 @@
 #include "Frosty/RenderEngine/Buffer.hpp"
 #include "Frosty/RenderEngine/VertexArray.hpp"
 #include "Frosty/RenderEngine/Texture.hpp"
+#include "Frosty/RenderEngine/OrthographicCamera.hpp"
 #include "Frosty/API/Scene.hpp"
 
 namespace Frosty
@@ -21,7 +22,8 @@ namespace Frosty
 		virtual ~Application();
 		
 		// Temporary function (Testing)
-		void InitPrefabBuffers();
+		void InitiateQuadMesh();
+		void InitiateTriangleMesh();
 		void InitShaders();
 
 		void Run();
@@ -43,6 +45,11 @@ namespace Frosty
 		inline Window& GetWindow() { return *m_Window; }
 		static inline Application& Get() { return *s_Instance; }
 
+		// TEMPORARY
+		inline const std::shared_ptr<VertexArray>& GetQuadMesh() const { return m_Quad; }
+		inline const std::shared_ptr<VertexArray>& GetTriangleMesh() const { return m_Triangle; }
+		inline const std::shared_ptr<Shader>& GetShader() const { return m_ShaderAssets; }
+
 	private:
 		void OnWindowCloseEvent(WindowCloseEvent& e);
 		void OnKeyPressedEvent(KeyPressedEvent& e);	
@@ -58,8 +65,10 @@ namespace Frosty
 		static Application* s_Instance;
 
 		// Renderer Stuff (TEMPORARY)
+		std::shared_ptr<Shader> m_ShaderAssets;
 		std::shared_ptr<Shader> m_Shader;
-		std::shared_ptr<VertexArray> m_VertexArray;
+		std::shared_ptr<VertexArray> m_Quad;
+		std::shared_ptr<VertexArray> m_Triangle;
 		std::shared_ptr<Texture2D> m_Texture;
 
 	};

@@ -17,7 +17,7 @@ namespace Frosty
 		void UploadUniformFloat2(const std::string& name, const glm::vec2& value);
 		void UploadUniformFloat4(const std::string& name, const glm::vec4& value);
 
-		void UploadUniforMat4(const std::string& name, const glm::mat4& matrix);
+		void UploadUniformMat4(const std::string& name, const glm::mat4& matrix);
 	private:
 		uint32_t m_RendererID;
 	};
