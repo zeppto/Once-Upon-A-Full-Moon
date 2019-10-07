@@ -88,6 +88,6 @@ namespace Frosty
 	}
 	const glm::mat4 PointLight::GetTransform()
 	{
-		return m_Transform.getModel();
+		return m_Transform.GetModel();
 	}
 }
