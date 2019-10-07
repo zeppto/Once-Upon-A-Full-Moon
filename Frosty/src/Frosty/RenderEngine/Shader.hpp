@@ -6,7 +6,8 @@ namespace Frosty
 {
 	enum ShaderProgramsEnum
 	{
-		STANDARD = 0		
+		STANDARD = 0,
+		GEOMETRY = 1
 	};
 	class Shader
 	{
@@ -23,9 +24,7 @@ namespace Frosty
 		void UploadUniformFloat3(const std::string& name, const glm::vec3& value);
 		void UploadUniformFloat4(const std::string& name, const glm::vec4& value);
 		void UploadUniforMat3(const std::string& name, const glm::mat3& matrix);
-		void UploadUniforMat4(const std::string& name, const glm::mat4& matrix);
-
-		void UploadVSRendererUniformBuffer();
+		void UploadUniforMat4(const std::string& name, const glm::mat4& matrix);		
 		
 		std::string GetShaderProgramEnumString(ShaderProgramsEnum theEnum);
 

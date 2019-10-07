@@ -1,15 +1,11 @@
 #include <fypch.hpp>
 #include "Texture.hpp"
-
 #include "Renderer.hpp"
-
 #include "stb_image.h"
-
 #include "glad/glad.h"
 
-namespace Banshee
+namespace Frosty
 {
-
 	Texture2D::Texture2D(const std::string& path)
 		: m_Path(path)
 	{
@@ -40,5 +36,4 @@ namespace Banshee
 	{
 		glBindTextureUnit(slot, m_RendererID);
 	}
-
 }

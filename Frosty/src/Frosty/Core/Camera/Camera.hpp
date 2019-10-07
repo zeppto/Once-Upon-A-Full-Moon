@@ -6,6 +6,8 @@ namespace Frosty
 	class Camera
 	{
 	private:
+		//friend class CameraManager;
+
 		struct CameraData
 		{
 			float FoV = glm::radians(60.0f);			

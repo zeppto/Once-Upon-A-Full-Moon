@@ -121,8 +121,7 @@ namespace Frosty
 				indices.emplace_back(index);
 			}
 		}
-
-
+		
 		//float vertices[8 * 7] = {
 		//	-0.5f, -0.5f,  0.5f, 0.8f, 0.0f, 0.8f, 1.0f,
 		//	 0.5f, -0.5f,  0.5f, 0.2f, 0.3f, 0.8f, 1.0f,
@@ -335,7 +334,8 @@ namespace Frosty
 
 	void Application::Run()
 	{		
-		//Renderer::ShaderInit(m_Shader);
+		Renderer::InitScene(m_Shader);
+
 		while (m_Running)
 		{
 			/// Frame Start

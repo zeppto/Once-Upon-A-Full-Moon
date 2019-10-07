@@ -1,7 +1,7 @@
 #ifndef TEXTURE_HPP
 #define TEXTURE_HPP
 
-namespace Banshee
+namespace Frosty
 {
 	class Texture
 	{
@@ -12,7 +12,6 @@ namespace Banshee
 		virtual uint32_t GetHeight() const = 0;
 
 		virtual void Bind(uint32_t slot = 0) const = 0;
-
 	};
 
 	class Texture2D : public Texture
@@ -25,13 +24,10 @@ namespace Banshee
 		virtual uint32_t GetHeight() const override { return m_Height; }
 
 		virtual void Bind(uint32_t slot = 0) const override;
-
 	private:
 		std::string m_Path;
 		uint32_t m_Width, m_Height;
 		uint32_t m_RendererID;
-
 	};
 }
-
-#endif // !TEXTURE_HPP
+#endif
