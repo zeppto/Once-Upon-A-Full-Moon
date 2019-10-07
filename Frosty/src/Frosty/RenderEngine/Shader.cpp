@@ -299,6 +299,59 @@ namespace Frosty
 		glDeleteShader(vertexID);
 	}
 
+	Shader::Shader(const std::string computeSrc)
+	{
+		char buff[1024];
+		memset(buff, 0, 1024);
+		GLint compileResult = 0;
+
+		GLuint ID;
+
+		//Read vertex shader
+		ID = glCreateShader(GL_COMPUTE_SHADER);
+
+		std::ifstream shaderFile(computeSrc);
+		std::string shaderText((std::istreambuf_iterator<char>(shaderFile)), std::istreambuf_iterator<char>());
+		shaderFile.close();
+
+		const char* shaderTextPtr = shaderText.c_str();
+
+		glShaderSource(ID, 1, &shaderTextPtr, nullptr);
+		glCompileShader(ID);
+
+		glGetShaderiv(ID, GL_COMPILE_STATUS, &compileResult);
+		if (compileResult == GL_FALSE) {
+
+			glGetShaderInfoLog(ID, 1024, nullptr, buff);
+
+			OutputDebugStringA(buff);
+			FY_CORE_WARN("Could not create shader!");
+		}
+
+		//Link shader program
+		memset(buff, 0, 1024);
+		compileResult = 0;
+
+		m_RendererID = glCreateProgram();
+
+		glAttachShader(m_RendererID, ID);
+		glLinkProgram(m_RendererID);
+
+		compileResult = GL_FALSE;
+		glGetProgramiv(m_RendererID, GL_LINK_STATUS, &compileResult);
+		if (compileResult == GL_FALSE) {
+			// query information about the compilation (nothing if compilation went fine!)
+			memset(buff, 0, 1024);
+			glGetProgramInfoLog(m_RendererID, 1024, nullptr, buff);
+			// print to Visual Studio debug console output
+			OutputDebugStringA(buff);
+			FY_CORE_WARN("Could not link shader program");
+		}
+
+		glDetachShader(m_RendererID, ID);
+		glDeleteShader(ID);
+	}
+
 	Shader::~Shader()
 	{
 		glDeleteProgram(m_RendererID);

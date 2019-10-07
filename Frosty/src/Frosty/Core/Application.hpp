@@ -86,6 +86,7 @@ namespace Frosty
 		std::shared_ptr<Shader> m_Shader;
 		std::shared_ptr<Shader> m_textShader;
 		std::shared_ptr<Shader> m_particleShader;
+		std::shared_ptr<Shader> m_computeParticleShader;
 		std::shared_ptr<VertexArray> m_VertexArray;
 		std::shared_ptr<VertexArray> m_TextVertexArray;
 		std::shared_ptr<VertexBuffer> m_textVertBuffer;
