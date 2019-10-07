@@ -54,6 +54,8 @@ namespace Frosty
 			glActiveTexture(tempBufferId);
 			glBindTexture(GL_TEXTURE_2D, tempBufferId);
 
+
+
 			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, textureWidth, textureHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, imageData);
 			glGenerateMipmap(GL_TEXTURE_2D);
 

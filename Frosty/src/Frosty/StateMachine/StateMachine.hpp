@@ -19,7 +19,7 @@ namespace Frosty
 
 		// Replacing means it will pop the current state and add the new one.
 		// Otherwise it will just pause the current state and add another on top of the stack
-		void AddState(StateRef newState, bool isReplacing = true);
+		void AddState    (StateRef newState, bool isReplacing = true);
 		void RemoveState();
 		void ClearAllStates();
 

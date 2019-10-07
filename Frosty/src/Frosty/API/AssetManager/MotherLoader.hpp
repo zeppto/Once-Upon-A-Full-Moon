@@ -3,8 +3,9 @@
 #include"AssetFiles/ModelTemplate.hpp"
 #include<Luna/include/Reader.h>
 #include"AssetFiles/TextureFile.hpp"
+#include "AssetFiles/TrueTypeFile.hpp"
 
-
+//or enums?
 
 // should be inside definitions?
 //File types
@@ -20,8 +21,6 @@ namespace Frosty
 
 	extern 	struct FileMetaData;
 
-
-
 	enum FileType
 	{
 		JPG,
@@ -30,15 +29,26 @@ namespace Frosty
 		TTFF
 	};
 
-
 	class MotherLoader
 	{
 	public: //variables
 
-
-
 	private: //variables
 
+		enum FileType
+		{
+			JPG,
+			PNG,
+			LUNA,
+			TTF
+		};
+		struct FileNameInfo
+		{
+			int8_t m_type = -1;
+			std::string m_FilePath = "";
+			std::string m_FileName = "";
+			std::string m_PreFab_Name = "";
+		};
 
 		static MotherLoader* s_Instance;
 
@@ -46,7 +56,6 @@ namespace Frosty
 		static uint16_t s_Success_Loading_Attempts;
 
 		friend class Assetmanager;
-
 
 	public: //functions
 		static MotherLoader* GetMotherLoader();
@@ -62,25 +71,18 @@ namespace Frosty
 
 		void PrintLoadingAttemptInformation() const;
 
-
-
-
 	private: //functions
-
 
 		inline static void Delete() { if (s_Instance != nullptr) { delete s_Instance; } }
 		bool GetFileInformation(FileMetaData& FileNameInformation);
 		int8_t GetFileType(const std::string& fileType) const;
 
 		//AssetManager Filler Functions
+
+		bool LoadFontFile(const FileMetaData& FileNameInformation, const bool& Reload = false);
 		bool LoadLunaFile(const FileMetaData& FileNameInformation, const bool& Reload = false);
 		bool LoadGraphicFile(const FileMetaData& FileNameInformation, const bool& Reload = false);
-	
-
 	};
-
-
-
 }
 
 
