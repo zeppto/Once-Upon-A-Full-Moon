@@ -11,7 +11,7 @@
 #include "Frosty/Core/Camera/Camera.hpp"
 
 // Temp
-//#include "Frosty/API/Lights/LightManager.hpp"
+#include "Frosty/API/Lights/LightManager.hpp"
 
 namespace Frosty
 {
@@ -64,7 +64,7 @@ namespace Frosty
 		std::shared_ptr<Camera> m_Camera;
 
 		// Light (TEMPORARY)
-		//std::shared_ptr<LightManager> m_LightManager;
+		std::shared_ptr<LightManager> m_LightManager;
 	};
 }
 #endif 

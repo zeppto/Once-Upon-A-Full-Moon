@@ -21,15 +21,22 @@ struct DirLight
 	vec3 Direction;
 };
 
+struct ForwardPlus	// think this throught ~ W-_-W ~
+{
+	int LightIndexList[500];
+	vec2 CellLightInfo[256];
+};
+
 // MAX 1024 uniforms / shader
 layout(location = 4) uniform uint nrOfPointLights;
-layout(location = 100) uniform uint nrOfDirLights;
-layout(location = 300) uniform PointLight pointLights[2];
-layout(location = 500) uniform DirLight dirLights[2];
+layout(location = 8) uniform uint nrOfDirLights;
+layout(location = 300) uniform PointLight pointLights[10];
+layout(location = 500) uniform DirLight dirLights[10];
+
+layout(location=800) uniform ForwardPlus forwardPlus;
 
 vec3 CalcPointLight(PointLight light, vec3 normal, vec3 fragPos)
 {
-
     vec3 lightDir = normalize(light.Position - fragPos);
     float diff = max(dot(normal, lightDir), 0.0);
     float distance = length(light.Position - fragPos);
@@ -55,10 +62,19 @@ void main()
 	vec3 normal = vec3(0.f, 0.f, 1.f);
 	vec3 result;
 
-	// Calc Point Lights
-	for(int i = 0; i < nrOfPointLights; i++)
+//	// Calc Point Lights
+//	for(int i = 0; i < nrOfPointLights; i++)
+//	{
+//		result += CalcPointLight(pointLights[i], normal, worldPos);
+//	}
+	int cellLocation = (16 * int(floor(gl_FragCoord.y / 45))) + int(floor(gl_FragCoord.x / 80));	// (gridSize * minY / cellHeight) + minX / cellWidth
+	if (cellLocation >= 0 && cellLocation <= 255)
 	{
-		result += CalcPointLight(pointLights[i], normal, worldPos);
+		for(int i = int(forwardPlus.CellLightInfo[cellLocation].x) ; i < int(forwardPlus.CellLightInfo[cellLocation].x) + int(forwardPlus.CellLightInfo[cellLocation].y); i++)
+		{
+
+			result += CalcPointLight(pointLights[forwardPlus.LightIndexList[i]], normal, worldPos);
+		}
 	}
 	// Calc Dir Lights
 	for(int i = 0; i < nrOfDirLights; i++)
@@ -68,6 +84,50 @@ void main()
 
 	// Add Ambient Light
 	result + vec3(ambient);
-	
+
 	finalColor = vec4(result, 1.f);
+	//finalColor = vec4(1.f, 1.f, 1.f, 1.f);
+
+
+	// <<< HEAT MAP >>>
+//	vec4 NDC = NDCPos;
+//	NDC = NDC / NDC.z;
+//	// Converting from NDC to pixel
+//	int x = int(round((NDC.x + 1.0f) * Frustum.x / 2.0f));
+//	int y = int(round((NDC.y + 1.0f) * Frustum.y / 2.0f));
+//	int cellLocation = (16 * int(floor(y / 45))) + int(floor(x / 80));
+
+//	int cellLocation = (16 * int(floor(gl_FragCoord.y / 45))) + int(floor(gl_FragCoord.x / 80));	// may cause the fps drop ~ W-_-W ~
+//
+//	if (cellLocation >= 0 && cellLocation <= 255)
+//	{
+//		if(forwardPlus.CellLightInfo[cellLocation].y == 1)
+//		{
+//			finalColor = vec4(0.f, 0.5f, 1.f, 1.f);
+//		}
+//		else if (forwardPlus.CellLightInfo[cellLocation].y == 2)
+//		{
+//			finalColor = vec4(0.f, 0.7f, 0.7f, 1.f);
+//		}
+//		else if (forwardPlus.CellLightInfo[cellLocation].y == 3)
+//		{
+//			finalColor = vec4(0.1f, 0.9f, 0.5f, 1.f);
+//		}
+//		else if (forwardPlus.CellLightInfo[cellLocation].y == 4)
+//		{
+//			finalColor = vec4(0.9f, 0.9f, 0.2f, 1.f);
+//		}
+//		else if (forwardPlus.CellLightInfo[cellLocation].y == 5)
+//		{
+//			finalColor = vec4(1.f, 0.5f, 0.f, 1.f);
+//		}
+//		else if (forwardPlus.CellLightInfo[cellLocation].y == 6)
+//		{
+//			finalColor = vec4(1.f, 0.f, 0.f, 1.f);
+//		}
+//		else
+//		{
+//			finalColor = vec4(0.f, 0.f, 0.8f, 1.f);
+//		}
+//	}
 }

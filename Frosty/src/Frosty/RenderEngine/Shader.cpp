@@ -285,6 +285,6 @@ namespace Frosty
 
 	void Shader::CreateAllShaderPrograms()
 	{
-		CreateShaderProgram(FY_SHADER_VERTEX_SHADER, FY_SHADER_FRAGMENT_SHADER, STANDARD);
+		CreateShaderProgram(FY_SHADER_TESTLIGHT_VERTEX_SHADER, FY_SHADER_TESTLIGHT_FRAGMENT_SHADER, STANDARD);
 	}
 }

@@ -29,14 +29,11 @@ namespace Frosty
 		m_Camera.reset(FY_NEW Camera());
 
 		// <<< FORWARD PLUS >>>
-		//m_LightManager.reset(FY_NEW LightManager());
-		//m_LightManager->AddPointLight(glm::vec3(2.f, 2.f, 4.5f), glm::vec4(1.f, 1.f, 1.f, 1.f), 1.f, 2.f);
+		m_LightManager.reset(FY_NEW LightManager());
+		m_LightManager->AddPointLight(glm::vec3(0.f, 0.f, 1.f), glm::vec4(1.f, 1.f, 1.f, 1.f), 1.f, 10.f);
 
-		// 4) send the four buffers to a frgament shader
 
-		// 5) find out which cell the pixel belongs to (in screen space)
-
-		// 6) calculate lights as usual (world space)
+		Renderer::InitForwardPlus(m_LightManager);
 	}
 
 	Application::~Application()
@@ -51,11 +48,22 @@ namespace Frosty
 	{		
 		m_VertexArray.reset(VertexArray::Create());
 
-		float vertices[3 * 7] =
+		//float vertices[3 * 7] =
+		//{
+		//	-0.5f, -0.5f, 0.0f, 0.8f, 0.0f, 0.8f, 1.0f,
+		//	 0.5f, -0.5f, 0.0f, 0.2f, 0.3f, 0.8f, 1.0f,
+		//	 0.0f,  0.5f, 0.0f, 0.8f, 0.8f, 0.2f, 1.0f
+		//};
+
+		float vertices[6 * 7] =
 		{
-			-0.5f, -0.5f, 0.0f, 0.8f, 0.0f, 0.8f, 1.0f,
-			 0.5f, -0.5f, 0.0f, 0.2f, 0.3f, 0.8f, 1.0f,
-			 0.0f,  0.5f, 0.0f, 0.8f, 0.8f, 0.2f, 1.0f
+			-2.f, -2.f, 0.f, 0.8f, 0.0f, 0.8f, 1.0f,
+			 2.f, -2.f, 0.f, 0.2f, 0.3f, 0.8f, 1.0f,
+			-2.f,  2.f, 0.f, 0.8f, 0.8f, 0.2f, 1.0f,
+
+			 2.f, -2.f, 0.f, 0.2f, 0.3f, 0.8f, 1.0f,
+			 2.f, 2.f, 0.f, 0.8f, 0.0f, 0.8f, 1.0f,
+			-2.f,  2.f, 0.f, 0.8f, 0.8f, 0.2f, 1.0f
 		};
 
 		std::shared_ptr<VertexBuffer> m_VertexBuffer;
@@ -70,7 +78,7 @@ namespace Frosty
 		m_VertexBuffer->SetLayout(layout);		
 		m_VertexArray->AddVertexBuffer(m_VertexBuffer);
 
-		uint32_t indices[3] = { 0, 1, 2 };
+		uint32_t indices[4] = { 0, 1, 2, 3};
 		std::shared_ptr<IndexBuffer> m_IndexBuffer;
 		m_IndexBuffer.reset(IndexBuffer::Create(indices, sizeof(indices) / sizeof(uint32_t)));
 		m_VertexArray->SetIndexBuffer(m_IndexBuffer);
@@ -166,11 +174,11 @@ namespace Frosty
 			}
 			
 			/// Render
-			RenderCommand::SetClearColor({ 0.1f, 0.1f, 0.1f, 1.0f });
+			RenderCommand::SetClearColor({ 0.0f, 0.0f, 0.1f, 5.0f });
 			RenderCommand::Clear();
 
 			Renderer::BeginScene(m_Camera);			
-			//Renderer::Submit(m_Shader, m_VertexArray, m_LightManager);
+			Renderer::Submit(m_Shader, m_VertexArray, m_LightManager);
 			Renderer::EndScene();
 
 

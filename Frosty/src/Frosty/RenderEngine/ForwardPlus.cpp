@@ -11,11 +11,6 @@ namespace Frosty
 		s_Instance = this;
 
 		m_TotalCells = 0;
-		m_Camera.reset(FY_NEW Camera());
-		m_Frustum = glm::vec2(Application::Get().GetWindow().GetWidth(), Application::Get().GetWindow().GetHeight());
-
-		CreateGridCells();
-		LightCulling();
 	}
 
 	FrustumGrid::FrustumGrid(const FrustumGrid& other)
@@ -35,6 +30,37 @@ namespace Frosty
 	{
 		FY_CORE_ASSERT(false, "Assignment operator is used in class 'FrustumGrid'.");
 		return *this;
+	}
+
+	void FrustumGrid::Update()
+	{
+		LightCulling();
+	}
+
+	void FrustumGrid::Initiate(std::shared_ptr<LightManager>& lightManager)
+	{
+		m_Camera.reset(FY_NEW Camera());
+		m_Frustum = glm::vec2(Application::Get().GetWindow().GetWidth(), Application::Get().GetWindow().GetHeight());
+		m_LightManager = lightManager;
+		CreateGridCells();
+	}
+
+	const int FrustumGrid::GetNrOfGrids()
+	{
+		return m_TotalCells;
+	}
+
+	const std::vector<int>& FrustumGrid::GetLightIndexList()
+	{
+		return m_LightIndexList;
+	}
+
+	const glm::vec2 FrustumGrid::GetCellLightInfoAt(int position)
+	{
+		if (position < m_TotalCells)
+			return glm::vec2(m_CellLightsInfo[position].Offset, m_CellLightsInfo[position].Size);
+		else
+			- 1;
 	}
 
 	void FrustumGrid::CreateGridCells()
@@ -66,15 +92,15 @@ namespace Frosty
 
 	void FrustumGrid::LightCulling()
 	{
-		std::vector<int> pos;
+		//std::vector<int> pos;
 		uint16_t offsetCounter = 0;
 		uint16_t size = 0;
 
 		for (int i = 0; i < m_TotalCells; i++)
 		{
-			for (int j = 0; j < m_LightManager.GetNrOfPointLights(); j++)
+			for (int j = 0; j < m_LightManager->GetNrOfPointLights(); j++)
 			{
-				if (CheckCollision(m_GridCells[i], ConvertToNDC(m_LightManager.GetPointLightAt(j)->GetPositionAndRadius(), m_LightManager.GetPointLightAt(j)->GetTransform())))
+				if (CheckCollision(m_GridCells[i], ConvertToNDC(m_LightManager->GetPointLightAt(j)->GetPositionAndRadius(), m_LightManager->GetPointLightAt(j)->GetTransform())))
 				{
 					//pos.emplace_back(i);							// Temporary for checking	~ W-_-W ~
 
