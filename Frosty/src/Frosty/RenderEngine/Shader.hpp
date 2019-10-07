@@ -7,6 +7,7 @@ namespace Frosty
 	{
 	public:
 		Shader(const std::string vertexSrc, const std::string fragmentSrc);
+		Shader(const std::string vertexSrc, const std::string geometrySrc, const std::string fragmentSrc);
 		virtual ~Shader();
 
 		void Bind()const;

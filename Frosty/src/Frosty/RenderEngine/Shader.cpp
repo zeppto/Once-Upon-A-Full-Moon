@@ -192,6 +192,113 @@ namespace Frosty
 		//glDetachShader(program, fragmentShader);
 	}
 
+	Shader::Shader(const std::string vertexSrc, const std::string geometrySrc, const std::string fragmentSrc)
+	{
+		char buff[1024];
+		memset(buff, 0, 1024);
+		GLint compileResult = 0;
+
+		GLuint vertexID;
+		GLuint geometryID;
+		GLuint fragmentID;
+
+		//Read vertex shader
+		vertexID = glCreateShader(GL_VERTEX_SHADER);
+
+		std::ifstream shaderFile(vertexSrc);
+		std::string shaderText((std::istreambuf_iterator<char>(shaderFile)), std::istreambuf_iterator<char>());
+		shaderFile.close();
+
+		const char* shaderTextPtr = shaderText.c_str();
+
+		glShaderSource(vertexID, 1, &shaderTextPtr, nullptr);
+		glCompileShader(vertexID);
+
+		glGetShaderiv(vertexID, GL_COMPILE_STATUS, &compileResult);
+		if (compileResult == GL_FALSE) {
+
+			glGetShaderInfoLog(vertexID, 1024, nullptr, buff);
+
+			OutputDebugStringA(buff);
+			FY_CORE_WARN("Could not create shader!");
+		}
+
+		//Read geometry shader
+		memset(buff, 0, 1024);
+		compileResult = 0;
+		geometryID = glCreateShader(GL_GEOMETRY_SHADER);
+
+		std::ifstream shaderFile2(geometrySrc);
+		std::string shaderText2((std::istreambuf_iterator<char>(shaderFile2)), std::istreambuf_iterator<char>());
+		shaderFile2.close();
+
+		const char* shaderTextPtr2 = shaderText2.c_str();
+
+		glShaderSource(geometryID, 1, &shaderTextPtr2, nullptr);
+		glCompileShader(geometryID);
+
+		glGetShaderiv(geometryID, GL_COMPILE_STATUS, &compileResult);
+		if (compileResult == GL_FALSE) {
+
+			glGetShaderInfoLog(geometryID, 1024, nullptr, buff);
+
+			OutputDebugStringA(buff);
+			FY_CORE_WARN("Could not create shader!");
+		}
+
+		//Read fragment shader
+		memset(buff, 0, 1024);
+		compileResult = 0;
+		fragmentID = glCreateShader(GL_FRAGMENT_SHADER);
+
+		std::ifstream shaderFile3(fragmentSrc);
+		std::string shaderText3((std::istreambuf_iterator<char>(shaderFile3)), std::istreambuf_iterator<char>());
+		shaderFile3.close();
+
+		const char* shaderTextPtr3 = shaderText3.c_str();
+
+		glShaderSource(fragmentID, 1, &shaderTextPtr3, nullptr);
+		glCompileShader(fragmentID);
+
+		glGetShaderiv(fragmentID, GL_COMPILE_STATUS, &compileResult);
+		if (compileResult == GL_FALSE) {
+
+			glGetShaderInfoLog(fragmentID, 1024, nullptr, buff);
+
+			OutputDebugStringA(buff);
+			FY_CORE_WARN("Could not create shader!");
+		}
+
+		//Link shader program
+		memset(buff, 0, 1024);
+		compileResult = 0;
+
+		m_RendererID = glCreateProgram();
+
+		glAttachShader(m_RendererID, vertexID);
+		glAttachShader(m_RendererID, geometryID);
+		glAttachShader(m_RendererID, fragmentID);
+		glLinkProgram(m_RendererID);
+
+		compileResult = GL_FALSE;
+		glGetProgramiv(m_RendererID, GL_LINK_STATUS, &compileResult);
+		if (compileResult == GL_FALSE) {
+			// query information about the compilation (nothing if compilation went fine!)
+			memset(buff, 0, 1024);
+			glGetProgramInfoLog(m_RendererID, 1024, nullptr, buff);
+			// print to Visual Studio debug console output
+			OutputDebugStringA(buff);
+			FY_CORE_WARN("Could not link shader program");
+		}
+
+		glDetachShader(m_RendererID, vertexID);
+		glDetachShader(m_RendererID, geometryID);
+		glDetachShader(m_RendererID, fragmentID);
+		glDeleteShader(fragmentID);
+		glDeleteShader(geometryID);
+		glDeleteShader(vertexID);
+	}
+
 	Shader::~Shader()
 	{
 		glDeleteProgram(m_RendererID);
