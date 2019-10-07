@@ -2,6 +2,7 @@
 #define RENDERENGINE_HPP
 #include "Frosty/Core/Camera/Camera.hpp"
 #include "Frosty/API/AssetManager/Assetmanager.hpp"
+#include"..\Core\Collision\HitBox\SphereHitbox.hpp"
 #include "Frosty/API/Transform.h"
 #define BUFFER_OFFSET(i) ((char *)nullptr + (i))
 
@@ -14,6 +15,7 @@ namespace Frosty
 		std::shared_ptr<ModelTemplate> model_ptr;
 		std::shared_ptr<LinkedMaterial> material_Ptr;
 		glm::mat4 worldPosition;
+		glm::vec3 m_Colour = glm::vec3(0.0f,0.0f,0.0f);
 
 	};
 

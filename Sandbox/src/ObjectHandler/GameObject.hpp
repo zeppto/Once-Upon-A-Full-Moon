@@ -13,10 +13,11 @@ private:
 	glm::vec3 m_Pos = glm::vec3(0.0f, 0.0f, 0.0f), m_Scale = glm::vec3(1.0f, 1.0f, 1.0f),
 		m_Rotation = glm::vec3(0.0f, 0.0f, 0.0f);
 	Luna::BoundingBox m_BoundingBox;
+	Frosty::SphereHitbox m_SphereHitBox;
 
 
 public:
-	GameObject(glm::vec3 color = glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3 position = glm::vec3(0.0f, 0.0f, 0.0f),
+	GameObject(glm::vec3 color = glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3 position = glm::vec3(0.0f, 0.0f, 0.0f),
 		glm::vec3 rotation = glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3 scale = glm::vec3(1.0f, 1.0f, 1.0f), std::string modelFilename = "tempGround");
 	~GameObject();
 

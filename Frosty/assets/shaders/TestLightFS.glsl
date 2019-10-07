@@ -8,6 +8,8 @@ layout(location = 0) in vec3 vsOutPos;
 layout(location = 1) in vec2 vsOutUV;
 layout(location = 2) in vec3 vsOutNormal; // color/normal
 
+layout(location=13) uniform vec3 m_Colour;
+
 
 struct PointLight
 {
@@ -73,7 +75,7 @@ void main()
 	result + vec3(ambient);
 
 	//finalColor = diffTexture*vec4(result, 1.f);
-	finalColor = diffTexture;
+	finalColor = diffTexture + vec4(m_Colour,0.0f);
 	//finalColor = diffTexture*vec4(result, 1.f);
 
 

@@ -1,6 +1,7 @@
 #include "fypch.hpp"
 #include "Glad/glad.h"
 #include "RenderEngine.hpp"
+
 #include "Frosty/Core/Application.hpp"
 #include "Frosty/DEFINITIONS.hpp"
 
@@ -504,8 +505,12 @@ namespace Frosty
 
 				glBindVertexArray(m_Temp_RenderList.at(i)->model_ptr->GetVBO(0));
 				glUniformMatrix4fv(0, 1, GL_FALSE, &m_Temp_RenderList.at(i)->worldPosition[0][0]); 
+				glUniform3fv(13, 1,&m_Temp_RenderList.at(i)->m_Colour[0] );
 				glActiveTexture(GL_TEXTURE0);
-				glBindTexture(GL_TEXTURE_2D, m_Temp_RenderList.at(i)->material_Ptr->Diffuse_Texture_MetaData_Ptr->GetData()->GetBufferID());
+				if (m_Temp_RenderList.at(i)->material_Ptr->Diffuse_Texture_MetaData_Ptr != nullptr)
+				{
+					glBindTexture(GL_TEXTURE_2D, m_Temp_RenderList.at(i)->material_Ptr->Diffuse_Texture_MetaData_Ptr->GetData()->GetBufferID());
+				}
 				glDrawArrays(GL_TRIANGLES, 0, m_Temp_RenderList.at(i)->model_ptr->GetMeshConst(0).vertexCount);
 
 				glBindTexture(GL_TEXTURE_2D,0);

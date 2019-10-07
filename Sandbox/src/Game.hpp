@@ -15,11 +15,16 @@ private:
 	Frosty::CollisionDetection m_CollisionDetection;
 	Player m_Player;
 	//Player m_Player2;
-	GameObject m_Ground = GameObject(glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(10.0f));
-	GameObject m_Collidable1 = GameObject(glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(3.0f, 0.0f, -1.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), "tempPlayer");
-	GameObject m_Collidable2 = GameObject(glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(-2.0f, 0.0f, -1.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), "tempPlayer");
-	GameObject m_Collidable3 = GameObject(glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(-1.0f, 0.0f, -2.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), "tempPlayer");
+	GameObject m_Ground = GameObject(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(10.0f));
+	GameObject m_Collidable1 = GameObject(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(3.0f, 0.0f, -1.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), "tempPlayer");
+	GameObject m_Collidable2 = GameObject(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(-2.0f, 0.0f, -1.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), "tempPlayer");
+	GameObject m_Collidable3 = GameObject(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(-1.0f, 0.0f, -2.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), "tempPlayer");
 
+
+	GameObject m_SphereOne = GameObject(glm::vec3(0.0f, 0.0f, 0.99f), glm::vec3(2.0f, 3.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), "capsule_hitbox");
+	GameObject m_SphereTwo = GameObject(glm::vec3(0.0f, 0.99f, 0.0f), glm::vec3(-2.0f, 3.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), "capsule_hitbox");
+
+	float m_Temp_Rot = 0.0f;
 
 public:
 	ExampleLayerA()
@@ -44,6 +49,16 @@ public:
 				m_Player.GetHitBoxCenter(), m_Collidable2.GetHitBoxLength(), m_Collidable2.GetHitBoxCenter()));
 			m_Player.SetPos(m_Player.GetPos() - m_CollisionDetection.AABBIntersecPushback(m_Player.GetHitBoxLength(),
 				m_Player.GetHitBoxCenter(), m_Collidable3.GetHitBoxLength(), m_Collidable3.GetHitBoxCenter()));
+
+			m_SphereOne.SetRotation(glm::vec3(0.0f, 0.0f,m_Temp_Rot));
+			m_SphereOne.UpdateWorldMatrix();
+
+			m_SphereTwo.SetRotation(glm::vec3(0.0f, 0.0f, -m_Temp_Rot));
+			m_SphereTwo.UpdateWorldMatrix();
+
+
+			m_Temp_Rot += 2.0f;
+
 
 	}
 	virtual void OnImGuiRender() override

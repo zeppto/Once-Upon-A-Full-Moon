@@ -5,6 +5,8 @@ GameObject::GameObject(glm::vec3 color, glm::vec3 position, glm::vec3 rotation, 
 	m_renderData.model_ptr = Frosty::Assetmanager::GetAssetmanager()->GetModeltemplateMetaData(modelFilename)->GetData();
 	m_renderData.material_Ptr = Frosty::Assetmanager::GetAssetmanager()->GetMaterialMetaData("Mat_0:" + modelFilename)->GetData();
 	m_BoundingBox = Frosty::Assetmanager::GetAssetmanager()->GetModeltemplateMetaData(modelFilename)->GetData()->GetMeshInfoConst(0).BoundingBox;
+	m_renderData.m_Colour = color; 
+	
 
 	//temp fix
 	m_BoundingBox.halfSize[0] *= 2;
