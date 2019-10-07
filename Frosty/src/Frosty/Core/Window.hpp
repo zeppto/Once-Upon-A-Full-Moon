@@ -1,8 +1,6 @@
 #ifndef WINDOW_HPP
 #define WINDOW_HPP
-
 #include <fypch.hpp>		// This is already included in the cpp file so we shouldn't need it here but doesn't work otherwise
-
 #include "Frosty/Core/Base.hpp"
 #include <GLFW/glfw3.h>
 
@@ -58,5 +56,4 @@ namespace Frosty
 		WindowData m_Data;
 	};
 }
-
 #endif

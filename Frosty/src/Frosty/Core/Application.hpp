@@ -11,7 +11,7 @@
 #include "Frosty/StateMachine/MainMenuState.h"
 
 #include "Frosty/API/AssetManager/Assetmanager.hpp"
-#include "Frosty/RenderEngine/RenderEngine.hpp"
+//#include "Frosty/RenderEngine/RenderEngine.hpp"
 
 // test
 #include "Frosty/RenderEngine/ForwardPlus.hpp"
@@ -21,9 +21,6 @@
 #include "Frosty/UI/Sprite.h"
 #include "Frosty/UI/Canvas.h"
 #include "Frosty/DEFINITIONS.hpp"
-
-#define SAFE_RELEASE(x) if(x) x->release(), x = nullptr
-#define SAFE_DELETE(x) if(x) delete x, x = nullptr
 
 namespace Frosty
 {

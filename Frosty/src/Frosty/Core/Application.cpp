@@ -46,9 +46,7 @@ namespace Frosty
 		//FrustumGrid grid;
 
 		// 4) send the three buffers to a frgament shader
-
 		// 5) find out which cell the pixel belongs to (in screen space)
-
 		// 6) calculate lights as usual (world space)
 	}
 
@@ -58,8 +56,7 @@ namespace Frosty
 		glfwTerminate();
 		Assetmanager::Delete();
 		//delete m_RenderEngine;
-	}
-		
+	}		
 
 	void Application::InitPrefabBuffers()
 	{
@@ -95,7 +92,6 @@ namespace Frosty
 		m_VertexBuffer2->SetLayout(layout);
 		m_VertexArray->AddVertexBuffer(m_VertexBuffer2); //Add to array
 
-
 		uint32_t indices[6] = { 0, 1, 2, 3, 4, 5};
 		std::shared_ptr<IndexBuffer> m_IndexBuffer;
 		m_IndexBuffer.reset(IndexBuffer::Create(indices, sizeof(indices) / sizeof(uint32_t)));
@@ -129,7 +125,6 @@ namespace Frosty
 
 	void Application::Run()
 	{
-
 		states.AddState(Frosty::StateRef(new MainMenuState(s_Instance)), false);
 		states.ProcessStateChanges();
 
@@ -140,7 +135,6 @@ namespace Frosty
 
 		while (m_Running)
 		{
-
 			states.GetActiveState()->OnUpdate();
 			if (mainMenuReturn == true)
 			{
@@ -173,7 +167,6 @@ namespace Frosty
 			m_Shader->UploadUniforMat4("model", m_Canvas->GetTransform().GetModel());
 			//glBindTexture(GL_TEXTURE_2D, 0);
 			m_Shader->UnBind();
-
 
 			//Render text
 			glEnable(GL_BLEND);
