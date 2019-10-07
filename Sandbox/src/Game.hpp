@@ -26,6 +26,8 @@ private:
 	int m_EnemyDamage = 1;
 	int m_PlayerDamage = 1;
 
+	Frosty::PrefabInstance* m_testInstance;
+	uint16_t m_testTranslateX = 0;
 
 public:
 	ExampleLayerA()
@@ -35,9 +37,16 @@ public:
 	}
 	void OnAttach() override
 	{
+		Frosty::PrefabManager::GetPrefabManager()->setPrefab("TestPrefab1", "clock", "Mat_0:table");
+		m_testInstance = Frosty::PrefabManager::GetPrefabManager()->CreatePrefabInstance("TestPrefab1");
+		m_testInstance->GetTransform()->setTranslate(glm::vec3(10, 5, 0));
+
 	}
 	void OnUpdate() override
 	{
+		m_testInstance->GetTransform()->setTranslate(glm::vec3(++m_testTranslateX, 5, 0));
+		glm::vec3 test = Frosty::PrefabManager::GetPrefabManager()->GetPrefab("TestPrefab1")->GetInstances()->at(0)->GetTransform()->getTranslate();
+
 		m_Attacks = m_GameInput.PlayerControllerAttacks();
 
 		m_Player.UpdatePlayer();

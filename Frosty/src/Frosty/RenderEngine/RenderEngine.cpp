@@ -420,9 +420,9 @@ namespace Frosty
 		AssetMetaData<TextureFile>* metaTexture = tempAssetsManager->GetTextureMetaData("pCube10_diffuse");
 		
 		auto tempPrefabManager = PrefabManager::GetPrefabManager();
-		
+		/*
 		tempPrefabManager->setPrefab("TestPrefab1", "clock", "Mat_0:table");
-		tempPrefabManager->setPrefab("TestPrefab2", "table", "Mat_0:clock");
+		tempPrefabManager->setPrefab("TestPrefab2", "table", "Mat_0:clock");*/
 
 		glBindTexture(GL_TEXTURE_2D, 0);
 		////////
@@ -526,6 +526,16 @@ namespace Frosty
 		glBindVertexArray(VBO);
 		glDrawArrays(GL_TRIANGLES, 0, nrOfVertices);
 		glBindVertexArray(0);
+	}
+
+	void RenderEngine::RenderAllPrefabs()
+	{
+		std::unordered_map<std::string, Prefab>* prefabMap = PrefabManager::GetPrefabManager()->GetPrefabMap();
+
+		for (std::unordered_map<std::string, Prefab>::iterator it = prefabMap->begin(); it != prefabMap->end(); ++it)
+		{
+			RenderPrefab(prefabMap[it->first].GetName());
+		}
 	}
 
 	void RenderEngine::RenderPrefab(std::string prefabName)

@@ -29,6 +29,7 @@ namespace Frosty
 			
 		}*/
 		returnValue = m_Prefabs[prefabName].SetData(modelName, materialName);
+		m_Prefabs[prefabName].SetName(prefabName);
 
 		return returnValue;
 	}
@@ -41,6 +42,17 @@ namespace Frosty
 	Prefab* PrefabManager::GetPrefab(std::string prefabName)
 	{
 		return &m_Prefabs.at(prefabName);
+	}
+
+	PrefabInstance* PrefabManager::CreatePrefabInstance(std::string prefabName)
+	{
+		if (CheckIfPrefabExists(prefabName))
+		{
+			return m_Prefabs.at(prefabName).CreatePrefabInstance();
+		}
+		FY_CORE_WARN("PrefabManager, Failed to create instance of prefab: {0}", prefabName, ", no prefab with that name exists!");
+
+		return nullptr;
 	}
 
 	bool PrefabManager::CheckIfPrefabExists(std::string prefabName)
