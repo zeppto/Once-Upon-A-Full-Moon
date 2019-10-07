@@ -5,19 +5,6 @@
 namespace Frosty
 {
 
-	double gcd(double a, double b)
-	{
-		if (a < b)
-			return gcd(b, a);
-
-		// base case 
-		if (fabs(b) < 0.001)
-			return a;
-
-		else
-			return (gcd(b, a - floor(a / b) * b));
-	}
-
 
 	Frosty::SphereHitbox::SphereHitbox()
 	{
@@ -53,45 +40,73 @@ namespace Frosty
 		float thisLength = ((m_Length / 2) + m_Raduis);
 		float otherLength = ((other.m_Length / 2) + other.m_Raduis);
 		glm::vec3 TempPOVec = other.m_Position - m_Position;
+		glm::vec3 This_Dir = m_Direction;
+		glm::vec3 Other_Dir = other.m_Direction;
 		bool returnValue = false;
 
 		if (TempPOVec.length() <= (thisLength + otherLength))
 		{
-			glm::vec3 OrthoVec = glm::cross(m_Direction, other.m_Direction);
-			glm::vec3 Final = ((glm::dot(TempPOVec, OrthoVec) / glm::dot(OrthoVec, OrthoVec)) * OrthoVec);
 
-			if (glm::length(Final) < (m_Raduis + other.m_Raduis))
+
+			for (uint8_t i = 0; i < 3; i++)
 			{
-
-				glm::mat3 OneToTwo = 
-				{	other.m_Direction.x, -m_Direction.x, other.m_Position.x - m_Position.x,
-					other.m_Direction.y, -m_Direction.y, other.m_Position.y - m_Position.y,
-					other.m_Direction.z, -m_Direction.z, other.m_Position.z - m_Position.z
-				};
-
-				glm::vec3 calcVecOne(0.0f, 0.0f, 0.0f);
-				glm::vec3 calcVecTwo(0.0f, 0.0f, 0.0f);
-
-				for (uint8_t i = 0; i < 3; i++)
+				if (This_Dir[i] < std::pow(10, -5))
 				{
-
-					calcVecOne[0] += OneToTwo[i][0] * m_Direction[i];
-					calcVecOne[1] += OneToTwo[i][1] * m_Direction[i];
-					calcVecOne[2] += OneToTwo[i][2] * m_Direction[i];
-
-					calcVecTwo[0] += OneToTwo[i][0] * other.m_Direction[i];
-					calcVecTwo[1] += OneToTwo[i][1] * other.m_Direction[i];
-					calcVecTwo[2] += OneToTwo[i][2] * other.m_Direction[i];
+					This_Dir[i] = 0;
+				}
+				if (Other_Dir[i] < std::pow(10, -5))
+				{
+					Other_Dir[i] = 0;
 				}
 
-				float s_Value;
-				float t_Value;
+			}
 
-				//T
-				if (abs(calcVecOne[0]) != abs(calcVecTwo[0]))
+			This_Dir = glm::normalize(This_Dir);
+			Other_Dir = glm::normalize(Other_Dir);
+
+
+			if (glm::dot(This_Dir, Other_Dir) != 0)
+			{
+				glm::vec3 OrthoVec = glm::cross(This_Dir, Other_Dir);
+
+				glm::vec3 Final(0.0f);
+				if (OrthoVec != glm::vec3(0.0f))
 				{
-		/*			if (abs(calcVecOne[0]) > abs(calcVecTwo[0]))
-					{*/
+					Final = ((glm::dot(TempPOVec, OrthoVec) / glm::dot(OrthoVec, OrthoVec)) * OrthoVec);
+				}
+
+				if (glm::length(Final) < (m_Raduis + other.m_Raduis))
+				{
+
+					glm::mat3 OneToTwo =
+					{ Other_Dir.x, -This_Dir.x, Other_Dir.x - m_Position.x,
+						Other_Dir.y, -This_Dir.y, Other_Dir.y - m_Position.y,
+						Other_Dir.z, -This_Dir.z, Other_Dir.z - m_Position.z
+					};
+
+					glm::vec3 calcVecOne(0.0f, 0.0f, 0.0f);
+					glm::vec3 calcVecTwo(0.0f, 0.0f, 0.0f);
+
+					for (uint8_t i = 0; i < 3; i++)
+					{
+
+						calcVecOne[0] += OneToTwo[i][0] * This_Dir[i];
+						calcVecOne[1] += OneToTwo[i][1] * This_Dir[i];
+						calcVecOne[2] += OneToTwo[i][2] * This_Dir[i];
+
+						calcVecTwo[0] += OneToTwo[i][0] * Other_Dir[i];
+						calcVecTwo[1] += OneToTwo[i][1] * Other_Dir[i];
+						calcVecTwo[2] += OneToTwo[i][2] * Other_Dir[i];
+					}
+
+					float s_Value;
+					float t_Value;
+
+					//T
+					if (abs(calcVecOne[0]) != abs(calcVecTwo[0]))
+					{
+						//if (abs(calcVecOne[0]) > abs(calcVecTwo[0]))
+						//{
 						float tempTimes = calcVecOne[0] / calcVecTwo[0];
 						glm::vec3 tempVec = calcVecTwo * tempTimes;
 
@@ -118,7 +133,7 @@ namespace Frosty
 						{
 							tempRes = tempVec - calcVecOne;
 						}
-						
+
 						if (tempRes[1] < 0)
 						{
 							tempRes *= -1;
@@ -126,31 +141,31 @@ namespace Frosty
 
 						t_Value = tempRes[2] / tempRes[1];
 
-						float sSubValue = calcVecOne.y* t_Value;
+						float sSubValue = calcVecOne.y * t_Value;
 
 						if (calcVecOne[0] < 0)
 						{
-						s_Value = -((calcVecOne[2] - sSubValue) / calcVecOne[0]);
+							s_Value = -((calcVecOne[2] - sSubValue) / calcVecOne[0]);
 						}
 						else
 						{
-						s_Value = (calcVecOne[2] - sSubValue) / calcVecOne[0];
+							s_Value = (calcVecOne[2] - sSubValue) / calcVecOne[0];
 						}
 
 
-						glm::vec3 P_Pos = 
+						glm::vec3 P_Pos =
 							glm::vec3(
-							m_Position.x + m_Direction.x * s_Value,
-							m_Position.y + m_Direction.y * s_Value,
-							m_Position.z + m_Direction.z * s_Value);
+								m_Position.x + This_Dir.x * s_Value,
+								m_Position.y + This_Dir.y * s_Value,
+								m_Position.z + This_Dir.z * s_Value);
 
 						float P_Pos_Length = glm::length((P_Pos - m_Position));
 
 						glm::vec3 Q_Pos =
 							glm::vec3(
-								other.m_Position.x + other.m_Direction.x * t_Value,
-								other.m_Position.y + other.m_Direction.y * t_Value,
-								other.m_Position.z + other.m_Direction.z * t_Value);
+								other.m_Position.x + Other_Dir.x * t_Value,
+								other.m_Position.y + Other_Dir.y * t_Value,
+								other.m_Position.z + Other_Dir.z * t_Value);
 
 						float Q_Pos_Length = glm::length((Q_Pos - other.m_Position));
 
@@ -173,56 +188,349 @@ namespace Frosty
 
 
 
-				//	}
-					//else
-					//{
+						//	}
+							//else
+							//{
 
 
-					//	float tempTimes = calcVecTwo[0] / calcVecOne[0];
-					//	glm::vec3 tempVec = calcVecOne * tempTimes;
+							//	float tempTimes = calcVecTwo[0] / calcVecOne[0];
+							//	glm::vec3 tempVec = calcVecOne * tempTimes;
 
-					//	glm::vec3 tempRes = tempVec - calcVecTwo;
+							//	glm::vec3 tempRes = tempVec - calcVecTwo;
 
-					//	t_Value = tempRes[2] / tempRes[1];
-
-
-					//}
+							//	t_Value = tempRes[2] / tempRes[1];
 
 
-				}
-				else
-				{
-
-				}
-
-				//S
-			/*	if (abs(calcVecOne[1]) != abs(calcVecTwo[1]))
-				{
-					if (abs(calcVecOne[1]) > abs(calcVecTwo[1]))
-					{
+							//}
 
 
-						float tempTimes = calcVecOne[1] / calcVecTwo[1];
-						glm::vec3 tempVec = calcVecTwo * tempTimes;
 
-						glm::vec3 tempRes = tempVec - calcVecOne;
 
-						s_Value = tempVec[2] / tempVec[0];
 
 					}
 					else
 					{
 
+						glm::vec3 CylEdge_Pos = (m_Position + (This_Dir * m_Length));
+						glm::vec3 CylEdge_Vec = CylEdge_Pos - m_Position;
+
+
+						glm::vec3 OtherCylEdge_Pos = (other.m_Position + Other_Dir * other.m_Length);
+						glm::vec3 OtherCylEdge_Vec = OtherCylEdge_Pos - other.m_Position;
+
+
+
+
+						glm::vec3 proVec = ((glm::dot(TempPOVec, CylEdge_Vec) / glm::dot(CylEdge_Vec, CylEdge_Vec)) * CylEdge_Vec);
+
+						float bothLng = glm::length(CylEdge_Vec) + glm::length(OtherCylEdge_Vec);
+
+						if (glm::length(proVec) <= bothLng)
+						{
+							glm::vec3 LngBtwLin = other.m_Position - proVec;
+
+							if (glm::length(LngBtwLin) <= (m_Raduis + other.m_Raduis))
+							{
+								returnValue = true;
+							}
+						}
+						else if (glm::length(proVec) <= (bothLng + m_Raduis + other.m_Raduis))
+						{
+							glm::vec3 ThisE2 = (m_Position - (This_Dir * m_Length));
+							glm::vec3 OtherE2 = (other.m_Position - (Other_Dir * other.m_Length));
+
+							glm::vec3 shortOne, ShortTwo;
+
+							float LngOne = glm::length(OtherCylEdge_Pos - CylEdge_Pos);
+							float LngTwo = glm::length(OtherE2 - CylEdge_Pos);
+
+							if (LngOne < LngTwo)
+							{
+								shortOne = OtherCylEdge_Pos - CylEdge_Pos;
+							}
+							else
+							{
+								shortOne = OtherE2 - CylEdge_Pos;
+							}
+
+
+							float LngThree = glm::length(OtherCylEdge_Pos - ThisE2);
+							float LngFour = glm::length(OtherE2 - ThisE2);
+
+							if (LngThree < LngFour)
+							{
+								ShortTwo = OtherCylEdge_Pos - ThisE2;
+							}
+							else
+							{
+								ShortTwo = OtherE2 - ThisE2;
+							}
+
+							if (glm::length(shortOne) < glm::length(ShortTwo))
+							{
+								if (glm::length(shortOne) <= (m_Raduis + other.m_Raduis))
+								{
+									returnValue = true;
+								}
+							}
+							else
+							{
+								if (glm::length(ShortTwo) <= (m_Raduis + other.m_Raduis))
+								{
+									returnValue = true;
+								}
+							}
+
+
+
+						}
 					}
+					////shpere same line
+					//else if (1 == glm::dot(glm::normalize(TempPOVec),glm::normalize(m_Direction)))
+					//{
+					//	if (glm::length(TempPOVec) < (bothLng + m_Raduis + other.m_Raduis))
+					//	{
+					//		returnValue = true;
+					//	}
+					//}
+
+					//}
+
+
+
+
+
+					//S
+				/*	if (abs(calcVecOne[1]) != abs(calcVecTwo[1]))
+					{
+						if (abs(calcVecOne[1]) > abs(calcVecTwo[1]))
+						{
+
+
+							float tempTimes = calcVecOne[1] / calcVecTwo[1];
+							glm::vec3 tempVec = calcVecTwo * tempTimes;
+
+							glm::vec3 tempRes = tempVec - calcVecOne;
+
+							s_Value = tempVec[2] / tempVec[0];
+
+						}
+						else
+						{
+
+						}
+					}
+					else
+					{
+
+					}
+	*/
 				}
-				else
+
+
+
+
+			}
+			else
+			{
+
+			    glm::vec3 One_Two_Pro = ((glm::dot(TempPOVec, This_Dir) / glm::dot(This_Dir, This_Dir))* This_Dir);
+
+				if (glm::length(One_Two_Pro) <= thisLength)
 				{
 
-				}
-*/
+					glm::vec3 TempPos = One_Two_Pro + m_Position;
+					glm::vec3 tempBr = TempPos - other.m_Position;
 
+					glm::vec3 Two_One_Pro = ((glm::dot(tempBr, Other_Dir) / glm::dot(Other_Dir, Other_Dir)) * Other_Dir);
+
+					if (glm::length(Two_One_Pro) <= other.m_Length)
+					{
+						returnValue = true;
+					}
+					else if (glm::length(Two_One_Pro) <= other.m_Length + other.m_Raduis + m_Raduis)
+					{
+						glm::vec3 CylEdge_Pos = (m_Position + (This_Dir * m_Length));
+						glm::vec3 CylEdge_Vec = CylEdge_Pos - m_Position;
+
+
+						glm::vec3 OtherCylEdge_Pos = (other.m_Position + Other_Dir * other.m_Length);
+						glm::vec3 OtherCylEdge_Vec = OtherCylEdge_Pos - other.m_Position;
+
+
+
+
+						glm::vec3 proVec = ((glm::dot(TempPOVec, CylEdge_Vec) / glm::dot(CylEdge_Vec, CylEdge_Vec)) * CylEdge_Vec);
+
+						float bothLng = glm::length(CylEdge_Vec) + glm::length(OtherCylEdge_Vec);
+
+						if (glm::length(proVec) <= bothLng)
+						{
+							glm::vec3 LngBtwLin = other.m_Position - proVec;
+
+							if (glm::length(LngBtwLin) <= (m_Raduis + other.m_Raduis))
+							{
+								returnValue = true;
+							}
+						}
+						else if (glm::length(proVec) <= (bothLng + m_Raduis + other.m_Raduis))
+						{
+							glm::vec3 ThisE2 = (m_Position - (This_Dir * m_Length));
+							glm::vec3 OtherE2 = (other.m_Position - (Other_Dir * other.m_Length));
+
+							glm::vec3 shortOne, ShortTwo;
+
+							float LngOne = glm::length(OtherCylEdge_Pos - CylEdge_Pos);
+							float LngTwo = glm::length(OtherE2 - CylEdge_Pos);
+
+							if (LngOne < LngTwo)
+							{
+								shortOne = OtherCylEdge_Pos - CylEdge_Pos;
+							}
+							else
+							{
+								shortOne = OtherE2 - CylEdge_Pos;
+							}
+
+
+							float LngThree = glm::length(OtherCylEdge_Pos - ThisE2);
+							float LngFour = glm::length(OtherE2 - ThisE2);
+
+							if (LngThree < LngFour)
+							{
+								ShortTwo = OtherCylEdge_Pos - ThisE2;
+							}
+							else
+							{
+								ShortTwo = OtherE2 - ThisE2;
+							}
+
+							if (glm::length(shortOne) < glm::length(ShortTwo))
+							{
+								if (glm::length(shortOne) <= (m_Raduis + other.m_Raduis))
+								{
+									returnValue = true;
+								}
+							}
+							else
+							{
+								if (glm::length(ShortTwo) <= (m_Raduis + other.m_Raduis))
+								{
+									returnValue = true;
+								}
+							}
+
+
+
+						}
+					}
+				}
+				else if (glm::length(One_Two_Pro) <= (thisLength + other.m_Raduis))
+				{
+
+					glm::vec3 edgeOne = m_Position + (This_Dir * m_Length);
+					glm::vec3 edgeTwo = m_Position - (This_Dir * m_Length);
+					glm::vec3 MinVec;
+					if (glm::length(edgeOne - other.m_Position) < glm::length(edgeTwo - other.m_Position))
+					{
+						MinVec = edgeOne;
+					}
+					else
+					{
+						MinVec = edgeTwo;
+					}
+						glm::vec3 temp = MinVec - other.m_Position;
+						glm::vec3 Two_One_Pro = ((glm::dot(temp, Other_Dir) / glm::dot(Other_Dir, Other_Dir)) * Other_Dir);
+						if (glm::length(Two_One_Pro) <= other.m_Length)
+						{
+							returnValue = true;
+
+						}
+						else if (glm::length(Two_One_Pro) < other.m_Length + other.m_Raduis)
+						{
 					
 
+							glm::vec3 CylEdge_Pos = (m_Position + (This_Dir * m_Length));
+							glm::vec3 CylEdge_Vec = CylEdge_Pos - m_Position;
+
+
+							glm::vec3 OtherCylEdge_Pos = (other.m_Position + Other_Dir * other.m_Length);
+							glm::vec3 OtherCylEdge_Vec = OtherCylEdge_Pos - other.m_Position;
+
+
+
+
+							glm::vec3 proVec = ((glm::dot(TempPOVec, CylEdge_Vec) / glm::dot(CylEdge_Vec, CylEdge_Vec)) * CylEdge_Vec);
+
+							float bothLng = glm::length(CylEdge_Vec) + glm::length(OtherCylEdge_Vec);
+
+							if (glm::length(proVec) <= bothLng)
+							{
+								glm::vec3 LngBtwLin = other.m_Position - proVec;
+
+								if (glm::length(LngBtwLin) <= (m_Raduis + other.m_Raduis))
+								{
+									returnValue = true;
+								}
+							}
+							else if (glm::length(proVec) <= (bothLng + m_Raduis + other.m_Raduis))
+							{
+								glm::vec3 ThisE2 = (m_Position - (This_Dir * m_Length));
+								glm::vec3 OtherE2 = (other.m_Position - (Other_Dir * other.m_Length));
+
+								glm::vec3 shortOne, ShortTwo;
+
+								float LngOne = glm::length(OtherCylEdge_Pos - CylEdge_Pos);
+								float LngTwo = glm::length(OtherE2 - CylEdge_Pos);
+
+								if (LngOne < LngTwo)
+								{
+									shortOne = OtherCylEdge_Pos - CylEdge_Pos;
+								}
+								else
+								{
+									shortOne = OtherE2 - CylEdge_Pos;
+								}
+
+
+								float LngThree = glm::length(OtherCylEdge_Pos - ThisE2);
+								float LngFour = glm::length(OtherE2 - ThisE2);
+
+								if (LngThree < LngFour)
+								{
+									ShortTwo = OtherCylEdge_Pos - ThisE2;
+								}
+								else
+								{
+									ShortTwo = OtherE2 - ThisE2;
+								}
+
+								if (glm::length(shortOne) < glm::length(ShortTwo))
+								{
+									if (glm::length(shortOne) <= (m_Raduis + other.m_Raduis))
+									{
+										returnValue = true;
+									}
+								}
+								else
+								{
+									if (glm::length(ShortTwo) <= (m_Raduis + other.m_Raduis))
+									{
+										returnValue = true;
+									}
+								}
+
+
+
+							}
+
+
+						}
+
+
+
+
+				}
 
 
 			}
@@ -235,4 +543,6 @@ namespace Frosty
 
 		return returnValue;
 	}
+
+
 }

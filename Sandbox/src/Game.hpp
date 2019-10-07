@@ -43,9 +43,9 @@ public:
 
 
 		Test1.m_Position = glm::vec3(0.0f,0.0f,0.0f);
-		Test2.m_Position = glm::vec3(-0.2f,0.0f,-1.5f);
+		Test2.m_Position = glm::vec3(2.98f,0.0f,0.0f);
 
-		float rot = -30;
+		float rot = 90;
 
 		glm::mat4 rotateZ = glm::mat4(
 			cos(glm::radians(rot)), -sin(glm::radians(rot)), 0.0f, 0.0f,
@@ -54,9 +54,9 @@ public:
 			0.0f, 0.0f, 0.0f, 1.0f
 		);
 
-		glm::vec4 tempVec4 = rotateZ * glm::vec4(Test2.m_Direction,1.0f);
+		glm::vec4 tempVec4 = rotateZ * glm::vec4(Test2.m_Direction,0.0f);
 
-		Test2.m_Direction = glm::vec3(tempVec4.x,tempVec4.y,tempVec4.z);
+		Test2.m_Direction = glm::normalize(glm::vec3(tempVec4.x,tempVec4.y,tempVec4.z));
 
 		bool gg = Test1.IsCollidingWith(Test2);
 

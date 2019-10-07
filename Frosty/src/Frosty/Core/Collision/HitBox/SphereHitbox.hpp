@@ -30,7 +30,7 @@ namespace Frosty
 
 
 	private:
-
+	
 	};
 
 }
