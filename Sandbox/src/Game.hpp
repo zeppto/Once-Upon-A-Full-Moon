@@ -24,6 +24,12 @@ private:
 	GameObject m_SphereOne = GameObject(glm::vec3(0.0f, 0.0f, 0.99f), glm::vec3(2.0f, 3.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), "capsule_hitbox");
 	GameObject m_SphereTwo = GameObject(glm::vec3(0.0f, 0.99f, 0.0f), glm::vec3(-2.0f, 3.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), "capsule_hitbox");
 
+	Frosty::SphereHitbox Test1;
+	Frosty::SphereHitbox Test2;
+
+
+
+
 	float m_Temp_Rot = 0.0f;
 
 public:
@@ -34,6 +40,27 @@ public:
 	}
 	void OnAttach() override
 	{
+
+
+		Test1.m_Position = glm::vec3(0.0f,0.0f,0.0f);
+		Test2.m_Position = glm::vec3(-0.2f,0.0f,-1.5f);
+
+		float rot = -30;
+
+		glm::mat4 rotateZ = glm::mat4(
+			cos(glm::radians(rot)), -sin(glm::radians(rot)), 0.0f, 0.0f,
+			sin(glm::radians(rot)), cos(glm::radians(rot)), 0.0f, 0.0f,
+			0.0f, 0.0f, 1.0f, 0.0f,
+			0.0f, 0.0f, 0.0f, 1.0f
+		);
+
+		glm::vec4 tempVec4 = rotateZ * glm::vec4(Test2.m_Direction,1.0f);
+
+		Test2.m_Direction = glm::vec3(tempVec4.x,tempVec4.y,tempVec4.z);
+
+		bool gg = Test1.IsCollidingWith(Test2);
+
+
 	}
 	void OnUpdate() override
 	{
@@ -57,7 +84,7 @@ public:
 			m_SphereTwo.UpdateWorldMatrix();
 
 
-			m_Temp_Rot += 2.0f;
+			m_Temp_Rot += 0.5f;
 
 
 	}

@@ -11,8 +11,6 @@ namespace Frosty
 	public:
 
 
-	private:
-
 		glm::vec3 m_Position;
 		glm::vec3 m_Direction;
 		glm::vec3 m_Scale;
