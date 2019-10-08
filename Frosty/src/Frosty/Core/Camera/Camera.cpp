@@ -36,11 +36,14 @@ namespace Frosty
 		return m_CameraTranslationData.Pos;
 	}
 	
-	void Frosty::Camera::CameraPositionUpdate()
+	bool Frosty::Camera::CameraPositionUpdate()
 	{
 		Application& app = Application::Get();
 		GLFWwindow* window = static_cast<GLFWwindow*>(app.GetWindow().GetNativeWindow());
 		m_CameraTranslationData.CamSpeed = 2.0f * Time::DeltaTime();
+
+		// Test
+		bool moving = false;
 		
 		if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
 		{
@@ -49,6 +52,8 @@ namespace Frosty
 				m_CameraTranslationData.CamSpeed = m_CameraTranslationData.CamSpeed * 3.0f;
 			}
 			m_CameraTranslationData.Pos += m_CameraTranslationData.CamSpeed * m_CameraTranslationData.LookAtVec;
+			
+			moving = true;
 		}
 		if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
 		{
@@ -57,6 +62,8 @@ namespace Frosty
 				m_CameraTranslationData.CamSpeed = m_CameraTranslationData.CamSpeed * 3.0f;
 			}
 			m_CameraTranslationData.Pos -= m_CameraTranslationData.CamSpeed * m_CameraTranslationData.LookAtVec;
+			
+			moving = true;
 		}
 		if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
 		{
@@ -65,6 +72,8 @@ namespace Frosty
 				m_CameraTranslationData.CamSpeed = m_CameraTranslationData.CamSpeed * 3.0f;
 			}
 			m_CameraTranslationData.Pos -= glm::normalize(glm::cross(m_CameraTranslationData.LookAtVec, m_CameraTranslationData.UpVec)) * m_CameraTranslationData.CamSpeed;
+		
+			moving = true;
 		}
 		if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
 		{
@@ -73,6 +82,8 @@ namespace Frosty
 				m_CameraTranslationData.CamSpeed = m_CameraTranslationData.CamSpeed * 3.0f;
 			}
 			m_CameraTranslationData.Pos += glm::normalize(glm::cross(m_CameraTranslationData.LookAtVec, m_CameraTranslationData.UpVec)) * m_CameraTranslationData.CamSpeed;
+		
+			moving = true;
 		}
 
 		if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS)
@@ -97,6 +108,8 @@ namespace Frosty
 		}
 
 		m_CameraData.View = glm::lookAt(m_CameraTranslationData.Pos, m_CameraTranslationData.Pos + m_CameraTranslationData.LookAtVec, m_CameraTranslationData.UpVec);
+	
+		return moving;
 	}
 
 	void Frosty::Camera::CameraRotationUpdate(double xpos, double ypos)

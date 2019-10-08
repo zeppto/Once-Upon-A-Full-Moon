@@ -67,6 +67,7 @@ void main()
 //	{
 //		result += CalcPointLight(pointLights[i], normal, worldPos);
 //	}
+
 	int cellLocation = (16 * int(floor(gl_FragCoord.y / 45))) + int(floor(gl_FragCoord.x / 80));	// (gridSize * minY / cellHeight) + minX / cellWidth
 	if (cellLocation >= 0 && cellLocation <= 255)
 	{
@@ -90,6 +91,7 @@ void main()
 
 
 	// <<< HEAT MAP >>>
+
 //	vec4 NDC = NDCPos;
 //	NDC = NDC / NDC.z;
 //	// Converting from NDC to pixel

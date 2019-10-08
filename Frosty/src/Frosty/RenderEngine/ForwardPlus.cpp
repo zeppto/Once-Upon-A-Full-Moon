@@ -34,6 +34,9 @@ namespace Frosty
 
 	void FrustumGrid::Update()
 	{
+		m_LightIndexList.clear();
+		m_CellLightsInfo.fill(CellLightinfo());
+		
 		LightCulling();
 	}
 
@@ -95,6 +98,7 @@ namespace Frosty
 		//std::vector<int> pos;
 		uint16_t offsetCounter = 0;
 		uint16_t size = 0;
+		uint16_t CellInfoCounter = 0;
 
 		for (int i = 0; i < m_TotalCells; i++)
 		{
@@ -107,9 +111,9 @@ namespace Frosty
 					m_CellLightsInfo[i].Offset = offsetCounter;		// Find better place, it becomes repetative and uneccesary	~ W-_-W ~
 					size++;
 					m_LightIndexList.emplace_back(j);
-					m_CellLightsInfo[i].Size = size;
 				}
 			}
+			m_CellLightsInfo[i].Size = size;
 			offsetCounter += m_CellLightsInfo[i].Size;
 			size = 0;
 		}

@@ -15,7 +15,7 @@ namespace Frosty
 		static void EndScene();
 
 		static void ShaderInit(std::shared_ptr<Shader>& shader);
-		static void Submit(const std::shared_ptr<Shader>& shader, const std::shared_ptr<VertexArray>& vertexArray, const std::shared_ptr<LightManager> lightManager);
+		static void Submit(const std::shared_ptr<Shader>& shader, const std::shared_ptr<VertexArray>& vertexArray, const std::shared_ptr<LightManager>& lightManager);
 		static void DeleteSceneData();
 
 		// Forward Plus

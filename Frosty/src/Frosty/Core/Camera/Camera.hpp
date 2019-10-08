@@ -46,7 +46,7 @@ namespace Frosty
 		glm::mat4 GetViewProjection();	
 		glm::vec3 GetPosition();
 		
-		void CameraPositionUpdate();
+		bool CameraPositionUpdate();
 		void CameraRotationUpdate(double xpos, double ypos);
 	};
 }

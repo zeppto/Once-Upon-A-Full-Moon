@@ -18,7 +18,7 @@ namespace Frosty
 		float MinX, MaxX, MinY, MaxY;
 	};
 
-	struct CellLightinfo					// Information that m_CellLightInfo stores
+	struct CellLightinfo					// Information that m_CellLightInfo stores, each position representing a cell
 	{
 		uint16_t Offset = 0;
 		uint16_t Size = 0;
