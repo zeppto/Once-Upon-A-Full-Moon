@@ -8,7 +8,7 @@ namespace Frosty
 	
 	void Renderer::InitScene(std::shared_ptr<Shader>& shader)
 	{
-		//shader.reset(new Shader(FY_SHADER_VERTEX_SHADER, FY_SHADER_FRAGMENT_SHADER));
+		shader.reset(new Shader(FY_SHADER_VERTEX_SHADER, FY_SHADER_FRAGMENT_SHADER));
 	}
 
 	void Renderer::BeginScene(const std::shared_ptr<Camera>& m_Camera)

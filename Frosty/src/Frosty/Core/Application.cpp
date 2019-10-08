@@ -1,6 +1,7 @@
 #include "fypch.hpp"
 #include "Application.hpp"
 #include "Frosty/RenderEngine/Renderer.hpp"
+//#include "Frosty/API/PrefabManager/PrefabManager.h"
 #include <glad/glad.h>
 
 namespace Frosty
@@ -27,12 +28,13 @@ namespace Frosty
 		//InitPrefabBuffers();
 
 		LoadModel("newClock");
+		//PrefabManager::GetPrefabManager()->setPrefab("TestPrefab1", "newClock", "Mat_0:newClock");
 		CreateBuffers("newClock");
 
 		//LoadModel("testingCube");
 		//CreateBuffers("testingCube");
 		
-		InitShaders();
+		//InitShaders();
 		
 		m_Camera.reset(FY_NEW Camera());
 
@@ -55,7 +57,7 @@ namespace Frosty
 		Renderer::DeleteSceneData();		
 	}
 	
-	void Application::InitPrefabBuffers()
+	/*void Application::InitPrefabBuffers()
 	{		
 		m_VertexArray.reset(VertexArray::Create());
 
@@ -169,7 +171,7 @@ namespace Frosty
 		std::shared_ptr<IndexBuffer> m_IndexBuffer;
 		m_IndexBuffer.reset(IndexBuffer::Create(&indices.front(), indices.size()));
 		m_VertexArray->SetIndexBuffer(m_IndexBuffer);
-	}
+	}*/
 
 	void Application::LoadModel(const std::string filename)
 	{
@@ -239,14 +241,15 @@ namespace Frosty
 			}
 		}
 
-		std::shared_ptr<VertexBuffer> m_VertexBuffer;
+		std::shared_ptr<VertexBuffer> m_VertexBuffer;		
 		m_VertexBuffer.reset(VertexBuffer::Create(&vertices.front(), sizeof(TempVertex) * (uint64_t)vertices.size()));
+		m_VertexBuffer->SetNrOfVertices((uint64_t)vertices.size());
 
 		BufferLayout layout =
 		{
-			{ ShaderDataType::Float3, "a_Position" },
-			{ ShaderDataType::Float2, "a_TexCoord" },
-			{ ShaderDataType::Float3, "a_Normal" }
+			{ ShaderDataType::Float3, "vsInPos" },
+			{ ShaderDataType::Float2, "vsInUV"  },
+			{ ShaderDataType::Float3, "vsInNorm"}
 		};
 
 		m_VertexBuffer->SetLayout(layout);
@@ -294,14 +297,14 @@ namespace Frosty
 		//m_Shader.reset(new Shader(VertexSrc, FragmentSrc));
 		//----------------------------------------------------
 
-		std::string VertexSrc2 = R"(
+		/*std::string VertexSrc2 = R"(
 			#version 440 core
 			
 			layout(location = 0) in vec3 a_Position;
 			layout(location = 1) in vec2 a_TexCoord;
 			layout(location = 2) in vec3 a_Normal;
 			
-			uniform mat4 u_ViewProjection;
+			//uniform mat4 u_ViewProjection;
 
 			out vec3 v_Normal;
 			out vec2 v_UV;
@@ -310,7 +313,8 @@ namespace Frosty
 			{
 				v_Normal = a_Normal;
 				v_UV = a_TexCoord;
-				gl_Position = u_ViewProjection * vec4(a_Position, 1.0f);
+				gl_Position = vec4(a_Position, 1.0f);
+				//gl_Position = u_ViewProjection * vec4(a_Position, 1.0f);
 			}
 		)";
 		std::string FragmentSrc2 = R"(
@@ -323,18 +327,21 @@ namespace Frosty
 
 			void main()
 			{				
-				//color = vec4(1.0, 1.0, 0.0f, 1.0f);
+				color = vec4(1.0, 1.0, 0.0f, 1.0f);
 				//color = vec4(v_UV, 0.0f, 1.0f);
-				color = vec4(v_Normal, 1.0f);
+				//color = vec4(v_Normal, 1.0f);
 			}
-		)";
+		)";*/
 
-		m_Shader.reset(FY_NEW Shader(VertexSrc2, FragmentSrc2));		
+		//m_Shader.reset(FY_NEW Shader(VertexSrc2, FragmentSrc2));		
 	}
 
 	void Application::Run()
 	{		
 		Renderer::InitScene(m_Shader);
+
+		//auto tempPrefabManager = PrefabManager::GetPrefabManager();
+		//Prefab* tempPrefab = tempPrefabManager->GetPrefab("TestPrefab1");
 
 		while (m_Running)
 		{
@@ -349,12 +356,17 @@ namespace Frosty
 			}
 			
 			/// Render
-			RenderCommand::SetClearColor({ 0.1f, 0.1f, 0.1f, 1.0f });
+			RenderCommand::SetClearColor({ 0.1f, 0.1f, 0.3f, 1.0f });			
 			RenderCommand::Clear();
 
 			Renderer::BeginScene(m_Camera);			
 			Renderer::Submit(m_Shader, m_VertexArray);
-			Renderer::EndScene();
+			//Renderer::Submit(m_Shader, tempPrefab->GetModelKey().GetKeyData().GetVertexArray(0));
+			
+			//tempPrefab->GetModelKey().GetKeyData().GetVertexArray(0)->Bind();
+			//RenderCommand::DrawIndexed(tempPrefab->GetModelKey().GetKeyData().GetVertexArray(0));
+			//SubmitPrefab("TestPrefab1");
+			//Renderer::EndScene();
 
 			m_ImGuiLayer->Begin();
 			for (Layer* layer : m_LayerHandler)
@@ -442,5 +454,25 @@ namespace Frosty
 		{
 			m_Running = false;
 		}
+	}
+
+	void Application::SubmitPrefab(std::string prefabName)
+	{
+		//auto tempPrefabManager = PrefabManager::GetPrefabManager();
+		//Prefab* tempPrefab = tempPrefabManager->GetPrefab(prefabName);
+
+		//Renderer::Submit(m_Shader, tempPrefab->GetModelKey().GetKeyData().GetVBO(0)); //get vertexarray plzzzzz
+		//Renderer::Submit(m_Shader, tempPrefab->GetModelKey().GetKeyData().GetVertexArray(0));
+		
+		//I want a texture! >:C
+
+		/*RenderModel
+		(
+			tempPrefab->GetModelKey().GetKeyData().GetVBO(0),
+			tempPrefab->GetModelKey().GetKeyData().GetMeshConst(0).vertexCount,
+			m_Transform.getModel(), //temp
+			tempPrefab->GetMaterialKey().GetKeyData().Diffuse_Texture_MetaData_Ptr->GetData()->GetBufferID()
+
+		);*/
 	}
 }

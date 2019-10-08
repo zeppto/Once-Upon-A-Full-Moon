@@ -114,7 +114,6 @@ namespace Frosty
 
 		std::vector<BufferElement>::iterator begin() { return m_Element.begin(); }
 		std::vector<BufferElement>::iterator end() { return m_Element.end(); }
-
 	private:
 		void CalculateOffsetAndStride()
 		{
@@ -142,6 +141,9 @@ namespace Frosty
 		void Bind()const;
 		void Unbind()const;
 
+		void SetNrOfVertices(uint32_t count);
+		uint32_t GetNrOfVertices()const;
+
 		uint32_t GetSize()const;
 
 		BufferLayout GetLayout()const { return m_Layout; }
@@ -151,6 +153,7 @@ namespace Frosty
 	private:
 		uint32_t m_RendererID;
 		uint32_t m_Size;
+		uint32_t m_NrOfVertices;
 		BufferLayout m_Layout;
 	};
 

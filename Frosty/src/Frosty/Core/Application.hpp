@@ -47,6 +47,7 @@ namespace Frosty
 	private:
 		void OnWindowCloseEvent(WindowCloseEvent& e);
 		void OnKeyPressedEvent(KeyPressedEvent& e);	
+		void SubmitPrefab(std::string prefabName);//Temp
 	private:
 		bool m_Running = true;
 
@@ -62,8 +63,8 @@ namespace Frosty
 		//std::unique_ptr<ECS::BaseComponentManager> m_TransformManager;
 		
 		std::shared_ptr<Shader> m_Shader;
-		std::shared_ptr<VertexArray> m_VertexArray;	
 		std::shared_ptr<Camera> m_Camera;
+		std::shared_ptr<VertexArray> m_VertexArray;	
 	};
 }
 #endif 

@@ -29,6 +29,16 @@ namespace Frosty
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 	}
 
+	void VertexBuffer::SetNrOfVertices(uint32_t count)
+	{
+		m_NrOfVertices = count;
+	}
+
+	uint32_t VertexBuffer::GetNrOfVertices()const
+	{
+		return m_NrOfVertices;
+	}
+
 	uint32_t VertexBuffer::GetSize() const
 	{
 		return m_Size;

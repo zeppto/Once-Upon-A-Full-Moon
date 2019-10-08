@@ -92,6 +92,6 @@ namespace Frosty
 
 	VertexArray * VertexArray::Create()
 	{
-		return new VertexArray();
+		return FY_NEW VertexArray();
 	}
 }

@@ -3,10 +3,8 @@
 
 namespace Frosty
 {
-	
 	PrefabManager* PrefabManager::s_Instance = nullptr;
-
-
+	
 	PrefabManager* Frosty::PrefabManager::GetPrefabManager()
 	{
 		if (s_Instance == nullptr)
@@ -26,11 +24,21 @@ namespace Frosty
 		bool returnValue;
 		/*if (CheckIfPrefabExists(prefabName))
 		{
-			
+
 		}*/
 		returnValue = m_Prefabs[prefabName].SetData(modelName, materialName);
 
 		return returnValue;
+	}
+
+	std::unordered_map<std::string, Prefab>* PrefabManager::GetPrefabMap()
+	{
+		return &m_Prefabs;
+	}
+
+	Prefab* PrefabManager::GetPrefab(std::string prefabName)
+	{
+		return &m_Prefabs.at(prefabName);
 	}
 
 	bool PrefabManager::CheckIfPrefabExists(std::string prefabName)

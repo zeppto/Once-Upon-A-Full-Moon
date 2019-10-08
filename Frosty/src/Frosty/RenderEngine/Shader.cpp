@@ -6,7 +6,7 @@ namespace Frosty
 {
 	Shader::Shader(const std::string& vertexSrc, const std::string& fragmentSrc)
 	{
-		// Create an empty vertex shader handle
+		/*// Create an empty vertex shader handle
 		GLuint vertexShader = glCreateShader(GL_VERTEX_SHADER);
 
 		// Send the vertex shader source code to GL
@@ -112,9 +112,9 @@ namespace Frosty
 
 		// Always detach shaders after a successful link.
 		glDetachShader(program, vertexShader);
-		glDetachShader(program, fragmentShader);
+		glDetachShader(program, fragmentShader);*/
 		
-		//CreateAllShaderPrograms();
+		CreateAllShaderPrograms();
 	}
 
 	Shader::~Shader()

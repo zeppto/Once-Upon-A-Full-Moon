@@ -4,7 +4,6 @@
 
 namespace Frosty
 {
-
 	class Prefab
 	{
 	public:		//Variables
@@ -42,14 +41,7 @@ namespace Frosty
 		Prefab& operator = (Prefab& other);
 		bool operator == (Prefab& other);
 
-	private:	//Functions
-
-	
+	private:	//Functions	
 	};
-
 }
-
-
-
-#endif // !PREFAB
-
+#endif 
