@@ -17,7 +17,7 @@ namespace Frosty
 	void RenderCommand::DrawIndexed(const std::shared_ptr<VertexArray>& vertexArray)
 	{		
 		//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-		if (vertexArray->GetIndexBuffer()->GetCount() != 0)
+		if (vertexArray->GetIndexBuffer()->GetCount() < 0)
 		{
 			glDrawElements(GL_TRIANGLES, vertexArray->GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, nullptr);			
 		}
@@ -32,9 +32,9 @@ namespace Frosty
 		//glDrawArrays(GL_TRIANGLES, 0, x);
 		else
 		{
-			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+			//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 			glDrawArrays(GL_TRIANGLES, 0, vertexArray->GetVertexBuffer()->GetNrOfVertices());
-			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+			//glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 		}
 		int y = vertexArray->GetVertexBuffer()->GetNrOfVertices();
 		int z = vertexArray->GetIndexBuffer()->GetCount();
