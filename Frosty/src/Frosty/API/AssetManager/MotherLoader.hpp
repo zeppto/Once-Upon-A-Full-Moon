@@ -4,22 +4,15 @@
 #include<Luna/include/Reader.h>
 #include"AssetFiles/TextureFile.hpp"
 
-
-
 // should be inside definitions?
 //File types
 #define FILE_TYPE_JPG "jpg"
 #define FILE_TYPE_PNG "png"
 #define FILE_TYPE_LUNA "lu"
 
-
-
 namespace Frosty
 {
-
 	extern 	struct FileMetaData;
-
-
 
 	enum FileType
 	{
@@ -27,8 +20,7 @@ namespace Frosty
 		PNG,
 		LUNA
 	};
-
-
+	
 	class MotherLoader
 	{
 	public: //variables
@@ -75,10 +67,5 @@ namespace Frosty
 		bool LoadGraphicFile(const FileMetaData& FileNameInformation, const bool& Reload = false);
 
 	};
-
-
-
 }
-
-
-#endif // ! MOTHERLOADER_H
+#endif 

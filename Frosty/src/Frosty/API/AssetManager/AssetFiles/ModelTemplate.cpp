@@ -103,8 +103,12 @@ namespace Frosty
 			for (uint8_t i = 0; i < m_Meshes.size(); i++)
 			{
 				std::shared_ptr<VertexBuffer> tempVertexBuffer;
-				tempVertexBuffer.reset(VertexBuffer::Create(&m_MeshInfoMap[i].MeshVertices, m_Meshes.at(i).vertexCount));
-								
+				tempVertexBuffer.reset(VertexBuffer::Create(&m_MeshInfoMap[i].MeshVertices, sizeof(Luna::Vertex) * m_Meshes.at(i).vertexCount));
+				tempVertexBuffer->SetNrOfVertices((uint64_t)m_Meshes.at(i).vertexCount);
+			
+				int v = sizeof(Luna::Vertex) * m_Meshes.at(i).vertexCount;
+
+
 				BufferLayout layout =
 				{
 					{ ShaderDataType::Float3, "vsInPos" },
@@ -114,17 +118,21 @@ namespace Frosty
 
 				tempVertexBuffer->SetLayout(layout);
 
+				std::shared_ptr<IndexBuffer> tempIndexBuffer;
+				tempIndexBuffer.reset(IndexBuffer::Create(&m_MeshInfoMap[i].MeshIndices, m_Meshes.at(i).indexCount));				
+
 				std::shared_ptr<VertexArray> TempVertexArray;
 				TempVertexArray.reset(VertexArray::Create());
-				
+
 				TempVertexArray->Bind();
 				TempVertexArray->AddVertexBuffer(tempVertexBuffer);
+				TempVertexArray->SetIndexBuffer(tempIndexBuffer);
 				TempVertexArray->Unbind();
 
 				m_VertexArrays.emplace_back(TempVertexArray);
-
-
-				std::vector<uint32_t> indices;
+								
+				
+				/*std::vector<uint32_t> indices;
 				unsigned int indexCounter = 0;
 				int index = -1;
 
@@ -132,15 +140,66 @@ namespace Frosty
 				float uv[2];
 				float norm[3];
 
+				for (size_t i = 0; i < tempAssetsManager->GetModeltemplateMetaData(filename)->GetData()->GetMeshInfoMap()->at(0).MeshVertices.size(); i++)
+				{
+					index = -1;
+					pos[0] = tempAssetsManager->GetModeltemplateMetaData(filename)->GetData()->GetMeshInfoMap()->at(0).MeshVertices.at(i).position[0];
+					pos[1] = tempAssetsManager->GetModeltemplateMetaData(filename)->GetData()->GetMeshInfoMap()->at(0).MeshVertices.at(i).position[1];
+					pos[2] = tempAssetsManager->GetModeltemplateMetaData(filename)->GetData()->GetMeshInfoMap()->at(0).MeshVertices.at(i).position[2];
+
+					uv[1] = tempAssetsManager->GetModeltemplateMetaData(filename)->GetData()->GetMeshInfoMap()->at(0).MeshVertices.at(i).uv[1];
+					uv[0] = tempAssetsManager->GetModeltemplateMetaData(filename)->GetData()->GetMeshInfoMap()->at(0).MeshVertices.at(i).uv[0];
+
+					norm[0] = tempAssetsManager->GetModeltemplateMetaData(filename)->GetData()->GetMeshInfoMap()->at(0).MeshVertices.at(i).normal[0];
+					norm[1] = tempAssetsManager->GetModeltemplateMetaData(filename)->GetData()->GetMeshInfoMap()->at(0).MeshVertices.at(i).normal[1];
+					norm[2] = tempAssetsManager->GetModeltemplateMetaData(filename)->GetData()->GetMeshInfoMap()->at(0).MeshVertices.at(i).normal[2];
+
+					for (size_t j = 0; j < vertices.size() && index != -1; j++)
+					{
+						if (vertices.at(j).Position == glm::vec3(pos[0], pos[1], pos[2]) &&
+							vertices.at(j).Texture == glm::vec2(uv[0], uv[1]) &&
+							vertices.at(j).Normal == glm::vec3(norm[0], norm[1], norm[2]))
+						{
+							index = j;
+						}
+					}
+
+					if (index == -1)
+					{
+						indices.emplace_back(indexCounter++);
+						vertices.emplace_back(TempVertex({ pos[0], pos[1], pos[2] }, { uv[0], uv[1] }, { norm[0], norm[1], norm[2] }));
+					}
+					else
+					{
+						indices.emplace_back(index);
+					}
+				}*/
 
 
 
 
 
-				/*
 
-				
-			
+				/*m_VertexArray.reset(VertexArray::Create());
+
+				auto tempAssetsManager = Assetmanager::GetAssetmanager();
+				struct TempVertex
+				{
+					glm::vec3 Position;
+					glm::vec2 Texture;
+					glm::vec3 Normal;
+
+					TempVertex(glm::vec3 pos, glm::vec2 uv, glm::vec3 norm) : Position(pos), Texture(uv), Normal(norm) { }
+				};
+
+				std::vector<TempVertex> vertices;
+				std::vector<uint32_t> indices;
+				unsigned int indexCounter = 0;
+				int index = -1;
+
+				float pos[3];
+				float uv[2];
+				float norm[3];
 
 				for (size_t i = 0; i < tempAssetsManager->GetModeltemplateMetaData(filename)->GetData()->GetMeshInfoMap()->at(0).MeshVertices.size(); i++)
 				{
@@ -179,20 +238,52 @@ namespace Frosty
 
 				std::shared_ptr<VertexBuffer> m_VertexBuffer;
 				m_VertexBuffer.reset(VertexBuffer::Create(&vertices.front(), sizeof(TempVertex) * (uint64_t)vertices.size()));
+				m_VertexBuffer->SetNrOfVertices((uint64_t)vertices.size());
 
 				BufferLayout layout =
 				{
-					{ ShaderDataType::Float3, "a_Position" },
-					{ ShaderDataType::Float2, "a_TexCoord" },
-					{ ShaderDataType::Float3, "a_Normal" }
+					{ ShaderDataType::Float3, "vsInPos" },
+					{ ShaderDataType::Float2, "vsInUV"  },
+					{ ShaderDataType::Float3, "vsInNorm"}
 				};
 
 				m_VertexBuffer->SetLayout(layout);
-				m_VertexArray->AddVertexBuffer(m_VertexBuffer);		
+				m_VertexArray->AddVertexBuffer(m_VertexBuffer);
 
 				std::shared_ptr<IndexBuffer> m_IndexBuffer;
 				m_IndexBuffer.reset(IndexBuffer::Create(&indices.front(), indices.size()));
 				m_VertexArray->SetIndexBuffer(m_IndexBuffer);*/
+
+				/*std::shared_ptr<VertexBuffer> tempVertexBuffer;
+				tempVertexBuffer.reset(VertexBuffer::Create(&m_MeshInfoMap[i].MeshVertices, m_Meshes.at(i).vertexCount));
+								
+				BufferLayout layout =
+				{
+					{ ShaderDataType::Float3, "vsInPos" },
+					{ ShaderDataType::Float2, "vsInUV" },
+					{ ShaderDataType::Float3, "vsInNorm"}
+				};
+
+				tempVertexBuffer->SetLayout(layout);
+
+				std::shared_ptr<VertexArray> TempVertexArray;
+				TempVertexArray.reset(VertexArray::Create());
+				
+				TempVertexArray->Bind();
+				TempVertexArray->AddVertexBuffer(tempVertexBuffer);
+				TempVertexArray->Unbind();
+
+				m_VertexArrays.emplace_back(TempVertexArray);
+
+
+				std::vector<uint32_t> indices;
+				unsigned int indexCounter = 0;
+				int index = -1;
+
+				float pos[3];
+				float uv[2];
+				float norm[3];*/
+								
 				/*unsigned int TempID = -1;				
 
 				glGenVertexArrays(1, &TempID);
@@ -214,7 +305,7 @@ namespace Frosty
 
 				temp_VBO_Vector.emplace_back(TempID);*/
 			}
-
+			std::shared_ptr<VertexBuffer> tempVertexBuffer2 = m_VertexArrays.at(0)->GetVertexBuffer();
 			//Erase all loaded data here
 			if (DumpData)
 			{

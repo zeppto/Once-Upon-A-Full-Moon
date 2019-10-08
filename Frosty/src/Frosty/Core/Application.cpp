@@ -28,7 +28,9 @@ namespace Frosty
 		//InitPrefabBuffers();
 
 		LoadModel("newClock");
+		//LoadModel("testingCube");
 		//PrefabManager::GetPrefabManager()->setPrefab("TestPrefab1", "newClock", "Mat_0:newClock");
+		//PrefabManager::GetPrefabManager()->setPrefab("TestPrefab1", "testingCube", "Mat_0:testingCube");
 		CreateBuffers("newClock");
 
 		//LoadModel("testingCube");
@@ -43,9 +45,7 @@ namespace Frosty
 		FrustumGrid grid;
 
 		// 4) send the three buffers to a frgament shader
-
 		// 5) find out which cell the pixel belongs to (in screen space)
-
 		// 6) calculate lights as usual (world space)
 	}
 
@@ -356,11 +356,24 @@ namespace Frosty
 			}
 			
 			/// Render
-			RenderCommand::SetClearColor({ 0.1f, 0.1f, 0.3f, 1.0f });			
+			//RenderCommand::SetClearColor({ 0.1f, 0.1f, 0.1f, 1.0f });			
+			RenderCommand::SetClearColor({ 0.5f, 0.5f, 0.5f, 1.0f });
 			RenderCommand::Clear();
 
-			Renderer::BeginScene(m_Camera);			
+			Renderer::BeginScene(m_Camera);
 			Renderer::Submit(m_Shader, m_VertexArray);
+			//SubmitPrefab("TestPrefab1");			
+			//RenderCommand::DrawIndexed(tempPrefab->GetModelKey().GetKeyData().GetVertexArray(0));
+			//Renderer::Submit(m_Shader, tempPrefab->GetModelKey().GetKeyData().GetVertexArray(0));
+
+
+
+
+
+
+
+
+			//Renderer::Submit(m_Shader, m_VertexArray);
 			//Renderer::Submit(m_Shader, tempPrefab->GetModelKey().GetKeyData().GetVertexArray(0));
 			
 			//tempPrefab->GetModelKey().GetKeyData().GetVertexArray(0)->Bind();
@@ -458,12 +471,13 @@ namespace Frosty
 
 	void Application::SubmitPrefab(std::string prefabName)
 	{
-		//auto tempPrefabManager = PrefabManager::GetPrefabManager();
-		//Prefab* tempPrefab = tempPrefabManager->GetPrefab(prefabName);
-
-		//Renderer::Submit(m_Shader, tempPrefab->GetModelKey().GetKeyData().GetVBO(0)); //get vertexarray plzzzzz
-		//Renderer::Submit(m_Shader, tempPrefab->GetModelKey().GetKeyData().GetVertexArray(0));
+		/*auto tempPrefabManager = PrefabManager::GetPrefabManager();
+		Prefab* tempPrefab = tempPrefabManager->GetPrefab(prefabName);
 		
+		tempPrefab->GetModelKey().GetKeyData().GetVertexArray(0)->Bind();
+		Renderer::Submit(m_Shader, tempPrefab->GetModelKey().GetKeyData().GetVertexArray(0));
+
+		std::shared_ptr<VertexArray> v = tempPrefab->GetModelKey().GetKeyData().GetVertexArray(0);*/
 		//I want a texture! >:C
 
 		/*RenderModel
