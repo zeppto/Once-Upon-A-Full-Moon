@@ -26,6 +26,11 @@ namespace Frosty
 		return m_CameraData.Projection;
 	}
 
+	glm::mat4 Camera::GetOrthoGraphic()
+	{
+		return m_CameraData.OrthoGraphic;
+	}
+
 	glm::mat4 Camera::GetViewProjection()
 	{
 		return m_CameraData.Projection * m_CameraData.View;
@@ -35,7 +40,9 @@ namespace Frosty
 	{
 		return m_CameraTranslationData.Pos;
 	}
-	
+
+
+
 	bool Frosty::Camera::CameraPositionUpdate()
 	{
 		Application& app = Application::Get();

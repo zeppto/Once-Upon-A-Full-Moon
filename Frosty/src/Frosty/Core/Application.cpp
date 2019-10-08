@@ -1,6 +1,7 @@
 #include "fypch.hpp"
 #include "Application.hpp"
 #include "Frosty/RenderEngine/Renderer.hpp"
+#include "..\\API\CollisionMap\CollisionMap.hpp"
 
 namespace Frosty
 {
@@ -10,6 +11,7 @@ namespace Frosty
 	{
 		Log::Init();
 		FY_CORE_INFO("Logger initialized..");
+
 
 		// TODO: Error handling?
 		s_Instance = this;
@@ -35,6 +37,8 @@ namespace Frosty
 
 
 		Renderer::InitForwardPlus(m_LightManager);
+		CollisionMap::Get()->Initiate();
+		
 	}
 
 	Application::~Application()
@@ -58,13 +62,13 @@ namespace Frosty
 
 		float vertices[6 * 7] =
 		{
-			-2.f, -2.f, 0.f, 0.8f, 0.0f, 0.8f, 1.0f,
-			 2.f, -2.f, 0.f, 0.2f, 0.3f, 0.8f, 1.0f,
-			-2.f,  2.f, 0.f, 0.8f, 0.8f, 0.2f, 1.0f,
+			0.f, 0.f, 0.f, 0.8f, 0.0f, 0.8f, 1.0f,
+			1920.f, 0.f, 0.f, 0.2f, 0.3f, 0.8f, 1.0f,
+			0.f,  0.f, 1080.f, 0.8f, 0.8f, 0.2f, 1.0f,
 
-			 2.f, -2.f, 0.f, 0.2f, 0.3f, 0.8f, 1.0f,
-			 2.f, 2.f, 0.f, 0.8f, 0.0f, 0.8f, 1.0f,
-			-2.f,  2.f, 0.f, 0.8f, 0.8f, 0.2f, 1.0f
+			1920.f, 0.f, 1080.f, 0.2f, 0.3f, 0.8f, 1.0f,
+			0.f, 0.f, 1080.f, 0.8f, 0.0f, 0.8f, 1.0f,
+			1920.f,  0.f, 0.f, 0.8f, 0.8f, 0.2f, 1.0f
 		};
 
 		std::shared_ptr<VertexBuffer> m_VertexBuffer;
@@ -175,10 +179,12 @@ namespace Frosty
 			}
 			
 			/// Render
-			RenderCommand::SetClearColor({ 0.0f, 0.0f, 0.1f, 5.0f });
+			RenderCommand::SetClearColor({ 0.0f, 0.0f, 1.0f, 5.0f });
 			RenderCommand::Clear();
 
-			Renderer::BeginScene(m_Camera);			
+		//	Renderer::BeginScene(m_Camera);			
+			Renderer::BeginScene(CollisionMap::Get()->GetCamera());			
+
 			Renderer::Submit(m_Shader, m_VertexArray, m_LightManager);
 			Renderer::EndScene();
 
