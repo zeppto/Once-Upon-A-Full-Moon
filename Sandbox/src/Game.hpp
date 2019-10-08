@@ -26,12 +26,12 @@ private:
 	int m_EnemyDamage = 1;
 	int m_PlayerDamage = 1;
 
-	//Frosty::PrefabInstance* m_testInstance;
-	std::vector< Frosty::PrefabInstance*> m_Instances;
+
+	 Frosty::PrefabInstance* m_Instance; //For example 
 	
-	std::vector< float> m_Rotation;
+	 float m_Rotation = 0;
 	
-	bool phase2 = false;
+
 
 public:
 	ExampleLayerA()
@@ -41,55 +41,23 @@ public:
 	}
 	void OnAttach() override
 	{
-		Frosty::PrefabManager::GetPrefabManager()->setPrefab("TestPrefab1", "clock", "Mat_0:table");
-		//m_testInstance = Frosty::PrefabManager::GetPrefabManager()->CreatePrefabInstance("TestPrefab1");
-		//m_testInstance->GetTransform()->setTranslate(glm::vec3(10, 5, 0));
-
-		int i = 0;
-			for (uint32_t x = 0; x < 5; x++)
-			{
-				for (uint32_t y = 0; y < 5; y++)
-				{
-					for (uint32_t z = 0; z < 5; z++)
-					{
-						m_Instances.emplace_back(Frosty::PrefabManager::GetPrefabManager()->CreatePrefabInstance("TestPrefab1"));
-						m_Instances.at(i)->GetTransform()->setTranslate(glm::vec3(10 * x, 10 *y, 10 * z));
-						m_Rotation.emplace_back(0.0f);
-	
-						i++;
-					}
-				}
-			}
-			
-		
+		Frosty::PrefabManager::GetPrefabManager()->setPrefab("TestPrefab1", "clock", "Mat_0:table"); //Create a prefab
+		m_Instance = Frosty::PrefabManager::GetPrefabManager()->CreatePrefabInstance("TestPrefab1"); //Create an instanceof the prefab
+		m_Instance->GetTransform()->setTranslate(glm::vec3(0, 0, -10)); //Move the instance
 
 
 	}
 	void OnUpdate() override
 	{
-		//Frosty::PrefabManager::GetPrefabManager()->setPrefab("TestPrefab1", "clock", "Mat_0:clock");
+		
 
 		float dt = Frosty::Time::DeltaTime();
 		int frame = Frosty::Time::GetFrameCount();
 		
-		if (frame % (50*30) == 0)
+		
+		if (frame % 1000 == 0)
 		{
-			if (m_Instances.size() > 0 && phase2 == false)
-			{
-				m_Instances.at(0)->Destroy();
-				m_Instances.erase(m_Instances.begin());
-				
-
-			}
-			
-			
-			
-			
-		}
-
-		if (frame % 1000 == 0 )
-		{
-			Frosty::PrefabManager::GetPrefabManager()->setPrefab("TestPrefab1", "clock", "Mat_0:clock");
+			Frosty::PrefabManager::GetPrefabManager()->setPrefab("TestPrefab1", "clock", "Mat_0:clock"); //You can change the prefab, this changes all instances
 		}
 		else if (frame % 750 == 0)
 		{
@@ -104,13 +72,13 @@ public:
 			Frosty::PrefabManager::GetPrefabManager()->setPrefab("TestPrefab1", "table", "Mat_0:clock");
 		}
 		
-		for (uint32_t i = 0; i < m_Instances.size(); i++)
-		{
-			m_Instances.at(i)->GetTransform()->setRotate(glm::vec3(0, 0, m_Rotation.at(i) -= 40 * Frosty::Time::DeltaTime()));
-		}
+		
+		m_Instance->GetTransform()->setRotate(glm::vec3(0, 0, m_Rotation -= 40 * Frosty::Time::DeltaTime())); //Instances can also rotate! Amazing right?!
+		
 
-		//m_testInstance->GetTransform()->setTranslate(glm::vec3(m_testTranslateX += 0.01, 5, 0));
-		glm::vec3 test = Frosty::PrefabManager::GetPrefabManager()->GetPrefab("TestPrefab1")->GetInstances()->at(0)->GetTransform()->getTranslate();
+
+
+		
 
 		m_Attacks = m_GameInput.PlayerControllerAttacks();
 
