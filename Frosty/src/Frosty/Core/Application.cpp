@@ -27,14 +27,13 @@ namespace Frosty
 		
 		//InitPrefabBuffers();
 
-		LoadModel("newClock");
-		//LoadModel("testingCube");
+		//LoadModel("newClock");		
 		//PrefabManager::GetPrefabManager()->setPrefab("TestPrefab1", "newClock", "Mat_0:newClock");
-		//PrefabManager::GetPrefabManager()->setPrefab("TestPrefab1", "testingCube", "Mat_0:testingCube");
-		CreateBuffers("newClock");
+		//CreateBuffers("newClock");
 
-		//LoadModel("testingCube");
-		//CreateBuffers("testingCube");
+		LoadModel("testingCube");
+		//PrefabManager::GetPrefabManager()->setPrefab("TestPrefab1", "testingCube", "Mat_0:testingCube");
+		CreateBuffers("testingCube");
 		
 		//InitShaders();
 		
@@ -243,7 +242,7 @@ namespace Frosty
 
 		std::shared_ptr<VertexBuffer> m_VertexBuffer;		
 		m_VertexBuffer.reset(VertexBuffer::Create(&vertices.front(), sizeof(TempVertex) * (uint64_t)vertices.size()));
-		m_VertexBuffer->SetNrOfVertices((uint64_t)vertices.size());
+		m_VertexBuffer->SetNrOfVertices((uint64_t)vertices.size());	
 
 		BufferLayout layout =
 		{
@@ -256,10 +255,10 @@ namespace Frosty
 		m_VertexArray->AddVertexBuffer(m_VertexBuffer);		
 
 		std::shared_ptr<IndexBuffer> m_IndexBuffer;
-		m_IndexBuffer.reset(IndexBuffer::Create(&indices.front(), indices.size()));
-		m_VertexArray->SetIndexBuffer(m_IndexBuffer);
+		//m_IndexBuffer.reset(IndexBuffer::Create(&indices.front(), indices.size()));
+		//m_VertexArray->SetIndexBuffer(m_IndexBuffer);
 	}
-
+	
 	void Application::InitShaders()
 	{
 		/*std::string VertexSrc = R"(
@@ -356,22 +355,19 @@ namespace Frosty
 			}
 			
 			/// Render
-			//RenderCommand::SetClearColor({ 0.1f, 0.1f, 0.1f, 1.0f });			
-			RenderCommand::SetClearColor({ 0.5f, 0.5f, 0.5f, 1.0f });
+			RenderCommand::SetClearColor({ 0.1f, 0.1f, 0.1f, 1.0f });		
 			RenderCommand::Clear();
 
 			Renderer::BeginScene(m_Camera);
 			Renderer::Submit(m_Shader, m_VertexArray);
+
+
+
+
+
 			//SubmitPrefab("TestPrefab1");			
 			//RenderCommand::DrawIndexed(tempPrefab->GetModelKey().GetKeyData().GetVertexArray(0));
 			//Renderer::Submit(m_Shader, tempPrefab->GetModelKey().GetKeyData().GetVertexArray(0));
-
-
-
-
-
-
-
 
 			//Renderer::Submit(m_Shader, m_VertexArray);
 			//Renderer::Submit(m_Shader, tempPrefab->GetModelKey().GetKeyData().GetVertexArray(0));
@@ -478,8 +474,7 @@ namespace Frosty
 		Renderer::Submit(m_Shader, tempPrefab->GetModelKey().GetKeyData().GetVertexArray(0));
 
 		std::shared_ptr<VertexArray> v = tempPrefab->GetModelKey().GetKeyData().GetVertexArray(0);*/
-		//I want a texture! >:C
-
+		
 		/*RenderModel
 		(
 			tempPrefab->GetModelKey().GetKeyData().GetVBO(0),

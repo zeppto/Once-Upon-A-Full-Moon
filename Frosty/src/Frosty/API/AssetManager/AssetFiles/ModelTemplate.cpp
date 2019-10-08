@@ -107,8 +107,7 @@ namespace Frosty
 				tempVertexBuffer->SetNrOfVertices((uint64_t)m_Meshes.at(i).vertexCount);
 			
 				int v = sizeof(Luna::Vertex) * m_Meshes.at(i).vertexCount;
-
-
+				
 				BufferLayout layout =
 				{
 					{ ShaderDataType::Float3, "vsInPos" },
@@ -130,7 +129,7 @@ namespace Frosty
 				TempVertexArray->Unbind();
 
 				m_VertexArrays.emplace_back(TempVertexArray);
-								
+				
 				
 				/*std::vector<uint32_t> indices;
 				unsigned int indexCounter = 0;
@@ -175,8 +174,7 @@ namespace Frosty
 					}
 				}*/
 
-
-
+				
 
 
 
@@ -304,8 +302,7 @@ namespace Frosty
 				glBindVertexArray(0);
 
 				temp_VBO_Vector.emplace_back(TempID);*/
-			}
-			std::shared_ptr<VertexBuffer> tempVertexBuffer2 = m_VertexArrays.at(0)->GetVertexBuffer();
+			}			
 			//Erase all loaded data here
 			if (DumpData)
 			{
