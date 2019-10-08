@@ -23,14 +23,21 @@ namespace Frosty
 		virtual ~SphereHitbox();
 
 		//If you have a better name then rename it
-		bool IsCollidingWith(const SphereHitbox& other) const;
+		bool IsCollidingWith(const SphereHitbox& other);
+
+		bool ColTest(const SphereHitbox& other);
 
 
 
 
 
 	private:
+
+		glm::vec3 m_Temp_Calc_This_Dir;
+		glm::vec3 m_Temp_Calc_Other_Dir;
 	
+		bool SphereCheck(const SphereHitbox& Other);
+
 	};
 
 }
