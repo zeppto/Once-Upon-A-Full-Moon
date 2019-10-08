@@ -25,6 +25,7 @@ namespace Frosty
 
 		Transform* GetTransform();
 
+		void Destroy();
 
 		PrefabInstance& operator = (PrefabInstance& other);
 		bool operator == (PrefabInstance& other);

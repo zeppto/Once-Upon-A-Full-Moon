@@ -450,7 +450,7 @@ namespace Frosty
 		m_Transform.setRotate(glm::vec3(0.0f, m_Rotation += 100 * Time::DeltaTime(), 0.0f));//Temp
 		//RenderTriangle();
 		RenderTempModels();
-
+		RenderAllPrefabs();
 		
 		/*RenderPrefab("TestPrefab1");
 		RenderPrefab("TestPrefab2");*/
@@ -532,9 +532,12 @@ namespace Frosty
 	{
 		std::unordered_map<std::string, Prefab>* prefabMap = PrefabManager::GetPrefabManager()->GetPrefabMap();
 
+
+
+
 		for (std::unordered_map<std::string, Prefab>::iterator it = prefabMap->begin(); it != prefabMap->end(); ++it)
-		{
-			RenderPrefab(prefabMap[it->first].GetName());
+		{	
+			RenderPrefab(prefabMap->at(it->first).GetName());		
 		}
 	}
 
@@ -543,14 +546,20 @@ namespace Frosty
 		auto tempPrefabManager = PrefabManager::GetPrefabManager();
 		Prefab* tempPrefab = tempPrefabManager->GetPrefab(prefabName);
 
-		RenderModel
-		(
-			tempPrefab->GetModelKey().GetKeyData().GetVBO(0),
-			tempPrefab->GetModelKey().GetKeyData().GetMeshConst(0).vertexCount,
-			m_Transform.getModel(), //temp
-			tempPrefab->GetMaterialKey().GetKeyData().Diffuse_Texture_MetaData_Ptr->GetData()->GetBufferID()
+		std::vector<PrefabInstance*>* instances= tempPrefab->GetInstances();
 
-		);
+		for (uint32_t i = 0; i < instances->size(); i++)
+		{
+			RenderModel
+			(
+				tempPrefab->GetModelKey().GetKeyData().GetVBO(0),
+				tempPrefab->GetModelKey().GetKeyData().GetMeshConst(0).vertexCount,
+				instances->at(i)->GetTransform()->getModel(), 
+				tempPrefab->GetMaterialKey().GetKeyData().Diffuse_Texture_MetaData_Ptr->GetData()->GetBufferID()
+
+			);
+		}
+		
 	}
 
 	void RenderEngine::AddToRenderList(TempRender* obj)

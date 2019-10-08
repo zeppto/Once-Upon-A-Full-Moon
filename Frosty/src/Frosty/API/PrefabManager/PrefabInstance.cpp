@@ -33,6 +33,11 @@ namespace Frosty
 		return &m_Transform;
 	}
 
+	void PrefabInstance::Destroy()
+	{
+		delete this;
+	}
+
 	PrefabInstance& PrefabInstance::operator=(PrefabInstance& other)
 	{
 		m_InstanceID = s_Unique_ID++;

@@ -59,7 +59,7 @@ namespace Frosty
 	{
 		for (std::unordered_map<std::string, Prefab>::iterator it = m_Prefabs.begin(); it != m_Prefabs.end(); ++it)
 		{
-			if (m_Prefabs[it->first].GetName() == prefabName)
+			if (m_Prefabs.at(it->first).GetName() == prefabName)
 			{
 				return true;
 			}

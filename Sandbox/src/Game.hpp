@@ -26,8 +26,12 @@ private:
 	int m_EnemyDamage = 1;
 	int m_PlayerDamage = 1;
 
-	Frosty::PrefabInstance* m_testInstance;
-	uint16_t m_testTranslateX = 0;
+	//Frosty::PrefabInstance* m_testInstance;
+	std::vector< Frosty::PrefabInstance*> m_Instances;
+	
+	std::vector< float> m_Rotation;
+	
+	bool phase2 = false;
 
 public:
 	ExampleLayerA()
@@ -38,13 +42,74 @@ public:
 	void OnAttach() override
 	{
 		Frosty::PrefabManager::GetPrefabManager()->setPrefab("TestPrefab1", "clock", "Mat_0:table");
-		m_testInstance = Frosty::PrefabManager::GetPrefabManager()->CreatePrefabInstance("TestPrefab1");
-		m_testInstance->GetTransform()->setTranslate(glm::vec3(10, 5, 0));
+		//m_testInstance = Frosty::PrefabManager::GetPrefabManager()->CreatePrefabInstance("TestPrefab1");
+		//m_testInstance->GetTransform()->setTranslate(glm::vec3(10, 5, 0));
+
+		int i = 0;
+			for (uint32_t x = 0; x < 5; x++)
+			{
+				for (uint32_t y = 0; y < 5; y++)
+				{
+					for (uint32_t z = 0; z < 5; z++)
+					{
+						m_Instances.emplace_back(Frosty::PrefabManager::GetPrefabManager()->CreatePrefabInstance("TestPrefab1"));
+						m_Instances.at(i)->GetTransform()->setTranslate(glm::vec3(10 * x, 10 *y, 10 * z));
+						m_Rotation.emplace_back(0.0f);
+	
+						i++;
+					}
+				}
+			}
+			
+		
+
 
 	}
 	void OnUpdate() override
 	{
-		m_testInstance->GetTransform()->setTranslate(glm::vec3(++m_testTranslateX, 5, 0));
+		//Frosty::PrefabManager::GetPrefabManager()->setPrefab("TestPrefab1", "clock", "Mat_0:clock");
+
+		float dt = Frosty::Time::DeltaTime();
+		int frame = Frosty::Time::GetFrameCount();
+		
+		if (frame % (50*30) == 0)
+		{
+			if (m_Instances.size() > 0 && phase2 == false)
+			{
+				m_Instances.at(0)->Destroy();
+				m_Instances.erase(m_Instances.begin());
+				
+
+			}
+			
+			
+			
+			
+		}
+
+		if (frame % 1000 == 0 )
+		{
+			Frosty::PrefabManager::GetPrefabManager()->setPrefab("TestPrefab1", "clock", "Mat_0:clock");
+		}
+		else if (frame % 750 == 0)
+		{
+			Frosty::PrefabManager::GetPrefabManager()->setPrefab("TestPrefab1", "clock", "Mat_0:table");
+		}
+		else if (frame % 500 == 0)
+		{
+			Frosty::PrefabManager::GetPrefabManager()->setPrefab("TestPrefab1", "table", "Mat_0:table");
+		}
+		else if (frame % 250 == 0)
+		{
+			Frosty::PrefabManager::GetPrefabManager()->setPrefab("TestPrefab1", "table", "Mat_0:clock");
+		}
+		
+		for (uint32_t i = 0; i < m_Instances.size(); i++)
+		{
+			m_Instances.at(i)->GetTransform()->setRotate(glm::vec3(0, 0, m_Rotation.at(i) -= 40 * Frosty::Time::DeltaTime()));
+		}
+
+		//m_testInstance->GetTransform()->setTranslate(glm::vec3(m_testTranslateX += 0.01, 5, 0));
 		glm::vec3 test = Frosty::PrefabManager::GetPrefabManager()->GetPrefab("TestPrefab1")->GetInstances()->at(0)->GetTransform()->getTranslate();
 
 		m_Attacks = m_GameInput.PlayerControllerAttacks();
@@ -54,7 +119,7 @@ public:
 		if (m_CollisionDetection.AABBIntersect(m_Player.GetHitBoxLength(),
 			m_Player.GetHitBoxCenter(), m_Collidable1.GetHitBoxLength(), m_Collidable1.GetHitBoxCenter()))
 			m_Collidable1.SetShouldRender(false);
-		else if(m_Collidable1.GetHp() > 0)
+		else if (m_Collidable1.GetHp() > 0)
 			m_Collidable1.SetShouldRender(true);
 		m_Player.SetPos(m_Player.GetPos() - m_CollisionDetection.AABBIntersecPushback(m_Player.GetHitBoxLength(),
 			m_Player.GetHitBoxCenter(), m_Collidable2.GetHitBoxLength(), m_Collidable2.GetHitBoxCenter()));
