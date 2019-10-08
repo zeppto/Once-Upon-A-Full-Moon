@@ -69,6 +69,7 @@ namespace Frosty
 		void CreateTriangle();
 		void RenderTriangle();
 		void RenderModel(const unsigned int& VBO, const unsigned int& nrOfVertices, const glm::mat4& modelMatrix, const unsigned int& textureID);
+		void RenderAllPrefabs();
 		void RenderPrefab(std::string prefabName);
 		void AddToRenderList(TempRender* obj);
 		void RenderTempModels();
