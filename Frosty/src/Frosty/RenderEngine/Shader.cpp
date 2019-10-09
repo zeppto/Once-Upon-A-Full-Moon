@@ -335,5 +335,4 @@ namespace Frosty
 			glDeleteShader(id);
 		}
 	}
-
 }

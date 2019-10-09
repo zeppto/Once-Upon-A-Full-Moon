@@ -27,13 +27,13 @@ namespace Frosty
 		
 		//InitPrefabBuffers();
 
-		//LoadModel("newClock");		
+		LoadModel("newClock");		
 		//PrefabManager::GetPrefabManager()->setPrefab("TestPrefab1", "newClock", "Mat_0:newClock");
-		//CreateBuffers("newClock");
+		CreateBuffers("newClock");
 
-		LoadModel("testingCube");
+		//LoadModel("testingCube");
 		//PrefabManager::GetPrefabManager()->setPrefab("TestPrefab1", "testingCube", "Mat_0:testingCube");
-		CreateBuffers("testingCube");
+		//CreateBuffers("testingCube");
 		
 		//InitShaders();
 		
@@ -355,15 +355,12 @@ namespace Frosty
 			}
 			
 			/// Render
-			RenderCommand::SetClearColor({ 0.1f, 0.1f, 0.1f, 1.0f });		
+			//RenderCommand::SetClearColor({ 0.1f, 0.1f, 0.1f, 1.0f });		
+			RenderCommand::SetClearColor({ 0.0f, 0.2f, 0.39f, 1.0f });		
 			RenderCommand::Clear();
 
 			Renderer::BeginScene(m_Camera);
 			Renderer::Submit(m_Shader, m_VertexArray);
-			
-
-
-
 
 			//SubmitPrefab("TestPrefab1");			
 			//RenderCommand::DrawIndexed(tempPrefab->GetModelKey().GetKeyData().GetVertexArray(0));

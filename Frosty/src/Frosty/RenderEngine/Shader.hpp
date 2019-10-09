@@ -6,12 +6,7 @@
 typedef unsigned int GLenum;
 
 namespace Frosty
-{
-	enum ShaderProgramsEnum
-	{
-		STANDARD = 0,
-		GEOMETRY = 1
-	};
+{	
 	class Shader
 	{
 	public:	
@@ -32,24 +27,13 @@ namespace Frosty
 		void UploadUniformFloat4(const std::string& name, const glm::vec4& value);
 		void UploadUniforMat3(const std::string& name, const glm::mat3& matrix);
 		void UploadUniforMat4(const std::string& name, const glm::mat4& matrix);		
-		
-		std::string GetShaderProgramEnumString(ShaderProgramsEnum theEnum);
 
 		static Shader* CreateShader(const std::string& filepath);
 		static Shader* CreateShader(const std::string& name, const std::string& vertexSrc, const std::string& fragmentSrc);
-
-
-
-		//static Shader* CreateShader(const std::string vertexShaderPath, const std::string fragmentShaderPath);
-		//static Shader* CreateShader(const std::string vertexShaderPath, const std::string geometryShaderPath, const std::string fragmentShaderPath);
 	private:
 		std::string ReadFile(const std::string& filepath);
 		std::unordered_map<GLenum, std::string> PreProcess(const std::string& source);
-		void Compile(const std::unordered_map<GLenum, std::string>& shaderSources);
-
-
-		void CreateShaderProgram(const std::string vertexShaderPath, const std::string fragmentShaderPath, ShaderProgramsEnum program);
-		void CreateAllShaderPrograms();
+		void Compile(const std::unordered_map<GLenum, std::string>& shaderSources);		
 	private:
 		uint32_t m_RendererID;
 		std::vector<unsigned int> m_ShaderProgramVector;
