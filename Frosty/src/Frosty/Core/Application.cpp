@@ -360,7 +360,7 @@ namespace Frosty
 
 			Renderer::BeginScene(m_Camera);
 			Renderer::Submit(m_Shader, m_VertexArray);
-
+			
 
 
 

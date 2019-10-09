@@ -8,7 +8,11 @@ namespace Frosty
 	
 	void Renderer::InitScene(std::shared_ptr<Shader>& shader)
 	{
-		shader.reset(new Shader(FY_SHADER_VERTEX_SHADER, FY_SHADER_FRAGMENT_SHADER));
+		//shader.reset(new Shader(FY_SHADER_VERTEX_SHADER, FY_SHADER_FRAGMENT_SHADER));
+
+		//shader.reset(Frosty::Shader::CreateShader("assets/shaders/Texture.glt"));
+		//shader.reset(Frosty::Shader::CreateShader("../../../Frosty/assets/shaders/TestShader.gls"));
+		shader.reset(Frosty::Shader::CreateShader("../../../Frosty/assets/shaders/TestShader2.gls"));
 	}
 
 	void Renderer::BeginScene(const std::shared_ptr<Camera>& m_Camera)
