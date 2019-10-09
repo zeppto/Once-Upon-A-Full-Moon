@@ -31,6 +31,11 @@ void GameObject::SetPos(glm::vec3 newPos)
 	m_Pos = newPos;
 }
 
+void GameObject::SetColour(const glm::vec3& Colour)
+{
+	m_renderData.m_Colour = Colour;
+}
+
 void GameObject::SetScale(glm::vec3 newScale)
 {
 	m_Scale = newScale;
@@ -60,6 +65,11 @@ void GameObject::SetHitBoxCenter(glm::vec3 newHitBoxCenter)
 void GameObject::SetWorldMatrix(glm::mat4 newWorld)
 {
 	m_renderData.worldPosition = newWorld;
+}
+
+Frosty::SphereHitbox& GameObject::GetSphereHitbox()
+{
+	return m_SphereHitBox;
 }
 
 glm::vec3 GameObject::GetPos() const
@@ -95,4 +105,70 @@ void GameObject::UpdateWorldMatrix()
 	m_renderData.worldPosition = glm::rotate(m_renderData.worldPosition, glm::radians(m_Rotation.y), glm::vec3(0.0f, 1.0f, 0.0f));
 	m_renderData.worldPosition = glm::rotate(m_renderData.worldPosition, glm::radians(m_Rotation.z), glm::vec3(0.0f, 0.0f, 1.0f));
 	m_renderData.worldPosition = glm::scale(m_renderData.worldPosition, m_Scale);
+
+
+
+	//test
+	glm::mat4 TempMat;
+	//TempMat = glm::mat4(1.0f);
+	//TempMat = glm::translate(TempMat, m_Pos);
+	//
+
+	//m_SphereHitBox.m_Position = glm::vec3(TempMat * glm::vec4(m_SphereHitBox.m_Position,1.0));
+
+	m_SphereHitBox.m_Position = m_Pos;
+
+	TempMat = glm::mat4(1.0f);
+	TempMat = glm::rotate(TempMat, glm::radians(m_Rotation.x), glm::vec3(1.0f, 0.0f, 0.0f));
+	TempMat = glm::rotate(TempMat, glm::radians(m_Rotation.y), glm::vec3(0.0f, 1.0f, 0.0f));
+	TempMat = glm::rotate(TempMat, glm::radians(m_Rotation.z), glm::vec3(0.0f, 0.0f, 1.0f));
+
+
+
+
+
+
+
+
+
+	glm::vec3 rotate = m_Rotation + glm::vec3(0.0f,0.0f,90.0f);
+
+	glm::mat4 rotateX = glm::mat4(
+		1.0f, 0.0f, 0.0f, 0.0f,
+		0.0f, cos(glm::radians(rotate.x)), -sin(glm::radians(rotate.x)), 0.0f,
+		0.0f, sin(glm::radians(rotate.x)), cos(glm::radians(rotate.x)), 0.0f,
+		0.0f, 0.0f, 0.0f, 1.0f
+	);
+
+	glm::mat4 rotateY = glm::mat4(
+		cos(glm::radians(rotate.y)), 0.0f, sin(glm::radians(rotate.y)), 0.0f,
+		0.0f, 1.0f, 0.0f, 0.0f,
+		-sin(glm::radians(rotate.y)), 0.0f, cos(glm::radians(rotate.y)), 0.0f,
+		0.0f, 0.0f, 0.0f, 1.0f
+	);
+
+	glm::mat4 rotateZ = glm::mat4(
+		cos(glm::radians(rotate.z)), -sin(glm::radians(rotate.z)), 0.0f, 0.0f,
+		sin(glm::radians(rotate.z)), cos(glm::radians(rotate.z)), 0.0f, 0.0f,
+		0.0f, 0.0f, 1.0f, 0.0f,
+		0.0f, 0.0f, 0.0f, 1.0f
+	);
+
+	glm::mat4 temp_Rot = rotateY * rotateX * rotateZ;
+
+
+
+
+
+
+
+
+
+	m_SphereHitBox.m_Direction = glm::normalize(glm::vec3(temp_Rot * glm::vec4(0.0f,1.0f,0.0f,1.0f)));
+
+
+	//TempMat = glm::scale(m_renderData.worldPosition, m_Scale);
+
+
+
 }

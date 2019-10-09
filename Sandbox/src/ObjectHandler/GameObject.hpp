@@ -24,9 +24,12 @@ public:
 	void SetPos(glm::vec3 newPos);
 	void SetScale(glm::vec3 newScale);
 	void SetRotation(glm::vec3 newRotation);
+	void SetColour(const glm::vec3& Colour);
 	void SetHitBoxLength(glm::vec3 newHitBoxLength);
 	void SetHitBoxCenter(glm::vec3 newHitBoxCenter);
 	void SetWorldMatrix(glm::mat4 newWorld);
+
+	Frosty::SphereHitbox& GetSphereHitbox();
 
 	glm::vec3 GetPos() const;
 	glm::vec3 GetScale() const;
