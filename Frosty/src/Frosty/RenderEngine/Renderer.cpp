@@ -1,5 +1,6 @@
 #include "fypch.hpp"
 #include "Renderer.hpp"
+#include "Frosty/Core/ECS.hpp"
 
 #include "glad/glad.h"
 
@@ -16,9 +17,15 @@ namespace Frosty
 	{
 	}
 	
-	void Renderer::Submit(const std::shared_ptr<Shader>& shader, const std::shared_ptr<VertexArray>& vertexArray)
+	void Renderer::Submit(ECS::CMaterial* mat, const std::shared_ptr<VertexArray>& vertexArray, const glm::mat4& transform)
 	{
-		shader->UploadUniformMat4("u_ViewProjection", s_SceneData->ViewProjectionMatrix);
+		mat->UseShader->Bind();
+		mat->UseShader->UploadUniformMat4("u_ViewProjection", s_SceneData->ViewProjectionMatrix);
+		mat->UseShader->UploadUniformMat4("u_Transform", transform);
+		if (mat->UseShader->GetName() == "FlatColor")
+		{
+			mat->UseShader->UploadUniformFloat4("u_Color", mat->Albedo);
+		}
 
 		vertexArray->Bind();
 		RenderCommand::DrawIndexed(vertexArray);

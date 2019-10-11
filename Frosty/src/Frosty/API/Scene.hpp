@@ -2,7 +2,6 @@
 #define SCENE_HPP
 
 #include "Frosty/Core/ECS.hpp"
-#include "Frosty/RenderEngine/Renderer.hpp"
 
 namespace Frosty
 {
@@ -10,24 +9,18 @@ namespace Frosty
 	{
 	public:
 		Scene();
-		Scene(const Scene& org) { FY_CORE_ASSERT(false, "Copy constructor in Entity called."); }
+		Scene(const Scene& org) { FY_CORE_ASSERT(false, "Copy constructor in Scene called."); }
 		virtual ~Scene() = default;
 
 		// Operators
-		Scene& operator=(const Scene& org) { FY_CORE_ASSERT(false, "Assignment operator in Entity called."); return *this; }
+		Scene& operator=(const Scene& org) { FY_CORE_ASSERT(false, "Assignment operator in Scene called."); return *this; }
 
-		// Scene Functions
 		void Init();
-		void OnInput();
-		void OnUpdate();
-		void Render();
 
 		// Entity Functions
-		std::shared_ptr<ECS::Entity>& At(size_t index);
-		const std::shared_ptr<ECS::Entity>& At(size_t index) const;
 		std::shared_ptr<ECS::Entity>& CreateEntity();
 		void RemoveEntity(std::shared_ptr<ECS::Entity>& entity);
-		inline size_t GetTotalEntities() const { return m_EntityManager->GetTotalEntities(); }
+		inline std::unique_ptr<ECS::EntityManager>& GetEntityManager() { return m_EntityManager; }
 		template<typename ComponentType>
 		inline bool HasComponent(const std::shared_ptr<ECS::Entity>& entity)
 		{
@@ -70,13 +63,11 @@ namespace Frosty
 
 			ComponentType& addedComp = GetComponentManager<ComponentType>()->Add(entity, std::forward<TArgs>(mArgs)...);
 
-			// Check which systems needs this component
-
 			return addedComp;
 		}
 
 		template<typename ComponentType>
-		inline bool RemoveComponent(std::shared_ptr<ECS::Entity>& entity)
+		inline void RemoveComponent(std::shared_ptr<ECS::Entity>& entity)
 		{
 			static_assert(std::is_base_of<ECS::BaseComponent, ComponentType>::value,
 				"ComponentType must inherit from BaseComponent");
@@ -88,14 +79,10 @@ namespace Frosty
 			// Remove from component manager
 			m_ComponentManagers[cId]->Remove(entity);
 
-			// Remove from system(s)
-
 			// Remove from entity's bitset
 			entity->Bitset[cId] = false;
-
-			return true;
 		}
-
+		
 	private:
 		template<typename ComponentType>
 		inline ECS::ComponentManager<ComponentType>* GetComponentManager()
@@ -104,7 +91,10 @@ namespace Frosty
 		}
 
 	private:
+		// Entity Declarations
 		std::unique_ptr<ECS::EntityManager> m_EntityManager;
+
+		// Component Declarations
 		std::array<std::unique_ptr<ECS::BaseComponentManager>, ECS::MAX_COMPONENTS> m_ComponentManagers;
 
 	};

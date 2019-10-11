@@ -44,7 +44,7 @@ namespace Frosty
 	float InputManager::GetMouseY()
 	{
 		auto[x, y] = GetMousePosition();
-		return x;
+		return y;
 	}
 
 	bool InputManager::IsClicked(int button, const glm::vec4& bounds)

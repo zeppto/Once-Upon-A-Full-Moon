@@ -9,18 +9,18 @@ namespace Frosty
 		InputManager() { }
 		virtual ~InputManager() { }
 
-		bool IsKeyPressed(int key);
-		bool IsKeyReleased(int key);
-		bool IsMouseButtonPressed(int button);
-		bool IsMouseButtonReleased(int button);
-		std::pair<float, float> GetMousePosition();
-		float GetMouseX();
-		float GetMouseY();
-		bool IsClicked(int button, const glm::vec4& bounds);
+		static bool IsKeyPressed(int key);
+		static bool IsKeyReleased(int key);
+		static bool IsMouseButtonPressed(int button);
+		static bool IsMouseButtonReleased(int button);
+		static std::pair<float, float> GetMousePosition();
+		static float GetMouseX();
+		static float GetMouseY();
+		static bool IsClicked(int button, const glm::vec4& bounds);
 
 	private:
-		int CheckKeyClickType(int key);
-		int CheckMouseClickType(int button);
+		static int CheckKeyClickType(int key);
+		static int CheckMouseClickType(int button);
 
 	};
 }

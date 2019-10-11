@@ -2,6 +2,7 @@
 #include "Application.hpp"
 #include <glad/glad.h>
 #include "Frosty/RenderEngine/Renderer.hpp"
+#include "Frosty/API/AssetManager.hpp"
 
 
 
@@ -22,15 +23,13 @@ namespace Frosty
 		m_Window.reset(FY_NEW Window());
 		m_Window->Init();
 
+		m_EditorCamera.Init();
+
 		m_ImGuiLayer = FY_NEW ImGuiLayer();
 		PushOverlay(m_ImGuiLayer);
 
-		m_Scene.reset(FY_NEW Scene());
-		m_Scene->Init();
-
-		InitiateQuadMesh();
-		InitiateTriangleMesh();
-		InitShaders();
+		m_World.reset(FY_NEW World());
+		m_World->Init();
 	}
 
 	Application::~Application()
@@ -38,105 +37,7 @@ namespace Frosty
 		EventBus::GetEventBus()->Delete();
 		m_Window->Shutdown();
 		Renderer::Shutdown();
-		Assetmanager::Delete();
-	}
-
-	void Application::InitiateQuadMesh()
-	{
-		m_Quad.reset(VertexArray::Create());
-
-		float vertices[4 * 3] =
-		{
-			-0.5f, -0.5f, 0.0f,
-			 0.5f, -0.5f, 0.0f,
-			 0.5f,  0.5f, 0.0f,
-			-0.5f,  0.5f, 0.0f
-		};
-
-		std::shared_ptr<VertexBuffer> m_VertexBuffer;
-		m_VertexBuffer.reset(VertexBuffer::Create(vertices, sizeof(vertices)));
-
-		BufferLayout layout =
-		{
-			{ ShaderDataType::Float3, "a_Position" }
-		};
-
-		m_VertexBuffer->SetLayout(layout);
-		m_Quad->AddVertexBuffer(m_VertexBuffer);
-
-		uint32_t indices[2 * 3] = {
-			0, 1, 2,
-			2, 3, 0
-		};
-		std::shared_ptr<IndexBuffer> m_IndexBuffer;
-		m_IndexBuffer.reset(IndexBuffer::Create(indices, sizeof(indices) / sizeof(uint32_t)));
-		m_Quad->SetIndexBuffer(m_IndexBuffer);
-	}
-
-	void Application::InitiateTriangleMesh()
-	{
-		m_Triangle.reset(VertexArray::Create());
-
-		float vertices[3 * 3] =
-		{
-			-0.5f, -0.5f, 0.0f,
-			 0.5f, -0.5f, 0.0f,
-			 0.0f,  0.5f, 0.0f,
-		};
-
-		std::shared_ptr<VertexBuffer> m_VertexBuffer;
-		m_VertexBuffer.reset(VertexBuffer::Create(vertices, sizeof(vertices)));
-
-		BufferLayout layout =
-		{
-			{ ShaderDataType::Float3, "a_Position" }
-		};
-
-		m_VertexBuffer->SetLayout(layout);
-		m_Triangle->AddVertexBuffer(m_VertexBuffer);
-
-		uint32_t indices[1 * 3] = {
-			0, 1, 2
-		};
-		std::shared_ptr<IndexBuffer> m_IndexBuffer;
-		m_IndexBuffer.reset(IndexBuffer::Create(indices, sizeof(indices) / sizeof(uint32_t)));
-		m_Triangle->SetIndexBuffer(m_IndexBuffer);
-	}
-
-	void Application::InitShaders()
-	{
-		std::string flatColorVS = R"(
-			#version 440 core
-			
-			layout(location = 0) in vec3 a_Position;
-
-			uniform mat4 u_ViewProjection;
-			uniform mat4 u_Transform;
-
-			void main()
-			{
-				gl_Position = u_ViewProjection * u_Transform * vec4(a_Position, 1.0f);
-			}
-		)";
-		std::string flatColorFS = R"(
-			#version 440 core
-
-			layout(location = 0) out vec4 color;
-			
-			uniform vec4 u_Color;
-
-			void main()
-			{
-				color = u_Color;
-			}
-		)";
-
-		m_ShaderAssets.reset(FY_NEW Shader(flatColorVS, flatColorFS));
-
-		//m_Texture.reset(FY_NEW Texture2D("assets/textures/Checkerboard.png"));
-
-		//m_Shader->Bind();
-		//m_Shader->UploadUniformInt("u_Texture", 0);
+		//Assetmanager::Delete();
 	}
 
 	void Application::Run()
@@ -146,28 +47,36 @@ namespace Frosty
 			/// Frame Start
 			Time::OnUpdate();
 
-			/// Input			
-			
+			/// Input
+			if (m_GameRunning)
+			{
+				m_World->OnInput();
+			}
 
 			/// Update
+			m_EditorCamera.OnUpdate();
 			for (Layer* layer : m_LayerHandler)
 			{
 				layer->OnUpdate();
 			}
+			m_World->OnUpdate();
 
 			/// Render
-			//RenderCommand::SetClearColor({ 0.2f, 0.2f, 0.2f, 1.0f });
-			//RenderCommand::Clear();
+			if (m_EditorCamera.IsActive())
+			{
+				RenderCommand::SetClearColor({ 0.2f, 0.2f, 0.2f, 1.0f });
+				RenderCommand::Clear();
 
-			//Renderer::BeginScene(m_Camera);
+				Renderer::BeginScene(m_EditorCamera.GetViewProjectionMatrix());
+			}
+			else
+			{
+				m_World->BeginScene(m_EditorCamera.IsActive());
+			}
 
-			m_Scene->Render();
+			m_World->Render();
 
-			//m_Texture->Bind();
-			//m_Shader->Bind();
-			//Renderer::Submit(m_VertexArray);
-
-			//Renderer::EndScene();
+			Renderer::EndScene();
 
 			m_ImGuiLayer->Begin();
 			for (Layer* layer : m_LayerHandler)
@@ -215,31 +124,18 @@ namespace Frosty
 		delete layer;
 	}
 
-	std::unique_ptr<Scene>& Application::CreateScene()
+	void Application::StartGame()
 	{
-		m_Scene.reset(FY_NEW Scene());
-
-		return m_Scene;
+		m_GameRunning = true;
+		bool* eCam = m_EditorCamera.ActiveStatus();
+		*eCam = false;
 	}
 
-	void Application::DestroyScene()
+	void Application::StopGame()
 	{
-		if (!m_Shader)
-		{
-			m_Scene.reset();;
-		}
-	}
-
-	std::unique_ptr<Scene>& Application::GetScene()
-	{
-		FY_CORE_ASSERT(m_Scene, "Scene needs to be created before it get retrieved.");
-		return m_Scene;
-	}
-
-	const std::unique_ptr<Scene>& Application::GetScene() const
-	{
-		FY_CORE_ASSERT(m_Scene, "Scene needs to be created before it get retrieved.");
-		return m_Scene;
+		m_GameRunning = false;
+		bool* eCam = m_EditorCamera.ActiveStatus();
+		*eCam = true;
 	}
 
 	void Application::OnEvent(BaseEvent& e)

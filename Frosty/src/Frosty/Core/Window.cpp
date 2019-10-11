@@ -49,6 +49,10 @@ namespace Frosty
 
 		glfwSetWindowUserPointer(m_Window, &m_Data);
 		
+		glEnable(GL_DEPTH_TEST);
+		glDisable(GL_CULL_FACE);
+		glDepthFunc(GL_LESS);
+
 		glViewport(0, 0, m_Data.Width, m_Data.Height);
 
 		InitCallbacks();
@@ -140,6 +144,15 @@ namespace Frosty
 			}
 		});
 
+	}
+
+	glm::vec4 Window::GetViewport() const
+	{
+		return glm::vec4(
+			EDITOR_EXPLORER_WIDTH,													// Start from left side
+			EDITOR_ASSETS_HEIGHT,													// Start from bottom
+			m_Data.Width - EDITOR_INSPECTOR_WIDTH - EDITOR_EXPLORER_WIDTH,			// Width
+			m_Data.Height - EDITOR_ASSETS_HEIGHT - EDITOR_MAIN_MENU_BAR_HEIGHT);	// Height
 	}
 
 	void Window::SetVSync(bool enabled)

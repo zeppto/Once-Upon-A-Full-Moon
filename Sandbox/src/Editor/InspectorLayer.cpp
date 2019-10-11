@@ -1,8 +1,10 @@
 #include <mcspch.hpp>
 #include "InspectorLayer.hpp"
+#include "Frosty/API/AssetManager.hpp"
 
 #include "imgui/imgui.h"
 #include <GLFW/glfw3.h>
+#include <PugiXML/pugixml.hpp>
 
 namespace MCS
 {
@@ -25,12 +27,11 @@ namespace MCS
 
 	void InspectorLayer::OnUpdate()
 	{
-
 	}
 
 	void InspectorLayer::OnImGuiRender()
 	{
-		auto& scene = m_App->GetScene();
+		auto& world = m_App->GetWorld();
 
 		ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse;
 
@@ -49,23 +50,26 @@ namespace MCS
 			{
 				m_App->GetWindow().SetVSync(s_VSync);
 			}
+			ImGui::Checkbox("Editor Camera: ", m_App->GetEditorCamera().ActiveStatus());
 			if (ImGui::Button("Create Entity", ImVec2(100.0f, 20.0f)))
 			{
-				scene->CreateEntity();
+				world->CreateEntity();
 			}
 
 			static int selection_mask = 0;
 			int node_clicked = -1;
-			for (size_t i = 0; i < scene->GetTotalEntities(); i++)
+			unsigned int counter = 0;
+			for (auto& entity : *world->GetEntityManager())
 			{
-				ImGuiTreeNodeFlags node_flags = ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen | ((selection_mask & (1 << i)) ? ImGuiTreeNodeFlags_Selected : 0); // ImGuiTreeNodeFlags_Bullet
-				Frosty::ECS::EntityID eid = scene->At(i)->Id;
-				ImGui::TreeNodeEx((void*)(intptr_t)i, node_flags, "Entity (%d)", eid);
+				ImGuiTreeNodeFlags node_flags = ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen | ((selection_mask & (1 << counter)) ? ImGuiTreeNodeFlags_Selected : 0); // ImGuiTreeNodeFlags_Bullet
+				Frosty::ECS::EntityID eid = entity->Id;
+				ImGui::TreeNodeEx((void*)(intptr_t)counter, node_flags, "Entity (%d)", eid);
 				if (ImGui::IsItemClicked())
 				{
-					node_clicked = (int)i;
-					m_SelectedEntity = scene->At(i);
+					node_clicked = (int)counter;
+					m_SelectedEntity = entity;
 				}
+				counter++;
 			}
 			if (node_clicked != -1)
 			{
@@ -101,63 +105,46 @@ namespace MCS
 				bool toggles[Frosty::ECS::MAX_COMPONENTS] = { false };
 				for (size_t i = 1; i < Frosty::ECS::MAX_COMPONENTS; i++)
 				{
-					if (scene->HasComponent<Frosty::ECS::CMesh>(m_SelectedEntity))
-					{
-						toggles[1] = true;
-					}
-					if (scene->HasComponent<Frosty::ECS::CCamera>(m_SelectedEntity))
-					{
-						toggles[2] = true;
-					}
-					if (scene->HasComponent<Frosty::ECS::CMaterial>(m_SelectedEntity))
-					{
-						toggles[3] = true;
-					}
+					if (world->HasComponent<Frosty::ECS::CMesh>(m_SelectedEntity)) toggles[1] = true;
+					if (world->HasComponent<Frosty::ECS::CCamera>(m_SelectedEntity)) toggles[2] = true;
+					if (world->HasComponent<Frosty::ECS::CMaterial>(m_SelectedEntity)) toggles[3] = true;
 				}
 
 				// Information
 				ImGui::Text("Entity (%i)", m_SelectedEntity->Id);
 
-				if (scene->HasComponent<Frosty::ECS::CTransform>(m_SelectedEntity))
+				if (world->HasComponent<Frosty::ECS::CTransform>(m_SelectedEntity))
 				{
 					if (ImGui::CollapsingHeader("Transform"))
 					{
-						auto& comp = scene->GetComponent<Frosty::ECS::CTransform>(m_SelectedEntity);
+						auto& comp = world->GetComponent<Frosty::ECS::CTransform>(m_SelectedEntity);
 						ImGui::BeginChild("CTransform", ImVec2(EDITOR_INSPECTOR_WIDTH, 80), true);
-						ImGui::DragFloat3("Position", glm::value_ptr(comp.Position), 0.1f, 0.0f, 0.0f);
-						ImGui::DragFloat3("Rotation", glm::value_ptr(comp.Rotation), 0.1f, 0.0f, 0.0f);
-						ImGui::DragFloat3("Scale", glm::value_ptr(comp.Scale), 0.1f, 0.0f, 0.0f);
+						if (ImGui::DragFloat3("Position", glm::value_ptr(comp.Position), 0.1f, 0.0f, 0.0f, "%.2f")) { comp.UpdateTransform = true; }
+						if (ImGui::DragFloat3("Rotation", glm::value_ptr(comp.Rotation), 0.1f, 0.0f, 0.0f, "%.2f")) { comp.UpdateTransform = true; }
+						if (ImGui::DragFloat3("Scale", glm::value_ptr(comp.Scale), 0.1f, 0.0f, 0.0f, "%.2f")) { comp.UpdateTransform = true; }
 						ImGui::EndChild();
 					}
 				}
-				if (scene->HasComponent<Frosty::ECS::CMesh>(m_SelectedEntity))
+				if (world->HasComponent<Frosty::ECS::CMesh>(m_SelectedEntity))
 				{
 					if (ImGui::CollapsingHeader("Mesh"))
 					{
-						auto& comp = scene->GetComponent<Frosty::ECS::CMesh>(m_SelectedEntity);
+						auto& comp = world->GetComponent<Frosty::ECS::CMesh>(m_SelectedEntity);
 						ImGui::BeginChild("CMesh", ImVec2(EDITOR_INSPECTOR_WIDTH, 30), true);
 						if (ImGui::Button("Select mesh.."))
 							ImGui::OpenPopup("Mesh selector");
 						if (ImGui::BeginPopupModal("Mesh selector", NULL, ImGuiWindowFlags_MenuBar))
 						{
-							// Loop through all meshes
-							int node_clicked = -1;
+							//auto& meshes = Frosty::AssetManager::GetMeshes();
+							size_t index = 0;
+							ImGuiTreeNodeFlags node_flags = ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen; // ImGuiTreeNodeFlags_Bullet
 
-							for (size_t i = 0; i < 2; i++)
+							for (auto& mesh : Frosty::AssetManager::GetMeshes())
 							{
-								ImGuiTreeNodeFlags node_flags = ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen; // ImGuiTreeNodeFlags_Bullet
-								ImGui::TreeNodeEx((void*)(intptr_t)i, node_flags, "Mesh (%d)", i);
+								ImGui::TreeNodeEx((void*)(intptr_t)index, node_flags, "%s", mesh.first.c_str());
 								if (ImGui::IsItemClicked())
 								{
-									node_clicked = (int)i;
-									if (i == 0)		// Quad
-									{
-										scene->GetComponent<Frosty::ECS::CMesh>(m_SelectedEntity).Mesh = m_App->GetQuadMesh();
-									}
-									else // Triangle
-									{
-										scene->GetComponent<Frosty::ECS::CMesh>(m_SelectedEntity).Mesh = m_App->GetTriangleMesh();
-									}
+									world->GetComponent<Frosty::ECS::CMesh>(m_SelectedEntity).Mesh = mesh.second;
 								}
 							}
 
@@ -168,41 +155,102 @@ namespace MCS
 						ImGui::EndChild();
 					}
 				}
-				if (scene->HasComponent<Frosty::ECS::CCamera>(m_SelectedEntity))
+				if (world->HasComponent<Frosty::ECS::CCamera>(m_SelectedEntity))
 				{
 					if (ImGui::CollapsingHeader("Camera"))
 					{
-						auto& comp = scene->GetComponent<Frosty::ECS::CCamera>(m_SelectedEntity);
+						auto& comp = world->GetComponent<Frosty::ECS::CCamera>(m_SelectedEntity);
 						ImGui::BeginChild("Camera", ImVec2(EDITOR_INSPECTOR_WIDTH, 70), true);
-						ImGui::DragFloat("Field of View", &comp.FieldOfView, 0.1f, 1.0f, 179.0f, "%1f");
-						ImGui::DragFloat("Near", &comp.Near, 0.1f, 0.01f, 0.0f, "%2f");
-						ImGui::DragFloat("Far", &comp.Far, 0.1f, 0.01f, 0.0f, "%2f");
+						if (ImGui::DragFloat("Field of View", &comp.FieldOfView, 0.1f, 1.0f, 179.0f, "%.1f")) { comp.UpdateProjection = true; }
+						if (ImGui::DragFloat("Near", &comp.Near, 0.1f, 0.1f, comp.Far - 0.1f, "%.2f")) { comp.UpdateProjection = true; }
+						if (ImGui::DragFloat("Far", &comp.Far, 0.1f, comp.Near + 0.1f, 10000.0f, "%.2f")) { comp.UpdateProjection = true; }
 						ImGui::EndChild();
 					}
 				}
-				if (scene->HasComponent<Frosty::ECS::CMaterial>(m_SelectedEntity))
+				if (world->HasComponent<Frosty::ECS::CMaterial>(m_SelectedEntity))
 				{
 					if (ImGui::CollapsingHeader("Material"))
 					{
-						static int selected_shader = 0;
-						const char* names[] = { "Standard" };
-						static bool toggles[] = { true };
-						auto& comp = scene->GetComponent<Frosty::ECS::CMaterial>(m_SelectedEntity);
+						auto& comp = world->GetComponent<Frosty::ECS::CMaterial>(m_SelectedEntity);
 						ImGui::BeginChild("Material", ImVec2(EDITOR_INSPECTOR_WIDTH, 100), true);
 
 						if (ImGui::Button("Shader"))
 							ImGui::OpenPopup("shader_select_popup");
 						ImGui::SameLine();
-						ImGui::TextUnformatted(names[selected_shader]);
+						ImGui::TextUnformatted(comp.UseShader->GetName().c_str());
 						if (ImGui::BeginPopup("shader_select_popup"))
 						{
 							ImGui::Separator();
-							for (int i = 0; i < IM_ARRAYSIZE(names); i++)
-								if (ImGui::Selectable(names[i]))
-									selected_shader = i;
+							for (auto& shader : Frosty::AssetManager::GetShaders())
+							{
+								if (ImGui::Selectable(shader.first.c_str()))
+								{
+									//comp.UseShader->Bind();
+									//comp.UseShader->UploadUniformInt("u_Texture", 0);
+									comp.UseShader = shader.second;
+								}
+							}
 							ImGui::EndPopup();
 						}
-						ImGui::ColorEdit4("Albedo", glm::value_ptr(comp.Albedo));
+
+						// Parameters
+						if (comp.UseShader->GetName() == "FlatColor") ImGui::ColorEdit4("Albedo", glm::value_ptr(comp.Albedo));
+						if (comp.UseShader->GetName() == "Texture2D")
+						{
+							// DIFFUSE // 
+							if (ImGui::Button("Diffuse Texture"))
+								ImGui::OpenPopup("diffuse_texture_select_popup");
+							ImGui::SameLine();
+							ImGui::TextUnformatted(comp.DiffuseTexture ? comp.DiffuseTexture->GetName().c_str() : "None");
+							if (ImGui::BeginPopup("diffuse_texture_select_popup"))
+							{
+								ImGui::Separator();
+								for (auto& texture : Frosty::AssetManager::GetTextures2D())
+								{
+									if (ImGui::Selectable(texture.first.c_str()))
+									{
+										comp.DiffuseTexture = texture.second;
+									}
+								}
+								ImGui::EndPopup();
+							}
+							// Gloss // 
+							if (ImGui::Button("Gloss Texture"))
+								ImGui::OpenPopup("gloss_texture_select_popup");
+							ImGui::SameLine();
+							ImGui::TextUnformatted(comp.GlossTexture ? comp.GlossTexture->GetName().c_str() : "None");
+							if (ImGui::BeginPopup("gloss_texture_select_popup"))
+							{
+								ImGui::Separator();
+								for (auto& texture : Frosty::AssetManager::GetTextures2D())
+								{
+									if (ImGui::Selectable(texture.first.c_str()))
+									{
+										comp.GlossTexture = texture.second;
+									}
+								}
+								ImGui::EndPopup();
+							}
+							// NORMAL // 
+							if (ImGui::Button("Normal Texture"))
+								ImGui::OpenPopup("normal_texture_select_popup");
+							ImGui::SameLine();
+							ImGui::TextUnformatted(comp.NormalTexture ? comp.NormalTexture->GetName().c_str() : "None");
+							if (ImGui::BeginPopup("normal_texture_select_popup"))
+							{
+								ImGui::Separator();
+								for (auto& texture : Frosty::AssetManager::GetTextures2D())
+								{
+									if (ImGui::Selectable(texture.first.c_str()))
+									{
+										comp.NormalTexture = texture.second;
+									}
+								}
+								ImGui::EndPopup();
+							}
+						}
+
+						// Add more parameters like texture etc
 
 						ImGui::EndChild();
 					}
@@ -218,24 +266,24 @@ namespace MCS
 				{
 					if (ImGui::MenuItem("Mesh", "", &toggles[1]))
 					{
-						if (!scene->HasComponent<Frosty::ECS::CMesh>(m_SelectedEntity))
-							scene->AddComponent<Frosty::ECS::CMesh>(m_SelectedEntity, m_App->GetTriangleMesh());
+						if (!world->HasComponent<Frosty::ECS::CMesh>(m_SelectedEntity))
+							world->AddComponent<Frosty::ECS::CMesh>(m_SelectedEntity, Frosty::AssetManager::GetMesh("Table"));
 						else
-							scene->RemoveComponent<Frosty::ECS::CMesh>(m_SelectedEntity);
+							world->RemoveComponent<Frosty::ECS::CMesh>(m_SelectedEntity);
 					}
 					if (ImGui::MenuItem("Camera", "", &toggles[2]))
 					{
-						if (!scene->HasComponent<Frosty::ECS::CCamera>(m_SelectedEntity))
-							scene->AddComponent<Frosty::ECS::CCamera>(m_SelectedEntity);
+						if (!world->HasComponent<Frosty::ECS::CCamera>(m_SelectedEntity))
+							world->AddComponent<Frosty::ECS::CCamera>(m_SelectedEntity);
 						else
-							scene->RemoveComponent<Frosty::ECS::CCamera>(m_SelectedEntity);
+							world->RemoveComponent<Frosty::ECS::CCamera>(m_SelectedEntity);
 					}
 					if (ImGui::MenuItem("Material", "", &toggles[3]))
 					{
-						if (!scene->HasComponent<Frosty::ECS::CMaterial>(m_SelectedEntity))
-							scene->AddComponent<Frosty::ECS::CMaterial>(m_SelectedEntity, m_App->GetShader());
+						if (!world->HasComponent<Frosty::ECS::CMaterial>(m_SelectedEntity))
+							world->AddComponent<Frosty::ECS::CMaterial>(m_SelectedEntity, Frosty::AssetManager::GetShader("FlatColor"));
 						else
-							scene->RemoveComponent<Frosty::ECS::CMaterial>(m_SelectedEntity);
+							world->RemoveComponent<Frosty::ECS::CMaterial>(m_SelectedEntity);
 					}
 
 					ImGui::EndPopup();
@@ -268,7 +316,10 @@ namespace MCS
 		{
 			if (ImGui::BeginMenu("File"))
 			{
-				if (ImGui::MenuItem("Save", "CTRL+S")) {}
+				if (ImGui::MenuItem("Save", "CTRL+S"))
+				{
+
+				}
 				if (ImGui::MenuItem("Save All", "CTRL+SHIFT+S")) {}
 				ImGui::EndMenu();
 			}
@@ -281,6 +332,21 @@ namespace MCS
 				if (ImGui::MenuItem("Copy", "CTRL+C")) {}
 				if (ImGui::MenuItem("Paste", "CTRL+V")) {}
 				ImGui::EndMenu();
+			}
+			ImGui::SetCursorPosX(m_App->GetWindow().GetWidth() - 80.0f);
+			if (m_App->GameIsRunning())
+			{
+				if (ImGui::Button("Stop", ImVec2(80.0f, EDITOR_MAIN_MENU_BAR_HEIGHT)))
+				{
+					m_App->StopGame();
+				}
+			}
+			else
+			{
+				if (ImGui::Button("Play", ImVec2(80.0f, EDITOR_MAIN_MENU_BAR_HEIGHT)))
+				{
+					m_App->StartGame();
+				}
 			}
 			ImGui::EndMainMenuBar();
 		}
@@ -303,6 +369,12 @@ namespace MCS
 
 	bool InspectorLayer::OnKeyPressedEvent(Frosty::KeyPressedEvent & e)
 	{
+		if (m_SelectedEntity && e.GetKeyCode() == GLFW_KEY_DELETE)
+		{
+			m_App->GetWorld()->RemoveEntity(m_SelectedEntity);
+			m_SelectedEntity = nullptr;
+		}
+
 		return false;
 	}
 

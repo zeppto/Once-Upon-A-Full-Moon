@@ -77,7 +77,7 @@ namespace Frosty
 		bool MaterialLoaded(const std::string& FileName);
 		bool ModelTemplateLoaded(const std::string& FileName);
 		
-		bool CheckIfMetaDataExist(const std::string& FilePath);
+		//bool CheckIfMetaDataExist(const std::string& FilePath);
 
 
 		inline static void Delete() { if (s_Instance != nullptr) { delete s_Instance; } }

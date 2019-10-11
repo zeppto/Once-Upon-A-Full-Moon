@@ -20,7 +20,7 @@ namespace MCS
 		bool OnKeyPressedEvent(Frosty::KeyPressedEvent& e);
 
 	private:
-		Frosty::Application* m_App;
+		Frosty::Application* m_App = nullptr;
 
 		// Explporer
 		std::shared_ptr<Frosty::ECS::Entity> m_SelectedEntity;

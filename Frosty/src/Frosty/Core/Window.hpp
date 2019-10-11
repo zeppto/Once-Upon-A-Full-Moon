@@ -36,6 +36,7 @@ namespace Frosty
 		inline unsigned int GetPositionX() const { return m_Data.PositionX; }
 		inline unsigned int GetPositionY() const { return m_Data.PositionY; }
 		std::pair<unsigned int, unsigned int> GetPosition() const { return { m_Data.PositionX, m_Data.PositionY }; }
+		glm::vec4 GetViewport() const;
 
 		bool IsMaximized() const { return m_Data.Maximized; }
 		void Maximize() { glfwMaximizeWindow(m_Window); }

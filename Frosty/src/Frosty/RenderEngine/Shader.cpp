@@ -4,7 +4,8 @@
 
 namespace Frosty
 {
-	Shader::Shader(const std::string& vertexSrc, const std::string& fragmentSrc)
+	Shader::Shader(const std::string& vertexSrc, const std::string& fragmentSrc, const std::string& shaderName)
+		: m_Name(shaderName)
 	{
 		// Create an empty vertex shader handle
 		GLuint vertexShader = glCreateShader(GL_VERTEX_SHADER);
@@ -32,6 +33,8 @@ namespace Frosty
 			glDeleteShader(vertexShader);
 
 			// Use the infoLog as you see fit.
+			FY_CORE_ERROR("{0}", infoLog.data());
+			FY_CORE_ASSERT(false, "Shader compilation failure!");
 
 			// In this simple program, we'll just leave
 			return;
@@ -65,7 +68,7 @@ namespace Frosty
 
 			// Use the infoLog as you see fit.
 			FY_CORE_ERROR("{0}", infoLog.data());
-			FY_CORE_ASSERT(false, "Vertex shader compilation failure!");
+			FY_CORE_ASSERT(false, "Shader compilation failure!");
 
 			// In this simple program, we'll just leave
 			return;
@@ -104,7 +107,7 @@ namespace Frosty
 
 			// Use the infoLog as you see fit.
 			FY_CORE_ERROR("{0}", infoLog.data());
-			FY_CORE_ASSERT(false, "Fragment shader compilation failure!");
+			FY_CORE_ASSERT(false, "Shader linking failure!");
 
 			// In this simple program, we'll just leave
 			return;
@@ -133,24 +136,28 @@ namespace Frosty
 	void Shader::UploadUniformInt(const std::string& name, int value)
 	{
 		GLuint location = glGetUniformLocation(m_RendererID, name.c_str());
+		//FY_CORE_ASSERT(location == -1, "Error finding uniform location for {0}", name);
 		glUniform1i(location, value);
 	}
 
 	void Shader::UploadUniformFloat2(const std::string& name, const glm::vec2& value)
 	{
 		GLuint location = glGetUniformLocation(m_RendererID, name.c_str());
+		//FY_CORE_ASSERT(location > -1, "Error finding uniform location for {0}", name);
 		glUniform2f(location, value.x, value.y);
 	}
 
 	void Shader::UploadUniformFloat4(const std::string & name, const glm::vec4 & value)
 	{
 		GLint location = glGetUniformLocation(m_RendererID, name.c_str());
+		//FY_CORE_ASSERT(location > -1, "Error finding uniform location for {0}", name);
 		glUniform4f(location, value.x, value.y, value.z, value.w);
 	}
 
 	void Shader::UploadUniformMat4(const std::string & name, const glm::mat4 & matrix)
 	{
 		GLint location = glGetUniformLocation(m_RendererID, name.c_str());
+		//FY_CORE_ASSERT(location > -1, "Error finding uniform location for {0}", name);
 		glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(matrix));
 	}
 }

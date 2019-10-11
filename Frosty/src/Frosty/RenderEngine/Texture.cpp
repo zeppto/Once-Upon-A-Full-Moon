@@ -10,8 +10,8 @@
 namespace Frosty
 {
 
-	Texture2D::Texture2D(const std::string& path)
-		: m_Path(path)
+	Texture2D::Texture2D(const std::string& name, const std::string& path)
+		: m_Name(name), m_Path(path)
 	{
 		int width, height, channels;
 		stbi_set_flip_vertically_on_load(1);
@@ -28,6 +28,8 @@ namespace Frosty
 
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB8, m_Width, m_Height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
 
+		glBindTexture(GL_TEXTURE_2D, 0);
+
 		stbi_image_free(data);
 	}
 
@@ -38,7 +40,8 @@ namespace Frosty
 
 	void Texture2D::Bind(uint32_t slot) const
 	{
-		glBindTexture(slot, m_RendererID);
+		glActiveTexture(GL_TEXTURE0 + slot);
+		glBindTexture(GL_TEXTURE_2D, m_RendererID);
 	}
 
 }
