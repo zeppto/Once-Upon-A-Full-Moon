@@ -11,6 +11,7 @@
 
 // test
 #include "Frosty/RenderEngine/ForwardPlus.hpp"
+#include "Frosty/API/PrefabManager/PrefabManager.h"
 
 namespace Frosty
 {
@@ -57,6 +58,8 @@ namespace Frosty
 		//std::unique_ptr<ECS::BaseComponentManager> m_TransformManager;		
 		
 		RenderEngine* m_RenderEngine;
+
+		
 	};
 }
 #endif
