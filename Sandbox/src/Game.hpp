@@ -27,6 +27,12 @@ private:
 	int m_PlayerDamage = 1;
 
 
+	 Frosty::PrefabInstance* m_Instance; //For example 
+	
+	 float m_Rotation = 0;
+	
+
+
 public:
 	ExampleLayerA()
 		: Layer("Example")
@@ -35,9 +41,45 @@ public:
 	}
 	void OnAttach() override
 	{
+		Frosty::PrefabManager::GetPrefabManager()->setPrefab("TestPrefab1", "clock", "Mat_0:table"); //Create a prefab
+		m_Instance = Frosty::PrefabManager::GetPrefabManager()->CreatePrefabInstance("TestPrefab1"); //Create an instanceof the prefab
+		m_Instance->GetTransform()->setTranslate(glm::vec3(0, 0, -10)); //Move the instance
+
+
 	}
 	void OnUpdate() override
 	{
+		
+
+		float dt = Frosty::Time::DeltaTime();
+		int frame = Frosty::Time::GetFrameCount();
+		
+		
+		if (frame % 1000 == 0)
+		{
+			Frosty::PrefabManager::GetPrefabManager()->setPrefab("TestPrefab1", "clock", "Mat_0:clock"); //You can change the prefab, this changes all instances
+		}
+		else if (frame % 750 == 0)
+		{
+			Frosty::PrefabManager::GetPrefabManager()->setPrefab("TestPrefab1", "clock", "Mat_0:table");
+		}
+		else if (frame % 500 == 0)
+		{
+			Frosty::PrefabManager::GetPrefabManager()->setPrefab("TestPrefab1", "table", "Mat_0:table");
+		}
+		else if (frame % 250 == 0)
+		{
+			Frosty::PrefabManager::GetPrefabManager()->setPrefab("TestPrefab1", "table", "Mat_0:clock");
+		}
+		
+		
+		m_Instance->GetTransform()->setRotate(glm::vec3(0, 0, m_Rotation -= 40 * Frosty::Time::DeltaTime())); //Instances can also rotate! Amazing right?!
+		
+
+
+
+		
+
 		m_Attacks = m_GameInput.PlayerControllerAttacks();
 
 		m_Player.UpdatePlayer();
@@ -45,7 +87,7 @@ public:
 		if (m_CollisionDetection.AABBIntersect(m_Player.GetHitBoxLength(),
 			m_Player.GetHitBoxCenter(), m_Collidable1.GetHitBoxLength(), m_Collidable1.GetHitBoxCenter()))
 			m_Collidable1.SetShouldRender(false);
-		else if(m_Collidable1.GetHp() > 0)
+		else if (m_Collidable1.GetHp() > 0)
 			m_Collidable1.SetShouldRender(true);
 		m_Player.SetPos(m_Player.GetPos() - m_CollisionDetection.AABBIntersecPushback(m_Player.GetHitBoxLength(),
 			m_Player.GetHitBoxCenter(), m_Collidable2.GetHitBoxLength(), m_Collidable2.GetHitBoxCenter()));

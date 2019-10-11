@@ -70,6 +70,7 @@ namespace Frosty
 		}
 
 		m_VertexBuffer.push_back(vertexBuffer);
+		//m_VertexBuffer = vertexBuffer;
 	}
 
 	void VertexArray::SetIndexBuffer(const std::shared_ptr<IndexBuffer>& indexBuffer)
@@ -80,18 +81,18 @@ namespace Frosty
 		m_IndexBuffer = indexBuffer;		
 	}
 
-	const std::vector<std::shared_ptr<VertexBuffer>>& VertexArray::GetVertexBuffer() const
+	const std::vector<std::shared_ptr<VertexBuffer>>& VertexArray::GetVertexBuffer() 
 	{
 		return m_VertexBuffer;
 	}
 
-	const std::shared_ptr<IndexBuffer>& VertexArray::GetIndexBuffer() const
+	const std::shared_ptr<IndexBuffer>& VertexArray::GetIndexBuffer()
 	{
 		return m_IndexBuffer;
 	}
 
 	VertexArray * VertexArray::Create()
 	{
-		return new VertexArray();
+		return FY_NEW VertexArray();
 	}
 }

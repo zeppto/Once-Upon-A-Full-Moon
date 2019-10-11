@@ -4,6 +4,7 @@
 #include "Frosty/RenderEngine/Renderer.hpp"
 #include "Frosty/RenderEngine/VertexArray.hpp"
 #include "Frosty/RenderEngine/RenderEngine.hpp"
+#include "Frosty/API/PrefabManager/PrefabManager.h"
 
 #include "Frosty/UI/UIText.h"
 
@@ -51,6 +52,16 @@ namespace Frosty
 		// 4) send the three buffers to a frgament shader
 		// 5) find out which cell the pixel belongs to (in screen space)
 		// 6) calculate lights as usual (world space)
+
+		//LoadModel("newClock");
+		//LoadModel("testingCube");
+		//PrefabManager::GetPrefabManager()->setPrefab("TestPrefab1", "newClock", "Mat_0:newClock");
+		//PrefabManager::GetPrefabManager()->setPrefab("TestPrefab1", "testingCube", "Mat_0:testingCube");
+		PrefabManager::GetPrefabManager()->setPrefab("TestPrefab1", "table", "Mat_0:testingCube");
+		//LoadModel("testingCube");
+		//PrefabManager::GetPrefabManager()->setPrefab("TestPrefab1", "testingCube", "Mat_0:testingCube");
+		//InitShaders();
+		m_Camera.reset(FY_NEW Camera());
 	}
 
 	Application::~Application()
@@ -58,6 +69,7 @@ namespace Frosty
 		EventBus::GetEventBus()->Delete();
 		glfwTerminate();
 		Assetmanager::Delete();
+		Renderer::DeleteSceneData();
 		//delete m_RenderEngine;
 	}		
 
@@ -93,6 +105,7 @@ namespace Frosty
 		std::shared_ptr<VertexBuffer> m_VertexBuffer2;
 		m_VertexBuffer2.reset(VertexBuffer::Create(m_Canvas->m_Vertices, sizeof(m_Canvas->m_Vertices)));
 		m_VertexBuffer2->SetLayout(layout);
+		m_VertexBuffer2->SetNrOfVertices(6);
 		m_VertexArray->AddVertexBuffer(m_VertexBuffer2); //Add to array
 
 		uint32_t indices[6] = { 0, 1, 2, 3, 4, 5};
@@ -128,15 +141,23 @@ namespace Frosty
 		m_computeParticleShader.reset(new Shader(std::string(FY_SHADERS_FOLDER_ROOT) + "ParticleComputeShader.glsl"));
 	}
 
+	//void Application::Run()
+	//{
+	//	states.AddState(Frosty::StateRef(new MainMenuState(s_Instance)), false);
+	//	states.ProcessStateChanges();
+
+	//	//m_Canvas.reset(new Canvas);
+	//	//m_Sprite.reset(new Sprite);
+
+	//	//ECS::ComponentManager<ECS::CTransform> cManager;
+	//	Renderer::DeleteSceneData();
+	//}
+
 	void Application::Run()
-	{
+	{		
+		Renderer::InitScene(m_Shader2);
 		states.AddState(Frosty::StateRef(new MainMenuState(s_Instance)), false);
 		states.ProcessStateChanges();
-
-		//m_Canvas.reset(new Canvas);
-		//m_Sprite.reset(new Sprite);
-
-		//ECS::ComponentManager<ECS::CTransform> cManager;
 
 		while (m_Running)
 		{
@@ -156,22 +177,31 @@ namespace Frosty
 			RenderCommand::SetClearColor({ 0.1f, 0.1f, 0.1f, 1.0f });
 			RenderCommand::Clear();
 
-			Renderer::BeginScene();
-			m_Shader->Bind();
-			Renderer::Submit(m_VertexArray);
+			Renderer::BeginScene(m_Camera);
+			//Renderer::Submit(m_Shader, tempVertexArray);
+			SubmitPrefab("TestPrefab1");
 
-			Renderer::EndScene();
+			//RenderCommand::DrawIndexed(tempPrefab->GetModelKey().GetKeyData().GetVertexArray(0));
+			//Renderer::Submit(m_Shader, tempPrefab->GetModelKey().GetKeyData().GetVertexArray(0));
 
-			/// Input
+			//Renderer::Submit(m_Shader, m_VertexArray);
+			//Renderer::Submit(m_Shader, tempPrefab->GetModelKey().GetKeyData().GetVertexArray(0));
+
+			//tempPrefab->GetModelKey().GetKeyData().GetVertexArray(0)->Bind();
+			//RenderCommand::DrawIndexed(tempPrefab->GetModelKey().GetKeyData().GetVertexArray(0));
+			//SubmitPrefab("TestPrefab1");
+			//Renderer::EndScene();
+
 
 			//TEST SPRITE
 			m_Shader->UploadUniformInt(m_Sprite->GetTexture().name, 0);
-
+			Renderer::BeginScene(m_Camera);
 			glActiveTexture(GL_TEXTURE0);
 			glBindTexture(GL_TEXTURE_2D, m_Canvas->GetTexture());
-			m_Shader->UploadUniforMat4("model", m_Canvas->GetTransform().GetModel());
-			//glBindTexture(GL_TEXTURE_2D, 0);
-			m_Shader->UnBind();
+			Renderer::Submit2D(m_Shader, m_VertexArray, m_Sprite->GetTexture().name, m_Canvas->GetTransform().GetModel());
+
+			Renderer::EndScene();
+			glBindTexture(GL_TEXTURE_2D, 0);
 
 			//Render particles
 			m_particleShader->Bind();
@@ -186,45 +216,45 @@ namespace Frosty
 			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 			std::string tempText = "Hello team";
 
-			glm::mat4 projection = glm::ortho(0.0f, 800.0f, 0.0f, 600.0f);
-			glm::vec3 color = glm::vec3(1.0f, 0.0f, 1.0f);
-			m_textShader->Bind();
-			m_textShader->UploadUniforMat4("projection", projection);
-			m_textShader->UploadUniformInt("text", 1);
-			m_textShader->UploadUniformFloat3("textColor", color);
-			std::string::const_iterator c;
-			float x = 25.0f;
-			float y = 24.0f;
-			float scale = 1.0f;
-			glm::vec3 vec = glm::vec3(0.5f, 0.8f, 0.2f);
-			for (c = tempText.begin(); c != tempText.end(); c++) {
-				Character ch = Assetmanager::GetAssetmanager()->GetFontMetaData("Gabriola")->GetData()->m_characters.at(*c);
-				float xpos = x + ch.bearing.x * scale;
-				float ypos = y - (ch.size.y - ch.bearing.y) * scale;
-				float width = ch.size.x * scale;
-				float height = ch.size.y * scale;
+			//glm::mat4 projection = glm::ortho(0.0f, 800.0f, 0.0f, 600.0f);
+			//glm::vec3 color = glm::vec3(1.0f, 0.0f, 1.0f);
+			//m_textShader->Bind();
+			//m_textShader->UploadUniforMat4("projection", projection);
+			//m_textShader->UploadUniformInt("text", 1);
+			//m_textShader->UploadUniformFloat3("textColor", color);
+			//std::string::const_iterator c;
+			//float x = 25.0f;
+			//float y = 24.0f;
+			//float scale = 1.0f;
+			//glm::vec3 vec = glm::vec3(0.5f, 0.8f, 0.2f);
+			//for (c = tempText.begin(); c != tempText.end(); c++) {
+			//	Character ch = Assetmanager::GetAssetmanager()->GetFontMetaData("Gabriola")->GetData()->m_characters.at(*c);
+			//	float xpos = x + ch.bearing.x * scale;
+			//	float ypos = y - (ch.size.y - ch.bearing.y) * scale;
+			//	float width = ch.size.x * scale;
+			//	float height = ch.size.y * scale;
 
-				float verts[6][4]
-				{
-					{ xpos,			ypos + height,	0.0f, 0.0f },
-					{ xpos,			ypos,			0.0f, 1.0f },
-					{ xpos + width,	ypos,			1.0f, 1.0f },
+			//	float verts[6][4]
+			//	{
+			//		{ xpos,			ypos + height,	0.0f, 0.0f },
+			//		{ xpos,			ypos,			0.0f, 1.0f },
+			//		{ xpos + width,	ypos,			1.0f, 1.0f },
 
-					{ xpos,			ypos + height,	0.0f, 0.0f },
-					{ xpos + width, ypos,			1.0f, 1.0f },
-					{ xpos + width, ypos + height,	1.0f, 0.0f }
-				};
+			//		{ xpos,			ypos + height,	0.0f, 0.0f },
+			//		{ xpos + width, ypos,			1.0f, 1.0f },
+			//		{ xpos + width, ypos + height,	1.0f, 0.0f }
+			//	};
 
-				m_textVertBuffer->Bind();
-				m_textVertBuffer->SetData(*verts, sizeof(verts), GL_DYNAMIC_DRAW);
+				//m_textVertBuffer->Bind();
+				//m_textVertBuffer->SetData(*verts, sizeof(verts), GL_DYNAMIC_DRAW);
 
-				glActiveTexture(GL_TEXTURE1);
-				glBindTexture(GL_TEXTURE_2D, ch.textureID);
+				//glActiveTexture(GL_TEXTURE1);
+				//glBindTexture(GL_TEXTURE_2D, ch.textureID);
 
-				Renderer::Submit(m_TextVertexArray);
-				x += (ch.advance >> 6) * scale;
-			}
-			m_textShader->UnBind();
+				Renderer::SubmitText(m_textShader, m_TextVertexArray, m_textVertBuffer, tempText);
+				//x += (ch.advance >> 6) * scale;
+			//}
+			//m_textShader->UnBind();
 			glDisable(GL_BLEND);
 			//glBindVertexArray(0);
 			//glBindTexture(GL_TEXTURE_2D, 0);
@@ -234,9 +264,6 @@ namespace Frosty
 			{
 				layer->OnUpdate();
 			}
-			/// Render
-			//m_RenderEngine->Render();
-			//m_RenderEngine->UpdateCamera();
 
 			m_ImGuiLayer->Begin();
 			for (Layer* layer : m_LayerHandler)
@@ -332,5 +359,26 @@ namespace Frosty
 		{
 			states.GetActiveState()->OnInput();
 		}
+	}
+
+	void Application::SubmitPrefab(std::string prefabName)
+	{
+		auto tempPrefabManager = PrefabManager::GetPrefabManager();
+		Prefab* tempPrefab = tempPrefabManager->GetPrefab(prefabName);
+
+		tempPrefab->GetModelKey().GetKeyData().GetVertexArray(0)->Bind();
+		Renderer::Submit(m_Shader, tempPrefab->GetModelKey().GetKeyData().GetVertexArray(0));
+
+		std::shared_ptr<VertexArray> v = tempPrefab->GetModelKey().GetKeyData().GetVertexArray(0);
+		//I want a texture! >:C
+
+		/*RenderModel
+		(
+			tempPrefab->GetModelKey().GetKeyData().GetVBO(0),
+			tempPrefab->GetModelKey().GetKeyData().GetMeshConst(0).vertexCount,
+			m_Transform.getModel(), //temp
+			tempPrefab->GetMaterialKey().GetKeyData().Diffuse_Texture_MetaData_Ptr->GetData()->GetBufferID()
+
+		);*/
 	}
 }

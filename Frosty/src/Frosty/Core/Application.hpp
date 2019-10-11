@@ -21,7 +21,8 @@
 #include "Frosty/UI/Sprite.h"
 #include "Frosty/UI/Canvas.h"
 #include "Frosty/DEFINITIONS.hpp"
-
+#include "Frosty/API/PrefabManager/PrefabManager.h"
+#include "Frosty/Core/Camera/Camera.hpp"
 #include "Frosty/Particles/ParticleSystem.h"
 
 namespace Frosty
@@ -31,6 +32,10 @@ namespace Frosty
 	public:
 		Application();
 		virtual ~Application();
+		
+		// Temporary function (Testing)		
+		void LoadModel(const std::string filename);			
+		void InitShaders();
 
 		void Run();
 
@@ -61,7 +66,8 @@ namespace Frosty
 		void OnWindowCloseEvent(WindowCloseEvent& e);
 		void OnKeyPressedEvent(KeyPressedEvent& e);	
 		void InitPrefabBuffers();
-		void InitShaders();
+		void SubmitPrefab(std::string prefabName);//Temp
+
 	private:
 		InputManager m_InputManager;
 		bool m_Running = true;
@@ -87,12 +93,15 @@ namespace Frosty
 		std::shared_ptr<ParticleSystem> m_particleSystem;
 
 		std::shared_ptr<Shader> m_Shader;
+		std::shared_ptr<Shader> m_Shader2;
 		std::shared_ptr<Shader> m_textShader;
 		std::shared_ptr<Shader> m_particleShader;
 		std::shared_ptr<Shader> m_computeParticleShader;
 		std::shared_ptr<VertexArray> m_VertexArray;
 		std::shared_ptr<VertexArray> m_TextVertexArray;
 		std::shared_ptr<VertexBuffer> m_textVertBuffer;
+
+		std::shared_ptr<Camera> m_Camera;
 	};
 }
 #endif

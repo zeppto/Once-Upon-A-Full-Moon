@@ -6,7 +6,6 @@
 #include "AssetFiles/TrueTypeFile.hpp"
 
 //or enums?
-
 // should be inside definitions?
 //File types
 #define FILE_TYPE_JPG "jpg"
@@ -17,7 +16,6 @@
 
 namespace Frosty
 {
-
 	extern 	struct FileMetaData;
 
 	enum FileType
@@ -85,6 +83,4 @@ namespace Frosty
 		//bool LoadParticleFile(const FileMetaData& FileNameInformation, const bool& Reload = false);
 	};
 }
-
-
-#endif // ! MOTHERLOADER_H
+#endif 

@@ -136,30 +136,36 @@ namespace Frosty
 	class VertexBuffer
 	{
 	public:
-		VertexBuffer(float* vertices, uint32_t size);
+		VertexBuffer(const void* vertices, uint32_t size);
 		VertexBuffer();
 		virtual ~VertexBuffer();
 
 		void Bind()const;
 		void Unbind()const;
 
+		void SetNrOfVertices(uint32_t count);
+		uint32_t GetNrOfVertices()const;
+		uint32_t GetSize()const;
+
 		BufferLayout GetLayout()const { return m_Layout; }
 		void SetLayout(const BufferLayout& layout) { m_Layout = layout; }
 
-		static VertexBuffer* Create(float* vertices, uint32_t size);
+		static VertexBuffer* Create(const void* vertices, uint32_t size);
 		static VertexBuffer* Create();
 
 		void SetData(float* vertices, uint32_t size, uint32_t type);
 
 	private:
 		uint32_t m_RendererID;
+		uint32_t m_Size;
+		uint32_t m_NrOfVertices;
 		BufferLayout m_Layout;
 	};
 
 	class IndexBuffer
 	{
 	public:
-		IndexBuffer(uint32_t* indices, uint32_t count);
+		IndexBuffer(const void* indices, uint32_t count);
 		virtual ~IndexBuffer();
 
 		void Bind()const;
@@ -167,7 +173,7 @@ namespace Frosty
 
 		uint32_t GetCount()const;
 
-		static IndexBuffer* Create(uint32_t* indices, uint32_t count);
+		static IndexBuffer* Create(const void* indices, uint32_t count);
 	private:
 		uint32_t m_RendererID;
 		uint32_t m_Count;		

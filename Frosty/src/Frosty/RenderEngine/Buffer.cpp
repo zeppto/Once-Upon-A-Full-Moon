@@ -6,7 +6,8 @@ namespace Frosty
 {
 	// Vertexbuffer --------------------------------------------------------------------
 
-	VertexBuffer::VertexBuffer(float * vertices, uint32_t size)
+	VertexBuffer::VertexBuffer(const void * vertices, uint32_t size)
+		:m_Size(size)
 	{
 		glGenBuffers(1, &m_RendererID);
 		glBindBuffer(GL_ARRAY_BUFFER, m_RendererID);
@@ -32,8 +33,8 @@ namespace Frosty
 	{
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 	}
-	
-	VertexBuffer * VertexBuffer::Create(float * vertices, uint32_t size)
+
+	VertexBuffer * VertexBuffer::Create(const void * vertices, uint32_t size)
 	{
 		return new VertexBuffer(vertices, size);
 	}
@@ -49,9 +50,23 @@ namespace Frosty
 		glBufferData(GL_ARRAY_BUFFER, size, vertices, type);
 	}
 
-	// Indexbuffer --------------------------------------------------------------------
+	void VertexBuffer::SetNrOfVertices(uint32_t count)
+	{
+		m_NrOfVertices = count;
+	}
 
-	IndexBuffer::IndexBuffer(uint32_t* indices, uint32_t count)
+	uint32_t VertexBuffer::GetNrOfVertices()const
+	{
+		return m_NrOfVertices;
+	}
+
+	uint32_t VertexBuffer::GetSize() const
+	{
+		return m_Size;
+	}	
+
+	// Indexbuffer --------------------------------------------------------------------
+	IndexBuffer::IndexBuffer(const void* indices, uint32_t count)
 		:	m_Count(count)
 	{
 		//glCreateBuffers(1, &m_RendererID);
@@ -80,7 +95,7 @@ namespace Frosty
 		return m_Count;
 	}
 
-	IndexBuffer * IndexBuffer::Create(uint32_t * indices, uint32_t count)
+	IndexBuffer * IndexBuffer::Create(const void * indices, uint32_t count)
 	{
 		return new IndexBuffer(indices, count);
 	}	

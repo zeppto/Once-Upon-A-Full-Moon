@@ -1,3 +1,4 @@
+#type vertex
 #version 440 core
 			
 layout(location = 0) in vec3 vsInPos;
@@ -17,4 +18,22 @@ void main()
 	vsOutNorm = vsInNorm;
 	gl_Position = u_ViewProjection * vec4(vsInPos, 1.0f);
 	//gl_Position = vec4(vsInPos, 1.0f);
+}
+
+#type fragment
+#version 440 core
+
+in vec3 vsOutPos;
+in vec2 vsOutUV;
+in vec3 vsOutNorm;
+
+layout(location = 0) out vec4 fsOutCol;
+			
+void main()
+{
+	//fsOutCol = vec4(0.8f, 0.2f, 0.3f, 1.0f);			
+	
+	fsOutCol = vec4(vsOutPos, 1.0f);
+	//fsOutCol = vec4(vsOutUV, 0.0f, 1.0f);
+	//fsOutCol = vec4(vsOutNorm, 1.0f);
 }

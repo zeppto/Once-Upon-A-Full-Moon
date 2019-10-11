@@ -206,9 +206,6 @@ namespace Frosty
 
 					tempFile.getIndices(tempMeshId, tempMeshInfo_Ptr->MeshIndices);
 					tempFile.getVertices(tempMeshId, tempMeshInfo_Ptr->MeshVertices);
-
-					//Mod->getBoundingBoxVector()->emplace_back(tempFile.getBoundingBox(i));
-
 				}
 
 				if (modelHasSkeleton)
