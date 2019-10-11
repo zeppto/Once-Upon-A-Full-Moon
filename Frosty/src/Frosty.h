@@ -5,7 +5,6 @@
 #include "Frosty/Core/Log.hpp"
 
 // ---Graphics------------------------
-#include "Frosty/RenderEngine/RenderEngine.hpp"
 #include "Frosty/RenderEngine/RenderCommand.hpp"
 
 #include "Frosty/RenderEngine/Buffer.hpp"

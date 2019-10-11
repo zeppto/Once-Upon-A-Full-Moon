@@ -1,7 +1,6 @@
 #ifndef LIGHTBASE_HPP
 #define LIGHTBASE_HPP
 
-#include <glm/glm.hpp>
 
 namespace Frosty 
 {

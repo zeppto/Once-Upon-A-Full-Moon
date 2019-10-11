@@ -20,13 +20,17 @@ namespace Frosty
 
 		const std::string& GetName() const { return m_Name; }
 
-		void UploadUniformInt(const std::string& name, int value);
+		void UploadUniformInt(const std::string& name, const int value);
+		void UploadUniformUint(const std::string& name, const int value);
 		void UploadUniformFloat(const std::string& name, const float value);
+		void UploadUniformFloatArray(const std::string& name, const float value);
 		void UploadUniformFloat2(const std::string& name, const glm::vec2& value);
 		void UploadUniformFloat3(const std::string& name, const glm::vec3& value);
+		void UploadUniformFloat3Array(const std::string& name, const glm::vec3& value);
 		void UploadUniformFloat4(const std::string& name, const glm::vec4& value);
+		void UploadUniformFloat4Array(const std::string& name, const glm::vec4& value);
 		void UploadUniforMat3(const std::string& name, const glm::mat3& matrix);
-		void UploadUniforMat4(const std::string& name, const glm::mat4& matrix);		
+		void UploadUniforMat4(const std::string& name, const glm::mat4& matrix);
 
 		static Shader* CreateShader(const std::string& filepath);
 		static Shader* CreateShader(const std::string& name, const std::string& vertexSrc, const std::string& fragmentSrc);		

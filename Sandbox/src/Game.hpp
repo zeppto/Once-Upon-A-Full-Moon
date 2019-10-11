@@ -13,15 +13,15 @@ class ExampleLayerA : public Frosty::Layer
 
 private:
 	Frosty::CollisionDetection m_CollisionDetection;
-	Player m_Player;
-	//Player m_Player2;
+	/*Player m_Player;
+	Player m_Player2;
 	GameObject m_Ground = GameObject(glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(10.0f));
 	GameObject m_Collidable1 = GameObject(glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(3.0f, 0.0f, -1.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), 10, "tempPlayer");
 	GameObject m_Collidable2 = GameObject(glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(-2.0f, 0.0f, -1.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), 10, "tempPlayer");
 	GameObject m_Collidable3 = GameObject(glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(-1.0f, 0.0f, -2.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), 10, "tempPlayer");
 
 	Frosty::Attacks m_Attacks;
-	Frosty::PlayerController m_GameInput;
+	Frosty::PlayerController m_GameInput;*/
 	//temp
 	int m_EnemyDamage = 1;
 	int m_PlayerDamage = 1;
@@ -80,7 +80,7 @@ public:
 
 		
 
-		m_Attacks = m_GameInput.PlayerControllerAttacks();
+		/*m_Attacks = m_GameInput.PlayerControllerAttacks();
 
 		m_Player.UpdatePlayer();
 
@@ -101,7 +101,7 @@ public:
 		m_Collidable2.UpdateHp();
 		m_Player.UpdateHp();
 
-		m_Player.UpdateWorldMatrix();
+		m_Player.UpdateWorldMatrix();*/
 
 	}
 	virtual void OnImGuiRender() override

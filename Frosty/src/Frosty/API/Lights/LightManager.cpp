@@ -10,7 +10,7 @@ namespace Frosty
 		s_Instance = this;
 
 		// ONLY for testing purposes	~ W-_-W ~
-		m_Pointlights.emplace_back(std::make_shared<PointLight>(glm::vec3(1.f, 1.f, -5.f), glm::vec4(1.f, 1.f, 1.f, 1.f), 1.f, 1.f));
+		//m_Pointlights.emplace_back(std::make_shared<PointLight>(glm::vec3(2.f, 2.f, 4.5f), glm::vec4(1.f, 1.f, 1.f, 1.f), 1.f, 2.f));
 		//m_Pointlights.emplace_back(std::make_shared<PointLight>(glm::vec3(3.f, 3.f, -10.f), glm::vec4(1.f, 1.f, 1.f, 1.f), 1.f, 2.f));
 	}
 
@@ -32,7 +32,7 @@ namespace Frosty
 
 	void LightManager::AddDirectionalLight(glm::vec4 color, float strength, glm::vec3 direction)
 	{
-		m_DirLights.emplace_back(DirectionalLight(color, strength, direction));
+		m_DirLights.emplace_back(std::make_shared<DirectionalLight>(color, strength, direction));
 	}
 
 	bool LightManager::RemovePointLightAt(uint16_t position)
@@ -78,7 +78,7 @@ namespace Frosty
 		return m_Pointlights.at(size_t(position));
 	}
 
-	const std::vector< std::shared_ptr<PointLight>>& LightManager::GetAllPointLights()
+	const std::vector<std::shared_ptr<PointLight>>& LightManager::GetAllPointLights()
 	{
 		return m_Pointlights;
 	}
@@ -88,14 +88,14 @@ namespace Frosty
 		return int(m_Pointlights.size());
 	}
 
-	DirectionalLight* LightManager::GetDirectionalLightAt(uint16_t position)
+	std::shared_ptr<DirectionalLight>& LightManager::GetDirectionalLightAt(uint16_t position)
 	{
-		return &m_DirLights.at(size_t(position));
+		return m_DirLights.at(size_t(position));
 	}
 
-	const std::vector<DirectionalLight>* LightManager::GetAllDirectionalLights()
+	const std::vector<std::shared_ptr<DirectionalLight>>& LightManager::GetAllDirectionalLights()
 	{
-		return &m_DirLights;
+		return m_DirLights;
 	}
 
 	const int LightManager::GetNrOfDirectionalLights()

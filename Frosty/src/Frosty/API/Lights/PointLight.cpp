@@ -17,7 +17,7 @@ namespace Frosty
 		m_Radius = radius;
 		m_Linear_Quadratic = linear_Quadratic;
 	}
-	
+
 	PointLight::PointLight(const PointLight& other) : LightBase(other)
 	{
 		m_Position = other.m_Position;
@@ -26,7 +26,7 @@ namespace Frosty
 
 		FY_CORE_ASSERT(false, "Copy constructor is used in class 'PointLight'.");
 	}
-	
+
 	PointLight& PointLight::operator=(const PointLight& other)
 	{
 		if (this != &other)
@@ -35,7 +35,7 @@ namespace Frosty
 			m_Position = other.m_Position;
 			m_Radius = other.m_Radius;
 			m_Linear_Quadratic = other.m_Linear_Quadratic;
-			
+
 			FY_CORE_ASSERT(false, "Assignment operator is used in class 'PointLight'.");
 		}
 		return *this;
@@ -45,7 +45,7 @@ namespace Frosty
 	{
 		return LightBase::operator==(other);
 	}
-	
+
 	void PointLight::SetPosition(glm::vec3 position)
 	{
 		m_Position = position;
@@ -66,7 +66,7 @@ namespace Frosty
 		m_Position = { positionAndRadius.x, positionAndRadius.y, positionAndRadius.z };
 		m_Radius = positionAndRadius.w;
 	}
-	
+
 	const glm::vec3 PointLight::GetPosition()
 	{
 		return m_Position;

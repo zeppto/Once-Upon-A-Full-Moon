@@ -1,9 +1,9 @@
 #include "fypch.hpp"
 #include "LightBase.hpp"
 
-namespace Frosty 
-{ 
-	uint16_t LightBase::s_LightIDCounter = 0; 
+namespace Frosty
+{
+	uint16_t LightBase::s_LightIDCounter = 0;
 
 	LightBase::LightBase()
 	{
@@ -30,13 +30,13 @@ namespace Frosty
 
 	LightBase& Frosty::LightBase::operator=(const LightBase& other)
 	{
-		if(this != &other)
+		if (this != &other)
 		{
 			m_Color = other.m_Color;
 			m_Strength = other.m_Strength;
 			m_ID = s_LightIDCounter++;
 		}
-		
+
 		FY_CORE_ASSERT(false, "Assignment operator is used in class 'LightBase'.");
 
 		return *this;
@@ -46,27 +46,27 @@ namespace Frosty
 	{
 		return m_ID == other.m_ID;
 	}
-	
+
 	void LightBase::SetColor(glm::vec4 color)
 	{
 		m_Color = color;
 	}
-	
+
 	void LightBase::SetStrength(float strength)
 	{
 		m_Strength = strength;
 	}
-	
+
 	const glm::vec4 LightBase::GetColor()
 	{
 		return m_Color;
 	}
-	
+
 	const float LightBase::GetStrength()
 	{
 		return m_Strength;
 	}
-	
+
 	const uint16_t LightBase::GetID()
 	{
 		return m_ID;
