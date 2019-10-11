@@ -54,6 +54,10 @@ public:
 		float dt = Frosty::Time::DeltaTime();
 		int frame = Frosty::Time::GetFrameCount();
 		
+		if (frame == 120)
+		{
+			delete m_Instance;
+		}
 		
 		if (frame % 1000 == 0)
 		{
@@ -72,8 +76,10 @@ public:
 			Frosty::PrefabManager::GetPrefabManager()->setPrefab("TestPrefab1", "table", "Mat_0:clock");
 		}
 		
-		
-		m_Instance->GetTransform()->setRotate(glm::vec3(0, 0, m_Rotation -= 40 * Frosty::Time::DeltaTime())); //Instances can also rotate! Amazing right?!
+		if (m_Instance != nullptr)
+		{
+			m_Instance->GetTransform()->setRotate(glm::vec3(0, 0, m_Rotation -= 40 * Frosty::Time::DeltaTime())); //Instances can also rotate! Amazing right?!
+		}
 		
 
 

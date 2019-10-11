@@ -2,6 +2,7 @@
 #define PREFAB_H 
 #include "..//AssetManager/AssetManager.hpp"
 #include "PrefabInstance.hpp"
+
 namespace Frosty
 {
 
@@ -21,7 +22,8 @@ namespace Frosty
 		KeyLabel<ModelTemplate> m_ModelKey;
 		KeyLabel<LinkedMaterial> m_MaterialKey;
 
-		std::vector<PrefabInstance*> m_PrefabInstances;
+		//std::vector<PrefabInstance*> m_PrefabInstances;
+		TripleLinkedList<PrefabInstance*> m_PrefabInstances;
 
 
 	public:		//Functions
@@ -42,7 +44,7 @@ namespace Frosty
 
 		PrefabInstance* CreatePrefabInstance();
 
-		std::vector<PrefabInstance*>* GetInstances();
+		TripleLinkedList<PrefabInstance*>* GetInstances();
 
 		Prefab& operator = (Prefab& other);
 		bool operator == (Prefab& other);

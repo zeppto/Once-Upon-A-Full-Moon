@@ -546,15 +546,16 @@ namespace Frosty
 		auto tempPrefabManager = PrefabManager::GetPrefabManager();
 		Prefab* tempPrefab = tempPrefabManager->GetPrefab(prefabName);
 
-		std::vector<PrefabInstance*>* instances= tempPrefab->GetInstances();
-
-		for (uint32_t i = 0; i < instances->size(); i++)
+		//std::vector<PrefabInstance*>* instances= tempPrefab->GetInstances();
+		TripleLinkedList<PrefabInstance*>* instances = tempPrefab->GetInstances();
+		int test = instances->GetSize();
+		for (uint32_t i = 0; i < instances->GetSize(); i++)
 		{
 			RenderModel
 			(
 				tempPrefab->GetModelKey().GetKeyData().GetVBO(0),
 				tempPrefab->GetModelKey().GetKeyData().GetMeshConst(0).vertexCount,
-				instances->at(i)->GetTransform()->getModel(), 
+				instances->GetAt(i)->GetTransform()->getModel(), 
 				tempPrefab->GetMaterialKey().GetKeyData().Diffuse_Texture_MetaData_Ptr->GetData()->GetBufferID()
 
 			);

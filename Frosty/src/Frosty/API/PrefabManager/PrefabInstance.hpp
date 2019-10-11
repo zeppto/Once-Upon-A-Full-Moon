@@ -1,6 +1,7 @@
 #ifndef GAMEOBJECT_H
 #define GAMEOBJECT_H
 #include"Frosty/API/Transform.h"
+#include "TripleLinkedList.hpp"
 namespace Frosty
 {
 
@@ -16,6 +17,7 @@ namespace Frosty
 		std::string m_PrefabName;
 
 		Transform m_Transform;
+		Node<PrefabInstance*>* m_ListNode = nullptr;
 
 	public:		//Functions
 		PrefabInstance(std::string pefabName);
@@ -24,8 +26,8 @@ namespace Frosty
 		~PrefabInstance();
 
 		Transform* GetTransform();
-
 		void Destroy();
+		void SetListNode(Node<PrefabInstance*>* node);
 
 		PrefabInstance& operator = (PrefabInstance& other);
 		bool operator == (PrefabInstance& other);

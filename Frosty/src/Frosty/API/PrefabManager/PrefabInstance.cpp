@@ -25,7 +25,7 @@ namespace Frosty
 
 	PrefabInstance::~PrefabInstance()
 	{
-
+		delete m_ListNode;
 	}
 
 	Transform* PrefabInstance::GetTransform()
@@ -36,6 +36,11 @@ namespace Frosty
 	void PrefabInstance::Destroy()
 	{
 		delete this;
+	}
+
+	void PrefabInstance::SetListNode(Node<PrefabInstance*>* node)
+	{
+		m_ListNode = node;
 	}
 
 	PrefabInstance& PrefabInstance::operator=(PrefabInstance& other)

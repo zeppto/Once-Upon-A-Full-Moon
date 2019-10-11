@@ -31,6 +31,7 @@ namespace Frosty
 
 	Prefab::~Prefab()
 	{
+	
 	}
 
 	void Prefab::SetModelKey(KeyLabel<ModelTemplate> modelKey)
@@ -92,12 +93,16 @@ namespace Frosty
 
 	PrefabInstance* Prefab::CreatePrefabInstance()
 	{
-		m_PrefabInstances.emplace_back(FY_NEW PrefabInstance(m_PrefabName));
+		/*m_PrefabInstances.emplace_back(FY_NEW PrefabInstance(m_PrefabName));
 
-		return m_PrefabInstances.back();
+		return m_PrefabInstances.back();*/
+
+		Node<PrefabInstance*>* tempNode = m_PrefabInstances.InsertAtBack(FY_NEW PrefabInstance(m_PrefabName));
+		m_PrefabInstances.GetLast()->SetListNode(tempNode);
+		return m_PrefabInstances.GetLast();
 	}
 
-	std::vector<PrefabInstance*>* Prefab::GetInstances()
+	TripleLinkedList<PrefabInstance*>* Prefab::GetInstances()
 	{
 		return &m_PrefabInstances;
 	}
