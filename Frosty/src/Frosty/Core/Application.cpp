@@ -41,6 +41,15 @@ namespace Frosty
 		//InitShaders();
 		
 		m_Camera.reset(FY_NEW Camera());		
+
+
+		// <<< FORWARD PLUS >>>
+		m_LightManager.reset(FY_NEW LightManager());
+		m_LightManager->AddPointLight(glm::vec3(0.f, 0.f, 1.f), glm::vec4(1.f, 1.f, 1.f, 1.f), 1.f, 10.f);
+		m_LightManager->AddDirectionalLight(glm::vec4(0.2f, 0.3f, 0.7f, 1.f), 0.7f, glm::vec3(-1.f, -1.f, -1.f));
+
+
+		Renderer::InitForwardPlus(m_LightManager);
 	}
 
 	Application::~Application()
@@ -256,7 +265,7 @@ namespace Frosty
 		Prefab* tempPrefab = tempPrefabManager->GetPrefab(prefabName);
 		
 		tempPrefab->GetModelKey().GetKeyData().GetVertexArray(0)->Bind();
-		Renderer::Submit(m_Shader, tempPrefab->GetModelKey().GetKeyData().GetVertexArray(0));
+		Renderer::Submit(m_Shader, tempPrefab->GetModelKey().GetKeyData().GetVertexArray(0), m_LightManager);
 
 		std::shared_ptr<VertexArray> v = tempPrefab->GetModelKey().GetKeyData().GetVertexArray(0);
 		//I want a texture! >:C

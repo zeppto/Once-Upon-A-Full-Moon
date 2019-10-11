@@ -60,6 +60,8 @@ namespace Frosty
 		
 		std::shared_ptr<Shader> m_Shader;
 		std::shared_ptr<Camera> m_Camera;
+
+		std::shared_ptr<LightManager> m_LightManager;
 	};
 }
 #endif
