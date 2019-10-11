@@ -173,6 +173,14 @@ namespace Frosty
 			//glBindTexture(GL_TEXTURE_2D, 0);
 			m_Shader->UnBind();
 
+			//Render particles
+			m_particleShader->Bind();
+			glEnable(GL_BLEND);
+			glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+
+			m_particleShader->UnBind();
+			glDisable(GL_BLEND);
+
 			//Render text
 			glEnable(GL_BLEND);
 			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -217,6 +225,7 @@ namespace Frosty
 				x += (ch.advance >> 6) * scale;
 			}
 			m_textShader->UnBind();
+			glDisable(GL_BLEND);
 			//glBindVertexArray(0);
 			//glBindTexture(GL_TEXTURE_2D, 0);
 
