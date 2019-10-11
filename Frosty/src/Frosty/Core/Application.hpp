@@ -7,6 +7,7 @@
 #include "Frosty/ImGui/ImGuiLayer.hpp"
 #include "Frosty/API/AssetManager/Assetmanager.hpp"
 #include "Frosty/RenderEngine/RenderEngine.hpp"
+#include "Frosty/API/PrefabManager/PrefabManager.h"
 
 // test
 #include "Frosty/RenderEngine/ForwardPlus.hpp"

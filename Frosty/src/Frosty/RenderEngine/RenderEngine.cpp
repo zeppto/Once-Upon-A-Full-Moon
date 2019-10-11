@@ -447,13 +447,13 @@ namespace Frosty
 
 		UpdateInfoFromWindow();
 
-		m_Transform.setRotate(glm::vec3(0.0f, m_Rotation += 100 * Time::DeltaTime(), 0.0f));//Temp
+		//m_Transform.setRotate(glm::vec3(0.0f, m_Rotation += 100 * Time::DeltaTime(), 0.0f));//Temp
 		//RenderTriangle();
 		RenderTempModels();
 
 		
-		/*RenderPrefab("TestPrefab1");
-		RenderPrefab("TestPrefab2");*/
+		RenderPrefab("AnimTestCuboid");
+	
 
 	}
 
@@ -532,6 +532,8 @@ namespace Frosty
 	{
 		auto tempPrefabManager = PrefabManager::GetPrefabManager();
 		Prefab* tempPrefab = tempPrefabManager->GetPrefab(prefabName);
+
+		int temp = tempPrefab->GetModelKey().GetKeyData().GetMeshConst(0).vertexCount;
 
 		RenderModel
 		(
