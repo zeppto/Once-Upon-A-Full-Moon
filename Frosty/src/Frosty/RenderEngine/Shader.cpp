@@ -4,6 +4,8 @@
 
 namespace Frosty
 {
+	// Shader ------------------------------------------------------------
+
 	static GLenum ShaderTypeFromString(const std::string& type)
 	{
 		if (type == "vertex")
@@ -208,13 +210,13 @@ namespace Frosty
 	}
 
 	Shader* Shader::CreateShader(const std::string& filepath)
-	{
+	{	
 		return FY_NEW Shader(filepath);
 	}
-
+	
 	Shader* Shader::CreateShader(const std::string& name, const std::string& vertexSrc, const std::string& fragmentSrc)
 	{
-		return FY_NEW Shader(name, vertexSrc, fragmentSrc);
+		return FY_NEW Shader(name, vertexSrc, fragmentSrc);		
 	}
 
 	std::string Shader::ReadFile(const std::string& filepath)
@@ -334,5 +336,44 @@ namespace Frosty
 			glDetachShader(program, id);
 			glDeleteShader(id);
 		}
+	}
+
+	// Shaderlibrary ------------------------------------------------------------
+	
+	void ShaderLibrary::Add(const std::string & name, Shader* shader)
+	{
+		FY_CORE_ASSERT(!Exists(name), "Shader already exists!");
+		m_Shaders[name] = shader;
+	}
+	
+	void ShaderLibrary::Add(Shader* shader)
+	{
+		auto& name = shader->GetName();
+		Add(name, shader);
+	}
+
+	Shader * ShaderLibrary::Load(const std::string & filepath)
+	{
+		auto shader = Shader::CreateShader(filepath);
+		Add(shader);
+		return shader;
+	}
+
+	Shader * ShaderLibrary::Load(const std::string & name, const std::string & filepath)
+	{
+		auto shader = Shader::CreateShader(filepath);
+		Add(name, shader);
+		return shader;
+	}
+
+	Shader * ShaderLibrary::Get(const std::string & name)
+	{
+		FY_CORE_ASSERT(Exists(name), "Shader not found!");
+		return m_Shaders[name];
+	}
+
+	bool ShaderLibrary::Exists(const std::string & name) const
+	{
+		return m_Shaders.find(name) != m_Shaders.end();
 	}
 }

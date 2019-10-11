@@ -21,8 +21,7 @@ namespace Frosty
 		Application();
 		virtual ~Application();
 		
-		// Temporary function (Testing)
-		void InitPrefabBuffers();
+		// Temporary function (Testing)		
 		void LoadModel(const std::string filename);
 		void CreateBuffers(const std::string filename);		
 		void InitShaders();

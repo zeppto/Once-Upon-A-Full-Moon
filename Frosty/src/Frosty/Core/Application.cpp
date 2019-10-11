@@ -27,13 +27,13 @@ namespace Frosty
 		
 		//InitPrefabBuffers();
 
-		LoadModel("newClock");		
+		//LoadModel("newClock");		
 		//PrefabManager::GetPrefabManager()->setPrefab("TestPrefab1", "newClock", "Mat_0:newClock");
-		CreateBuffers("newClock");
+		//CreateBuffers("newClock");
 
-		//LoadModel("testingCube");
+		LoadModel("testingCube");
 		//PrefabManager::GetPrefabManager()->setPrefab("TestPrefab1", "testingCube", "Mat_0:testingCube");
-		//CreateBuffers("testingCube");
+		CreateBuffers("testingCube");
 		
 		//InitShaders();
 		
@@ -56,122 +56,6 @@ namespace Frosty
 		Renderer::DeleteSceneData();		
 	}
 	
-	/*void Application::InitPrefabBuffers()
-	{		
-		m_VertexArray.reset(VertexArray::Create());
-
-		auto tempAssetsManager = Assetmanager::GetAssetmanager();
-		MotherLoader::GetMotherLoader()->LoadFiles();
-		MotherLoader::GetMotherLoader()->PrintLoadingAttemptInformation();
-		
-		AssetMetaData<ModelTemplate>* metaModel = tempAssetsManager->GetModeltemplateMetaData("clock");
-		std::shared_ptr<ModelTemplate> model = metaModel->GetData();
-		
-		struct TempVertex
-		{
-			glm::vec3 Position;
-			glm::vec2 Texture;
-			glm::vec3 Normal;
-
-			TempVertex(glm::vec3 pos, glm::vec2 uv, glm::vec3 norm) : Position(pos), Texture(uv), Normal(norm) { }
-		};
-
-		std::vector<TempVertex> vertices;
-		std::vector<uint32_t> indices;
-		unsigned int indexCounter = 0;
-		int index = -1;
-
-		float pos[3];
-		float uv[2];
-		float norm[3];
-		
-		for (size_t i = 0; i < tempAssetsManager->GetModeltemplateMetaData("tempPlayer")->GetData()->GetMeshInfoMap()->at(0).MeshVertices.size(); i++)
-		{
-			index = -1;
-			pos[0] = tempAssetsManager->GetModeltemplateMetaData("tempPlayer")->GetData()->GetMeshInfoMap()->at(0).MeshVertices.at(i).position[0];
-			pos[1] = tempAssetsManager->GetModeltemplateMetaData("tempPlayer")->GetData()->GetMeshInfoMap()->at(0).MeshVertices.at(i).position[1];
-			pos[2] = tempAssetsManager->GetModeltemplateMetaData("tempPlayer")->GetData()->GetMeshInfoMap()->at(0).MeshVertices.at(i).position[2];
-
-			uv[0] = tempAssetsManager->GetModeltemplateMetaData("tempPlayer")->GetData()->GetMeshInfoMap()->at(0).MeshVertices.at(i).uv[0];
-			uv[1] = tempAssetsManager->GetModeltemplateMetaData("tempPlayer")->GetData()->GetMeshInfoMap()->at(0).MeshVertices.at(i).uv[1];
-
-			norm[0] = tempAssetsManager->GetModeltemplateMetaData("tempPlayer")->GetData()->GetMeshInfoMap()->at(0).MeshVertices.at(i).normal[0];
-			norm[1] = tempAssetsManager->GetModeltemplateMetaData("tempPlayer")->GetData()->GetMeshInfoMap()->at(0).MeshVertices.at(i).normal[1];
-			norm[2] = tempAssetsManager->GetModeltemplateMetaData("tempPlayer")->GetData()->GetMeshInfoMap()->at(0).MeshVertices.at(i).normal[2];
-
-
-			std::vector<Luna::Vertex> ff = tempAssetsManager->GetModeltemplateMetaData("tempPlayer")->GetData()->GetMeshInfoMap()->at(0).MeshVertices;
-
-			for (size_t j = 0; j < vertices.size() && index != -1; j++)
-			{
-				if (vertices.at(j).Position == glm::vec3(pos[0], pos[1], pos[2]) &&
-					vertices.at(j).Texture == glm::vec2(uv[0], uv[1]) &&
-					vertices.at(j).Normal == glm::vec3(norm[0], norm[1], norm[2]))
-				{
-					index = j;
-				}
-			}
-
-			if (index == -1)
-			{
-				indices.emplace_back(indexCounter++);
-				vertices.emplace_back(TempVertex({ pos[0], pos[1], pos[2] }, { uv[0], uv[1] }, { norm[0], norm[1], norm[2] }));
-			}
-			else
-			{
-				indices.emplace_back(index);
-			}
-		}
-		
-		//float vertices[8 * 7] = {
-		//	-0.5f, -0.5f,  0.5f, 0.8f, 0.0f, 0.8f, 1.0f,
-		//	 0.5f, -0.5f,  0.5f, 0.2f, 0.3f, 0.8f, 1.0f,
-		//	 0.5f,  0.5f,  0.5f, 0.8f, 0.8f, 0.2f, 1.0f,
-		//	-0.5f,  0.5f,  0.5f, 0.8f, 0.8f, 0.2f, 1.0f,
-		//	-0.5f, -0.5f, -0.5f, 0.8f, 0.8f, 0.2f, 1.0f,
-		//	 0.5f, -0.5f, -0.5f, 0.8f, 0.8f, 0.2f, 1.0f,
-		//	 0.5f,  0.5f, -0.5f, 0.8f, 0.8f, 0.2f, 1.0f,
-		//	-0.5f,  0.5f, -0.5f, 0.8f, 0.8f, 0.2f, 1.0f
-		//};
-
-		std::shared_ptr<VertexBuffer> m_VertexBuffer;
-		m_VertexBuffer.reset(VertexBuffer::Create(&vertices.front(), sizeof(TempVertex) * (uint64_t)vertices.size()));
-
-		BufferLayout layout =
-		{
-			{ ShaderDataType::Float3, "a_Position" },
-			{ ShaderDataType::Float2, "a_TexCoord" },
-			{ ShaderDataType::Float3, "a_Normal" }
-		};
-		
-		m_VertexBuffer->SetLayout(layout);		
-		m_VertexArray->AddVertexBuffer(m_VertexBuffer);
-
-		//uint32_t indices[12 * 3] = {
-		//	0, 1, 2,
-		//	0, 2, 3,
-		//
-		//	3, 2, 4,
-		//	3, 4, 5,
-		//
-		//	5, 4, 6,
-		//	5, 6, 7,
-		//
-		//	7, 6, 1,
-		//	7, 1, 0,
-		//
-		//	1, 6, 4,
-		//	1, 4, 2,
-		//
-		//	7, 0, 3,
-		//	7, 3, 5
-		//};
-
-		std::shared_ptr<IndexBuffer> m_IndexBuffer;
-		m_IndexBuffer.reset(IndexBuffer::Create(&indices.front(), indices.size()));
-		m_VertexArray->SetIndexBuffer(m_IndexBuffer);
-	}*/
-
 	void Application::LoadModel(const std::string filename)
 	{
 		auto tempAssetsManager = Assetmanager::GetAssetmanager();
@@ -355,8 +239,8 @@ namespace Frosty
 			}
 			
 			/// Render
-			//RenderCommand::SetClearColor({ 0.1f, 0.1f, 0.1f, 1.0f });		
-			RenderCommand::SetClearColor({ 0.0f, 0.2f, 0.39f, 1.0f });		
+			RenderCommand::SetClearColor({ 0.1f, 0.1f, 0.1f, 1.0f });		
+			//RenderCommand::SetClearColor({ 0.0f, 0.2f, 0.39f, 1.0f });		
 			RenderCommand::Clear();
 
 			Renderer::BeginScene(m_Camera);

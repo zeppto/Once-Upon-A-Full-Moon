@@ -36,21 +36,23 @@ namespace Frosty
 		GLFWwindow* window = static_cast<GLFWwindow*>(app.GetWindow().GetNativeWindow());
 		// --------------------------------------------------------------------------------
 		glEnable(GL_PROGRAM_POINT_SIZE);		
-		glPointSize(1.5f);
+		glPointSize(1.5f);		
 		
 		glDrawArrays(GL_POINTS, 0, vertexArray->GetVertexBuffer().front()->GetNrOfVertices());
 
-		/*if (glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS)
+		if (glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS)
 		{
-			glDrawArrays(GL_POINTS, 0, vertexArray->GetVertexBuffer().front()->GetNrOfVertices());
-		}*/
+			//glDrawArrays(GL_POINTS, 0, vertexArray->GetVertexBuffer().front()->GetNrOfVertices());
+		}
 		if (glfwGetKey(window, GLFW_KEY_2) == GLFW_PRESS)
 		{
 			glDrawArrays(GL_LINES, 0, vertexArray->GetVertexBuffer().front()->GetNrOfVertices());
 		}
 		if (glfwGetKey(window, GLFW_KEY_3) == GLFW_PRESS)
 		{
+			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 			glDrawArrays(GL_TRIANGLES, 0, vertexArray->GetVertexBuffer().front()->GetNrOfVertices());
+			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 		}
 		
 		//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
