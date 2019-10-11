@@ -35,6 +35,7 @@ public:
 	}
 	void OnAttach() override
 	{
+		Frosty::PrefabManager::GetPrefabManager()->setPrefab("AnimTestCuboid", "AnimTestCuboid", "Mat_0:table");
 	}
 	void OnUpdate() override
 	{
