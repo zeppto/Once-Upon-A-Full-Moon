@@ -63,7 +63,7 @@ namespace Frosty
 		if (position < m_TotalCells)
 			return glm::vec2(m_CellLightsInfo[position].Offset, m_CellLightsInfo[position].Size);
 		else
-			- 1;
+			return glm::vec2(0, 0);
 	}
 
 	void FrustumGrid::CreateGridCells()
