@@ -25,18 +25,18 @@ namespace Frosty
 
 		ECS::ComponentManager<ECS::CTransform> cManager;
 		
-		//InitPrefabBuffers();
+		
 
 		//LoadModel("newClock");
 		//LoadModel("testingCube");
 		MotherLoader::GetMotherLoader()->LoadFiles();
-		PrefabManager::GetPrefabManager()->setPrefab("TestPrefab1", "newClock", "Mat_0:newClock");
+		//PrefabManager::GetPrefabManager()->setPrefab("TestPrefab1", "newClock", "Mat_0:newClock");
 		//PrefabManager::GetPrefabManager()->setPrefab("TestPrefab1", "testingCube", "Mat_0:testingCube");
-		//CreateBuffers("newClock");
+		PrefabManager::GetPrefabManager()->setPrefab("TestPrefab1", "table", "Mat_0:testingCube");
 
-		LoadModel("testingCube");
+		//LoadModel("testingCube");
 		//PrefabManager::GetPrefabManager()->setPrefab("TestPrefab1", "testingCube", "Mat_0:testingCube");
-		CreateBuffers("testingCube");
+		
 		
 		//InitShaders();
 		
@@ -67,85 +67,7 @@ namespace Frosty
 
 		AssetMetaData<ModelTemplate>* metaModel = tempAssetsManager->GetModeltemplateMetaData(filename);
 		std::shared_ptr<ModelTemplate> model = metaModel->GetData();
-	}
-
-	void Application::CreateBuffers(const std::string filename)
-	{
-		tempVertexArray.reset(VertexArray::Create());
-
-		auto tempAssetsManager = Assetmanager::GetAssetmanager();
-		struct TempVertex
-		{
-			glm::vec3 Position;
-			glm::vec2 Texture;
-			glm::vec3 Normal;
-
-			TempVertex(glm::vec3 pos, glm::vec2 uv, glm::vec3 norm) : Position(pos), Texture(uv), Normal(norm) { }
-		};
-
-		std::vector<TempVertex> vertices;
-		std::vector<uint32_t> indices;
-		unsigned int indexCounter = 0;
-		int index = -1;
-
-		float pos[3];
-		float uv[2];
-		float norm[3];
-
-		for (size_t i = 0; i < tempAssetsManager->GetModeltemplateMetaData(filename)->GetData()->GetMeshInfoMap()->at(0).MeshVertices.size(); i++)
-		{
-			index = -1;
-			pos[0] = tempAssetsManager->GetModeltemplateMetaData(filename)->GetData()->GetMeshInfoMap()->at(0).MeshVertices.at(i).position[0];
-			pos[1] = tempAssetsManager->GetModeltemplateMetaData(filename)->GetData()->GetMeshInfoMap()->at(0).MeshVertices.at(i).position[1];
-			pos[2] = tempAssetsManager->GetModeltemplateMetaData(filename)->GetData()->GetMeshInfoMap()->at(0).MeshVertices.at(i).position[2];
-
-			uv[1] = tempAssetsManager->GetModeltemplateMetaData(filename)->GetData()->GetMeshInfoMap()->at(0).MeshVertices.at(i).uv[1];
-			uv[0] = tempAssetsManager->GetModeltemplateMetaData(filename)->GetData()->GetMeshInfoMap()->at(0).MeshVertices.at(i).uv[0];
-
-			norm[0] = tempAssetsManager->GetModeltemplateMetaData(filename)->GetData()->GetMeshInfoMap()->at(0).MeshVertices.at(i).normal[0];
-			norm[1] = tempAssetsManager->GetModeltemplateMetaData(filename)->GetData()->GetMeshInfoMap()->at(0).MeshVertices.at(i).normal[1];
-			norm[2] = tempAssetsManager->GetModeltemplateMetaData(filename)->GetData()->GetMeshInfoMap()->at(0).MeshVertices.at(i).normal[2];
-
-			for (size_t j = 0; j < vertices.size() && index != -1; j++)
-			{
-				if (vertices.at(j).Position == glm::vec3(pos[0], pos[1], pos[2]) &&
-					vertices.at(j).Texture == glm::vec2(uv[0], uv[1]) &&
-					vertices.at(j).Normal == glm::vec3(norm[0], norm[1], norm[2]))
-				{
-					index = j;
-				}
-			}
-
-			if (index == -1)
-			{
-				indices.emplace_back(indexCounter++);
-				vertices.emplace_back(TempVertex({ pos[0], pos[1], pos[2] }, { uv[0], uv[1] }, { norm[0], norm[1], norm[2] }));
-			}
-			else
-			{
-				indices.emplace_back(index);
-			}
-		}
-
-		std::shared_ptr<VertexBuffer> m_VertexBuffer;		
-		m_VertexBuffer.reset(VertexBuffer::Create(&vertices.front(), sizeof(TempVertex) * (uint64_t)vertices.size()));
-		m_VertexBuffer->SetNrOfVertices((uint64_t)vertices.size());	
-
-		BufferLayout layout =
-		{
-			{ ShaderDataType::Float3, "vsInPos" },
-			{ ShaderDataType::Float2, "vsInUV"  },
-			{ ShaderDataType::Float3, "vsInNorm"}
-		};
-
-		m_VertexBuffer->SetLayout(layout);
-		tempVertexArray->AddVertexBuffer(m_VertexBuffer);		
-		int test = indices.size();
-
-		std::shared_ptr<IndexBuffer> m_IndexBuffer;
-		m_IndexBuffer.reset(IndexBuffer::Create(&indices.front(), indices.size()));
-		tempVertexArray->SetIndexBuffer(m_IndexBuffer);
-	}
+	}	
 	
 	void Application::InitShaders()
 	{

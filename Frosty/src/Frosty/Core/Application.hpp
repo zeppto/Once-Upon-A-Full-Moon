@@ -22,8 +22,7 @@ namespace Frosty
 		virtual ~Application();
 		
 		// Temporary function (Testing)		
-		void LoadModel(const std::string filename);
-		void CreateBuffers(const std::string filename);		
+		void LoadModel(const std::string filename);			
 		void InitShaders();
 
 		void Run();
