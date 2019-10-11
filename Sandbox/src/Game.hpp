@@ -42,24 +42,24 @@ public:
 	{
 
 
-		//Test1.m_Position = glm::vec3(0.0f,0.0f,0.0f);
-		//Test2.m_Position = glm::vec3(0.0f,4.0f,0.0f);
+		Test1.m_Position = glm::vec3(0.0f,0.0f,0.0f);
+		Test2.m_Position = glm::vec3(0.0f,4.0f,0.0f);
 
-		//float rot = 180;
+		double rot = 180;
 
-		//glm::mat4 rotateZ = glm::mat4(
-		//	cos(glm::radians(rot)), -sin(glm::radians(rot)), 0.0f, 0.0f,
-		//	sin(glm::radians(rot)), cos(glm::radians(rot)), 0.0f, 0.0f,
-		//	0.0f, 0.0f, 1.0f, 0.0f,
-		//	0.0f, 0.0f, 0.0f, 1.0f
-		//);
+		glm::mat4 rotateZ = glm::mat4(
+			cos(glm::radians(rot)), -sin(glm::radians(rot)), 0.0f, 0.0f,
+			sin(glm::radians(rot)), cos(glm::radians(rot)), 0.0f, 0.0f,
+			0.0f, 0.0f, 1.0f, 0.0f,
+			0.0f, 0.0f, 0.0f, 1.0f
+		);
 
-		//glm::vec4 tempVec4 = rotateZ * glm::vec4(Test2.m_Direction,0.0f);
+		glm::vec4 tempVec4 = rotateZ * glm::vec4(Test2.m_Direction,0.0f);
 
-		//Test2.m_Direction = glm::normalize(glm::vec3(tempVec4.x,tempVec4.y,tempVec4.z));
+		Test2.m_Direction = glm::normalize(glm::vec3(tempVec4.x,tempVec4.y,tempVec4.z));
 
 
-		//bool jj = Test1.ColTest(Test2);
+		bool jj;// = Test1.ColTest(Test2);
 
 		//if (jj) 
 		//{
@@ -106,29 +106,29 @@ public:
 		//}
 
 
-		//Test2.m_Position = glm::vec3(2.5f, 0.0f, 0.0f);
+		Test2.m_Position = glm::vec3(2.5f, 0.0f, 0.0f);
 
-		//rot = 90;
-		//rotateZ = glm::mat4(
-		//	cos(glm::radians(rot)), -sin(glm::radians(rot)), 0.0f, 0.0f,
-		//	sin(glm::radians(rot)), cos(glm::radians(rot)), 0.0f, 0.0f,
-		//	0.0f, 0.0f, 1.0f, 0.0f,
-		//	0.0f, 0.0f, 0.0f, 1.0f
-		//);
-
-
-
-		//tempVec4 = rotateZ * glm::vec4(Test2.m_Direction, 0.0f);
-
-		//Test2.m_Direction = glm::normalize(glm::vec3(tempVec4.x, tempVec4.y, tempVec4.z));
+		rot = 90;
+		rotateZ = glm::mat4(
+			cos(glm::radians(rot)), -sin(glm::radians(rot)), 0.0f, 0.0f,
+			sin(glm::radians(rot)), cos(glm::radians(rot)), 0.0f, 0.0f,
+			0.0f, 0.0f, 1.0f, 0.0f,
+			0.0f, 0.0f, 0.0f, 1.0f
+		);
 
 
-		//jj = Test1.ColTest(Test2);
 
-		//if (!jj)
-		//{
-		//	FY_CORE_INFO("TEST 6 OK");
-		//}
+		tempVec4 = rotateZ * glm::vec4(Test2.m_Direction, 0.0f);
+
+		Test2.m_Direction = glm::normalize(glm::vec3(tempVec4.x, tempVec4.y, tempVec4.z));
+
+
+		jj = Test1.ColTest(Test2);
+
+		if (!jj)
+		{
+			FY_CORE_INFO("TEST 6 OK");
+		}
 
 
 

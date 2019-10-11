@@ -792,6 +792,8 @@ namespace Frosty
 				float s_Value;
 				float t_Value;
 
+				//Fault from here
+
 
 					float tempTimes = calcVecOne[0] / calcVecTwo[0];
 					glm::vec3 tempVec = calcVecTwo * tempTimes;
