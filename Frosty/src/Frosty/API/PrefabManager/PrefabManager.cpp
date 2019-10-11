@@ -3,10 +3,8 @@
 
 namespace Frosty
 {
-	
 	PrefabManager* PrefabManager::s_Instance = nullptr;
-
-
+	
 	PrefabManager* Frosty::PrefabManager::GetPrefabManager()
 	{
 		if (s_Instance == nullptr)
@@ -26,7 +24,7 @@ namespace Frosty
 		bool returnValue;
 		/*if (CheckIfPrefabExists(prefabName))
 		{
-			
+
 		}*/
 		returnValue = m_Prefabs[prefabName].SetData(modelName, materialName);
 		m_Prefabs[prefabName].SetName(prefabName);

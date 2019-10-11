@@ -36,13 +36,13 @@ namespace Frosty
 		const std::vector< std::shared_ptr<PointLight>>& GetAllPointLights();	// Should it be const??		~ W-_-W ~
 		const int GetNrOfPointLights();
 
-		DirectionalLight* GetDirectionalLightAt(uint16_t position);
-		const std::vector<DirectionalLight>* GetAllDirectionalLights();
+		std::shared_ptr<DirectionalLight>& GetDirectionalLightAt(uint16_t position);
+		const std::vector<std::shared_ptr<DirectionalLight>>& GetAllDirectionalLights();
 		const int GetNrOfDirectionalLights();
 
 	private:
-		std::vector< std::shared_ptr<PointLight>> m_Pointlights;
-		std::vector<DirectionalLight> m_DirLights;
+		std::vector<std::shared_ptr<PointLight>> m_Pointlights;
+		std::vector<std::shared_ptr<DirectionalLight>> m_DirLights;
 
 		static LightManager* s_Instance;
 	};

@@ -32,13 +32,18 @@ namespace Frosty
 	{
 		return m_CameraData.Projection * m_CameraData.View;
 	}
+
+	glm::vec3 Camera::GetPosition()
+	{
+		return m_CameraTranslationData.Pos;
+	}
 	
 	void Frosty::Camera::CameraPositionUpdate()
 	{
 		Application& app = Application::Get();
 		GLFWwindow* window = static_cast<GLFWwindow*>(app.GetWindow().GetNativeWindow());
 		m_CameraTranslationData.CamSpeed = 2.0f * Time::DeltaTime();
-		
+
 		if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
 		{
 			if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
@@ -70,6 +75,22 @@ namespace Frosty
 				m_CameraTranslationData.CamSpeed = m_CameraTranslationData.CamSpeed * 3.0f;
 			}
 			m_CameraTranslationData.Pos += glm::normalize(glm::cross(m_CameraTranslationData.LookAtVec, m_CameraTranslationData.UpVec)) * m_CameraTranslationData.CamSpeed;
+		}
+		if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS)
+		{
+			if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
+			{
+				m_CameraTranslationData.CamSpeed = m_CameraTranslationData.CamSpeed * 3.0f;
+			}
+			m_CameraTranslationData.Pos -= glm::normalize(m_CameraTranslationData.UpVec) * m_CameraTranslationData.CamSpeed;
+		}
+		if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS)
+		{
+			if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
+			{
+				m_CameraTranslationData.CamSpeed = m_CameraTranslationData.CamSpeed * 3.0f;
+			}	
+			m_CameraTranslationData.Pos += glm::normalize(m_CameraTranslationData.UpVec) * m_CameraTranslationData.CamSpeed;
 		}
 
 		if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS)

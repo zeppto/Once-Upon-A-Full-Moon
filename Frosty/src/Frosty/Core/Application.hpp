@@ -6,8 +6,7 @@
 #include "EventSystem.hpp"
 #include "Frosty/ImGui/ImGuiLayer.hpp"
 #include "Frosty/API/AssetManager/Assetmanager.hpp"
-#include "Frosty/RenderEngine/RenderEngine.hpp"
-
+#include "Frosty/RenderEngine/Shader.hpp"
 // test
 #include "Frosty/RenderEngine/ForwardPlus.hpp"
 #include "Frosty/API/PrefabManager/PrefabManager.h"
@@ -19,6 +18,10 @@ namespace Frosty
 	public:
 		Application();
 		virtual ~Application();
+		
+		// Temporary function (Testing)		
+		void LoadModel(const std::string filename);			
+		void InitShaders();
 
 		void Run();
 
@@ -30,8 +33,6 @@ namespace Frosty
 		void PopLayer(Layer* layer);
 		void PopOverlay(Layer* layer);	
 
-		RenderEngine* GetRenderEngine() { return m_RenderEngine; }
-
 		inline Window& GetWindow() { return *m_Window; }
 		static inline Application& Get() { return *s_Instance; }
 
@@ -42,6 +43,7 @@ namespace Frosty
 	private:
 		void OnWindowCloseEvent(WindowCloseEvent& e);
 		void OnKeyPressedEvent(KeyPressedEvent& e);	
+		void SubmitPrefab(std::string prefabName);//Temp
 	private:
 		bool m_Running = true;
 
@@ -56,9 +58,10 @@ namespace Frosty
 		ECS::EntityManager m_EntityManager;
 		//std::unique_ptr<ECS::BaseComponentManager> m_TransformManager;		
 		
-		RenderEngine* m_RenderEngine;
+		std::shared_ptr<Shader> m_Shader;
+		std::shared_ptr<Camera> m_Camera;
 
-		
+		std::shared_ptr<LightManager> m_LightManager;
 	};
 }
 #endif

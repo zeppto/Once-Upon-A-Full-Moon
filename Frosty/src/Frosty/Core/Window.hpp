@@ -58,5 +58,4 @@ namespace Frosty
 		WindowData m_Data;
 	};
 }
-
 #endif
