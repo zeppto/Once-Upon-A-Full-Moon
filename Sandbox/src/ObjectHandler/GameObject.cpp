@@ -17,7 +17,7 @@ GameObject::GameObject(glm::vec3 color, glm::vec3 position, glm::vec3 rotation, 
 	m_Scale = scale;
 	UpdateWorldMatrix();
 
-	Frosty::Application::Get().GetRenderEngine()->AddToRenderList(&m_renderData);
+	//Frosty::Application::Get().GetRenderEngine()->AddToRenderList(&m_renderData);
 
 	m_renderData.m_Render_Colour = glm::vec3(0.0f, 0.0f, 0.0f);
 	m_MaxHp = maxHp;

@@ -40,33 +40,15 @@ namespace Frosty
 		
 		//InitShaders();
 		
-		m_Camera.reset(FY_NEW Camera());
-
-		// <<< FORWARD PLUS >>>
-		
-		//FrustumGrid grid;
-
-		// 4) send the three buffers to a frgament shader
-		// 5) find out which cell the pixel belongs to (in screen space)
-		// 6) calculate lights as usual (world space)
+		m_Camera.reset(FY_NEW Camera());		
 	}
 
 	Application::~Application()
 	{		
 		EventBus::GetEventBus()->Delete();
 		glfwTerminate();
-		Assetmanager::Delete();	
-		delete m_RenderEngine;
-	}
-	
-	void Application::LoadModel(const std::string filename)
-	{
-		auto tempAssetsManager = Assetmanager::GetAssetmanager();
-		MotherLoader::GetMotherLoader()->LoadFiles();
-		MotherLoader::GetMotherLoader()->PrintLoadingAttemptInformation();
-
-		AssetMetaData<ModelTemplate>* metaModel = tempAssetsManager->GetModeltemplateMetaData(filename);
-		std::shared_ptr<ModelTemplate> model = metaModel->GetData();
+		Assetmanager::Delete();
+		Renderer::DeleteSceneData();
 	}	
 	
 	void Application::InitShaders()
@@ -147,15 +129,11 @@ namespace Frosty
 
 	void Application::Run()
 	{		
-		Renderer::InitScene(m_Shader);
-
-		//auto tempPrefabManager = PrefabManager::GetPrefabManager();
-		//Prefab* tempPrefab = tempPrefabManager->GetPrefab("TestPrefab1");
+		Renderer::InitScene(m_Shader);	
 
 		while (m_Running)
 		{
 			/// Frame Start
-			m_RenderEngine->ClearColor();
 			Time::OnUpdate();
 			/// Input
 			
@@ -166,13 +144,13 @@ namespace Frosty
 			}
 			
 			/// Render
-			RenderCommand::SetClearColor({ 0.1f, 0.1f, 0.1f, 1.0f });		
-			//RenderCommand::SetClearColor({ 0.0f, 0.2f, 0.39f, 1.0f });		
+			RenderCommand::SetClearColor({ 0.1f, 0.1f, 0.1f, 1.0f });				
 			RenderCommand::Clear();
 
 			Renderer::BeginScene(m_Camera);
 			//Renderer::Submit(m_Shader, tempVertexArray);
-			SubmitPrefab("TestPrefab1");			
+			SubmitPrefab("TestPrefab1");
+
 			//RenderCommand::DrawIndexed(tempPrefab->GetModelKey().GetKeyData().GetVertexArray(0));
 			//Renderer::Submit(m_Shader, tempPrefab->GetModelKey().GetKeyData().GetVertexArray(0));
 

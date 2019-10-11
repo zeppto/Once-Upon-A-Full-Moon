@@ -36,7 +36,7 @@ namespace Frosty
 		GLFWwindow* window = static_cast<GLFWwindow*>(app.GetWindow().GetNativeWindow());
 		// --------------------------------------------------------------------------------
 		glEnable(GL_PROGRAM_POINT_SIZE);		
-		glPointSize(1.5f);		
+		glPointSize(1.5f);
 		
 		glDrawArrays(GL_POINTS, 0, vertexArray->GetVertexBuffer().front()->GetNrOfVertices());
 

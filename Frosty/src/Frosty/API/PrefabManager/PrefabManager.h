@@ -27,9 +27,7 @@ namespace Frosty
 		std::unordered_map<std::string, Prefab>* GetPrefabMap();
 		Prefab* GetPrefab(std::string prefabName);
 		bool setPrefab(const std::string& prefabName, const std::string& modelName, const std::string& materialName);
-		std::unordered_map<std::string, Prefab>* GetPrefabMap();
-		Prefab* GetPrefab(std::string prefabName);
-
+		
 		PrefabInstance* CreatePrefabInstance(std::string prefabName);
 		
 	private:	//Functions

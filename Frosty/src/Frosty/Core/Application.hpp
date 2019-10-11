@@ -6,8 +6,7 @@
 #include "EventSystem.hpp"
 #include "Frosty/ImGui/ImGuiLayer.hpp"
 #include "Frosty/API/AssetManager/Assetmanager.hpp"
-#include "Frosty/RenderEngine/RenderEngine.hpp"
-
+#include "Frosty/RenderEngine/Shader.hpp"
 // test
 #include "Frosty/RenderEngine/ForwardPlus.hpp"
 #include "Frosty/API/PrefabManager/PrefabManager.h"
@@ -33,8 +32,6 @@ namespace Frosty
 		void PushOverlay(Layer* layer);
 		void PopLayer(Layer* layer);
 		void PopOverlay(Layer* layer);	
-
-		RenderEngine* GetRenderEngine() { return m_RenderEngine; }
 
 		inline Window& GetWindow() { return *m_Window; }
 		static inline Application& Get() { return *s_Instance; }
@@ -63,7 +60,6 @@ namespace Frosty
 		
 		std::shared_ptr<Shader> m_Shader;
 		std::shared_ptr<Camera> m_Camera;
-		std::shared_ptr<VertexArray> tempVertexArray;	
 	};
 }
 #endif
