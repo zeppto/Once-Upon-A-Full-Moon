@@ -4,17 +4,19 @@
 #include "Frosty/DEFINITIONS.hpp"
 #include "Frosty/API/AssetManager/KeyLabel.hpp"
 #include "Frosty/API/AssetManager/AssetFiles/TextureFile.hpp"
+#include "Frosty/RenderEngine/VertexArray.hpp"
+#include "Frosty/API/AssetManager/Assetmanager.hpp"
 
 namespace Frosty
 {
 	struct Particle
 	{
-		glm::vec3 position;
-		glm::vec3 color;
-		glm::vec4 startPos;
-		glm::vec4 direction;
-		float lifetime;
-		float speed;
+		glm::vec4 position = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
+		glm::vec4 color = glm::vec4(1.0);
+		glm::vec4 startPos = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
+		glm::vec4 direction = glm::vec4(0.0, 1.0, 0.0, 1.0);;
+		float lifetime = 2.0f;
+		float speed = 2.0f;
 		//int padding[]; //In case padding is needed
 	};
 
@@ -24,25 +26,39 @@ namespace Frosty
 	class ParticleSystem
 	{
 	public:
-		ParticleSystem(std::string name = "", std::string texturePath = "");
+		ParticleSystem(std::string name, std::string texturePath, size_t particleCount);
 		~ParticleSystem();
 
 		void Update();
 
+		void LoadTexture();
+
 		void SetTexturePath(std::string texPath);
 		std::string GetTexturePath() const;
+
+		void SetParticleCount(size_t count);
+		size_t GetParticleCount() const;
+
+		std::shared_ptr<VertexArray>& GetVertexArray();
+
+		glm::mat4 GetModelMatrix();
+		uint16_t& GetTextureID();
 
 	private:
 
 	public:
 		//KeyLabel<TextureFile> m_texture;
 		Particle particles[MAX_PARTICLE_COUNT];
+		std::shared_ptr<VertexArray> m_particleVertArray;
 
 	private:
 		std::string m_name;
 		std::string m_texturePath;
 		uint32_t m_particleCount;
 		float m_emitRate;
+		glm::mat4 m_modelMat;
+
+		uint16_t m_textureID;
 
 	};
 }

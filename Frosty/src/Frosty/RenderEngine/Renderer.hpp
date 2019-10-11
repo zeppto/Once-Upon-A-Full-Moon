@@ -16,14 +16,16 @@ namespace Frosty
 
 		static void Submit(const std::shared_ptr<Shader>& shader, const std::shared_ptr<VertexArray>& vertexArray);
 		static void Submit2D(const std::shared_ptr<Shader>& shader, const std::shared_ptr<VertexArray>& vertexArray, std::string& tex, glm::mat4& modelMatrix);
-		static void SubmitText(const std::shared_ptr<Shader>& shader, const std::shared_ptr<VertexArray>& vertexArray, std::shared_ptr<VertexBuffer>& vertexBuffer, std::string& text);
-		static void SubmitParticles(const std::shared_ptr<Shader>& shader, const std::shared_ptr<VertexArray>& vertexArray);
+		static void SubmitText(const std::shared_ptr<Shader>& shader, const std::shared_ptr<VertexArray>& vertexArray, std::string& text);
+		static void SubmitParticles(const std::shared_ptr<Shader>& shader, const std::shared_ptr<VertexArray>& vertexArray, glm::mat4& modelMat, size_t particleCount);
 
 		static void DeleteSceneData();
 	private:
 		struct SceneData
 		{
-			glm::mat4 ViewProjectionMatrix;			
+			glm::mat4 ViewProjectionMatrix;
+			glm::mat4 ViewMatrix;
+			glm::mat4 ProjectionMatrix;
 		};
 		static SceneData* m_SceneData;
 	};

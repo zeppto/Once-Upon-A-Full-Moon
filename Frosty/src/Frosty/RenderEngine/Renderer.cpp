@@ -19,6 +19,8 @@ namespace Frosty
 	void Renderer::BeginScene(const std::shared_ptr<Camera>& m_Camera)
 	{		
 		m_SceneData->ViewProjectionMatrix = m_Camera->GetViewProjection();
+		m_SceneData->ViewMatrix = m_Camera->GetView();
+		m_SceneData->ProjectionMatrix = m_Camera->GetProjection();
 		m_Camera->CameraPositionUpdate();
 	}
 
@@ -47,7 +49,7 @@ namespace Frosty
 		vertexArray->Unbind();
 	}
 
-	void Renderer::SubmitText(const std::shared_ptr<Shader>& shader, const std::shared_ptr<VertexArray>& vertexArray, std::shared_ptr<VertexBuffer>& vertexBuffer, std::string& text)
+	void Renderer::SubmitText(const std::shared_ptr<Shader>& shader, const std::shared_ptr<VertexArray>& vertexArray, std::string& text)
 	{
 		shader->Bind();
 		vertexArray->Bind();
@@ -82,8 +84,8 @@ namespace Frosty
 				{ xpos + width, ypos + height,	1.0f, 0.0f }
 			};
 
-			vertexBuffer->Bind();
-			vertexBuffer->SetData(*verts, sizeof(verts), GL_DYNAMIC_DRAW);
+			vertexArray->GetVertexBuffer().front()->Bind();
+			vertexArray->GetVertexBuffer().front()->SetData(*verts, sizeof(verts), GL_DYNAMIC_DRAW);
 
 			glActiveTexture(GL_TEXTURE1);
 			glBindTexture(GL_TEXTURE_2D, ch.textureID);
@@ -94,7 +96,22 @@ namespace Frosty
 		}
 		glBindTexture(GL_TEXTURE_2D, 0);
 		vertexArray->Unbind();
-		vertexBuffer->Unbind();
+		vertexArray->GetVertexBuffer().front()->Unbind();
+	}
+
+	void Renderer::SubmitParticles(const std::shared_ptr<Shader>& shader, const std::shared_ptr<VertexArray>& vertexArray, glm::mat4& modelMat, size_t particleCount)
+	{
+		shader->Bind();
+		vertexArray->Bind();
+
+		shader->UploadUniforMat4("viewMat", m_SceneData->ViewMatrix);
+		shader->UploadUniforMat4("projectionMat", m_SceneData->ProjectionMatrix);
+		shader->UploadUniforMat4("modelMat", modelMat);
+
+		RenderCommand::DrawParticles(vertexArray, particleCount);
+
+		vertexArray->Unbind();
+		shader->UnBind();
 	}
 	
 	void Renderer::DeleteSceneData()

@@ -31,9 +31,9 @@ namespace Frosty
 
 		MotherLoader::GetMotherLoader()->LoadFiles();
 
-		m_Canvas.reset(new Canvas);
-		m_Sprite.reset(new Sprite);
-		m_particleSystem.reset(new ParticleSystem);
+		m_Canvas.reset(FY_NEW Canvas);
+		m_Sprite.reset(FY_NEW Sprite);
+		m_particleSystem.reset(FY_NEW ParticleSystem("Test", DEFAULT_PARTICLE_PATH, 10));
 
 		ECS::ComponentManager<ECS::CTransform> cManager;
 		InitPrefabBuffers();
@@ -193,7 +193,7 @@ namespace Frosty
 			Renderer::EndScene();
 
 
-			////TEST SPRITE
+			//TEST SPRITE
 			m_Shader->UploadUniformInt(m_Sprite->GetTexture().name, 0);
 			glActiveTexture(GL_TEXTURE0);
 			glBindTexture(GL_TEXTURE_2D, m_Canvas->GetTexture());
@@ -205,7 +205,9 @@ namespace Frosty
 			m_particleShader->Bind();
 			glEnable(GL_BLEND);
 			glBlendFunc(GL_SRC_ALPHA, GL_ONE);
-
+			m_particleSystem->LoadTexture();
+			glBindTexture(GL_TEXTURE_2D, m_particleSystem->GetTextureID());
+			Renderer::SubmitParticles(m_particleShader, m_particleSystem->GetVertexArray(), m_particleSystem->GetModelMatrix(), m_particleSystem->GetParticleCount());
 			m_particleShader->UnBind();
 			glDisable(GL_BLEND);
 
@@ -213,7 +215,7 @@ namespace Frosty
 			glEnable(GL_BLEND);
 			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 			std::string tempText = "Hello team";
-			Renderer::SubmitText(m_textShader, m_TextVertexArray, m_textVertBuffer, tempText);
+			Renderer::SubmitText(m_textShader, m_TextVertexArray, tempText);
 			glDisable(GL_BLEND);
 
 			/// Update

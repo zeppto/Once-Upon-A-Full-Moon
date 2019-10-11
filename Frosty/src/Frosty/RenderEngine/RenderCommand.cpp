@@ -72,8 +72,8 @@ namespace Frosty
 		glDrawElements(GL_TRIANGLES, vertexArray->GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, nullptr);
 	}
 
-	void RenderCommand::DrawParticles(const std::shared_ptr<VertexArray>& vertexArray)
+	void RenderCommand::DrawParticles(const std::shared_ptr<VertexArray>& vertexArray, size_t count)
 	{
-		glDrawArrays(GL_POINTS, vertexArray->GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT);
+		glDrawArrays(GL_POINTS, 0, count);
 	}
 }
