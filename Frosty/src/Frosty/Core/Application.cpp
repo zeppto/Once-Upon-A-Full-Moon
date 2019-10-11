@@ -23,7 +23,7 @@ namespace Frosty
 		m_ImGuiLayer = new ImGuiLayer();
 		PushOverlay(m_ImGuiLayer);
 
-		ECS::ComponentManager<ECS::CTransform> cManager;
+		ECS::ComponentManager<ECS::CTransform> cManager;	
 		
 		
 
@@ -44,7 +44,7 @@ namespace Frosty
 
 		// <<< FORWARD PLUS >>>
 		
-		FrustumGrid grid;
+		//FrustumGrid grid;
 
 		// 4) send the three buffers to a frgament shader
 		// 5) find out which cell the pixel belongs to (in screen space)
@@ -55,8 +55,8 @@ namespace Frosty
 	{		
 		EventBus::GetEventBus()->Delete();
 		glfwTerminate();
-		Assetmanager::Delete();
-		Renderer::DeleteSceneData();		
+		Assetmanager::Delete();	
+		delete m_RenderEngine;
 	}
 	
 	void Application::LoadModel(const std::string filename)
@@ -155,6 +155,7 @@ namespace Frosty
 		while (m_Running)
 		{
 			/// Frame Start
+			m_RenderEngine->ClearColor();
 			Time::OnUpdate();
 			/// Input
 			

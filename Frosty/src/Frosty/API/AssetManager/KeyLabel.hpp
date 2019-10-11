@@ -44,6 +44,7 @@ namespace Frosty
 		void SetKeyData(AssetMetaData<T>& data) {m_MetaData_ptr = &data;}
 
 		const uint32_t& GetKeyID() { return m_Key_ID; }
+
 		const uint32_t& GetKeyCount() { return s_NrOf_Keys; }
 
 		//Functions

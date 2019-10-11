@@ -6,12 +6,11 @@
 #include "EventSystem.hpp"
 #include "Frosty/ImGui/ImGuiLayer.hpp"
 #include "Frosty/API/AssetManager/Assetmanager.hpp"
-#include "Frosty/RenderEngine/Shader.hpp"
-#include "Frosty/RenderEngine/VertexArray.hpp"
-#include "Frosty/Core/Camera/Camera.hpp"
+#include "Frosty/RenderEngine/RenderEngine.hpp"
 
 // test
 #include "Frosty/RenderEngine/ForwardPlus.hpp"
+#include "Frosty/API/PrefabManager/PrefabManager.h"
 
 namespace Frosty
 {
@@ -33,7 +32,9 @@ namespace Frosty
 		void PushLayer(Layer* layer);
 		void PushOverlay(Layer* layer);
 		void PopLayer(Layer* layer);
-		void PopOverlay(Layer* layer);		
+		void PopOverlay(Layer* layer);	
+
+		RenderEngine* GetRenderEngine() { return m_RenderEngine; }
 
 		inline Window& GetWindow() { return *m_Window; }
 		static inline Application& Get() { return *s_Instance; }
@@ -58,11 +59,11 @@ namespace Frosty
 
 		// ECS stuff (TEMPORARY)
 		ECS::EntityManager m_EntityManager;
-		//std::unique_ptr<ECS::BaseComponentManager> m_TransformManager;
+		//std::unique_ptr<ECS::BaseComponentManager> m_TransformManager;		
 		
 		std::shared_ptr<Shader> m_Shader;
 		std::shared_ptr<Camera> m_Camera;
 		std::shared_ptr<VertexArray> tempVertexArray;	
 	};
 }
-#endif 
+#endif

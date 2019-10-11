@@ -4,9 +4,14 @@ layout(binding = 0) uniform sampler2D tex;
 
 out vec4 finalColor;
 
+
+
 layout(location = 0) in vec3 vsOutPos;
 layout(location = 1) in vec2 vsOutUV;
 layout(location = 2) in vec3 vsOutNormal; // color/normal
+
+
+layout(location = 13) uniform vec3 m_Colour;
 
 
 struct PointLight
@@ -38,7 +43,7 @@ vec3 CalcPointLight(PointLight light, vec3 normal, vec3 fragPos)
     float distance = length(light.position - fragPos);
 	//float attenuation = 1.0 / (1.f + light.linear_Quadratic.x * distance + light.linear_Quadratic.y * (distance * distance));
 	float attenuation = smoothstep(light.radius * 2, -1, distance); // perform Hermite interpolation between two values		seems ok so far... ~ W-_-W ~
-	vec3 diffuse = fragColor * light.color.rgb * diff * light.strength * attenuation /*(1.f/distance)*/;
+	vec3 diffuse = vsOutNormal * light.color.rgb * diff * light.strength * attenuation /*(1.f/distance)*/;
 
 	return (diffuse);
 }
@@ -72,10 +77,13 @@ void main()
 		result += CalcDirLight(dirLights[i], normal);
 	}
 	// Add Ambient Light
+
+	//m_Colour = vec3(1.0f,1.0f,0.0f);
+
 	result + vec3(ambient);
 
 	//finalColor = diffTexture*vec4(result, 1.f);
-	finalColor = diffTexture;
+	finalColor = diffTexture + m_Colour;
 	//finalColor = diffTexture*vec4(result, 1.f);
 
 

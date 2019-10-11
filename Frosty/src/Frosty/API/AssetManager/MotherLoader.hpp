@@ -9,6 +9,7 @@
 #define FILE_TYPE_JPG "jpg"
 #define FILE_TYPE_PNG "png"
 #define FILE_TYPE_LUNA "lu"
+#define FILE_TYPE_TTF "ttf"
 
 namespace Frosty
 {
@@ -18,7 +19,8 @@ namespace Frosty
 	{
 		JPG,
 		PNG,
-		LUNA
+		LUNA,
+		TTFF
 	};
 	
 	class MotherLoader
@@ -65,6 +67,7 @@ namespace Frosty
 		//AssetManager Filler Functions
 		bool LoadLunaFile(const FileMetaData& FileNameInformation, const bool& Reload = false);
 		bool LoadGraphicFile(const FileMetaData& FileNameInformation, const bool& Reload = false);
+	
 
 	};
 }

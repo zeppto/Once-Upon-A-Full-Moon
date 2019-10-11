@@ -9,7 +9,9 @@ namespace Frosty
 	{
 		m_CameraData.AspRatio = Application::Get().GetWindow().GetWidth() / (float)Application::Get().GetWindow().GetHeight();
 		m_CameraData.Projection = glm::perspective(m_CameraData.FoV, m_CameraData.AspRatio, m_CameraData.NearPlane, m_CameraData.FarPlane);
-		m_CameraData.View = glm::lookAt(m_CameraTranslationData.Pos, m_CameraTranslationData.Pos + m_CameraTranslationData.LookAtVec, m_CameraTranslationData.UpVec);		
+		m_CameraData.View = glm::lookAt(m_CameraTranslationData.Pos, m_CameraTranslationData.Pos + m_CameraTranslationData.LookAtVec, m_CameraTranslationData.UpVec);
+	
+
 	}
 
 	Camera::~Camera()

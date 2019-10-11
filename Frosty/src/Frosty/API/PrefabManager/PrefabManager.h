@@ -1,6 +1,7 @@
 #ifndef PREFABMANAGER_H
 #define PREFABMANAGER_H
 #include "Prefab.hpp"
+#include"PrefabInstance.hpp"
 
 namespace Frosty
 {
@@ -26,6 +27,11 @@ namespace Frosty
 		std::unordered_map<std::string, Prefab>* GetPrefabMap();
 		Prefab* GetPrefab(std::string prefabName);
 		bool setPrefab(const std::string& prefabName, const std::string& modelName, const std::string& materialName);
+		std::unordered_map<std::string, Prefab>* GetPrefabMap();
+		Prefab* GetPrefab(std::string prefabName);
+
+		PrefabInstance* CreatePrefabInstance(std::string prefabName);
+		
 	private:	//Functions
 
 		bool CheckIfPrefabExists(std::string prefabName);
