@@ -586,6 +586,7 @@ namespace Frosty
 
 			//Par
 			if (std::abs(DotCheck) == 1)
+			//if (0)
 			{
 
 				glm::vec3 CylEdge_Vec = m_Temp_Calc_This_Dir * m_Length;
@@ -793,74 +794,285 @@ namespace Frosty
 				float t_Value;
 
 				//Fault from here
+				bool s_Found = false;
+				bool t_Found = false;
+
+				bool v1_Found = false;
+				bool v2_Found = false;
 
 
-					float tempTimes = calcVecOne[0] / calcVecTwo[0];
-					glm::vec3 tempVec = calcVecTwo * tempTimes;
-
-
-					glm::vec3 tempRes;
-
-
-					if (tempVec[0] < 0 && calcVecOne[0] > 0)
+					//vec 1
+					if (calcVecOne[0] == 0)
 					{
-						tempRes = tempVec + calcVecOne;
+						t_Value = calcVecOne[2] / calcVecOne[1];
+						t_Found = true;
+						v1_Found = true;
+					}
+					if (calcVecOne[1] == 0)
+					{
+						s_Value = calcVecOne[2] / calcVecOne[0];
+						s_Found = true;
+						v1_Found = true;
+
 					}
 
-					else if (tempVec[0] > 0 && calcVecOne[0] > 0)
+					//vec 2
+					if (calcVecTwo[0] == 0)
 					{
-						tempRes = tempVec - calcVecOne;
+						t_Value = calcVecTwo[2] / calcVecTwo[1];
+						t_Found = true;
+						v2_Found = true;
+					}
+					if (calcVecTwo[1] == 0)
+					{
+						s_Value = calcVecTwo[2] / calcVecTwo[0];
+						s_Found = true;
+						v2_Found = true;
+
 					}
 
-					else if (tempVec[0] > 0 && calcVecOne[0] < 0)
+
+					if (s_Found && !t_Found)
 					{
-						tempRes = tempVec + calcVecOne;
+						if (v1_Found)
+						{
+							float tempTimes = calcVecTwo[0] / calcVecOne[0];
+
+							glm::vec3 temp_Vec = calcVecTwo * tempTimes;
+							
+							if (temp_Vec[0] < 0 && calcVecOne[0] < 0)
+							{
+								temp_Vec -= calcVecOne;
+							}
+							else if (temp_Vec[0] > 0 && calcVecOne[0] > 0)
+							{
+								temp_Vec -= calcVecOne;
+							}
+							else if (temp_Vec[0] < 0 && calcVecOne[0] > 0)
+							{
+								temp_Vec += calcVecOne;
+							}
+							else if (temp_Vec[0] > 0 && calcVecOne[0] < 0)
+							{
+								temp_Vec += calcVecOne;
+							}
+							else 
+							{
+								FY_CORE_ERROR("DHA FUQ?!");
+							}
+							if (temp_Vec[0] < 0)
+							{
+								temp_Vec *= -1;
+							}
+							t_Value = temp_Vec[2] / temp_Vec[1];
+							t_Found = true;
+						}
+						else
+						{
+							float tempTimes = calcVecOne[0] / calcVecTwo[0];
+							glm::vec3 temp_Vec = calcVecOne * tempTimes;
+
+							if (temp_Vec[0] < 0 && calcVecTwo[0] < 0)
+							{
+								temp_Vec -= calcVecTwo;
+							}
+							else if (temp_Vec[0] > 0 && calcVecTwo[0] > 0)
+							{
+								temp_Vec -= calcVecTwo;
+							}
+							else if (temp_Vec[0] < 0 && calcVecTwo[0] > 0)
+							{
+								temp_Vec += calcVecTwo;
+							}
+							else if (temp_Vec[0] > 0 && calcVecTwo[0] < 0)
+							{
+								temp_Vec += calcVecTwo;
+							}
+							else
+							{
+								FY_CORE_ERROR("DHA FUQ?!");
+							}
+							if (temp_Vec[0] < 0)
+							{
+								temp_Vec *= -1;
+							}
+							t_Value = temp_Vec[2] / temp_Vec[1];
+							t_Found = true;
+
+						}
+					}
+					else if (!s_Found && t_Found)
+					{
+						if (v1_Found)
+						{
+							float tempTimes = calcVecTwo[1] / calcVecOne[1];
+
+							glm::vec3 temp_Vec = calcVecTwo * tempTimes;
+
+							if (temp_Vec[1] < 0 && calcVecOne[1] < 0)
+							{
+								temp_Vec -= calcVecOne;
+							}
+							else if (temp_Vec[1] > 0 && calcVecOne[1] > 0)
+							{
+								temp_Vec -= calcVecOne;
+							}
+							else if (temp_Vec[1] < 0 && calcVecOne[1] > 0)
+							{
+								temp_Vec += calcVecOne;
+							}
+							else if (temp_Vec[1] > 0 && calcVecOne[1] < 0)
+							{
+								temp_Vec += calcVecOne;
+							}
+							else
+							{
+								FY_CORE_ERROR("DHA FUQ?!");
+							}
+							if (temp_Vec[1] < 0)
+							{
+								temp_Vec *= -1;
+							}
+							s_Value = temp_Vec[2] / temp_Vec[0];
+						}
+						else
+						{
+							float tempTimes = calcVecOne[1] / calcVecTwo[1];
+							glm::vec3 temp_Vec = calcVecOne * tempTimes;
+
+							if (temp_Vec[1] < 0 && calcVecTwo[1] < 0)
+							{
+								temp_Vec -= calcVecTwo;
+							}
+							else if (temp_Vec[1] > 0 && calcVecTwo[1] > 0)
+							{
+								temp_Vec -= calcVecTwo;
+							}
+							else if (temp_Vec[1] < 0 && calcVecTwo[1] > 0)
+							{
+								temp_Vec += calcVecTwo;
+							}
+							else if (temp_Vec[1] > 0 && calcVecTwo[1] < 0)
+							{
+								temp_Vec += calcVecTwo;
+							}
+							else
+							{
+								FY_CORE_ERROR("DHA FUQ?!");
+							}
+							if (temp_Vec[1] < 0)
+							{
+								temp_Vec *= -1;
+							}
+							s_Value = temp_Vec[2] / temp_Vec[0];
+						}
+					}
+					else if(!s_Found && !t_Found)
+					{
+					float tempMultiplier = calcVecOne[0] / calcVecTwo[0];
+					glm::vec3 temp2_Vec = calcVecTwo * tempMultiplier;
+					temp2_Vec -= calcVecOne;
+
+					//if (temp2_Vec[1] < 0)
+					//{
+					//	temp2_Vec *= -1;
+					//}
+					t_Value = temp2_Vec[2] / temp2_Vec[1];
+
+
+
+					tempMultiplier = calcVecOne[1] / calcVecTwo[1];
+					temp2_Vec = calcVecTwo * tempMultiplier;
+					temp2_Vec -= calcVecOne;
+
+					//if (temp2_Vec[0] < 0)
+					//{
+					//	temp2_Vec *= -1;
+					//}
+					s_Value = temp2_Vec[2] / temp2_Vec[0];
+
 					}
 
-					else
-					{
-						tempRes = tempVec - calcVecOne;
-					}
 
-					if (tempRes[1] < 0)
-					{
-						tempRes *= -1;
-					}
 
-					t_Value = tempRes[2] / tempRes[1];
 
-					float sSubValue = calcVecOne.y * t_Value;
 
-					if (calcVecOne[0] < 0)
-					{
-						s_Value = -((calcVecOne[2] - sSubValue) / calcVecOne[0]);
-					}
-					else
-					{
-						s_Value = (calcVecOne[2] - sSubValue) / calcVecOne[0];
-					}
+
+
+
+
+
+
+
+
+
+
+					//float tempTimes = calcVecOne[0] / calcVecTwo[0];
+					//glm::vec3 tempVec = calcVecTwo * tempTimes;
+
+
+					//glm::vec3 tempRes;
+
+
+					//if (tempVec[0] < 0 && calcVecOne[0] > 0)
+					//{
+					//	tempRes = tempVec + calcVecOne;
+					//}
+
+					//else if (tempVec[0] > 0 && calcVecOne[0] > 0)
+					//{
+					//	tempRes = tempVec - calcVecOne;
+					//}
+
+					//else if (tempVec[0] > 0 && calcVecOne[0] < 0)
+					//{
+					//	tempRes = tempVec + calcVecOne;
+					//}
+
+					//else
+					//{
+					//	tempRes = tempVec - calcVecOne;
+					//}
+
+					//if (tempRes[1] < 0)
+					//{
+					//	tempRes *= -1;
+					//}
+
+					//t_Value = tempRes[2] / tempRes[1];
+
+					//float sSubValue = calcVecOne.y * t_Value;
+
+					//if (calcVecOne[0] < 0)
+					//{
+					//	s_Value = -((calcVecOne[2] - sSubValue) / calcVecOne[0]);
+					//}
+					//else
+					//{
+					//	s_Value = (calcVecOne[2] - sSubValue) / calcVecOne[0];
+					//}
 
 
 					glm::vec3 P_Pos =
 						glm::vec3(
-							m_Position.x + m_Temp_Calc_This_Dir.x * s_Value,
-							m_Position.y + m_Temp_Calc_This_Dir.y * s_Value,
-							m_Position.z + m_Temp_Calc_This_Dir.z * s_Value);
+							m_Position.x + m_Temp_Calc_This_Dir.x * t_Value,
+							m_Position.y + m_Temp_Calc_This_Dir.y * t_Value,
+							m_Position.z + m_Temp_Calc_This_Dir.z * t_Value);
 
 					float P_Pos_Length = glm::length((P_Pos - m_Position));
 
 					glm::vec3 Q_Pos =
 						glm::vec3(
-							other.m_Position.x + m_Temp_Calc_Other_Dir.x * t_Value,
-							other.m_Position.y + m_Temp_Calc_Other_Dir.y * t_Value,
-							other.m_Position.z + m_Temp_Calc_Other_Dir.z * t_Value);
+							other.m_Position.x + m_Temp_Calc_Other_Dir.x * s_Value,
+							other.m_Position.y + m_Temp_Calc_Other_Dir.y * s_Value,
+							other.m_Position.z + m_Temp_Calc_Other_Dir.z * s_Value);
 
 					float Q_Pos_Length = glm::length((Q_Pos - other.m_Position));
 
 
 
 
-
+					FY_CORE_INFO("P: {0} , Q: {1}", P_Pos_Length, Q_Pos_Length);
 
 					if (P_Pos_Length <= (m_Length + m_Raduis) && Q_Pos_Length <= (other.m_Length + other.m_Raduis))
 					{

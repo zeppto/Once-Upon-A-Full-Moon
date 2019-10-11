@@ -125,7 +125,7 @@ public:
 
 		jj = Test1.ColTest(Test2);
 
-		if (!jj)
+		if (jj)
 		{
 			FY_CORE_INFO("TEST 6 OK");
 		}
@@ -151,13 +151,13 @@ public:
 			//m_Player.SetPos(m_Player.GetPos() - m_CollisionDetection.AABBIntersecPushback(m_Player.GetHitBoxLength(),
 			//	m_Player.GetHitBoxCenter(), m_Collidable3.GetHitBoxLength(), m_Collidable3.GetHitBoxCenter()));
 
-			m_SphereOne.SetPos(glm::vec3(1.5f,0.0f,0.0f));
+			m_SphereOne.SetPos(glm::vec3(1.0f,0.0f,-1.0f));
 			m_SphereOne.SetRotation(glm::vec3(0.0f, 0.0f,m_Temp_Rot));
 			m_SphereOne.UpdateWorldMatrix();
 			
-			m_SphereTwo.SetPos(glm::vec3(-1.5f,0.0f,0.0f));
+			m_SphereTwo.SetPos(glm::vec3(2.0f,0.0f,-2.0f));
 			//m_SphereTwo.SetRotation(glm::vec3(0.0f, 0.0f, -m_Temp_Rot));
-			//m_SphereTwo.UpdateWorldMatrix();
+			m_SphereTwo.UpdateWorldMatrix();
 
 
 

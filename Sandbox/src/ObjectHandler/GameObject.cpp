@@ -131,7 +131,7 @@ void GameObject::UpdateWorldMatrix()
 
 
 
-	glm::vec3 rotate = m_Rotation + glm::vec3(0.0f,0.0f,90.0f);
+	glm::vec3 rotate = m_Rotation + glm::vec3(0.0f,0.0f,0.0f);
 
 	glm::mat4 rotateX = glm::mat4(
 		1.0f, 0.0f, 0.0f, 0.0f,
@@ -154,7 +154,7 @@ void GameObject::UpdateWorldMatrix()
 		0.0f, 0.0f, 0.0f, 1.0f
 	);
 
-	glm::mat4 temp_Rot = rotateY * rotateX * rotateZ;
+	glm::mat4 temp_Rot = rotateZ * rotateY * rotateX  ;
 
 
 
@@ -163,8 +163,8 @@ void GameObject::UpdateWorldMatrix()
 
 
 
-
-	m_SphereHitBox.m_Direction = glm::normalize(glm::vec3(temp_Rot * glm::vec4(0.0f,1.0f,0.0f,1.0f)));
+	m_SphereHitBox.m_Position = m_Pos;
+	m_SphereHitBox.m_Direction = glm::normalize(glm::vec3(TempMat * glm::vec4(0.0f,1.0f,0.0f,0.0f)));
 
 
 	//TempMat = glm::scale(m_renderData.worldPosition, m_Scale);
