@@ -22,6 +22,8 @@
 #include "Frosty/UI/Canvas.h"
 #include "Frosty/DEFINITIONS.hpp"
 
+#include "Frosty/Particles/ParticleSystem.h"
+
 namespace Frosty
 {
 	class Application
@@ -82,6 +84,7 @@ namespace Frosty
 		//RenderEngine* m_RenderEngine;
 		std::shared_ptr<Canvas> m_Canvas;
 		std::shared_ptr<Sprite> m_Sprite;
+		std::shared_ptr<ParticleSystem> m_particleSystem;
 
 		std::shared_ptr<Shader> m_Shader;
 		std::shared_ptr<Shader> m_textShader;

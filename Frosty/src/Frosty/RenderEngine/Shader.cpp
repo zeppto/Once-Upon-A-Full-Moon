@@ -28,10 +28,22 @@ namespace Frosty
 		glGetShaderiv(vertexID, GL_COMPILE_STATUS, &compileResult);
 		if (compileResult == GL_FALSE) {
 
-			glGetShaderInfoLog(vertexID, 1024, nullptr, buff);
+			GLint maxLength = 0;
+			glGetShaderiv(vertexID, GL_INFO_LOG_LENGTH, &maxLength);
 
-			OutputDebugStringA(buff);
-			FY_CORE_WARN("Could not create shader!");
+			// The maxLength includes the NULL character
+			std::vector<GLchar> infoLog(maxLength);
+			glGetShaderInfoLog(vertexID, maxLength, &maxLength, &infoLog[0]);
+
+			// We don't need the shader anymore.
+			glDeleteShader(vertexID);
+
+			// Use the infoLog as you see fit.
+			FY_CORE_ERROR("{0}", infoLog.data());
+			FY_CORE_ASSERT(false, "Shader compilation failure!");
+
+			// In this simple program, we'll just leave
+			return;
 		}
 
 		//Read fragment shader

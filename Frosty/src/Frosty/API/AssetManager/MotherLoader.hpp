@@ -13,8 +13,7 @@
 #define FILE_TYPE_PNG "png"
 #define FILE_TYPE_LUNA "lu"
 #define FILE_TYPE_TTF "ttf"
-
-
+//#define FILE_TYPE_PARTICLE "particle" //For exported particle systems (not yet implemented)
 
 namespace Frosty
 {
@@ -26,7 +25,8 @@ namespace Frosty
 		JPG,
 		PNG,
 		LUNA,
-		TTFF
+		TTF
+		//PARTICLE
 	};
 
 	class MotherLoader
@@ -82,6 +82,7 @@ namespace Frosty
 		bool LoadFontFile(const FileMetaData& FileNameInformation, const bool& Reload = false);
 		bool LoadLunaFile(const FileMetaData& FileNameInformation, const bool& Reload = false);
 		bool LoadGraphicFile(const FileMetaData& FileNameInformation, const bool& Reload = false);
+		//bool LoadParticleFile(const FileMetaData& FileNameInformation, const bool& Reload = false);
 	};
 }
 

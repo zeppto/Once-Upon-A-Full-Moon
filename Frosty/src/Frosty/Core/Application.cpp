@@ -32,6 +32,7 @@ namespace Frosty
 
 		m_Canvas.reset(new Canvas);
 		m_Sprite.reset(new Sprite);
+		m_particleSystem.reset(new ParticleSystem);
 
 		ECS::ComponentManager<ECS::CTransform> cManager;
 		InitPrefabBuffers();
@@ -40,6 +41,8 @@ namespace Frosty
 		//	FY_CORE_ERROR("Could not load shader source.");
 		//}
 		MotherLoader::GetMotherLoader()->LoadFiles();
+
+		Assetmanager::GetAssetmanager()->LoadFile(m_particleSystem->GetTexturePath()); //Test
 
 		// <<< FORWARD PLUS >>>
 		

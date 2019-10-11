@@ -12,6 +12,47 @@ namespace Frosty
 		FY_CORE_ERROR("GLFW Error ({0}): {1}", error, description);
 	}
 
+	//This function specifies the layout of debug messages
+	void APIENTRY glDebugOutput(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar *message, const void *userParam) {
+		//Take out 131185 for example to test debug messages
+		if (id == 131169 || id == 131185 || id == 131218 || id == 131204) { //Insignificant errors/notifications
+			return;
+		}
+
+		//std::cout << "Debug message (" << id << "): " << message << std::endl;
+
+		std::string sourceStr;
+		switch (source) {
+		case GL_DEBUG_SOURCE_API:             sourceStr = "Source: API"; break;
+		case GL_DEBUG_SOURCE_WINDOW_SYSTEM:   sourceStr = "Source: Window System"; break;
+		case GL_DEBUG_SOURCE_SHADER_COMPILER: sourceStr = "Source: Shader Compiler"; break;
+		case GL_DEBUG_SOURCE_THIRD_PARTY:     sourceStr = "Source: Third Party"; break;
+		case GL_DEBUG_SOURCE_APPLICATION:     sourceStr = "Source: Application"; break;
+		case GL_DEBUG_SOURCE_OTHER:           sourceStr = "Source: Other"; break;
+		}
+
+		std::string typeStr;
+		switch (type) {
+		case GL_DEBUG_TYPE_ERROR:               typeStr = "Error"; break;
+		case GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR: typeStr = "Deprecated Behaviour"; break;
+		case GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR:  typeStr = "Undefined Behaviour"; break;
+		case GL_DEBUG_TYPE_PORTABILITY:         typeStr = "Portability"; break;
+		case GL_DEBUG_TYPE_PERFORMANCE:         typeStr = "Performance"; break;
+		case GL_DEBUG_TYPE_MARKER:              typeStr = "Marker"; break;
+		case GL_DEBUG_TYPE_PUSH_GROUP:          typeStr = "Push Group"; break;
+		case GL_DEBUG_TYPE_POP_GROUP:           typeStr = "Pop Group"; break;
+		case GL_DEBUG_TYPE_OTHER:               typeStr = "Other"; break;
+		}
+
+		switch (severity) {
+		case GL_DEBUG_SEVERITY_HIGH:         FY_CORE_ERROR("OpenGL Debug message ({0}): {1}\n{2}\nType: {3}\nSeverity: high", id, message, sourceStr, typeStr); break;
+		case GL_DEBUG_SEVERITY_MEDIUM:       FY_CORE_ERROR("OpenGL Debug message ({0}): {1}\n{2}\nType: {3}\nSeverity: medium", id, message, sourceStr, typeStr); break;
+		case GL_DEBUG_SEVERITY_LOW:          FY_CORE_INFO("OpenGL Debug message ({0}): {1}\n{2}\nType: {3}\nSeverity: low", id, message, sourceStr, typeStr); break;
+		case GL_DEBUG_SEVERITY_NOTIFICATION: FY_CORE_TRACE("OpenGL Debug message ({0}): {1}\n{2}\nType: {3}\nSeverity: notification", id, message, sourceStr, typeStr); break;
+		} std::cout << std::endl;
+		std::cout << std::endl;
+	}
+
 	Window::Window(const WindowProps& props)
 	{
 		Init(props);
@@ -35,6 +76,11 @@ namespace Frosty
 			s_GLFWInitialized = true;
 		}
 
+		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 4);
+		glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+		glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GL_TRUE);
+
 		m_Window = glfwCreateWindow((int)props.Width, (int)props.Height, props.Title.c_str(), nullptr, nullptr);
 
 		glfwSetWindowPos(m_Window, props.PositionX, props.PositionY);
@@ -55,6 +101,18 @@ namespace Frosty
 		glfwSetWindowUserPointer(m_Window, &m_Data);
 		
 		glViewport(0, 0, m_Data.Width, m_Data.Height);
+
+		//Test if debug output could be initialized
+		GLint flags;
+		glGetIntegerv(GL_CONTEXT_FLAGS, &flags);
+		if (flags & GL_CONTEXT_FLAG_DEBUG_BIT)
+		{
+			FY_CORE_INFO("Debug output successfully initialized.");
+			glEnable(GL_DEBUG_OUTPUT);
+			glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
+			glDebugMessageCallback(glDebugOutput, nullptr);
+			glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, nullptr, GL_TRUE);
+		}
 
 		InitCallbacks();
 	}
