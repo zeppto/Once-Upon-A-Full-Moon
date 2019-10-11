@@ -43,7 +43,7 @@ public:
 	{
 		Frosty::PrefabManager::GetPrefabManager()->setPrefab("TestPrefab1", "clock", "Mat_0:table"); //Create a prefab
 		m_Instance = Frosty::PrefabManager::GetPrefabManager()->CreatePrefabInstance("TestPrefab1"); //Create an instanceof the prefab
-		m_Instance->GetTransform()->setTranslate(glm::vec3(0, 0, -10)); //Move the instance
+		m_Instance->GetTransform()->SetTranslate(glm::vec3(0, 0, -10)); //Move the instance
 
 
 	}
@@ -72,13 +72,7 @@ public:
 			Frosty::PrefabManager::GetPrefabManager()->setPrefab("TestPrefab1", "table", "Mat_0:clock");
 		}
 		
-		
-		m_Instance->GetTransform()->setRotate(glm::vec3(0, 0, m_Rotation -= 40 * Frosty::Time::DeltaTime())); //Instances can also rotate! Amazing right?!
-		
-
-
-
-		
+		m_Instance->GetTransform()->SetRotate(glm::vec3(0, 0, m_Rotation -= 40 * Frosty::Time::DeltaTime()));//Instances can also rotate! Amazing right?!
 
 		m_Attacks = m_GameInput.PlayerControllerAttacks();
 

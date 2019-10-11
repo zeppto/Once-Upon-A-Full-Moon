@@ -53,7 +53,7 @@ namespace Frosty
 		float* GetQuad();
 		int GetSize();
 
-		Texture GetTexture();
+		Texture& GetTexture();
 		Transform &GetTransform();
 
 	private:

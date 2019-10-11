@@ -92,7 +92,7 @@ namespace Frosty
 		return sizeof(vertices);
 	}
 
-	Texture Sprite::GetTexture()
+	Texture& Sprite::GetTexture()
 	{
 		return m_Texture;
 	}
