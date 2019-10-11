@@ -176,7 +176,9 @@ namespace Frosty
 				//m_VertexArrays.emplace_back(std::move(tempVertexBuffer));
 				m_VertexArrays.emplace_back(std::shared_ptr<VertexArray> (FY_NEW VertexArray));
 				m_VertexArrays.at(t)->AddVertexBuffer( tempVertexBuffer);
-				m_VertexArrays.at(t)->GetVertexBuffer()->SetNrOfVertices(m_MeshInfoMap[t].MeshVertices.size());
+				//m_VertexArrays.at(t)->GetVertexBuffer()->SetNrOfVertices(m_MeshInfoMap[t].MeshVertices.size());
+
+				m_VertexArrays.at(t)->GetVertexBuffer().at(t)->SetNrOfVertices(m_MeshInfoMap[t].MeshVertices.size());
 
 				std::shared_ptr<IndexBuffer> tempIndexBuffer;
 				int test2 = indices.size();
