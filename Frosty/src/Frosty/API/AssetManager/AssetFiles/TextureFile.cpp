@@ -51,7 +51,7 @@ namespace Frosty
 
 			returnValue = true;
 			glGenTextures(1, &tempBufferId);
-			glActiveTexture(tempBufferId);
+			//glActiveTexture(tempBufferId);
 			glBindTexture(GL_TEXTURE_2D, tempBufferId);
 
 
