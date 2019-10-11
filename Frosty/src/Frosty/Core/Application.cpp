@@ -154,7 +154,7 @@ namespace Frosty
 	//}
 
 	void Application::Run()
-	{		
+	{
 		Renderer::InitScene(m_Shader2);
 		states.AddState(Frosty::StateRef(new MainMenuState(s_Instance)), false);
 		states.ProcessStateChanges();
@@ -190,17 +190,15 @@ namespace Frosty
 			//tempPrefab->GetModelKey().GetKeyData().GetVertexArray(0)->Bind();
 			//RenderCommand::DrawIndexed(tempPrefab->GetModelKey().GetKeyData().GetVertexArray(0));
 			//SubmitPrefab("TestPrefab1");
-			//Renderer::EndScene();
+			Renderer::EndScene();
 
 
-			//TEST SPRITE
+			////TEST SPRITE
 			m_Shader->UploadUniformInt(m_Sprite->GetTexture().name, 0);
-			Renderer::BeginScene(m_Camera);
 			glActiveTexture(GL_TEXTURE0);
 			glBindTexture(GL_TEXTURE_2D, m_Canvas->GetTexture());
 			Renderer::Submit2D(m_Shader, m_VertexArray, m_Sprite->GetTexture().name, m_Canvas->GetTransform().GetModel());
 
-			Renderer::EndScene();
 			glBindTexture(GL_TEXTURE_2D, 0);
 
 			//Render particles
@@ -215,49 +213,8 @@ namespace Frosty
 			glEnable(GL_BLEND);
 			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 			std::string tempText = "Hello team";
-
-			//glm::mat4 projection = glm::ortho(0.0f, 800.0f, 0.0f, 600.0f);
-			//glm::vec3 color = glm::vec3(1.0f, 0.0f, 1.0f);
-			//m_textShader->Bind();
-			//m_textShader->UploadUniforMat4("projection", projection);
-			//m_textShader->UploadUniformInt("text", 1);
-			//m_textShader->UploadUniformFloat3("textColor", color);
-			//std::string::const_iterator c;
-			//float x = 25.0f;
-			//float y = 24.0f;
-			//float scale = 1.0f;
-			//glm::vec3 vec = glm::vec3(0.5f, 0.8f, 0.2f);
-			//for (c = tempText.begin(); c != tempText.end(); c++) {
-			//	Character ch = Assetmanager::GetAssetmanager()->GetFontMetaData("Gabriola")->GetData()->m_characters.at(*c);
-			//	float xpos = x + ch.bearing.x * scale;
-			//	float ypos = y - (ch.size.y - ch.bearing.y) * scale;
-			//	float width = ch.size.x * scale;
-			//	float height = ch.size.y * scale;
-
-			//	float verts[6][4]
-			//	{
-			//		{ xpos,			ypos + height,	0.0f, 0.0f },
-			//		{ xpos,			ypos,			0.0f, 1.0f },
-			//		{ xpos + width,	ypos,			1.0f, 1.0f },
-
-			//		{ xpos,			ypos + height,	0.0f, 0.0f },
-			//		{ xpos + width, ypos,			1.0f, 1.0f },
-			//		{ xpos + width, ypos + height,	1.0f, 0.0f }
-			//	};
-
-				//m_textVertBuffer->Bind();
-				//m_textVertBuffer->SetData(*verts, sizeof(verts), GL_DYNAMIC_DRAW);
-
-				//glActiveTexture(GL_TEXTURE1);
-				//glBindTexture(GL_TEXTURE_2D, ch.textureID);
-
-				Renderer::SubmitText(m_textShader, m_TextVertexArray, m_textVertBuffer, tempText);
-				//x += (ch.advance >> 6) * scale;
-			//}
-			//m_textShader->UnBind();
+			Renderer::SubmitText(m_textShader, m_TextVertexArray, m_textVertBuffer, tempText);
 			glDisable(GL_BLEND);
-			//glBindVertexArray(0);
-			//glBindTexture(GL_TEXTURE_2D, 0);
 
 			/// Update
 			for (Layer* layer : m_LayerHandler)
@@ -367,7 +324,7 @@ namespace Frosty
 		Prefab* tempPrefab = tempPrefabManager->GetPrefab(prefabName);
 
 		tempPrefab->GetModelKey().GetKeyData().GetVertexArray(0)->Bind();
-		Renderer::Submit(m_Shader, tempPrefab->GetModelKey().GetKeyData().GetVertexArray(0));
+		Renderer::Submit(m_Shader2, tempPrefab->GetModelKey().GetKeyData().GetVertexArray(0));
 
 		std::shared_ptr<VertexArray> v = tempPrefab->GetModelKey().GetKeyData().GetVertexArray(0);
 		//I want a texture! >:C

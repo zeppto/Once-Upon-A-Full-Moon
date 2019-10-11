@@ -50,6 +50,7 @@ namespace Frosty
 	void Renderer::SubmitText(const std::shared_ptr<Shader>& shader, const std::shared_ptr<VertexArray>& vertexArray, std::shared_ptr<VertexBuffer>& vertexBuffer, std::string& text)
 	{
 		shader->Bind();
+		vertexArray->Bind();
 
 		glm::mat4 projection = glm::ortho(0.0f, 800.0f, 0.0f, 600.0f);
 		glm::vec3 color = glm::vec3(1.0f, 0.0f, 1.0f);
@@ -87,12 +88,13 @@ namespace Frosty
 			glActiveTexture(GL_TEXTURE1);
 			glBindTexture(GL_TEXTURE_2D, ch.textureID);
 
-			vertexArray->Bind();
 			RenderCommand::Draw2D(vertexArray);
-			vertexArray->Unbind();
 
 			x += (ch.advance >> 6) * scale;
 		}
+		glBindTexture(GL_TEXTURE_2D, 0);
+		vertexArray->Unbind();
+		vertexBuffer->Unbind();
 	}
 	
 	void Renderer::DeleteSceneData()
