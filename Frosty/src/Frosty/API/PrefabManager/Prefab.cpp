@@ -1,6 +1,7 @@
 #include "fypch.hpp"
 #include "Prefab.hpp"
 
+
 namespace Frosty
 {
 	uint32_t Prefab::s_NrOf_Prefabs = 0;
@@ -37,7 +38,7 @@ namespace Frosty
 		m_ModelKey = modelKey;
 	}
 
-	void Prefab::SetMaterialKey(KeyLabel<Luna::Material> materialKey)
+	void Prefab::SetMaterialKey(KeyLabel<LinkedMaterial> materialKey)
 	{
 		m_MaterialKey = materialKey;
 	}
@@ -47,13 +48,13 @@ namespace Frosty
 		return m_ModelKey;
 	}
 
-	KeyLabel<Luna::Material> Prefab::GetMaterialKey()
+	KeyLabel<LinkedMaterial> Prefab::GetMaterialKey()
 	{
 		return m_MaterialKey;
 	}
 	std::string Prefab::GetName()
 	{
-		return n_Name;
+		return m_PrefabName;
 	}
 	bool Prefab::SetData(std::string modelName, std::string materialName)
 	{
@@ -82,6 +83,25 @@ namespace Frosty
 
 		return returnValue;
 	}
+
+	void Prefab::SetName(std::string prefabName)
+	{
+		m_PrefabName = prefabName;
+	}
+
+
+	PrefabInstance* Prefab::CreatePrefabInstance()
+	{
+		m_PrefabInstances.emplace_back(FY_NEW PrefabInstance(m_PrefabName));
+
+		return m_PrefabInstances.back();
+	}
+
+	std::vector<PrefabInstance*>* Prefab::GetInstances()
+	{
+		return &m_PrefabInstances;
+	}
+
 	Prefab& Prefab::operator=(Prefab& other)
 	{
 		m_MaterialKey = other.m_MaterialKey;

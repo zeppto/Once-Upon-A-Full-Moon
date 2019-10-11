@@ -1,17 +1,11 @@
 #ifndef APPLICATION_HPP
 #define APPLICATION_HPP
 
-#include "Window.hpp"
-#include "LayerHandler.hpp"
-#include "EventSystem.hpp"
+#include "Frosty/Core/Window.hpp"
+#include "Frosty/Core/LayerHandler.hpp"
+#include "Frosty/Core/EventSystem.hpp"
 #include "Frosty/ImGui/ImGuiLayer.hpp"
-//#include "Frosty/API/AssetManager/Assetmanager.hpp"
-#include "Frosty/RenderEngine/Shader.hpp"
-#include "Frosty/RenderEngine/Buffer.hpp"
-#include "Frosty/RenderEngine/VertexArray.hpp"
-#include "Frosty/RenderEngine/Texture.hpp"
 #include "Frosty/RenderEngine/EditorCamera.hpp"
-#include "Frosty/API/Scene.hpp"
 #include "Frosty/Core/World.hpp"
 
 namespace Frosty
@@ -44,7 +38,7 @@ namespace Frosty
 
 	private:
 		void OnWindowCloseEvent(WindowCloseEvent& e);
-		void OnKeyPressedEvent(KeyPressedEvent& e);	
+		void OnKeyPressedEvent(KeyPressedEvent& e);
 
 	private:
 		bool m_Running = true;

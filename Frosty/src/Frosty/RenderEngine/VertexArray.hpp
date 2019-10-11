@@ -16,8 +16,8 @@ namespace Frosty
 		void AddVertexBuffer(const std::shared_ptr<VertexBuffer>& vertexBuffer);
 		void SetIndexBuffer(const std::shared_ptr<IndexBuffer>& indexBuffer);
 
-		const std::vector<std::shared_ptr<VertexBuffer>>& GetVertexBuffer()const;
-		const std::shared_ptr<IndexBuffer>& GetIndexBuffer()const;
+		const std::vector<std::shared_ptr<VertexBuffer>>& GetVertexBuffer();
+		const std::shared_ptr<IndexBuffer>& GetIndexBuffer();
 
 		static VertexArray* Create();
 	private:

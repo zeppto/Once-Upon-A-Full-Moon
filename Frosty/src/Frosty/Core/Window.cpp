@@ -17,7 +17,7 @@ namespace Frosty
 	{
 	}
 
-	void Window::Init(const WindowProps & props)
+	void Window::Init(const WindowProps& props)
 	{
 		FY_CORE_INFO("Creating window {0} ({1}, {2})", props.Title, props.Width, props.Height);
 
@@ -48,7 +48,7 @@ namespace Frosty
 		FY_CORE_INFO("  Version: {0}", glGetString(GL_VERSION));
 
 		glfwSetWindowUserPointer(m_Window, &m_Data);
-		
+
 		glEnable(GL_DEPTH_TEST);
 		glDisable(GL_CULL_FACE);
 		glDepthFunc(GL_LESS);
@@ -118,7 +118,7 @@ namespace Frosty
 				break;
 			}
 		});
-		
+
 		glfwSetCursorPosCallback(m_Window, [](GLFWwindow* window, double xpos, double ypos)
 		{
 			EventBus::GetEventBus()->Publish<MouseMovedEvent>(MouseMovedEvent((float)xpos, (float)ypos));
@@ -200,7 +200,7 @@ namespace Frosty
 		}
 	}
 
-	void Window::OnWindowResizeEvent(WindowResizeEvent & e)
+	void Window::OnWindowResizeEvent(WindowResizeEvent& e)
 	{
 		m_Data.Width = e.GetWidth();
 		m_Data.Height = e.GetHeight();
@@ -208,7 +208,7 @@ namespace Frosty
 		UpdateViewport();
 	}
 
-	void Window::OnWindowMovedEvent(WindowMovedEvent & e)
+	void Window::OnWindowMovedEvent(WindowMovedEvent& e)
 	{
 		m_Data.PositionX = e.GetXPos();
 		m_Data.PositionY = e.GetYPos();

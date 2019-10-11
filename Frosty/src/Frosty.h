@@ -9,7 +9,6 @@
 #include "Frosty/Core/InputManager.hpp"
 
 // ---Graphics------------------------
-#include "Frosty/RenderEngine/Renderer.hpp"
 #include "Frosty/RenderEngine/RenderCommand.hpp"
 
 #include "Frosty/RenderEngine/Buffer.hpp"

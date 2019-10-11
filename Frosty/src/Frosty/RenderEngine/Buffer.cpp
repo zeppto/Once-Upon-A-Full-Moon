@@ -1,12 +1,13 @@
 #include "fypch.hpp"
 #include "Buffer.hpp"
+
 #include <glad/glad.h>
 
 namespace Frosty
 {
 	// Vertexbuffer --------------------------------------------------------------------
 
-	VertexBuffer::VertexBuffer(const void * vertices, uint32_t size)
+	VertexBuffer::VertexBuffer(const void* vertices, uint32_t size)
 	{
 		glGenBuffers(1, &m_RendererID);
 		glBindBuffer(GL_ARRAY_BUFFER, m_RendererID);
@@ -27,8 +28,8 @@ namespace Frosty
 	{
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 	}
-	
-	VertexBuffer * VertexBuffer::Create(const void * vertices, uint32_t size)
+
+	VertexBuffer* VertexBuffer::Create(const void* vertices, uint32_t size)
 	{
 		return new VertexBuffer(vertices, size);
 	}
@@ -36,7 +37,7 @@ namespace Frosty
 	// Indexbuffer --------------------------------------------------------------------
 
 	IndexBuffer::IndexBuffer(const void* indices, uint32_t count)
-		:	m_Count(count)
+		: m_Count(count)
 	{
 		//glCreateBuffers(1, &m_RendererID);
 		glGenBuffers(1, &m_RendererID);
@@ -64,8 +65,8 @@ namespace Frosty
 		return m_Count;
 	}
 
-	IndexBuffer * IndexBuffer::Create(const void * indices, uint32_t count)
+	IndexBuffer* IndexBuffer::Create(const void* indices, uint32_t count)
 	{
 		return new IndexBuffer(indices, count);
-	}	
+	}
 }

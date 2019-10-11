@@ -15,7 +15,7 @@ namespace Frosty
 	{
 	public:
 		static void BeginScene(const glm::mat4& viewProjection);
-		static void EndScene();		
+		static void EndScene();
 
 		static void Submit(ECS::CMaterial* mat, const std::shared_ptr<VertexArray>& vertexArray, const glm::mat4& transform);
 

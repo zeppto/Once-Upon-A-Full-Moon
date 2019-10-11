@@ -1,15 +1,12 @@
 #include <fypch.hpp>
 #include "Texture.hpp"
-
 #include "Renderer.hpp"
 
-#include "stb_image.h"
-
-#include "glad/glad.h"
+#include <stb_image.h>
+#include <glad/glad.h>
 
 namespace Frosty
 {
-
 	Texture2D::Texture2D(const std::string& name, const std::string& path)
 		: m_Name(name), m_Path(path)
 	{
@@ -43,5 +40,4 @@ namespace Frosty
 		glActiveTexture(GL_TEXTURE0 + slot);
 		glBindTexture(GL_TEXTURE_2D, m_RendererID);
 	}
-
 }

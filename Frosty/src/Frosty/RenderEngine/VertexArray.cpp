@@ -1,6 +1,7 @@
 #include "fypch.hpp"
-#include <glad/glad.h>
 #include "Frosty/RenderEngine/VertexArray.hpp"
+
+#include <glad/glad.h>
 
 namespace Frosty
 {
@@ -28,10 +29,6 @@ namespace Frosty
 
 	VertexArray::VertexArray()
 	{
-		//glCreateVertexArrays(1, &m_RendererID);
-		//glGenVertexArrays(1, &m_VertexArray);
-		//glBindVertexArray(m_VertexArray);
-
 		glGenVertexArrays(1, &m_RendererID);		
 	}
 
@@ -80,18 +77,18 @@ namespace Frosty
 		m_IndexBuffer = indexBuffer;		
 	}
 
-	const std::vector<std::shared_ptr<VertexBuffer>>& VertexArray::GetVertexBuffer() const
+	const std::vector<std::shared_ptr<VertexBuffer>>& VertexArray::GetVertexBuffer() 
 	{
 		return m_VertexBuffer;
 	}
 
-	const std::shared_ptr<IndexBuffer>& VertexArray::GetIndexBuffer() const
+	const std::shared_ptr<IndexBuffer>& VertexArray::GetIndexBuffer()
 	{
 		return m_IndexBuffer;
 	}
 
 	VertexArray * VertexArray::Create()
 	{
-		return new VertexArray();
+		return FY_NEW VertexArray();
 	}
 }

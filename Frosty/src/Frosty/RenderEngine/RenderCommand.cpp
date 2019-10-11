@@ -4,7 +4,7 @@
 
 namespace Frosty
 {
-	void RenderCommand::SetClearColor(const glm::vec4 & color)
+	void RenderCommand::SetClearColor(const glm::vec4& color)
 	{
 		glClearColor(color.r, color.g, color.b, color.a);
 	}
@@ -15,7 +15,7 @@ namespace Frosty
 	}
 
 	void RenderCommand::DrawIndexed(const std::shared_ptr<VertexArray>& vertexArray)
-	{		
-		glDrawElements(GL_TRIANGLES, vertexArray->GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, nullptr);		
+	{
+		glDrawElements(GL_TRIANGLES, vertexArray->GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, nullptr);
 	}
 }

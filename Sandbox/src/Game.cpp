@@ -168,6 +168,7 @@ public:
 	{
 		Frosty::ECS::ComponentArrayIndex tempIndex = p_EntityMap[entity];
 
+
 		if (tempIndex > 0)
 		{
 			p_Total--;

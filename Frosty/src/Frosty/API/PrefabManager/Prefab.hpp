@@ -1,17 +1,16 @@
 #ifndef PREFAB_H
 #define PREFAB_H 
 #include "..//AssetManager/AssetManager.hpp"
-
+#include "PrefabInstance.hpp"
 namespace Frosty
 {
-
 	class Prefab
 	{
 	public:		//Variables
 		
 
 	private:	//Variables
-		std::string n_Name;
+		std::string m_PrefabName;
 
 
 		uint32_t m_PrefabID = 0;
@@ -19,37 +18,35 @@ namespace Frosty
 		static uint32_t s_NrOf_Prefabs;
 	
 		KeyLabel<ModelTemplate> m_ModelKey;
-		KeyLabel<Luna::Material> m_MaterialKey;
+		KeyLabel<LinkedMaterial> m_MaterialKey;
+
+		std::vector<PrefabInstance*> m_PrefabInstances;
 
 
 	public:		//Functions
 		Prefab();
 		Prefab(Prefab &other);
 
-
-
 		~Prefab();
 
 		void SetModelKey(KeyLabel<ModelTemplate> modelKey);
-		void SetMaterialKey(KeyLabel<Luna::Material> materialKey);
+		void SetMaterialKey(KeyLabel<LinkedMaterial> materialKey);
 
 		KeyLabel<ModelTemplate> GetModelKey();
-		KeyLabel<Luna::Material> GetMaterialKey();
+		KeyLabel<LinkedMaterial> GetMaterialKey();
 		std::string GetName();
 
 		bool SetData(std::string modelName, std::string materialName);
+		void SetName(std::string prefabName);
+
+		PrefabInstance* CreatePrefabInstance();
+
+		std::vector<PrefabInstance*>* GetInstances();
 
 		Prefab& operator = (Prefab& other);
 		bool operator == (Prefab& other);
 
-	private:	//Functions
-
-	
+	private:	//Functions	
 	};
-
 }
-
-
-
-#endif // !PREFAB
-
+#endif 

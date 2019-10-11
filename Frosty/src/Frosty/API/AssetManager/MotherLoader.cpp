@@ -3,14 +3,13 @@
 #include "Assetmanager.hpp"
 #include "..\PrefabManager\PrefabManager.h"
 #include"..\..\DEFINITIONS.hpp"
-
+#include "Frosty/Core/Application.hpp"
 
 namespace Frosty
 {
 
 	MotherLoader* MotherLoader::s_Instance = nullptr;
 	uint16_t MotherLoader::s_Failed_Loading_Attempts = 0;
-	uint16_t MotherLoader::s_Total_Loading_Attempts = 0;
 	uint16_t MotherLoader::s_Success_Loading_Attempts = 0;
 
 	MotherLoader* MotherLoader::GetMotherLoader()
@@ -35,13 +34,13 @@ namespace Frosty
 	{
 		bool returnValue = false;
 
-		FileNameInfo TempFileInfo;
-		TempFileInfo.m_FilePath = FilePath;
-		TempFileInfo.m_PreFab_Name = PrefabName;
+		FileMetaData TempFileInfo;
+		TempFileInfo.FullFilePath = FilePath;
+		TempFileInfo.PreFab_Name = PrefabName;
 
 		if (GetFileInformation(TempFileInfo))
 		{
-			switch (TempFileInfo.m_type)
+			switch (TempFileInfo.Type)
 			{
 			case JPG:
 				returnValue = LoadGraphicFile(TempFileInfo,Reload);
@@ -56,8 +55,10 @@ namespace Frosty
 				
 				break;
 
+
+
 			default:
-				FY_CORE_WARN("Unknown fileformat, Filepath: {0}", TempFileInfo.m_FilePath);
+				FY_CORE_WARN("Unknown fileformat, Filepath: {0}", TempFileInfo.FilePath);
 				break;
 			}
 		}
@@ -70,7 +71,6 @@ namespace Frosty
 		{
 			s_Failed_Loading_Attempts++;
 		}
-		s_Total_Loading_Attempts++;
 
 		return returnValue;
 	}
@@ -87,12 +87,15 @@ namespace Frosty
 
 	void MotherLoader::PrintLoadingAttemptInformation() const
 	{
-		FY_CORE_INFO("MotherLoader, Total Loading Attempts: {0}",s_Total_Loading_Attempts);
+		FY_CORE_INFO("________________________________________________________");
 		FY_CORE_INFO("MotherLoader, Success Loading Attempts: {0}",s_Success_Loading_Attempts);
-		FY_CORE_INFO("MotherLoader, Failed Loading Attempts: {0}",s_Failed_Loading_Attempts);
+		FY_CORE_INFO("MotherLoader, Failed Loading Attempts : {0}",s_Failed_Loading_Attempts);
+		FY_CORE_INFO("-----------------------------------------=--------------");
+		FY_CORE_INFO("MotherLoader, Total Loading Attempts  : {0}", (s_Success_Loading_Attempts + s_Failed_Loading_Attempts));
+		FY_CORE_INFO("¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯");
 	}
 
-	bool MotherLoader::GetFileInformation(FileNameInfo& FileNameInformation)
+	bool MotherLoader::GetFileInformation(FileMetaData& FileNameInformation)
 	{
 		bool returnValue = false;
 
@@ -100,26 +103,25 @@ namespace Frosty
 		std::string temp_Name = "";
 		std::string temp_Type = "";
 
-
-		size_t count = (FileNameInformation.m_FilePath.size() - 1);
-		while (FileNameInformation.m_FilePath[count] != '.' && count > 0)
+		size_t count = (FileNameInformation.FullFilePath.size()-1);
+		while (FileNameInformation.FullFilePath[count] != '.' && count > 0)
 		{
 
-			temp_Type.push_back(FileNameInformation.m_FilePath[count]);
+			temp_Type.push_back(FileNameInformation.FullFilePath[count]);
 			count--;
 		}
 		std::reverse(temp_Type.begin(), temp_Type.end());
 
-		FileNameInformation.m_type = GetFileType(temp_Type);
+		FileNameInformation.Type = GetFileType(temp_Type);
 
 		if (count > 0) {
 
 			returnValue = true;
 
 			count--;
-			while (FileNameInformation.m_FilePath[count] != (char)'/')
+			while (FileNameInformation.FullFilePath[count] != (char)'/')
 			{
-				temp_Name.push_back(FileNameInformation.m_FilePath[count--]);
+				temp_Name.push_back(FileNameInformation.FullFilePath[count--]);
 
 				if (count < 0)
 				{
@@ -129,11 +131,12 @@ namespace Frosty
 			}
 
 			std::reverse(temp_Name.begin(), temp_Name.end());
-			FileNameInformation.m_FileName = temp_Name;
+			FileNameInformation.FileName = temp_Name;
+			FileNameInformation.FilePath = temp_Name + "." + temp_Type;
 		}
 		else
 		{
-			FY_CORE_WARN("File Has No Name, Filepath {0}", FileNameInformation.m_FilePath);
+			FY_CORE_WARN("File Has No Name, Filepath {0}", FileNameInformation.FilePath);
 		}
 		return returnValue;
 	}
@@ -156,26 +159,26 @@ namespace Frosty
 		return -1;
 	}
 
-	bool MotherLoader::LoadLunaFile(const FileNameInfo& FileNameInformation, const bool& Reload)
+	bool MotherLoader::LoadLunaFile(const FileMetaData& FileNameInformation, const bool& Reload)
 	{
 
 		bool returnValue = false;
 
 		Luna::Reader tempFile;
 
-		if (tempFile.readFile(FileNameInformation.m_FilePath.c_str()))
+		if (tempFile.readFile(FileNameInformation.FullFilePath.c_str()))
 		{
 
 
 			auto temp_AssetManager = Assetmanager::GetAssetmanager();
 
-			ModelTemplate* mod_ptr = nullptr;
+			std::shared_ptr<ModelTemplate> mod_ptr = nullptr;
 
 
 			//std::string Temp_MT_Asset_Name = TempFileName; //ModelName?
 
 			//ModelTemplate
-			if (temp_AssetManager->AddNewModelTemplate(mod_ptr, FileNameInformation.m_FileName, FileNameInformation.m_FilePath))
+			if (temp_AssetManager->AddNewModelTemplate(mod_ptr, FileNameInformation))
 			{
 				//Fill modeltemplate
 
@@ -193,20 +196,17 @@ namespace Frosty
 
 					if (mod_ptr->GetMeshVector()->back().hasSkeleton)
 					{
-						tempFile.getWeights(tempMeshId, tempMeshInfo_Ptr->m_Weights);
+						tempFile.getWeights(tempMeshId, tempMeshInfo_Ptr->Weights);
 						modelHasSkeleton = true;
 					}
 
 					if (mod_ptr->GetMeshVector()->back().hasBoundingBox)
 					{
-						tempMeshInfo_Ptr->m_BoundingBox = tempFile.getBoundingBox(tempMeshId);
+						tempMeshInfo_Ptr->BoundingBox = tempFile.getBoundingBox(tempMeshId);
 					}
 
-					tempFile.getIndices(tempMeshId, tempMeshInfo_Ptr->m_MeshIndices);
-					tempFile.getVertices(tempMeshId, tempMeshInfo_Ptr->m_MeshVertices);
-
-					//Mod->getBoundingBoxVector()->emplace_back(tempFile.getBoundingBox(i));
-
+					tempFile.getIndices(tempMeshId, tempMeshInfo_Ptr->MeshIndices);
+					tempFile.getVertices(tempMeshId, tempMeshInfo_Ptr->MeshVertices);
 				}
 
 				if (modelHasSkeleton)
@@ -233,19 +233,23 @@ namespace Frosty
 				}
 
 
+
+
+				mod_ptr->LoadModelToGpu();
+
 			}
 			else
 			{
 				if (Reload)
 				{
 
-					FY_CORE_INFO("Trying To Reload a ModelTemplate: {0}", FileNameInformation.m_FileName);
+					FY_CORE_INFO("Trying To Reload a ModelTemplate: {0}", FileNameInformation.FileName);
 
 
 				}
 				else
 				{
-					FY_CORE_INFO("ModelTemplate Already Loaded, File: {0}", FileNameInformation.m_FileName);
+					FY_CORE_INFO("ModelTemplate Already Loaded, File: {0}", FileNameInformation.FileName);
 				}
 
 
@@ -257,11 +261,11 @@ namespace Frosty
 			std::vector<Luna::Material> tempMatVector;
 			tempFile.getMaterials(tempMatVector);
 
-			Luna::Material* tempMatPtr = nullptr;
+			std::shared_ptr<LinkedMaterial> tempMatPtr = nullptr;
 
 
 
-			std::string MaterialAssetName = "HejHej Fel Fel";
+			std::string MaterialAssetName = "Could not Load Material";
 
 
 			//Add Materials to holder
@@ -270,32 +274,37 @@ namespace Frosty
 
 				//tempMatVector.at(i).diffuseTexPath Chop Name???
 
+				//Load Textures to materials
+
 				//Materials
-				if (temp_AssetManager->AddNewMaterialTemplate(tempMatPtr, tempMatVector.at(i).diffuseTexPath, FileNameInformation.m_FileName))
+
+				FileMetaData TempMatMetaData = FileNameInformation;
+				TempMatMetaData.FileName = "Mat_" + std::to_string(i) + ":" + FileNameInformation.FileName;
+
+				if (temp_AssetManager->AddNewMaterialTemplate(tempMatVector.at(i), TempMatMetaData))
 				{
 					//Fill Material
-					*tempMatPtr = tempMatVector.at(i);
 
-					//saving lates material name for prefab(If Needed, build so the prefab can support more materials)
-					MaterialAssetName = tempMatVector.at(i).diffuseTexPath;
+					//saving latest material name for prefab(If Needed, build so the prefab can support more materials)
+					MaterialAssetName = TempMatMetaData.FileName;
 
 				}
 				else
 				{
 					if (Reload)
 					{
-						FY_CORE_INFO("Trying To Reload a Material: {0}", FileNameInformation.m_FileName);
+						FY_CORE_INFO("Trying To Reload a Material: {0}", FileNameInformation.FileName);
 					}
 					else
 					{
-						FY_CORE_INFO("Material Already Loaded, File: {0}", FileNameInformation.m_FileName);
+						FY_CORE_INFO("Material Already Loaded, File: {0}", FileNameInformation.FileName);
 					}
 				}
 			}
 
-			if (FileNameInformation.m_PreFab_Name != "")
+			if (FileNameInformation.PreFab_Name != "")
 			{
-			PrefabManager::GetPrefabManager()->setPrefab(FileNameInformation.m_PreFab_Name, FileNameInformation.m_FileName, MaterialAssetName);
+			PrefabManager::GetPrefabManager()->setPrefab(FileNameInformation.PreFab_Name, FileNameInformation.FileName, MaterialAssetName);
 			}
 
 
@@ -303,23 +312,39 @@ namespace Frosty
 		}
 		else
 		{
-			FY_CORE_WARN("Luna Failed to load file, FilePath: {0}", FileNameInformation.m_FilePath);
+			FY_CORE_WARN("Luna Failed to load file, FilePath: {0}", FileNameInformation.FilePath);
 		}
 		return returnValue;
 	}
 
-	bool MotherLoader::LoadGraphicFile(const FileNameInfo& FileNameInformation, const bool& Reload)
+	bool MotherLoader::LoadGraphicFile(const FileMetaData& FileNameInformation, const bool& Reload)
 	{
 		bool returnValue = false;
 
 
+
+			std::shared_ptr<TextureFile> tempTexturePtr = Assetmanager::GetAssetmanager()->AddNewTextureTemplate(FileNameInformation);
+
+			if (tempTexturePtr != nullptr)
+			{
+				if (tempTexturePtr->LoadToGpu())
+				{
+					returnValue = true;
+				}
+				else
+				{
+					FY_CORE_WARN("Could not load Image to GPU, Name: {0}", FileNameInformation.FileName);
+				}
+			}
+			else
+			{
+				FY_CORE_WARN("Could not load Image, Name: {0}" , FileNameInformation.FileName);
+			}
+		
+
+
 		return returnValue;
 	}
-
-
-
-
-
 
 }
 

@@ -2,7 +2,7 @@
 #include "Renderer.hpp"
 #include "Frosty/Core/ECS.hpp"
 
-#include "glad/glad.h"
+#include <glad/glad.h>
 
 namespace Frosty
 {
@@ -16,7 +16,7 @@ namespace Frosty
 	void Renderer::EndScene()
 	{
 	}
-	
+
 	void Renderer::Submit(ECS::CMaterial* mat, const std::shared_ptr<VertexArray>& vertexArray, const glm::mat4& transform)
 	{
 		mat->UseShader->Bind();

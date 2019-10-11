@@ -86,7 +86,7 @@ namespace Frosty
 					layer->OnImGuiRender();
 				}
 			}
-			m_ImGuiLayer->End();			
+			m_ImGuiLayer->End();
 
 			m_Window->OnUpdate();
 		}
@@ -104,7 +104,7 @@ namespace Frosty
 		layer->OnAttach();
 	}
 
-	void Application::PopLayer(Layer * layer)
+	void Application::PopLayer(Layer* layer)
 	{
 		if (layer != nullptr)
 		{
@@ -114,7 +114,7 @@ namespace Frosty
 		delete layer;
 	}
 
-	void Application::PopOverlay(Layer * layer)
+	void Application::PopOverlay(Layer* layer)
 	{
 		if (layer != nullptr)
 		{

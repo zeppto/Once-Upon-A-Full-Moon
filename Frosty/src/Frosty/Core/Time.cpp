@@ -1,6 +1,5 @@
 #include <fypch.hpp>
 #include "Time.hpp"
-
 #include <GLFW/glfw3.h>
 
 namespace Frosty
@@ -12,8 +11,7 @@ namespace Frosty
 	float Time::m_FPSResetCounter = 1.0f;
 	int Time::m_FPSCounter = 0;
 	std::stack<float> Time::m_Timers;
-
-	
+		
 	void Time::StartTimer(const std::string& func)
 	{
 		FY_CORE_TRACE("Timer started for '{0}'!", func);
