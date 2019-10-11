@@ -10,7 +10,7 @@ namespace Frosty
 	{
 	public:
 		Shader(const std::string & filepath, const std::string& shaderName = "Unnamed");
-		Shader(const std::string& vertexSrc, const std::string& fragmentSrc, const std::string& shaderName = "Unnamed");
+		//Shader(const std::string& vertexSrc, const std::string& fragmentSrc, const std::string& shaderName = "Unnamed");
 		virtual ~Shader();
 
 		void Bind()const;
@@ -27,10 +27,6 @@ namespace Frosty
 
 		void UploadUniformMat3(const std::string& name, const glm::mat3& matrix);
 		void UploadUniformMat4(const std::string& name, const glm::mat4& matrix);
-
-		//void UploadUniformFloatArray(const std::string& name, const float value);
-		//void UploadUniformFloat3Array(const std::string& name, const glm::vec3& value);
-		//void UploadUniformFloat4Array(const std::string& name, const glm::vec4& value);
 
 	private:
 		std::string ReadFile(const std::string& filepath);

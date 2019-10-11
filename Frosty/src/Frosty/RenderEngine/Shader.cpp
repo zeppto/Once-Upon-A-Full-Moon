@@ -6,7 +6,7 @@ namespace Frosty
 {
 	static GLenum ShaderTypeFromString(const std::string& type)
 	{
-		if (type == "vertex")
+		if (type == "vertex" || type == "vertex\t")
 			return GL_VERTEX_SHADER;
 		if (type == "fragment" || type == "pixel")
 			return GL_FRAGMENT_SHADER;
@@ -29,14 +29,14 @@ namespace Frosty
 		auto count = lastDot == std::string::npos ? filepath.size() - lastSlash : lastDot - lastSlash;
 	}
 
-	Shader::Shader(const std::string& vertexSrc, const std::string& fragmentSrc, const std::string& shaderName)
+	/*Shader::Shader(const std::string& vertexSrc, const std::string& fragmentSrc, const std::string& shaderName)
 		: m_Name(shaderName)
 	{
 		std::unordered_map<GLenum, std::string> sources;
 		sources[GL_VERTEX_SHADER] = vertexSrc;
 		sources[GL_FRAGMENT_SHADER] = fragmentSrc;
 		Compile(sources);
-	}
+	}*/
 
 	Shader::~Shader()
 	{
