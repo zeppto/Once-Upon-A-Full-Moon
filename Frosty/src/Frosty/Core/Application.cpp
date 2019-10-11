@@ -1,7 +1,7 @@
 #include "fypch.hpp"
 #include "Application.hpp"
 #include "Frosty/RenderEngine/Renderer.hpp"
-//#include "Frosty/API/PrefabManager/PrefabManager.h"
+#include "Frosty/API/PrefabManager/PrefabManager.h"
 #include <glad/glad.h>
 
 namespace Frosty
@@ -27,8 +27,11 @@ namespace Frosty
 		
 		//InitPrefabBuffers();
 
-		//LoadModel("newClock");		
-		//PrefabManager::GetPrefabManager()->setPrefab("TestPrefab1", "newClock", "Mat_0:newClock");
+		//LoadModel("newClock");
+		//LoadModel("testingCube");
+		MotherLoader::GetMotherLoader()->LoadFiles();
+		PrefabManager::GetPrefabManager()->setPrefab("TestPrefab1", "newClock", "Mat_0:newClock");
+		//PrefabManager::GetPrefabManager()->setPrefab("TestPrefab1", "testingCube", "Mat_0:testingCube");
 		//CreateBuffers("newClock");
 
 		LoadModel("testingCube");
@@ -68,7 +71,7 @@ namespace Frosty
 
 	void Application::CreateBuffers(const std::string filename)
 	{
-		m_VertexArray.reset(VertexArray::Create());
+		tempVertexArray.reset(VertexArray::Create());
 
 		auto tempAssetsManager = Assetmanager::GetAssetmanager();
 		struct TempVertex
@@ -136,11 +139,12 @@ namespace Frosty
 		};
 
 		m_VertexBuffer->SetLayout(layout);
-		m_VertexArray->AddVertexBuffer(m_VertexBuffer);		
+		tempVertexArray->AddVertexBuffer(m_VertexBuffer);		
+		int test = indices.size();
 
 		std::shared_ptr<IndexBuffer> m_IndexBuffer;
-		//m_IndexBuffer.reset(IndexBuffer::Create(&indices.front(), indices.size()));
-		//m_VertexArray->SetIndexBuffer(m_IndexBuffer);
+		m_IndexBuffer.reset(IndexBuffer::Create(&indices.front(), indices.size()));
+		tempVertexArray->SetIndexBuffer(m_IndexBuffer);
 	}
 	
 	void Application::InitShaders()
@@ -244,9 +248,8 @@ namespace Frosty
 			RenderCommand::Clear();
 
 			Renderer::BeginScene(m_Camera);
-			Renderer::Submit(m_Shader, m_VertexArray);
-
-			//SubmitPrefab("TestPrefab1");			
+			//Renderer::Submit(m_Shader, tempVertexArray);
+			SubmitPrefab("TestPrefab1");			
 			//RenderCommand::DrawIndexed(tempPrefab->GetModelKey().GetKeyData().GetVertexArray(0));
 			//Renderer::Submit(m_Shader, tempPrefab->GetModelKey().GetKeyData().GetVertexArray(0));
 
@@ -348,14 +351,15 @@ namespace Frosty
 
 	void Application::SubmitPrefab(std::string prefabName)
 	{
-		/*auto tempPrefabManager = PrefabManager::GetPrefabManager();
+		auto tempPrefabManager = PrefabManager::GetPrefabManager();
 		Prefab* tempPrefab = tempPrefabManager->GetPrefab(prefabName);
 		
 		tempPrefab->GetModelKey().GetKeyData().GetVertexArray(0)->Bind();
 		Renderer::Submit(m_Shader, tempPrefab->GetModelKey().GetKeyData().GetVertexArray(0));
 
-		std::shared_ptr<VertexArray> v = tempPrefab->GetModelKey().GetKeyData().GetVertexArray(0);*/
-		
+		std::shared_ptr<VertexArray> v = tempPrefab->GetModelKey().GetKeyData().GetVertexArray(0);
+		//I want a texture! >:C
+
 		/*RenderModel
 		(
 			tempPrefab->GetModelKey().GetKeyData().GetVBO(0),
