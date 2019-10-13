@@ -548,6 +548,58 @@ namespace Frosty
 	bool SphereHitbox::ColTest(const SphereHitbox& other)
 	{
 
+		float thisLength = m_Length + m_Raduis;
+		float otherLength = other.m_Length + other.m_Raduis;
+		glm::vec3 TempPOVec = other.m_Position - m_Position;
+		glm::vec3 This_Dir = m_Direction;
+		glm::vec3 Other_Dir = other.m_Direction;
+		bool returnValue = false;
+
+		if (TempPOVec.length() <= (thisLength + otherLength))
+		{
+
+			for (uint8_t i = 0; i < 3; i++)
+			{
+				if (std::abs(m_Temp_Calc_This_Dir[i]) < 10e-6)
+				{
+					This_Dir[i] = 0;
+				}
+				if (std::abs(m_Temp_Calc_Other_Dir[i]) < 10e-6)
+				{
+					Other_Dir[i] = 0;
+				}
+
+			}
+
+
+
+			glm::vec3 CylEdge_Vec = This_Dir * m_Length;
+			glm::vec3 CylEdge_Pos_One = (m_Position + CylEdge_Vec);
+			glm::vec3 CylEdge_Pos_Two = (m_Position - CylEdge_Vec);
+
+
+			glm::vec3 OtherCylEdge_Vec = Other_Dir * other.m_Length;
+			glm::vec3 OtherCylEdge_Pos_One = other.m_Position + OtherCylEdge_Vec;
+			glm::vec3 OtherCylEdge_Pos_Two = other.m_Position - OtherCylEdge_Vec;
+
+			if (calcShortestDist(CylEdge_Pos_One, CylEdge_Pos_Two, OtherCylEdge_Pos_One, OtherCylEdge_Pos_Two) <= (other.m_Raduis + m_Raduis))
+			{
+				returnValue = true;
+			}
+
+
+
+
+		}
+
+
+
+		return returnValue;
+	}
+
+	bool SphereHitbox::ColTest2(const SphereHitbox& other)
+	{
+
 
 		float thisLength = m_Length + m_Raduis;
 		float otherLength = other.m_Length + other.m_Raduis;
@@ -979,7 +1031,7 @@ namespace Frosty
 					//}
 					t_Value = temp2_Vec[2] / temp2_Vec[1];
 
-
+					
 
 					tempMultiplier = calcVecOne[1] / calcVecTwo[1];
 					temp2_Vec = calcVecTwo * tempMultiplier;
@@ -1167,6 +1219,87 @@ namespace Frosty
 	bool SphereHitbox::SphereCheck(const SphereHitbox& Other)
 	{
 		return false;
+	}
+
+	const float SphereHitbox::calcShortestDist(const glm::vec3& S1P0, const glm::vec3& S1P1, const glm::vec3& S2P0, const glm::vec3& S2P1) const
+	{
+		glm::vec3 u = S1P1 - S1P0;
+		glm::vec3 v = S2P1 - S2P0;
+		glm::vec3 w = S1P0 - S2P0;
+
+		float a = glm::dot(u,u);
+		float b = glm::dot(u,v);
+		float c = glm::dot(v,v);
+		float d = glm::dot(u,w);
+		float e = glm::dot(v,w);
+
+		float D = a * c - b * b;
+		float sc, sN, sD = D;
+		float tc, tN, tD = D;
+
+		if (D < SMALL_NUM)
+		{
+			sN = 0.0f;
+			sD = 1.0f;
+			tN = e;
+			tD = c;
+		}
+		else
+		{
+			sN = (b * e - c * d);
+			tN = (a * e - b * d);
+			if (sN < 0.0f)
+			{
+				sN = 0.0f;
+				tN = e;
+				tD = c;
+			}
+			else if (sN > sD)
+			{
+				sN = sD;
+				tN = e + b;
+				tD = c;
+			}
+		}
+
+		if (tN < 0.0f)
+		{
+			tN = 0.0f;
+			if (-d < 0.0f)
+			{
+				sN = 0.0f;
+			}
+			else if (-d > a)
+			{
+				sN = sD;
+			}
+			else
+			{
+				sN = -d;
+				sD = a;
+			}
+		}
+		else if (tN > tD)
+		{
+			tN = tD;
+			if ((-d + b) < 0.0f)
+			{
+				sN = 0.0f;
+			}
+			else if ((-d + b) > a)
+			{
+				sN = sD;
+			}
+			else
+			{
+				sN = (-d + b);
+				sD = a;
+			}
+		}
+
+		sc = (std::abs(sN) < SMALL_NUM ? 0.0f : sN / sD);
+		tc = (std::abs(tN) < SMALL_NUM ? 0.0f : tN / tD);
+		return glm::length((w + (sc * u) - (tc * v)));
 	}
 
 }
