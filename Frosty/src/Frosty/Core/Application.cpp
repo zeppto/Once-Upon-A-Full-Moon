@@ -3,6 +3,7 @@
 #include "Frosty/RenderEngine/Renderer.hpp"
 #include "Frosty/API/AssetManager.hpp"
 #include "Frosty/Core/KeyCodes.h"
+#include"Frosty/API/AssetManager/AM.hpp"
 
 
 
@@ -31,6 +32,7 @@ namespace Frosty
 
 		m_World.reset(FY_NEW World());
 		m_World->Init();
+		Assetmanager::Get()->LoadFiles();
 	}
 
 	Application::~Application()
