@@ -1,41 +1,41 @@
 #ifndef TEXTUREFILE_HPP
 #define TEXTUREFILE_HPP
 
+#include "AssetFile.hpp"
+
 namespace Frosty
 {
 
-	class TextureFile
+	class TextureFile : public AssetFile
 	{
 	public:		//Variables
 
 	private:	//Variables
 
-		bool m_Loaded_In_Gpu;
-		uint8_t m_Components;
-		uint16_t m_Image_Width;
-		uint16_t m_Image_Height;
-		uint16_t  m_Buffer_ID;
-		std::string m_FilePath;
+	//	Need to be int for stbi loader
+		int m_Components;
+		int m_Image_Width;
+		int m_Image_Height;
+
+		unsigned char* m_ImageData;
 
 
 	public:		//Functions
-		TextureFile();
-		TextureFile(const std::string& FilePath);
+		inline TextureFile() : AssetFile(FileMetaData()) {}
+		TextureFile(const FileMetaData& MetaData);
+		//TextureFile(const std::string& FilePath);
 		virtual ~TextureFile();
 
-		const bool& LoadedInGpu() { return m_Loaded_In_Gpu; }
-		const uint8_t& GetComponents() { return m_Components; }
-		const uint16_t& GetBufferID() { return m_Buffer_ID; }
-		const uint16_t& GetImageWidth() { return m_Image_Height; }
-		const uint16_t& GetImageHeight() { return m_Image_Height; }
-
-		const std::string& GetFilePath() { return m_FilePath; }
-		void SetFilePath(const std::string& FilePath) { m_FilePath = FilePath; } // unload?
+		const int& GetComponents() { return m_Components; }
+		const int& GetImageWidth() { return m_Image_Height; }
+		const int& GetImageHeight() { return m_Image_Height; }
 
 
-		bool LoadToGpu();
-		bool LoadToGpu(const std::string& FilePath);
-		void ReleaseFromGpu();
+		virtual bool LoadToMem(const bool& Reload = false);
+		virtual bool DeleteFromMem();
+
+		virtual bool LoadToGPU();
+		virtual bool DeleteFromGPU();
 
 
 	private:	//Functions

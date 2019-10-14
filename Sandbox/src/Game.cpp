@@ -11,6 +11,8 @@ public:
 	{
 		p_Signature.set(Frosty::ECS::getComponentTypeID<Frosty::ECS::CTransform>(), true);
 		p_Signature.set(Frosty::ECS::getComponentTypeID<Frosty::ECS::CCamera>(), true);
+
+		Frosty::PrefabManager::GetPrefabManager()->SetPrefab("StorKlocka", "klocka","");
 	}
 
 	virtual void OnUpdate() override
