@@ -3,6 +3,8 @@
 
 #include "Frosty/Core/Application.hpp"
 #include "Frosty/Core/InputManager.hpp"
+#include "Frosty/Core/KeyCodes.h"
+#include "Frosty/Core/MouseButtonCodes.h"
 
 namespace Frosty
 {
@@ -11,13 +13,13 @@ namespace Frosty
 		auto& win = Application::Get().GetWindow();
 		m_ProjectionMatrix = glm::perspective(glm::radians(props.FieldOfView), (float)(win.GetViewport().z / win.GetViewport().w), props.ClippingPlanes.x, props.ClippingPlanes.y);
 		m_Position = props.Position;
-		m_Front = props.Front;
+		m_Rotation = props.Rotation;
 		RecalculateMatrix();
 	}
 
 	void EditorCamera::OnUpdate()
 	{
-		if (InputManager::IsMouseButtonPressed(GLFW_MOUSE_BUTTON_2))
+		if (InputManager::IsMouseButtonPressed(FY_MOUSE_BUTTON_2))
 		{
 			if (m_ResetMouse)
 			{
@@ -28,19 +30,23 @@ namespace Frosty
 
 			// Movement
 			float velocity = m_TranslationSpeed * Time::DeltaTime();
-			if (InputManager::IsKeyPressed(GLFW_KEY_W))
+			if (InputManager::IsKeyPressed(FY_KEY_LEFT_CONTROL))
+			{
+				velocity *= 10.0f;
+			}
+			if (InputManager::IsKeyPressed(FY_KEY_W))
 			{
 				Translate(m_Front * velocity);
 			}
-			else if (InputManager::IsKeyPressed(GLFW_KEY_S))
+			else if (InputManager::IsKeyPressed(FY_KEY_S))
 			{
 				Translate(m_Front * velocity * -1.0f);
 			}
-			if (InputManager::IsKeyPressed(GLFW_KEY_A))
+			if (InputManager::IsKeyPressed(FY_KEY_A))
 			{
 				Translate(glm::cross(m_Front, { 0.0f, 1.0f, 0.0f }) * velocity * -1.0f);
 			}
-			else if (InputManager::IsKeyPressed(GLFW_KEY_D))
+			else if (InputManager::IsKeyPressed(FY_KEY_D))
 			{
 				Translate(glm::cross(m_Front, { 0.0f, 1.0f, 0.0f }) * velocity);
 			}
@@ -65,7 +71,7 @@ namespace Frosty
 
 			RecalculateMatrix();
 		}
-		if (InputManager::IsMouseButtonReleased(GLFW_MOUSE_BUTTON_2))
+		if (InputManager::IsMouseButtonReleased(FY_MOUSE_BUTTON_2))
 		{
 			m_ResetMouse = true;
 		}
@@ -83,9 +89,6 @@ namespace Frosty
 		front.y = sin(glm::radians(m_Rotation.y));
 		front.z = sin(glm::radians(m_Rotation.x)) * cos(glm::radians(m_Rotation.y));
 		m_Front = glm::normalize(front);
-
-		//glm::vec3 right = glm::normalize(glm::cross(m_Front, { 0.0f, 1.0f, 0.0f }));  // Normalize the vectors, because their length gets closer to 0 the more you look up or down which results in slower movement.
-		//glm::vec3 up = glm::normalize(glm::cross(right, m_Front));
 
 		m_ViewMatrix = glm::lookAt(m_Position, m_Position + m_Front, { 0.0f, 1.0f, 0.0f });
 		m_ViewProjectionMatrix = m_ProjectionMatrix * m_ViewMatrix;

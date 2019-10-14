@@ -12,6 +12,15 @@ namespace Frosty
 		// Move all this code later out to front-end
 		AddMesh("Clock", "assets/models/clock/clock.lu");
 		AddMesh("Table", "assets/models/table/table.lu");
+		AddMesh("Plane", "assets/primitives/plane/plane.lu");
+		AddMesh("Sphere", "assets/primitives/sphere/sphere.lu");
+		AddMesh("Icosahedron", "assets/primitives/icosahedron/icosahedron.lu");
+		AddMesh("Donut", "assets/primitives/donut/donut.lu");
+		AddMesh("Disc", "assets/primitives/disc/disc.lu");
+		AddMesh("Cylinder", "assets/primitives/cylinder/cylinder.lu");
+		AddMesh("Cube", "assets/primitives/cube/cube.lu");
+		AddMesh("Cone", "assets/primitives/cone/cone.lu");
+		AddMesh("3D", "assets/primitives/3D/3D.lu");
 
 		s_Shaders.emplace("FlatColor", FY_NEW Shader("assets/shaders/FlatColor.glsl", "FlatColor"));
 		s_Shaders.emplace("Texture2D", FY_NEW Shader("assets/shaders/Texture2D.glsl", "Texture2D"));
@@ -20,6 +29,8 @@ namespace Frosty
 		LoadTexture2D("Clock_Gloss", "assets/textures/pCube10_gloss.png");
 		LoadTexture2D("Clock_Normal", "assets/textures/pCube10_normal.png");
 		LoadTexture2D("Table_Diffuse", "assets/textures/polySurface15_diffuse.png");
+		LoadTexture2D("Brown_Mud_Diffuse", "assets/textures/brown_mud_diffuse.png");
+		LoadTexture2D("Checkerboard", "assets/textures/Checkerboard.png");
 
 		s_Shaders["Texture2D"]->Bind();
 		s_Shaders["Texture2D"]->UploadUniformInt("u_DiffuseTexture", 0);
@@ -88,38 +99,6 @@ namespace Frosty
 		indexBuffer.reset(IndexBuffer::Create(&indices.front(), indices.size()));
 		s_Meshes[name]->SetIndexBuffer(indexBuffer);
 
-	}
-
-	void AssetManager::AddQuadMesh()
-	{
-		s_Meshes.emplace("Quad", VertexArray::Create());
-
-		float vertices[4 * 5] = {
-			-0.5f, -0.5f, 0.0f, 0.0, 0.0f,
-			 0.5f, -0.5f, 0.0f, 1.0, 0.0f,
-			 0.5f,  0.5f, 0.0f, 1.0, 1.0f,
-			-0.5f,  0.5f, 0.0f, 0.0, 1.0f
-		};
-
-		std::shared_ptr<VertexBuffer> vertexBuffer;
-		vertexBuffer.reset(VertexBuffer::Create(vertices, sizeof(vertices)));
-
-		BufferLayout layout =
-		{
-			{ ShaderDataType::Float3, "a_Position" },
-			{ ShaderDataType::Float2, "a_TextureCoords" }
-		};
-
-		vertexBuffer->SetLayout(layout);
-		s_Meshes["Quad"]->AddVertexBuffer(vertexBuffer);
-
-		uint32_t indices[2 * 3] = {
-			0, 1, 2,
-			2, 3, 0
-		};
-		std::shared_ptr<IndexBuffer> indexBuffer;
-		indexBuffer.reset(IndexBuffer::Create(indices, sizeof(indices) / sizeof(uint32_t)));
-		s_Meshes["Quad"]->SetIndexBuffer(indexBuffer);
 	}
 
 	void AssetManager::LoadTexture2D(const std::string& name, const std::string& filepath)

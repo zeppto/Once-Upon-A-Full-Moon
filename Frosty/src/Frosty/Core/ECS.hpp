@@ -3,6 +3,8 @@
 
 #include "Frosty/RenderEngine/Renderer.hpp"
 #include "Frosty/RenderEngine/Texture.hpp"
+#include "Frosty/Core/KeyCodes.h"
+#include "Frosty/Core/MouseButtonCodes.h"
 
 namespace Frosty
 {
@@ -82,7 +84,7 @@ namespace Frosty
 #pragma region Settings
 
 		// Let's define a maximum number of unique components:
-		constexpr std::size_t MAX_COMPONENTS{ 4 };
+		constexpr std::size_t MAX_COMPONENTS{ 8 };
 
 		// Let's define a maximum number of entities that
 		// can have the same component type:
@@ -107,24 +109,7 @@ namespace Frosty
 
 
 #pragma region Utilities
-
-		//struct ComponentInfo
-		//{
-		//	std::unordered_map<ComponentID, std::string> s_ComponentNames;
-		//
-		//	inline std::string& GetComponentNameById(ComponentID cid)
-		//	{
-		//		FY_CORE_ASSERT(!s_ComponentNames[cid].empty(), "Can't retrieve information about a component before it has been added once at least.");
-		//		return s_ComponentNames[cid];
-		//	}
-		//
-		//	inline void SetComponentNameById(ComponentID cid, const std::string& name)
-		//	{
-		//		if (s_ComponentNames[cid].empty())
-		//			s_ComponentNames[cid] = name;
-		//	}
-		//};
-
+		
 		namespace Internal
 		{
 			inline ComponentID getComponentUniqueID()
@@ -248,7 +233,7 @@ namespace Frosty
 
 		struct BaseComponent
 		{
-			std::shared_ptr<Entity> EntityPtr;
+			std::shared_ptr<Entity> EntityPtr{ nullptr };
 
 			virtual void Func() = 0;
 		};
@@ -372,7 +357,9 @@ namespace Frosty
 		struct CCamera : public BaseComponent
 		{
 			static std::string NAME;
+			CTransform* Target{ nullptr };
 			glm::vec3 Front{ 0.0f, 0.0f, -1.0f };
+			glm::vec3 Background{ 0.2f };
 			float FieldOfView{ 60.0f };
 			float Near{ 0.03f };
 			float Far{ 1000.0f };
@@ -382,9 +369,8 @@ namespace Frosty
 			bool UpdateProjection{ false };			// Not sure if this is needed outside the editor
 
 			CCamera() = default;
-			CCamera(const glm::vec3& position, float fov, float aspect, float zNear, float zFar)
-				: FieldOfView(fov), Near(zNear), Far(zFar), ProjectionMatrix(glm::perspective(glm::radians(fov), aspect, zNear, zFar)),
-				ViewMatrix(glm::lookAt(position, position + Front, glm::vec3(0.0f, 1.0f, 0.0f))), ViewProjectionMatrix(ProjectionMatrix * ViewMatrix)
+			CCamera(float fov, float aspect, float zNear, float zFar)
+				: FieldOfView(fov), Near(zNear), Far(zFar), ProjectionMatrix(glm::perspective(glm::radians(fov), aspect, zNear, zFar))
 			{
 			}
 			CCamera(const CCamera& org) { FY_CORE_ASSERT(false, "Copy constructor in CCamera called."); }
@@ -409,6 +395,56 @@ namespace Frosty
 			virtual void Func() override { }
 		};
 
+		struct CMotion : public BaseComponent
+		{
+			static std::string NAME;
+			glm::vec3 Direction{ 0.0f, 0.0f, 0.0f };
+			float Speed{ 0.0f };
+
+			CMotion() = default;
+			CMotion(float speed) : Speed(speed) { }
+			CMotion(const CMotion& org) { FY_CORE_ASSERT(false, "Copy constructor in CMotion called."); }
+
+			virtual void Func() override { }
+		};
+
+		struct CController : public BaseComponent
+		{
+			static std::string NAME;
+			int MoveWestKey{ FY_KEY_A };
+			int MoveNorthKey{ FY_KEY_W };
+			int MoveEastKey{ FY_KEY_D };
+			int MoveSouthKey{ FY_KEY_S };
+
+			CController() = default;
+			CController(const CController& org) { FY_CORE_ASSERT(false, "Copy constructor in CController called."); }
+
+			virtual void Func() override { }
+		};
+
+		struct CFollow : public BaseComponent 
+		{
+			static std::string NAME;
+			CTransform* Target{ nullptr };
+			float StopDistance{ 3.0f };
+
+			CFollow() = default;
+			CFollow(const CFollow& org) { FY_CORE_ASSERT(false, "Copy constructor in CFollow called."); }
+
+			virtual void Func() override { }
+		};
+
+		struct CLight : public BaseComponent
+		{
+			static std::string NAME;
+			glm::vec3 Color{ 1.0f, 0.96f, 0.84f };
+
+			CLight() = default;
+			CLight(const CLight& org) { FY_CORE_ASSERT(false, "Copy constructor in CLight called."); }
+
+			virtual void Func() override { }
+		};
+
 		static std::string GetComponentName(size_t i)
 		{
 			switch (i)
@@ -417,6 +453,10 @@ namespace Frosty
 			case 1:		return "Mesh";
 			case 2:		return "Camera";
 			case 3:		return "Material";
+			case 4:		return "Motion";
+			case 5:		return "Controller";
+			case 6:		return "Follow";
+			case 7:		return "Light";
 			default:	return "";
 			}
 		}
@@ -441,6 +481,7 @@ namespace Frosty
 			virtual void AddComponent(const std::shared_ptr<Entity>& entity) = 0;
 			virtual void RemoveEntity(const std::shared_ptr<Entity>& entity) = 0;
 
+			ComponentBitset& GetSignature() { return p_Signature; }
 
 		protected:
 			ComponentBitset p_Signature;
@@ -449,145 +490,6 @@ namespace Frosty
 
 		private:
 		};
-
-		/* Specific Systems */
-		/*
-		class CameraSystem : public BaseSystem
-		{
-		public:
-			CameraSystem() = default;
-			virtual ~CameraSystem() = default;
-
-			inline virtual void Init() override
-			{
-				p_Signature.set(getComponentTypeID<CTransform>(), true);
-				p_Signature.set(getComponentTypeID<CCamera>(), true);
-			}
-
-			virtual void OnInput() override;
-			virtual void OnUpdate() override;
-
-			virtual void BeginScene(bool editorCamera) override
-			{
-				if (editorCamera) return;
-
-				if (p_Total > 1)
-				{
-					RenderCommand::SetClearColor({ 0.2f, 0.2f, 0.2f, 1.0f });
-					RenderCommand::Clear();
-					for (size_t i = 1; i < p_Total; i++)
-					{
-						Renderer::BeginScene(m_Cameras[i]->ViewProjectionMatrix);
-					}
-				}
-				else
-				{
-					RenderCommand::SetClearColor({ 0.0f, 0.0f, 0.0f, 1.0f });
-					RenderCommand::Clear();
-					Renderer::BeginScene(glm::mat4(1.0f));
-				}
-			}
-
-			virtual void AddComponent(const std::shared_ptr<Entity>& entity) override;
-			inline virtual void RemoveEntity(const std::shared_ptr<Entity>& entity) override
-			{
-				ComponentArrayIndex tempIndex = p_EntityMap[entity];
-
-				if (tempIndex > 0)
-				{
-					p_Total--;
-					m_Transform[p_Total] = nullptr;
-					m_Cameras[p_Total] = nullptr;
-
-					//std::shared_ptr<Entity> entityToUpdate = removeEntityFromData(mEntity);
-
-					if (p_Total > tempIndex)
-					{
-						std::shared_ptr<Entity> entityToUpdate = m_Transform[p_EntityMap[entity]]->EntityPtr;
-						p_EntityMap[entityToUpdate] = tempIndex;
-					}
-
-					p_EntityMap.erase(entity);
-				}
-			}
-
-		private:
-			std::array<CTransform*, MAX_ENTITIES_PER_COMPONENT> m_Transform;
-			std::array<CCamera*, MAX_ENTITIES_PER_COMPONENT> m_Cameras;
-
-		};
-
-		class RenderSystem : public BaseSystem
-		{
-		public:
-			RenderSystem() = default;
-			virtual ~RenderSystem() = default;
-
-			inline virtual void Init() override
-			{
-				p_Signature.set(getComponentTypeID<CTransform>(), true);
-				p_Signature.set(getComponentTypeID<CMesh>(), true);
-				p_Signature.set(getComponentTypeID<CMaterial>(), true);
-			}
-
-			inline virtual void OnUpdate() override { }
-
-			inline virtual void Render()
-			{
-				for (size_t i = 1; i < p_Total; i++)
-				{
-					// So the question is, calculate it every frame or save the result in the component
-					// and update it only when Position/Rotation/Scale changes
-					// Takes up performance if calculated every frame, but the other way will mean
-					// 4 * 4 floats which is 4 * 4 * 4 = 64 bytes for EVERY entity
-					// For now we calculate it every frame
-					glm::mat4 transform = glm::translate(glm::mat4(1.0f), m_Transform[i]->Position);
-					transform = glm::rotate(transform, glm::radians(m_Transform[i]->Rotation.x), { 1.0f, 0.0f, 0.0f });
-					transform = glm::rotate(transform, glm::radians(m_Transform[i]->Rotation.y), { 0.0f, 1.0f, 0.0f });
-					transform = glm::rotate(transform, glm::radians(m_Transform[i]->Rotation.z), { 0.0f, 0.0f, 1.0f });
-					transform = glm::scale(transform, m_Transform[i]->Scale);
-
-					if (m_Materials[i]->UseShader->GetName() == "Texture2D" && m_Materials[i]->DiffuseTexture) m_Materials[i]->DiffuseTexture->Bind(); 
-					if (m_Materials[i]->UseShader->GetName() == "Texture2D" && m_Materials[i]->GlossTexture) m_Materials[i]->GlossTexture->Bind(1);
-					if (m_Materials[i]->UseShader->GetName() == "Texture2D" && m_Materials[i]->NormalTexture) m_Materials[i]->NormalTexture->Bind(2);
-
-					Renderer::Submit(m_Materials[i], m_Meshes[i]->Mesh, transform);
-				}
-			}
-
-			virtual void AddComponent(const std::shared_ptr<Entity>& entity) override;
-			inline virtual void RemoveEntity(const std::shared_ptr<Entity>& entity) override
-			{
-				ComponentArrayIndex tempIndex = p_EntityMap[entity];
-
-				if (tempIndex > 0)
-				{
-					p_Total--;
-					m_Transform[p_Total] = nullptr;
-					m_Meshes[p_Total] = nullptr;
-					m_Materials[p_Total] = nullptr;
-
-					if (p_Total > 1)
-					{
-						//std::shared_ptr<Entity> entityToUpdate = removeEntityFromData(mEntity);
-						std::shared_ptr<Entity> entityToUpdate = m_Transform[p_EntityMap[entity]]->EntityPtr;
-
-						if (p_Total > tempIndex)
-						{
-							p_EntityMap[entityToUpdate] = tempIndex;
-						}
-					}
-
-					p_EntityMap.erase(entity);
-				}
-			}
-
-		private:
-			std::array<CTransform*, MAX_ENTITIES_PER_COMPONENT> m_Transform;
-			std::array<CMesh*, MAX_ENTITIES_PER_COMPONENT> m_Meshes;
-			std::array<CMaterial*, MAX_ENTITIES_PER_COMPONENT> m_Materials;
-
-		};*/
 
 #pragma endregion System
 

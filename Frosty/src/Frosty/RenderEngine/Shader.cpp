@@ -1,6 +1,7 @@
 #include "fypch.hpp"
 #include "Shader.hpp"
-#include "Glad/glad.h"
+
+#include <Glad/glad.h>
 
 namespace Frosty
 {

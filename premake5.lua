@@ -159,6 +159,11 @@ project "Sandbox"
 	{
 		"Frosty"
 	}
+	
+	postbuildcommands
+	{
+		("{COPY} %{wks.location.relpath} ../assets ../bin/" .. outputdir .. "/%{prj.name}/assets/")
+	}
 
 	filter "system:windows"
 		systemversion "latest"

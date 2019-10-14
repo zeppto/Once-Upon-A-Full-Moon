@@ -6,12 +6,12 @@ namespace Frosty
 	struct EditorCameraProps
 	{
 		glm::vec3 Position;
-		glm::vec3 Front;
+		glm::vec3 Rotation;
 		float FieldOfView;
 		glm::vec2 ClippingPlanes;
 
-		EditorCameraProps(const glm::vec3& pos = glm::vec3(0.0f, 0.0f, 0.0f), const glm::vec3& front = glm::vec3(0.0f, 0.0f, -1.0f), float fov = 60.0f, const glm::vec2& nearFar = glm::vec2(0.03f, 1000.0f))
-			: Position(pos), Front(front), FieldOfView(fov), ClippingPlanes(nearFar) { }
+		EditorCameraProps(const glm::vec3& pos = glm::vec3(0.0f, 0.0f, 0.0f), const glm::vec3& rotation = glm::vec3(0.0f, 0.0f, 0.0f), float fov = 60.0f, const glm::vec2& nearFar = glm::vec2(0.03f, 1000.0f))
+			: Position(pos), Rotation(rotation), FieldOfView(fov), ClippingPlanes(nearFar) { }
 	};
 
 	class EditorCamera
@@ -55,7 +55,7 @@ namespace Frosty
 		glm::mat4 m_ViewProjectionMatrix;
 
 		glm::vec3 m_Position{ 0.0f };
-		glm::vec3 m_Rotation{ 90.0f, 0.0f, 0.0f };		// Yaw, Pitch, Roll
+		glm::vec3 m_Rotation{ 0.0f, 0.0f, 0.0f };		// Yaw, Pitch, Roll
 		glm::vec3 m_Front;
 
 		// Settings

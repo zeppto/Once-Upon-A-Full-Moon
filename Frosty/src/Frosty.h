@@ -5,8 +5,12 @@
 
 #include "Frosty/Core/Application.hpp"
 #include "Frosty/Core/Log.hpp"
+
 #include "Frosty/Core/Time.hpp"
+
 #include "Frosty/Core/InputManager.hpp"
+#include "Frosty/Core/KeyCodes.h"
+#include "Frosty/Core/MouseButtonCodes.h"
 
 // ---Graphics------------------------
 #include "Frosty/RenderEngine/RenderCommand.hpp"

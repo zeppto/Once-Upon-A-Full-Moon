@@ -2,7 +2,8 @@
 #define FROSTY_HPP
 
 #include "Editor/InspectorLayer.hpp"
-#include "imgui/imgui.h"
+
+#include <imgui/imgui.h>
 
 namespace MCS
 {

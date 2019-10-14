@@ -1,4 +1,4 @@
-#include "fypch.hpp"
+#include <fypch.hpp>
 #include "Window.hpp"
 #include "Frosty/DEFINITIONS.hpp"
 
@@ -12,6 +12,12 @@ namespace Frosty
 	{
 		FY_CORE_ERROR("GLFW Error ({0}): {1}", error, description);
 	}
+
+	BaseWindow* BaseWindow::Create()
+	{
+		return FY_NEW Window();
+	}
+
 
 	Window::Window()
 	{

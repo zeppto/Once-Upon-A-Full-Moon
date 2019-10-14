@@ -12,8 +12,10 @@ namespace Frosty
 		virtual const std::string& GetName() const = 0;
 		virtual uint32_t GetWidth() const = 0;
 		virtual uint32_t GetHeight() const = 0;
+		virtual uint32_t GetRenderID() = 0;
 
 		virtual void Bind(uint32_t slot = 0) const = 0;
+		virtual void Unbind() const = 0;
 	};
 
 	class Texture2D : public Texture
@@ -22,12 +24,16 @@ namespace Frosty
 		Texture2D(const std::string& name, const std::string& path);
 		virtual ~Texture2D();
 
+
 		virtual std::string& GetName() override { return m_Name; }
 		virtual const std::string& GetName() const override { return m_Name; }
 		virtual uint32_t GetWidth() const override { return m_Width; }
 		virtual uint32_t GetHeight() const override { return m_Height; }
+		virtual uint32_t GetRenderID() { return m_RendererID; }
 
 		virtual void Bind(uint32_t slot = 0) const override;
+		virtual void Unbind() const override;
+
 	private:
 		std::string m_Name;
 		std::string m_Path;

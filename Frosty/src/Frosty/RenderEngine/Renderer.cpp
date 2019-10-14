@@ -17,6 +17,12 @@ namespace Frosty
 	{
 	}
 
+	void Renderer::AddLight(const glm::vec3& pos, const glm::vec3& color)
+	{
+		s_SceneData->Lights.Position = pos;
+		s_SceneData->Lights.Color = color;
+	}
+
 	void Renderer::Submit(ECS::CMaterial* mat, const std::shared_ptr<VertexArray>& vertexArray, const glm::mat4& transform)
 	{
 		mat->UseShader->Bind();
@@ -24,7 +30,9 @@ namespace Frosty
 		mat->UseShader->UploadUniformMat4("u_Transform", transform);
 		if (mat->UseShader->GetName() == "FlatColor")
 		{
-			mat->UseShader->UploadUniformFloat4("u_Color", mat->Albedo);
+			mat->UseShader->UploadUniformFloat4("u_ObjectColor", mat->Albedo);
+			//mat->UseShader->UploadUniformFloat3("u_CameraPosition", s_SceneData->Lights.Position);
+			//mat->UseShader->UploadUniformFloat3("u_LightColor", s_SceneData->Lights.Color);
 		}
 
 		vertexArray->Bind();

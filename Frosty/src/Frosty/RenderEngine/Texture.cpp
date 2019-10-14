@@ -40,4 +40,9 @@ namespace Frosty
 		glActiveTexture(GL_TEXTURE0 + slot);
 		glBindTexture(GL_TEXTURE_2D, m_RendererID);
 	}
+	
+	void Texture2D::Unbind() const
+	{
+		glBindTexture(GL_TEXTURE_2D, 0);
+	}
 }

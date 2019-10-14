@@ -7,11 +7,6 @@
 
 namespace Frosty
 {
-	Scene::Scene()
-	{
-
-	}
-
 	void Scene::Init()
 	{
 		// Initiate entity manager with a fixed size for all scenes or user defined for each specific scene?

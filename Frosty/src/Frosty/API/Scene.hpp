@@ -8,7 +8,7 @@ namespace Frosty
 	class Scene
 	{
 	public:
-		Scene();
+		Scene() = default;
 		Scene(const Scene& org) { FY_CORE_ASSERT(false, "Copy constructor in Scene called."); }
 		virtual ~Scene() = default;
 

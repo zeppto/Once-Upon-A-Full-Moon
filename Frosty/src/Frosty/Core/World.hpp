@@ -57,6 +57,7 @@ namespace Frosty
 		template<typename ComponentType, typename... TArgs>
 		inline ComponentType& AddComponent(std::shared_ptr<ECS::Entity>& entity, TArgs&&... mArgs)
 		{
+			//FY_CORE_ASSERT(cId > -1, "Component was not found!");
 			ComponentType& addedComp = m_Scene->AddComponent<ComponentType>(entity, std::forward<TArgs>(mArgs)...);
 
 			for (size_t i = 1; i < m_TotalSystems; i++)
@@ -74,13 +75,20 @@ namespace Frosty
 
 			for (size_t i = 1; i < m_TotalSystems; i++)
 			{
-				m_Systems[i]->RemoveEntity(entity);
+				if (m_Systems[i]->GetSignature().test(ECS::getComponentTypeID<ComponentType>()))
+				{
+					m_Systems[i]->RemoveEntity(entity);
+				}
 			}
 		}
 
-	private:
-		// System Functions
-		void CreateSystems();
+		template<typename ComponentType>
+		inline void InitiateComponent()
+		{
+			ComponentType* component(new ComponentType());
+			std::unique_ptr<ComponentType> componentPtr{ component };
+			m_ComponentList[ECS::getComponentTypeID<ComponentType>()] = std::move(componentPtr);
+		}
 
 	private:
 		// Scene Declarations
@@ -89,6 +97,10 @@ namespace Frosty
 		// System Declarations 
 		std::array<std::unique_ptr<ECS::BaseSystem>, ECS::MAX_SYSTEMS> m_Systems;
 		size_t m_TotalSystems{ 1 };
+
+		// Component Declarations
+		//std::array<std::unique_ptr<ECS::BaseComponent>, ECS::MAX_COMPONENTS> m_ComponentList;
+		//size_t m_TotalComponents{ 0 };
 
 	};
 }

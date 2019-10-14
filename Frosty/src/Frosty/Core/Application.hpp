@@ -1,7 +1,7 @@
 #ifndef APPLICATION_HPP
 #define APPLICATION_HPP
 
-#include "Frosty/Core/Window.hpp"
+#include "Frosty/Core/BaseWindow.hpp"
 #include "Frosty/Core/LayerHandler.hpp"
 #include "Frosty/Core/EventSystem.hpp"
 #include "Frosty/ImGui/ImGuiLayer.hpp"
@@ -28,7 +28,7 @@ namespace Frosty
 
 		inline EditorCamera& GetEditorCamera() { return m_EditorCamera; }
 		inline std::unique_ptr<World>& GetWorld() { return m_World; }
-		inline Window& GetWindow() { return *m_Window; }
+		inline BaseWindow& GetWindow() { return *m_Window; }
 		static inline Application& Get() { return *s_Instance; }
 
 		// Game Functions
@@ -48,7 +48,7 @@ namespace Frosty
 		LayerHandler m_LayerHandler;
 		std::unique_ptr<World> m_World;
 
-		std::unique_ptr<Window> m_Window;
+		std::unique_ptr<BaseWindow> m_Window;
 
 		static Application* s_Instance;
 

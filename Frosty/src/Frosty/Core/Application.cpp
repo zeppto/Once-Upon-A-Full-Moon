@@ -1,8 +1,8 @@
-#include "fypch.hpp"
+#include <fypch.hpp>
 #include "Application.hpp"
-#include <glad/glad.h>
 #include "Frosty/RenderEngine/Renderer.hpp"
 #include "Frosty/API/AssetManager.hpp"
+#include "Frosty/Core/KeyCodes.h"
 
 
 
@@ -20,10 +20,11 @@ namespace Frosty
 
 		EventBus::GetEventBus()->Subscribe<Application, BaseEvent>(this, &Application::OnEvent);
 
-		m_Window.reset(FY_NEW Window());
+		//m_Window.reset(FY_NEW Window());
+		m_Window.reset(BaseWindow::Create());
 		m_Window->Init();
 
-		m_EditorCamera.Init();
+		m_EditorCamera.Init(EditorCameraProps({ 0.0f, 20.0f, -20.0f }, { 90.0f, -50.0f, 0.0f }));
 
 		m_ImGuiLayer = FY_NEW ImGuiLayer();
 		PushOverlay(m_ImGuiLayer);
@@ -48,7 +49,7 @@ namespace Frosty
 			Time::OnUpdate();
 
 			/// Input
-			if (m_GameRunning)
+			//if (m_GameRunning)
 			{
 				m_World->OnInput();
 			}
@@ -174,7 +175,7 @@ namespace Frosty
 
 	void Application::OnKeyPressedEvent(KeyPressedEvent& e)
 	{
-		if (e.GetKeyCode() == GLFW_KEY_ESCAPE)
+		if (e.GetKeyCode() == FY_KEY_ESCAPE)
 		{
 			m_Running = false;
 		}

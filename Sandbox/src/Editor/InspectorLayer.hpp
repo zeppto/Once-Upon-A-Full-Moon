@@ -7,8 +7,8 @@ namespace MCS
 	class InspectorLayer : public Frosty::Layer
 	{
 	public:
-		InspectorLayer();
-		virtual ~InspectorLayer() { }
+		InspectorLayer() = default;
+		virtual ~InspectorLayer() = default;
 
 		virtual void OnAttach() override;
 		virtual void OnDetach() override;
@@ -24,6 +24,10 @@ namespace MCS
 
 		// Explporer
 		std::shared_ptr<Frosty::ECS::Entity> m_SelectedEntity;
+
+		// Inspector
+		Frosty::ECS::CController* m_SelectedController{ nullptr };
+		int m_PreviousControllerHotkey;
 
 		// Static stuff (Mostly temporary)
 		static bool s_VSync;

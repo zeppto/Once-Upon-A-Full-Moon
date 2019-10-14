@@ -2,25 +2,14 @@
 #define WINDOW_HPP
 
 #include <fypch.hpp>		// This is already included in the cpp file so we shouldn't need it here but doesn't work otherwise
+#include "Frosty/Core/BaseWindow.hpp"
 
-#include "Frosty/Core/Base.hpp"
 #include <GLFW/glfw3.h>
 
 namespace Frosty
 {
-	struct WindowProps
-	{
-		std::string Title;
-		unsigned int Width;
-		unsigned int Height;
-		unsigned int PositionX;
-		unsigned int PositionY;
 
-		WindowProps(const std::string& title = "Frosty Engine", unsigned int width = 1280, unsigned int height = 720, unsigned int posx = 100, unsigned int posy = 200)
-			: Title(title), Width(width), Height(height), PositionX(posx), PositionY(posy) { }
-	};
-
-	class Window
+	class Window : public BaseWindow
 	{
 	public:
 		Window();
@@ -30,37 +19,37 @@ namespace Frosty
 		// Operators
 		Window& operator=(const Window& org) { FY_CORE_ASSERT(false, "Assignment operator in Window called."); return *this; }
 
-		inline std::string GetTitle() const { return m_Data.Title; }
-		inline unsigned int GetWidth() const { return m_Data.Width; }
-		inline unsigned int GetHeight() const { return m_Data.Height; }
-		inline unsigned int GetPositionX() const { return m_Data.PositionX; }
-		inline unsigned int GetPositionY() const { return m_Data.PositionY; }
-		std::pair<unsigned int, unsigned int> GetPosition() const { return { m_Data.PositionX, m_Data.PositionY }; }
-		glm::vec4 GetViewport() const;
+		virtual inline std::string GetTitle() const override { return m_Data.Title; }
+		virtual inline unsigned int GetWidth() const override { return m_Data.Width; }
+		virtual inline unsigned int GetHeight() const override { return m_Data.Height; }
+		virtual inline unsigned int GetPositionX() const override { return m_Data.PositionX; }
+		virtual inline unsigned int GetPositionY() const override { return m_Data.PositionY; }
+		virtual std::pair<unsigned int, unsigned int> GetPosition() const override { return { m_Data.PositionX, m_Data.PositionY }; }
+		virtual glm::vec4 GetViewport() const override;
 
-		bool IsMaximized() const { return m_Data.Maximized; }
-		void Maximize() { glfwMaximizeWindow(m_Window); }
+		virtual bool IsMaximized() const override { return m_Data.Maximized; }
+		virtual void Maximize() override { glfwMaximizeWindow(m_Window); }
 
-		void SetVSync(bool enabled);
-		bool IsVSync();
+		virtual void SetVSync(bool enabled) override;
+		virtual bool IsVSync() override;
 
-		void OnEvent(BaseEvent& e);
-		void OnUpdate();
+		virtual void OnEvent(BaseEvent& e) override;
+		virtual void OnUpdate() override;
 
-		inline void* GetNativeWindow() const { return m_Window; }
+		virtual inline void* GetNativeWindow() const override { return m_Window; }
 
 	private:
-		void Init(const WindowProps& props = WindowProps());
+		virtual void Init(const WindowProps& props = WindowProps()) override;
 		void InitCallbacks();
 
-		void Shutdown() { glfwTerminate(); }
+		virtual void Shutdown() override { glfwTerminate(); }
 
 		void UpdateViewport();
 
 		void OnWindowResizeEvent(WindowResizeEvent& e);
 		void OnWindowMovedEvent(WindowMovedEvent& e);
 
-		void UpdateViewPort();
+		//void UpdateViewPort();
 	private:
 		GLFWwindow* m_Window;
 

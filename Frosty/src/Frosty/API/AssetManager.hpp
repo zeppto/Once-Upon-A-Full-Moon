@@ -35,12 +35,6 @@ namespace Frosty
 	private:
 		// Meshes
 		static void AddMesh(const std::string& name, const std::string& filepath);
-		static void AddQuadMesh();		// Remove this later
-
-		// Shaders
-		static void AddStandardShader();
-		static void AddFlatColorShader();
-		static void AddTextureShader();
 
 		// Textures
 		static void LoadTexture2D(const std::string& name, const std::string& filepath);
