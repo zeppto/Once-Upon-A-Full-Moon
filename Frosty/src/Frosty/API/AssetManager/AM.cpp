@@ -30,7 +30,7 @@ namespace Frosty
 	{
 		if (!s_Instance)
 		{
-			s_Instance = new Assetmanager;
+			s_Instance = FY_NEW Assetmanager;
 		}
 		return s_Instance;
 	}
@@ -524,6 +524,7 @@ namespace Frosty
 			//Temp
 			Assetmanager::GetTexture(FileNameInformation.FileName)->LoadToMem();
 			Assetmanager::GetTexture(FileNameInformation.FileName)->LoadToGPU();
+			Assetmanager::GetTexture(FileNameInformation.FileName)->DeleteFromMem();
 		}
 		else
 		{

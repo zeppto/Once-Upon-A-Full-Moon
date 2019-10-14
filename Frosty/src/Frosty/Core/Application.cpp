@@ -32,9 +32,11 @@ namespace Frosty
 
 		m_World.reset(FY_NEW World());
 		m_World->Init();
-		Assetmanager::Get()->LoadFiles();
-		TextureFile* l =  Assetmanager::GetTexture("pCube10_diffuse");
-		Animation* g =  Assetmanager::GetAnimation("klocka");
+
+		//Testing AssetManager
+		//Assetmanager::Get()->LoadFiles();
+		//TextureFile* l =  Assetmanager::GetTexture("pCube10_diffuse");
+		//Animation* g =  Assetmanager::GetAnimation("klocka");
 	}
 
 	Application::~Application()
