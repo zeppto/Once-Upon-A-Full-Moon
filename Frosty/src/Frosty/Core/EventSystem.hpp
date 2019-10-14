@@ -11,7 +11,7 @@ namespace Frosty
 	enum class EventType
 	{
 		None = 0,
-		WindowClose, WindowResize, WindowFocus, WindowLostFocus, WindowMoved,
+		WindowClose, WindowMaximized, WindowResize, WindowFocus, WindowLostFocus, WindowMoved,
 		KeyPressed, KeyReleased,
 		MouseButtonPressed, MouseButtonReleased, MouseMoved, MouseScrolled,
 		ButtonClicked
@@ -38,6 +38,18 @@ namespace Frosty
 		WindowCloseEvent() { }
 
 		EVENT_TYPE(WindowClose)
+	};
+
+	class WindowMaximizeEvent : public BaseEvent
+	{
+	public:
+		WindowMaximizeEvent(int maximized) : m_Maximized(maximized) { }
+
+		inline bool IsMaximized() const { return m_Maximized; }
+
+		EVENT_TYPE(WindowMaximized)
+	private:
+		int m_Maximized;
 	};
 
 	// TODO: Should this store previous size?
@@ -332,7 +344,7 @@ namespace Frosty
 				"EventType must inherit from BaseEvent");
 
 			// Step 2
-			m_Subscribers.emplace_back(new Subscriber<SystemType, EventType>(instance, function));
+			m_Subscribers.emplace_back(FY_NEW Subscriber<SystemType, EventType>(instance, function));
 
 		}
 
@@ -340,7 +352,7 @@ namespace Frosty
 		{
 			if (s_Instance == nullptr)
 			{
-				s_Instance = new EventBus();
+				s_Instance = FY_NEW EventBus();
 			}
 
 			return s_Instance;

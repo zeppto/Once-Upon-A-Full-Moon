@@ -1,17 +1,12 @@
 #ifndef APPLICATION_HPP
 #define APPLICATION_HPP
-#include "ECS.hpp"
-#include "Window.hpp"
-#include "LayerHandler.hpp"
-#include "EventSystem.hpp"
-#include "Frosty/ImGui/ImGuiLayer.hpp"
-#include "Frosty/API/AssetManager/Assetmanager.hpp"
-#include "Frosty/RenderEngine/RenderEngine.hpp"
-#include "Frosty/API/PrefabManager/PrefabManager.h"
 
-// test
-#include "Frosty/RenderEngine/ForwardPlus.hpp"
-#include "Frosty/API/PrefabManager/PrefabManager.h"
+#include "Frosty/Core/BaseWindow.hpp"
+#include "Frosty/Core/LayerHandler.hpp"
+#include "Frosty/Core/EventSystem.hpp"
+#include "Frosty/ImGui/ImGuiLayer.hpp"
+#include "Frosty/RenderEngine/EditorCamera.hpp"
+#include "Frosty/Core/World.hpp"
 
 namespace Frosty
 {
@@ -25,41 +20,40 @@ namespace Frosty
 
 		void OnEvent(BaseEvent& e);
 
-		// Layer functions
+		// Layer Functions
 		void PushLayer(Layer* layer);
 		void PushOverlay(Layer* layer);
 		void PopLayer(Layer* layer);
-		void PopOverlay(Layer* layer);	
+		void PopOverlay(Layer* layer);
 
-		RenderEngine* GetRenderEngine() { return m_RenderEngine; }
-
-		inline Window& GetWindow() { return *m_Window; }
+		inline EditorCamera& GetEditorCamera() { return m_EditorCamera; }
+		inline std::unique_ptr<World>& GetWorld() { return m_World; }
+		inline BaseWindow& GetWindow() { return *m_Window; }
 		static inline Application& Get() { return *s_Instance; }
 
-		// ECS Stuff (TEMPORARY)
-		const ECS::EntityManager& GetEntityManager() const { return m_EntityManager; }
-		std::shared_ptr<ECS::Entity>& CreateEntity() { return m_EntityManager.CreateEntity(); }
+		// Game Functions
+		inline bool GameIsRunning() const { return m_GameRunning; }
+		void StartGame();
+		void StopGame();
 
 	private:
 		void OnWindowCloseEvent(WindowCloseEvent& e);
-		void OnKeyPressedEvent(KeyPressedEvent& e);	
+		void OnKeyPressedEvent(KeyPressedEvent& e);
+
 	private:
 		bool m_Running = true;
+		bool m_GameRunning = false;
 
 		ImGuiLayer* m_ImGuiLayer;
 		LayerHandler m_LayerHandler;
+		std::unique_ptr<World> m_World;
 
-		std::unique_ptr<Window> m_Window;
-		
+		std::unique_ptr<BaseWindow> m_Window;
+
 		static Application* s_Instance;
 
-		// ECS stuff (TEMPORARY)
-		ECS::EntityManager m_EntityManager;
-		//std::unique_ptr<ECS::BaseComponentManager> m_TransformManager;		
-		
-		RenderEngine* m_RenderEngine;
+		EditorCamera m_EditorCamera;
 
-		
 	};
 }
-#endif
+#endif 

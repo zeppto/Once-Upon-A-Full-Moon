@@ -20,6 +20,7 @@ IncludeDir["ImGui"] = "Frosty/vendor/imgui"
 IncludeDir["glm"] = "Frosty/vendor/glm"
 IncludeDir["Luna"] = "Frosty/vendor/Luna"
 IncludeDir["stb_image"] = "Frosty/vendor/stb_image"
+IncludeDir["FreeType"] = "Frosty/vendor/FreeType/include"
 
 group "Dependencies"
 	include "Frosty/vendor/GLFW"
@@ -61,13 +62,15 @@ project "Frosty"
 		"%{IncludeDir.ImGui}",
 		"%{IncludeDir.Luna}",
 		"%{IncludeDir.glm}",
-		"%{IncludeDir.stb_image}"
+		"%{IncludeDir.stb_image}",
+		"%{IncludeDir.FreeType}"
 	}
 
 	libdirs
 	{
 		"%{prj.name}/vendor/GLFW/lib",
-		"%{prj.name}/vendor/Luna/lib"
+		"%{prj.name}/vendor/Luna/lib",
+		"%{prj.name}/vendor/FreeType/lib"
 	}
 
 	links
@@ -75,7 +78,8 @@ project "Frosty"
 		"GLFW",
 		"Glad",
 		"ImGui",
-		"opengl32.lib"
+		"opengl32.lib",
+		"freetype.lib"
 	}
 
 	filter "system:windows"
@@ -147,12 +151,18 @@ project "Sandbox"
 		"%{IncludeDir.GLFW}",
 		"%{IncludeDir.Glad}",
 		"%{IncludeDir.ImGui}",
-		"%{IncludeDir.glm}"
+		"%{IncludeDir.glm}",
+		"%{IncludeDir.FreeType}"
 	}
 
 	links
 	{
 		"Frosty"
+	}
+	
+	postbuildcommands
+	{
+		("{COPY} %{wks.location.relpath} ../assets ../bin/" .. outputdir .. "/%{prj.name}/assets/")
 	}
 
 	filter "system:windows"

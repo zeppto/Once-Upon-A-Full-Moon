@@ -1,5 +1,6 @@
-#include "fypch.hpp"
+#include <fypch.hpp>
 #include "Window.hpp"
+#include "Frosty/DEFINITIONS.hpp"
 
 #include <glad/glad.h>
 
@@ -12,17 +13,17 @@ namespace Frosty
 		FY_CORE_ERROR("GLFW Error ({0}): {1}", error, description);
 	}
 
-	Window::Window(const WindowProps& props)
+	BaseWindow* BaseWindow::Create()
 	{
-		Init(props);
+		return FY_NEW Window();
 	}
 
-	std::pair<unsigned int, unsigned int> Window::GetPosition() const
+
+	Window::Window()
 	{
-		return { m_Data.PositionX, m_Data.PositionY };
 	}
 
-	void Window::Init(const WindowProps & props)
+	void Window::Init(const WindowProps& props)
 	{
 		FY_CORE_INFO("Creating window {0} ({1}, {2})", props.Title, props.Width, props.Height);
 
@@ -53,10 +54,16 @@ namespace Frosty
 		FY_CORE_INFO("  Version: {0}", glGetString(GL_VERSION));
 
 		glfwSetWindowUserPointer(m_Window, &m_Data);
-		
+
+		glEnable(GL_DEPTH_TEST);
+		glDisable(GL_CULL_FACE);
+		glDepthFunc(GL_LESS);
+
 		glViewport(0, 0, m_Data.Width, m_Data.Height);
 
 		InitCallbacks();
+
+		glfwMaximizeWindow(m_Window);
 	}
 
 	void Window::InitCallbacks()
@@ -64,6 +71,15 @@ namespace Frosty
 		glfwSetWindowCloseCallback(m_Window, [](GLFWwindow* window)
 		{
 			EventBus::GetEventBus()->Publish<WindowCloseEvent>(WindowCloseEvent());
+		});
+
+		glfwSetWindowMaximizeCallback(m_Window, [](GLFWwindow* window, int maximize)
+		{
+			auto& data = *((WindowData*)glfwGetWindowUserPointer(window));
+
+			data.Maximized = maximize;
+
+			EventBus::GetEventBus()->Publish<WindowMaximizeEvent>(WindowMaximizeEvent(maximize));
 		});
 
 		glfwSetWindowSizeCallback(m_Window, [](GLFWwindow* window, int width, int height)
@@ -108,7 +124,7 @@ namespace Frosty
 				break;
 			}
 		});
-		
+
 		glfwSetCursorPosCallback(m_Window, [](GLFWwindow* window, double xpos, double ypos)
 		{
 			EventBus::GetEventBus()->Publish<MouseMovedEvent>(MouseMovedEvent((float)xpos, (float)ypos));
@@ -136,10 +152,43 @@ namespace Frosty
 
 	}
 
+	glm::vec4 Window::GetViewport() const
+	{
+		return glm::vec4(
+			EDITOR_EXPLORER_WIDTH,													// Start from left side
+			EDITOR_ASSETS_HEIGHT,													// Start from bottom
+			m_Data.Width - EDITOR_INSPECTOR_WIDTH - EDITOR_EXPLORER_WIDTH,			// Width
+			m_Data.Height - EDITOR_ASSETS_HEIGHT - EDITOR_MAIN_MENU_BAR_HEIGHT);	// Height
+	}
+
+	void Window::SetVSync(bool enabled)
+	{
+		if (enabled)
+			glfwSwapInterval(1);
+		else
+			glfwSwapInterval(0);
+
+		m_Data.VSync = enabled;
+	}
+
+	bool Window::IsVSync()
+	{
+		return m_Data.VSync;
+	}
+
+	void Window::UpdateViewport()
+	{
+		glViewport(
+			EDITOR_EXPLORER_WIDTH,													// Start from left side
+			EDITOR_ASSETS_HEIGHT,													// Start from bottom
+			m_Data.Width - EDITOR_INSPECTOR_WIDTH - EDITOR_EXPLORER_WIDTH,			// Width
+			m_Data.Height - EDITOR_ASSETS_HEIGHT - EDITOR_MAIN_MENU_BAR_HEIGHT);	// Height
+	}
+
 	void Window::OnUpdate()
 	{
 		glfwPollEvents();
-		glfwSwapBuffers(m_Window);		
+		glfwSwapBuffers(m_Window);
 	}
 
 	void Window::OnEvent(BaseEvent& e)
@@ -157,21 +206,19 @@ namespace Frosty
 		}
 	}
 
-	void Window::OnWindowResizeEvent(WindowResizeEvent & e)
+	void Window::OnWindowResizeEvent(WindowResizeEvent& e)
 	{
 		m_Data.Width = e.GetWidth();
 		m_Data.Height = e.GetHeight();
-		UpdateViewPort();
+
+		UpdateViewport();
 	}
 
-	void Window::OnWindowMovedEvent(WindowMovedEvent & e)
+	void Window::OnWindowMovedEvent(WindowMovedEvent& e)
 	{
 		m_Data.PositionX = e.GetXPos();
 		m_Data.PositionY = e.GetYPos();
-	}
 
-	void Window::UpdateViewPort()
-	{
-		glViewport(0, 0, m_Data.Width, m_Data.Height);
+		UpdateViewport();
 	}
 }

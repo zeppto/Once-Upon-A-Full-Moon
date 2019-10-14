@@ -15,8 +15,13 @@ namespace Frosty
 
 
 		{
+<<<<<<< HEAD
+			s_Instance = FY_NEW Assetmanager;
+			s_Instance->m_Total_Nr_Assets = 0;
+=======
 			s_Instance = new Assetmanager;
 			//s_Instance->m_Total_Nr_Assets = 0;
+>>>>>>> master
 		}
 			return s_Instance;
 	}

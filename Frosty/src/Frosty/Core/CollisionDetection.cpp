@@ -1,6 +1,7 @@
-#include "fypch.hpp"
-#include <glm/glm.hpp>
+#include <fypch.hpp>
 #include "CollisionDetection.hpp"
+
+#include <glm/glm.hpp>
 
 Frosty::CollisionDetection::CollisionDetection()
 {

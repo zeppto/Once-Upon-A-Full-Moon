@@ -1,29 +1,30 @@
 #include <fypch.hpp>
 #include "InputManager.hpp"
+#include "Application.hpp"
+#include "Frosty/Core/KeyCodes.h"
 
 #include <GLFW/glfw3.h>
-#include "Application.hpp"
 
 namespace Frosty
 {
 	bool InputManager::IsKeyPressed(int key)
 	{
-		return CheckKeyClickType(key) == GLFW_PRESS;
+		return CheckKeyClickType(key) == FY_PRESS;
 	}
 
 	bool InputManager::IsKeyReleased(int key)
 	{
-		return CheckKeyClickType(key) == GLFW_RELEASE;
+		return CheckKeyClickType(key) == FY_RELEASE;
 	}
 
 	bool InputManager::IsMouseButtonPressed(int button)
 	{
-		return CheckMouseClickType(button) == GLFW_PRESS;
+		return CheckMouseClickType(button) == FY_PRESS;
 	}
 
 	bool InputManager::IsMouseButtonReleased(int button)
 	{
-		return CheckMouseClickType(button) == GLFW_RELEASE;
+		return CheckMouseClickType(button) == FY_RELEASE;
 	}
 
 	std::pair<float, float> InputManager::GetMousePosition()
@@ -44,7 +45,7 @@ namespace Frosty
 	float InputManager::GetMouseY()
 	{
 		auto[x, y] = GetMousePosition();
-		return x;
+		return y;
 	}
 
 	bool InputManager::IsClicked(int button, const glm::vec4& bounds)

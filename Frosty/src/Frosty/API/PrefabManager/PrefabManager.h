@@ -5,7 +5,7 @@
 
 namespace Frosty
 {
-	
+
 
 	class PrefabManager
 	{
@@ -16,9 +16,7 @@ namespace Frosty
 		static PrefabManager* s_Instance;
 
 		std::unordered_map<std::string, Prefab> m_Prefabs;
-		
-		
-		
+
 
 
 		friend class Assetmanager;
@@ -26,10 +24,10 @@ namespace Frosty
 	public:		//Functions
 		static PrefabManager* GetPrefabManager();
 		~PrefabManager();
-		bool setPrefab(const std::string& prefabName, const std::string& modelName, const std::string& materialName);
 		std::unordered_map<std::string, Prefab>* GetPrefabMap();
 		Prefab* GetPrefab(std::string prefabName);
-
+		bool setPrefab(const std::string& prefabName, const std::string& modelName, const std::string& materialName);
+		
 		PrefabInstance* CreatePrefabInstance(std::string prefabName);
 		
 	private:	//Functions
@@ -39,7 +37,7 @@ namespace Frosty
 		inline static void Delete() { if (s_Instance != nullptr) { delete s_Instance; } }
 	};
 
-	
+
 }
 
 #endif // !PREFABMANAGER_H

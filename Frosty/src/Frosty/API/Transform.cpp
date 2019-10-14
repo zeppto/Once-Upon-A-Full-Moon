@@ -1,5 +1,4 @@
-#include <iostream>
-#include "fypch.hpp"
+#include <fypch.hpp>
 #include "Transform.h"
 
 namespace Frosty

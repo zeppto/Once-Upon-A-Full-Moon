@@ -1,7 +1,7 @@
 #ifndef MODELTEMPLATE_H
 #define MODELTEMPLATE_H
 #include<Luna/include/Luna.h>
-
+#include "Frosty/RenderEngine/VertexArray.hpp"
 
 namespace Frosty
 {
@@ -10,7 +10,6 @@ namespace Frosty
 	public:
 		struct MeshInfo
 		{
-
 			MeshInfo() {};
 			MeshInfo(
 				Luna::BoundingBox BoundingBox,
@@ -33,14 +32,11 @@ namespace Frosty
 	//Variables
 	public:
 
-
-
 	//Variables
 	private:
 		uint16_t m_SelfID;
 		static uint16_t s_ModelTemplateID;
 		static uint16_t s_ModelTemplateCounter;
-
 
 		Luna::Skeleton m_Skeleton;
 		Luna::Animation m_Animation;
@@ -50,14 +46,12 @@ namespace Frosty
 
 		std::vector<unsigned int> m_VBOs;
 
-		bool m_Dumped_Info;
-
-	
+		bool m_Dumped_Info;	
 		
 		std::map<uint16_t, MeshInfo> m_MeshInfoMap;
 		std::map<uint16_t, std::vector<Luna::Keyframe>> m_KeyframeMap;
 
-
+		std::vector<std::shared_ptr<VertexArray>> m_VertexArrays;
 	//Funcs
 	public:
 		ModelTemplate();
@@ -81,19 +75,18 @@ namespace Frosty
 		std::map<uint16_t, MeshInfo>* GetMeshInfoMap();
 		std::map<uint16_t, std::vector<Luna::Keyframe>>* GetKeyframeMap();
 
-
-
-
 		std::vector<unsigned int>* GetVboVector() { return &m_VBOs; }
 		const unsigned int& GetVBO(const uint16_t& meshId) { return m_VBOs.at(meshId); }
 
+		std::shared_ptr<VertexArray> GetVertexArray(const uint16_t& meshId) 
+		{ 
+			return m_VertexArrays.at(meshId); 
+		}
 
 		const Luna::Skeleton& GetSkeletonConst() { return m_Skeleton; }
 		const Luna::Animation& GetAnimationConst() { return m_Animation; }
 
 		const Luna::Mesh& GetMeshConst(const uint16_t& meshId) {return m_Meshes.at(meshId);}
-		
-
 
 		const ModelTemplate::MeshInfo& GetMeshInfoConst(const uint16_t& meshId) { return m_MeshInfoMap[meshId];}
 
@@ -103,12 +96,9 @@ namespace Frosty
 
 		const std::map<uint16_t, MeshInfo>& GetMeshInfoMapConst() { return m_MeshInfoMap; }
 		const std::map<uint16_t, std::vector<Luna::Keyframe>>& GetKeyframeMapConst() { return m_KeyframeMap; }
-
 		
 		const uint16_t& GetId() const;
 		static const uint16_t& GetNumberOfModelTemplates();
-
-
 
 		void AddMeshInfo(
 			const uint16_t& meshId,
@@ -117,14 +107,7 @@ namespace Frosty
 			const std::vector<Luna::Index>& MeshIndices,
 			const std::vector<Luna::Weights>& Weights);
 
-
-		bool LoadModelToGpu(const bool& DumpData = false);
-
-
-
-
-
-		
+		bool LoadModelToGpu(const bool& DumpData = false);		
 
 		//std::vector<Luna::BoundingBox>* getBoundingBoxVector();
 		//std::vector<Luna::Vertex*>* getVertexVector();
@@ -132,16 +115,9 @@ namespace Frosty
 		//std::vector<Luna::Weights*>* getWeightsVector();
 		//std::vector<Luna::Keyframe*>* getKeyframeVector();
 
-
-
 	//Funcs
 	private:
 
-		
-
-
 	};
-
 }
-
-#endif // !MODELTEMPLATE_H
+#endif 

@@ -9,7 +9,6 @@
 
 // TEMPORARY
 #include <GLFW/glfw3.h>
-#include <glad/glad.h>
 
 namespace Frosty
 {
@@ -100,7 +99,7 @@ namespace Frosty
 
 	void ImGuiLayer::OnImGuiRender()
 	{
-		static bool show = false;
+		//static bool show = false;
 		//ImGui::ShowDemoWindow(&show);
 	}
 }

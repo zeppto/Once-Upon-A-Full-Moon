@@ -11,14 +11,6 @@ namespace Frosty
 		s_Instance = this;
 
 		m_TotalCells = 0;
-		m_Camera.reset(FY_NEW Camera());
-		m_Frustum = glm::vec2(Application::Get().GetWindow().GetWidth(), Application::Get().GetWindow().GetHeight());
-
-		CreateGridCells();
-		LightCulling();
-
-		//ConvertToNDC({ 3.f, 4.f, -5.f, 1.f });
-		//CheckCollision(m_GridCells[223], ConvertToNDC({ 3.f, 2.f, -5.f, 1.f }));	// test values
 	}
 
 	FrustumGrid::FrustumGrid(const FrustumGrid& other)
@@ -30,7 +22,7 @@ namespace Frosty
 		//m_CellLightsInfo = other.m_CellLightsInfo;
 		//m_Camera.reset(FY_NEW Camera());
 		//m_Frustum = other.m_Frustum;
-		
+
 		FY_CORE_ASSERT(false, "Copy constructor is used in class 'FrustumGrid'.");
 	}
 
@@ -38,6 +30,40 @@ namespace Frosty
 	{
 		FY_CORE_ASSERT(false, "Assignment operator is used in class 'FrustumGrid'.");
 		return *this;
+	}
+
+	void FrustumGrid::Update()
+	{
+		m_LightIndexList.clear();
+		m_CellLightsInfo.fill(CellLightinfo());
+
+		LightCulling();
+	}
+
+	void FrustumGrid::Initiate(std::shared_ptr<LightManager>& lightManager)
+	{
+		m_Camera.reset(FY_NEW Camera());
+		m_Frustum = glm::vec2(Application::Get().GetWindow().GetWidth(), Application::Get().GetWindow().GetHeight());
+		m_LightManager = lightManager;
+		CreateGridCells();
+	}
+
+	const int FrustumGrid::GetNrOfGrids()
+	{
+		return m_TotalCells;
+	}
+
+	const std::vector<int>& FrustumGrid::GetLightIndexList()
+	{
+		return m_LightIndexList;
+	}
+
+	const glm::vec2 FrustumGrid::GetCellLightInfoAt(int position)
+	{
+		if (position < m_TotalCells)
+			return glm::vec2(m_CellLightsInfo[position].Offset, m_CellLightsInfo[position].Size);
+		else
+			return glm::vec2(0, 0);
 	}
 
 	void FrustumGrid::CreateGridCells()
@@ -59,7 +85,7 @@ namespace Frosty
 				cell.MaxX = minX + cellSizeX;
 
 				m_GridCells[m_TotalCells++] = cell;
-				
+
 				minX += cellSizeX;
 			}
 			minX = 0;
@@ -69,28 +95,42 @@ namespace Frosty
 
 	void FrustumGrid::LightCulling()
 	{
-		std::vector<int> pos;
+		//std::vector<int> pos;
+		uint16_t offsetCounter = 0;
+		uint16_t size = 0;
+		uint16_t CellInfoCounter = 0;
 
 		for (int i = 0; i < m_TotalCells; i++)
 		{
-			for (int j = 0; j < m_LightManager.GetAllPointLights().size(); j++)
+			for (int j = 0; j < m_LightManager->GetNrOfPointLights(); j++)
 			{
-				if (CheckCollision(m_GridCells[i], ConvertToNDC(m_LightManager.GetPointLightAt(j)->GetPositionAndRadius(), m_LightManager.GetPointLightAt(j)->GetTransform())))
+				if (CheckCollision(m_GridCells[i], ConvertToNDC(m_LightManager->GetPointLightAt(j)->GetPositionAndRadius(), m_LightManager->GetPointLightAt(j)->GetTransform())))
 				{
-					pos.emplace_back(i);
+					//pos.emplace_back(i);							// Temporary for checking	~ W-_-W ~
+
+					m_CellLightsInfo[i].Offset = offsetCounter;		// Find better place, it becomes repetative and uneccesary	~ W-_-W ~
+					size++;
+					m_LightIndexList.emplace_back(j);
 				}
 			}
+			m_CellLightsInfo[i].Size = size;
+			offsetCounter += m_CellLightsInfo[i].Size;
+			size = 0;
 		}
 	}
 
 	bool FrustumGrid::CheckCollision(const GridCell& cell, const glm::vec3& light)	// light.xy = 2D position, light.z = radius
 	{
+		if (light.z == 0)
+			return false;
+
+
 		// Get center point circle first 
 		glm::vec2 center = { light.x, light.y };
-		
+
 		// Calculate AABB info (center, half-extents)
 		glm::vec2 aabb_half_extents(m_Frustum.x / GRID_SIZE / 2, m_Frustum.y / GRID_SIZE / 2);
-		
+
 		glm::vec2 aabb_center(
 			cell.MinX + aabb_half_extents.x,
 			cell.MinY + aabb_half_extents.y
@@ -99,23 +139,41 @@ namespace Frosty
 		// Get difference vector between both centers
 		glm::vec2 difference = center - aabb_center;
 		glm::vec2 clamped = glm::clamp(difference, -aabb_half_extents, aabb_half_extents);	// A clamp operation clamps a value to a value within a given range
-		
+
 		// Add clamped value to AABB_center and we get the value of box closest to circle
 		glm::vec2 closest = aabb_center + clamped;
-		
+
 		// Retrieve vector between center circle and closest point AABB and check if length <= radius
 		difference = closest - center;
-		
+
 		return glm::length(difference) < light.z;
 	}
 
 	glm::vec3 FrustumGrid::ConvertToNDC(const glm::vec4& light, const glm::mat4& transform)	// light.xyz = 3D position, light.w = radius
 	{
+		float z = light.z;	// Z value has to change in case the light is positioned behind the camera. Beacuse the light is const, we need a temp variable
+
+		if (light.z > m_Camera.get()->GetPosition().z)															// If light is behind camera ...
+		{
+			float dist = glm::length(glm::vec3(light.x, light.y, light.z) - m_Camera.get()->GetPosition());
+			if (dist < light.w)																					// 1) ... but light radius still reaches the "frustum"
+			{
+				dist = glm::length(z - m_Camera.get()->GetPosition().z);
+				z += (-dist * 2);																				// move light in front of camera with the same distance apart like before
+				z *= -1;
+			}
+			else																								// 2) ... and light radius doesn't reach the "frustum"
+			{
+				return glm::vec3(0, 0, 0);																		// abort calculation
+			}
+		}
+
+
 		// Converting from 3D space to NDC
 		glm::mat4 VP = m_Camera.get()->GetProjection() * m_Camera.get()->GetView();
 		glm::mat4 MVP = m_Camera.get()->GetProjection() * m_Camera.get()->GetView() * transform;
 
-		glm::vec4 NDC = MVP * glm::vec4(glm::vec3(light.x, light.y, light.z), 1.f);
+		glm::vec4 NDC = MVP * glm::vec4(glm::vec3(light.x, light.y, z), 1.f);
 		NDC = NDC / NDC.z;
 
 		// Converting from NDC to pixel
@@ -124,14 +182,13 @@ namespace Frosty
 
 
 		// Calculate Radius and repeat process
-		glm::vec4 NDC2 = MVP * glm::vec4(glm::vec3(light.x, light.y + light.w, light.z), 1.f);
+		glm::vec4 NDC2 = MVP * glm::vec4(glm::vec3(light.x, light.y + light.w, z), 1.f);
 		NDC2 = NDC2 / NDC2.z;
 
-		int x2 = (int)round((NDC2.x + 1.0f) * m_Frustum.x / 2.0f);
-		int y2 = (int)round((NDC2.y + 1.0f) * m_Frustum.y / 2.0f);
+		int lightShereSurfaceX = (int)round((NDC2.x + 1.0f) * m_Frustum.x / 2.0f);
+		int lightShereSurfaceY = (int)round((NDC2.y + 1.0f) * m_Frustum.y / 2.0f);
 
-		glm::vec2 length = glm::vec2(x, y) - glm::vec2(x2, y2);
-		float radius = glm::length(length);
+		float radius = glm::length(glm::vec2(x, y) - glm::vec2(lightShereSurfaceX, lightShereSurfaceY));
 		if (radius < 0)
 			radius *= -1;
 

@@ -1,67 +1,83 @@
-#include "fypch.hpp"
+#include <fypch.hpp>
 #include "Application.hpp"
-#include "Frosty/RenderEngine/RenderEngine.hpp"
+#include "Frosty/RenderEngine/Renderer.hpp"
+#include "Frosty/API/AssetManager.hpp"
+#include "Frosty/Core/KeyCodes.h"
+
+
 
 namespace Frosty
 {
 	Application* Application::s_Instance = nullptr;
-	
-	Application::Application()		
+
+	Application::Application()
 	{
 		Log::Init();
 		FY_CORE_INFO("Logger initialized..");
 
-		// TODO: Error handling?
+		FY_CORE_ASSERT(!s_Instance, "Application already exists!");
 		s_Instance = this;
-
-		m_Window = std::make_unique<Window>(Window());
 
 		EventBus::GetEventBus()->Subscribe<Application, BaseEvent>(this, &Application::OnEvent);
 
-		m_ImGuiLayer = new ImGuiLayer();
+		//m_Window.reset(FY_NEW Window());
+		m_Window.reset(BaseWindow::Create());
+		m_Window->Init();
+
+		m_EditorCamera.Init(EditorCameraProps({ 0.0f, 20.0f, -20.0f }, { 90.0f, -50.0f, 0.0f }));
+
+		m_ImGuiLayer = FY_NEW ImGuiLayer();
 		PushOverlay(m_ImGuiLayer);
 
-		ECS::ComponentManager<ECS::CTransform> cManager;	
-		
-		m_RenderEngine = new RenderEngine();
-
-		// <<< FORWARD PLUS >>>
-		
-		//FrustumGrid grid;
-
-		// 4) send the three buffers to a frgament shader
-
-		// 5) find out which cell the pixel belongs to (in screen space)
-
-		// 6) calculate lights as usual (world space)
+		m_World.reset(FY_NEW World());
+		m_World->Init();
 	}
 
 	Application::~Application()
-	{		
+	{
 		EventBus::GetEventBus()->Delete();
-		glfwTerminate();
-		Assetmanager::Delete();	
-		delete m_RenderEngine;
+		m_Window->Shutdown();
+		Renderer::Shutdown();
+		//Assetmanager::Delete();
 	}
 
 	void Application::Run()
-	{		
+	{
 		while (m_Running)
 		{
 			/// Frame Start
-			m_RenderEngine->ClearColor();
 			Time::OnUpdate();
+
 			/// Input
+			//if (m_GameRunning)
+			{
+				m_World->OnInput();
+			}
 
 			/// Update
+			m_EditorCamera.OnUpdate();
 			for (Layer* layer : m_LayerHandler)
 			{
 				layer->OnUpdate();
 			}
-			
+			m_World->OnUpdate();
+
 			/// Render
-			m_RenderEngine->Render();
-			m_RenderEngine->UpdateCamera();
+			if (m_EditorCamera.IsActive())
+			{
+				RenderCommand::SetClearColor({ 0.2f, 0.2f, 0.2f, 1.0f });
+				RenderCommand::Clear();
+
+				Renderer::BeginScene(m_EditorCamera.GetViewProjectionMatrix());
+			}
+			else
+			{
+				m_World->BeginScene(m_EditorCamera.IsActive());
+			}
+
+			m_World->Render();
+
+			Renderer::EndScene();
 
 			m_ImGuiLayer->Begin();
 			for (Layer* layer : m_LayerHandler)
@@ -71,7 +87,7 @@ namespace Frosty
 					layer->OnImGuiRender();
 				}
 			}
-			m_ImGuiLayer->End();			
+			m_ImGuiLayer->End();
 
 			m_Window->OnUpdate();
 		}
@@ -89,7 +105,7 @@ namespace Frosty
 		layer->OnAttach();
 	}
 
-	void Application::PopLayer(Layer * layer)
+	void Application::PopLayer(Layer* layer)
 	{
 		if (layer != nullptr)
 		{
@@ -99,7 +115,7 @@ namespace Frosty
 		delete layer;
 	}
 
-	void Application::PopOverlay(Layer * layer)
+	void Application::PopOverlay(Layer* layer)
 	{
 		if (layer != nullptr)
 		{
@@ -107,6 +123,20 @@ namespace Frosty
 			m_LayerHandler.PopOverlay(layer);
 		}
 		delete layer;
+	}
+
+	void Application::StartGame()
+	{
+		m_GameRunning = true;
+		bool* eCam = m_EditorCamera.ActiveStatus();
+		*eCam = false;
+	}
+
+	void Application::StopGame()
+	{
+		m_GameRunning = false;
+		bool* eCam = m_EditorCamera.ActiveStatus();
+		*eCam = true;
 	}
 
 	void Application::OnEvent(BaseEvent& e)
@@ -145,7 +175,7 @@ namespace Frosty
 
 	void Application::OnKeyPressedEvent(KeyPressedEvent& e)
 	{
-		if (e.GetKeyCode() == GLFW_KEY_ESCAPE)
+		if (e.GetKeyCode() == FY_KEY_ESCAPE)
 		{
 			m_Running = false;
 		}

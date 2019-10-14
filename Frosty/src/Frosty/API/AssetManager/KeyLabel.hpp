@@ -3,7 +3,6 @@
 #include"AssetMetaData.hpp"
 #include"BaseKey.hpp"
 
-
 namespace Frosty
 {
 	template<class T>
@@ -42,24 +41,14 @@ namespace Frosty
 
 		T& GetKeyData() { return *m_MetaData_ptr->GetData(); }
 
-
-
 		void SetKeyData(AssetMetaData<T>& data) {m_MetaData_ptr = &data;}
 
 		const uint32_t& GetKeyID() { return m_Key_ID; }
 
 		const uint32_t& GetKeyCount() { return s_NrOf_Keys; }
 
-
-
 		//Functions
 	private:
-
 	};
-
-
-
-
 }
-
 #endif // !KEYHEAD_HPP
