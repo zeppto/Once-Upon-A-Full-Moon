@@ -186,8 +186,6 @@ namespace Frosty
 		return true;
 	}
 
-
-
 	bool Assetmanager::ConnectMaterialWithTexture(LinkedMaterial& Material, const FileMetaData& MetaData)
 	{
 		return false;

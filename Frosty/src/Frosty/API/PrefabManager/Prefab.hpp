@@ -1,7 +1,8 @@
 #ifndef PREFAB_H
 #define PREFAB_H 
-#include "..//AssetManager/AM.hpp"
 #include "PrefabInstance.hpp"
+#include"..\AssetManager\AM.hpp"
+
 namespace Frosty
 {
 	class Prefab
