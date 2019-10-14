@@ -44,6 +44,12 @@ namespace MCS
 			ImGui::Checkbox("Editor Camera: ", m_App->GetEditorCamera().ActiveStatus());
 			if (ImGui::Button("Create Entity", ImVec2(100.0f, 20.0f))) world->CreateEntity();
 
+			if (m_SelectedEntity)
+			{
+				auto& comp = m_App->GetWorld()->GetComponent<Frosty::ECS::CTransform>(m_SelectedEntity);
+				glm::vec3 radRot = glm::radians(comp.Rotation);
+				ImGui::InputFloat3("Rotations in rad", glm::value_ptr(radRot));
+			}
 			static int selection_mask = 0;
 			int node_clicked = -1;
 			unsigned int counter = 0;
@@ -112,7 +118,7 @@ namespace MCS
 					if (ImGui::MenuItem("Mesh", "", &toggles[1]))
 					{
 						if (!world->HasComponent<Frosty::ECS::CMesh>(m_SelectedEntity))
-							world->AddComponent<Frosty::ECS::CMesh>(m_SelectedEntity, Frosty::AssetManager::GetMesh("Table"));
+							world->AddComponent<Frosty::ECS::CMesh>(m_SelectedEntity, Frosty::AssetManager::GetMesh("Cube"));
 						else
 							world->RemoveComponent<Frosty::ECS::CMesh>(m_SelectedEntity);
 					}
@@ -161,6 +167,7 @@ namespace MCS
 					ImGui::EndPopup();
 				}
 
+				// List of components (Information)
 				if (world->HasComponent<Frosty::ECS::CTransform>(m_SelectedEntity))
 				{
 					if (ImGui::CollapsingHeader("Transform"))
@@ -240,8 +247,8 @@ namespace MCS
 					{
 						auto& comp = world->GetComponent<Frosty::ECS::CMaterial>(m_SelectedEntity);
 						float compHeight = 0.0f;
-						if (comp.UseShader->GetName() == "FlatColor") compHeight = 80.0f;
-						else if (comp.UseShader->GetName() == "Texture2D") compHeight = 280.0f;
+						if (comp.UseShader->GetName() == "FlatColor") compHeight = 200.0f;
+						else if (comp.UseShader->GetName() == "Texture2D") compHeight = 300.0f;
 						ImGui::BeginChild("Material", ImVec2(EDITOR_INSPECTOR_WIDTH, compHeight), true);
 
 						if (ImGui::Button("Shader")) ImGui::OpenPopup("shader_select_popup");
@@ -262,7 +269,12 @@ namespace MCS
 						ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 20.f);
 
 						// Parameters
-						if (comp.UseShader->GetName() == "FlatColor") ImGui::ColorEdit4("Albedo", glm::value_ptr(comp.Albedo));
+						if (comp.UseShader->GetName() == "FlatColor")
+						{
+							ImGui::ColorEdit4("Albedo", glm::value_ptr(comp.Albedo));
+							ImGui::DragFloat("Specular Strength", &comp.SpecularStrength, 0.01f, 0.0f, 1.0f, "%.2f");
+							ImGui::SliderInt("Shininess", &comp.Shininess, 2, 256);
+						}
 						if (comp.UseShader->GetName() == "Texture2D")
 						{
 							// Diffuse // 
@@ -301,13 +313,13 @@ namespace MCS
 							ImGui::SameLine();
 							ImGui::Text("Diffuse");
 
-							// Gloss // 
+							// Specular // 
 							ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 10.f);
 							ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(10, 10));
-							ImGui::Image(comp.GlossTexture ? comp.GlossTexture->GetRenderID() : Frosty::AssetManager::GetTexture2D("Checkerboard")->GetRenderID(), ImVec2(64, 64));
+							ImGui::Image(comp.SpecularTexture ? comp.SpecularTexture->GetRenderID() : Frosty::AssetManager::GetTexture2D("Checkerboard")->GetRenderID(), ImVec2(64, 64));
 							ImGui::PopStyleVar();
-							if (ImGui::IsItemClicked()) ImGui::OpenPopup("gloss_texture_selector");
-							if (ImGui::BeginPopupModal("gloss_texture_selector", NULL))
+							if (ImGui::IsItemClicked()) ImGui::OpenPopup("specular_texture_selector");
+							if (ImGui::BeginPopupModal("specular_texture_selector", NULL))
 							{
 								size_t index = 0;
 								ImGuiTreeNodeFlags node_flags = ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen; // ImGuiTreeNodeFlags_Bullet
@@ -320,12 +332,12 @@ namespace MCS
 									{
 										if (texture.first == "Checkerboard")
 										{
-											comp.GlossTexture->Unbind();
-											comp.GlossTexture.reset();
+											comp.SpecularTexture->Unbind();
+											comp.SpecularTexture.reset();
 										}
 										else
 										{
-											comp.GlossTexture = texture.second;
+											comp.SpecularTexture = texture.second;
 										}
 									}
 								}
@@ -334,7 +346,8 @@ namespace MCS
 								ImGui::EndPopup();
 							}
 							ImGui::SameLine();
-							ImGui::Text("Gloss");
+							ImGui::Text("Specular");
+							ImGui::SliderInt("Shininess", &comp.Shininess, 2, 256);
 
 							// Normal // 
 							ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 10.f);
@@ -373,7 +386,6 @@ namespace MCS
 						}
 
 						// Add more parameters like texture etc
-
 						ImGui::EndChild();
 					}
 				}
@@ -464,6 +476,8 @@ namespace MCS
 						auto& comp = world->GetComponent<Frosty::ECS::CLight>(m_SelectedEntity);
 						ImGui::BeginChild("CFollow", ImVec2(EDITOR_INSPECTOR_WIDTH, 85), true);
 						ImGui::ColorEdit4("Color", glm::value_ptr(comp.Color));
+						ImGui::InputFloat("Radius", &comp.Radius, 1.0f, 5.0f, 0);
+						ImGui::DragFloat("Strength", &comp.Strength, 0.01f, 0.0f, 1.0f, "%.2");
 						ImGui::EndChild();
 					}
 				}

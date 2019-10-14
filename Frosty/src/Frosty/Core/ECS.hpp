@@ -381,18 +381,22 @@ namespace Frosty
 
 		struct CMaterial : public BaseComponent
 		{
+			static const unsigned int MAXIMUM_SHININESS = 256;
 			static std::string NAME;
 			std::shared_ptr<Shader> UseShader;
 			glm::vec4 Albedo{ 1.0f, 0.0f, 1.0f, 1.0f };
 			std::shared_ptr<Texture2D> DiffuseTexture;
-			std::shared_ptr<Texture2D> GlossTexture;
+			std::shared_ptr<Texture2D> SpecularTexture;
 			std::shared_ptr<Texture2D> NormalTexture;
+			float SpecularStrength{ 0.5f };
+			int Shininess{ 16 };
 
 			CMaterial() = default;
 			CMaterial(const std::shared_ptr<Shader>& shader) : UseShader(shader) { }
 			CMaterial(const CMaterial& org) { FY_CORE_ASSERT(false, "Copy constructor in CMaterial called."); }
 
 			virtual void Func() override { }
+
 		};
 
 		struct CMotion : public BaseComponent
@@ -438,6 +442,8 @@ namespace Frosty
 		{
 			static std::string NAME;
 			glm::vec3 Color{ 1.0f, 0.96f, 0.84f };
+			float Radius{ 20.0f };
+			float Strength{ 1.0f };
 
 			CLight() = default;
 			CLight(const CLight& org) { FY_CORE_ASSERT(false, "Copy constructor in CLight called."); }

@@ -24,7 +24,7 @@ namespace Frosty
 		m_Window.reset(BaseWindow::Create());
 		m_Window->Init();
 
-		m_EditorCamera.Init(EditorCameraProps({ 0.0f, 20.0f, -20.0f }, { 90.0f, -50.0f, 0.0f }));
+		m_EditorCamera.Init(EditorCameraProps({ 0.0f, 20.0f, 20.0f }, { -90.0f, -50.0f, 0.0f }));
 
 		m_ImGuiLayer = FY_NEW ImGuiLayer();
 		PushOverlay(m_ImGuiLayer);
@@ -68,7 +68,8 @@ namespace Frosty
 				RenderCommand::SetClearColor({ 0.2f, 0.2f, 0.2f, 1.0f });
 				RenderCommand::Clear();
 
-				Renderer::BeginScene(m_EditorCamera.GetViewProjectionMatrix());
+				Renderer::BeginScene();
+				Renderer::SetCamera(m_EditorCamera.GetPosition(), m_EditorCamera.GetViewProjectionMatrix());
 			}
 			else
 			{

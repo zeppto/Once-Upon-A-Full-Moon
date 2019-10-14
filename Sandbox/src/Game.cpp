@@ -46,14 +46,16 @@ public:
 			{
 				Frosty::RenderCommand::SetClearColor(glm::vec4(m_Cameras[i]->Background, 1.0f));
 				Frosty::RenderCommand::Clear();
-				Frosty::Renderer::BeginScene(m_Cameras[i]->ViewProjectionMatrix);
+				Frosty::Renderer::BeginScene();
+				Frosty::Renderer::SetCamera(m_Transform[i]->Position, m_Cameras[i]->ViewProjectionMatrix);
 			}
 		}
 		else
 		{
 			Frosty::RenderCommand::SetClearColor({ 0.0f, 0.0f, 0.0f, 1.0f });
 			Frosty::RenderCommand::Clear();
-			Frosty::Renderer::BeginScene(glm::mat4(1.0f));
+			Frosty::Renderer::BeginScene();
+			Frosty::Renderer::SetCamera(glm::vec3(0.0f, 0.0f, -5.0f), glm::mat4(1.0f));
 		}
 	}
 
@@ -131,7 +133,12 @@ public:
 		{
 			for (size_t i = 1; i < p_Total; i++)
 			{
-				Frosty::Renderer::AddLight(m_Transform[i]->Position, m_Light[i]->Color);
+				//glm::mat4 mat = glm::rotate(glm::mat4(1.0f), glm::radians(m_Transform[i]->Rotation.x), { 1.0f, 0.0f, 0.0f });
+				//mat = glm::rotate(mat, glm::radians(m_Transform[i]->Rotation.y), { 0.0f, 1.0f, 0.0f });
+				//mat = glm::rotate(mat, glm::radians(m_Transform[i]->Rotation.z), { 0.0f, 0.0f, 1.0f });
+				//glm::vec3 direction = mat * glm::vec4(0.0f, 1.0f, 0.0f, 1.0);
+				//direction = glm::normalize(direction);
+				Frosty::Renderer::AddLight(m_Transform[i]->Position, m_Light[i]->Color, m_Light[i]->Radius, m_Light[i]->Strength, m_Transform[i]->Rotation);
 			}
 		}
 	}
@@ -202,6 +209,8 @@ public:
 			// Takes up performance if calculated every frame, but the other way will mean
 			// 4 * 4 floats which is 4 * 4 * 4 = 64 bytes for EVERY entity
 			// For now we calculate it every frame
+
+			// Check if directional light
 			glm::mat4 transform = glm::translate(glm::mat4(1.0f), m_Transform[i]->Position);
 			transform = glm::rotate(transform, glm::radians(m_Transform[i]->Rotation.x), { 1.0f, 0.0f, 0.0f });
 			transform = glm::rotate(transform, glm::radians(m_Transform[i]->Rotation.y), { 0.0f, 1.0f, 0.0f });
@@ -209,14 +218,14 @@ public:
 			transform = glm::scale(transform, m_Transform[i]->Scale);
 
 			if (m_Materials[i]->UseShader->GetName() == "Texture2D" && m_Materials[i]->DiffuseTexture) m_Materials[i]->DiffuseTexture->Bind();
-			if (m_Materials[i]->UseShader->GetName() == "Texture2D" && m_Materials[i]->GlossTexture) m_Materials[i]->GlossTexture->Bind(1);
-			if (m_Materials[i]->UseShader->GetName() == "Texture2D" && m_Materials[i]->NormalTexture) m_Materials[i]->NormalTexture->Bind(2);
+			if (m_Materials[i]->UseShader->GetName() == "Texture2D" && m_Materials[i]->NormalTexture) m_Materials[i]->NormalTexture->Bind(1);
+			if (m_Materials[i]->UseShader->GetName() == "Texture2D" && m_Materials[i]->SpecularTexture) m_Materials[i]->SpecularTexture->Bind(2);
 
 			Frosty::Renderer::Submit(m_Materials[i], m_Meshes[i]->Mesh, transform);
 
 			if (m_Materials[i]->UseShader->GetName() == "Texture2D" && m_Materials[i]->DiffuseTexture) m_Materials[i]->DiffuseTexture->Unbind();
-			if (m_Materials[i]->UseShader->GetName() == "Texture2D" && m_Materials[i]->GlossTexture) m_Materials[i]->GlossTexture->Unbind();
 			if (m_Materials[i]->UseShader->GetName() == "Texture2D" && m_Materials[i]->NormalTexture) m_Materials[i]->NormalTexture->Unbind();
+			if (m_Materials[i]->UseShader->GetName() == "Texture2D" && m_Materials[i]->SpecularTexture) m_Materials[i]->SpecularTexture->Unbind();
 		}
 	}
 
@@ -528,3 +537,11 @@ namespace MCS
 
 	}
 }
+
+
+
+
+
+
+
+

@@ -25,17 +25,24 @@ namespace Frosty
 		s_Shaders.emplace("FlatColor", FY_NEW Shader("assets/shaders/FlatColor.glsl", "FlatColor"));
 		s_Shaders.emplace("Texture2D", FY_NEW Shader("assets/shaders/Texture2D.glsl", "Texture2D"));
 
-		LoadTexture2D("Clock_Diffuse", "assets/textures/pCube10_diffuse.png");
-		LoadTexture2D("Clock_Gloss", "assets/textures/pCube10_gloss.png");
-		LoadTexture2D("Clock_Normal", "assets/textures/pCube10_normal.png");
-		LoadTexture2D("Table_Diffuse", "assets/textures/polySurface15_diffuse.png");
-		LoadTexture2D("Brown_Mud_Diffuse", "assets/textures/brown_mud_diffuse.png");
+		LoadTexture2D("Clock Diffuse", "assets/textures/clock_diffuse.png");
+		LoadTexture2D("Clock Normal", "assets/textures/clock_normal.png");
+		LoadTexture2D("Clock Specular", "assets/textures/clock_specular.png");
+		LoadTexture2D("Table Diffuse", "assets/textures/polySurface15_diffuse.png");
+		LoadTexture2D("Brown Mud Diffuse", "assets/textures/brown_mud_diffuse.png");
 		LoadTexture2D("Checkerboard", "assets/textures/Checkerboard.png");
-
+		LoadTexture2D("Rusty Metal Diffuse", "assets/textures/rusty_metal_diffuse.png");
+		LoadTexture2D("Rusty Metal Normal", "assets/textures/rusty_metal_normal.png");
+		LoadTexture2D("Rusty Metal Specular", "assets/textures/rusty_metal_specular.png");
+		LoadTexture2D("Normal Test", "assets/textures/cube_normal.png");					// TEMPORARY
+		LoadTexture2D("Cherno Logo", "assets/textures/ChernoLogo.png");						// TEMPORARY
+		
 		s_Shaders["Texture2D"]->Bind();
+
+		// Clock
 		s_Shaders["Texture2D"]->UploadUniformInt("u_DiffuseTexture", 0);
-		s_Shaders["Texture2D"]->UploadUniformInt("u_GlossTexture", 1);
-		s_Shaders["Texture2D"]->UploadUniformInt("u_NormalTexture", 2);
+		s_Shaders["Texture2D"]->UploadUniformInt("u_NormalTexture", 1);
+		s_Shaders["Texture2D"]->UploadUniformInt("u_SpecularTexture", 2);
 	}
 
 	void AssetManager::AddMesh(const std::string& name, const std::string& filepath)
