@@ -1,3 +1,4 @@
+#include "fypch.hpp"
 #include "AnimationHandler.h"
 
 Frosty::AnimationHandler::AnimationHandler()
@@ -53,7 +54,7 @@ void Frosty::AnimationHandler::CalculateAnimMatrix( float currentAnimTime)
 	// keyframes involved.
 	int k1 = (int)(currentAnimTime * animPtr->fps);
 	//keyFrameMap.
-	int k2 = fminf(k1 + 1, keyVec.back);
+	int k2 = fminf(k1 + 1, keyVec[keyVec.size()].timePosition);
 
 	// keyframes in anim_time terms
 	float k1_time = k1 / animPtr->fps;
@@ -71,7 +72,7 @@ void Frosty::AnimationHandler::CalculateAnimMatrix( float currentAnimTime)
 	}
 	keyVec = keyFrameMap->at(jointVec[0].jointID);
 
-	/*glm::vec4 k2Trans = { keyVec[k2].translation[0] ,keyVec[k2].translation[1] ,keyVec[k2].translation[2] ,keyVec[k2].translation[3] };*/
+	///*glm::vec4 k2Trans = { keyVec[k2].translation[0] ,keyVec[k2].translation[1] ,keyVec[k2].translation[2] ,keyVec[k2].translation[3] };*/
 
 	//TODO: All the make_ calls should be done before this function.
 	//Ideally keyVec[k1].translation and the others would already be parsed correctly.
@@ -84,7 +85,7 @@ void Frosty::AnimationHandler::CalculateAnimMatrix( float currentAnimTime)
 	glm::quat k1Rot = glm::make_quat(keyVec[k1].rotation);
 	glm::quat k2Rot = glm::make_quat(keyVec[k2].rotation);
 
-	//Root Values.
+	////Root Values.
 	glm::vec4 translation_r = k1Trans * (1 - t) + k2Trans * t;
 	glm::vec4 scaling_r		= k1Scale * (1 - t) + k2Scale * t;
 	glm::quat quaternion_r  = glm::slerp(k1Rot, k2Rot, t);
@@ -96,8 +97,13 @@ void Frosty::AnimationHandler::CalculateAnimMatrix( float currentAnimTime)
 	// Put it in the list.
 	bone_global_pose[0] = transMat * rotMat * scaleMat;
 
-	//Apply final rotation to the array for root node.
-	glm::mat4 invBindPose = glm::make_mat4(jointVec[0].invBindposeMatrix);
+	////Apply final rotation to the array for root node.
+	glm::mat4 invBindPose = { jointVec[0].invBindposeMatrix[0][0],jointVec[0].invBindposeMatrix[0][1],jointVec[0].invBindposeMatrix[0][2], jointVec[0].invBindposeMatrix[0][3],
+							  jointVec[0].invBindposeMatrix[1][0],jointVec[0].invBindposeMatrix[1][1],jointVec[0].invBindposeMatrix[1][2], jointVec[0].invBindposeMatrix[1][3],
+							  jointVec[0].invBindposeMatrix[2][0],jointVec[0].invBindposeMatrix[2][1],jointVec[0].invBindposeMatrix[2][2], jointVec[0].invBindposeMatrix[2][3],
+							  jointVec[0].invBindposeMatrix[3][0],jointVec[0].invBindposeMatrix[3][1],jointVec[0].invBindposeMatrix[3][2], jointVec[0].invBindposeMatrix[3][3] 
+							};
+
 	skinData[0] = bone_global_pose[0] * invBindPose;
 
 	for (int i = 1; i < jointVec.size(); i++)
@@ -124,8 +130,12 @@ void Frosty::AnimationHandler::CalculateAnimMatrix( float currentAnimTime)
 		//Put it in the list.
 		bone_global_pose[i] = transMat * rotMat * scaleMat;
 
-		glm::mat4 invBindPose = glm::make_mat4(jointVec[0].invBindposeMatrix);
-		skinData[0] = bone_global_pose[0] * invBindPose;
+		glm::mat4 invBindPose = { jointVec[i].invBindposeMatrix[0][0],jointVec[i].invBindposeMatrix[0][1],jointVec[i].invBindposeMatrix[0][2], jointVec[i].invBindposeMatrix[0][3],
+								  jointVec[i].invBindposeMatrix[1][0],jointVec[i].invBindposeMatrix[1][1],jointVec[i].invBindposeMatrix[1][2], jointVec[i].invBindposeMatrix[1][3],
+								  jointVec[i].invBindposeMatrix[2][0],jointVec[i].invBindposeMatrix[2][1],jointVec[i].invBindposeMatrix[2][2], jointVec[i].invBindposeMatrix[2][3],
+								  jointVec[i].invBindposeMatrix[3][0],jointVec[i].invBindposeMatrix[3][1],jointVec[i].invBindposeMatrix[3][2], jointVec[i].invBindposeMatrix[3][3]
+		};
+		skinData[i] = bone_global_pose[i] * invBindPose;
 	}
 
 }
