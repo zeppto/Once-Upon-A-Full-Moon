@@ -49,11 +49,11 @@ namespace Frosty
 
 		static std::vector<std::string> s_FilePath_Vector;
 
-		//was not allowed to itterate the unorderedmap
-		static std::vector<std::string> s_MeshNames;
-		static std::vector<std::string> s_AnimationsNames;
-		static std::vector<std::string> s_TexturesNames;
-		static std::vector<std::string> s_MaterialNames;
+		////was not allowed to itterate the unorderedmap
+		//static std::vector<std::string> s_MeshNames;
+		//static std::vector<std::string> s_AnimationsNames;
+		//static std::vector<std::string> s_TexturesNames;
+		//static std::vector<std::string> s_MaterialNames;
 
 
 
@@ -71,14 +71,18 @@ namespace Frosty
 
 		static bool LinkKey(const std::string& AssetName, BaseKey* In_Key);
 
-		inline static bool AddTexture(const FileMetaData& MetaData) { if (TextureLoaded(MetaData.FileName)) { return false; } else { s_Textures[MetaData.FileName] = TextureFile(MetaData); s_TexturesNames.emplace_back(MetaData.FileName); } return true; }
-		static bool AddMesh(const FileMetaData& MetaData, const Luna::Mesh& LunMesh);
-		inline static bool AddMaterial(const FileMetaData& MetaData, const std::string& MatName) { if (MaterialLoaded(MatName)) { return false; } else { s_LinkedMaterials[MatName] = LinkedMaterial(MetaData); s_MaterialNames.emplace_back(MatName); } return true; }
+		static bool AddTexture(TextureFile& Tex);
+		static bool AddTexture(const FileMetaData& MetaData);
 
-		inline static bool AddTexture(TextureFile& Tex) { if (TextureLoaded(Tex.GetfileMetaData().FileName)) { return false; } else { s_Textures[Tex.GetfileMetaData().FileName] = Tex; s_TexturesNames.emplace_back(Tex.GetfileMetaData().FileName); } return true; }
-		inline static bool AddMesh(Mesh& Mesh) { if (MeshLoaded(Mesh.GetLunaMesh().name)) { return false; } else { s_Meshes[Mesh.GetLunaMesh().name] = Mesh; s_MeshNames.emplace_back(Mesh.GetLunaMesh().name); } return true; }
-		inline static bool AddMaterial(LinkedMaterial& LnkMat) { if (MaterialLoaded(LnkMat.GetfileMetaData().FileName)) { return false; } else { s_LinkedMaterials[LnkMat.GetfileMetaData().FileName] = LnkMat; s_MaterialNames.emplace_back(LnkMat.GetfileMetaData().FileName); } return true; }
-		inline static bool AddAnimation(Animation& Animation) { if (AnimationLoaded(Animation.GetName())) { return false; } else { s_Animaions[Animation.GetName()] = Animation; s_AnimationsNames.emplace_back(Animation.GetName()); } return true; }
+		static bool AddMesh(Mesh& Mesh);
+		static bool AddMesh(const FileMetaData& MetaData, const Luna::Mesh& LunMesh);
+		
+		static bool AddMaterial(LinkedMaterial& LnkMat);
+		static bool AddMaterial(const FileMetaData& MetaData, const Luna::Material& LunMat);
+
+		static bool AddAnimation(Animation& Animation);
+
+		//If wanted/needed make declarations in cpp
 
 		inline static Mesh* GetMesh(const std::string& MeshName) { return  MeshLoaded(MeshName) ? &s_Meshes[MeshName] : nullptr; }
 		inline static TextureFile* GetTexture(const std::string& FileName) { return  TextureLoaded(FileName) ? &s_Textures[FileName] : nullptr; }
@@ -92,6 +96,7 @@ namespace Frosty
 		inline static void Delete() { if (s_Instance != nullptr) { delete s_Instance; } }
 
 		bool ConnectMaterialWithTexture(LinkedMaterial& Material, const FileMetaData& MetaData);
+		bool LoadMaterialTextures(LinkedMaterial*& Material);
 
 		static bool FileLoaded(const std::string& FilePath);
 		static bool AssetLoaded(const std::string& AssetName);

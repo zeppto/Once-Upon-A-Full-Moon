@@ -17,9 +17,9 @@ namespace Frosty
 
 	void LinkedMaterial::LinkMaterial()
 	{
-		//m_Glow_Texture_Ptr = Assetmanager::GetTexture(CutFileExtentionFromString(m_LunaMaterial.diffuseTexPath));
-		//m_Normal_Texture_Ptr = Assetmanager::GetTexture(CutFileExtentionFromString(m_LunaMaterial.diffuseTexPath));
-		//m_Diffuse_Texture_Ptr = Assetmanager::GetTexture(CutFileExtentionFromString(m_LunaMaterial.diffuseTexPath));
+		m_Glow_Texture_Ptr = Assetmanager::GetTexture(CutFileExtentionFromString(m_LunaMaterial.diffuseTexPath));
+		m_Normal_Texture_Ptr = Assetmanager::GetTexture(CutFileExtentionFromString(m_LunaMaterial.diffuseTexPath));
+		m_Diffuse_Texture_Ptr = Assetmanager::GetTexture(CutFileExtentionFromString(m_LunaMaterial.diffuseTexPath));
 	}
 
 	bool LinkedMaterial::LoadToMem(const bool& Reload)
