@@ -97,9 +97,9 @@ namespace Frosty
 
 		return m_PrefabInstances.back();*/
 
-		Node<PrefabInstance*>* tempNode = m_PrefabInstances.InsertAtBack(FY_NEW PrefabInstance(m_PrefabName));
+		Node<PrefabInstance*>* tempNode = m_PrefabInstances.InsertAtFront(FY_NEW PrefabInstance(m_PrefabName));
 		m_PrefabInstances.GetLast()->SetListNode(tempNode);
-		return m_PrefabInstances.GetLast();
+		return m_PrefabInstances.GetFirst();
 	}
 
 	TripleLinkedList<PrefabInstance*>* Prefab::GetInstances()

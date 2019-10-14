@@ -27,7 +27,7 @@ private:
 	int m_PlayerDamage = 1;
 
 
-	 Frosty::PrefabInstance* m_Instance; //For example 
+	std::vector<Frosty::PrefabInstance*> m_Instances; //For example 
 	
 	 float m_Rotation = 0;
 	
@@ -42,10 +42,19 @@ public:
 	void OnAttach() override
 	{
 		Frosty::PrefabManager::GetPrefabManager()->setPrefab("TestPrefab1", "clock", "Mat_0:table"); //Create a prefab
-		m_Instance = Frosty::PrefabManager::GetPrefabManager()->CreatePrefabInstance("TestPrefab1"); //Create an instanceof the prefab
-		m_Instance->GetTransform()->setTranslate(glm::vec3(0, 0, -10)); //Move the instance
+		m_Instances.emplace_back(Frosty::PrefabManager::GetPrefabManager()->CreatePrefabInstance("TestPrefab1")); //Create an instanceof the prefab
+		m_Instances.at(0)->GetTransform()->setTranslate(glm::vec3(0, 0, -10)); //Move the instance
 
 
+	}
+
+	void OnDetach() override
+	{
+		
+		//No need to destroy all instances here, actually it wont work at all (At the moment at least). 
+		//This is not my fault, layer is one of the last things that gets destroyed.
+		//So if you try to delete something here when the program is closed, the prefab will already be destroyed.
+		//But worry not, the prefab will destroy any left over instances when it gets destroyed.
 	}
 	void OnUpdate() override
 	{
@@ -54,10 +63,28 @@ public:
 		float dt = Frosty::Time::DeltaTime();
 		int frame = Frosty::Time::GetFrameCount();
 		
-		if (frame == 120)
+		if (frame == 120 && m_Instances.at(0) != nullptr)
 		{
-			delete m_Instance;
+			m_Instances.at(0)->Destroy(); //Destroy the object before removing it from a vector. Othervise it still lives on back-end
+			m_Instances.erase(m_Instances.begin());
+			//m_Instance.at(0) = nullptr;
 		}
+
+		if (frame == 500 && m_Instances.size() == 0)
+		{
+			m_Instances.emplace_back(Frosty::PrefabManager::GetPrefabManager()->CreatePrefabInstance("TestPrefab1"));
+			m_Instances.at(0)->GetTransform()->setTranslate(glm::vec3(0, 10, -10)); //Move the instance
+
+			//Notice we dont destroy this instance. It should create a memory leak when closing the program but back-end got you covered. 
+			//When the prefab is destroyed it destroys all instances.
+		}
+
+		//if (frame == 700 && m_Instances.at(0) != nullptr)
+		//{
+		//	m_Instances.at(0)->Destroy();
+		//	m_Instances.erase(m_Instances.begin());
+		//	//m_Instance.at(0) = nullptr;
+		//}
 		
 		if (frame % 1000 == 0)
 		{
@@ -76,9 +103,9 @@ public:
 			Frosty::PrefabManager::GetPrefabManager()->setPrefab("TestPrefab1", "table", "Mat_0:clock");
 		}
 		
-		if (m_Instance != nullptr)
+		if (m_Instances.size() > 0)
 		{
-			m_Instance->GetTransform()->setRotate(glm::vec3(0, 0, m_Rotation -= 40 * Frosty::Time::DeltaTime())); //Instances can also rotate! Amazing right?!
+			m_Instances.at(0)->GetTransform()->setRotate(glm::vec3(0, 0, m_Rotation -= 40 * Frosty::Time::DeltaTime())); //Instances can also rotate! Amazing right?!
 		}
 		
 
@@ -123,6 +150,8 @@ public:
 		//FY_TRACE("{0}", event);
 		return true;
 	}
+
+	
 };
 
 class Game : public Frosty::Application

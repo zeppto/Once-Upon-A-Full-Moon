@@ -9,16 +9,17 @@ namespace Frosty
 	{
 	public:		//Variables
 
-
 	private:	//Variables
 		T m_Element;
 		Node<T>* m_PreviousNode;
 		Node<T>* m_NextNode;
-		
-		uint32_t* m_NrOfNodes =nullptr;
+
+		uint32_t* m_NrOfNodes = nullptr;
+		//TripleLinkedList<T>* m_List
 
 	public:		//Functions
 		Node(T element, uint32_t* nrOfNodes);
+
 		~Node();
 
 		Node<T>* GetPreviousNode();
@@ -27,6 +28,7 @@ namespace Frosty
 
 		void RelinkForwardsWith(Node<T>* node);
 		void RelinkBackwardsWith(Node<T>* node);
+
 
 
 
@@ -41,7 +43,7 @@ namespace Frosty
 	public:		//Variables
 
 	protected:  //Variables
-		
+
 
 
 	private:	//Variables
@@ -49,14 +51,14 @@ namespace Frosty
 		Node<T>* m_FirstNode = nullptr;
 		Node<T>* m_LastNode = nullptr;
 
-	friend class Node<T>;
+		friend class Node<T>;
 
 	public:		//Functions
 		TripleLinkedList();
 		~TripleLinkedList();
 
 
-		void ClearList();
+		void ClearList(bool deleteElements = false);
 		bool DeleteAt(uint32_t pos);
 		bool DeleteAtFront();
 		bool DeleteAtBack();
@@ -69,7 +71,8 @@ namespace Frosty
 		T GetFirst();
 		T GetLast();
 
-		int GetSize();
+		uint32_t GetSize();
+
 
 	private:	//Functions
 
@@ -90,21 +93,32 @@ namespace Frosty
 	template<class T>
 	inline TripleLinkedList<T>::~TripleLinkedList()
 	{
-		ClearList();
+		ClearList(true);
 	}
 
 
 
 	template<class T>
-	inline void TripleLinkedList<T>::ClearList()
+	inline void TripleLinkedList<T>::ClearList(bool deleteElements)
 	{
 		Node<T>* traveler = m_FirstNode;
 		Node<T>* temp = nullptr;
 
+		
+
+
 		for (uint32_t i = 0; i < m_NrOfNodes; i++)
 		{
 			temp = traveler->GetNextNode();
-			delete traveler;
+			if (deleteElements == true)
+			{
+				delete traveler->GetElement(); 
+			}
+			else
+			{ 
+				delete traveler; //When deleting the element, the node gets destroyed as well. 
+			}
+			
 			traveler = temp;
 		}
 		m_NrOfNodes = 0;
@@ -187,6 +201,7 @@ namespace Frosty
 			return true;
 		}
 
+
 		return false;
 	}
 
@@ -263,6 +278,8 @@ namespace Frosty
 	template<class T>
 	inline T TripleLinkedList<T>::GetAt(uint32_t pos)
 	{
+		int test = m_NrOfNodes;
+
 		if (pos <= 0)
 		{
 			return GetFirst();
@@ -296,7 +313,7 @@ namespace Frosty
 	}
 
 	template<class T>
-	inline int TripleLinkedList<T>::GetSize()
+	inline uint32_t TripleLinkedList<T>::GetSize()
 	{
 		return m_NrOfNodes;
 	}
@@ -307,9 +324,12 @@ namespace Frosty
 
 
 
+
 	template<class T>
 	inline Node<T>::Node(T element, uint32_t* nrOfNodes)
 	{
+		//m_List = list;
+		m_NrOfNodes = nrOfNodes;
 		m_Element = element;
 		m_NrOfNodes = nrOfNodes;
 		m_NextNode = nullptr;
@@ -320,6 +340,8 @@ namespace Frosty
 	template<class T>
 	inline Node<T>::~Node()
 	{
+		*m_NrOfNodes = *m_NrOfNodes - 1;
+
 		if (m_PreviousNode != nullptr)
 		{
 			m_PreviousNode->RelinkForwardsWith(m_NextNode);
@@ -331,7 +353,9 @@ namespace Frosty
 			m_NextNode->RelinkBackwardsWith(m_PreviousNode);
 		}
 
-		m_NrOfNodes--;
+
+	
+		
 	}
 
 	template<class T>
@@ -363,6 +387,8 @@ namespace Frosty
 	{
 		m_PreviousNode = node;
 	}
+
+
 
 
 }

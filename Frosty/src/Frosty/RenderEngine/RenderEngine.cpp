@@ -548,7 +548,8 @@ namespace Frosty
 
 		//std::vector<PrefabInstance*>* instances= tempPrefab->GetInstances();
 		TripleLinkedList<PrefabInstance*>* instances = tempPrefab->GetInstances();
-		int test = instances->GetSize();
+	
+
 		for (uint32_t i = 0; i < instances->GetSize(); i++)
 		{
 			RenderModel

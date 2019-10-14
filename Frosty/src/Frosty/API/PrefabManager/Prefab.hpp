@@ -41,9 +41,9 @@ namespace Frosty
 
 		bool SetData(std::string modelName, std::string materialName);
 		void SetName(std::string prefabName);
-
+		
 		PrefabInstance* CreatePrefabInstance();
-
+		
 		TripleLinkedList<PrefabInstance*>* GetInstances();
 
 		Prefab& operator = (Prefab& other);
