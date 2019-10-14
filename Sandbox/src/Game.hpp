@@ -41,6 +41,9 @@ public:
 	}
 	void OnAttach() override
 	{
+		Frosty::PrefabManager::GetPrefabManager()->setPrefab("AnimTestCuboid", "AnimTestCuboid", "Mat_0:table");
+		m_Instance = Frosty::PrefabManager::GetPrefabManager()->CreatePrefabInstance("AnimTestCuboid");
+
 		Frosty::PrefabManager::GetPrefabManager()->setPrefab("TestPrefab1", "clock", "Mat_0:table"); //Create a prefab
 		m_Instance = Frosty::PrefabManager::GetPrefabManager()->CreatePrefabInstance("TestPrefab1"); //Create an instanceof the prefab
 		m_Instance->GetTransform()->setTranslate(glm::vec3(0, 0, -10)); //Move the instance

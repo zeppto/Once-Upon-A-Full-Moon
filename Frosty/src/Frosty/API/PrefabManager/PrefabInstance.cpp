@@ -28,6 +28,12 @@ namespace Frosty
 
 	}
 
+	bool PrefabInstance::setAnimation(std::string luFileName)
+	{
+
+		return false;
+	}
+
 	Transform* PrefabInstance::GetTransform()
 	{
 		return &m_Transform;

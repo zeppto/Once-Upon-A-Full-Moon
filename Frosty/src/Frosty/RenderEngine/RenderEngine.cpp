@@ -451,6 +451,8 @@ namespace Frosty
 		//RenderTriangle();
 		RenderTempModels();
 		RenderAllPrefabs();
+
+		/*RenderPrefab("AnimTestCuboid");*/
 		
 		/*RenderPrefab("TestPrefab1");
 		RenderPrefab("TestPrefab2");*/

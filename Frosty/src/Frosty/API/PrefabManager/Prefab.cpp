@@ -92,10 +92,33 @@ namespace Frosty
 
 	PrefabInstance* Prefab::CreatePrefabInstance()
 	{
+
+		if (GetModelKey().GetKeyData().GetAnimation() != nullptr)
+		{
+			m_AnimHandler.setAnimPtr(GetModelKey().GetKeyData().GetAnimation());
+			m_AnimHandler.setJointVec(*GetModelKey().GetKeyData().GetJointVector());
+			m_AnimHandler.setKeyframeMap(GetModelKey().GetKeyData().GetKeyframeMap());
+		}
+
 		m_PrefabInstances.emplace_back(FY_NEW PrefabInstance(m_PrefabName));
 
 		return m_PrefabInstances.back();
 	}
+
+	PrefabInstance * Prefab::CreateAnimPrefabInstance()
+	{
+
+		m_PrefabInstances.emplace_back(FY_NEW PrefabInstance(m_PrefabName));
+
+		return m_PrefabInstances.back();
+	}
+
+	AnimationHandler * Prefab::getAnimationHandler()
+	{
+		return &m_AnimHandler;
+	}
+
+
 
 	std::vector<PrefabInstance*>* Prefab::GetInstances()
 	{
