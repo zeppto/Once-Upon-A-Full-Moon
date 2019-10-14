@@ -55,7 +55,6 @@ namespace Frosty
 		m_MeshInfoMap = other.m_MeshInfoMap;
 		m_KeyframeMap = other.m_KeyframeMap;
 
-
 		return *this;
 	}
 	bool ModelTemplate::operator==(const ModelTemplate& other)

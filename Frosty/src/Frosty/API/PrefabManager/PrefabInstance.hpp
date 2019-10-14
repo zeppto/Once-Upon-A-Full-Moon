@@ -18,11 +18,12 @@ namespace Frosty
 		Transform m_Transform;
 
 	public:		//Functions
-		PrefabInstance(std::string pefabName);
+		PrefabInstance(std::string prefabName);
 		PrefabInstance(PrefabInstance& other);
 
 		~PrefabInstance();
 
+		bool setAnimation(std::string luFileName);
 		Transform* GetTransform();
 
 		void Destroy();

@@ -2,6 +2,8 @@
 #define PREFAB_H 
 #include "..//AssetManager/AssetManager.hpp"
 #include "PrefabInstance.hpp"
+#include "Frosty/API/AnimationHandler/AnimationHandler.h"
+
 namespace Frosty
 {
 	class Prefab
@@ -12,6 +14,7 @@ namespace Frosty
 	private:	//Variables
 		std::string m_PrefabName;
 
+		AnimationHandler m_AnimHandler;
 
 		uint32_t m_PrefabID = 0;
 		static uint32_t s_Unique_ID;
@@ -40,6 +43,9 @@ namespace Frosty
 		void SetName(std::string prefabName);
 
 		PrefabInstance* CreatePrefabInstance();
+
+		PrefabInstance* CreateAnimPrefabInstance();
+		AnimationHandler* getAnimationHandler();
 
 		std::vector<PrefabInstance*>* GetInstances();
 
