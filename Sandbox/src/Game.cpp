@@ -13,7 +13,7 @@ public:
 		p_Signature.set(Frosty::ECS::getComponentTypeID<Frosty::ECS::CCamera>(), true);
 
 		//Needed for testing
-		//Frosty::PrefabManager::GetPrefabManager()->SetPrefab("StorKlocka", "klocka","");
+		//Frosty::PrefabManager::GetPrefabManager()->SetPrefab("StorKlocka", "klocka","Mat_0:newClock");
 	}
 
 	virtual void OnUpdate() override

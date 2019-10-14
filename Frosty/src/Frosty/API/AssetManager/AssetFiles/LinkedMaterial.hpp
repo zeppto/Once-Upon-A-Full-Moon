@@ -25,11 +25,20 @@ namespace Frosty
 
 
 	public:
-		inline LinkedMaterial() :AssetFile(FileMetaData()) {}
-		inline LinkedMaterial(const FileMetaData& MetaData)
+		inline LinkedMaterial()
+		   :m_Glow_Texture_Ptr(nullptr),
+			m_Normal_Texture_Ptr(nullptr),
+			m_Diffuse_Texture_Ptr(nullptr),
+			m_LunaMaterial(Luna::Material()),
+			AssetFile(FileMetaData()) {}
+
+
+
+		inline LinkedMaterial(const FileMetaData& MetaData, const Luna::Material& LunMat)
 			: m_Glow_Texture_Ptr(nullptr),
 			m_Normal_Texture_Ptr(nullptr),
 			m_Diffuse_Texture_Ptr(nullptr),
+			m_LunaMaterial(LunMat),
 			AssetFile(MetaData){}
 		virtual ~LinkedMaterial();
 

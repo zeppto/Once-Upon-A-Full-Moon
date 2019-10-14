@@ -43,6 +43,7 @@ namespace Frosty
 		m_Window->Shutdown();
 		Renderer::Shutdown();
 		Assetmanager::Delete();
+		PrefabManager::Delete();
 	}
 
 	void Application::Run()

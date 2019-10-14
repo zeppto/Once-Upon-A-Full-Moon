@@ -7,7 +7,7 @@ namespace Frosty
 {
 
 
-	Assetmanager* Assetmanager::s_Instance= nullptr;
+	Assetmanager* Assetmanager::s_Instance = nullptr;
 	uint16_t Assetmanager::s_Total_Nr_Assets = 0;
 
 
@@ -17,10 +17,10 @@ namespace Frosty
 	std::unordered_map<std::string, LinkedMaterial> Assetmanager::s_LinkedMaterials;
 
 	std::vector<std::string> Assetmanager::s_FilePath_Vector;
-	std::vector<std::string> Assetmanager::s_MeshNames;
-	std::vector<std::string> Assetmanager::s_AnimationsNames;
-	std::vector<std::string> Assetmanager::s_TexturesNames;
-	std::vector<std::string> Assetmanager::s_MaterialNames;
+	//std::vector<std::string> Assetmanager::s_MeshNames;
+	//std::vector<std::string> Assetmanager::s_AnimationsNames;
+	//std::vector<std::string> Assetmanager::s_TexturesNames;
+	//std::vector<std::string> Assetmanager::s_MaterialNames;
 
 	uint16_t Assetmanager::s_Failed_Loading_Attempts = 0;
 	uint16_t Assetmanager::s_Success_Loading_Attempts = 0;
@@ -172,23 +172,117 @@ namespace Frosty
 		return returnValue;
 	}
 
-	bool Assetmanager::AddMesh(const FileMetaData& MetaData, const Luna::Mesh& LunMesh)
+	bool Assetmanager::AddMesh(Mesh& Mesh)
 	{
-		if (MeshLoaded(LunMesh.name)) 
-		{ 
+		if (MeshLoaded(Mesh.GetLunaMesh().name))
+		{
 			return false;
 		}
 		else
-		{ 
-		s_Meshes[LunMesh.name] = Mesh(MetaData, LunMesh); 
-		s_MeshNames.emplace_back(LunMesh.name); 
+		{
+			s_Meshes[Mesh.GetLunaMesh().name] = Mesh;
+		//	s_MeshNames.emplace_back(Mesh.GetLunaMesh().name);
 		}
 		return true;
 	}
 
-	bool Assetmanager::ConnectMaterialWithTexture(LinkedMaterial& Material, const FileMetaData& MetaData)
+	bool Assetmanager::AddMesh(const FileMetaData& MetaData, const Luna::Mesh& LunMesh)
 	{
-		return false;
+		if (MeshLoaded(LunMesh.name))
+		{
+			return false;
+		}
+		else
+		{
+			s_Meshes[LunMesh.name] = Mesh(MetaData, LunMesh);
+			//s_MeshNames.emplace_back(LunMesh.name);
+		}
+		return true;
+	}
+
+	bool Assetmanager::AddTexture(TextureFile& Tex)
+	{
+		if (TextureLoaded(Tex.GetfileMetaData().FileName))
+		{
+			return false;
+		}
+		else
+		{
+			s_Textures[Tex.GetfileMetaData().FileName] = Tex;
+			//s_TexturesNames.emplace_back(Tex.GetfileMetaData().FileName);
+		}
+		return true;
+	}
+
+	bool Assetmanager::AddTexture(const FileMetaData& MetaData)
+	{
+		if (TextureLoaded(MetaData.FileName))
+		{
+			return false;
+		}
+		else
+		{
+			s_Textures[MetaData.FileName] = TextureFile(MetaData);
+			//s_TexturesNames.emplace_back(MetaData.FileName);
+		}
+		return true;
+	}
+
+	bool Assetmanager::AddMaterial(LinkedMaterial& LnkMat)
+	{
+		if (MaterialLoaded(LnkMat.GetfileMetaData().FileName))
+		{
+			return false;
+		}
+		else
+		{
+			s_LinkedMaterials[LnkMat.GetfileMetaData().FileName] = LnkMat;
+			//s_MaterialNames.emplace_back(LnkMat.GetfileMetaData().FileName);
+		}
+		return true;
+	}
+
+	bool Assetmanager::AddMaterial(const FileMetaData& MetaData, const Luna::Material& LunMat)
+	{
+		if (MaterialLoaded(MetaData.FileName))
+		{
+			return false;
+		}
+		else
+		{
+			s_LinkedMaterials[MetaData.FileName] = LinkedMaterial(MetaData, LunMat);
+			//s_MaterialNames.emplace_back(MatName);
+		}
+		return true;
+	}
+
+	bool Assetmanager::AddAnimation(Animation& Animation)
+	{
+		if (AnimationLoaded(Animation.GetName()))
+		{
+			return false;
+		}
+		else
+		{
+			s_Animaions[Animation.GetName()] = Animation;
+			//s_AnimationsNames.emplace_back(Animation.GetName());
+		}
+		return true;
+	}
+
+	bool Assetmanager::LoadMaterialTextures(LinkedMaterial*& Material)
+	{
+
+		LoadFile((PROJECT_LUNAFILES_FOLDER_ROOT + std::string(Material->GetMaterial().diffuseTexPath)));
+		LoadFile((PROJECT_LUNAFILES_FOLDER_ROOT + std::string(Material->GetMaterial().normalTexPath)));
+		LoadFile((PROJECT_LUNAFILES_FOLDER_ROOT + std::string(Material->GetMaterial().glowTexPath)));
+
+		Material->GetGlow() = Assetmanager::GetTexture(CutFileExtentionFromString(Material->GetMaterial().diffuseTexPath));
+		Material->GetNormal() = Assetmanager::GetTexture(CutFileExtentionFromString(Material->GetMaterial().diffuseTexPath));
+		Material->GetDiffuse() = Assetmanager::GetTexture(CutFileExtentionFromString(Material->GetMaterial().diffuseTexPath));
+
+
+		return true;
 	}
 
 	bool Assetmanager::FileLoaded(const std::string& FilePath)
@@ -263,22 +357,22 @@ namespace Frosty
 		bool returnValue = false;
 
 
-		//std::unordered_map<std::string, AssetMetaData<LinkedMaterial>>::iterator it;
-		//for (it = s_MAT_MetaData_Map.begin(); it != s_MAT_MetaData_Map.end() && returnValue == false; it++)
-		//{
-		//	if (it->first == FileName)
-		//	{
-		//		returnValue = true;
-		//	}
-		//}
-
-		for (int i = 0; i < s_MaterialNames.size() && returnValue == false; i++)
+		std::unordered_map<std::string, LinkedMaterial>::iterator it;
+		for (it = s_LinkedMaterials.begin(); it != s_LinkedMaterials.end() && returnValue == false; it++)
 		{
-			if (s_MaterialNames.at(i) == FileName)
+			if (it->first == FileName)
 			{
 				returnValue = true;
 			}
 		}
+
+		//for (int i = 0; i < s_MaterialNames.size() && returnValue == false; i++)
+		//{
+		//	if (s_MaterialNames.at(i) == FileName)
+		//	{
+		//		returnValue = true;
+		//	}
+		//}
 		return returnValue;
 	}
 
@@ -286,22 +380,22 @@ namespace Frosty
 	{
 		bool returnValue = false;
 
-		//std::unordered_map<std::string, AssetMetaData<TextureFile>>::iterator it;
-		//for (it = s_Texture_MetaData_Map.begin(); it != s_Texture_MetaData_Map.end() && returnValue == false; it++)
-		//{
-		//	if (it->first == FileName)
-		//	{
-		//		returnValue = true;
-		//	}
-		//}
-
-		for (int i = 0; i < s_TexturesNames.size() && returnValue == false; i++)
+		std::unordered_map<std::string, TextureFile>::iterator it;
+		for (it = s_Textures.begin(); it != s_Textures.end() && returnValue == false; it++)
 		{
-			if (s_TexturesNames.at(i) == FileName)
+			if (it->first == FileName)
 			{
 				returnValue = true;
 			}
 		}
+
+		//for (int i = 0; i < s_TexturesNames.size() && returnValue == false; i++)
+		//{
+		//	if (s_TexturesNames.at(i) == FileName)
+		//	{
+		//		returnValue = true;
+		//	}
+		//}
 
 		return returnValue;
 	}
@@ -312,9 +406,19 @@ namespace Frosty
 
 
 
-		for (int i = 0; i < s_AnimationsNames.size() && returnValue == false; i++)
+		//for (int i = 0; i < s_AnimationsNames.size() && returnValue == false; i++)
+		//{
+		//	if (s_AnimationsNames.at(i) == AssetName)
+		//	{
+		//		returnValue = true;
+		//	}
+		//}
+
+
+		std::unordered_map<std::string, Animation>::iterator it;
+		for (it = s_Animaions.begin(); it != s_Animaions.end() && returnValue == false; it++)
 		{
-			if (s_AnimationsNames.at(i) == AssetName)
+			if (it->first == AssetName)
 			{
 				returnValue = true;
 			}
@@ -328,14 +432,23 @@ namespace Frosty
 		bool returnValue = false;
 
 
-
-		for (int i = 0; i < s_MeshNames.size() && returnValue == false; i++)
+		std::unordered_map<std::string, Mesh>::iterator it;
+		for (it = s_Meshes.begin(); it != s_Meshes.end() && returnValue == false; it++)
 		{
-			if (s_MeshNames.at(i) == AssetName)
+			if (it->first == AssetName)
 			{
 				returnValue = true;
 			}
 		}
+
+
+		//for (int i = 0; i < s_MeshNames.size() && returnValue == false; i++)
+		//{
+		//	if (s_MeshNames.at(i) == AssetName)
+		//	{
+		//		returnValue = true;
+		//	}
+		//}
 
 		return returnValue;
 	}
@@ -350,6 +463,8 @@ namespace Frosty
 		if (tempFile.readFile(FileNameInformation.FullFilePath.c_str()))
 		{
 
+			//the get functions can be skipped for optimization
+
 			returnValue = true;
 			bool modelHasSkeleton = false;
 
@@ -359,7 +474,7 @@ namespace Frosty
 
 				if (Assetmanager::AddMesh(FileNameInformation, tempFile.getMesh(i)))
 				{
-					//Temp can be opimized
+					//Temp can be optimized
 					Assetmanager::GetMesh(tempFile.getMesh(i).name)->LoadToMem();
 					Assetmanager::GetMesh(tempFile.getMesh(i).name)->LoadToGPU();
 				}
@@ -368,10 +483,26 @@ namespace Frosty
 				{
 
 					Assetmanager::AddAnimation(Animation(FileNameInformation, i, 1));
-					//Temp can be opimized
+					//Temp can be optimized
 					Assetmanager::GetAnimation(tempFile.getAnimation().animationName)->LoadToMem();
 					Assetmanager::GetAnimation(tempFile.getAnimation().animationName)->LoadToGPU();
 
+				}
+
+
+				std::vector<Luna::Material> tempMatVector;
+				tempFile.getMaterials(tempMatVector);
+
+				for (int i = 0; i < tempMatVector.size(); i++)
+				{
+					FileMetaData TempMatMetaData = FileNameInformation;
+					TempMatMetaData.FileName = "Mat_" + std::to_string(i) + ":" + FileNameInformation.FileName;
+
+					AddMaterial(TempMatMetaData, tempFile.getMaterial(i));
+					//Temp can be optimized
+					LinkedMaterial* kk = GetMaterial(TempMatMetaData.FileName);
+					LoadMaterialTextures(kk);
+					
 				}
 
 			}
