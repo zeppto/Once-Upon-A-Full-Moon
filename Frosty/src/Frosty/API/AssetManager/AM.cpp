@@ -105,6 +105,89 @@ namespace Frosty
 		FY_CORE_INFO("¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯");
 	}
 
+	bool Assetmanager::LinkKey(const std::string& AssetName, BaseKey* In_Key)
+	{
+		bool returnValue = false;
+
+		if (MaterialLoaded(AssetName))
+		{
+
+			KeyLabel<LinkedMaterial>* temp_mt_ptr = static_cast<KeyLabel<LinkedMaterial>*>(In_Key);
+			if (temp_mt_ptr != nullptr)
+			{
+				temp_mt_ptr->SetKeyData(s_LinkedMaterials[AssetName]);
+				returnValue = true;
+			}
+			else
+			{
+				FY_CORE_WARN("Could not link key, Key was Not Correct type,Asset Name: {0}", AssetName);
+			}
+		}
+		else if (TextureLoaded(AssetName))
+		{
+
+			KeyLabel<TextureFile>* temp_mt_ptr = static_cast<KeyLabel<TextureFile>*>(In_Key);
+			if (temp_mt_ptr != nullptr)
+			{
+				temp_mt_ptr->SetKeyData(s_Textures[AssetName]);
+				returnValue = true;
+			}
+			else
+			{
+				FY_CORE_WARN("Could not link key, Key was Not Correct type,Asset Name: {0}", AssetName);
+			}
+		}
+		else if (AnimationLoaded(AssetName))
+		{
+
+			KeyLabel<Animation>* temp_mt_ptr = static_cast<KeyLabel<Animation>*>(In_Key);
+			if (temp_mt_ptr != nullptr)
+			{
+				temp_mt_ptr->SetKeyData(s_Animaions[AssetName]);
+				returnValue = true;
+			}
+			else
+			{
+				FY_CORE_WARN("Could not link key, Key was Not Correct type,Asset Name: {0}", AssetName);
+			}
+		}
+		else if (MeshLoaded(AssetName))
+		{
+			KeyLabel<Mesh>* temp_mt_ptr = static_cast<KeyLabel<Mesh>*>(In_Key);
+			if (temp_mt_ptr != nullptr)
+			{
+				temp_mt_ptr->SetKeyData(s_Meshes[AssetName]);
+				returnValue = true;
+			}
+			else
+			{
+				FY_CORE_WARN("Could not link key, Key was Not Correct type,Asset Name: {0}", AssetName);
+			}
+
+		}
+		else
+		{
+			FY_CORE_WARN("Could not link key, The Asset is not loaded, Name: {0}", AssetName);
+		}
+		return returnValue;
+	}
+
+	bool Assetmanager::AddMesh(const FileMetaData& MetaData, const Luna::Mesh& LunMesh)
+	{
+		if (MeshLoaded(LunMesh.name)) 
+		{ 
+			return false;
+		}
+		else
+		{ 
+		s_Meshes[LunMesh.name] = Mesh(MetaData, LunMesh); 
+		s_MeshNames.emplace_back(LunMesh.name); 
+		}
+		return true;
+	}
+
+
+
 	bool Assetmanager::ConnectMaterialWithTexture(LinkedMaterial& Material, const FileMetaData& MetaData)
 	{
 		return false;
@@ -276,11 +359,12 @@ namespace Frosty
 			for (uint16_t i = 0; i < tempFile.getMeshCount(); i++)
 			{
 
-				Assetmanager::AddMesh(FileNameInformation, tempFile.getMesh(i));
-				//Temp can be opimized
-				Assetmanager::GetAnimation(tempFile.getMesh(i).name)->LoadToMem();
-				Assetmanager::GetAnimation(tempFile.getMesh(i).name)->LoadToGPU();
-
+				if (Assetmanager::AddMesh(FileNameInformation, tempFile.getMesh(i)))
+				{
+					//Temp can be opimized
+					Assetmanager::GetMesh(tempFile.getMesh(i).name)->LoadToMem();
+					Assetmanager::GetMesh(tempFile.getMesh(i).name)->LoadToGPU();
+				}
 
 				if (tempFile.animationExist())
 				{

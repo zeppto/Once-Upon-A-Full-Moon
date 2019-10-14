@@ -1,6 +1,6 @@
 #ifndef PREFAB_H
 #define PREFAB_H 
-#include "..//AssetManager/AssetManager.hpp"
+#include "..//AssetManager/AM.hpp"
 #include "PrefabInstance.hpp"
 namespace Frosty
 {
@@ -17,8 +17,10 @@ namespace Frosty
 		static uint32_t s_Unique_ID;
 		static uint32_t s_NrOf_Prefabs;
 	
-		KeyLabel<ModelTemplate> m_ModelKey;
+		KeyLabel<Mesh> m_MeshKey;
 		KeyLabel<LinkedMaterial> m_MaterialKey;
+		KeyLabel<Animation> m_AnimationKey;
+		
 
 		std::vector<PrefabInstance*> m_PrefabInstances;
 
@@ -29,14 +31,14 @@ namespace Frosty
 
 		~Prefab();
 
-		void SetModelKey(KeyLabel<ModelTemplate> modelKey);
+		void SetMeshKey(KeyLabel<Mesh> MeshKey);
 		void SetMaterialKey(KeyLabel<LinkedMaterial> materialKey);
 
-		KeyLabel<ModelTemplate> GetModelKey();
+		KeyLabel<Mesh> GetMeshKey();
 		KeyLabel<LinkedMaterial> GetMaterialKey();
 		std::string GetName();
 
-		bool SetData(std::string modelName, std::string materialName);
+		bool SetData(std::string meshName, std::string materialName);
 		void SetName(std::string prefabName);
 
 		PrefabInstance* CreatePrefabInstance();

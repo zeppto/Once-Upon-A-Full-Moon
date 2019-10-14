@@ -4,6 +4,8 @@
 #include"AssetFiles/Animation.hpp"
 #include"AssetFiles/Mesh.hpp"
 #include"AssetFiles/LinkedMaterial.hpp"
+#include"KeyLabel.hpp"
+#include"BaseKey.hpp"
 
 
 #define FILE_TYPE_JPG "jpg"
@@ -67,8 +69,10 @@ namespace Frosty
 
 		void PrintLoadInfo() const;
 
+		static bool LinkKey(const std::string& AssetName, BaseKey* In_Key);
+
 		inline static bool AddTexture(const FileMetaData& MetaData) { if (TextureLoaded(MetaData.FileName)) { return false; } else { s_Textures[MetaData.FileName] = TextureFile(MetaData); s_TexturesNames.emplace_back(MetaData.FileName); } return true; }
-		inline static bool AddMesh(const FileMetaData& MetaData, const Luna::Mesh& LunMesh) { if (MeshLoaded(LunMesh.name)) { return false; } else { s_Meshes[LunMesh.name] = Mesh(MetaData, LunMesh); s_MeshNames.emplace_back(LunMesh.name); } return true; }
+		static bool AddMesh(const FileMetaData& MetaData, const Luna::Mesh& LunMesh);
 		inline static bool AddMaterial(const FileMetaData& MetaData, const std::string& MatName) { if (MaterialLoaded(MatName)) { return false; } else { s_LinkedMaterials[MatName] = LinkedMaterial(MetaData); s_MaterialNames.emplace_back(MatName); } return true; }
 
 		inline static bool AddTexture(TextureFile& Tex) { if (TextureLoaded(Tex.GetfileMetaData().FileName)) { return false; } else { s_Textures[Tex.GetfileMetaData().FileName] = Tex; s_TexturesNames.emplace_back(Tex.GetfileMetaData().FileName); } return true; }

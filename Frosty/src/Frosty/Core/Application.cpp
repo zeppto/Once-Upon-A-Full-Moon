@@ -33,6 +33,8 @@ namespace Frosty
 		m_World.reset(FY_NEW World());
 		m_World->Init();
 		Assetmanager::Get()->LoadFiles();
+		TextureFile* l =  Assetmanager::GetTexture("pCube10_diffuse");
+		Animation* g =  Assetmanager::GetAnimation("klocka");
 	}
 
 	Application::~Application()
@@ -40,7 +42,7 @@ namespace Frosty
 		EventBus::GetEventBus()->Delete();
 		m_Window->Shutdown();
 		Renderer::Shutdown();
-		//Assetmanager::Delete();
+		Assetmanager::Delete();
 	}
 
 	void Application::Run()
