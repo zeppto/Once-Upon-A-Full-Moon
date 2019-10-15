@@ -5,7 +5,7 @@
 #include "Frosty/Core/LayerHandler.hpp"
 #include "Frosty/Core/EventSystem.hpp"
 #include "Frosty/ImGui/ImGuiLayer.hpp"
-#include"Frosty/API/PrefabManager/PrefabManager.h"
+//#include"Frosty/API/PrefabManager/PrefabManager.h"
 #include "Frosty/RenderEngine/EditorCamera.hpp"
 #include "Frosty/Core/World.hpp"
 
