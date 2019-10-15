@@ -62,7 +62,7 @@ namespace Frosty
 		bool m_ResetMouse{ true };
 		float m_LastX;
 		float m_LastY;
-		float m_TranslationSpeed{ 1.0f };
+		float m_TranslationSpeed{ 10.0f };
 		float m_RotationSpeed{ 0.5f };
 
 	};

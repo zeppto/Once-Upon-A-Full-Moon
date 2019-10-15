@@ -82,8 +82,8 @@ namespace Frosty
 		// Creates a camera every time a scene is initiated
 		auto& camEntity = CreateEntity();
 		auto& camTransform = GetComponent<ECS::CTransform>(camEntity);
-		camTransform.Position = glm::vec3(0.0f, 20.0f, -20.0f);
-		camTransform.Rotation = glm::vec3(90.0f, -50.0f, 0.0f);
+		camTransform.Position = glm::vec3(0.0f, 20.0f, 20.0f);
+		camTransform.Rotation = glm::vec3(-90.0f, -50.0f, 0.0f);
 		AddComponent<ECS::CCamera>(camEntity, 60.0f, (float)(win.GetViewport().z / win.GetViewport().w), 0.01f, 1000.0f);
 
 		return m_Scene;
