@@ -60,15 +60,18 @@ namespace Frosty
 		//	 0.0f,  0.5f, 0.0f, 0.8f, 0.8f, 0.2f, 1.0f
 		//};
 
+		float PlaneX = 192.0f;
+		float PlaneY = 108.0f;
+
 		float vertices[6 * 7] =
 		{
-			0.f, 0.f, 0.f, 0.8f, 0.0f, 0.8f, 1.0f,
-			1920.f, 0.f, 0.f, 0.2f, 0.3f, 0.8f, 1.0f,
-			0.f,  0.f, 1080.f, 0.8f, 0.8f, 0.2f, 1.0f,
+			0.f, 0.f, 0.f, 1.0f, 0.0f, 0.0f, 1.0f,		//Top Left
+			PlaneX, 0.f, 0.f, 0.0f, 0.0f, 1.0f, 1.0f, // Top Rigth
+			0.f,  0.f, PlaneY, 0.0f, 1.0f, 0.0f, 1.0f, //Bot Left
 
-			1920.f, 0.f, 1080.f, 0.2f, 0.3f, 0.8f, 1.0f,
-			0.f, 0.f, 1080.f, 0.8f, 0.0f, 0.8f, 1.0f,
-			1920.f,  0.f, 0.f, 0.8f, 0.8f, 0.2f, 1.0f
+			PlaneX, 0.f, PlaneY, 1.0f, 1.0f, 1.0f, 1.0f, //Bot Rigth
+			0.f, 0.f, PlaneY, 0.0f, 1.0f, 0.0f, 1.0f,	//Bot Left
+			PlaneX,  0.f, 0.f, 0.0f, 0.0f, 1.0f, 1.0f	//Top Rigth
 		};
 
 		std::shared_ptr<VertexBuffer> m_VertexBuffer;

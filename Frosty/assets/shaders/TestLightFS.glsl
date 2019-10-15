@@ -86,7 +86,15 @@ void main()
 	// Add Ambient Light
 	result + vec3(ambient);
 
-	finalColor = vec4(result, 1.f);
+	//finalColor = vec4(result, 1.f);
+//	if(gl_FragCoord.x <= 0.01f || gl_FragCoord.y <= 0.01f  || gl_FragCoord.x >= 0.99f || gl_FragCoord.y >= 0.99f)
+//	{
+//	finalColor = vec4(0.0f,0.0f,0.0f,1.0f);
+//	}
+//	else
+//	{
+//	}
+	finalColor = fragColor;
 	//finalColor = vec4(1.f, 1.f, 1.f, 1.f);
 
 
