@@ -78,6 +78,7 @@ namespace Frosty
 		auto& light = CreateEntity();
 		auto& lightTransform = GetComponent<ECS::CTransform>(light);
 		lightTransform.Position.z = 10.0f;
+		lightTransform.Rotation.x = 180.0;
 		AddComponent<ECS::CMesh>(light, AssetManager::GetMesh("Cube"));
 		AddComponent<ECS::CMaterial>(light, AssetManager::GetShader("FlatColor"));
 		AddComponent<ECS::CLight>(light);

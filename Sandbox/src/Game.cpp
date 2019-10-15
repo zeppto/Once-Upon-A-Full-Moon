@@ -133,12 +133,15 @@ public:
 		{
 			for (size_t i = 1; i < p_Total; i++)
 			{
-				//glm::mat4 mat = glm::rotate(glm::mat4(1.0f), glm::radians(m_Transform[i]->Rotation.x), { 1.0f, 0.0f, 0.0f });
-				//mat = glm::rotate(mat, glm::radians(m_Transform[i]->Rotation.y), { 0.0f, 1.0f, 0.0f });
-				//mat = glm::rotate(mat, glm::radians(m_Transform[i]->Rotation.z), { 0.0f, 0.0f, 1.0f });
-				//glm::vec3 direction = mat * glm::vec4(0.0f, 1.0f, 0.0f, 1.0);
-				//direction = glm::normalize(direction);
-				Frosty::Renderer::AddLight(m_Transform[i]->Position, m_Light[i]->Color, m_Light[i]->Radius, m_Light[i]->Strength, m_Transform[i]->Rotation);
+				if (m_Light[i]->Type == Frosty::ECS::CLight::Point)
+				{
+
+					Frosty::Renderer::AddLight(m_Light[i]->Color, m_Transform[i]->Position, m_Light[i]->Strength, m_Light[i]->Radius);
+				}
+				else if (m_Light[i]->Type == Frosty::ECS::CLight::Directional)
+				{
+					Frosty::Renderer::AddLight(m_Light[i]->Color, m_Transform[i]->Rotation, m_Light[i]->Strength);
+				}
 			}
 		}
 	}
@@ -216,7 +219,7 @@ public:
 			transform = glm::rotate(transform, glm::radians(m_Transform[i]->Rotation.y), { 0.0f, 1.0f, 0.0f });
 			transform = glm::rotate(transform, glm::radians(m_Transform[i]->Rotation.z), { 0.0f, 0.0f, 1.0f });
 			transform = glm::scale(transform, m_Transform[i]->Scale);
-
+			
 			if (m_Materials[i]->UseShader->GetName() == "Texture2D" && m_Materials[i]->DiffuseTexture) m_Materials[i]->DiffuseTexture->Bind();
 			if (m_Materials[i]->UseShader->GetName() == "Texture2D" && m_Materials[i]->NormalTexture) m_Materials[i]->NormalTexture->Bind(1);
 			if (m_Materials[i]->UseShader->GetName() == "Texture2D" && m_Materials[i]->SpecularTexture) m_Materials[i]->SpecularTexture->Bind(2);

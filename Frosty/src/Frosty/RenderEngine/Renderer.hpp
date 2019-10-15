@@ -18,7 +18,8 @@ namespace Frosty
 		static void EndScene();
 
 		static void SetCamera(const glm::vec3& pos, const glm::mat4& viewProjection);
-		static void AddLight(const glm::vec3& pos, const glm::vec3& color, float radius, float strength, glm::vec3& direction);
+		static void AddLight(const glm::vec3& color, const glm::vec3& pos, float strength, float radius);
+		static void AddLight(const glm::vec3& color, glm::vec3& direction, float strength);
 
 		static void Submit(ECS::CMaterial* mat, const std::shared_ptr<VertexArray>& vertexArray, const glm::mat4& transform);
 
@@ -30,19 +31,27 @@ namespace Frosty
 			glm::vec3 CameraPosition;
 			glm::mat4 ViewProjectionMatrix;
 		};
-		struct LightProps
+
+		struct PointLight
 		{
 			glm::vec3 Position;
 			glm::vec3 Color;
-			float Radius;
 			float Strength;
+			float Radius;
+		};
+
+		struct DirectionalLight
+		{
 			glm::vec3 Direction;
+			glm::vec3 Color;
+			float Strength;
 		};
 
 		struct SceneData
 		{
 			GameCameraProps GameCamera;
-			LightProps Lights;
+			std::vector<PointLight> PointLights;
+			std::vector<DirectionalLight> DirectionalLights;
 		};
 		static SceneData* s_SceneData;
 

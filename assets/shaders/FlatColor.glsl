@@ -25,76 +25,91 @@ void main()
 #version 440 core
 
 layout(location = 0) out vec4 color;
-			
+
+struct PointLight
+{
+	vec3 Color;
+	vec3 Position;
+	float Radius;
+	float Strength;
+};
+uniform int u_TotalPointLights;
+uniform PointLight u_PointLights[10];
+
+struct DirectionalLight
+{
+	vec3 Color;
+	vec3 Direction;
+	float Strength;
+};
+uniform int u_TotalDirectionalLights;
+uniform DirectionalLight u_DirectionalLights[10];
+
 uniform vec3 u_CameraPosition;
 uniform vec4 u_ObjectColor;
-uniform vec3 u_LightColor;
-uniform vec3 u_LightPosition;
 uniform float u_SpecularStrength;
 uniform int u_Shininess;
-uniform float u_Radius;
-uniform float u_Strength;
-uniform vec3 u_LightDirection;
-
 
 in vec3 v_FragPosition;
 in vec3 v_Normal;
 
-vec3 CalcPointLight();
-vec3 CalcDirLight();
+vec3 CalculatePointLight(PointLight light);
+vec3 CalculateDirectionalLight(DirectionalLight light);
 
 void main()
 {
-	// Ambient
-	float ambientStrength = 0.1;
-	vec3 ambient = ambientStrength * u_LightColor;
-
-	vec3 result;
+	vec3 result = vec3(0.0, 0.0, 0.0);
 
 	// PointLights
-	//result += CalcPointLight();
+	for (int i = 0; i < u_TotalPointLights; i++)
+	{
+		result += CalculatePointLight(u_PointLights[i]);
+	}
 
 	// DirectionalLights
-	result += CalcDirLight();
+	for (int i = 0; i < u_TotalDirectionalLights; i++)
+	{
+		result += CalculateDirectionalLight(u_DirectionalLights[i]);
+	}
 
-
-	result = (ambient + result) * u_ObjectColor.rgb;
-
-	color = vec4(result, 1.0f);
+	color = vec4(result * u_ObjectColor.rgb, 1.0f);
 }
 
 
-vec3 CalcPointLight()
+vec3 CalculatePointLight(PointLight light)
 {
+	// Attenuation
+	float dist = length(light.Position - v_FragPosition);
+	float attenuation = smoothstep(light.Radius * 2, -1, dist);
+
+	// Ambient
+	float ambientStrength = 0.1;
+	vec3 ambient = ambientStrength * light.Color * attenuation;
+
 	// Diffuse
 	vec3 normal = normalize(v_Normal);
-	float dist = length(u_LightPosition - v_FragPosition);
-	float attenuation = smoothstep(u_Radius * 2, -1, dist);
-	vec3 lightDir = normalize(u_LightPosition - v_FragPosition);
-	vec3 diffuse = max(dot(normal, lightDir), 0.0) * u_LightColor * attenuation * u_Strength;
+	vec3 lightDir = normalize(light.Position - v_FragPosition);
+	vec3 diffuse = max(dot(normal, lightDir), 0.0) * light.Color * attenuation * light.Strength;
 	
 	// Specular
 	vec3 viewDir = normalize(u_CameraPosition - v_FragPosition);
 	vec3 reflectDir = reflect(-lightDir, normal);
 	float spec = pow(max(dot(viewDir, reflectDir), 0.0), u_Shininess);
-	vec3 specular = u_SpecularStrength * spec * u_LightColor * attenuation;
+	vec3 specular = u_SpecularStrength * spec * light.Color * attenuation;
 
-	return (diffuse + specular);
+	return (ambient + diffuse + specular);
 }
 
-vec3 CalcDirLight()
+vec3 CalculateDirectionalLight(DirectionalLight light)
 {
+	// Ambient
+	float ambientStrength = 0.1;
+	vec3 ambient = ambientStrength * light.Color;
+
 	// Diffuse
 	vec3 normal = normalize(v_Normal);
-	
-	vec3 lightDir = -vec3(mod(u_LightDirection.y, 360.0), mod(u_LightDirection.x, 360) + 1.0, 0.0) / 360.0;
-	vec3 diffuse = max(dot(normal, lightDir), 0.0) * u_LightColor;
-	
-	// Specular
-	vec3 viewDir = normalize(u_CameraPosition - v_FragPosition);
-	vec3 reflectDir = reflect(-lightDir, normal);
-	float spec = pow(max(dot(viewDir, reflectDir), 0.0), u_Shininess);
-	vec3 specular = u_SpecularStrength * spec * u_LightColor;
+	vec3 lightDir = normalize(-light.Direction);
+	vec3 diffuse = max(dot(normal, lightDir), 0.0) * light.Color * light.Strength;
 
-	return (diffuse + specular);
+	return ambient + diffuse;
 }

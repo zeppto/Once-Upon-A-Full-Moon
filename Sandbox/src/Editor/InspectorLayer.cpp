@@ -160,7 +160,7 @@ namespace MCS
 					if (ImGui::MenuItem("Light", "", &toggles[7]))
 					{
 						if (!world->HasComponent<Frosty::ECS::CLight>(m_SelectedEntity))
-							world->AddComponent<Frosty::ECS::CLight>(m_SelectedEntity);
+							world->AddComponent<Frosty::ECS::CLight>(m_SelectedEntity, Frosty::ECS::CLight::LightType::Point);
 						else
 							world->RemoveComponent<Frosty::ECS::CLight>(m_SelectedEntity);
 					}
@@ -474,10 +474,27 @@ namespace MCS
 					if (ImGui::CollapsingHeader("Light"))
 					{
 						auto& comp = world->GetComponent<Frosty::ECS::CLight>(m_SelectedEntity);
-						ImGui::BeginChild("CFollow", ImVec2(EDITOR_INSPECTOR_WIDTH, 85), true);
+						ImGui::BeginChild("CLight", ImVec2(EDITOR_INSPECTOR_WIDTH, 100), true);
+						if (ImGui::Button("Type")) ImGui::OpenPopup("light_type_popup");
+						if (ImGui::BeginPopup("light_type_popup"))
+						{
+							if (ImGui::MenuItem("Point", "", comp.Type == Frosty::ECS::CLight::Point ? true : false))
+							{
+								comp.Type = Frosty::ECS::CLight::LightType::Point;
+							}
+							if (ImGui::MenuItem("Directional", "", comp.Type == Frosty::ECS::CLight::Directional ? true : false))
+							{
+								comp.Type = Frosty::ECS::CLight::LightType::Directional;
+							}
+							ImGui::EndPopup();
+						}
+
 						ImGui::ColorEdit4("Color", glm::value_ptr(comp.Color));
-						ImGui::InputFloat("Radius", &comp.Radius, 1.0f, 5.0f, 0);
-						ImGui::DragFloat("Strength", &comp.Strength, 0.01f, 0.0f, 1.0f, "%.2");
+						ImGui::SliderFloat("Strength", &comp.Strength, 0.0f, 1.0f, "%.2f");
+						if (comp.Type == Frosty::ECS::CLight::Point)
+						{
+							ImGui::InputFloat("Radius", &comp.Radius, 1.0f, 5.0f, 0);
+						}	
 						ImGui::EndChild();
 					}
 				}

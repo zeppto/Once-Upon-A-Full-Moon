@@ -440,12 +440,19 @@ namespace Frosty
 
 		struct CLight : public BaseComponent
 		{
+			enum LightType
+			{
+				Point, Directional
+			};
+
 			static std::string NAME;
+			LightType Type;
 			glm::vec3 Color{ 1.0f, 0.96f, 0.84f };
 			float Radius{ 20.0f };
 			float Strength{ 1.0f };
 
 			CLight() = default;
+			CLight(LightType lightType) : Type(lightType) { }
 			CLight(const CLight& org) { FY_CORE_ASSERT(false, "Copy constructor in CLight called."); }
 
 			virtual void Func() override { }
