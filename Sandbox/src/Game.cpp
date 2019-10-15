@@ -131,11 +131,11 @@ public:
 
 		if (p_Total > 1)
 		{
+			// Optimization: Could send in to Renderer how many point and directional lights we have to reserve that space in vectors.
 			for (size_t i = 1; i < p_Total; i++)
 			{
 				if (m_Light[i]->Type == Frosty::ECS::CLight::Point)
 				{
-
 					Frosty::Renderer::AddLight(m_Light[i]->Color, m_Transform[i]->Position, m_Light[i]->Strength, m_Light[i]->Radius);
 				}
 				else if (m_Light[i]->Type == Frosty::ECS::CLight::Directional)
@@ -540,6 +540,7 @@ namespace MCS
 
 	}
 }
+
 
 
 

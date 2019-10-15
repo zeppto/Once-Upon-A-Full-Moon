@@ -140,8 +140,8 @@ namespace Frosty
 
 		struct Entity
 		{
-			inline static EntityID s_LastId{ 0 };
-			EntityID Id;
+			inline static EntityID s_LastId{ 1 };
+			EntityID Id{ 0 };
 			ComponentBitset Bitset;
 
 			Entity() : Id(s_LastId++) { FY_CORE_INFO("An entity({0}) was successfully created.", Id); }
@@ -255,8 +255,6 @@ namespace Frosty
 			virtual BaseComponent* GetTypeComponent(const std::shared_ptr<Entity>& entity) = 0;
 
 			virtual void Remove(std::shared_ptr<Entity>& entity) = 0;
-
-			//static std::array<std::shared_ptr<BaseComponent>, MAX_COMPONENTS> s_ComponentList;
 
 		};
 
@@ -440,13 +438,10 @@ namespace Frosty
 
 		struct CLight : public BaseComponent
 		{
-			enum LightType
-			{
-				Point, Directional
-			};
+			enum LightType { Point, Directional };
 
 			static std::string NAME;
-			LightType Type;
+			LightType Type{ LightType::Point };
 			glm::vec3 Color{ 1.0f, 0.96f, 0.84f };
 			float Radius{ 20.0f };
 			float Strength{ 1.0f };

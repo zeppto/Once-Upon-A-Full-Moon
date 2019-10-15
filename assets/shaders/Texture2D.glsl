@@ -12,6 +12,7 @@ uniform mat4 u_Transform;
 
 out vec3 v_FragPosition;
 out vec2 v_TextureCoords;
+out vec3 v_Normal;
 out mat3 v_TBN;
 
 
@@ -19,6 +20,7 @@ void main()
 {
 	v_FragPosition = vec3(u_Transform * vec4(a_Position, 1.0));
 	v_TextureCoords = a_TextureCoords;
+	v_Normal = mat3(transpose(inverse(u_Transform))) * a_Normal;		// Oldie but goldie
 
 	vec3 T = normalize(vec3(u_Transform * vec4(a_Tangent,   0.0)));
 	vec3 B = normalize(vec3(u_Transform * vec4(a_Bitangent, 0.0)));
@@ -62,6 +64,7 @@ uniform int u_Shininess;
 
 in vec3 v_FragPosition;
 in vec2 v_TextureCoords;
+in vec3 v_Normal;
 in mat3 v_TBN;
 
 vec3 CalculatePointLight(PointLight light, vec3 normal);
@@ -75,6 +78,8 @@ void main()
 
 	vec3 normal = normalize(normalTexture.rgb * 2.0 - 1.0);
 	normal = normalize(v_TBN * normalTexture.rgb);
+
+	normal = max(normal, normalize(v_Normal));
 	
 	vec3 result = vec3(0.0, 0.0, 0.0);
 	// PointLights
@@ -127,5 +132,5 @@ vec3 CalculateDirectionalLight(DirectionalLight light, vec3 normal)
 	vec3 lightDir = normalize(-light.Direction);
 	vec3 diffuse = max(dot(normal, lightDir), 0.0) * light.Color * light.Strength;
 	
-	return ambient + diffuse;
+	return (ambient + diffuse);
 }

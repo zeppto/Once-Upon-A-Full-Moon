@@ -215,7 +215,7 @@ namespace MCS
 					if (ImGui::CollapsingHeader("Camera"))
 					{
 						auto& comp = world->GetComponent<Frosty::ECS::CCamera>(m_SelectedEntity);
-						ImGui::BeginChild("Camera", ImVec2(EDITOR_INSPECTOR_WIDTH, 105), true);
+						ImGui::BeginChild("Camera", ImVec2(EDITOR_INSPECTOR_WIDTH, 130), true);
 						if (ImGui::Button("Target")) ImGui::OpenPopup("camera_target_select_popup");
 						ImGui::SameLine();
 						comp.Target ? ImGui::TextUnformatted(("Entity (" + std::to_string(comp.Target->EntityPtr->Id) + ")").c_str()) : ImGui::TextUnformatted("None");
@@ -247,7 +247,7 @@ namespace MCS
 					{
 						auto& comp = world->GetComponent<Frosty::ECS::CMaterial>(m_SelectedEntity);
 						float compHeight = 0.0f;
-						if (comp.UseShader->GetName() == "FlatColor") compHeight = 200.0f;
+						if (comp.UseShader->GetName() == "FlatColor") compHeight = 125.0f;
 						else if (comp.UseShader->GetName() == "Texture2D") compHeight = 300.0f;
 						ImGui::BeginChild("Material", ImVec2(EDITOR_INSPECTOR_WIDTH, compHeight), true);
 
@@ -394,7 +394,7 @@ namespace MCS
 					if (ImGui::CollapsingHeader("Motion"))
 					{
 						auto& comp = world->GetComponent<Frosty::ECS::CMotion>(m_SelectedEntity);
-						ImGui::BeginChild("CMotion", ImVec2(EDITOR_INSPECTOR_WIDTH, 85), true);
+						ImGui::BeginChild("CMotion", ImVec2(EDITOR_INSPECTOR_WIDTH, 35), true);
 						ImGui::InputFloat("Speed", &comp.Speed, 1.0f, 10.0f, 0);
 						ImGui::EndChild();
 					}
@@ -446,7 +446,7 @@ namespace MCS
 					if (ImGui::CollapsingHeader("Follow"))
 					{
 						auto& comp = world->GetComponent<Frosty::ECS::CFollow>(m_SelectedEntity);
-						ImGui::BeginChild("CFollow", ImVec2(EDITOR_INSPECTOR_WIDTH, 85), true);
+						ImGui::BeginChild("CFollow", ImVec2(EDITOR_INSPECTOR_WIDTH, 60), true);
 						if (ImGui::Button("Target")) ImGui::OpenPopup("follow_target_select_popup");
 						ImGui::SameLine();
 						comp.Target ? ImGui::TextUnformatted(("Entity (" + std::to_string(comp.Target->EntityPtr->Id) + ")").c_str()) : ImGui::TextUnformatted("None");
@@ -474,7 +474,7 @@ namespace MCS
 					if (ImGui::CollapsingHeader("Light"))
 					{
 						auto& comp = world->GetComponent<Frosty::ECS::CLight>(m_SelectedEntity);
-						ImGui::BeginChild("CLight", ImVec2(EDITOR_INSPECTOR_WIDTH, 100), true);
+						ImGui::BeginChild("CLight", ImVec2(EDITOR_INSPECTOR_WIDTH, 105), true);
 						if (ImGui::Button("Type")) ImGui::OpenPopup("light_type_popup");
 						if (ImGui::BeginPopup("light_type_popup"))
 						{

@@ -34,6 +34,8 @@ namespace Frosty
 			dataFormat = GL_RED;
 		}
 
+		FY_CORE_ASSERT(internalFormat & dataFormat, "Format not supported!");
+
 		glGenTextures(1, &m_RendererID);
 		glBindTexture(GL_TEXTURE_2D, m_RendererID);
 		

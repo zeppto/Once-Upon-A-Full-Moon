@@ -24,6 +24,8 @@ namespace Frosty
 		m_Window.reset(BaseWindow::Create());
 		m_Window->Init();
 
+		Renderer::Init();
+
 		m_EditorCamera.Init(EditorCameraProps({ 0.0f, 20.0f, 20.0f }, { -90.0f, -50.0f, 0.0f }));
 
 		m_ImGuiLayer = FY_NEW ImGuiLayer();
