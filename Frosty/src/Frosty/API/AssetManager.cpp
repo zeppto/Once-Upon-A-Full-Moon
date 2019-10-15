@@ -1,6 +1,7 @@
 #include <fypch.hpp>
 #include "AssetManager.hpp"
 
+
 namespace Frosty
 {
 	std::map<std::string, std::shared_ptr<Frosty::VertexArray>> AssetManager::s_Meshes;
@@ -78,4 +79,5 @@ namespace Frosty
 	{
 		s_Textures2D.emplace(name, FY_NEW Texture2D(name, filepath));
 	}
+
 }

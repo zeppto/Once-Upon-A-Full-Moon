@@ -3,6 +3,7 @@
 #include "Frosty/RenderEngine/Renderer.hpp"
 #include "Frosty/API/AssetManager.hpp"
 #include "Frosty/Core/KeyCodes.h"
+//#include"Frosty/API/AssetManager/AM.hpp"
 
 
 
@@ -31,6 +32,11 @@ namespace Frosty
 
 		m_World.reset(FY_NEW World());
 		m_World->Init();
+
+		//Testing AssetManager
+		//Assetmanager::Get()->LoadFiles();
+		//TextureFile* l =  Assetmanager::GetTexture("pCube10_diffuse");
+		//Animation* g =  Assetmanager::GetAnimation("klocka");
 	}
 
 	Application::~Application()
@@ -38,7 +44,8 @@ namespace Frosty
 		EventBus::GetEventBus()->Delete();
 		m_Window->Shutdown();
 		Renderer::Shutdown();
-		//Assetmanager::Delete();
+		Assetmanager::Delete();
+		PrefabManager::Delete();
 	}
 
 	void Application::Run()
