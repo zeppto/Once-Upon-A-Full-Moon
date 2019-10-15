@@ -9,32 +9,31 @@ namespace Frosty
 	class StateMachine
 	{
 	public:
-		StateMachine() { }
 		virtual ~StateMachine();
 		StateMachine(const StateMachine& obj) = delete;
 
 		StateMachine& operator=(const StateMachine& obj) = delete;
 
-		StateRef& GetActiveState() { return m_States.top(); }
+		static StateRef& GetActiveState() { return m_States.top(); }
 
 		// Replacing means it will pop the current state and add the new one.
 		// Otherwise it will just pause the current state and add another on top of the stack
-		void AddState(StateRef newState, bool isReplacing = true);
-		void RemoveState();
-		void ClearAllStates();
+		static void AddState(StateRef newState, bool isReplacing = true);
+		static void RemoveState();
+		static void ClearAllStates();
 
-		bool ProcessStateChanges();
+		static bool ProcessStateChanges();
 
 	private:
-		void Clear();
+		static void Clear();
 
-		std::stack<StateRef> m_States;
-		StateRef m_NewState;
+		static std::stack<StateRef> m_States;
+		static StateRef m_NewState;
 
-		bool m_IsRemoving = false;
-		bool m_IsAdding = false;
-		bool m_IsReplacing = false;
-		bool m_ClearAll = false;
+		static bool m_IsRemoving;
+		static bool m_IsAdding;
+		static bool m_IsReplacing;
+		static bool m_ClearAll;
 	};
 }
 #endif // !STATE_MACHINE_HPP
