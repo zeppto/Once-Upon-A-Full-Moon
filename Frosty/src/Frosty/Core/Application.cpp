@@ -189,6 +189,8 @@ namespace Frosty
 			Renderer::BeginScene(CollisionMap::Get()->GetCamera());			
 
 			Renderer::Submit(m_Shader, m_VertexArray, m_LightManager);
+
+			CollisionMap::Get()->RenderQuad();
 			Renderer::EndScene();
 
 
