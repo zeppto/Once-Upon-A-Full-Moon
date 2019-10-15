@@ -21,9 +21,11 @@ namespace Frosty
 		AddMesh("Cube", "assets/primitives/cube/cube.lu");
 		AddMesh("Cone", "assets/primitives/cone/cone.lu");
 		AddMesh("3D", "assets/primitives/3D/3D.lu");
+		AddMesh("AnimTest", "assets/models/animTestCuboid/AnimTestCuboid.lu");
 
 		s_Shaders.emplace("FlatColor", FY_NEW Shader("assets/shaders/FlatColor.glsl", "FlatColor"));
 		s_Shaders.emplace("Texture2D", FY_NEW Shader("assets/shaders/Texture2D.glsl", "Texture2D"));
+	/*	s_Shaders.emplace("AnimShader", FY_NEW Shader("assets/shaders/Animation.glsl", "AnimShader"));*/
 
 		LoadTexture2D("Clock_Diffuse", "assets/textures/pCube10_diffuse.png");
 		LoadTexture2D("Clock_Gloss", "assets/textures/pCube10_gloss.png");
