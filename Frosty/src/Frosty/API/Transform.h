@@ -1,7 +1,5 @@
 #pragma once
 
-
-
 namespace Frosty
 {
 	class Transform
@@ -10,23 +8,26 @@ namespace Frosty
 		Transform();
 		~Transform();
 
-		void setTranslate(glm::vec3 translate);
-		void setRotate(glm::vec3 rotate);
-		void setScale(glm::vec3 scale);
+		void SetAnchor(glm::vec3 anchor);
+		void SetTranslate(glm::vec3 translate);
+		void SetRotate(glm::vec3 rotate);
+		void SetScale(glm::vec3 scale);
 
-		glm::vec3 getTranslate();
-		glm::vec3 getRotate();
-		glm::vec3 getScale();
-
-		glm::mat4 getModel();
+		glm::vec3 GetAnchor();
+		glm::vec3 GetTranslate();
+		glm::vec3 GetRotate();
+		glm::vec3 GetScale();
+				  
+		glm::mat4 GetModel();
 
 	private:
-		glm::vec3 translate_vec3;
-		glm::vec3 rotate_vec3;
-		glm::vec3 scale_vec3;
+		glm::vec3 m_Anchor_vec3;
+		glm::vec3 m_Translate_vec3;
+		glm::vec3 m_Rotate_vec3;
+		glm::vec3 m_Scale_vec3;
 
-		glm::mat4 translate_mat4;
-		glm::mat4 rotate_mat4;
-		glm::mat4 scale_mat4;
+		glm::mat4 m_Translate_mat4;
+		glm::mat4 m_Rotate_mat4;
+		glm::mat4 m_Scale_mat4;
 	};
 }
