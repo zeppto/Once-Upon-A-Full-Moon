@@ -3,6 +3,13 @@
 
 namespace Frosty
 {
+	std::stack<Frosty::StateRef> StateMachine::m_States;
+	Frosty::StateRef StateMachine::m_NewState;
+	bool StateMachine::m_IsRemoving = false;
+	bool StateMachine::m_IsAdding = false;
+	bool StateMachine::m_IsReplacing = false;
+	bool StateMachine::m_ClearAll = false;
+
 	StateMachine::~StateMachine()
 	{		
 		Clear();

@@ -1,7 +1,8 @@
 #ifndef KEYHEAD_HPP
 #define KEYHEAD_HPP
-#include"AssetMetaData.hpp"
-#include"BaseKey.hpp"
+
+#include"KeyLabel.hpp"
+
 
 namespace Frosty
 {
@@ -16,39 +17,47 @@ namespace Frosty
 		//Variables
 	private:
 
-		 AssetMetaData<T>* m_MetaData_ptr;
+		 T* m_Data_ptr;
 		 std::string m_Label;
 
 		//Functions
 	public:
 
-		KeyLabel() : BaseKey(), m_MetaData_ptr(nullptr) {}
-		KeyLabel(T& data) : BaseKey(), m_MetaData_ptr(&data) {}
-		KeyLabel(KeyLabel& other) : BaseKey(other) , m_MetaData_ptr(other.m_MetaData_ptr) {}
+		KeyLabel() : BaseKey(), m_Data_ptr(nullptr) {}
+		KeyLabel(T& data) : BaseKey(), m_Data_ptr(&data) {}
+		KeyLabel(KeyLabel& other) : BaseKey(other) , m_Data_ptr(other.m_Data_ptr) {}
 		virtual ~KeyLabel() {}
 
-		bool operator ==(const KeyLabel& other) { return (m_MetaData_ptr == other.m_MetaData_ptr);}
+		inline	bool operator ==(const KeyLabel& other) { return (m_Data_ptr == other.m_Data_ptr);}
 		
-		KeyLabel& operator = (const KeyLabel& other) 
+		inline KeyLabel& operator = (const KeyLabel& other) 
 		{
-			m_MetaData_ptr = other.m_MetaData_ptr;
+			m_Data_ptr = other.m_Data_ptr;
 			m_Label = other.m_Label;
 			return *this; 
 		}
 
-		void SetLabel(const std::string& Label) { m_Label = Label; }
-		const std::string& GetLabel() { return m_Label; }
+		inline void SetLabel(const std::string& Label) { m_Label = Label; }
+		inline const std::string& GetLabel() const { return m_Label; }
 
-		T& GetKeyData() { return *m_MetaData_ptr->GetData(); }
+		inline T& GetKeyData() { return *m_Data_ptr->GetData(); }
 
-		void SetKeyData(AssetMetaData<T>& data) {m_MetaData_ptr = &data;}
+		void SetKeyData(T& data) {m_Data_ptr = &data;}
 
 		const uint32_t& GetKeyID() { return m_Key_ID; }
 
 		const uint32_t& GetKeyCount() { return s_NrOf_Keys; }
 
+
+
 		//Functions
 	private:
+
 	};
+
+
+
+
 }
+
 #endif // !KEYHEAD_HPP

@@ -119,7 +119,7 @@ namespace MCS
 					if (ImGui::MenuItem("Mesh", "", &toggles[1]))
 					{
 						if (!world->HasComponent<Frosty::ECS::CMesh>(m_SelectedEntity))
-							world->AddComponent<Frosty::ECS::CMesh>(m_SelectedEntity, Frosty::AssetManager::GetMesh("Cube"));
+							world->AddComponent<Frosty::ECS::CMesh>(m_SelectedEntity, Frosty::AssetManager::GetMesh("3D"));
 						else
 							world->RemoveComponent<Frosty::ECS::CMesh>(m_SelectedEntity);
 					}
