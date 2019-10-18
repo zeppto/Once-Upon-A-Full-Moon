@@ -2,6 +2,8 @@
 #define COLLISIONMAP_HPP
 #include"..\..\Core\Camera\Camera.hpp"
 
+
+
 namespace Frosty
 {
 
@@ -15,7 +17,9 @@ namespace Frosty
 
 		//var
 	private:
-		unsigned int QuadVAO = 0;
+		unsigned int QuadVAO = -1;
+
+		unsigned int m_VertexArray = -1;
 		unsigned int m_GBuffer;
 		unsigned int m_Texture;
 
@@ -61,7 +65,7 @@ namespace Frosty
 		void InitiateGBuffer();
 		void InitiateShaders();
 		void InitiateProgram();
-		void RenderQuad();
+		void RenderTriangle();
 	};
 
 

@@ -1,7 +1,7 @@
 #include<fypch.hpp>
 #include"CollisionMap.hpp"
 #include "Glad/glad.h"
-
+#define BUFFER_OFFSET(i) ((char *)nullptr + (i))
 
 namespace Frosty
 {
@@ -50,6 +50,10 @@ namespace Frosty
 		m_Camera->GetCameraData().Projection = m_OrthoGraphic;
 
 
+	//	InitiateGBuffer();
+		InitiateShaders();
+		InitiateProgram();
+
 	}
 
 	std::shared_ptr<Camera>& CollisionMap::GetCamera()
@@ -89,26 +93,21 @@ namespace Frosty
 			
 			layout(location = 0) in vec3 vsInPos;
 			
-			uniform mat4 u_ViewOrtho;
-			
-			out vec3 vsOutPos;
+			layout(location = 44) uniform mat4 u_ViewOrtho;
 			
 			void main()
-			{
-				vsOutPos = vsInPos;
+			{				
 				gl_Position = u_ViewOrtho * vec4(vsInPos, 1.0f);
 			}
 		)";
 		m_FragmentSrc = R"(
 			#version 440 core
 
-			in vec3 vsOutPos;
-
-			layout(location = 0) out vec4 fsOutCol;
+			layout(location = 0) out vec4 fsOutCol; 
 			
 			void main()
 			{
-				fsOutCol = vec4{ 1.f, 0.f, 0.f, 1.f };
+				fsOutCol = vec4( 1.0f, 0.0f, 0.0f, 1.0f ); 
 			}
 		)";
 	}
@@ -130,7 +129,7 @@ namespace Frosty
 		{
 			glGetShaderInfoLog(vs, 1024, nullptr, buff);
 			OutputDebugStringA(buff);
-			FY_CORE_ERROR("Collision Map Generator Failed to compile Vertex Shader, GLFW Error ({0}) \n)", buff);
+			FY_CORE_ERROR("Collision Map Generator: Failed to compile Vertex Shader, GLFW Error ({0}) \n)", buff);
 		}
 
 		GLuint fs = glCreateShader(GL_FRAGMENT_SHADER);
@@ -146,7 +145,7 @@ namespace Frosty
 			memset(buff, 0, 1024);
 			glGetShaderInfoLog(fs, 1024, nullptr, buff);
 			OutputDebugStringA(buff);
-			FY_CORE_ERROR("Collision Map Generator Failed to compile Fragment Shader, GLFW Error ({0}) \n", buff);
+			FY_CORE_ERROR("Collision Map Generator: Failed to compile Fragment Shader, GLFW Error ({0}) \n", buff);
 		}
 
 		m_RendererID = glCreateProgram();
@@ -163,12 +162,13 @@ namespace Frosty
 			memset(buff, 0, 1024);
 			glGetProgramInfoLog(tempProgram, 1024, nullptr, buff);
 			OutputDebugStringA(buff);
-			FY_CORE_ERROR("Collision Map Generator Failed to Link program, GLFW Error ({0}) \n)", buff);
+			FY_CORE_ERROR("Collision Map Generator: Failed to Link program, GLFW Error ({0}) \n)", buff);
 		}
 		else
 		{
 			FY_CORE_INFO("Success Generation of Program)");
 		}
+
 
 		glDetachShader(tempProgram, vs);
 		glDetachShader(tempProgram, fs);
@@ -176,44 +176,57 @@ namespace Frosty
 		glDeleteShader(fs);
 	}
 
-	void CollisionMap::RenderQuad()
+	void CollisionMap::RenderTriangle()
 	{
+		if (QuadVAO == -1) {
 
-		if (QuadVAO == 0) {
+
+
 			float quadVertices[] = {
 				// positions       
-				MAP_WITDH_PIXELS/(2*m_Pix_Cord_Ratio),  1.0f, MAP_HEIGHT_PIXELS/(2* m_Pix_Cord_Ratio),
+				MAP_WITDH_PIXELS / (2 * m_Pix_Cord_Ratio),  1.0f, MAP_HEIGHT_PIXELS / (2 * m_Pix_Cord_Ratio),
 				0.0f,  1.0f, 0.0f,
 				0.0f,  1.0f, MAP_HEIGHT_PIXELS / m_Pix_Cord_Ratio
 			};
 			unsigned int VBO;
+
 			glGenVertexArrays(1, &QuadVAO);
-			glGenBuffers(1, &VBO);
 			glBindVertexArray(QuadVAO);
-			glBindBuffer(GL_ARRAY_BUFFER, VBO);
-			glBufferData(GL_ARRAY_BUFFER, sizeof(quadVertices), &quadVertices, GL_STATIC_DRAW);
+
 			glEnableVertexAttribArray(0);
-			glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+
+			//glGenBuffers(1, &QuadVAO);
+
+			//glBindBuffer(GL_ARRAY_BUFFER, QuadVAO);
+			glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE,  sizeof(float), BUFFER_OFFSET(0));
+			glBufferData(GL_ARRAY_BUFFER, sizeof(quadVertices), quadVertices, GL_STATIC_DRAW);
+
+
+			//glGenVertexArrays(1, &m_QuadVbo);    
+			//glBindVertexArray(m_QuadVbo);     
+			//glEnableVertexAttribArray(0);  
+			//glEnableVertexAttribArray(1);     
+			//glGenBuffers(1, &m_QuadVbo);      
+			//glBindBuffer(GL_ARRAY_BUFFER, m_QuadVbo);         
+			//glBufferData(GL_ARRAY_BUFFER, sizeof(myQuad), myQuad, GL_STATIC_DRAW);
+			//glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(Pos2UV), BUFFER_OFFSET(0));    
+			//glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(Pos2UV), BUFFER_OFFSET(sizeof(float) * 2));
+			
+			
+
+
+			glBindVertexArray(0);
 		}
 
 		glUseProgram(m_RendererID);
 
+		GLint location = glGetUniformLocation(m_RendererID, "u_ViewOrtho");
+		glUniformMatrix4fv(location, 1, GL_FALSE, &m_OrthoGraphic[0][0]);
+
 		// Render the Quad
 		glBindVertexArray(QuadVAO);
+		//glBindBuffer(GL_ARRAY_BUFFER, QuadVAO);
 		glDrawArrays(GL_TRIANGLES, 0, 3);
-		glBindVertexArray(0);
+		//glBindVertexArray(0);
 	}
-
-
-
-
-
-
-
-
-
-
-
-
-
 }

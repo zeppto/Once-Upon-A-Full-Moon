@@ -70,7 +70,7 @@ namespace Frosty
 		RenderCommand::DrawIndexed(vertexArray);
 	}
 	
-	void Renderer::DeleteSceneData()
+	void Renderer::DeleteSceneData() 
 	{
 		if (m_SceneData != nullptr)
 		{

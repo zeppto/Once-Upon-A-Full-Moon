@@ -3,6 +3,8 @@
 #include "Frosty/RenderEngine/Renderer.hpp"
 #include "..\\API\CollisionMap\CollisionMap.hpp"
 
+
+
 namespace Frosty
 {
 	Application* Application::s_Instance = nullptr;
@@ -190,7 +192,8 @@ namespace Frosty
 
 			Renderer::Submit(m_Shader, m_VertexArray, m_LightManager);
 
-			CollisionMap::Get()->RenderQuad();
+			CollisionMap::Get()->RenderTriangle();
+
 			Renderer::EndScene();
 
 
