@@ -32,6 +32,10 @@ namespace Frosty
 		inline static std::shared_ptr<Texture2D>& GetTexture2D(const std::string& name) { return s_Textures2D[name]; }
 		inline static std::map<std::string, std::shared_ptr<Texture2D>>& GetTextures2D() { return s_Textures2D; }
 
+		// Textures
+		inline static std::shared_ptr<Luna::BoundingBox>& GetBoundingBox(const std::string& name) { return s_BoundingBoxes[name]; }
+		inline static std::map<std::string, std::shared_ptr<Luna::BoundingBox>>& GetBoundingBoxes() { return s_BoundingBoxes; }
+
 	private:
 		// Meshes
 		static void AddMesh(const std::string& name, const std::string& filepath);
@@ -43,6 +47,7 @@ namespace Frosty
 		static std::map<std::string, std::shared_ptr<VertexArray>> s_Meshes;
 		static std::map<std::string, std::shared_ptr<Shader>> s_Shaders;
 		static std::map<std::string, std::shared_ptr<Texture2D>> s_Textures2D;
+		static std::map<std::string, std::shared_ptr<Luna::BoundingBox>> s_BoundingBoxes;
 
 	};
 }

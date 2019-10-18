@@ -6,6 +6,8 @@
 #include "Frosty/Core/KeyCodes.h"
 #include "Frosty/Core/MouseButtonCodes.h"
 
+#include <Luna/include/Luna.h>
+
 namespace Frosty
 {
 	namespace utils
@@ -84,7 +86,7 @@ namespace Frosty
 #pragma region Settings
 
 		// Let's define a maximum number of unique components:
-		constexpr std::size_t MAX_COMPONENTS{ 8 };
+		constexpr std::size_t MAX_COMPONENTS{ 9 };
 
 		// Let's define a maximum number of entities that
 		// can have the same component type:
@@ -181,6 +183,7 @@ namespace Frosty
 			// Operators
 			EntityManager& operator=(const EntityManager& e) { FY_CORE_ASSERT(false, "Assignment operator in EntityManager called."); return *this; }
 
+			inline std::vector<std::shared_ptr<Entity>>& GetEntities() { return m_Entities; }
 			inline size_t GetTotalEntities() const { return m_Entities.size(); }
 
 			inline std::shared_ptr<Entity>& At(size_t index) { return m_Entities.at(index); }
@@ -453,6 +456,18 @@ namespace Frosty
 			virtual void Func() override { }
 		};
 
+		struct CCollision : public BaseComponent
+		{
+			static std::string NAME;
+			std::shared_ptr<Luna::BoundingBox> BoundingBox;
+
+			CCollision() = default;
+			CCollision(const std::shared_ptr<Luna::BoundingBox>& bb) : BoundingBox(bb) { }
+			CCollision(const CCollision & org) { FY_CORE_ASSERT(false, "Copy constructor in CCollision called."); }
+
+			virtual void Func() override { }
+		};
+
 		static std::string GetComponentName(size_t i)
 		{
 			switch (i)
@@ -465,6 +480,7 @@ namespace Frosty
 			case 5:		return "Controller";
 			case 6:		return "Follow";
 			case 7:		return "Light";
+			case 8:		return "Collision";
 			default:	return "";
 			}
 		}

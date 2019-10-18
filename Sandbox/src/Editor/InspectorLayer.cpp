@@ -104,6 +104,7 @@ namespace MCS
 					if (world->HasComponent<Frosty::ECS::CController>(m_SelectedEntity)) toggles[5] = true;
 					if (world->HasComponent<Frosty::ECS::CFollow>(m_SelectedEntity)) toggles[6] = true;
 					if (world->HasComponent<Frosty::ECS::CLight>(m_SelectedEntity)) toggles[7] = true;
+					if (world->HasComponent<Frosty::ECS::CCollision>(m_SelectedEntity)) toggles[8] = true;
 				}
 
 				// Information
@@ -163,6 +164,13 @@ namespace MCS
 							world->AddComponent<Frosty::ECS::CLight>(m_SelectedEntity, Frosty::ECS::CLight::LightType::Point);
 						else
 							world->RemoveComponent<Frosty::ECS::CLight>(m_SelectedEntity);
+					}
+					if (ImGui::MenuItem("Collision", "", &toggles[8]))
+					{
+						if (!world->HasComponent<Frosty::ECS::CCollision>(m_SelectedEntity))
+							world->AddComponent<Frosty::ECS::CCollision>(m_SelectedEntity, Frosty::AssetManager::GetBoundingBox("Cube"));
+						else
+							world->RemoveComponent<Frosty::ECS::CCollision>(m_SelectedEntity);
 					}
 					ImGui::EndPopup();
 				}
@@ -494,7 +502,36 @@ namespace MCS
 						if (comp.Type == Frosty::ECS::CLight::Point)
 						{
 							ImGui::InputFloat("Radius", &comp.Radius, 1.0f, 5.0f, 0);
-						}	
+						}
+						ImGui::EndChild();
+					}
+				}
+				if (world->HasComponent<Frosty::ECS::CCollision>(m_SelectedEntity))
+				{
+					if (ImGui::CollapsingHeader("Collision"))
+					{
+						auto& comp = world->GetComponent<Frosty::ECS::CCollision>(m_SelectedEntity);
+						ImGui::BeginChild("CCollision", ImVec2(EDITOR_INSPECTOR_WIDTH, 35), true);
+						if (ImGui::Button("Select bounding box.."))
+							ImGui::OpenPopup("Bounding box selector");
+						if (ImGui::BeginPopupModal("Bounding box selector", NULL, ImGuiWindowFlags_MenuBar))
+						{
+							size_t index = 0;
+							ImGuiTreeNodeFlags node_flags = ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen; // ImGuiTreeNodeFlags_Bullet
+
+							for (auto& bb : Frosty::AssetManager::GetBoundingBoxes())
+							{
+								ImGui::TreeNodeEx((void*)(intptr_t)index, node_flags, "%s", bb.first.c_str());
+								if (ImGui::IsItemClicked())
+								{
+									world->GetComponent<Frosty::ECS::CCollision>(m_SelectedEntity).BoundingBox = bb.second;
+								}
+							}
+
+							if (ImGui::Button("Close"))
+								ImGui::CloseCurrentPopup();
+							ImGui::EndPopup();
+						}
 						ImGui::EndChild();
 					}
 				}

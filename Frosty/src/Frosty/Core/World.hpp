@@ -46,7 +46,8 @@ namespace Frosty
 		{
 			return m_Scene->HasComponent<ComponentType>(entity);
 		}
-
+		//std::vector<std::shared_ptr<ECS::Entity>> GetEntitiesInRadius(const glm::vec3& position, float radius);
+		
 		// Component Functions
 		template<typename ComponentType>
 		inline ComponentType& GetComponent(const std::shared_ptr<ECS::Entity>& entity)
@@ -89,7 +90,7 @@ namespace Frosty
 			std::unique_ptr<ComponentType> componentPtr{ component };
 			m_ComponentList[ECS::getComponentTypeID<ComponentType>()] = std::move(componentPtr);
 		}
-
+		
 	private:
 		// Scene Declarations
 		std::unique_ptr<Scene> m_Scene;
