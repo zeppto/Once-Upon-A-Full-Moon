@@ -20,9 +20,9 @@ namespace Frosty
 		UISprite();
 		~UISprite();
 
-		bool Init();
+		//bool Init();
 
-		unsigned int LoadTexture();
+		void LoadTexture();
 
 		float* GetVertices() { return m_vertices; };
 		uint8_t GetVerticesSize() { return sizeof(*m_vertices) / sizeof(float); };

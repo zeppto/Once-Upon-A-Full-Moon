@@ -1,7 +1,9 @@
 #include "fypch.hpp"
 #include "UIText.h"
 #include "Frosty/DEFINITIONS.hpp"
-#include "Frosty/API/AssetManager/Assetmanager.hpp"
+#include "Frosty/API/AssetManager/AM.hpp"
+//#include "..//API/AssetManager.hpp"
+//#include "Frosty/API/AssetManager.hpp"
 
 namespace Frosty
 {
@@ -22,6 +24,9 @@ namespace Frosty
 		for (c = m_text.begin(); c != m_text.end(); c++)
 		{
 			Character ch = Assetmanager::GetAssetmanager()->GetFontMetaData(font)->GetData()->m_characters.at(*c);
+			Assetmanager::Get()->get
+			//Character ch = AssetManager::;
+
 			float xPos = x + ch.bearing.x * scale;
 			float yPos = y - (ch.size.y - ch.bearing.y) * scale;
 			float zPos = 0.0f;

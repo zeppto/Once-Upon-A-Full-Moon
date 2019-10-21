@@ -1,7 +1,5 @@
 #ifndef CANVAS_H
 #define CANVAS_H
-#include "UIElement.h"
-#include "Frosty/UI/UISprite.h"
 #include "Frosty/UI/UIText.h"
 #include "Frosty/UI/UIBar.hpp"
 
@@ -11,19 +9,14 @@ namespace Frosty
 	{
 	public:
 		//Pos_3, Uv_2, Normal_3, Color_4
-		float m_CanvasVertices[(3 + 2 + 4) * 6]
-		{
-			-1.0, -1.0, 0.0,	0.0, 0.0,	0.0, 0.0, 0.8, 1.0,
-			1.0, -1.0, 0.0,		1.0, 0.0,	0.0, 0.0, 0.8, 1.0,
-			1.0, 1.0, 0.0,		1.0, 1.0,	0.0, 0.0, 0.8, 1.0,
-			1.0, 1.0, 0.0,		1.0, 1.0,	0.0, 0.0, 0.8, 1.0,
-			-1.0, 1.0, 0.0,		0.0, 1.0,	0.0, 0.0, 0.8, 1.0,
-			-1.0, -1.0, 0.0,	0.0, 0.0,	0.0, 0.0, 0.8, 1.0
-		};
 
 	private:
+		uint32_t m_MeshID;
 		uint32_t m_TextureID;
 		Transform m_Transform;
+		//std::shared_ptr<VertexArray> m_vertexArray;
+		//VertexArray test;
+
 		//testing
 		std::vector<Canvas> m_Canvas;
 		std::vector<UIElement> m_Elements; //Button, Text, Texture, Icon, Sprite
@@ -34,6 +27,7 @@ namespace Frosty
 		~Canvas();
 
 		void LoadTexture();
+		void LoadMesh();
 
 		void AddElement(UIElement element);
 
@@ -48,6 +42,7 @@ namespace Frosty
 		glm::vec2 GetRotate();
 
 		uint32_t GetTexture();
+		uint32_t GetMesh();
 		Transform& GetTransform();
 
 		std::vector<std::vector<int32_t>> GetVertices() 

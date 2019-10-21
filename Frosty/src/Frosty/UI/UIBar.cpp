@@ -17,10 +17,10 @@ namespace Frosty
 	
 	void UiBar::SetTexture(std::string filename)
 	{
-		m_Texture = AssetManager::GetTexture2D(filename);
+		m_Texture = AssetManager::GetTexture2D(filename)->GetRenderID();
 	}
 	
-	std::shared_ptr<Texture2D> UiBar::GetTexture()
+	uint32_t UiBar::GetTexture()
 	{
 		return m_Texture;
 	}

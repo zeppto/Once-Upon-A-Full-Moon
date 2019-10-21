@@ -23,22 +23,22 @@ namespace Frosty
 		delete(m_vertices);
 	}
 
-	bool UISprite::Init()
-	{
-		//try
-		//{
-		//	this->m_Texture.id = LoadTexture();
-		//	this->m_Texture.name = "sprite_Texture";
-		//	return true;
-		//}
-		//catch (const std::exception&)
-		//{
-		//	return false;
-		//}
-	}
+	//bool UISprite::Init()
+	//{
+	//	//try
+	//	//{
+	//	//	this->m_Texture.id = LoadTexture();
+	//	//	this->m_Texture.name = "sprite_Texture";
+	//	//	return true;
+	//	//}
+	//	//catch (const std::exception&)
+	//	//{
+	//	//	return false;
+	//	//}
+	//}
 
-	unsigned int UISprite::LoadTexture()
+	void UISprite::LoadTexture()
 	{
-		m_Texture = AssetManager::GetTexture2D("frame2");
+		m_TextureID = AssetManager::GetTexture2D("frame2")->GetRenderID();
 	}
 }

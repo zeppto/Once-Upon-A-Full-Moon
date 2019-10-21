@@ -22,7 +22,7 @@ namespace Frosty
 		Transform m_Transform;
 	public:
 		UIElement();
-		~UIElement();
+		virtual ~UIElement();
 
 		inline void SetAnchor(glm::vec2 anchor) { m_Transform.SetAnchor(glm::vec3(anchor, 0)); };
 		inline void SetPosition(glm::vec2 pos) { m_Transform.SetTranslate(glm::vec3(pos, 0)); };

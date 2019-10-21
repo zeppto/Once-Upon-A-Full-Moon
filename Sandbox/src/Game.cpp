@@ -518,6 +518,9 @@ namespace MCS
 		world->AddSystem<FollowSystem>();
 
 		// Add components
+
+
+		
 		//world->InitiateComponent<Frosty::ECS::CTransform>();
 		//world->InitiateComponent<Frosty::ECS::CCamera>();
 
