@@ -29,7 +29,10 @@ namespace Frosty
 		virtual unsigned int GetPositionX() const = 0;
 		virtual unsigned int GetPositionY() const = 0;
 		virtual std::pair<unsigned int, unsigned int> GetPosition() const = 0;
-		virtual glm::vec4 GetViewport() const = 0;
+		virtual const glm::vec4& GetViewport() const = 0;
+
+		virtual void ActivateEditorMode() = 0;
+		virtual void ActivateGameMode() = 0;
 
 		virtual bool IsMaximized() const = 0;
 		virtual void Maximize() = 0;

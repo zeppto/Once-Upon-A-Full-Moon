@@ -3,7 +3,7 @@
 
 #include "Frosty/RenderEngine/Renderer.hpp"
 #include "Frosty/API/AssetManager.hpp"
-
+#include "Frosty/Core/Application.hpp"
 
 namespace Frosty
 {
@@ -11,6 +11,11 @@ namespace Frosty
 	{
 		// Initiate entity manager with a fixed size for all scenes or user defined for each specific scene?
 		m_EntityManager.reset(FY_NEW ECS::EntityManager());
+	}
+
+	void Scene::AddCamera(std::shared_ptr<ECS::Entity>& camera)
+	{
+		m_GameCamera = camera;
 	}
 
 	std::shared_ptr<ECS::Entity>& Scene::CreateEntity()

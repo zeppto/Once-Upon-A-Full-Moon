@@ -1,6 +1,7 @@
 #include <fypch.hpp>
 #include "Window.hpp"
 #include "Frosty/DEFINITIONS.hpp"
+#include "Frosty/Core/Application.hpp"
 
 #include <glad/glad.h>
 
@@ -17,7 +18,6 @@ namespace Frosty
 	{
 		return FY_NEW Window();
 	}
-
 
 	Window::Window()
 	{
@@ -44,6 +44,7 @@ namespace Frosty
 		m_Data.Height = props.Height;
 		m_Data.PositionX = props.PositionX;
 		m_Data.PositionY = props.PositionY;
+		m_Data.Viewport = glm::vec4(0, 0, m_Data.Width, m_Data.Height);
 
 		glfwMakeContextCurrent(m_Window);
 		int status = gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
@@ -152,13 +153,27 @@ namespace Frosty
 
 	}
 
-	glm::vec4 Window::GetViewport() const
+	const glm::vec4& Window::GetViewport() const
 	{
-		return glm::vec4(
+		return m_Data.Viewport;
+	}
+
+	void Window::ActivateEditorMode()
+	{
+		m_Data.Viewport = glm::vec4(
 			EDITOR_EXPLORER_WIDTH,													// Start from left side
 			EDITOR_ASSETS_HEIGHT,													// Start from bottom
 			m_Data.Width - EDITOR_INSPECTOR_WIDTH - EDITOR_EXPLORER_WIDTH,			// Width
 			m_Data.Height - EDITOR_ASSETS_HEIGHT - EDITOR_MAIN_MENU_BAR_HEIGHT);	// Height
+
+		glViewport((int)m_Data.Viewport.x, (int)m_Data.Viewport.y, (int)m_Data.Viewport.z, (int)m_Data.Viewport.w);
+	}
+
+	void Window::ActivateGameMode()
+	{
+		m_Data.Viewport = glm::vec4(0, 0, m_Data.Width, m_Data.Height);
+
+		glViewport((int)m_Data.Viewport.x, (int)m_Data.Viewport.y, (int)m_Data.Viewport.z, (int)m_Data.Viewport.w);
 	}
 
 	void Window::SetVSync(bool enabled)
@@ -174,15 +189,6 @@ namespace Frosty
 	bool Window::IsVSync()
 	{
 		return m_Data.VSync;
-	}
-
-	void Window::UpdateViewport()
-	{
-		glViewport(
-			EDITOR_EXPLORER_WIDTH,													// Start from left side
-			EDITOR_ASSETS_HEIGHT,													// Start from bottom
-			m_Data.Width - EDITOR_INSPECTOR_WIDTH - EDITOR_EXPLORER_WIDTH,			// Width
-			m_Data.Height - EDITOR_ASSETS_HEIGHT - EDITOR_MAIN_MENU_BAR_HEIGHT);	// Height
 	}
 
 	void Window::OnUpdate()
@@ -211,7 +217,9 @@ namespace Frosty
 		m_Data.Width = e.GetWidth();
 		m_Data.Height = e.GetHeight();
 
-		UpdateViewport();
+		auto& app = Application::Get();
+		if (app.GameIsRunning()) ActivateGameMode();
+		else ActivateEditorMode();
 	}
 
 	void Window::OnWindowMovedEvent(WindowMovedEvent& e)
@@ -219,6 +227,8 @@ namespace Frosty
 		m_Data.PositionX = e.GetXPos();
 		m_Data.PositionY = e.GetYPos();
 
-		UpdateViewport();
+		auto& app = Application::Get();
+		if (app.GameIsRunning()) ActivateGameMode();
+		else ActivateEditorMode();
 	}
 }

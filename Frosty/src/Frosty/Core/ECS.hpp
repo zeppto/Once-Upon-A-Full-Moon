@@ -405,6 +405,7 @@ namespace Frosty
 			static std::string NAME;
 			glm::vec3 Direction{ 0.0f, 0.0f, 0.0f };
 			float Speed{ 0.0f };
+			glm::vec3 Velocity{ 0.0f };
 
 			CMotion() = default;
 			CMotion(float speed) : Speed(speed) { }
@@ -416,10 +417,10 @@ namespace Frosty
 		struct CController : public BaseComponent
 		{
 			static std::string NAME;
-			int MoveWestKey{ FY_KEY_A };
-			int MoveNorthKey{ FY_KEY_W };
-			int MoveEastKey{ FY_KEY_D };
-			int MoveSouthKey{ FY_KEY_S };
+			int MoveLeftKey{ FY_KEY_A };
+			int MoveForwardKey{ FY_KEY_W };
+			int MoveRightKey{ FY_KEY_D };
+			int MoveBackKey{ FY_KEY_S };
 
 			CController() = default;
 			CController(const CController& org) { FY_CORE_ASSERT(false, "Copy constructor in CController called."); }
@@ -451,6 +452,7 @@ namespace Frosty
 
 			CLight() = default;
 			CLight(LightType lightType) : Type(lightType) { }
+			CLight(LightType lightType, float strength, float radius) : Type(lightType), Strength(strength), Radius(radius) { }
 			CLight(const CLight& org) { FY_CORE_ASSERT(false, "Copy constructor in CLight called."); }
 
 			virtual void Func() override { }
@@ -499,7 +501,7 @@ namespace Frosty
 			virtual void Init() = 0;
 			virtual void OnInput() { }
 			virtual void OnUpdate() = 0;
-			virtual void BeginScene(bool editorCamera) { }
+			virtual void BeginScene() { }
 			virtual void Render() { }
 
 			virtual void AddComponent(const std::shared_ptr<Entity>& entity) = 0;

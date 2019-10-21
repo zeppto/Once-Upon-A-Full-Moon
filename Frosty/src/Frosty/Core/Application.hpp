@@ -34,8 +34,8 @@ namespace Frosty
 
 		// Game Functions
 		inline bool GameIsRunning() const { return m_GameRunning; }
-		void StartGame();
-		void StopGame();
+		void StartGame(bool maximize);
+		void StopGame(bool maximize);
 
 	private:
 		void OnWindowCloseEvent(WindowCloseEvent& e);

@@ -58,7 +58,7 @@ namespace Frosty
 			Time::OnUpdate();
 
 			/// Input
-			//if (m_GameRunning)
+			if (m_GameRunning)
 			{
 				m_World->OnInput();
 			}
@@ -69,10 +69,13 @@ namespace Frosty
 			{
 				layer->OnUpdate();
 			}
-			m_World->OnUpdate();
+			if (m_GameRunning)
+			{
+				m_World->OnUpdate();
+			}
 
 			/// Render
-			if (m_EditorCamera.IsActive())
+			if (!m_GameRunning)
 			{
 				RenderCommand::SetClearColor({ 0.2f, 0.2f, 0.2f, 1.0f });
 				RenderCommand::Clear();
@@ -82,7 +85,7 @@ namespace Frosty
 			}
 			else
 			{
-				m_World->BeginScene(m_EditorCamera.IsActive());
+				m_World->BeginScene();
 			}
 
 			m_World->Render();
@@ -135,18 +138,20 @@ namespace Frosty
 		delete layer;
 	}
 
-	void Application::StartGame()
+	void Application::StartGame(bool maximize)
 	{
 		m_GameRunning = true;
 		bool* eCam = m_EditorCamera.ActiveStatus();
 		*eCam = false;
+		if (maximize) m_Window->ActivateGameMode();
 	}
 
-	void Application::StopGame()
+	void Application::StopGame(bool maximize)
 	{
 		m_GameRunning = false;
 		bool* eCam = m_EditorCamera.ActiveStatus();
 		*eCam = true;
+		if (maximize) m_Window->ActivateEditorMode();
 	}
 
 	void Application::OnEvent(BaseEvent& e)

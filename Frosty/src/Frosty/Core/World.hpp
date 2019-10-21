@@ -21,7 +21,7 @@ namespace Frosty
 		void Start();
 		void OnInput();
 		void OnUpdate();
-		void BeginScene(bool editorCamera);
+		void BeginScene();
 		void Render();
 
 		template<typename SystemType>
@@ -37,6 +37,8 @@ namespace Frosty
 		// Scene Functions
 		std::unique_ptr<Scene>& CreateScene();
 		void DestroyScene();
+		// Returns the camera entity for the scene (later change this when having multiple scenes)
+		const std::shared_ptr<ECS::Entity>& GetSceneCamera() const { return m_Scene->GetCamera(); }
 
 		// Entity Functions
 		inline std::shared_ptr<ECS::Entity>& CreateEntity() { return m_Scene->CreateEntity(); }

@@ -41,7 +41,6 @@ namespace MCS
 			ImGui::Text("Delta Time: %f", Frosty::Time::DeltaTime());
 			ImGui::Text("FPS: %i", Frosty::Time::FPS());
 			if (ImGui::Checkbox("VSync: ", &s_VSync)) m_App->GetWindow().SetVSync(s_VSync);
-			ImGui::Checkbox("Editor Camera: ", m_App->GetEditorCamera().ActiveStatus());
 			if (ImGui::Button("Create Entity", ImVec2(100.0f, 20.0f))) world->CreateEntity();
 
 			if (m_SelectedEntity)
@@ -414,37 +413,37 @@ namespace MCS
 						auto& comp = world->GetComponent<Frosty::ECS::CController>(m_SelectedEntity);
 						ImGui::BeginChild("CController", ImVec2(EDITOR_INSPECTOR_WIDTH, 110), true);
 
-						if (ImGui::Button(std::to_string(comp.MoveWestKey).c_str(), ImVec2(100.0f, 0.0f)))
+						if (ImGui::Button(std::to_string(comp.MoveLeftKey).c_str(), ImVec2(100.0f, 0.0f)))
 						{
 							m_SelectedController = &comp;
-							m_PreviousControllerHotkey = comp.MoveWestKey;
+							m_PreviousControllerHotkey = comp.MoveLeftKey;
 						}
 						ImGui::SameLine();
-						ImGui::Text(m_PreviousControllerHotkey == comp.MoveWestKey ? "Move West (Press a key)" : "Move West");
+						ImGui::Text(m_PreviousControllerHotkey == comp.MoveLeftKey ? "Move Left (Press a key)" : "Move Left");
 
-						if (ImGui::Button(std::to_string(comp.MoveNorthKey).c_str(), ImVec2(100.0f, 0.0f)))
+						if (ImGui::Button(std::to_string(comp.MoveForwardKey).c_str(), ImVec2(100.0f, 0.0f)))
 						{
 							m_SelectedController = &comp;
-							m_PreviousControllerHotkey = comp.MoveNorthKey;
+							m_PreviousControllerHotkey = comp.MoveForwardKey;
 						}
 						ImGui::SameLine();
-						ImGui::Text(m_PreviousControllerHotkey == comp.MoveNorthKey ? "Move North (Press a key)" : "Move North");
+						ImGui::Text(m_PreviousControllerHotkey == comp.MoveForwardKey ? "Move Forward (Press a key)" : "Move Forward");
 
-						if (ImGui::Button(std::to_string(comp.MoveEastKey).c_str(), ImVec2(100.0f, 0.0f)))
+						if (ImGui::Button(std::to_string(comp.MoveRightKey).c_str(), ImVec2(100.0f, 0.0f)))
 						{
 							m_SelectedController = &comp;
-							m_PreviousControllerHotkey = comp.MoveEastKey;
+							m_PreviousControllerHotkey = comp.MoveRightKey;
 						}
 						ImGui::SameLine();
-						ImGui::Text(m_PreviousControllerHotkey == comp.MoveEastKey ? "Move East (Press a key)" : "Move East");
+						ImGui::Text(m_PreviousControllerHotkey == comp.MoveRightKey ? "Move Right (Press a key)" : "Move Right");
 
-						if (ImGui::Button(std::to_string(comp.MoveSouthKey).c_str(), ImVec2(100.0f, 0.0f)))
+						if (ImGui::Button(std::to_string(comp.MoveBackKey).c_str(), ImVec2(100.0f, 0.0f)))
 						{
 							m_SelectedController = &comp;
-							m_PreviousControllerHotkey = comp.MoveSouthKey;
+							m_PreviousControllerHotkey = comp.MoveBackKey;
 						}
 						ImGui::SameLine();
-						ImGui::Text(m_PreviousControllerHotkey == comp.MoveSouthKey ? "Move South (Press a key)" : "Move South");
+						ImGui::Text(m_PreviousControllerHotkey == comp.MoveBackKey ? "Move Back (Press a key)" : "Move Back");
 
 						ImGui::EndChild();
 					}
@@ -580,19 +579,23 @@ namespace MCS
 				if (ImGui::MenuItem("Paste", "CTRL+V")) {}
 				ImGui::EndMenu();
 			}
+			ImGui::SetCursorPosX(m_App->GetWindow().GetWidth() - 250.0f);
+			if (!m_App->GameIsRunning()) ImGui::Checkbox("Maximize on play", &m_MaximizeOnPlay);
 			ImGui::SetCursorPosX(m_App->GetWindow().GetWidth() - 80.0f);
 			if (m_App->GameIsRunning())
 			{
 				if (ImGui::Button("Stop", ImVec2(80.0f, EDITOR_MAIN_MENU_BAR_HEIGHT)))
 				{
-					m_App->StopGame();
+					m_App->StopGame(m_MaximizeOnPlay);
+					m_Active = true;
 				}
 			}
 			else
 			{
 				if (ImGui::Button("Play", ImVec2(80.0f, EDITOR_MAIN_MENU_BAR_HEIGHT)))
 				{
-					m_App->StartGame();
+					m_App->StartGame(m_MaximizeOnPlay);
+					if (m_MaximizeOnPlay) m_Active = false;
 				}
 			}
 			ImGui::EndMainMenuBar();
@@ -616,6 +619,33 @@ namespace MCS
 
 	bool InspectorLayer::OnKeyPressedEvent(Frosty::KeyPressedEvent & e)
 	{
+		if (e.GetKeyCode() == FY_KEY_TAB)
+		{
+			if (m_App->GameIsRunning())
+			{
+				m_App->StopGame(m_MaximizeOnPlay);
+				if (m_MaximizeOnPlay)
+				{
+					auto& camEntity = m_App->GetWorld()->GetSceneCamera();
+					auto& gameCameraComp = m_App->GetWorld()->GetComponent<Frosty::ECS::CCamera>(camEntity);
+					gameCameraComp.ProjectionMatrix = glm::perspective(glm::radians(gameCameraComp.FieldOfView), (float)(m_App->GetWindow().GetViewport().z / m_App->GetWindow().GetViewport().w), gameCameraComp.Near, gameCameraComp.Far);
+					m_Active = true;
+				}
+			}
+			else
+			{
+				m_App->StartGame(m_MaximizeOnPlay);
+				if (m_MaximizeOnPlay)
+				{
+					auto& camEntity = m_App->GetWorld()->GetSceneCamera();
+					auto& gameCameraComp = m_App->GetWorld()->GetComponent<Frosty::ECS::CCamera>(camEntity);
+					gameCameraComp.ProjectionMatrix = glm::perspective(glm::radians(gameCameraComp.FieldOfView), (float)(m_App->GetWindow().GetViewport().z / m_App->GetWindow().GetViewport().w), gameCameraComp.Near, gameCameraComp.Far);
+					m_Active = false;
+				}
+			}
+			return true;
+		}
+
 		if (m_SelectedEntity && e.GetKeyCode() == FY_KEY_DELETE)
 		{
 			m_App->GetWorld()->RemoveEntity(m_SelectedEntity);
@@ -625,21 +655,21 @@ namespace MCS
 		{
 			if (m_SelectedController != nullptr)
 			{
-				if (m_SelectedController->MoveWestKey == m_PreviousControllerHotkey)
+				if (m_SelectedController->MoveLeftKey == m_PreviousControllerHotkey)
 				{
-					m_SelectedController->MoveWestKey = e.GetKeyCode();
+					m_SelectedController->MoveLeftKey = e.GetKeyCode();
 				}
-				if (m_SelectedController->MoveNorthKey == m_PreviousControllerHotkey)
+				if (m_SelectedController->MoveForwardKey == m_PreviousControllerHotkey)
 				{
-					m_SelectedController->MoveNorthKey = e.GetKeyCode();
+					m_SelectedController->MoveForwardKey = e.GetKeyCode();
 				}
-				if (m_SelectedController->MoveEastKey == m_PreviousControllerHotkey)
+				if (m_SelectedController->MoveRightKey == m_PreviousControllerHotkey)
 				{
-					m_SelectedController->MoveEastKey = e.GetKeyCode();
+					m_SelectedController->MoveRightKey = e.GetKeyCode();
 				}
-				if (m_SelectedController->MoveSouthKey == m_PreviousControllerHotkey)
+				if (m_SelectedController->MoveBackKey == m_PreviousControllerHotkey)
 				{
-					m_SelectedController->MoveSouthKey = e.GetKeyCode();
+					m_SelectedController->MoveBackKey = e.GetKeyCode();
 				}
 				m_PreviousControllerHotkey = -1;
 				m_SelectedController = nullptr;
@@ -648,5 +678,4 @@ namespace MCS
 
 		return false;
 	}
-
 }

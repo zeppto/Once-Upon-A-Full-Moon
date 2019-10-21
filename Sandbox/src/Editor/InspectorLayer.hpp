@@ -29,6 +29,9 @@ namespace MCS
 		Frosty::ECS::CController* m_SelectedController{ nullptr };
 		int m_PreviousControllerHotkey;
 
+		// Main Menu
+		bool m_MaximizeOnPlay{ false };
+
 		// Static stuff (Mostly temporary)
 		static bool s_VSync;
 

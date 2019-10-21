@@ -119,7 +119,7 @@ vec3 CalculatePointLight(PointLight light, vec3 normal)
 	float spec = pow(max(dot(viewDir, reflectDir), 0.0), u_Shininess);
 	vec3 specular = specularStrength * spec * light.Color * attenuation;
 
-	return (diffuse + specular);
+	return (ambient + diffuse + specular);
 }
 
 vec3 CalculateDirectionalLight(DirectionalLight light, vec3 normal)

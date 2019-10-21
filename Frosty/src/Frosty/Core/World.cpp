@@ -36,11 +36,11 @@ namespace Frosty
 		}
 	}
 
-	void World::BeginScene(bool editorCamera)
+	void World::BeginScene()
 	{
 		for (size_t i = 1; i < m_TotalSystems; i++)
 		{
-			m_Systems[i]->BeginScene(editorCamera);
+			m_Systems[i]->BeginScene();
 		}
 	}
 
@@ -63,25 +63,28 @@ namespace Frosty
 		// Creates a camera every time a scene is initiated
 		auto& camEntity = CreateEntity();
 		auto& camTransform = GetComponent<ECS::CTransform>(camEntity);
-		camTransform.Position = glm::vec3(0.0f, 20.0f, 20.0f);
-		camTransform.Rotation = glm::vec3(-90.0f, -50.0f, 0.0f);
+		camTransform.Position = glm::vec3(0.0f, 40.0f, 25.0f);
+		camTransform.Rotation = glm::vec3(-90.0f, -65.0f, 0.0f);
 		AddComponent<ECS::CCamera>(camEntity, 60.0f, (float)(win.GetViewport().z / win.GetViewport().w), 0.01f, 1000.0f);
+		m_Scene->AddCamera(camEntity);
 		//AddComponent<ECS::CLight>(camEntity);
 
 		// Temporary
-		auto& obj = CreateEntity();
-		auto& objTransform = GetComponent<ECS::CTransform>(obj);
-		objTransform.Position.x = -10.0f;
-		AddComponent<ECS::CMesh>(obj, AssetManager::GetMesh("3D"));
-		AddComponent<ECS::CMaterial>(obj, AssetManager::GetShader("FlatColor"));
-
-		auto& light = CreateEntity();
-		auto& lightTransform = GetComponent<ECS::CTransform>(light);
-		lightTransform.Position.z = 10.0f;
-		lightTransform.Rotation.x = 180.0;
-		AddComponent<ECS::CMesh>(light, AssetManager::GetMesh("Cube"));
-		AddComponent<ECS::CMaterial>(light, AssetManager::GetShader("FlatColor"));
-		AddComponent<ECS::CLight>(light);
+		//auto& obj = CreateEntity();
+		//auto& objTransform = GetComponent<ECS::CTransform>(obj);
+		//objTransform.Position.x = -10.0f;
+		//AddComponent<ECS::CMesh>(obj, AssetManager::GetMesh("3D"));
+		//AddComponent<ECS::CMaterial>(obj, AssetManager::GetShader("FlatColor"));
+		//AddComponent<ECS::CMotion>(obj, 3.0f);
+		//AddComponent<ECS::CController>(obj);
+		//
+		//auto& light = CreateEntity();
+		//auto& lightTransform = GetComponent<ECS::CTransform>(light);
+		//lightTransform.Position.z = 10.0f;
+		//lightTransform.Rotation.x = 180.0;
+		//AddComponent<ECS::CMesh>(light, AssetManager::GetMesh("Cube"));
+		//AddComponent<ECS::CMaterial>(light, AssetManager::GetShader("FlatColor"));
+		//AddComponent<ECS::CLight>(light);
 
 		return m_Scene;
 	}

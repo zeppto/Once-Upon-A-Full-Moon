@@ -22,7 +22,7 @@
 #endif
 
 #ifdef FY_ENABLE_TIME
-	#define FY_TIME(x, name) { Frosty::Time::Get().StartTimer(name); x; Frosty::Time::Get().EndTimer(name); }
+	#define FY_TIME(x, name) { Frosty::Time::StartTimer(name); x; Frosty::Time:EndTimer(name); }
 #else
 	#define FY_TIME(x, name) { x; }
 #endif 
