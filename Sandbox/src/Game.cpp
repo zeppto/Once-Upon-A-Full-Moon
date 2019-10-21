@@ -299,7 +299,7 @@ public:
 	{
 		p_Signature.set(Frosty::ECS::getComponentTypeID<Frosty::ECS::CTransform>(), true);
 		p_Signature.set(Frosty::ECS::getComponentTypeID<Frosty::ECS::CMotion>(), true);
-		//p_Signature.set(Frosty::ECS::getComponentTypeID<Frosty::ECS::CCollision>(), true);
+		p_Signature.set(Frosty::ECS::getComponentTypeID<Frosty::ECS::CCollision>(), true);
 	}
 
 	inline virtual void OnUpdate() override
@@ -309,19 +309,19 @@ public:
 			m_Transform[i]->Position += m_Motion[i]->Velocity * Frosty::Time::DeltaTime();
 			//m_Transform[i]->Position += m_Motion[i]->Direction * m_Motion[i]->Speed * Frosty::Time::DeltaTime();
 
-			//for (size_t j = 1; j < p_Total; j++)
-			//{
-			//	if (j != i)
-			//	{
-			//		glm::vec3 finalCenterA = m_Transform[i]->Position + glm::vec3(m_Collision[i]->BoundingBox->pos[0], m_Collision[i]->BoundingBox->pos[1], m_Collision[i]->BoundingBox->pos[2]);
-			//		glm::vec3 finalCenterB = m_Transform[j]->Position + glm::vec3(m_Collision[j]->BoundingBox->pos[0], m_Collision[j]->BoundingBox->pos[1], m_Collision[j]->BoundingBox->pos[2]);
-			//		glm::vec3 finalLengthA = glm::vec3(m_Collision[i]->BoundingBox->halfSize[0], m_Collision[i]->BoundingBox->halfSize[1], m_Collision[i]->BoundingBox->halfSize[2]) * m_Transform[i]->Scale;
-			//		glm::vec3 finalLengthB = glm::vec3(m_Collision[j]->BoundingBox->halfSize[0], m_Collision[j]->BoundingBox->halfSize[1], m_Collision[j]->BoundingBox->halfSize[2]) * m_Transform[j]->Scale;
-			//		glm::vec3 offset = Frosty::CollisionDetection::AABBIntersecPushback(finalLengthA, finalCenterA, finalLengthB, finalCenterB);
-			//
-			//		m_Transform[i]->Position -= offset;
-			//	}
-			//}
+			for (size_t j = 1; j < p_Total; j++)
+			{
+				if (j != i)
+				{
+					glm::vec3 finalCenterA = m_Transform[i]->Position + glm::vec3(m_Collision[i]->BoundingBox->pos[0], m_Collision[i]->BoundingBox->pos[1], m_Collision[i]->BoundingBox->pos[2]);
+					glm::vec3 finalCenterB = m_Transform[j]->Position + glm::vec3(m_Collision[j]->BoundingBox->pos[0], m_Collision[j]->BoundingBox->pos[1], m_Collision[j]->BoundingBox->pos[2]);
+					glm::vec3 finalLengthA = glm::vec3(m_Collision[i]->BoundingBox->halfSize[0], m_Collision[i]->BoundingBox->halfSize[1], m_Collision[i]->BoundingBox->halfSize[2]) * m_Transform[i]->Scale;
+					glm::vec3 finalLengthB = glm::vec3(m_Collision[j]->BoundingBox->halfSize[0], m_Collision[j]->BoundingBox->halfSize[1], m_Collision[j]->BoundingBox->halfSize[2]) * m_Transform[j]->Scale;
+					glm::vec3 offset = Frosty::CollisionDetection::AABBIntersecPushback(finalLengthA, finalCenterA, finalLengthB, finalCenterB);
+			
+					m_Transform[i]->Position -= offset;
+				}
+			}
 		}
 	}
 
@@ -334,7 +334,7 @@ public:
 			auto& world = Frosty::Application::Get().GetWorld();
 			m_Transform[p_Total] = &world->GetComponent<Frosty::ECS::CTransform>(entity);
 			m_Motion[p_Total] = &world->GetComponent<Frosty::ECS::CMotion>(entity);
-			//m_Collision[p_Total] = &world->GetComponent<Frosty::ECS::CCollision>(entity);
+			m_Collision[p_Total] = &world->GetComponent<Frosty::ECS::CCollision>(entity);
 
 			p_Total++;
 		}
@@ -350,7 +350,7 @@ public:
 			p_Total--;
 			m_Transform[p_Total] = nullptr;
 			m_Motion[p_Total] = nullptr;
-			//m_Collision[p_Total] = nullptr;
+			m_Collision[p_Total] = nullptr;
 
 			if (p_Total > 1)
 			{
@@ -370,7 +370,7 @@ public:
 private:
 	std::array<Frosty::ECS::CTransform*, Frosty::ECS::MAX_ENTITIES_PER_COMPONENT> m_Transform;
 	std::array<Frosty::ECS::CMotion*, Frosty::ECS::MAX_ENTITIES_PER_COMPONENT> m_Motion;
-	//std::array<Frosty::ECS::CCollision*, Frosty::ECS::MAX_ENTITIES_PER_COMPONENT> m_Collision;
+	std::array<Frosty::ECS::CCollision*, Frosty::ECS::MAX_ENTITIES_PER_COMPONENT> m_Collision;
 
 };
 
@@ -422,22 +422,22 @@ public:
 
 			// Calculate direction based on rotation
 			CalculateDirection(i);
-
+			m_Motion[i]->Velocity = glm::vec3(0.0f);
 			if (Frosty::InputManager::IsKeyPressed(m_Controller[i]->MoveForwardKey))
 			{
-				m_Motion[i]->Velocity = m_Motion[i]->Direction * m_Motion[i]->Speed;
+				m_Motion[i]->Velocity += -m_Motion[i]->Direction * m_Motion[i]->Speed;
 			}
-			else if (Frosty::InputManager::IsKeyPressed(m_Controller[i]->MoveBackKey))
+			if (Frosty::InputManager::IsKeyPressed(m_Controller[i]->MoveBackKey))
 			{
-				m_Motion[i]->Velocity = -m_Motion[i]->Direction * m_Motion[i]->Speed;
+				m_Motion[i]->Velocity += m_Motion[i]->Direction * m_Motion[i]->Speed;
 			}
 			if (Frosty::InputManager::IsKeyPressed(m_Controller[i]->MoveLeftKey))
 			{
-				m_Motion[i]->Velocity = -glm::cross(m_Motion[i]->Direction, glm::vec3(0.0f, 1.0f, 0.0f)) * m_Motion[i]->Speed;
+				m_Motion[i]->Velocity += glm::cross(m_Motion[i]->Direction, glm::vec3(0.0f, 1.0f, 0.0f)) * m_Motion[i]->Speed;
 			}
-			else if (Frosty::InputManager::IsKeyPressed(m_Controller[i]->MoveRightKey))
+			if (Frosty::InputManager::IsKeyPressed(m_Controller[i]->MoveRightKey))
 			{
-				m_Motion[i]->Velocity = glm::cross(m_Motion[i]->Direction, glm::vec3(0.0f, 1.0f, 0.0f)) * m_Motion[i]->Speed;
+				m_Motion[i]->Velocity += -glm::cross(m_Motion[i]->Direction, glm::vec3(0.0f, 1.0f, 0.0f)) * m_Motion[i]->Speed;
 			}
 		}
 	}
@@ -653,6 +653,89 @@ private:
 
 };
 
+//class PlayerAttackSystem : public Frosty::ECS::BaseSystem
+//{
+//public:
+//	PlayerAttackSystem() = default;
+//	virtual ~PlayerAttackSystem() = default;
+//
+//	virtual void Init() override
+//	{
+//		p_Signature.set(Frosty::ECS::getComponentTypeID<Frosty::ECS::CTransform>(), true);
+//		p_Signature.set(Frosty::ECS::getComponentTypeID<Frosty::ECS::CPlayerAttack>(), true);
+//		p_Signature.set(Frosty::ECS::getComponentTypeID<Frosty::ECS::CCollision>(), true);
+//		//p_Signature.set(Frosty::ECS::getComponentTypeID<Frosty::ECS::CHp>(), true);
+//	}
+//
+//	virtual void OnUpdate() override
+//	{
+//	}
+//
+//	virtual void Render() override
+//	{
+//
+//		auto& win = Frosty::Application::Get().GetWindow();
+//
+//		if (p_Total > 1)
+//		{
+//			//// Optimization: Could send in to Renderer how many point and directional lights we have to reserve that space in vectors.
+//			//for (size_t i = 1; i < p_Total; i++)
+//			//{
+//			//	if (m_Light[i]->Type == Frosty::ECS::CLight::Point)
+//			//	{
+//			//		Frosty::Renderer::AddLight(m_Light[i]->Color, m_Transform[i]->Position, m_Light[i]->Strength, m_Light[i]->Radius);
+//			//	}
+//			//	else if (m_Light[i]->Type == Frosty::ECS::CLight::Directional)
+//			//	{
+//			//		Frosty::Renderer::AddLight(m_Light[i]->Color, m_Transform[i]->Rotation, m_Light[i]->Strength);
+//			//	}
+//			//}
+//		}
+//	}
+//
+//	virtual void AddComponent(const std::shared_ptr<Frosty::ECS::Entity>& entity) override
+//	{
+//		if (Frosty::utils::BitsetFits<Frosty::ECS::MAX_COMPONENTS>(p_Signature, entity->Bitset) && !p_EntityMap.count(entity))
+//		{
+//			p_EntityMap.emplace(entity, p_Total);
+//
+//			auto& world = Frosty::Application::Get().GetWorld();
+//			m_Transform[p_Total] = &world->GetComponent<Frosty::ECS::CTransform>(entity);
+//			m_Light[p_Total] = &world->GetComponent<Frosty::ECS::CLight>(entity);
+//
+//			p_Total++;
+//		}
+//	}
+//
+//	virtual void RemoveEntity(const std::shared_ptr<Frosty::ECS::Entity>& entity) override
+//	{
+//		Frosty::ECS::ComponentArrayIndex tempIndex = p_EntityMap[entity];
+//
+//		if (tempIndex > 0)
+//		{
+//			p_Total--;
+//			m_Transform[p_Total] = nullptr;
+//			m_Light[p_Total] = nullptr;
+//
+//			//std::shared_ptr<Entity> entityToUpdate = removeEntityFromData(mEntity);
+//
+//			if (p_Total > tempIndex)
+//			{
+//				std::shared_ptr<Frosty::ECS::Entity> entityToUpdate = m_Transform[p_EntityMap[entity]]->EntityPtr;
+//				p_EntityMap[entityToUpdate] = tempIndex;
+//			}
+//
+//			p_EntityMap.erase(entity);
+//		}
+//	}
+//
+//private:
+//	std::array<Frosty::ECS::CTransform*, Frosty::ECS::MAX_ENTITIES_PER_COMPONENT> m_Transform;
+//	std::array<Frosty::ECS::CLight*, Frosty::ECS::MAX_ENTITIES_PER_COMPONENT> m_Light;
+//
+//};
+
+
 namespace MCS
 {
 	Game::Game()
@@ -694,8 +777,9 @@ namespace MCS
 		playerTransform.Position.y = 1.0f;
 		world->AddComponent<Frosty::ECS::CMesh>(player, Frosty::AssetManager::GetMesh("Cylinder"));
 		world->AddComponent<Frosty::ECS::CMaterial>(player, Frosty::AssetManager::GetShader("FlatColor"));
-		world->AddComponent<Frosty::ECS::CMotion>(player, 5.0f);
+		world->AddComponent<Frosty::ECS::CMotion>(player, 8.0f);
 		world->AddComponent<Frosty::ECS::CController>(player);
+		world->AddComponent<Frosty::ECS::CCollision>(player);
 
 		PushLayer(FY_NEW InspectorLayer());
 	}

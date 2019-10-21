@@ -86,7 +86,7 @@ namespace Frosty
 #pragma region Settings
 
 		// Let's define a maximum number of unique components:
-		constexpr std::size_t MAX_COMPONENTS{ 9 };
+		constexpr std::size_t MAX_COMPONENTS{ 10 };
 
 		// Let's define a maximum number of entities that
 		// can have the same component type:
@@ -470,6 +470,20 @@ namespace Frosty
 			virtual void Func() override { }
 		};
 
+		struct CPlayerAttack : public BaseComponent
+		{
+			static std::string NAME;
+			float Reach{ 1.0f };
+			float Width{ 1.0f };
+			float Damage{ 2.0f };
+
+			CPlayerAttack() = default;
+			CPlayerAttack(float reach, float width, float damage) : Reach(reach), Width(width), Damage(damage) { }
+			CPlayerAttack(const CPlayerAttack& org) { FY_CORE_ASSERT(false, "Copy constructor in CPlayerAttack called."); }
+
+			virtual void Func() override { }
+		};
+
 		static std::string GetComponentName(size_t i)
 		{
 			switch (i)
@@ -483,6 +497,7 @@ namespace Frosty
 			case 6:		return "Follow";
 			case 7:		return "Light";
 			case 8:		return "Collision";
+			case 9:		return "PlayerAttack";
 			default:	return "";
 			}
 		}

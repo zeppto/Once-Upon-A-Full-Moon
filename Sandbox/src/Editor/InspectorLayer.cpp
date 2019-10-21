@@ -104,6 +104,7 @@ namespace MCS
 					if (world->HasComponent<Frosty::ECS::CFollow>(m_SelectedEntity)) toggles[6] = true;
 					if (world->HasComponent<Frosty::ECS::CLight>(m_SelectedEntity)) toggles[7] = true;
 					if (world->HasComponent<Frosty::ECS::CCollision>(m_SelectedEntity)) toggles[8] = true;
+					if (world->HasComponent<Frosty::ECS::CPlayerAttack>(m_SelectedEntity)) toggles[9] = true;
 				}
 
 				// Information
@@ -170,6 +171,13 @@ namespace MCS
 							world->AddComponent<Frosty::ECS::CCollision>(m_SelectedEntity, Frosty::AssetManager::GetBoundingBox("Cube"));
 						else
 							world->RemoveComponent<Frosty::ECS::CCollision>(m_SelectedEntity);
+					}
+					if (ImGui::MenuItem("Player Attack", "", &toggles[9]))
+					{
+						if (!world->HasComponent<Frosty::ECS::CPlayerAttack>(m_SelectedEntity))
+							world->AddComponent<Frosty::ECS::CPlayerAttack>(m_SelectedEntity);
+						else
+							world->RemoveComponent<Frosty::ECS::CPlayerAttack>(m_SelectedEntity);
 					}
 					ImGui::EndPopup();
 				}
@@ -532,6 +540,18 @@ namespace MCS
 							ImGui::EndPopup();
 						}
 						ImGui::EndChild();
+					}
+					if (world->HasComponent<Frosty::ECS::CPlayerAttack>(m_SelectedEntity))
+					{
+						if (ImGui::CollapsingHeader("Player Attack"))
+						{
+							auto& comp = world->GetComponent<Frosty::ECS::CPlayerAttack>(m_SelectedEntity);
+							ImGui::BeginChild("CPlayerAttack", ImVec2(EDITOR_INSPECTOR_WIDTH, 105), true);
+							ImGui::InputFloat("Damage", &comp.Damage, 1.0f, 10.0f, 0);
+							ImGui::InputFloat("Reach", &comp.Reach, 1.0f, 10.0f, 0);
+							ImGui::InputFloat("Width", &comp.Width, 1.0f, 10.0f, 0);
+							ImGui::EndChild();
+						}
 					}
 				}
 			}
