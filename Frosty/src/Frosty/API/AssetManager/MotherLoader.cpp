@@ -55,6 +55,11 @@ namespace Frosty
 				
 				break;
 
+			case TGA:
+				returnValue = LoadGraphicFile(TempFileInfo, Reload);
+
+				break;
+
 
 
 			default:
@@ -154,6 +159,10 @@ namespace Frosty
 		else if (fileType == FILE_TYPE_LUNA)
 		{
 			return LUNA;
+		}
+		else if (fileType == FILE_TYPE_TGA)
+		{
+			return TGA;
 		}
 
 		return -1;

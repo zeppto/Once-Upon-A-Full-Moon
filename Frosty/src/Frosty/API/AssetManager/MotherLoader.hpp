@@ -12,6 +12,7 @@
 #define FILE_TYPE_PNG "png"
 #define FILE_TYPE_LUNA "lu"
 #define FILE_TYPE_TTF "ttf"
+#define FILE_TYPE_TGA "tga"
 
 
 
@@ -27,7 +28,8 @@ namespace Frosty
 		JPG,
 		PNG,
 		LUNA,
-		TTFF
+		TTFF,
+		TGA
 	};
 
 
