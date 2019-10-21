@@ -25,6 +25,7 @@ namespace Frosty
 			std::map<uint16_t, std::vector<Luna::Keyframe>>* kMap);
 		AnimationHandler* getAnimationHandlerPtr() { return &meshAnims; }
 		void SetUniformBuffer(std::shared_ptr<UniformBuffer>& uniformBuffer);
+		const std::shared_ptr<UniformBuffer>& getUniformBuffer();
 		//TEMP FUNCS END
 		static VertexArray* Create();
 	private:

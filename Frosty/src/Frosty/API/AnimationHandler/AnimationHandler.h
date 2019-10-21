@@ -16,7 +16,7 @@ namespace Frosty
 	private:
 		Luna::Animation * animPtr;
 		std::vector<Luna::Joint> jointVec;
-		std::map<uint16_t, std::vector<Luna::Keyframe>>* keyFrameMap;
+		std::map<uint16_t, std::vector<Luna::Keyframe>> keyFrameMap;
 
 		//Temp. This should either be an input or a dynamically allocated array.
 		glm::mat4 skinData[64];
@@ -33,7 +33,7 @@ namespace Frosty
 		glm::mat4 * getSkinData();
 		int getNrOfJoints();
 
-		void CalculateAnimMatrix(float currentAnimTime);
+		void CalculateAnimMatrix(float * currentAnimTime);
 
 	private:
 	};

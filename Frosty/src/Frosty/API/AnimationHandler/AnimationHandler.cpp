@@ -26,7 +26,7 @@ void Frosty::AnimationHandler::setJointVec(std::vector<Luna::Joint> jVec)
 
 void Frosty::AnimationHandler::setKeyframeMap(std::map<uint16_t, std::vector<Luna::Keyframe>>* kMap)
 {
-	keyFrameMap = kMap;
+	keyFrameMap = *kMap;
 }
 
 glm::mat4 * Frosty::AnimationHandler::getSkinData()
@@ -41,26 +41,26 @@ int Frosty::AnimationHandler::getNrOfJoints()
 
 #define MAXBONES 80
 
-void Frosty::AnimationHandler::CalculateAnimMatrix( float currentAnimTime)
+void Frosty::AnimationHandler::CalculateAnimMatrix( float * currentAnimTime)
 {
-	if (currentAnimTime > animPtr->duration)
+	if (*currentAnimTime > animPtr->duration)
 	{
-		//TODO: Loop to beginning
+		*currentAnimTime = 0;
 	}
 	//Since all animations are baked which joint it is irrelevant for determining last keyframe.
 	std::vector<Luna::Keyframe> keyVec;
-	keyVec = keyFrameMap->at(jointVec[0].jointID);
+	keyVec = keyFrameMap.at(jointVec[0].jointID);
 
 	// keyframes involved.
-	int k1 = (int)(currentAnimTime * animPtr->fps);
+	int k1 = (int)(*currentAnimTime * animPtr->fps);
 	//keyFrameMap.
-	int k2 = fminf(k1 + 1, keyVec[keyVec.size()].timePosition);
+	int k2 = fminf(k1 + 1, keyVec[keyVec.size()-1].timePosition);
 
 	// keyframes in anim_time terms
 	float k1_time = k1 / animPtr->fps;
 	float k2_time = k2 / animPtr->fps;
 	// time rescaled into [0..1] as a percentage between k1 and k2
-	float t = (currentAnimTime - k1_time) / (k2_time - k1_time);
+	float t = (*currentAnimTime - k1_time) / (k2_time - k1_time);
 
 	int boneCount = jointVec.size();
 
@@ -70,7 +70,7 @@ void Frosty::AnimationHandler::CalculateAnimMatrix( float currentAnimTime)
 	{
 		bone_global_pose[i] = glm::mat4(1.0);
 	}
-	keyVec = keyFrameMap->at(jointVec[0].jointID);
+	keyVec = keyFrameMap.at(jointVec[0].jointID);
 
 	///*glm::vec4 k2Trans = { keyVec[k2].translation[0] ,keyVec[k2].translation[1] ,keyVec[k2].translation[2] ,keyVec[k2].translation[3] };*/
 
@@ -109,7 +109,7 @@ void Frosty::AnimationHandler::CalculateAnimMatrix( float currentAnimTime)
 	for (int i = 1; i < jointVec.size(); i++)
 	{
 		// Get all the keyframe vector for the current joint.
-		keyVec = keyFrameMap->at(jointVec[i].jointID);
+		keyVec = keyFrameMap.at(jointVec[i].jointID);
 		// Parse input data to correct format.
 		glm::vec4 k1Trans = glm::make_vec4(keyVec[k1].translation);
 		glm::vec4 k2Trans = glm::make_vec4(keyVec[k2].translation);

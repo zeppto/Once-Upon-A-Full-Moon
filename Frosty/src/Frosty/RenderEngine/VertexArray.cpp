@@ -98,6 +98,14 @@ namespace Frosty
 	void VertexArray::SetUniformBuffer(std::shared_ptr<UniformBuffer>& uniformBuffer)
 	{
 		glBindVertexArray(m_RendererID);
+		uniformBuffer->Bind();
+
+		m_UniformBuffer = uniformBuffer;
+	}
+
+	const std::shared_ptr<UniformBuffer>& VertexArray::getUniformBuffer()
+	{
+		return m_UniformBuffer;
 	}
 
 	VertexArray * VertexArray::Create()

@@ -84,13 +84,16 @@ namespace Frosty
 		glDeleteBuffers(1, &m_RendererID);
 	}
 	
-	void UniformBuffer::Bind(glm::mat4* boneData, int len) const
+	void UniformBuffer::Bind() const
 	{
 		glBindBuffer(GL_UNIFORM_BUFFER, m_RendererID);
+	}
+	void UniformBuffer::BindUpdate(glm::mat4* boneData, int len)
+	{
 		glBindBufferBase(GL_UNIFORM_BUFFER, 1, m_RendererID);
 		glBufferData(GL_UNIFORM_BUFFER, len * sizeof(glm::mat4), boneData, GL_STATIC_DRAW);
-
 	}
+
 	void UniformBuffer::Unbind() const
 	{
 		glBindBuffer(GL_UNIFORM_BUFFER, 0);

@@ -174,7 +174,8 @@ namespace Frosty
 		UniformBuffer(uint32_t count, int MaxBones);
 		virtual ~UniformBuffer();
 
-		void Bind(glm::mat4 * boneData, int len)const;
+		void Bind()const;
+		void BindUpdate(glm::mat4* boneData, int len);
 		void Unbind()const;
 
 		uint32_t GetCount()const;

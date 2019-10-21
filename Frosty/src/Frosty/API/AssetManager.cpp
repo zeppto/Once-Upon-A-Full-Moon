@@ -34,10 +34,10 @@ namespace Frosty
 		LoadTexture2D("Brown_Mud_Diffuse", "assets/textures/brown_mud_diffuse.png");
 		LoadTexture2D("Checkerboard", "assets/textures/Checkerboard.png");
 
-		s_Shaders["Texture2"]->Bind();
-		s_Shaders["Texture2"]->UploadUniformInt("u_DiffuseTexture", 0);
-		s_Shaders["Texture2"]->UploadUniformInt("u_GlossTexture", 1);
-		s_Shaders["Texture2"]->UploadUniformInt("u_NormalTexture", 2);
+		s_Shaders["Texture2D"]->Bind();
+		s_Shaders["Texture2D"]->UploadUniformInt("u_DiffuseTexture", 0);
+		s_Shaders["Texture2D"]->UploadUniformInt("u_GlossTexture", 1);
+		s_Shaders["Texture2D"]->UploadUniformInt("u_NormalTexture", 2);
 
 		s_Shaders["AnimShader"]->Bind();
 		s_Shaders["AnimShader"]->UploadUniformInt("u_DiffuseTexture", 0);
@@ -81,19 +81,6 @@ namespace Frosty
 			}
 		}
 
-		std::vector<Luna::Joint> joints;
-		tempFile.getJoints(joints);
-		tempFile.getAnimation();
-		std::map<uint16_t, std::vector<Luna::Keyframe>> kMap;
-
-		for (int i = 0; i < joints.size; i++)
-		{
-			std::vector<Luna::Keyframe> keyFrames;
-			tempFile.getKeyframes(joints[i].jointID, keyFrames);
-
-			kMap[joints[i].jointID] =  keyFrames;
-		}
-
 		// Vertex Array
 		s_Meshes.emplace(name, VertexArray::Create());
 
@@ -118,7 +105,27 @@ namespace Frosty
 		indexBuffer.reset(IndexBuffer::Create(&indices.front(), indices.size()));
 		s_Meshes[name]->SetIndexBuffer(indexBuffer);
 
-		s_Meshes[name]->setMeshAnims(&tempFile.getAnimation(), joints, &kMap);
+		if (tempFile.getAnimation().keyframeCount != 0)
+		{
+			std::vector<Luna::Joint> joints;
+			tempFile.getJoints(joints);
+			std::map<uint16_t, std::vector<Luna::Keyframe>> kMap;
+
+			for (int i = 0; i < joints.size(); i++)
+			{
+				std::vector<Luna::Keyframe> keyFrames;
+				tempFile.getKeyframes(joints[i].jointID, keyFrames);
+
+				kMap[joints[i].jointID] = keyFrames;
+			}
+
+			s_Meshes[name]->setMeshAnims(&tempFile.getAnimation(), joints, &kMap);
+			std::shared_ptr<UniformBuffer> uniformBuffer;
+			uint32_t MAX_BONES = 64;
+			uniformBuffer.reset(UniformBuffer::Create(joints.size(), MAX_BONES));
+			s_Meshes[name]->SetUniformBuffer(uniformBuffer);
+
+		}
 
 	}
 

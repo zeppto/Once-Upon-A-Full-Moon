@@ -5,7 +5,6 @@
 #include "Frosty/Core/KeyCodes.h"
 
 
-
 namespace Frosty
 {
 	Application* Application::s_Instance = nullptr;

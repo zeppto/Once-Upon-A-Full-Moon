@@ -38,6 +38,8 @@ namespace Frosty
 		RenderCommand::DrawIndexed(vertexArray);
 	}
 
+	float dt = 0;
+
 	void Renderer::animSubmit(ECS::CMaterial* mat, const std::shared_ptr<VertexArray>& vertexArray, const glm::mat4& transform)
 	{
 		mat->UseShader->Bind();
@@ -45,13 +47,13 @@ namespace Frosty
 		mat->UseShader->UploadUniformMat4("u_Transform", transform);
 		mat->UseShader->AssignUniformBlock("a_jointDataBlock");
 
-		float dt = 0;
-		vertexArray->getAnimationHandlerPtr()->CalculateAnimMatrix(dt);
-		vertexArray->getAnimationHandlerPtr()->getSkinData();
-
+		vertexArray->getAnimationHandlerPtr()->CalculateAnimMatrix(&dt);
+		int MaxBones = 64;
+		vertexArray->getUniformBuffer()->BindUpdate(vertexArray->getAnimationHandlerPtr()->getSkinData(), MaxBones);
 
 		vertexArray->Bind();
 		RenderCommand::DrawIndexed(vertexArray);
+		dt += 0.003;
 	}
 
 }

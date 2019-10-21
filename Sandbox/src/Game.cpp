@@ -212,7 +212,22 @@ public:
 			if (m_Materials[i]->UseShader->GetName() == "Texture2D" && m_Materials[i]->GlossTexture) m_Materials[i]->GlossTexture->Bind(1);
 			if (m_Materials[i]->UseShader->GetName() == "Texture2D" && m_Materials[i]->NormalTexture) m_Materials[i]->NormalTexture->Bind(2);
 
-			Frosty::Renderer::Submit(m_Materials[i], m_Meshes[i]->Mesh, transform);
+			if (m_Materials[i]->UseShader->GetName() == "AnimShader" && m_Materials[i]->DiffuseTexture) m_Materials[i]->DiffuseTexture->Bind();
+			if (m_Materials[i]->UseShader->GetName() == "AnimShader" && m_Materials[i]->GlossTexture) m_Materials[i]->GlossTexture->Bind(1);
+			if (m_Materials[i]->UseShader->GetName() == "AnimShader" && m_Materials[i]->NormalTexture) m_Materials[i]->NormalTexture->Bind(2);
+
+			if (m_Materials[i]->UseShader->GetName() == "AnimShader")
+			{
+				Frosty::Renderer::animSubmit(m_Materials[i], m_Meshes[i]->Mesh, transform);
+			}
+			else
+			{
+				Frosty::Renderer::Submit(m_Materials[i], m_Meshes[i]->Mesh, transform);
+			}
+
+			if (m_Materials[i]->UseShader->GetName() == "AnimShader" && m_Materials[i]->DiffuseTexture) m_Materials[i]->DiffuseTexture->Unbind();
+			if (m_Materials[i]->UseShader->GetName() == "AnimShader" && m_Materials[i]->GlossTexture) m_Materials[i]->GlossTexture->Unbind();
+			if (m_Materials[i]->UseShader->GetName() == "AnimShader" && m_Materials[i]->NormalTexture) m_Materials[i]->NormalTexture->Unbind();
 
 			if (m_Materials[i]->UseShader->GetName() == "Texture2D" && m_Materials[i]->DiffuseTexture) m_Materials[i]->DiffuseTexture->Unbind();
 			if (m_Materials[i]->UseShader->GetName() == "Texture2D" && m_Materials[i]->GlossTexture) m_Materials[i]->GlossTexture->Unbind();
