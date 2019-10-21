@@ -87,6 +87,19 @@ namespace Frosty
 		return m_IndexBuffer;
 	}
 
+	void VertexArray::setMeshAnims(Luna::Animation* aPtr, std::vector<Luna::Joint> jVec, std::map<uint16_t, std::vector<Luna::Keyframe>>* kMap)
+	{
+		currentAnim = *aPtr;
+		meshAnims.setAnimPtr(&currentAnim);
+		meshAnims.setJointVec(jVec);
+		meshAnims.setKeyframeMap(kMap);
+	}
+
+	void VertexArray::SetUniformBuffer(std::shared_ptr<UniformBuffer>& uniformBuffer)
+	{
+		glBindVertexArray(m_RendererID);
+	}
+
 	VertexArray * VertexArray::Create()
 	{
 		return FY_NEW VertexArray();

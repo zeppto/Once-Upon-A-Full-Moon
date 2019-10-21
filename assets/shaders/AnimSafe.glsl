@@ -1,6 +1,5 @@
-#type vertex	
-#version 440 core
-			
+#type vertex
+#version 440 core			
 			
 layout(location = 0) in vec3 a_Position;
 layout(location = 1) in vec2 a_TextureCoords;
@@ -12,7 +11,7 @@ layout(location = 6) in ivec4 a_joints;
 
 layout(std140, binding = 7) uniform a_jointDataBlock
 {
-	mat4 skinData[64]
+	mat4 skinData[64];
 };
 
 uniform mat4 u_ViewProjection;
@@ -24,16 +23,16 @@ out vec4 normal;
 
 void main()
 {
-	mat4 jointTransform = skinData[a_joints.x] * a_weights.x;
-	jointTransform += skinData[a_joints.y] * a_weights.y;
-	jointTransform += skinData[a_joints.z] * a_weights.z;
-	jointTransform += skinData[a_joint.w] * a_weights.w;
+	mat4 jointTransform = skinData[a_joints[0]] * a_weights.x;
+	jointTransform += skinData[a_joints[1]] * a_weights.y;
+	jointTransform += skinData[a_joints[2]] * a_weights.z;
+	jointTransform += skinData[a_joints[3]] * a_weights.w;
 	
 	gl_Position = jointTransform * vec4(a_Position,1.0);
 	
-	pos = gl_Position;
-	normal = jointTransform * vec4(normal,1.0);
 	v_TextureCoords = a_TextureCoords;
+	pos = gl_Position;
+	normal = (jointTransform * vec4(a_Normal,1.0));
 }
 
 #type fragment

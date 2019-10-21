@@ -34,8 +34,24 @@ namespace Frosty
 			//mat->UseShader->UploadUniformFloat3("u_CameraPosition", s_SceneData->Lights.Position);
 			//mat->UseShader->UploadUniformFloat3("u_LightColor", s_SceneData->Lights.Color);
 		}
+		vertexArray->Bind();
+		RenderCommand::DrawIndexed(vertexArray);
+	}
+
+	void Renderer::animSubmit(ECS::CMaterial* mat, const std::shared_ptr<VertexArray>& vertexArray, const glm::mat4& transform)
+	{
+		mat->UseShader->Bind();
+		mat->UseShader->UploadUniformMat4("u_ViewProjection", s_SceneData->ViewProjectionMatrix);
+		mat->UseShader->UploadUniformMat4("u_Transform", transform);
+		mat->UseShader->AssignUniformBlock("a_jointDataBlock");
+
+		float dt = 0;
+		vertexArray->getAnimationHandlerPtr()->CalculateAnimMatrix(dt);
+		vertexArray->getAnimationHandlerPtr()->getSkinData();
+
 
 		vertexArray->Bind();
 		RenderCommand::DrawIndexed(vertexArray);
 	}
+
 }

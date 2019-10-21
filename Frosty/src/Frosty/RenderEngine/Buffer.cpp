@@ -69,4 +69,41 @@ namespace Frosty
 	{
 		return new IndexBuffer(indices, count);
 	}
+
+	// UniformBuffer --------------------------------------------------------------------
+	UniformBuffer::UniformBuffer(uint32_t count, int MaxBones)
+		:m_Count(count)
+	{
+		glGenBuffers(1, &m_RendererID);
+		glBindBuffer(GL_UNIFORM_BUFFER, m_RendererID);
+		glBufferData(GL_UNIFORM_BUFFER, sizeof(glm::mat4) * MaxBones , NULL, GL_DYNAMIC_DRAW);
+
+	}
+	UniformBuffer::~UniformBuffer()
+	{
+		glDeleteBuffers(1, &m_RendererID);
+	}
+	
+	void UniformBuffer::Bind(glm::mat4* boneData, int len) const
+	{
+		glBindBuffer(GL_UNIFORM_BUFFER, m_RendererID);
+		glBindBufferBase(GL_UNIFORM_BUFFER, 1, m_RendererID);
+		glBufferData(GL_UNIFORM_BUFFER, len * sizeof(glm::mat4), boneData, GL_STATIC_DRAW);
+
+	}
+	void UniformBuffer::Unbind() const
+	{
+		glBindBuffer(GL_UNIFORM_BUFFER, 0);
+	}
+	uint32_t UniformBuffer::GetCount() const
+	{
+		return m_Count;
+	}
+
+	UniformBuffer* UniformBuffer::Create(uint32_t count, int MaxBones)
+	{
+		return new UniformBuffer(count, MaxBones);
+	}
+
+
 }

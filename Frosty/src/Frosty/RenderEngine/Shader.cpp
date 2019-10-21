@@ -99,6 +99,13 @@ namespace Frosty
 		//FY_CORE_ASSERT(location > -1, "Error finding uniform location for {0}", name);
 		glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(matrix));
 	}
+
+	void Shader::AssignUniformBlock(const std::string& name)
+	{
+		//TODO replace "a_jointDataBlock" with name.
+		unsigned int jointDataIndex = glGetUniformBlockIndex(m_RendererID, "a_jointDataBlock");
+		glUniformBlockBinding(m_RendererID, jointDataIndex, 1);
+	}
 	
 	std::string Shader::ReadFile(const std::string& filepath)
 	{

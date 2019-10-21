@@ -10,7 +10,7 @@ Frosty::AnimationHandler::AnimationHandler(Luna::Animation * Aptr, std::vector<L
 
 }
 
-Frosty::AnimationHandler::~AnimationHandler()
+Frosty::AnimationHandler::~AnimationHandler()  
 {
 }
 

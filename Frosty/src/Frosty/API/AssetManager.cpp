@@ -25,7 +25,7 @@ namespace Frosty
 
 		s_Shaders.emplace("FlatColor", FY_NEW Shader("assets/shaders/FlatColor.glsl", "FlatColor"));
 		s_Shaders.emplace("Texture2D", FY_NEW Shader("assets/shaders/Texture2D.glsl", "Texture2D"));
-	/*	s_Shaders.emplace("AnimShader", FY_NEW Shader("assets/shaders/Animation.glsl", "AnimShader"));*/
+		s_Shaders.emplace("AnimShader", FY_NEW Shader("assets/shaders/AnimSafe.glsl", "AnimShader"));
 
 		LoadTexture2D("Clock_Diffuse", "assets/textures/pCube10_diffuse.png");
 		LoadTexture2D("Clock_Gloss", "assets/textures/pCube10_gloss.png");
@@ -34,10 +34,15 @@ namespace Frosty
 		LoadTexture2D("Brown_Mud_Diffuse", "assets/textures/brown_mud_diffuse.png");
 		LoadTexture2D("Checkerboard", "assets/textures/Checkerboard.png");
 
-		s_Shaders["Texture2D"]->Bind();
-		s_Shaders["Texture2D"]->UploadUniformInt("u_DiffuseTexture", 0);
-		s_Shaders["Texture2D"]->UploadUniformInt("u_GlossTexture", 1);
-		s_Shaders["Texture2D"]->UploadUniformInt("u_NormalTexture", 2);
+		s_Shaders["Texture2"]->Bind();
+		s_Shaders["Texture2"]->UploadUniformInt("u_DiffuseTexture", 0);
+		s_Shaders["Texture2"]->UploadUniformInt("u_GlossTexture", 1);
+		s_Shaders["Texture2"]->UploadUniformInt("u_NormalTexture", 2);
+
+		s_Shaders["AnimShader"]->Bind();
+		s_Shaders["AnimShader"]->UploadUniformInt("u_DiffuseTexture", 0);
+		s_Shaders["AnimShader"]->UploadUniformInt("u_GlossTexture", 1);
+		s_Shaders["AnimShader"]->UploadUniformInt("u_NormalTexture", 2);
 	}
 
 	void AssetManager::AddMesh(const std::string& name, const std::string& filepath)
@@ -76,6 +81,18 @@ namespace Frosty
 			}
 		}
 
+		std::vector<Luna::Joint> joints;
+		tempFile.getJoints(joints);
+		tempFile.getAnimation();
+		std::map<uint16_t, std::vector<Luna::Keyframe>> kMap;
+
+		for (int i = 0; i < joints.size; i++)
+		{
+			std::vector<Luna::Keyframe> keyFrames;
+			tempFile.getKeyframes(joints[i].jointID, keyFrames);
+
+			kMap[joints[i].jointID] =  keyFrames;
+		}
 
 		// Vertex Array
 		s_Meshes.emplace(name, VertexArray::Create());
@@ -100,6 +117,8 @@ namespace Frosty
 		std::shared_ptr<IndexBuffer> indexBuffer;
 		indexBuffer.reset(IndexBuffer::Create(&indices.front(), indices.size()));
 		s_Meshes[name]->SetIndexBuffer(indexBuffer);
+
+		s_Meshes[name]->setMeshAnims(&tempFile.getAnimation(), joints, &kMap);
 
 	}
 
