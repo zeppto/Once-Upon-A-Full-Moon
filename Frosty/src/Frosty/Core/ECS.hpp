@@ -86,7 +86,7 @@ namespace Frosty
 #pragma region Settings
 
 		// Let's define a maximum number of unique components:
-		constexpr std::size_t MAX_COMPONENTS{ 10 };
+		constexpr std::size_t MAX_COMPONENTS{ 11 };
 
 		// Let's define a maximum number of entities that
 		// can have the same component type:
@@ -111,7 +111,7 @@ namespace Frosty
 
 
 #pragma region Utilities
-		
+
 		namespace Internal
 		{
 			inline ComponentID getComponentUniqueID()
@@ -254,7 +254,7 @@ namespace Frosty
 
 			// Operators
 			BaseComponentManager& operator=(const BaseComponentManager& e) { FY_CORE_ASSERT(false, "Assignment operator in BaseComponentManager called."); return *this; }
-			
+
 			virtual BaseComponent* GetTypeComponent(const std::shared_ptr<Entity>& entity) = 0;
 
 			virtual void Remove(std::shared_ptr<Entity>& entity) = 0;
@@ -290,7 +290,7 @@ namespace Frosty
 			inline const std::array<ComponentType, MAX_ENTITIES_PER_COMPONENT>& GetAll() const { return m_Data; }
 
 			template<typename... TArgs>
-			inline ComponentType& Add(std::shared_ptr<Entity>& entity, TArgs&&... mArgs)
+			inline ComponentType& Add(std::shared_ptr<Entity>& entity, TArgs&& ... mArgs)
 			{
 				FY_CORE_ASSERT(Total < MAX_ENTITIES_PER_COMPONENT,
 					"Maximum number of entities for this specific component({0}) is reached.", getComponentTypeID<ComponentType>());
@@ -303,7 +303,7 @@ namespace Frosty
 				return m_Data[Total++];
 			}
 
-			inline void Remove(std::shared_ptr<Entity>& entity) 
+			inline void Remove(std::shared_ptr<Entity>& entity)
 			{
 				ComponentArrayIndex index = EntityMap.at(entity);
 
@@ -320,7 +320,7 @@ namespace Frosty
 				EntityMap.erase(entity);
 				entity->Bitset.flip(getComponentTypeID<ComponentType>());
 			}
-			
+
 		private:
 			std::array<ComponentType, MAX_ENTITIES_PER_COMPONENT> m_Data;
 
@@ -403,9 +403,15 @@ namespace Frosty
 		struct CMotion : public BaseComponent
 		{
 			static std::string NAME;
+			static const int DASH_COOLDOWN = 3000;
+			static const int DASH_DISTANCE = 20000;
 			glm::vec3 Direction{ 0.0f, 0.0f, 0.0f };
 			float Speed{ 0.0f };
 			glm::vec3 Velocity{ 0.0f };
+			bool DashActive{ false };
+			float DashCurrentCooldown{ 0.0f };
+			float DistanceDashed{ 0.0f };
+			float DashSpeedMultiplier{ 20.0f };
 
 			CMotion() = default;
 			CMotion(float speed) : Speed(speed) { }
@@ -428,7 +434,7 @@ namespace Frosty
 			virtual void Func() override { }
 		};
 
-		struct CFollow : public BaseComponent 
+		struct CFollow : public BaseComponent
 		{
 			static std::string NAME;
 			CTransform* Target{ nullptr };
@@ -483,6 +489,18 @@ namespace Frosty
 			//CPlayerAttack(float reach, float width, float damage) : Reach(reach), Width(width), Damage(damage) { }
 			CPlayerAttack(float reach, float width, float damage, bool isPlayer) : Reach(reach), Width(width), Damage(damage), IsPlayer(isPlayer){ }
 			CPlayerAttack(const CPlayerAttack& org) { FY_CORE_ASSERT(false, "Copy constructor in CPlayerAttack called."); }
+			
+			virtual void Func() override { }
+		};
+		
+		struct CHealth : public BaseComponent
+		{
+			static std::string NAME;
+			float MaxHealth{ 0 };
+			float CurrentHealth{ 0 };
+
+			CHealth() = default;
+			CHealth(const CHealth& org) { FY_CORE_ASSERT(false, "Copy constructor in CHealth called."); }
 
 			virtual void Func() override { }
 		};
@@ -501,6 +519,7 @@ namespace Frosty
 			case 7:		return "Light";
 			case 8:		return "Collision";
 			case 9:		return "PlayerAttack";
+			case 9:		return "Health";
 			default:	return "";
 			}
 		}

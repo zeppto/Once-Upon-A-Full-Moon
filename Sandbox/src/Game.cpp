@@ -306,8 +306,16 @@ public:
 	{
 		for (size_t i = 1; i < p_Total; i++)
 		{
+			if (m_Motion[i]->DashActive)
+			{
+				m_Motion[i]->DistanceDashed += glm::length(m_Motion[i]->Velocity * Frosty::Time::DeltaTime());
+				if (m_Motion[i]->DistanceDashed >= m_Motion[i]->DASH_DISTANCE / 1000.0f)
+				{
+					m_Motion[i]->DashActive = false;
+					m_Motion[i]->DistanceDashed = 0.0f;
+				}
+			}
 			m_Transform[i]->Position += m_Motion[i]->Velocity * Frosty::Time::DeltaTime();
-			//m_Transform[i]->Position += m_Motion[i]->Direction * m_Motion[i]->Speed * Frosty::Time::DeltaTime();
 
 			for (size_t j = 1; j < p_Total; j++)
 			{
@@ -390,54 +398,66 @@ public:
 	{
 		for (size_t i = 1; i < p_Total; i++)
 		{
-			// Reset
-			m_Motion[i]->Velocity = glm::vec3(0.0f);
+			if (m_Motion[i]->DashCurrentCooldown > 0.0) m_Motion[i]->DashCurrentCooldown -= Frosty::Time::DeltaTime();
 
-			// Rotate based on mouse to world position
-			glm::vec4 viewport = Frosty::Application::Get().GetWindow().GetViewport();
-			auto& gameCameraEntity = Frosty::Application::Get().GetWorld()->GetSceneCamera();
-			auto& gameCameraComp = Frosty::Application::Get().GetWorld()->GetComponent<Frosty::ECS::CCamera>(gameCameraEntity);
-			glm::vec2 mousePos = glm::vec2(Frosty::InputManager::GetMouseX(), Frosty::InputManager::GetMouseY());
-
-			// Convert from viewport to NDC
-			glm::vec2 NDC = glm::vec2(
-				(2.0f * mousePos.x) / viewport.z - 1.0f,
-				1.0f - (2.0f * mousePos.y) / viewport.w
-			);
-
-			// Convert from NDC to clip
-			glm::vec4 clipRayCoords = glm::vec4(NDC.x, NDC.y, -1.0f, 1.0f);
-
-			// Convert from clip to eye
-			glm::vec4 eyeRayCoords = glm::inverse(gameCameraComp.ProjectionMatrix) * clipRayCoords;
-			eyeRayCoords .z = -1.0f;
-			eyeRayCoords .w = 0.0f;			// Was 1.0f
-
-			// Convert from eye to world and then normalize)
-			glm::vec4 worldRayCoords = glm::inverse(gameCameraComp.ViewMatrix) * eyeRayCoords;
-			glm::vec3 mouseWorldRay = normalize(glm::vec3(worldRayCoords));
-			//FY_TRACE("({0}, {1}, {2})", mouseWorldRay.x, mouseWorldRay.y, mouseWorldRay.z);
-
-			// Now we got a normalized vector from our screen position. Use this to find point in 3D space
-
-			// Calculate direction based on rotation
-			CalculateDirection(i);
-			m_Motion[i]->Velocity = glm::vec3(0.0f);
-			if (Frosty::InputManager::IsKeyPressed(m_Controller[i]->MoveForwardKey))
+			// Check dash status
+			if (!m_Motion[i]->DashActive)
 			{
-				m_Motion[i]->Velocity += -m_Motion[i]->Direction * m_Motion[i]->Speed;
-			}
-			if (Frosty::InputManager::IsKeyPressed(m_Controller[i]->MoveBackKey))
-			{
-				m_Motion[i]->Velocity += m_Motion[i]->Direction * m_Motion[i]->Speed;
-			}
-			if (Frosty::InputManager::IsKeyPressed(m_Controller[i]->MoveLeftKey))
-			{
-				m_Motion[i]->Velocity += glm::cross(m_Motion[i]->Direction, glm::vec3(0.0f, 1.0f, 0.0f)) * m_Motion[i]->Speed;
-			}
-			if (Frosty::InputManager::IsKeyPressed(m_Controller[i]->MoveRightKey))
-			{
-				m_Motion[i]->Velocity += -glm::cross(m_Motion[i]->Direction, glm::vec3(0.0f, 1.0f, 0.0f)) * m_Motion[i]->Speed;
+				// Reset
+				m_Motion[i]->Velocity = glm::vec3(0.0f);
+
+				// Get the point on our terrain
+				glm::vec3 point3D = ScreenToTerrainPoint();
+
+				// Look at point
+				LookAtPoint(point3D, i);
+
+				// Calculate direction based on rotation
+				//CalculateDirection(i);
+
+				m_Motion[i]->Direction = glm::vec3(0.0f, 0.0f, 0.0f);
+				if (Frosty::InputManager::IsKeyPressed(m_Controller[i]->MoveForwardKey))
+				{
+					m_Motion[i]->Direction.z = -1.0f;
+					if (Frosty::InputManager::IsKeyPressed(FY_KEY_LEFT_SHIFT) && m_Motion[i]->DashCurrentCooldown <= 0.0f)
+					{
+						m_Motion[i]->DashActive = true;
+					}
+				}
+				else if (Frosty::InputManager::IsKeyPressed(m_Controller[i]->MoveBackKey))
+				{
+					m_Motion[i]->Direction.z = 1.0f;
+					if (Frosty::InputManager::IsKeyPressed(FY_KEY_LEFT_SHIFT) && m_Motion[i]->DashCurrentCooldown <= 0.0f)
+					{
+						m_Motion[i]->DashActive = true;
+					}
+				}
+				if (Frosty::InputManager::IsKeyPressed(m_Controller[i]->MoveLeftKey))
+				{
+					m_Motion[i]->Direction.x = -1.0f;
+					if (Frosty::InputManager::IsKeyPressed(FY_KEY_LEFT_SHIFT) && m_Motion[i]->DashCurrentCooldown <= 0.0f)
+					{
+						m_Motion[i]->DashActive = true;
+					}
+				}
+				else if (Frosty::InputManager::IsKeyPressed(m_Controller[i]->MoveRightKey))
+				{
+					m_Motion[i]->Direction.x = 1.0f;
+					if (Frosty::InputManager::IsKeyPressed(FY_KEY_LEFT_SHIFT) && m_Motion[i]->DashCurrentCooldown <= 0.0f)
+					{
+						m_Motion[i]->DashActive = true;
+					}
+				}
+
+				if (glm::length(m_Motion[i]->Direction) > 0.0f)
+				{
+					m_Motion[i]->Velocity = m_Motion[i]->Direction * m_Motion[i]->Speed;
+					if (m_Motion[i]->DashActive)
+					{
+						m_Motion[i]->Velocity *= m_Motion[i]->DashSpeedMultiplier;
+						m_Motion[i]->DashCurrentCooldown = m_Motion[i]->DASH_COOLDOWN / 1000.0f;
+					}
+				}
 			}
 		}
 	}
@@ -490,6 +510,62 @@ public:
 	}
 
 private:
+	glm::vec3 ScreenToTerrainPoint()
+	{
+		glm::vec4 viewport = Frosty::Application::Get().GetWindow().GetViewport();
+		auto& gameCameraEntity = Frosty::Application::Get().GetWorld()->GetSceneCamera();
+		auto& gameCameraTransformComp = Frosty::Application::Get().GetWorld()->GetComponent<Frosty::ECS::CTransform>(gameCameraEntity);
+		auto& gameCameraCamerComp = Frosty::Application::Get().GetWorld()->GetComponent<Frosty::ECS::CCamera>(gameCameraEntity);
+		glm::vec2 mousePos = glm::vec2(Frosty::InputManager::GetMouseX(), Frosty::InputManager::GetMouseY());
+
+		// Todo: Make it work even in editor mode
+
+		// Convert from viewport to NDC
+		glm::vec2 NDC = glm::vec2(
+			(2.0f * mousePos.x) / viewport.z - 1.0f,
+			(2.0f * mousePos.y) / viewport.w - 1.0f
+		);
+
+		// Convert from NDC to clip
+		glm::vec4 clipRayCoords = glm::vec4(NDC.x, NDC.y, -1.0f, 1.0f);
+
+		// Convert from clip to eye
+		glm::vec4 eyeRayCoords = glm::inverse(gameCameraCamerComp.ProjectionMatrix) * clipRayCoords;
+		eyeRayCoords.z = -1.0f;
+		eyeRayCoords.w = 0.0f;
+
+		// Convert from eye to world (and then normalize)
+		glm::vec4 worldRayCoords = glm::inverse(gameCameraCamerComp.ViewMatrix) * eyeRayCoords;
+		glm::vec3 mouseWorldRay = normalize(glm::vec3(worldRayCoords));
+
+		// Now we got a normalized vector from our screen position. Use this to find point in 3D space
+		float div = glm::dot(glm::vec3(0.0f, 1.0f, 0.0f), mouseWorldRay);
+		float t = (1.0f - glm::dot(glm::vec3(0.0f, 1.0f, 0.0f), gameCameraTransformComp.Position)) / div;
+		glm::vec3 point3D = t * mouseWorldRay + gameCameraTransformComp.Position;
+
+		return point3D;
+	}
+
+	void LookAtPoint(const glm::vec3& point, size_t index)
+	{
+
+		// Rotate the player to look towards the mouse (point3D)
+		glm::vec3 pointVector = glm::normalize(point - m_Transform[index]->Position);
+		glm::vec3 originDirection = glm::vec3(0.0f, 0.0f, 1.0f);
+		float extraRotation = 0.0f;
+		if (point.x <= m_Transform[index]->Position.x)
+		{
+			originDirection.z = -1.0f;
+			extraRotation = 180.0f;
+		}
+		float product = glm::dot(glm::normalize(originDirection), pointVector);
+
+		float rotationOffset = glm::degrees(glm::acos(product)) + extraRotation;
+
+
+		m_Transform[index]->Rotation.y = rotationOffset;
+	}
+
 	void CalculateDirection(size_t index) 
 	{
 		glm::mat4 mat = glm::mat4(1.0f);
@@ -653,7 +729,7 @@ private:
 
 };
 
-//ska ändras senare !
+//ska ï¿½ndras senare !
 class PlayerAttackSystem : public Frosty::ECS::BaseSystem
 {
 public:
@@ -674,7 +750,7 @@ public:
 		{
 			//FY_TRACE("playerAttack ({0})", i);
 
-			//tips höger är fram utan rotation
+			//tips hï¿½ger ï¿½r fram utan rotation
 			if (Frosty::InputManager::IsKeyPressed(FY_KEY_SPACE))
 			{
 				for (size_t j = 1; j < p_Total; j++)
@@ -767,16 +843,18 @@ namespace MCS
 		world->AddSystem<CameraSystem>();
 		world->AddSystem<LightSystem>();
 		world->AddSystem<RenderSystem>();
-		world->AddSystem<MovementSystem>();
 		world->AddSystem<PlayerControllerSystem>();
+		world->AddSystem<MovementSystem>();
 		world->AddSystem<FollowSystem>();
 		world->AddSystem<CollisionSystem>();
 		world->AddSystem<PlayerAttackSystem>();
 
 		// Add components
+
+
+		
 		//world->InitiateComponent<Frosty::ECS::CTransform>();
 		//world->InitiateComponent<Frosty::ECS::CCamera>();
-
 		world->Start();
 
 		auto& plane = world->CreateEntity();
@@ -825,6 +903,7 @@ namespace MCS
 		world->AddComponent<Frosty::ECS::CPlayerAttack>(Enemy2, 1.0f, 1.0f, 2.0f, false);
 
 
+		
 		PushLayer(FY_NEW InspectorLayer());
 	}
 

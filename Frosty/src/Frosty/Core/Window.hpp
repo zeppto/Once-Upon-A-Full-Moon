@@ -27,6 +27,7 @@ namespace Frosty
 		virtual std::pair<unsigned int, unsigned int> GetPosition() const override { return { m_Data.PositionX, m_Data.PositionY }; }
 		virtual const glm::vec4& GetViewport() const override;
 
+		virtual bool IsEditorModeActivated() override { return m_Data.EditorMode; }
 		virtual void ActivateEditorMode() override;
 		virtual void ActivateGameMode() override;
 
@@ -61,6 +62,7 @@ namespace Frosty
 			unsigned int PositionX, PositionY;
 			bool VSync;
 			glm::vec4 Viewport;
+			bool EditorMode{ true };
 		};
 		WindowData m_Data;
 
