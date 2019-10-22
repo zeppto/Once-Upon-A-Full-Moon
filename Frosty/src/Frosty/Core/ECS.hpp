@@ -476,9 +476,12 @@ namespace Frosty
 			float Reach{ 1.0f };
 			float Width{ 1.0f };
 			float Damage{ 2.0f };
+			//temp
+			bool IsPlayer{ false };
 
 			CPlayerAttack() = default;
-			CPlayerAttack(float reach, float width, float damage) : Reach(reach), Width(width), Damage(damage) { }
+			//CPlayerAttack(float reach, float width, float damage) : Reach(reach), Width(width), Damage(damage) { }
+			CPlayerAttack(float reach, float width, float damage, bool isPlayer) : Reach(reach), Width(width), Damage(damage), IsPlayer(isPlayer){ }
 			CPlayerAttack(const CPlayerAttack& org) { FY_CORE_ASSERT(false, "Copy constructor in CPlayerAttack called."); }
 
 			virtual void Func() override { }
