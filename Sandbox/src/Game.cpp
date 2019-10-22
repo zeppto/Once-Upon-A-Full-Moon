@@ -414,11 +414,12 @@ public:
 				LookAtPoint(point3D, i);
 
 				// Calculate direction based on rotation
-				CalculateDirection(i);
+				//CalculateDirection(i);
 
 				if (Frosty::InputManager::IsKeyPressed(m_Controller[i]->MoveForwardKey))
 				{
-					m_Motion[i]->Velocity = m_Motion[i]->Direction * m_Motion[i]->Speed;
+					//m_Motion[i]->Velocity = m_Motion[i]->Direction * m_Motion[i]->Speed;
+					m_Motion[i]->Velocity = glm::vec3(0.0f, 0.0f, -1.0f) * m_Motion[i]->Speed;
 					if (Frosty::InputManager::IsKeyPressed(FY_KEY_LEFT_SHIFT) && m_Motion[i]->DashCurrentCooldown <= 0.0f)
 					{
 						m_Motion[i]->DashCurrentCooldown = m_Motion[i]->DASH_COOLDOWN / 1000.0f;
@@ -428,7 +429,28 @@ public:
 				}
 				else if (Frosty::InputManager::IsKeyPressed(m_Controller[i]->MoveBackKey))
 				{
-					m_Motion[i]->Velocity = -m_Motion[i]->Direction * m_Motion[i]->Speed;
+					m_Motion[i]->Velocity = glm::vec3(0.0f, 0.0f, 1.0f) * m_Motion[i]->Speed;
+					if (Frosty::InputManager::IsKeyPressed(FY_KEY_LEFT_SHIFT) && m_Motion[i]->DashCurrentCooldown <= 0.0f)
+					{
+						m_Motion[i]->DashCurrentCooldown = m_Motion[i]->DASH_COOLDOWN / 1000.0f;
+						m_Motion[i]->DashActive = true;
+						m_Motion[i]->Velocity *= m_Motion[i]->DashSpeedMultiplier;
+					}
+				}
+				if (Frosty::InputManager::IsKeyPressed(m_Controller[i]->MoveLeftKey))
+				{
+					//m_Motion[i]->Velocity = m_Motion[i]->Direction * m_Motion[i]->Speed;
+					m_Motion[i]->Velocity = glm::vec3(-1.0f, 0.0f, 0.0f) * m_Motion[i]->Speed;
+					if (Frosty::InputManager::IsKeyPressed(FY_KEY_LEFT_SHIFT) && m_Motion[i]->DashCurrentCooldown <= 0.0f)
+					{
+						m_Motion[i]->DashCurrentCooldown = m_Motion[i]->DASH_COOLDOWN / 1000.0f;
+						m_Motion[i]->DashActive = true;
+						m_Motion[i]->Velocity *= m_Motion[i]->DashSpeedMultiplier;
+					}
+				}
+				else if (Frosty::InputManager::IsKeyPressed(m_Controller[i]->MoveRightKey))
+				{
+					m_Motion[i]->Velocity = glm::vec3(1.0f, 0.0f, 0.0f) * m_Motion[i]->Speed;
 					if (Frosty::InputManager::IsKeyPressed(FY_KEY_LEFT_SHIFT) && m_Motion[i]->DashCurrentCooldown <= 0.0f)
 					{
 						m_Motion[i]->DashCurrentCooldown = m_Motion[i]->DASH_COOLDOWN / 1000.0f;

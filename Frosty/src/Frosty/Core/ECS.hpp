@@ -411,7 +411,7 @@ namespace Frosty
 			bool DashActive{ false };
 			float DashCurrentCooldown{ 0.0f };
 			float DistanceDashed{ 0.0f };
-			float DashSpeedMultiplier{ 10.0f };
+			float DashSpeedMultiplier{ 20.0f };
 
 			CMotion() = default;
 			CMotion(float speed) : Speed(speed) { }
