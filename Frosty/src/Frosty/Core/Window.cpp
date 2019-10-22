@@ -160,6 +160,7 @@ namespace Frosty
 
 	void Window::ActivateEditorMode()
 	{
+		m_Data.EditorMode = true;
 		m_Data.Viewport = glm::vec4(
 			EDITOR_EXPLORER_WIDTH,													// Start from left side
 			EDITOR_ASSETS_HEIGHT,													// Start from bottom
@@ -171,6 +172,7 @@ namespace Frosty
 
 	void Window::ActivateGameMode()
 	{
+		m_Data.EditorMode = false;
 		m_Data.Viewport = glm::vec4(0, 0, m_Data.Width, m_Data.Height);
 
 		glViewport((int)m_Data.Viewport.x, (int)m_Data.Viewport.y, (int)m_Data.Viewport.z, (int)m_Data.Viewport.w);

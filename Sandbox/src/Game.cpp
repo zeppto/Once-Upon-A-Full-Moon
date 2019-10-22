@@ -299,7 +299,7 @@ public:
 	{
 		p_Signature.set(Frosty::ECS::getComponentTypeID<Frosty::ECS::CTransform>(), true);
 		p_Signature.set(Frosty::ECS::getComponentTypeID<Frosty::ECS::CMotion>(), true);
-		//p_Signature.set(Frosty::ECS::getComponentTypeID<Frosty::ECS::CCollision>(), true);
+		p_Signature.set(Frosty::ECS::getComponentTypeID<Frosty::ECS::CCollision>(), true);
 	}
 
 	inline virtual void OnUpdate() override
@@ -307,21 +307,20 @@ public:
 		for (size_t i = 1; i < p_Total; i++)
 		{
 			m_Transform[i]->Position += m_Motion[i]->Velocity * Frosty::Time::DeltaTime();
-			//m_Transform[i]->Position += m_Motion[i]->Direction * m_Motion[i]->Speed * Frosty::Time::DeltaTime();
 
-			//for (size_t j = 1; j < p_Total; j++)
-			//{
-			//	if (j != i)
-			//	{
-			//		glm::vec3 finalCenterA = m_Transform[i]->Position + glm::vec3(m_Collision[i]->BoundingBox->pos[0], m_Collision[i]->BoundingBox->pos[1], m_Collision[i]->BoundingBox->pos[2]);
-			//		glm::vec3 finalCenterB = m_Transform[j]->Position + glm::vec3(m_Collision[j]->BoundingBox->pos[0], m_Collision[j]->BoundingBox->pos[1], m_Collision[j]->BoundingBox->pos[2]);
-			//		glm::vec3 finalLengthA = glm::vec3(m_Collision[i]->BoundingBox->halfSize[0], m_Collision[i]->BoundingBox->halfSize[1], m_Collision[i]->BoundingBox->halfSize[2]) * m_Transform[i]->Scale;
-			//		glm::vec3 finalLengthB = glm::vec3(m_Collision[j]->BoundingBox->halfSize[0], m_Collision[j]->BoundingBox->halfSize[1], m_Collision[j]->BoundingBox->halfSize[2]) * m_Transform[j]->Scale;
-			//		glm::vec3 offset = Frosty::CollisionDetection::AABBIntersecPushback(finalLengthA, finalCenterA, finalLengthB, finalCenterB);
-			//
-			//		m_Transform[i]->Position -= offset;
-			//	}
-			//}
+			for (size_t j = 1; j < p_Total; j++)
+			{
+				if (j != i)
+				{
+					glm::vec3 finalCenterA = m_Transform[i]->Position + glm::vec3(m_Collision[i]->BoundingBox->pos[0], m_Collision[i]->BoundingBox->pos[1], m_Collision[i]->BoundingBox->pos[2]);
+					glm::vec3 finalCenterB = m_Transform[j]->Position + glm::vec3(m_Collision[j]->BoundingBox->pos[0], m_Collision[j]->BoundingBox->pos[1], m_Collision[j]->BoundingBox->pos[2]);
+					glm::vec3 finalLengthA = glm::vec3(m_Collision[i]->BoundingBox->halfSize[0], m_Collision[i]->BoundingBox->halfSize[1], m_Collision[i]->BoundingBox->halfSize[2]) * m_Transform[i]->Scale;
+					glm::vec3 finalLengthB = glm::vec3(m_Collision[j]->BoundingBox->halfSize[0], m_Collision[j]->BoundingBox->halfSize[1], m_Collision[j]->BoundingBox->halfSize[2]) * m_Transform[j]->Scale;
+					glm::vec3 offset = Frosty::CollisionDetection::AABBIntersecPushback(finalLengthA, finalCenterA, finalLengthB, finalCenterB);
+			
+					m_Transform[i]->Position -= offset;
+				}
+			}
 		}
 	}
 
@@ -334,7 +333,7 @@ public:
 			auto& world = Frosty::Application::Get().GetWorld();
 			m_Transform[p_Total] = &world->GetComponent<Frosty::ECS::CTransform>(entity);
 			m_Motion[p_Total] = &world->GetComponent<Frosty::ECS::CMotion>(entity);
-			//m_Collision[p_Total] = &world->GetComponent<Frosty::ECS::CCollision>(entity);
+			m_Collision[p_Total] = &world->GetComponent<Frosty::ECS::CCollision>(entity);
 
 			p_Total++;
 		}
@@ -350,7 +349,7 @@ public:
 			p_Total--;
 			m_Transform[p_Total] = nullptr;
 			m_Motion[p_Total] = nullptr;
-			//m_Collision[p_Total] = nullptr;
+			m_Collision[p_Total] = nullptr;
 
 			if (p_Total > 1)
 			{
@@ -370,7 +369,7 @@ public:
 private:
 	std::array<Frosty::ECS::CTransform*, Frosty::ECS::MAX_ENTITIES_PER_COMPONENT> m_Transform;
 	std::array<Frosty::ECS::CMotion*, Frosty::ECS::MAX_ENTITIES_PER_COMPONENT> m_Motion;
-	//std::array<Frosty::ECS::CCollision*, Frosty::ECS::MAX_ENTITIES_PER_COMPONENT> m_Collision;
+	std::array<Frosty::ECS::CCollision*, Frosty::ECS::MAX_ENTITIES_PER_COMPONENT> m_Collision;
 
 };
 
@@ -393,32 +392,11 @@ public:
 			// Reset
 			m_Motion[i]->Velocity = glm::vec3(0.0f);
 
-			// Rotate based on mouse to world position
-			glm::vec4 viewport = Frosty::Application::Get().GetWindow().GetViewport();
-			auto& gameCameraEntity = Frosty::Application::Get().GetWorld()->GetSceneCamera();
-			auto& gameCameraComp = Frosty::Application::Get().GetWorld()->GetComponent<Frosty::ECS::CCamera>(gameCameraEntity);
-			glm::vec2 mousePos = glm::vec2(Frosty::InputManager::GetMouseX(), Frosty::InputManager::GetMouseY());
+			// Get the point on our terrain
+			glm::vec3 point3D = ScreenToTerrainPoint();
 
-			// Convert from viewport to NDC
-			glm::vec2 NDC = glm::vec2(
-				(2.0f * mousePos.x) / viewport.z - 1.0f,
-				1.0f - (2.0f * mousePos.y) / viewport.w
-			);
-
-			// Convert from NDC to clip
-			glm::vec4 clipRayCoords = glm::vec4(NDC.x, NDC.y, -1.0f, 1.0f);
-
-			// Convert from clip to eye
-			glm::vec4 eyeRayCoords = glm::inverse(gameCameraComp.ProjectionMatrix) * clipRayCoords;
-			eyeRayCoords .z = -1.0f;
-			eyeRayCoords .w = 0.0f;			// Was 1.0f
-
-			// Convert from eye to world and then normalize)
-			glm::vec4 worldRayCoords = glm::inverse(gameCameraComp.ViewMatrix) * eyeRayCoords;
-			glm::vec3 mouseWorldRay = normalize(glm::vec3(worldRayCoords));
-			FY_TRACE("({0}, {1}, {2})", mouseWorldRay.x, mouseWorldRay.y, mouseWorldRay.z);
-
-			// Now we got a normalized vector from our screen position. Use this to find point in 3D space
+			// Look at point
+			LookAtPoint(point3D, i);
 
 			// Calculate direction based on rotation
 			CalculateDirection(i);
@@ -430,14 +408,6 @@ public:
 			else if (Frosty::InputManager::IsKeyPressed(m_Controller[i]->MoveBackKey))
 			{
 				m_Motion[i]->Velocity = -m_Motion[i]->Direction * m_Motion[i]->Speed;
-			}
-			if (Frosty::InputManager::IsKeyPressed(m_Controller[i]->MoveLeftKey))
-			{
-				m_Motion[i]->Velocity = -glm::cross(m_Motion[i]->Direction, glm::vec3(0.0f, 1.0f, 0.0f)) * m_Motion[i]->Speed;
-			}
-			else if (Frosty::InputManager::IsKeyPressed(m_Controller[i]->MoveRightKey))
-			{
-				m_Motion[i]->Velocity = glm::cross(m_Motion[i]->Direction, glm::vec3(0.0f, 1.0f, 0.0f)) * m_Motion[i]->Speed;
 			}
 		}
 	}
@@ -490,6 +460,62 @@ public:
 	}
 
 private:
+	glm::vec3 ScreenToTerrainPoint()
+	{
+		glm::vec4 viewport = Frosty::Application::Get().GetWindow().GetViewport();
+		auto& gameCameraEntity = Frosty::Application::Get().GetWorld()->GetSceneCamera();
+		auto& gameCameraTransformComp = Frosty::Application::Get().GetWorld()->GetComponent<Frosty::ECS::CTransform>(gameCameraEntity);
+		auto& gameCameraCamerComp = Frosty::Application::Get().GetWorld()->GetComponent<Frosty::ECS::CCamera>(gameCameraEntity);
+		glm::vec2 mousePos = glm::vec2(Frosty::InputManager::GetMouseX(), Frosty::InputManager::GetMouseY());
+
+		// Todo: Make it work even in editor mode
+
+		// Convert from viewport to NDC
+		glm::vec2 NDC = glm::vec2(
+			(2.0f * mousePos.x) / viewport.z - 1.0f,
+			(2.0f * mousePos.y) / viewport.w - 1.0f
+		);
+
+		// Convert from NDC to clip
+		glm::vec4 clipRayCoords = glm::vec4(NDC.x, NDC.y, -1.0f, 1.0f);
+
+		// Convert from clip to eye
+		glm::vec4 eyeRayCoords = glm::inverse(gameCameraCamerComp.ProjectionMatrix) * clipRayCoords;
+		eyeRayCoords.z = -1.0f;
+		eyeRayCoords.w = 0.0f;
+
+		// Convert from eye to world (and then normalize)
+		glm::vec4 worldRayCoords = glm::inverse(gameCameraCamerComp.ViewMatrix) * eyeRayCoords;
+		glm::vec3 mouseWorldRay = normalize(glm::vec3(worldRayCoords));
+
+		// Now we got a normalized vector from our screen position. Use this to find point in 3D space
+		float div = glm::dot(glm::vec3(0.0f, 1.0f, 0.0f), mouseWorldRay);
+		float t = (1.0f - glm::dot(glm::vec3(0.0f, 1.0f, 0.0f), gameCameraTransformComp.Position)) / div;
+		glm::vec3 point3D = t * mouseWorldRay + gameCameraTransformComp.Position;
+
+		return point3D;
+	}
+
+	void LookAtPoint(const glm::vec3& point, size_t index)
+	{
+
+		// Rotate the player to look towards the mouse (point3D)
+		glm::vec3 pointVector = glm::normalize(point - m_Transform[index]->Position);
+		glm::vec3 originDirection = glm::vec3(0.0f, 0.0f, 1.0f);
+		float extraRotation = 0.0f;
+		if (point.x <= m_Transform[index]->Position.x)
+		{
+			originDirection.z = -1.0f;
+			extraRotation = 180.0f;
+		}
+		float product = glm::dot(glm::normalize(originDirection), pointVector);
+
+		float rotationOffset = glm::degrees(glm::acos(product)) + extraRotation;
+
+
+		m_Transform[index]->Rotation.y = rotationOffset;
+	}
+
 	void CalculateDirection(size_t index) 
 	{
 		glm::mat4 mat = glm::mat4(1.0f);
@@ -691,8 +717,9 @@ namespace MCS
 		
 		auto& player = world->CreateEntity();
 		auto& playerTransform = world->GetComponent<Frosty::ECS::CTransform>(player);
-		playerTransform.Position.y = 1.0f;
-		world->AddComponent<Frosty::ECS::CMesh>(player, Frosty::AssetManager::GetMesh("Cylinder"));
+		playerTransform.Position = glm::vec3(10.0f, 1.0f, 0.0f);
+		playerTransform.Scale *= 0.2f;
+		world->AddComponent<Frosty::ECS::CMesh>(player, Frosty::AssetManager::GetMesh("3D"));
 		world->AddComponent<Frosty::ECS::CMaterial>(player, Frosty::AssetManager::GetShader("FlatColor"));
 		world->AddComponent<Frosty::ECS::CMotion>(player, 5.0f);
 		world->AddComponent<Frosty::ECS::CController>(player);

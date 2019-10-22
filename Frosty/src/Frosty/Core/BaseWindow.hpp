@@ -31,6 +31,7 @@ namespace Frosty
 		virtual std::pair<unsigned int, unsigned int> GetPosition() const = 0;
 		virtual const glm::vec4& GetViewport() const = 0;
 
+		virtual bool IsEditorModeActivated() = 0;
 		virtual void ActivateEditorMode() = 0;
 		virtual void ActivateGameMode() = 0;
 

@@ -18,6 +18,7 @@ namespace Frosty
 		static float GetMouseY();
 		static bool IsClicked(int button, const glm::vec4& bounds);
 
+
 	private:
 		static int CheckKeyClickType(int key);
 		static int CheckMouseClickType(int button);
