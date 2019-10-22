@@ -403,7 +403,6 @@ public:
 			// Check dash status
 			if (!m_Motion[i]->DashActive)
 			{
-
 				// Reset
 				m_Motion[i]->Velocity = glm::vec3(0.0f);
 
@@ -416,46 +415,47 @@ public:
 				// Calculate direction based on rotation
 				//CalculateDirection(i);
 
+				m_Motion[i]->Direction = glm::vec3(0.0f, 0.0f, 0.0f);
 				if (Frosty::InputManager::IsKeyPressed(m_Controller[i]->MoveForwardKey))
 				{
-					//m_Motion[i]->Velocity = m_Motion[i]->Direction * m_Motion[i]->Speed;
-					m_Motion[i]->Velocity = glm::vec3(0.0f, 0.0f, -1.0f) * m_Motion[i]->Speed;
+					m_Motion[i]->Direction.z = -1.0f;
 					if (Frosty::InputManager::IsKeyPressed(FY_KEY_LEFT_SHIFT) && m_Motion[i]->DashCurrentCooldown <= 0.0f)
 					{
-						m_Motion[i]->DashCurrentCooldown = m_Motion[i]->DASH_COOLDOWN / 1000.0f;
 						m_Motion[i]->DashActive = true;
-						m_Motion[i]->Velocity *= m_Motion[i]->DashSpeedMultiplier;
 					}
 				}
 				else if (Frosty::InputManager::IsKeyPressed(m_Controller[i]->MoveBackKey))
 				{
-					m_Motion[i]->Velocity = glm::vec3(0.0f, 0.0f, 1.0f) * m_Motion[i]->Speed;
+					m_Motion[i]->Direction.z = 1.0f;
 					if (Frosty::InputManager::IsKeyPressed(FY_KEY_LEFT_SHIFT) && m_Motion[i]->DashCurrentCooldown <= 0.0f)
 					{
-						m_Motion[i]->DashCurrentCooldown = m_Motion[i]->DASH_COOLDOWN / 1000.0f;
 						m_Motion[i]->DashActive = true;
-						m_Motion[i]->Velocity *= m_Motion[i]->DashSpeedMultiplier;
 					}
 				}
 				if (Frosty::InputManager::IsKeyPressed(m_Controller[i]->MoveLeftKey))
 				{
-					//m_Motion[i]->Velocity = m_Motion[i]->Direction * m_Motion[i]->Speed;
-					m_Motion[i]->Velocity = glm::vec3(-1.0f, 0.0f, 0.0f) * m_Motion[i]->Speed;
+					m_Motion[i]->Direction.x = -1.0f;
 					if (Frosty::InputManager::IsKeyPressed(FY_KEY_LEFT_SHIFT) && m_Motion[i]->DashCurrentCooldown <= 0.0f)
 					{
-						m_Motion[i]->DashCurrentCooldown = m_Motion[i]->DASH_COOLDOWN / 1000.0f;
 						m_Motion[i]->DashActive = true;
-						m_Motion[i]->Velocity *= m_Motion[i]->DashSpeedMultiplier;
 					}
 				}
 				else if (Frosty::InputManager::IsKeyPressed(m_Controller[i]->MoveRightKey))
 				{
-					m_Motion[i]->Velocity = glm::vec3(1.0f, 0.0f, 0.0f) * m_Motion[i]->Speed;
+					m_Motion[i]->Direction.x = 1.0f;
 					if (Frosty::InputManager::IsKeyPressed(FY_KEY_LEFT_SHIFT) && m_Motion[i]->DashCurrentCooldown <= 0.0f)
 					{
-						m_Motion[i]->DashCurrentCooldown = m_Motion[i]->DASH_COOLDOWN / 1000.0f;
 						m_Motion[i]->DashActive = true;
+					}
+				}
+
+				if (glm::length(m_Motion[i]->Direction) > 0.0f)
+				{
+					m_Motion[i]->Velocity = m_Motion[i]->Direction * m_Motion[i]->Speed;
+					if (m_Motion[i]->DashActive)
+					{
 						m_Motion[i]->Velocity *= m_Motion[i]->DashSpeedMultiplier;
+						m_Motion[i]->DashCurrentCooldown = m_Motion[i]->DASH_COOLDOWN / 1000.0f;
 					}
 				}
 			}
@@ -739,8 +739,8 @@ namespace MCS
 		world->AddSystem<CameraSystem>();
 		world->AddSystem<LightSystem>();
 		world->AddSystem<RenderSystem>();
-		world->AddSystem<MovementSystem>();
 		world->AddSystem<PlayerControllerSystem>();
+		world->AddSystem<MovementSystem>();
 		world->AddSystem<FollowSystem>();
 		world->AddSystem<CollisionSystem>();
 
@@ -774,9 +774,17 @@ namespace MCS
 		world->AddComponent<Frosty::ECS::CMotion>(player, 5.0f);
 		world->AddComponent<Frosty::ECS::CController>(player);
 		world->AddComponent<Frosty::ECS::CCollision>(player, Frosty::AssetManager::GetBoundingBox("3D"));
-
 		auto& gameCameraEntity = world->GetSceneCamera();
 		world->GetComponent<Frosty::ECS::CCamera>(gameCameraEntity).Target = &playerTransform;
+
+		auto& wall = world->CreateEntity();
+		auto& wallTransform = world->GetComponent<Frosty::ECS::CTransform>(wall);
+		wallTransform.Position = glm::vec3(7.0f, 5.0f, 0.0f);
+		wallTransform.Scale = glm::vec3(1.0f, 10.0f, 10.0f);
+		world->AddComponent<Frosty::ECS::CMesh>(wall, Frosty::AssetManager::GetMesh("Cube"));
+		world->AddComponent<Frosty::ECS::CMaterial>(wall, Frosty::AssetManager::GetShader("FlatColor"));
+		world->AddComponent<Frosty::ECS::CMotion>(wall, 5.0f);
+		world->AddComponent<Frosty::ECS::CCollision>(wall, Frosty::AssetManager::GetBoundingBox("Cube"));
 
 		PushLayer(FY_NEW InspectorLayer());
 	}
