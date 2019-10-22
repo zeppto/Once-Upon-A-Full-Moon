@@ -23,43 +23,43 @@ namespace Frosty
 
 		for (c = m_text.begin(); c != m_text.end(); c++)
 		{
-			Character ch = Assetmanager::GetAssetmanager()->GetFontMetaData(font)->GetData()->m_characters.at(*c);
-			Assetmanager::Get()->get
+			//Character ch = Assetmanager::GetAssetmanager()->GetFontMetaData(font)->GetData()->m_characters.at(*c);
+			//Assetmanager::Get()->get
 			//Character ch = AssetManager::;
 
-			float xPos = x + ch.bearing.x * scale;
-			float yPos = y - (ch.size.y - ch.bearing.y) * scale;
-			float zPos = 0.0f;
-			float width = ch.size.x * scale;
-			float height = ch.size.y * scale;
+			//float xPos = x + ch.bearing.x * scale;
+			//float yPos = y - (ch.size.y - ch.bearing.y) * scale;
+			//float zPos = 0.0f;
+			//float width = ch.size.x * scale;
+			//float height = ch.size.y * scale;
 
-			//Create quad
+			////Create quad
 
-			//Pos_3, Uv_2, Color_4
-			float vertices[(3 + 2 + 4) * 6]{
-				xPos,		  yPos + height, zPos,	0.0f, 0.0f, color.r, color.b, color.b,
-				xPos,		  yPos,			 zPos,	0.0f, 1.0f, color.r, color.b, color.b,
-				xPos + width, yPos,			 zPos,	1.0f, 1.0f, color.r, color.b, color.b,
+			////Pos_3, Uv_2, Color_4
+			//float vertices[(3 + 2 + 4) * 6]{
+			//	xPos,		  yPos + height, zPos,	0.0f, 0.0f, color.r, color.b, color.b,
+			//	xPos,		  yPos,			 zPos,	0.0f, 1.0f, color.r, color.b, color.b,
+			//	xPos + width, yPos,			 zPos,	1.0f, 1.0f, color.r, color.b, color.b,
 
-				xPos,		  yPos + height, zPos,	0.0f, 0.0f, color.r, color.b, color.b,
-				xPos + width, yPos,			 zPos,	1.0f, 1.0f, color.r, color.b, color.b,
-				xPos + width, yPos + height, zPos,	1.0f, 0.0f, color.r, color.b, color.b
-			};
+			//	xPos,		  yPos + height, zPos,	0.0f, 0.0f, color.r, color.b, color.b,
+			//	xPos + width, yPos,			 zPos,	1.0f, 1.0f, color.r, color.b, color.b,
+			//	xPos + width, yPos + height, zPos,	1.0f, 0.0f, color.r, color.b, color.b
+			//};
 
-			//Send quad to Assetmanager()
-			//	vertices[]
-			//Send texture to Assetmanager()
-			//	ch.textureID
-			
-			const int32_t quadID = 1; // = Assetmanager::GetAssetmanager()->GetModeltemplateMetaData("quad")->GetAssetId();
+			////Send quad to Assetmanager()
+			////	vertices[]
+			////Send texture to Assetmanager()
+			////	ch.textureID
+			//
+			//const int32_t quadID = 1; // = Assetmanager::GetAssetmanager()->GetModeltemplateMetaData("quad")->GetAssetId();
 
-			//Get pointer
+			////Get pointer
 
-			//This array should have pointers (from Assetmanager())
-			m_quadPtrArray.emplace_back(quadID);
+			////This array should have pointers (from Assetmanager())
+			//m_quadPtrArray.emplace_back(quadID);
 
 
-			x += (ch.advance >> 6) * scale;
+			//x += (ch.advance >> 6) * scale;
 		}
 
 	}
