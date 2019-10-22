@@ -1,6 +1,6 @@
 #include <mcspch.hpp>
 #include "Game.hpp"
-
+#include "Frosty/API/AssetManager.hpp"
 class CameraSystem : public Frosty::ECS::BaseSystem
 {
 public:
@@ -520,9 +520,21 @@ namespace MCS
 		// Add components
 		//world->InitiateComponent<Frosty::ECS::CTransform>();
 		//world->InitiateComponent<Frosty::ECS::CCamera>();
-
 		world->Start();
 
+		auto& testEntity = world->CreateEntity();
+		auto& testTranform = world->GetComponent<Frosty::ECS::CTransform>(testEntity);
+		testTranform.Scale = glm::vec3(100.0f, 0.0f, 100.0f);
+		world->AddComponent<Frosty::ECS::CMesh>(testEntity, Frosty::AssetManager::GetMesh("Plane"));
+		auto& testMaterial = world->AddComponent<Frosty::ECS::CMaterial>(testEntity, Frosty::AssetManager::GetShader("Texture2D"));
+		testMaterial.Albedo = glm::vec4(0.2f, 0.8f, 0.3f, 1.0f);
+		testMaterial.DiffuseTexture = Frosty::AssetManager::GetTexture2D("Brown_Mud_Diffuse");
+		auto& health = world->AddComponent <Frosty::ECS::CHealth>(testEntity);
+		health.MaxHealth = 100;
+		health.CurrentHealth = 75;
+
+		auto& health2 = world->GetComponent <Frosty::ECS::CHealth>(testEntity);
+		health.CurrentHealth -= 20;
 		PushLayer(FY_NEW InspectorLayer());
 	}
 
