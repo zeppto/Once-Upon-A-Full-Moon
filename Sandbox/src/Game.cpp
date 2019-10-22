@@ -750,7 +750,6 @@ namespace MCS
 		
 		//world->InitiateComponent<Frosty::ECS::CTransform>();
 		//world->InitiateComponent<Frosty::ECS::CCamera>();
-
 		world->Start();
 
 		auto& plane = world->CreateEntity();
@@ -789,6 +788,7 @@ namespace MCS
 		world->AddComponent<Frosty::ECS::CMotion>(wall, 5.0f);
 		world->AddComponent<Frosty::ECS::CCollision>(wall, Frosty::AssetManager::GetBoundingBox("Cube"));
 
+		
 		PushLayer(FY_NEW InspectorLayer());
 	}
 

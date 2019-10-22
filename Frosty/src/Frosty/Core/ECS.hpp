@@ -86,7 +86,7 @@ namespace Frosty
 #pragma region Settings
 
 		// Let's define a maximum number of unique components:
-		constexpr std::size_t MAX_COMPONENTS{ 9 };
+		constexpr std::size_t MAX_COMPONENTS{ 10};
 
 		// Let's define a maximum number of entities that
 		// can have the same component type:
@@ -111,7 +111,7 @@ namespace Frosty
 
 
 #pragma region Utilities
-		
+
 		namespace Internal
 		{
 			inline ComponentID getComponentUniqueID()
@@ -254,7 +254,7 @@ namespace Frosty
 
 			// Operators
 			BaseComponentManager& operator=(const BaseComponentManager& e) { FY_CORE_ASSERT(false, "Assignment operator in BaseComponentManager called."); return *this; }
-			
+
 			virtual BaseComponent* GetTypeComponent(const std::shared_ptr<Entity>& entity) = 0;
 
 			virtual void Remove(std::shared_ptr<Entity>& entity) = 0;
@@ -290,7 +290,7 @@ namespace Frosty
 			inline const std::array<ComponentType, MAX_ENTITIES_PER_COMPONENT>& GetAll() const { return m_Data; }
 
 			template<typename... TArgs>
-			inline ComponentType& Add(std::shared_ptr<Entity>& entity, TArgs&&... mArgs)
+			inline ComponentType& Add(std::shared_ptr<Entity>& entity, TArgs&& ... mArgs)
 			{
 				FY_CORE_ASSERT(Total < MAX_ENTITIES_PER_COMPONENT,
 					"Maximum number of entities for this specific component({0}) is reached.", getComponentTypeID<ComponentType>());
@@ -303,7 +303,7 @@ namespace Frosty
 				return m_Data[Total++];
 			}
 
-			inline void Remove(std::shared_ptr<Entity>& entity) 
+			inline void Remove(std::shared_ptr<Entity>& entity)
 			{
 				ComponentArrayIndex index = EntityMap.at(entity);
 
@@ -320,7 +320,7 @@ namespace Frosty
 				EntityMap.erase(entity);
 				entity->Bitset.flip(getComponentTypeID<ComponentType>());
 			}
-			
+
 		private:
 			std::array<ComponentType, MAX_ENTITIES_PER_COMPONENT> m_Data;
 
@@ -434,7 +434,7 @@ namespace Frosty
 			virtual void Func() override { }
 		};
 
-		struct CFollow : public BaseComponent 
+		struct CFollow : public BaseComponent
 		{
 			static std::string NAME;
 			CTransform* Target{ nullptr };
@@ -476,6 +476,18 @@ namespace Frosty
 			virtual void Func() override { }
 		};
 
+		struct CHealth : public BaseComponent
+		{
+			static std::string NAME;
+			float MaxHealth{ 0 };
+			float CurrentHealth{ 0 };
+
+			CHealth() = default;
+			CHealth(const CHealth& org) { FY_CORE_ASSERT(false, "Copy constructor in CHealth called."); }
+
+			virtual void Func() override { }
+		};
+
 		static std::string GetComponentName(size_t i)
 		{
 			switch (i)
@@ -489,6 +501,7 @@ namespace Frosty
 			case 6:		return "Follow";
 			case 7:		return "Light";
 			case 8:		return "Collision";
+			case 9:		return "Health";
 			default:	return "";
 			}
 		}
