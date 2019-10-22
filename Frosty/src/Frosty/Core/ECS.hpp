@@ -403,9 +403,15 @@ namespace Frosty
 		struct CMotion : public BaseComponent
 		{
 			static std::string NAME;
+			static const int DASH_COOLDOWN = 3000;
+			static const int DASH_DISTANCE = 20000;
 			glm::vec3 Direction{ 0.0f, 0.0f, 0.0f };
 			float Speed{ 0.0f };
 			glm::vec3 Velocity{ 0.0f };
+			bool DashActive{ false };
+			float DashCurrentCooldown{ 0.0f };
+			float DistanceDashed{ 0.0f };
+			float DashSpeedMultiplier{ 10.0f };
 
 			CMotion() = default;
 			CMotion(float speed) : Speed(speed) { }

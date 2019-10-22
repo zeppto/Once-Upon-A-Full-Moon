@@ -306,6 +306,15 @@ public:
 	{
 		for (size_t i = 1; i < p_Total; i++)
 		{
+			if (m_Motion[i]->DashActive)
+			{
+				m_Motion[i]->DistanceDashed += glm::length(m_Motion[i]->Velocity * Frosty::Time::DeltaTime());
+				if (m_Motion[i]->DistanceDashed >= m_Motion[i]->DASH_DISTANCE / 1000.0f)
+				{
+					m_Motion[i]->DashActive = false;
+					m_Motion[i]->DistanceDashed = 0.0f;
+				}
+			}
 			m_Transform[i]->Position += m_Motion[i]->Velocity * Frosty::Time::DeltaTime();
 
 			for (size_t j = 1; j < p_Total; j++)
@@ -389,25 +398,44 @@ public:
 	{
 		for (size_t i = 1; i < p_Total; i++)
 		{
-			// Reset
-			m_Motion[i]->Velocity = glm::vec3(0.0f);
+			if (m_Motion[i]->DashCurrentCooldown > 0.0) m_Motion[i]->DashCurrentCooldown -= Frosty::Time::DeltaTime();
 
-			// Get the point on our terrain
-			glm::vec3 point3D = ScreenToTerrainPoint();
-
-			// Look at point
-			LookAtPoint(point3D, i);
-
-			// Calculate direction based on rotation
-			CalculateDirection(i);
-
-			if (Frosty::InputManager::IsKeyPressed(m_Controller[i]->MoveForwardKey))
+			// Check dash status
+			if (!m_Motion[i]->DashActive)
 			{
-				m_Motion[i]->Velocity = m_Motion[i]->Direction * m_Motion[i]->Speed;
-			}
-			else if (Frosty::InputManager::IsKeyPressed(m_Controller[i]->MoveBackKey))
-			{
-				m_Motion[i]->Velocity = -m_Motion[i]->Direction * m_Motion[i]->Speed;
+
+				// Reset
+				m_Motion[i]->Velocity = glm::vec3(0.0f);
+
+				// Get the point on our terrain
+				glm::vec3 point3D = ScreenToTerrainPoint();
+
+				// Look at point
+				LookAtPoint(point3D, i);
+
+				// Calculate direction based on rotation
+				CalculateDirection(i);
+
+				if (Frosty::InputManager::IsKeyPressed(m_Controller[i]->MoveForwardKey))
+				{
+					m_Motion[i]->Velocity = m_Motion[i]->Direction * m_Motion[i]->Speed;
+					if (Frosty::InputManager::IsKeyPressed(FY_KEY_LEFT_SHIFT) && m_Motion[i]->DashCurrentCooldown <= 0.0f)
+					{
+						m_Motion[i]->DashCurrentCooldown = m_Motion[i]->DASH_COOLDOWN / 1000.0f;
+						m_Motion[i]->DashActive = true;
+						m_Motion[i]->Velocity *= m_Motion[i]->DashSpeedMultiplier;
+					}
+				}
+				else if (Frosty::InputManager::IsKeyPressed(m_Controller[i]->MoveBackKey))
+				{
+					m_Motion[i]->Velocity = -m_Motion[i]->Direction * m_Motion[i]->Speed;
+					if (Frosty::InputManager::IsKeyPressed(FY_KEY_LEFT_SHIFT) && m_Motion[i]->DashCurrentCooldown <= 0.0f)
+					{
+						m_Motion[i]->DashCurrentCooldown = m_Motion[i]->DASH_COOLDOWN / 1000.0f;
+						m_Motion[i]->DashActive = true;
+						m_Motion[i]->Velocity *= m_Motion[i]->DashSpeedMultiplier;
+					}
+				}
 			}
 		}
 	}
@@ -723,6 +751,10 @@ namespace MCS
 		world->AddComponent<Frosty::ECS::CMaterial>(player, Frosty::AssetManager::GetShader("FlatColor"));
 		world->AddComponent<Frosty::ECS::CMotion>(player, 5.0f);
 		world->AddComponent<Frosty::ECS::CController>(player);
+		world->AddComponent<Frosty::ECS::CCollision>(player, Frosty::AssetManager::GetBoundingBox("3D"));
+
+		auto& gameCameraEntity = world->GetSceneCamera();
+		world->GetComponent<Frosty::ECS::CCamera>(gameCameraEntity).Target = &playerTransform;
 
 		PushLayer(FY_NEW InspectorLayer());
 	}
