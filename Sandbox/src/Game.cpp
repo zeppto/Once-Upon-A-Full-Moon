@@ -750,7 +750,7 @@ public:
 		{
 			//FY_TRACE("playerAttack ({0})", i);
 
-			//tips h�ger �r fram utan rotation
+			//tips hoger ar fram utan rotation
 			if (Frosty::InputManager::IsKeyPressed(FY_KEY_SPACE))
 			{
 				for (size_t j = 1; j < p_Total; j++)

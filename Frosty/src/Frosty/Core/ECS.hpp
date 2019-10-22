@@ -496,8 +496,8 @@ namespace Frosty
 		struct CHealth : public BaseComponent
 		{
 			static std::string NAME;
-			float MaxHealth{ 0 };
-			float CurrentHealth{ 0 };
+			float MaxHealth{ 5 };
+			float CurrentHealth{ 5 };
 
 			CHealth() = default;
 			CHealth(const CHealth& org) { FY_CORE_ASSERT(false, "Copy constructor in CHealth called."); }
@@ -519,7 +519,7 @@ namespace Frosty
 			case 7:		return "Light";
 			case 8:		return "Collision";
 			case 9:		return "PlayerAttack";
-			case 9:		return "Health";
+			case 10:	return "Health";
 			default:	return "";
 			}
 		}
