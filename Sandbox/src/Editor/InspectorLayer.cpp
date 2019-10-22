@@ -41,9 +41,14 @@ namespace MCS
 			ImGui::Text("Delta Time: %f", Frosty::Time::DeltaTime());
 			ImGui::Text("FPS: %i", Frosty::Time::FPS());
 			if (ImGui::Checkbox("VSync: ", &s_VSync)) m_App->GetWindow().SetVSync(s_VSync);
-			ImGui::Checkbox("Editor Camera: ", m_App->GetEditorCamera().ActiveStatus());
 			if (ImGui::Button("Create Entity", ImVec2(100.0f, 20.0f))) world->CreateEntity();
 
+			if (m_SelectedEntity)
+			{
+				auto& comp = m_App->GetWorld()->GetComponent<Frosty::ECS::CTransform>(m_SelectedEntity);
+				glm::vec3 radRot = glm::radians(comp.Rotation);
+				ImGui::InputFloat3("Rotations in rad", glm::value_ptr(radRot));
+			}
 			static int selection_mask = 0;
 			int node_clicked = -1;
 			unsigned int counter = 0;
@@ -98,6 +103,7 @@ namespace MCS
 					if (world->HasComponent<Frosty::ECS::CController>(m_SelectedEntity)) toggles[5] = true;
 					if (world->HasComponent<Frosty::ECS::CFollow>(m_SelectedEntity)) toggles[6] = true;
 					if (world->HasComponent<Frosty::ECS::CLight>(m_SelectedEntity)) toggles[7] = true;
+					if (world->HasComponent<Frosty::ECS::CCollision>(m_SelectedEntity)) toggles[8] = true;
 				}
 
 				// Information
@@ -154,13 +160,21 @@ namespace MCS
 					if (ImGui::MenuItem("Light", "", &toggles[7]))
 					{
 						if (!world->HasComponent<Frosty::ECS::CLight>(m_SelectedEntity))
-							world->AddComponent<Frosty::ECS::CLight>(m_SelectedEntity);
+							world->AddComponent<Frosty::ECS::CLight>(m_SelectedEntity, Frosty::ECS::CLight::LightType::Point);
 						else
 							world->RemoveComponent<Frosty::ECS::CLight>(m_SelectedEntity);
+					}
+					if (ImGui::MenuItem("Collision", "", &toggles[8]))
+					{
+						if (!world->HasComponent<Frosty::ECS::CCollision>(m_SelectedEntity))
+							world->AddComponent<Frosty::ECS::CCollision>(m_SelectedEntity, Frosty::AssetManager::GetBoundingBox("Cube"));
+						else
+							world->RemoveComponent<Frosty::ECS::CCollision>(m_SelectedEntity);
 					}
 					ImGui::EndPopup();
 				}
 
+				// List of components (Information)
 				if (world->HasComponent<Frosty::ECS::CTransform>(m_SelectedEntity))
 				{
 					if (ImGui::CollapsingHeader("Transform"))
@@ -208,7 +222,7 @@ namespace MCS
 					if (ImGui::CollapsingHeader("Camera"))
 					{
 						auto& comp = world->GetComponent<Frosty::ECS::CCamera>(m_SelectedEntity);
-						ImGui::BeginChild("Camera", ImVec2(EDITOR_INSPECTOR_WIDTH, 105), true);
+						ImGui::BeginChild("Camera", ImVec2(EDITOR_INSPECTOR_WIDTH, 130), true);
 						if (ImGui::Button("Target")) ImGui::OpenPopup("camera_target_select_popup");
 						ImGui::SameLine();
 						comp.Target ? ImGui::TextUnformatted(("Entity (" + std::to_string(comp.Target->EntityPtr->Id) + ")").c_str()) : ImGui::TextUnformatted("None");
@@ -240,8 +254,8 @@ namespace MCS
 					{
 						auto& comp = world->GetComponent<Frosty::ECS::CMaterial>(m_SelectedEntity);
 						float compHeight = 0.0f;
-						if (comp.UseShader->GetName() == "FlatColor") compHeight = 80.0f;
-						else if (comp.UseShader->GetName() == "Texture2D") compHeight = 280.0f;
+						if (comp.UseShader->GetName() == "FlatColor") compHeight = 125.0f;
+						else if (comp.UseShader->GetName() == "Texture2D") compHeight = 300.0f;
 						ImGui::BeginChild("Material", ImVec2(EDITOR_INSPECTOR_WIDTH, compHeight), true);
 
 						if (ImGui::Button("Shader")) ImGui::OpenPopup("shader_select_popup");
@@ -262,7 +276,12 @@ namespace MCS
 						ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 20.f);
 
 						// Parameters
-						if (comp.UseShader->GetName() == "FlatColor") ImGui::ColorEdit4("Albedo", glm::value_ptr(comp.Albedo));
+						if (comp.UseShader->GetName() == "FlatColor")
+						{
+							ImGui::ColorEdit4("Albedo", glm::value_ptr(comp.Albedo));
+							ImGui::DragFloat("Specular Strength", &comp.SpecularStrength, 0.01f, 0.0f, 1.0f, "%.2f");
+							ImGui::SliderInt("Shininess", &comp.Shininess, 2, 256);
+						}
 						if (comp.UseShader->GetName() == "Texture2D")
 						{
 							// Diffuse // 
@@ -301,13 +320,13 @@ namespace MCS
 							ImGui::SameLine();
 							ImGui::Text("Diffuse");
 
-							// Gloss // 
+							// Specular // 
 							ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 10.f);
 							ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(10, 10));
-							ImGui::Image(comp.GlossTexture ? comp.GlossTexture->GetRenderID() : Frosty::AssetManager::GetTexture2D("Checkerboard")->GetRenderID(), ImVec2(64, 64));
+							ImGui::Image(comp.SpecularTexture ? comp.SpecularTexture->GetRenderID() : Frosty::AssetManager::GetTexture2D("Checkerboard")->GetRenderID(), ImVec2(64, 64));
 							ImGui::PopStyleVar();
-							if (ImGui::IsItemClicked()) ImGui::OpenPopup("gloss_texture_selector");
-							if (ImGui::BeginPopupModal("gloss_texture_selector", NULL))
+							if (ImGui::IsItemClicked()) ImGui::OpenPopup("specular_texture_selector");
+							if (ImGui::BeginPopupModal("specular_texture_selector", NULL))
 							{
 								size_t index = 0;
 								ImGuiTreeNodeFlags node_flags = ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen; // ImGuiTreeNodeFlags_Bullet
@@ -320,12 +339,12 @@ namespace MCS
 									{
 										if (texture.first == "Checkerboard")
 										{
-											comp.GlossTexture->Unbind();
-											comp.GlossTexture.reset();
+											comp.SpecularTexture->Unbind();
+											comp.SpecularTexture.reset();
 										}
 										else
 										{
-											comp.GlossTexture = texture.second;
+											comp.SpecularTexture = texture.second;
 										}
 									}
 								}
@@ -334,7 +353,8 @@ namespace MCS
 								ImGui::EndPopup();
 							}
 							ImGui::SameLine();
-							ImGui::Text("Gloss");
+							ImGui::Text("Specular");
+							ImGui::SliderInt("Shininess", &comp.Shininess, 2, 256);
 
 							// Normal // 
 							ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 10.f);
@@ -373,7 +393,6 @@ namespace MCS
 						}
 
 						// Add more parameters like texture etc
-
 						ImGui::EndChild();
 					}
 				}
@@ -382,7 +401,7 @@ namespace MCS
 					if (ImGui::CollapsingHeader("Motion"))
 					{
 						auto& comp = world->GetComponent<Frosty::ECS::CMotion>(m_SelectedEntity);
-						ImGui::BeginChild("CMotion", ImVec2(EDITOR_INSPECTOR_WIDTH, 85), true);
+						ImGui::BeginChild("CMotion", ImVec2(EDITOR_INSPECTOR_WIDTH, 35), true);
 						ImGui::InputFloat("Speed", &comp.Speed, 1.0f, 10.0f, 0);
 						ImGui::EndChild();
 					}
@@ -394,37 +413,37 @@ namespace MCS
 						auto& comp = world->GetComponent<Frosty::ECS::CController>(m_SelectedEntity);
 						ImGui::BeginChild("CController", ImVec2(EDITOR_INSPECTOR_WIDTH, 110), true);
 
-						if (ImGui::Button(std::to_string(comp.MoveWestKey).c_str(), ImVec2(100.0f, 0.0f)))
+						if (ImGui::Button(std::to_string(comp.MoveLeftKey).c_str(), ImVec2(100.0f, 0.0f)))
 						{
 							m_SelectedController = &comp;
-							m_PreviousControllerHotkey = comp.MoveWestKey;
+							m_PreviousControllerHotkey = comp.MoveLeftKey;
 						}
 						ImGui::SameLine();
-						ImGui::Text(m_PreviousControllerHotkey == comp.MoveWestKey ? "Move West (Press a key)" : "Move West");
+						ImGui::Text(m_PreviousControllerHotkey == comp.MoveLeftKey ? "Move Left (Press a key)" : "Move Left");
 
-						if (ImGui::Button(std::to_string(comp.MoveNorthKey).c_str(), ImVec2(100.0f, 0.0f)))
+						if (ImGui::Button(std::to_string(comp.MoveForwardKey).c_str(), ImVec2(100.0f, 0.0f)))
 						{
 							m_SelectedController = &comp;
-							m_PreviousControllerHotkey = comp.MoveNorthKey;
+							m_PreviousControllerHotkey = comp.MoveForwardKey;
 						}
 						ImGui::SameLine();
-						ImGui::Text(m_PreviousControllerHotkey == comp.MoveNorthKey ? "Move North (Press a key)" : "Move North");
+						ImGui::Text(m_PreviousControllerHotkey == comp.MoveForwardKey ? "Move Forward (Press a key)" : "Move Forward");
 
-						if (ImGui::Button(std::to_string(comp.MoveEastKey).c_str(), ImVec2(100.0f, 0.0f)))
+						if (ImGui::Button(std::to_string(comp.MoveRightKey).c_str(), ImVec2(100.0f, 0.0f)))
 						{
 							m_SelectedController = &comp;
-							m_PreviousControllerHotkey = comp.MoveEastKey;
+							m_PreviousControllerHotkey = comp.MoveRightKey;
 						}
 						ImGui::SameLine();
-						ImGui::Text(m_PreviousControllerHotkey == comp.MoveEastKey ? "Move East (Press a key)" : "Move East");
+						ImGui::Text(m_PreviousControllerHotkey == comp.MoveRightKey ? "Move Right (Press a key)" : "Move Right");
 
-						if (ImGui::Button(std::to_string(comp.MoveSouthKey).c_str(), ImVec2(100.0f, 0.0f)))
+						if (ImGui::Button(std::to_string(comp.MoveBackKey).c_str(), ImVec2(100.0f, 0.0f)))
 						{
 							m_SelectedController = &comp;
-							m_PreviousControllerHotkey = comp.MoveSouthKey;
+							m_PreviousControllerHotkey = comp.MoveBackKey;
 						}
 						ImGui::SameLine();
-						ImGui::Text(m_PreviousControllerHotkey == comp.MoveSouthKey ? "Move South (Press a key)" : "Move South");
+						ImGui::Text(m_PreviousControllerHotkey == comp.MoveBackKey ? "Move Back (Press a key)" : "Move Back");
 
 						ImGui::EndChild();
 					}
@@ -434,7 +453,7 @@ namespace MCS
 					if (ImGui::CollapsingHeader("Follow"))
 					{
 						auto& comp = world->GetComponent<Frosty::ECS::CFollow>(m_SelectedEntity);
-						ImGui::BeginChild("CFollow", ImVec2(EDITOR_INSPECTOR_WIDTH, 85), true);
+						ImGui::BeginChild("CFollow", ImVec2(EDITOR_INSPECTOR_WIDTH, 60), true);
 						if (ImGui::Button("Target")) ImGui::OpenPopup("follow_target_select_popup");
 						ImGui::SameLine();
 						comp.Target ? ImGui::TextUnformatted(("Entity (" + std::to_string(comp.Target->EntityPtr->Id) + ")").c_str()) : ImGui::TextUnformatted("None");
@@ -462,8 +481,56 @@ namespace MCS
 					if (ImGui::CollapsingHeader("Light"))
 					{
 						auto& comp = world->GetComponent<Frosty::ECS::CLight>(m_SelectedEntity);
-						ImGui::BeginChild("CFollow", ImVec2(EDITOR_INSPECTOR_WIDTH, 85), true);
+						ImGui::BeginChild("CLight", ImVec2(EDITOR_INSPECTOR_WIDTH, 105), true);
+						if (ImGui::Button("Type")) ImGui::OpenPopup("light_type_popup");
+						if (ImGui::BeginPopup("light_type_popup"))
+						{
+							if (ImGui::MenuItem("Point", "", comp.Type == Frosty::ECS::CLight::Point ? true : false))
+							{
+								comp.Type = Frosty::ECS::CLight::LightType::Point;
+							}
+							if (ImGui::MenuItem("Directional", "", comp.Type == Frosty::ECS::CLight::Directional ? true : false))
+							{
+								comp.Type = Frosty::ECS::CLight::LightType::Directional;
+							}
+							ImGui::EndPopup();
+						}
+
 						ImGui::ColorEdit4("Color", glm::value_ptr(comp.Color));
+						ImGui::SliderFloat("Strength", &comp.Strength, 0.0f, 1.0f, "%.2f");
+						if (comp.Type == Frosty::ECS::CLight::Point)
+						{
+							ImGui::InputFloat("Radius", &comp.Radius, 1.0f, 5.0f, 0);
+						}
+						ImGui::EndChild();
+					}
+				}
+				if (world->HasComponent<Frosty::ECS::CCollision>(m_SelectedEntity))
+				{
+					if (ImGui::CollapsingHeader("Collision"))
+					{
+						auto& comp = world->GetComponent<Frosty::ECS::CCollision>(m_SelectedEntity);
+						ImGui::BeginChild("CCollision", ImVec2(EDITOR_INSPECTOR_WIDTH, 35), true);
+						if (ImGui::Button("Select bounding box.."))
+							ImGui::OpenPopup("Bounding box selector");
+						if (ImGui::BeginPopupModal("Bounding box selector", NULL, ImGuiWindowFlags_MenuBar))
+						{
+							size_t index = 0;
+							ImGuiTreeNodeFlags node_flags = ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen; // ImGuiTreeNodeFlags_Bullet
+
+							for (auto& bb : Frosty::AssetManager::GetBoundingBoxes())
+							{
+								ImGui::TreeNodeEx((void*)(intptr_t)index, node_flags, "%s", bb.first.c_str());
+								if (ImGui::IsItemClicked())
+								{
+									world->GetComponent<Frosty::ECS::CCollision>(m_SelectedEntity).BoundingBox = bb.second;
+								}
+							}
+
+							if (ImGui::Button("Close"))
+								ImGui::CloseCurrentPopup();
+							ImGui::EndPopup();
+						}
 						ImGui::EndChild();
 					}
 				}
@@ -512,19 +579,23 @@ namespace MCS
 				if (ImGui::MenuItem("Paste", "CTRL+V")) {}
 				ImGui::EndMenu();
 			}
+			ImGui::SetCursorPosX(m_App->GetWindow().GetWidth() - 250.0f);
+			if (!m_App->GameIsRunning()) ImGui::Checkbox("Maximize on play", &m_MaximizeOnPlay);
 			ImGui::SetCursorPosX(m_App->GetWindow().GetWidth() - 80.0f);
 			if (m_App->GameIsRunning())
 			{
 				if (ImGui::Button("Stop", ImVec2(80.0f, EDITOR_MAIN_MENU_BAR_HEIGHT)))
 				{
-					m_App->StopGame();
+					m_App->StopGame(m_MaximizeOnPlay);
+					m_Active = true;
 				}
 			}
 			else
 			{
 				if (ImGui::Button("Play", ImVec2(80.0f, EDITOR_MAIN_MENU_BAR_HEIGHT)))
 				{
-					m_App->StartGame();
+					m_App->StartGame(m_MaximizeOnPlay);
+					if (m_MaximizeOnPlay) m_Active = false;
 				}
 			}
 			ImGui::EndMainMenuBar();
@@ -548,6 +619,33 @@ namespace MCS
 
 	bool InspectorLayer::OnKeyPressedEvent(Frosty::KeyPressedEvent & e)
 	{
+		if (e.GetKeyCode() == FY_KEY_TAB)
+		{
+			if (m_App->GameIsRunning())
+			{
+				m_App->StopGame(m_MaximizeOnPlay);
+				if (m_MaximizeOnPlay)
+				{
+					auto& camEntity = m_App->GetWorld()->GetSceneCamera();
+					auto& gameCameraComp = m_App->GetWorld()->GetComponent<Frosty::ECS::CCamera>(camEntity);
+					gameCameraComp.ProjectionMatrix = glm::perspective(glm::radians(gameCameraComp.FieldOfView), (float)(m_App->GetWindow().GetViewport().z / m_App->GetWindow().GetViewport().w), gameCameraComp.Near, gameCameraComp.Far);
+					m_Active = true;
+				}
+			}
+			else
+			{
+				m_App->StartGame(m_MaximizeOnPlay);
+				if (m_MaximizeOnPlay)
+				{
+					auto& camEntity = m_App->GetWorld()->GetSceneCamera();
+					auto& gameCameraComp = m_App->GetWorld()->GetComponent<Frosty::ECS::CCamera>(camEntity);
+					gameCameraComp.ProjectionMatrix = glm::perspective(glm::radians(gameCameraComp.FieldOfView), (float)(m_App->GetWindow().GetViewport().z / m_App->GetWindow().GetViewport().w), gameCameraComp.Near, gameCameraComp.Far);
+					m_Active = false;
+				}
+			}
+			return true;
+		}
+
 		if (m_SelectedEntity && e.GetKeyCode() == FY_KEY_DELETE)
 		{
 			m_App->GetWorld()->RemoveEntity(m_SelectedEntity);
@@ -557,21 +655,21 @@ namespace MCS
 		{
 			if (m_SelectedController != nullptr)
 			{
-				if (m_SelectedController->MoveWestKey == m_PreviousControllerHotkey)
+				if (m_SelectedController->MoveLeftKey == m_PreviousControllerHotkey)
 				{
-					m_SelectedController->MoveWestKey = e.GetKeyCode();
+					m_SelectedController->MoveLeftKey = e.GetKeyCode();
 				}
-				if (m_SelectedController->MoveNorthKey == m_PreviousControllerHotkey)
+				if (m_SelectedController->MoveForwardKey == m_PreviousControllerHotkey)
 				{
-					m_SelectedController->MoveNorthKey = e.GetKeyCode();
+					m_SelectedController->MoveForwardKey = e.GetKeyCode();
 				}
-				if (m_SelectedController->MoveEastKey == m_PreviousControllerHotkey)
+				if (m_SelectedController->MoveRightKey == m_PreviousControllerHotkey)
 				{
-					m_SelectedController->MoveEastKey = e.GetKeyCode();
+					m_SelectedController->MoveRightKey = e.GetKeyCode();
 				}
-				if (m_SelectedController->MoveSouthKey == m_PreviousControllerHotkey)
+				if (m_SelectedController->MoveBackKey == m_PreviousControllerHotkey)
 				{
-					m_SelectedController->MoveSouthKey = e.GetKeyCode();
+					m_SelectedController->MoveBackKey = e.GetKeyCode();
 				}
 				m_PreviousControllerHotkey = -1;
 				m_SelectedController = nullptr;
@@ -580,5 +678,4 @@ namespace MCS
 
 		return false;
 	}
-
 }

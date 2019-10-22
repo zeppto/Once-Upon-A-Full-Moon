@@ -6,6 +6,8 @@
 #include "Frosty/Core/KeyCodes.h"
 #include "Frosty/Core/MouseButtonCodes.h"
 
+#include <Luna/include/Luna.h>
+
 namespace Frosty
 {
 	namespace utils
@@ -84,7 +86,7 @@ namespace Frosty
 #pragma region Settings
 
 		// Let's define a maximum number of unique components:
-		constexpr std::size_t MAX_COMPONENTS{ 8 };
+		constexpr std::size_t MAX_COMPONENTS{ 9 };
 
 		// Let's define a maximum number of entities that
 		// can have the same component type:
@@ -140,8 +142,8 @@ namespace Frosty
 
 		struct Entity
 		{
-			inline static EntityID s_LastId{ 0 };
-			EntityID Id;
+			inline static EntityID s_LastId{ 1 };
+			EntityID Id{ 0 };
 			ComponentBitset Bitset;
 
 			Entity() : Id(s_LastId++) { FY_CORE_INFO("An entity({0}) was successfully created.", Id); }
@@ -181,6 +183,7 @@ namespace Frosty
 			// Operators
 			EntityManager& operator=(const EntityManager& e) { FY_CORE_ASSERT(false, "Assignment operator in EntityManager called."); return *this; }
 
+			inline std::vector<std::shared_ptr<Entity>>& GetEntities() { return m_Entities; }
 			inline size_t GetTotalEntities() const { return m_Entities.size(); }
 
 			inline std::shared_ptr<Entity>& At(size_t index) { return m_Entities.at(index); }
@@ -255,8 +258,6 @@ namespace Frosty
 			virtual BaseComponent* GetTypeComponent(const std::shared_ptr<Entity>& entity) = 0;
 
 			virtual void Remove(std::shared_ptr<Entity>& entity) = 0;
-
-			//static std::array<std::shared_ptr<BaseComponent>, MAX_COMPONENTS> s_ComponentList;
 
 		};
 
@@ -381,25 +382,36 @@ namespace Frosty
 
 		struct CMaterial : public BaseComponent
 		{
+			static const unsigned int MAXIMUM_SHININESS = 256;
 			static std::string NAME;
 			std::shared_ptr<Shader> UseShader;
 			glm::vec4 Albedo{ 1.0f, 0.0f, 1.0f, 1.0f };
 			std::shared_ptr<Texture2D> DiffuseTexture;
-			std::shared_ptr<Texture2D> GlossTexture;
+			std::shared_ptr<Texture2D> SpecularTexture;
 			std::shared_ptr<Texture2D> NormalTexture;
+			float SpecularStrength{ 0.5f };
+			int Shininess{ 16 };
 
 			CMaterial() = default;
 			CMaterial(const std::shared_ptr<Shader>& shader) : UseShader(shader) { }
 			CMaterial(const CMaterial& org) { FY_CORE_ASSERT(false, "Copy constructor in CMaterial called."); }
 
 			virtual void Func() override { }
+
 		};
 
 		struct CMotion : public BaseComponent
 		{
 			static std::string NAME;
+			static const int DASH_COOLDOWN = 3000;
+			static const int DASH_DISTANCE = 20000;
 			glm::vec3 Direction{ 0.0f, 0.0f, 0.0f };
 			float Speed{ 0.0f };
+			glm::vec3 Velocity{ 0.0f };
+			bool DashActive{ false };
+			float DashCurrentCooldown{ 0.0f };
+			float DistanceDashed{ 0.0f };
+			float DashSpeedMultiplier{ 20.0f };
 
 			CMotion() = default;
 			CMotion(float speed) : Speed(speed) { }
@@ -411,10 +423,10 @@ namespace Frosty
 		struct CController : public BaseComponent
 		{
 			static std::string NAME;
-			int MoveWestKey{ FY_KEY_A };
-			int MoveNorthKey{ FY_KEY_W };
-			int MoveEastKey{ FY_KEY_D };
-			int MoveSouthKey{ FY_KEY_S };
+			int MoveLeftKey{ FY_KEY_A };
+			int MoveForwardKey{ FY_KEY_W };
+			int MoveRightKey{ FY_KEY_D };
+			int MoveBackKey{ FY_KEY_S };
 
 			CController() = default;
 			CController(const CController& org) { FY_CORE_ASSERT(false, "Copy constructor in CController called."); }
@@ -436,11 +448,30 @@ namespace Frosty
 
 		struct CLight : public BaseComponent
 		{
+			enum LightType { Point, Directional };
+
 			static std::string NAME;
+			LightType Type{ LightType::Point };
 			glm::vec3 Color{ 1.0f, 0.96f, 0.84f };
+			float Radius{ 20.0f };
+			float Strength{ 1.0f };
 
 			CLight() = default;
+			CLight(LightType lightType) : Type(lightType) { }
+			CLight(LightType lightType, float strength, float radius) : Type(lightType), Strength(strength), Radius(radius) { }
 			CLight(const CLight& org) { FY_CORE_ASSERT(false, "Copy constructor in CLight called."); }
+
+			virtual void Func() override { }
+		};
+
+		struct CCollision : public BaseComponent
+		{
+			static std::string NAME;
+			std::shared_ptr<Luna::BoundingBox> BoundingBox;
+
+			CCollision() = default;
+			CCollision(const std::shared_ptr<Luna::BoundingBox>& bb) : BoundingBox(bb) { }
+			CCollision(const CCollision & org) { FY_CORE_ASSERT(false, "Copy constructor in CCollision called."); }
 
 			virtual void Func() override { }
 		};
@@ -457,6 +488,7 @@ namespace Frosty
 			case 5:		return "Controller";
 			case 6:		return "Follow";
 			case 7:		return "Light";
+			case 8:		return "Collision";
 			default:	return "";
 			}
 		}
@@ -475,7 +507,7 @@ namespace Frosty
 			virtual void Init() = 0;
 			virtual void OnInput() { }
 			virtual void OnUpdate() = 0;
-			virtual void BeginScene(bool editorCamera) { }
+			virtual void BeginScene() { }
 			virtual void Render() { }
 
 			virtual void AddComponent(const std::shared_ptr<Entity>& entity) = 0;

@@ -2,6 +2,7 @@
 #define WORLD_HPP
 
 #include "Frosty/API/Scene.hpp"
+#include "Frosty/StateMachine/StateMachine.hpp"
 
 namespace Frosty
 {
@@ -20,7 +21,7 @@ namespace Frosty
 		void Start();
 		void OnInput();
 		void OnUpdate();
-		void BeginScene(bool editorCamera);
+		void BeginScene();
 		void Render();
 
 		template<typename SystemType>
@@ -36,6 +37,8 @@ namespace Frosty
 		// Scene Functions
 		std::unique_ptr<Scene>& CreateScene();
 		void DestroyScene();
+		// Returns the camera entity for the scene (later change this when having multiple scenes)
+		const std::shared_ptr<ECS::Entity>& GetSceneCamera() const { return m_Scene->GetCamera(); }
 
 		// Entity Functions
 		inline std::shared_ptr<ECS::Entity>& CreateEntity() { return m_Scene->CreateEntity(); }
@@ -46,7 +49,8 @@ namespace Frosty
 		{
 			return m_Scene->HasComponent<ComponentType>(entity);
 		}
-
+		//std::vector<std::shared_ptr<ECS::Entity>> GetEntitiesInRadius(const glm::vec3& position, float radius);
+		
 		// Component Functions
 		template<typename ComponentType>
 		inline ComponentType& GetComponent(const std::shared_ptr<ECS::Entity>& entity)
@@ -89,7 +93,7 @@ namespace Frosty
 			std::unique_ptr<ComponentType> componentPtr{ component };
 			m_ComponentList[ECS::getComponentTypeID<ComponentType>()] = std::move(componentPtr);
 		}
-
+		
 	private:
 		// Scene Declarations
 		std::unique_ptr<Scene> m_Scene;
