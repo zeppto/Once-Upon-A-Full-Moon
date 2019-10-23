@@ -256,6 +256,7 @@ namespace MCS
 						float compHeight = 0.0f;
 						if (comp.UseShader->GetName() == "FlatColor") compHeight = 125.0f;
 						else if (comp.UseShader->GetName() == "Texture2D") compHeight = 300.0f;
+						else if (comp.UseShader->GetName() == "UI") compHeight = 125.0f;
 						ImGui::BeginChild("Material", ImVec2(EDITOR_INSPECTOR_WIDTH, compHeight), true);
 
 						if (ImGui::Button("Shader")) ImGui::OpenPopup("shader_select_popup");
@@ -390,6 +391,45 @@ namespace MCS
 							}
 							ImGui::SameLine();
 							ImGui::Text("Normal");
+						}
+
+						if (comp.UseShader->GetName() == "UI")
+						{
+							// Diffuse // 
+							ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(10, 10));
+							//uint32_t selDiffuseID = 0;
+							//comp.DiffuseTexture ? selDiffuseID = comp.DiffuseTexture->GetRenderID() : selDiffuseID = Frosty::AssetManager::GetTexture2D("Checkerboard")->GetRenderID();
+							ImGui::Image(comp.DiffuseTexture ? comp.DiffuseTexture->GetRenderID() : Frosty::AssetManager::GetTexture2D("Checkerboard")->GetRenderID(), ImVec2(64, 64));
+							ImGui::PopStyleVar();
+							if (ImGui::IsItemClicked()) ImGui::OpenPopup("texture_selector");
+							if (ImGui::BeginPopupModal("texture_selector", NULL))
+							{
+								size_t index = 0;
+								ImGuiTreeNodeFlags node_flags = ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen; // ImGuiTreeNodeFlags_Bullet
+								uint32_t diffuseID = 0;
+
+								for (auto& texture : Frosty::AssetManager::GetTextures2D())
+								{
+									ImGui::Image(texture.second->GetRenderID(), ImVec2(64, 64));
+									if (ImGui::IsItemClicked())
+									{
+										if (texture.first == "Checkerboard")
+										{
+											comp.DiffuseTexture->Unbind();
+											comp.DiffuseTexture.reset();
+										}
+										else
+										{
+											comp.DiffuseTexture = texture.second;
+										}
+									}
+								}
+
+								if (ImGui::Button("Close")) ImGui::CloseCurrentPopup();
+								ImGui::EndPopup();
+							}
+							ImGui::SameLine();
+							ImGui::Text("Texture");
 						}
 
 						// Add more parameters like texture etc
