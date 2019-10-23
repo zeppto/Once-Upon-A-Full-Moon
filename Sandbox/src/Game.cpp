@@ -231,12 +231,15 @@ public:
 			if (m_Materials[i]->UseShader->GetName() == "Texture2D" && m_Materials[i]->DiffuseTexture) m_Materials[i]->DiffuseTexture->Bind();
 			if (m_Materials[i]->UseShader->GetName() == "Texture2D" && m_Materials[i]->NormalTexture) m_Materials[i]->NormalTexture->Bind(1);
 			if (m_Materials[i]->UseShader->GetName() == "Texture2D" && m_Materials[i]->SpecularTexture) m_Materials[i]->SpecularTexture->Bind(2);
+			if (m_Materials[i]->UseShader->GetName() == "UI" && m_Materials[i]->DiffuseTexture) m_Materials[i]->DiffuseTexture->Bind(0);
 
 			Frosty::Renderer::Submit(m_Materials[i], m_Meshes[i]->Mesh, transform);
 
 			if (m_Materials[i]->UseShader->GetName() == "Texture2D" && m_Materials[i]->DiffuseTexture) m_Materials[i]->DiffuseTexture->Unbind();
 			if (m_Materials[i]->UseShader->GetName() == "Texture2D" && m_Materials[i]->NormalTexture) m_Materials[i]->NormalTexture->Unbind();
 			if (m_Materials[i]->UseShader->GetName() == "Texture2D" && m_Materials[i]->SpecularTexture) m_Materials[i]->SpecularTexture->Unbind();
+			if (m_Materials[i]->UseShader->GetName() == "UI" && m_Materials[i]->DiffuseTexture) m_Materials[i]->DiffuseTexture->Unbind();
+		
 		}
 	}
 
@@ -851,11 +854,11 @@ namespace MCS
 
 		// Add components
 
-
-		
 		//world->InitiateComponent<Frosty::ECS::CTransform>();
 		//world->InitiateComponent<Frosty::ECS::CCamera>();
 		world->Start();
+
+
 
 		auto& plane = world->CreateEntity();
 		auto& planeTransform = world->GetComponent<Frosty::ECS::CTransform>(plane);
@@ -902,8 +905,39 @@ namespace MCS
 		world->AddComponent<Frosty::ECS::CCollision>(Enemy2, Frosty::AssetManager::GetBoundingBox("Cube"));
 		world->AddComponent<Frosty::ECS::CPlayerAttack>(Enemy2, 1.0f, 1.0f, 2.0f, false);
 
+		bool UI = true;
+		if (UI)
+		{
 
-		
+			for (size_t i = 0; i < 3; i++)
+			{
+				//Endast Sprites en så länge
+				auto& uiHeart1 = world->CreateEntity();
+				auto& uiHeart1Transform = world->GetComponent<Frosty::ECS::CTransform>(uiHeart1);
+				uiHeart1Transform.Position = glm::vec3(-0.9f + (i * 0.1), 0.9f, 0.0f);
+
+				uiHeart1Transform.Rotation = glm::vec3(90.0f, 0.0f, 0.0f);
+				uiHeart1Transform.Scale = glm::vec3(0.09f, 1.0f, 0.14f);
+				world->AddComponent<Frosty::ECS::CMesh>(uiHeart1, Frosty::AssetManager::GetMesh("Plane"));
+				auto& uiHeart1Mat = world->AddComponent<Frosty::ECS::CMaterial>(uiHeart1, Frosty::AssetManager::GetShader("UI"));
+				uiHeart1Mat.DiffuseTexture = Frosty::AssetManager::GetTexture2D("HeartFull");
+				if (i == 2)
+				{
+					uiHeart1Mat.DiffuseTexture = Frosty::AssetManager::GetTexture2D("Heart");
+				}
+			}
+
+			auto& uiHeart1 = world->CreateEntity();
+			auto& uiHeart1Transform = world->GetComponent<Frosty::ECS::CTransform>(uiHeart1);
+			uiHeart1Transform.Position = glm::vec3(-0.8f, -0.7f, 0.0f);
+
+			uiHeart1Transform.Rotation = glm::vec3(90.0f, 0.0f, 0.0f);
+			uiHeart1Transform.Scale = glm::vec3(0.2f, 1.0f, 0.3f);
+			world->AddComponent<Frosty::ECS::CMesh>(uiHeart1, Frosty::AssetManager::GetMesh("Plane"));
+			auto& uiHeart1Mat = world->AddComponent<Frosty::ECS::CMaterial>(uiHeart1, Frosty::AssetManager::GetShader("UI"));
+			uiHeart1Mat.DiffuseTexture = Frosty::AssetManager::GetTexture2D("Sword");
+		}
+
 		PushLayer(FY_NEW InspectorLayer());
 	}
 

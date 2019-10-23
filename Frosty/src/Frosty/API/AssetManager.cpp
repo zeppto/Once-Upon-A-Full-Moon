@@ -26,6 +26,7 @@ namespace Frosty
 
 		s_Shaders.emplace("FlatColor", FY_NEW Shader("assets/shaders/FlatColor.glsl", "FlatColor"));
 		s_Shaders.emplace("Texture2D", FY_NEW Shader("assets/shaders/Texture2D.glsl", "Texture2D"));
+		s_Shaders.emplace("UI", FY_NEW Shader("assets/shaders/UI.glsl", "UI"));
 
 		LoadTexture2D("Clock Diffuse", "assets/textures/clock_diffuse.png");
 		LoadTexture2D("Clock Normal", "assets/textures/clock_normal.png");
@@ -38,13 +39,20 @@ namespace Frosty
 		LoadTexture2D("Rusty Metal Specular", "assets/textures/rusty_metal_specular.png");
 		LoadTexture2D("Normal Test", "assets/textures/cube_normal.png");					// TEMPORARY
 		LoadTexture2D("Cherno Logo", "assets/textures/ChernoLogo.png");						// TEMPORARY
-		
+		LoadTexture2D("Heart", "assets/textures/heart.png");
+		LoadTexture2D("HeartFull", "assets/textures/heartFull.png");
+		LoadTexture2D("Sword", "assets/textures/sword.png");
+
 		s_Shaders["Texture2D"]->Bind();
 
 		// Clock
 		s_Shaders["Texture2D"]->UploadUniformInt("u_DiffuseTexture", 0);
 		s_Shaders["Texture2D"]->UploadUniformInt("u_NormalTexture", 1);
 		s_Shaders["Texture2D"]->UploadUniformInt("u_SpecularTexture", 2);
+
+		s_Shaders["UI"]->Bind();
+
+		s_Shaders["UI"]->UploadUniformInt("u_DiffuseTexture", 0);
 	}
 
 	void AssetManager::AddMesh(const std::string& name, const std::string& filepath)
