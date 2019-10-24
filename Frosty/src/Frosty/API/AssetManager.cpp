@@ -36,6 +36,7 @@ namespace Frosty
 		LoadTexture2D("Rusty Metal Diffuse", "assets/textures/rusty_metal_diffuse.png");
 		LoadTexture2D("Rusty Metal Normal", "assets/textures/rusty_metal_normal.png");
 		LoadTexture2D("Rusty Metal Specular", "assets/textures/rusty_metal_specular.png");
+		LoadTexture2D("Forest Ground", "assets/textures/forest_ground.jpg");
 		LoadTexture2D("Normal Test", "assets/textures/cube_normal.png");					// TEMPORARY
 		LoadTexture2D("Cherno Logo", "assets/textures/ChernoLogo.png");						// TEMPORARY
 		

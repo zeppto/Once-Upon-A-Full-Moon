@@ -755,15 +755,15 @@ namespace MCS
 		planeTransform.Scale = glm::vec3(100.0f, 1.0f, 100.0f);
 		world->AddComponent<Frosty::ECS::CMesh>(plane, Frosty::AssetManager::GetMesh("Plane"));
 		auto& planeMat = world->AddComponent<Frosty::ECS::CMaterial>(plane, Frosty::AssetManager::GetShader("Texture2D"));
-		planeMat.DiffuseTexture = Frosty::AssetManager::GetTexture2D("Brown Mud Diffuse");
+		planeMat.DiffuseTexture = Frosty::AssetManager::GetTexture2D("Forest Ground");
 		
 		auto& light = world->CreateEntity();
 		auto& lightTransform = world->GetComponent<Frosty::ECS::CTransform>(light);
 		lightTransform.Position = glm::vec3(0.0f, 15.0f, -6.0f);
-		lightTransform.Rotation = glm::vec3(180.0f, 0.0f, 10.0f);
+		lightTransform.Rotation = glm::vec3(90.0f, 0.0f, 10.0f);
 		//world->AddComponent<Frosty::ECS::CMesh>(light, Frosty::AssetManager::GetMesh("Cube"));
 		//world->AddComponent<Frosty::ECS::CMaterial>(light, Frosty::AssetManager::GetShader("FlatColor"));
-		world->AddComponent<Frosty::ECS::CLight>(light, Frosty::ECS::CLight::LightType::Point, 0.6f, 30.0f);
+		world->AddComponent<Frosty::ECS::CLight>(light, Frosty::ECS::CLight::LightType::Directional, 0.6f, 30.0f);
 		
 		auto& player = world->CreateEntity();
 		auto& playerTransform = world->GetComponent<Frosty::ECS::CTransform>(player);
