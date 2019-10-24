@@ -15,5 +15,7 @@ namespace Frosty
 		std::string CFollow::NAME = "Follow";
 		std::string CLight::NAME = "Light";
 		std::string CCollision::NAME = "Collision";
+		std::string CPlayerAttack::NAME = "PlayerAttack";
+		std::string CHealth::NAME = "Health";
 	}
 }

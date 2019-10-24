@@ -8,6 +8,7 @@
 //#include"Frosty/API/PrefabManager/PrefabManager.h"
 #include "Frosty/RenderEngine/EditorCamera.hpp"
 #include "Frosty/Core/World.hpp"
+//#include "Frosty/UI/Canvas.h"
 
 namespace Frosty
 {
@@ -55,6 +56,7 @@ namespace Frosty
 
 		EditorCamera m_EditorCamera;
 
+		//Canvas m_Canvas;
 	};
 }
 #endif 
