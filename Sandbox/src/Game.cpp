@@ -523,6 +523,7 @@ private:
 
 		// Todo: Make it work even in editor mode
 
+
 		// Convert from viewport to NDC
 		glm::vec2 NDC = glm::vec2(
 			(2.0f * mousePos.x) / viewport.z - 1.0f,
@@ -860,12 +861,14 @@ namespace MCS
 
 
 
+
 		auto& plane = world->CreateEntity();
 		auto& planeTransform = world->GetComponent<Frosty::ECS::CTransform>(plane);
 		planeTransform.Scale = glm::vec3(100.0f, 1.0f, 100.0f);
 		world->AddComponent<Frosty::ECS::CMesh>(plane, Frosty::AssetManager::GetMesh("Plane"));
 		auto& planeMat = world->AddComponent<Frosty::ECS::CMaterial>(plane, Frosty::AssetManager::GetShader("Texture2D"));
-		planeMat.DiffuseTexture = Frosty::AssetManager::GetTexture2D("Forest Ground");
+		planeMat.DiffuseTexture = Frosty::AssetManager::GetTexture2D("Brown Mud Diffuse");
+		planeMat.TextureScale = 10.0f;
 		
 		auto& light = world->CreateEntity();
 		auto& lightTransform = world->GetComponent<Frosty::ECS::CTransform>(light);
@@ -885,6 +888,7 @@ namespace MCS
 		world->AddComponent<Frosty::ECS::CController>(player);
 		world->AddComponent<Frosty::ECS::CCollision>(player, Frosty::AssetManager::GetBoundingBox("Cylinder"));
 		world->AddComponent<Frosty::ECS::CPlayerAttack>(player, 1.0f, 1.0f, 2.0f, true);
+		world->GetComponent<Frosty::ECS::CCamera>(world->GetSceneCamera()).Target = &playerTransform;
 
 		auto& Enemy = world->CreateEntity();
 		auto& EnemyTransform = world->GetComponent<Frosty::ECS::CTransform>(Enemy);

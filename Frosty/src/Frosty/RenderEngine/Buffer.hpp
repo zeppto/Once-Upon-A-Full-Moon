@@ -139,10 +139,10 @@ namespace Frosty
 		VertexBuffer(const void* vertices, uint32_t size);
 		virtual ~VertexBuffer();
 
-		void Bind()const;
-		void Unbind()const;
+		void Bind() const;
+		void Unbind() const;
 
-		BufferLayout GetLayout()const { return m_Layout; }
+		BufferLayout GetLayout() const { return m_Layout; }
 		void SetLayout(const BufferLayout& layout) { m_Layout = layout; }
 
 		static VertexBuffer* Create(const void* vertices, uint32_t size);
