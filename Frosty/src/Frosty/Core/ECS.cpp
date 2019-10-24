@@ -12,6 +12,7 @@ namespace Frosty
 		std::string CCamera::NAME = "Camera";
 		std::string CMaterial::NAME = "Material";
 		std::string CMotion::NAME = "Motion";
+		std::string CController::NAME = "Controller";
 		std::string CFollow::NAME = "Follow";
 		std::string CLight::NAME = "Light";
 		std::string CCollision::NAME = "Collision";
