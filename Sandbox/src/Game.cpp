@@ -793,15 +793,7 @@ public:
 							FY_TRACE("current health ({0})", m_Health[j]->CurrentHealth);
 							haveHitt = true;
 
-<<<<<<< Updated upstream
 							//nockBack
-							glm::vec3 knockback = m_Transform[i]->Position - m_Transform[j]->Position;
-							m_Transform[j]->Position -= glm::normalize(knockback) * glm::vec3(4.0f);
-
-						}
-
-						//m_Transform[i]->Position -= offset;
-=======
 							//enemy sak ta hand om sin egen push back, har sak bara skickas till enemyn att du ska push backa
 							m_Transform[j]->Position.x -= glm::normalize(m_Transform[i]->Position - m_Transform[j]->Position).x * 3.0f;
 							m_Transform[j]->Position.z -= glm::normalize(m_Transform[i]->Position - m_Transform[j]->Position).z * 3.0f;
