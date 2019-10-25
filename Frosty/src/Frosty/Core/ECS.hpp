@@ -86,7 +86,7 @@ namespace Frosty
 #pragma region Settings
 
 		// Let's define a maximum number of unique components:
-		constexpr std::size_t MAX_COMPONENTS{ 12 };
+		constexpr std::size_t MAX_COMPONENTS{ 13 };
 
 		// Let's define a maximum number of entities that
 		// can have the same component type:
@@ -459,6 +459,7 @@ namespace Frosty
 			CLight() = default;
 			CLight(LightType lightType) : Type(lightType) { }
 			CLight(LightType lightType, float strength, float radius) : Type(lightType), Strength(strength), Radius(radius) { }
+			CLight(LightType lightType, float strength, glm::vec3 color) : Type(lightType), Strength(strength), Color(color) { }
 			CLight(const CLight& org) { FY_CORE_ASSERT(false, "Copy constructor in CLight called."); }
 
 			virtual void Func() override { }
@@ -522,6 +523,29 @@ namespace Frosty
 			virtual void Func() override { }
 		};
 
+		struct CConsumables : public BaseComponent
+		{
+			static std::string NAME;
+
+			// Healing Potions - heals consumer (temp)
+			int MaxNrOfHealingPotions{ 5 };
+			int CurrentNrOfHealingPotions{ 3 };
+			float Heal{ 5.f };					// Heals 5 hearts
+			float HealingCooldown{ 3.f };		// Consumer can only drink Healing Potion every 3rd second
+			float HealingTimer{ float(std::clock()) };			// Timer used to check cooldown
+
+			// Increase Health Potions - inreases max health on consumer (const)
+
+			// Speed Booster - boosts speed during a time interval (temp)
+
+			// Speed Boots - boots add speed by a small procentage (const)
+
+
+			CConsumables() = default;
+			CConsumables(const CConsumables& org) { FY_CORE_ASSERT(false, "Copy constructor in CConsumables called."); }
+
+			virtual void Func() override { }
+		};
 
 		static std::string GetComponentName(size_t i)
 		{
@@ -539,6 +563,7 @@ namespace Frosty
 			case 9:		return "PlayerAttack";
 			case 10:	return "Health";
 			case 11:	return "Tag";
+			case 12:	return "Consumables";
 			default:	return "";
 			}
 		}
