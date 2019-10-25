@@ -19,5 +19,6 @@ namespace Frosty
 		std::string CPlayerAttack::NAME = "PlayerAttack";
 		std::string CHealth::NAME = "Health";
 		std::string CTag::NAME = "Tag";
+		std::string CConsumables::NAME = "Consumables";
 	}
 }
