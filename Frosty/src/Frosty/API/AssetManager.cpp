@@ -24,6 +24,17 @@ namespace Frosty
 		AddMesh("Cone", "assets/primitives/cone/cone.lu");
 		AddMesh("3D", "assets/primitives/3D/3D.lu");
 
+		AddMesh("Tree1", "assets/models/trees/tree1.lu");
+		AddMesh("Tree2", "assets/models/trees/tree2.lu");
+		AddMesh("Tree3", "assets/models/trees/tree3.lu");
+		AddMesh("Tree4", "assets/models/trees/tree4.lu");
+		AddMesh("Tree5", "assets/models/trees/tree5.lu");
+		AddMesh("Tree6", "assets/models/trees/tree6.lu");
+		AddMesh("Tree7", "assets/models/trees/tree7.lu");
+		AddMesh("Tree8", "assets/models/trees/tree8.lu");
+		AddMesh("Tree9", "assets/models/trees/tree9.lu");
+		AddMesh("Tree10", "assets/models/trees/tree10.lu");
+
 		s_Shaders.emplace("FlatColor", FY_NEW Shader("assets/shaders/FlatColor.glsl", "FlatColor"));
 		s_Shaders.emplace("Texture2D", FY_NEW Shader("assets/shaders/Texture2D.glsl", "Texture2D"));
 		s_Shaders.emplace("UI", FY_NEW Shader("assets/shaders/UI.glsl", "UI"));
@@ -44,6 +55,18 @@ namespace Frosty
 		LoadTexture2D("Sword", "assets/textures/sword.png");
 		LoadTexture2D("Red", "assets/textures/red.png");
 
+
+		LoadTexture2D("Tree1", "assets/textures/testPineLeves2.tga");						// TEMPORARY
+		LoadTexture2D("Tree2", "assets/textures/testPineLeves4.tga");						// TEMPORARY
+		LoadTexture2D("Tree3", "assets/textures/testPineLeves5.tga");						// TEMPORARY
+		LoadTexture2D("Tree4", "assets/textures/testPineLeves6.tga");						// TEMPORARY
+		LoadTexture2D("Tree5", "assets/textures/testPineLeves7.tga");						// TEMPORARY
+		LoadTexture2D("Tree6", "assets/textures/testPineLeves10.tga");						// TEMPORARY
+		LoadTexture2D("Tree7", "assets/textures/testPineLeves11.tga");						// TEMPORARY
+		LoadTexture2D("Tree8", "assets/textures/testPineLeves12.tga");						// TEMPORARY
+		LoadTexture2D("Tree9", "assets/textures/testPineLeves13.tga");						// TEMPORARY
+		LoadTexture2D("Tree10", "assets/textures/testPineLeves14.tga");						// TEMPORARY
+		
 		s_Shaders["Texture2D"]->Bind();
 
 		// Clock

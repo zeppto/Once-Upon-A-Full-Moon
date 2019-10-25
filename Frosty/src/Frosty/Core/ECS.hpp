@@ -86,7 +86,7 @@ namespace Frosty
 #pragma region Settings
 
 		// Let's define a maximum number of unique components:
-		constexpr std::size_t MAX_COMPONENTS{ 10 };
+		constexpr std::size_t MAX_COMPONENTS{ 15 };
 
 		// Let's define a maximum number of entities that
 		// can have the same component type:
@@ -111,7 +111,7 @@ namespace Frosty
 
 
 #pragma region Utilities
-		
+
 		namespace Internal
 		{
 			inline ComponentID getComponentUniqueID()
@@ -254,7 +254,7 @@ namespace Frosty
 
 			// Operators
 			BaseComponentManager& operator=(const BaseComponentManager& e) { FY_CORE_ASSERT(false, "Assignment operator in BaseComponentManager called."); return *this; }
-			
+
 			virtual BaseComponent* GetTypeComponent(const std::shared_ptr<Entity>& entity) = 0;
 
 			virtual void Remove(std::shared_ptr<Entity>& entity) = 0;
@@ -290,7 +290,7 @@ namespace Frosty
 			inline const std::array<ComponentType, MAX_ENTITIES_PER_COMPONENT>& GetAll() const { return m_Data; }
 
 			template<typename... TArgs>
-			inline ComponentType& Add(std::shared_ptr<Entity>& entity, TArgs&&... mArgs)
+			inline ComponentType& Add(std::shared_ptr<Entity>& entity, TArgs&& ... mArgs)
 			{
 				FY_CORE_ASSERT(Total < MAX_ENTITIES_PER_COMPONENT,
 					"Maximum number of entities for this specific component({0}) is reached.", getComponentTypeID<ComponentType>());
@@ -303,7 +303,7 @@ namespace Frosty
 				return m_Data[Total++];
 			}
 
-			inline void Remove(std::shared_ptr<Entity>& entity) 
+			inline void Remove(std::shared_ptr<Entity>& entity)
 			{
 				ComponentArrayIndex index = EntityMap.at(entity);
 
@@ -320,7 +320,7 @@ namespace Frosty
 				EntityMap.erase(entity);
 				entity->Bitset.flip(getComponentTypeID<ComponentType>());
 			}
-			
+
 		private:
 			std::array<ComponentType, MAX_ENTITIES_PER_COMPONENT> m_Data;
 
@@ -404,14 +404,14 @@ namespace Frosty
 		{
 			static std::string NAME;
 			static const int DASH_COOLDOWN = 3000;
-			static const int DASH_DISTANCE = 20000;
+			static const int DASH_DISTANCE = 10000;
 			glm::vec3 Direction{ 0.0f, 0.0f, 0.0f };
 			float Speed{ 0.0f };
 			glm::vec3 Velocity{ 0.0f };
 			bool DashActive{ false };
 			float DashCurrentCooldown{ 0.0f };
 			float DistanceDashed{ 0.0f };
-			float DashSpeedMultiplier{ 20.0f };
+			float DashSpeedMultiplier{ 10.0f };
 
 			CMotion() = default;
 			CMotion(float speed) : Speed(speed) { }
@@ -434,11 +434,11 @@ namespace Frosty
 			virtual void Func() override { }
 		};
 
-		struct CFollow : public BaseComponent 
+		struct CFollow : public BaseComponent
 		{
 			static std::string NAME;
 			CTransform* Target{ nullptr };
-			float StopDistance{ 3.0f };
+			float StopDistance{ 0.0f };
 
 			CFollow() = default;
 			CFollow(const CFollow& org) { FY_CORE_ASSERT(false, "Copy constructor in CFollow called."); }
@@ -459,6 +459,7 @@ namespace Frosty
 			CLight() = default;
 			CLight(LightType lightType) : Type(lightType) { }
 			CLight(LightType lightType, float strength, float radius) : Type(lightType), Strength(strength), Radius(radius) { }
+			CLight(LightType lightType, float strength, glm::vec3 color) : Type(lightType), Strength(strength), Color(color) { }
 			CLight(const CLight& org) { FY_CORE_ASSERT(false, "Copy constructor in CLight called."); }
 
 			virtual void Func() override { }
@@ -472,6 +473,92 @@ namespace Frosty
 			CCollision() = default;
 			CCollision(const std::shared_ptr<Luna::BoundingBox>& bb) : BoundingBox(bb) { }
 			CCollision(const CCollision & org) { FY_CORE_ASSERT(false, "Copy constructor in CCollision called."); }
+
+			virtual void Func() override { }
+		};
+
+		struct CPlayerAttack : public BaseComponent
+		{
+			static std::string NAME;
+			float Reach{ 1.0f };
+			float Cooldown{ 1.0f };
+			float Damage{ 2.0f };
+			//temp
+			bool IsPlayer{ false };
+
+			CPlayerAttack() = default;
+			//CPlayerAttack(float reach, float width, float damage) : Reach(reach), Width(width), Damage(damage) { }
+			CPlayerAttack(float reach, float cooldown, float damage, bool isPlayer) : Reach(reach), Cooldown(cooldown), Damage(damage), IsPlayer(isPlayer){ }
+			CPlayerAttack(const CPlayerAttack& org) { FY_CORE_ASSERT(false, "Copy constructor in CPlayerAttack called."); }
+			
+			virtual void Func() override { }
+		};
+		
+		struct CEnemyAttack : public BaseComponent
+		{
+			static std::string NAME;
+
+			float Radius = 3.0f;
+			float Cooldown = 0.3f;
+			float Damage = 2.0f;
+			bool IsPlayer = false;
+
+			CEnemyAttack() = default;			
+			CEnemyAttack(float radius, float cooldown, float damage, bool isPlayer) : Radius(radius), Cooldown(cooldown), Damage(damage), IsPlayer(isPlayer) { }
+			CEnemyAttack(const CEnemyAttack& org) { FY_CORE_ASSERT(false, "Copy constructor in CEnemyAttack called."); }
+
+			virtual void Func() override { }
+		};
+
+		struct CHealth : public BaseComponent
+		{
+			static std::string NAME;
+			float MaxHealth{ 5 };
+			float CurrentHealth{ 5 };
+
+			CHealth() = default;
+			CHealth(float health) : MaxHealth(health), CurrentHealth(health) {};
+			CHealth(const CHealth& org) { FY_CORE_ASSERT(false, "Copy constructor in CHealth called."); }
+
+			virtual void Func() override { }
+		};
+
+		//Temp
+		struct CTag : public BaseComponent
+		{
+			static std::string NAME;
+
+			std::string TagName;
+
+			CTag() = default;
+			CTag(const std::string& Tagname) : TagName(Tagname) { }
+			CTag(const CTag& org) { FY_CORE_ASSERT(false, "Copy constructor in CTag called."); }
+
+			bool operator==(const CTag& other) { return (TagName == other.TagName); }
+
+			virtual void Func() override { }
+		};
+
+		struct CConsumables : public BaseComponent
+		{
+			static std::string NAME;
+
+			// Healing Potions - heals consumer (temp)
+			int MaxNrOfHealingPotions{ 5 };
+			int CurrentNrOfHealingPotions{ 3 };
+			float Heal{ 5.f };					// Heals 5 hearts
+			float HealingCooldown{ 3.f };		// Consumer can only drink Healing Potion every 3rd second
+			float HealingTimer{ float(std::clock()) };			// Timer used to check cooldown
+
+			// Increase Health Potions - inreases max health on consumer (const)
+
+			// Speed Booster - boosts speed during a time interval (temp)
+
+			// Speed Boots - boots add speed by a small procentage (const)
+
+
+			CConsumables() = default;
+			CConsumables(const CConsumables& org) { FY_CORE_ASSERT(false, "Copy constructor in CConsumables called."); }
 
 			virtual void Func() override { }
 		};
@@ -509,7 +596,11 @@ namespace Frosty
 			case 6:		return "Follow";
 			case 7:		return "Light";
 			case 8:		return "Collision";
-			case 9:		return "HealthBar";
+			case 9:		return "PlayerAttack";
+			case 10:	return "Health";
+			case 11:	return "Tag";
+			case 12:	return "Consumables";
+			case 13:		return "HealthBar";
 
 			default:	return "";
 			}

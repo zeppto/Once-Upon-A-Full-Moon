@@ -15,6 +15,13 @@ namespace Frosty
 {
 	class UIText : public UIElement
 	{
+		struct Character
+		{
+			uint32_t textureID; //ID-Handle of the glyph texture
+			glm::ivec2 size;	//Glyph-size
+			glm::ivec2 bearing;	//Offset from baselne to left/top of glyph
+			uint32_t advance;	//Offset to advance to next glyph
+		};
 	public:
 
 	private:
