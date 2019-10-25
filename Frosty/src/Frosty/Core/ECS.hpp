@@ -500,6 +500,7 @@ namespace Frosty
 			float CurrentHealth{ 5 };
 
 			CHealth() = default;
+			CHealth(float health) : MaxHealth(health), CurrentHealth(health) {};
 			CHealth(const CHealth& org) { FY_CORE_ASSERT(false, "Copy constructor in CHealth called."); }
 
 			virtual void Func() override { }

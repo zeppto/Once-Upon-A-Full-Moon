@@ -231,12 +231,15 @@ public:
 			if (m_Materials[i]->UseShader->GetName() == "Texture2D" && m_Materials[i]->DiffuseTexture) m_Materials[i]->DiffuseTexture->Bind();
 			if (m_Materials[i]->UseShader->GetName() == "Texture2D" && m_Materials[i]->NormalTexture) m_Materials[i]->NormalTexture->Bind(1);
 			if (m_Materials[i]->UseShader->GetName() == "Texture2D" && m_Materials[i]->SpecularTexture) m_Materials[i]->SpecularTexture->Bind(2);
+			if (m_Materials[i]->UseShader->GetName() == "UI" && m_Materials[i]->DiffuseTexture) m_Materials[i]->DiffuseTexture->Bind(0);
 
 			Frosty::Renderer::Submit(m_Materials[i], m_Meshes[i]->Mesh, transform);
 
 			if (m_Materials[i]->UseShader->GetName() == "Texture2D" && m_Materials[i]->DiffuseTexture) m_Materials[i]->DiffuseTexture->Unbind();
 			if (m_Materials[i]->UseShader->GetName() == "Texture2D" && m_Materials[i]->NormalTexture) m_Materials[i]->NormalTexture->Unbind();
 			if (m_Materials[i]->UseShader->GetName() == "Texture2D" && m_Materials[i]->SpecularTexture) m_Materials[i]->SpecularTexture->Unbind();
+			if (m_Materials[i]->UseShader->GetName() == "UI" && m_Materials[i]->DiffuseTexture) m_Materials[i]->DiffuseTexture->Unbind();
+		
 		}
 	}
 
@@ -848,6 +851,248 @@ private:
 
 };
 
+class SpawnSystem : public Frosty::ECS::BaseSystem
+{
+public:
+	SpawnSystem() = default;
+	virtual ~SpawnSystem() = default;
+
+	virtual void Init() override
+	{
+		p_Signature.set(Frosty::ECS::getComponentTypeID<Frosty::ECS::CHealth>(), true);
+	}
+
+	inline virtual void OnInput() override	// VERY temporary
+	{
+		if (Frosty::InputManager::IsKeyPressed(FY_KEY_P))	// Damage+ Player
+		{
+			bool found = false;
+			for (size_t i = 1; i < p_Total && !found; i++)
+			{
+				if (m_Health[i]->EntityPtr == m_Player)
+				{
+					m_Health[i]->CurrentHealth -= 0.5f;
+					found = true;
+				}
+			}
+		}
+		else if (Frosty::InputManager::IsKeyPressed(FY_KEY_O))	// Damage+ Opponent
+		{
+			bool found = false;
+			for (size_t i = 1; i < p_Total && !found; i++)
+			{
+				if (m_Health[i]->EntityPtr != m_Player)
+				{
+					m_Health[i]->CurrentHealth -= 0.5f;
+					found = true;
+				}
+			}
+		}
+	}
+
+	inline virtual void OnUpdate() override
+	{
+		//// Initiate once, shouldn't be in update loop
+		//if (m_Player == nullptr)
+		//{
+		//	for (size_t i = 1; i < p_Total; i++)
+		//	{
+		//		if (m_Health[i]->EntityPtr->Bitset[7] == 1)
+		//		{
+		//			m_Player = m_Health[i]->EntityPtr;
+		//		}
+		//	}
+		//}
+
+		// If dead --> respawn
+		if (m_Player == nullptr && (std::clock() - m_PlayerSpawnTimer) >= 2000)
+		{
+			SpawnPlayer();
+		}
+		else if ((p_Total - 2) < m_NrOfEnemies && (std::clock() - m_EnemySpawnTimer) >= 6000)
+		{
+			SpawnEnemy();
+		}
+
+		// If health below 0 --> remove
+		for (size_t i = 1; i < p_Total; i++)
+		{
+			if (m_Health[i]->CurrentHealth <= 0.f && m_Health[i]->EntityPtr == m_Player)
+			{
+				RemovePlayer();
+			}
+			else if (m_Health[i]->CurrentHealth <= 0.f)
+			{
+				RemoveEnemyAt(i);
+			}
+		}
+	}
+
+	virtual void AddComponent(const std::shared_ptr<Frosty::ECS::Entity>& entity) override
+	{
+		if (Frosty::utils::BitsetFits<Frosty::ECS::MAX_COMPONENTS>(p_Signature, entity->Bitset) && !p_EntityMap.count(entity))
+		{
+			p_EntityMap.emplace(entity, p_Total);
+
+			auto& world = Frosty::Application::Get().GetWorld();
+			m_Health[p_Total] = &world->GetComponent<Frosty::ECS::CHealth>(entity);
+
+			p_Total++;
+		}
+	}
+
+	virtual void RemoveEntity(const std::shared_ptr<Frosty::ECS::Entity>& entity) override
+	{
+		Frosty::ECS::ComponentArrayIndex tempIndex = p_EntityMap[entity];
+
+
+		if (tempIndex > 0)
+		{
+			p_Total--;
+			m_Health[p_Total] = nullptr;
+
+			if (p_Total > 1)
+			{
+				//std::shared_ptr<Entity> entityToUpdate = removeEntityFromData(mEntity);
+
+				if (p_Total > tempIndex)
+				{
+					std::shared_ptr<Frosty::ECS::Entity> entityToUpdate = m_Health[p_EntityMap[entity]]->EntityPtr;
+					p_EntityMap[entityToUpdate] = tempIndex;
+				}
+			}
+
+			p_EntityMap.erase(entity);
+		}
+	}
+
+private:
+	void SpawnPlayer()
+	{
+		auto& world = Frosty::Application::Get().GetWorld();
+		auto& player = world->CreateEntity();
+		auto& playerTransform = world->GetComponent<Frosty::ECS::CTransform>(player);
+		playerTransform.Position = glm::vec3(0.0f, 1.0f, 0.0f);
+		playerTransform.Scale *= 0.2f;
+		world->AddComponent<Frosty::ECS::CMesh>(player, Frosty::AssetManager::GetMesh("3D"));
+		world->AddComponent<Frosty::ECS::CMaterial>(player, Frosty::AssetManager::GetShader("FlatColor"));
+		world->AddComponent<Frosty::ECS::CMotion>(player, 5.0f);
+		world->AddComponent<Frosty::ECS::CController>(player);
+		world->AddComponent<Frosty::ECS::CHealth>(player);
+
+		world->AddComponent<Frosty::ECS::CCollision>(player, Frosty::AssetManager::GetBoundingBox("3D"));
+		auto& gameCameraEntity = world->GetSceneCamera();
+		world->GetComponent<Frosty::ECS::CCamera>(gameCameraEntity).Target = &playerTransform;
+
+		m_Player = player;
+	}
+
+	void SpawnEnemy()
+	{
+		auto& world = Frosty::Application::Get().GetWorld();
+		auto& enemy = world->CreateEntity();
+		auto& enemyTransform = world->GetComponent<Frosty::ECS::CTransform>(enemy);
+
+		if (m_KillCount < 10)
+		{
+			enemyTransform.Position = GetSpawnPosition();
+			enemyTransform.Scale *= 2.f;
+			world->AddComponent<Frosty::ECS::CMesh>(enemy, Frosty::AssetManager::GetMesh("Cube"));
+			world->AddComponent<Frosty::ECS::CMaterial>(enemy, Frosty::AssetManager::GetShader("FlatColor"));
+			world->AddComponent<Frosty::ECS::CMotion>(enemy, 3.5f);
+			world->AddComponent<Frosty::ECS::CFollow>(enemy);
+			world->AddComponent<Frosty::ECS::CHealth>(enemy);
+			world->AddComponent<Frosty::ECS::CCollision>(enemy, Frosty::AssetManager::GetBoundingBox("Cube"));
+		}
+		else
+		{
+			enemyTransform.Position = glm::vec3((float)TERRAIN_WIDTH, 2.f, 0.f);
+			enemyTransform.Scale *= 6.f;
+			world->AddComponent<Frosty::ECS::CMesh>(enemy, Frosty::AssetManager::GetMesh("Cube"));
+			world->AddComponent<Frosty::ECS::CMaterial>(enemy, Frosty::AssetManager::GetShader("FlatColor"));
+			world->AddComponent<Frosty::ECS::CMotion>(enemy, 4.5f);
+			world->AddComponent<Frosty::ECS::CFollow>(enemy);
+			world->AddComponent<Frosty::ECS::CHealth>(enemy, 30);
+			world->AddComponent<Frosty::ECS::CCollision>(enemy, Frosty::AssetManager::GetBoundingBox("Cube"));
+			m_NrOfEnemies = 1;
+		}
+
+		if (m_Player != nullptr)
+		{
+			auto& comp = world->GetComponent<Frosty::ECS::CFollow>(enemy);
+			comp.Target = &world->GetComponent<Frosty::ECS::CTransform>(m_Player);
+		}
+
+		m_EnemySpawnTimer = float(std::clock());
+	}
+
+	void RemovePlayer()
+	{
+		auto& world = Frosty::Application::Get().GetWorld();
+		world->RemoveEntity(m_Player);
+		m_Player = nullptr;
+
+		RemoveAllEnemies();
+
+		m_KillCount = 0;
+		m_NrOfEnemies = 2;
+		m_PlayerSpawnTimer = float(std::clock());
+	}
+
+	void RemoveEnemyAt(size_t position)
+	{
+		m_Entity = m_Health[position]->EntityPtr;
+		auto& world = Frosty::Application::Get().GetWorld();
+		world->RemoveEntity(m_Entity);
+
+		m_EnemySpawnTimer = float(std::clock());
+		m_KillCount++;
+		m_NrOfEnemies--;
+
+		if (m_NrOfEnemies == 0)
+		{
+			m_NrOfEnemies = m_KillCount + 1;
+		}
+	}
+
+	void RemoveAllEnemies()
+	{
+		for (size_t i = 1; i < p_Total; i++)
+		{
+			if (m_Health[i]->EntityPtr)
+			{
+				m_Entity = m_Health[i]->EntityPtr;
+				auto& world = Frosty::Application::Get().GetWorld();
+				world->RemoveEntity(m_Entity);
+				i = 0;
+			}
+		}
+		m_EnemySpawnTimer = float(std::clock());
+	}
+
+	const glm::vec3& GetSpawnPosition()
+	{
+		float x = float(rand() % (2 * TERRAIN_WIDTH) - TERRAIN_WIDTH);
+		float z = float(rand() % TERRAIN_HEIGHT - float(TERRAIN_HEIGHT * 0.5f));
+
+		return glm::vec3(x, 1.5f, z);
+	}
+
+private:
+	std::array<Frosty::ECS::CHealth*, Frosty::ECS::MAX_ENTITIES_PER_COMPONENT> m_Health;
+
+	std::shared_ptr<Frosty::ECS::Entity> m_Player = nullptr;
+	std::shared_ptr<Frosty::ECS::Entity> m_Entity = nullptr;
+
+	float m_PlayerSpawnTimer;
+	float m_EnemySpawnTimer;
+
+	// Temp
+	int m_KillCount = 0;
+	int m_NrOfEnemies = 2;			// numbers of enemies simultaniously on the terrain. Start with 2 enemies
+	const int TERRAIN_WIDTH = 45;
+	const int TERRAIN_HEIGHT = 89;
+};
 
 namespace MCS
 {
@@ -864,14 +1109,15 @@ namespace MCS
 		world->AddSystem<FollowSystem>();
 		world->AddSystem<CollisionSystem>();
 		world->AddSystem<PlayerAttackSystem>();
+		world->AddSystem<SpawnSystem>();
 
 		// Add components
 
-
-		
 		//world->InitiateComponent<Frosty::ECS::CTransform>();
 		//world->InitiateComponent<Frosty::ECS::CCamera>();
 		world->Start();
+
+
 
 		auto& plane = world->CreateEntity();
 		auto& planeTransform = world->GetComponent<Frosty::ECS::CTransform>(plane);
@@ -882,47 +1128,75 @@ namespace MCS
 		
 		auto& light = world->CreateEntity();
 		auto& lightTransform = world->GetComponent<Frosty::ECS::CTransform>(light);
-		lightTransform.Position = glm::vec3(0.0f, 15.0f, -6.0f);
+		lightTransform.Position = glm::vec3(0.0f, 30.0f, -6.0f);
 		lightTransform.Rotation = glm::vec3(180.0f, 0.0f, 10.0f);
 		//world->AddComponent<Frosty::ECS::CMesh>(light, Frosty::AssetManager::GetMesh("Cube"));
 		//world->AddComponent<Frosty::ECS::CMaterial>(light, Frosty::AssetManager::GetShader("FlatColor"));
-		world->AddComponent<Frosty::ECS::CLight>(light, Frosty::ECS::CLight::LightType::Point, 0.6f, 30.0f);
+		world->AddComponent<Frosty::ECS::CLight>(light, Frosty::ECS::CLight::LightType::Point, 0.6f, 200.0f);
 		
-		auto& player = world->CreateEntity();
-		auto& playerTransform = world->GetComponent<Frosty::ECS::CTransform>(player);
-		playerTransform.Position.y = 1.0f;
-		playerTransform.Position.z = 3.0f;
-		world->AddComponent<Frosty::ECS::CMesh>(player, Frosty::AssetManager::GetMesh("Cylinder"));
-		world->AddComponent<Frosty::ECS::CMaterial>(player, Frosty::AssetManager::GetShader("FlatColor"));
-		world->AddComponent<Frosty::ECS::CMotion>(player, 8.0f);
-		world->AddComponent<Frosty::ECS::CController>(player);
-		world->AddComponent<Frosty::ECS::CCollision>(player, Frosty::AssetManager::GetBoundingBox("Cylinder"));
-		world->AddComponent<Frosty::ECS::CPlayerAttack>(player, 1.0f, 1.0f, 2.0f, true);
-		world->AddComponent<Frosty::ECS::CHealth>(player);
+		//auto& player = world->CreateEntity();
+		//auto& playerTransform = world->GetComponent<Frosty::ECS::CTransform>(player);
+		//playerTransform.Position.y = 1.0f;
+		//playerTransform.Position.z = 3.0f;
+		//world->AddComponent<Frosty::ECS::CMesh>(player, Frosty::AssetManager::GetMesh("Cylinder"));
+		//world->AddComponent<Frosty::ECS::CMaterial>(player, Frosty::AssetManager::GetShader("FlatColor"));
+		//world->AddComponent<Frosty::ECS::CMotion>(player, 8.0f);
+		//world->AddComponent<Frosty::ECS::CController>(player);
+		//world->AddComponent<Frosty::ECS::CCollision>(player, Frosty::AssetManager::GetBoundingBox("Cylinder"));
+		//world->AddComponent<Frosty::ECS::CPlayerAttack>(player, 1.0f, 1.0f, 2.0f, true);
 
-		auto& Enemy = world->CreateEntity();
-		auto& EnemyTransform = world->GetComponent<Frosty::ECS::CTransform>(Enemy);
-		EnemyTransform.Position.y = 1.0f;
-		world->AddComponent<Frosty::ECS::CMesh>(Enemy, Frosty::AssetManager::GetMesh("Cube"));
-		world->AddComponent<Frosty::ECS::CMaterial>(Enemy, Frosty::AssetManager::GetShader("FlatColor"));
-		world->AddComponent<Frosty::ECS::CMotion>(Enemy, 8.0f);
-		world->AddComponent<Frosty::ECS::CCollision>(Enemy, Frosty::AssetManager::GetBoundingBox("Cube"));
-		world->AddComponent<Frosty::ECS::CPlayerAttack>(Enemy, 1.0f, 1.0f, 2.0f, false);
-		world->AddComponent<Frosty::ECS::CHealth>(Enemy);
+		//auto& Enemy = world->CreateEntity();
+		//auto& EnemyTransform = world->GetComponent<Frosty::ECS::CTransform>(Enemy);
+		//EnemyTransform.Position.y = 1.0f;
+		//world->AddComponent<Frosty::ECS::CMesh>(Enemy, Frosty::AssetManager::GetMesh("Cube"));
+		//world->AddComponent<Frosty::ECS::CMaterial>(Enemy, Frosty::AssetManager::GetShader("FlatColor"));
+		//world->AddComponent<Frosty::ECS::CMotion>(Enemy, 8.0f);
+		//world->AddComponent<Frosty::ECS::CCollision>(Enemy, Frosty::AssetManager::GetBoundingBox("Cube"));
+		//world->AddComponent<Frosty::ECS::CPlayerAttack>(Enemy, 1.0f, 1.0f, 2.0f, false);
 
-		auto& Enemy2 = world->CreateEntity();
-		auto& Enemy2Transform = world->GetComponent<Frosty::ECS::CTransform>(Enemy2);
-		Enemy2Transform.Position.y = 1.0f;
-		Enemy2Transform.Position.x = 1.0f;
-		world->AddComponent<Frosty::ECS::CMesh>(Enemy2, Frosty::AssetManager::GetMesh("Cube"));
-		world->AddComponent<Frosty::ECS::CMaterial>(Enemy2, Frosty::AssetManager::GetShader("FlatColor"));
-		world->AddComponent<Frosty::ECS::CMotion>(Enemy2, 8.0f);
-		world->AddComponent<Frosty::ECS::CCollision>(Enemy2, Frosty::AssetManager::GetBoundingBox("Cube"));
-		world->AddComponent<Frosty::ECS::CPlayerAttack>(Enemy2, 1.0f, 1.0f, 2.0f, false);
-		world->AddComponent<Frosty::ECS::CHealth>(Enemy2);
+		//auto& Enemy2 = world->CreateEntity();
+		//auto& Enemy2Transform = world->GetComponent<Frosty::ECS::CTransform>(Enemy2);
+		//Enemy2Transform.Position.y = 1.0f;
+		//Enemy2Transform.Position.x = 1.0f;
+		//world->AddComponent<Frosty::ECS::CMesh>(Enemy2, Frosty::AssetManager::GetMesh("Cube"));
+		//world->AddComponent<Frosty::ECS::CMaterial>(Enemy2, Frosty::AssetManager::GetShader("FlatColor"));
+		//world->AddComponent<Frosty::ECS::CMotion>(Enemy2, 8.0f);
+		//world->AddComponent<Frosty::ECS::CCollision>(Enemy2, Frosty::AssetManager::GetBoundingBox("Cube"));
+		//world->AddComponent<Frosty::ECS::CPlayerAttack>(Enemy2, 1.0f, 1.0f, 2.0f, false);
 
+		bool UI = true;
+		if (UI)
+		{
 
-		
+			for (size_t i = 0; i < 3; i++)
+			{
+				//Endast Sprites en s� l�nge
+				auto& uiHeart1 = world->CreateEntity();
+				auto& uiHeart1Transform = world->GetComponent<Frosty::ECS::CTransform>(uiHeart1);
+				uiHeart1Transform.Position = glm::vec3(-0.9f + (i * 0.1), 0.9f, 0.0f);
+
+				uiHeart1Transform.Rotation = glm::vec3(90.0f, 0.0f, 0.0f);
+				uiHeart1Transform.Scale = glm::vec3(0.09f, 1.0f, 0.14f);
+				world->AddComponent<Frosty::ECS::CMesh>(uiHeart1, Frosty::AssetManager::GetMesh("Plane"));
+				auto& uiHeart1Mat = world->AddComponent<Frosty::ECS::CMaterial>(uiHeart1, Frosty::AssetManager::GetShader("UI"));
+				uiHeart1Mat.DiffuseTexture = Frosty::AssetManager::GetTexture2D("HeartFull");
+				if (i == 2)
+				{
+					uiHeart1Mat.DiffuseTexture = Frosty::AssetManager::GetTexture2D("Heart");
+				}
+			}
+
+			auto& uiHeart1 = world->CreateEntity();
+			auto& uiHeart1Transform = world->GetComponent<Frosty::ECS::CTransform>(uiHeart1);
+			uiHeart1Transform.Position = glm::vec3(-0.8f, -0.7f, 0.0f);
+
+			uiHeart1Transform.Rotation = glm::vec3(90.0f, 0.0f, 0.0f);
+			uiHeart1Transform.Scale = glm::vec3(0.2f, 1.0f, 0.3f);
+			world->AddComponent<Frosty::ECS::CMesh>(uiHeart1, Frosty::AssetManager::GetMesh("Plane"));
+			auto& uiHeart1Mat = world->AddComponent<Frosty::ECS::CMaterial>(uiHeart1, Frosty::AssetManager::GetShader("UI"));
+			uiHeart1Mat.DiffuseTexture = Frosty::AssetManager::GetTexture2D("Sword");
+		}
+
 		PushLayer(FY_NEW InspectorLayer());
 	}
 
