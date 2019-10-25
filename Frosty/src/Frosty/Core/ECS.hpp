@@ -438,7 +438,7 @@ namespace Frosty
 		{
 			static std::string NAME;
 			CTransform* Target{ nullptr };
-			float StopDistance{ 3.0f };
+			float StopDistance{ 0.0f };
 
 			CFollow() = default;
 			CFollow(const CFollow& org) { FY_CORE_ASSERT(false, "Copy constructor in CFollow called."); }
@@ -494,6 +494,22 @@ namespace Frosty
 			virtual void Func() override { }
 		};
 		
+		struct CEnemyAttack : public BaseComponent
+		{
+			static std::string NAME;
+
+			float Radius = 3.0f;
+			float Cooldown = 0.3f;
+			float Damage = 2.0f;
+			bool IsPlayer = false;
+
+			CEnemyAttack() = default;			
+			CEnemyAttack(float radius, float cooldown, float damage, bool isPlayer) : Radius(radius), Cooldown(cooldown), Damage(damage), IsPlayer(isPlayer) { }
+			CEnemyAttack(const CEnemyAttack& org) { FY_CORE_ASSERT(false, "Copy constructor in CEnemyAttack called."); }
+
+			virtual void Func() override { }
+		};
+
 		struct CHealth : public BaseComponent
 		{
 			static std::string NAME;

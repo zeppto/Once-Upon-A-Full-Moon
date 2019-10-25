@@ -107,6 +107,7 @@ namespace MCS
 					if (world->HasComponent<Frosty::ECS::CPlayerAttack>(m_SelectedEntity)) toggles[9] = true;
 					if (world->HasComponent<Frosty::ECS::CHealth>(m_SelectedEntity)) toggles[10] = true;
 					if (world->HasComponent<Frosty::ECS::CConsumables>(m_SelectedEntity)) toggles[11] = true;
+					if (world->HasComponent<Frosty::ECS::CEnemyAttack>(m_SelectedEntity)) toggles[10] = true;
 				}
 
 				// Information
@@ -180,6 +181,13 @@ namespace MCS
 							world->AddComponent<Frosty::ECS::CPlayerAttack>(m_SelectedEntity);
 						else
 							world->RemoveComponent<Frosty::ECS::CPlayerAttack>(m_SelectedEntity);
+					}
+					if (ImGui::MenuItem("Enemy Attack", "", &toggles[9]))
+					{
+						if (!world->HasComponent<Frosty::ECS::CEnemyAttack>(m_SelectedEntity))
+							world->AddComponent<Frosty::ECS::CEnemyAttack>(m_SelectedEntity);
+						else
+							world->RemoveComponent<Frosty::ECS::CEnemyAttack>(m_SelectedEntity);
 					}
 					if (ImGui::MenuItem("Health", "", &toggles[10]))
 					{
@@ -606,6 +614,18 @@ namespace MCS
 						ImGui::BeginChild("CPlayerAttack", ImVec2(EDITOR_INSPECTOR_WIDTH, 105), true);
 						ImGui::InputFloat("Damage", &comp.Damage, 1.0f, 10.0f, 0);
 						ImGui::InputFloat("Reach", &comp.Reach, 1.0f, 10.0f, 0);
+						ImGui::InputFloat("Cooldown", &comp.Cooldown, 1.0f, 10.0f, 0);
+						ImGui::EndChild();
+					}
+				}
+				if (world->HasComponent<Frosty::ECS::CEnemyAttack>(m_SelectedEntity))
+				{
+					if (ImGui::CollapsingHeader("Enemy Attack"))
+					{
+						auto& comp = world->GetComponent<Frosty::ECS::CEnemyAttack>(m_SelectedEntity);
+						ImGui::BeginChild("CEnemyAttack", ImVec2(EDITOR_INSPECTOR_WIDTH, 105), true);
+						ImGui::InputFloat("Damage", &comp.Damage, 1.0f, 10.0f, 0);
+						ImGui::InputFloat("Reach", &comp.Radius, 1.0f, 10.0f, 0);
 						ImGui::InputFloat("Cooldown", &comp.Cooldown, 1.0f, 10.0f, 0);
 						ImGui::EndChild();
 					}
