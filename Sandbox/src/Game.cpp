@@ -310,8 +310,6 @@ public:
 			m_Transform[i]->Position += m_Motion[i]->Velocity * Frosty::Time::DeltaTime();
 			//m_Transform[i]->Position += m_Motion[i]->Direction * m_Motion[i]->Speed * Frosty::Time::DeltaTime();
 
-
-
 			for (size_t j = 1; j < p_Total; j++)
 			{
 				if (j != i)
@@ -667,8 +665,16 @@ float randValue(int max, int min);
 namespace MCS
 {
 
+
+	void generateTrees();
+	void generateBorders();
+	void generatePlanes();
+	void generateMapMarkers();
+	void generateLights();
+
 	Game::Game()
 	{
+
 		auto& world = Application::Get().GetWorld();
 
 		// Add systems
@@ -695,7 +701,7 @@ namespace MCS
 		
 		auto& light = world->CreateEntity();
 		auto& lightTransform = world->GetComponent<Frosty::ECS::CTransform>(light);
-		lightTransform.Rotation = glm::vec3(90.0f, 0.0f, 0.0f);
+		lightTransform.Rotation = glm::vec3(0.0f, 0.0f, 1.0f);
 		//world->AddComponent<Frosty::ECS::CMesh>(light, Frosty::AssetManager::GetMesh("Cube"));
 		//world->AddComponent<Frosty::ECS::CMaterial>(light, Frosty::AssetManager::GetShader("FlatColor"));
 		world->AddComponent<Frosty::ECS::CLight>(light, Frosty::ECS::CLight::LightType::Directional);
@@ -712,45 +718,258 @@ namespace MCS
 
 		std::srand((unsigned)std::time(0));
 
+
+		generateTrees();
+		generateBorders();
+		//generatePlanes();
+
+
+
+		PushLayer(FY_NEW InspectorLayer());
+	}
+
+	Game::~Game()
+	{
+
+	}
+
+	void generateTrees()
+	{
+
 		uint8_t mapLength = 192;
 		uint8_t mapDepth = 108;
-		float HitboxMapInflunce = 0.15;
 
-		float startDebugBoxPosX = -mapLength / 2.0f;
-		float startDebugBoxPosZ = -mapDepth / 2.0f;
-		float HB_Y_pos = 1;
-		float middleWidth = 0.5;
-		float middleDepth = 5;
+		
+		//srand(time(NULL));
 
-		float Tree_Y_Offset = 3.0f;
-		float Light_Y_Offset = 3.0f;
+		auto& world = Frosty::Application::Get().GetWorld();
+
+		float Tree_Y_Offset = 0.0f;
+		int NrOfTreeTypes = 10;
 
 		int randOffsetMax = 5;
 		int randOffsetMin = -5;
 
-		for (int i = 0; i < 3; i++)
-		{
+		//Top Trees
 
-			for (int j = 0; j < 3; j++)
-			{
-				auto& DebugBox = world->CreateEntity();
-				auto& DebugBoxTranform = world->GetComponent<Frosty::ECS::CTransform>(DebugBox);
-				DebugBoxTranform.Scale = glm::vec3(1.0f, 10.0f, 1.0f);
-				DebugBoxTranform.Position = glm::vec3(startDebugBoxPosX + mapLength * j, 0.0f, startDebugBoxPosZ + ((mapDepth / 2) * i));
-				world->AddComponent<Frosty::ECS::CMesh>(DebugBox, Frosty::AssetManager::GetMesh("Cube"));
-				auto& DebugBoxMaterial = world->AddComponent<Frosty::ECS::CMaterial>(DebugBox, Frosty::AssetManager::GetShader("FlatColor"));
-				DebugBoxMaterial.Albedo = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
-			}
+		for (int i = 0; i < 25; i++)
+		{
+			auto& Tree = world->CreateEntity();
+			auto& TreeTranform = world->GetComponent<Frosty::ECS::CTransform>(Tree);
+			TreeTranform.Position = glm::vec3(-(mapLength / 2) + (((mapLength * 2) / 24) * i), Tree_Y_Offset, (mapDepth / 2) + randValue(randOffsetMax, randOffsetMin));
+			auto& TreeMaterial = world->AddComponent<Frosty::ECS::CMaterial>(Tree, Frosty::AssetManager::GetShader("Texture2D"));
+			TreeMaterial.Albedo = glm::vec4(0.2f, 0.8f, 0.3f, 1.0f);
+			std::string treeName = "Tree" + std::to_string(((rand() % NrOfTreeTypes) + 1));
+			TreeMaterial.DiffuseTexture = Frosty::AssetManager::GetTexture2D(treeName);
+
+			treeName = "Tree" + std::to_string(((rand() % NrOfTreeTypes) + 1));
+			world->AddComponent<Frosty::ECS::CMesh>(Tree, Frosty::AssetManager::GetMesh(treeName));
 		}
+
+
+
+		//Bot Trees
+
+		for (int i = 0; i < 25; i++)
+		{
+			auto& Tree = world->CreateEntity();
+			auto& TreeTranform = world->GetComponent<Frosty::ECS::CTransform>(Tree);
+			TreeTranform.Position = glm::vec3(-(mapLength / 2) + (((mapLength * 2) / 24) * i), Tree_Y_Offset, (-mapDepth / 2) + randValue(randOffsetMax, randOffsetMin));
+			auto& TreeMaterial = world->AddComponent<Frosty::ECS::CMaterial>(Tree, Frosty::AssetManager::GetShader("Texture2D"));
+			TreeMaterial.Albedo = glm::vec4(0.2f, 0.8f, 0.3f, 1.0f);
+			std::string treeName = "Tree" + std::to_string(((rand() % NrOfTreeTypes) + 1));
+			TreeMaterial.DiffuseTexture = Frosty::AssetManager::GetTexture2D(treeName);
+
+			treeName = "Tree" + std::to_string(((rand() % NrOfTreeTypes) + 1));
+			world->AddComponent<Frosty::ECS::CMesh>(Tree, Frosty::AssetManager::GetMesh(treeName));
+		}
+
+
+		//Left Trees
+
+		for (int i = 1; i < 6; i++)
+		{
+			auto& Tree = world->CreateEntity();
+			auto& TreeTranform = world->GetComponent<Frosty::ECS::CTransform>(Tree);
+			TreeTranform.Position = glm::vec3(-(mapLength / 2) + randValue(randOffsetMax, randOffsetMin), Tree_Y_Offset, (-mapDepth / 2 + (mapDepth / 6) * i));
+			auto& TreeMaterial = world->AddComponent<Frosty::ECS::CMaterial>(Tree, Frosty::AssetManager::GetShader("Texture2D"));
+			TreeMaterial.Albedo = glm::vec4(0.2f, 0.8f, 0.3f, 1.0f);
+			std::string treeName = "Tree" + std::to_string(((rand() % NrOfTreeTypes) + 1));
+			TreeMaterial.DiffuseTexture = Frosty::AssetManager::GetTexture2D(treeName);
+
+			treeName = "Tree" + std::to_string(((rand() % NrOfTreeTypes) + 1));
+			world->AddComponent<Frosty::ECS::CMesh>(Tree, Frosty::AssetManager::GetMesh(treeName));
+		}
+
+
+
+		//Right Trees
+
+		for (int i = 1; i < 6; i++)
+		{
+			auto& Tree = world->CreateEntity();
+			auto& TreeTranform = world->GetComponent<Frosty::ECS::CTransform>(Tree);
+			TreeTranform.Position = glm::vec3((mapLength * 1.5) + randValue(randOffsetMax, randOffsetMin), Tree_Y_Offset, (-mapDepth / 2 + (mapDepth / 6) * i));
+			auto& TreeMaterial = world->AddComponent<Frosty::ECS::CMaterial>(Tree, Frosty::AssetManager::GetShader("Texture2D"));
+			TreeMaterial.Albedo = glm::vec4(0.2f, 0.8f, 0.3f, 1.0f);
+			std::string treeName = "Tree" + std::to_string(((rand() % NrOfTreeTypes) + 1));
+			TreeMaterial.DiffuseTexture = Frosty::AssetManager::GetTexture2D(treeName);
+
+			treeName = "Tree" + std::to_string(((rand() % NrOfTreeTypes) + 1));
+			world->AddComponent<Frosty::ECS::CMesh>(Tree, Frosty::AssetManager::GetMesh(treeName));
+		}
+
+
+
+		//Middle Trees
+
+		for (int i = 1; i < 3; i++)
+		{
+			auto& Tree = world->CreateEntity();
+			auto& TreeTranform = world->GetComponent<Frosty::ECS::CTransform>(Tree);
+			TreeTranform.Position = glm::vec3((mapLength / 2) + randValue(randOffsetMax, randOffsetMin), Tree_Y_Offset, (-mapDepth / 2 + (mapDepth / 6) * i));
+			auto& TreeMaterial = world->AddComponent<Frosty::ECS::CMaterial>(Tree, Frosty::AssetManager::GetShader("Texture2D"));
+			TreeMaterial.Albedo = glm::vec4(0.2f, 0.8f, 0.3f, 1.0f);
+			std::string treeName = "Tree" + std::to_string(((rand() % NrOfTreeTypes) + 1));
+			TreeMaterial.DiffuseTexture = Frosty::AssetManager::GetTexture2D(treeName);
+
+			treeName = "Tree" + std::to_string(((rand() % NrOfTreeTypes) + 1));
+			world->AddComponent<Frosty::ECS::CMesh>(Tree, Frosty::AssetManager::GetMesh(treeName));
+		}
+
+		for (int i = 1; i < 3; i++)
+		{
+			auto& Tree = world->CreateEntity();
+			auto& TreeTranform = world->GetComponent<Frosty::ECS::CTransform>(Tree);
+			TreeTranform.Position = glm::vec3((mapLength / 2) + randValue(randOffsetMax, randOffsetMin), Tree_Y_Offset, (mapDepth / 6) * i);
+			auto& TreeMaterial = world->AddComponent<Frosty::ECS::CMaterial>(Tree, Frosty::AssetManager::GetShader("Texture2D"));
+			TreeMaterial.Albedo = glm::vec4(0.2f, 0.8f, 0.3f, 1.0f);
+			std::string treeName = "Tree" + std::to_string(((rand() % NrOfTreeTypes) + 1));
+			TreeMaterial.DiffuseTexture = Frosty::AssetManager::GetTexture2D(treeName);
+
+			treeName = "Tree" + std::to_string(((rand() % NrOfTreeTypes) + 1));
+			world->AddComponent<Frosty::ECS::CMesh>(Tree, Frosty::AssetManager::GetMesh(treeName));
+		}
+
+
+
+	}
+
+	void generateBorders()
+	{
+
+		auto& world = Frosty::Application::Get().GetWorld();
+		uint8_t mapLength = 192;
+		uint8_t mapDepth = 108;
+
+		float HB_Y_pos = 1;
+		float middleWidth = 0.5;
+		float middleDepth = 5;
+		float HitboxMapInflunce = 0.15;
+
+
+		//Bot Hitbox
+		auto& BorderBox_1 = world->CreateEntity();
+		auto& BorderTransform_1 = world->GetComponent<Frosty::ECS::CTransform>(BorderBox_1);
+		BorderTransform_1.Position = glm::vec3(mapLength / 2, 1.0f, mapDepth / 2);
+		BorderTransform_1.Scale = glm::vec3(mapLength * 2, 1.0f, mapDepth * HitboxMapInflunce);
+
+		//world->AddComponent<Frosty::ECS::CMesh>(BorderBox_1, Frosty::AssetManager::GetMesh("Cube"));
+		//auto& BorderBoxMaterial_1 = world->AddComponent<Frosty::ECS::CMaterial>(BorderBox_1, Frosty::AssetManager::GetShader("FlatColor"));
+		world->AddComponent<Frosty::ECS::CMotion>(BorderBox_1, 0.0f);
+		world->AddComponent<Frosty::ECS::CCollision>(BorderBox_1, Frosty::AssetManager::GetBoundingBox("Cube"));
+		//BorderBoxMaterial_1.Albedo = glm::vec4(1.0f, 0.0f, 0.0f, 1.0f);
+		world->AddComponent<Frosty::ECS::CTag>(BorderBox_1, "Border");
+
+
+		//Top Hitbox
+		auto& BorderBox_2 = world->CreateEntity();
+		auto& BorderTransform_2 = world->GetComponent<Frosty::ECS::CTransform>(BorderBox_2);
+		BorderTransform_2.Position = glm::vec3(mapLength / 2, 1.0f, -mapDepth / 2);
+		BorderTransform_2.Scale = glm::vec3(mapLength * 2, 1.0f, mapDepth * HitboxMapInflunce);
+
+		//world->AddComponent<Frosty::ECS::CMesh>(BorderBox_2, Frosty::AssetManager::GetMesh("Cube"));
+		//auto& BorderBoxMaterial_2 = world->AddComponent<Frosty::ECS::CMaterial>(BorderBox_2, Frosty::AssetManager::GetShader("FlatColor"));
+		world->AddComponent<Frosty::ECS::CCollision>(BorderBox_2, Frosty::AssetManager::GetBoundingBox("Cube"));
+		world->AddComponent<Frosty::ECS::CMotion>(BorderBox_2, 0.0f);
+		//BorderBoxMaterial_2.Albedo = glm::vec4(0.0f, 1.0f, 0.0f, 1.0f);
+		world->AddComponent<Frosty::ECS::CTag>(BorderBox_2, "Border");
+
+		//Left Hitbox
+		auto& BorderBox_3 = world->CreateEntity();
+		auto& BorderTransform_3 = world->GetComponent<Frosty::ECS::CTransform>(BorderBox_3);
+		BorderTransform_3.Position = glm::vec3(-mapLength / 2, 1.0f, 0.0);
+		BorderTransform_3.Scale = glm::vec3(mapLength * HitboxMapInflunce, 1.0f, mapDepth);
+
+		//world->AddComponent<Frosty::ECS::CMesh>(BorderBox_3, Frosty::AssetManager::GetMesh("Cube"));
+		//auto& BorderBoxMaterial_3 = world->AddComponent<Frosty::ECS::CMaterial>(BorderBox_3, Frosty::AssetManager::GetShader("FlatColor"));
+		world->AddComponent<Frosty::ECS::CCollision>(BorderBox_3, Frosty::AssetManager::GetBoundingBox("Cube"));
+		world->AddComponent<Frosty::ECS::CMotion>(BorderBox_3, 0.0f);
+		//BorderBoxMaterial_3.Albedo = glm::vec4(1.0f, 0.0f, 1.0f, 1.0f);
+		world->AddComponent<Frosty::ECS::CTag>(BorderBox_3, "Border");
+
+
+		//Right Hitbox
+		auto& BorderBox_4 = world->CreateEntity();
+		auto& BorderTransform_4 = world->GetComponent<Frosty::ECS::CTransform>(BorderBox_4);
+		BorderTransform_4.Position = glm::vec3(mapLength * 1.5, 1.0f, 0.0);
+		BorderTransform_4.Scale = glm::vec3(mapLength * HitboxMapInflunce, 1.0f, mapDepth);
+
+		//world->AddComponent<Frosty::ECS::CMesh>(BorderBox_4, Frosty::AssetManager::GetMesh("Cube"));
+		//auto& BorderBoxMaterial_4 = world->AddComponent<Frosty::ECS::CMaterial>(BorderBox_4, Frosty::AssetManager::GetShader("FlatColor"));
+		world->AddComponent<Frosty::ECS::CCollision>(BorderBox_4, Frosty::AssetManager::GetBoundingBox("Cube"));
+		world->AddComponent<Frosty::ECS::CMotion>(BorderBox_4, 0.0f);
+		//BorderBoxMaterial_4.Albedo = glm::vec4(1.0f, 1.0f, 0.0f, 1.0f);
+		world->AddComponent<Frosty::ECS::CTag>(BorderBox_4, "Border");
+
+
+
+		//Middle Top Hitbox
+		auto& BorderBox_5 = world->CreateEntity();
+		auto& BorderTransform_5 = world->GetComponent<Frosty::ECS::CTransform>(BorderBox_5);
+		BorderTransform_5.Position = glm::vec3(mapLength / 2, 1.0f, mapDepth / 2);
+		BorderTransform_5.Scale = glm::vec3(mapLength * HitboxMapInflunce * middleWidth, 1.0f, mapDepth * HitboxMapInflunce * middleDepth);
+
+		//world->AddComponent<Frosty::ECS::CMesh>(BorderBox_5, Frosty::AssetManager::GetMesh("Cube"));
+		world->AddComponent<Frosty::ECS::CCollision>(BorderBox_5, Frosty::AssetManager::GetBoundingBox("Cube"));
+		world->AddComponent<Frosty::ECS::CMotion>(BorderBox_5, 0.0f);
+		//auto& BorderBoxMaterial_5 = world->AddComponent<Frosty::ECS::CMaterial>(BorderBox_5, Frosty::AssetManager::GetShader("FlatColor"));
+		//BorderBoxMaterial_5.Albedo = glm::vec4(0.3f, 0.4f, 0.8f, 1.0f);
+		world->AddComponent<Frosty::ECS::CTag>(BorderBox_5, "Border");
+
+
+		//Middle Bot Hitbox
+		auto& BorderBox_6 = world->CreateEntity();
+		auto& BorderTransform_6 = world->GetComponent<Frosty::ECS::CTransform>(BorderBox_6);
+		BorderTransform_6.Position = glm::vec3(mapLength / 2, 1.0f, -mapDepth / 2);
+		BorderTransform_6.Scale = glm::vec3(mapLength * HitboxMapInflunce * middleWidth, 1.0f, mapDepth * HitboxMapInflunce * middleDepth);
+
+		//	world->AddComponent<Frosty::ECS::CMesh>(BorderBox_6, Frosty::AssetManager::GetMesh("Cube"));
+	//		auto& BorderBoxMaterial_6 = world->AddComponent<Frosty::ECS::CMaterial>(BorderBox_6, Frosty::AssetManager::GetShader("FlatColor"));
+		world->AddComponent<Frosty::ECS::CCollision>(BorderBox_6, Frosty::AssetManager::GetBoundingBox("Cube"));
+		world->AddComponent<Frosty::ECS::CMotion>(BorderBox_6, 0.0f);
+		//	BorderBoxMaterial_6.Albedo = glm::vec4(0.3f, 0.4f, 0.8f, 1.0f);
+		world->AddComponent<Frosty::ECS::CTag>(BorderBox_6, "Border");
+
+
+	}
+
+	void generatePlanes()
+	{
+		auto& world = Frosty::Application::Get().GetWorld();
+
+		uint8_t mapLength = 192;
+		uint8_t mapDepth = 108;
+
+		//Planes
 
 		auto& PlaneOne = world->CreateEntity();
 		auto& testTranform = world->GetComponent<Frosty::ECS::CTransform>(PlaneOne);
 		testTranform.Scale = glm::vec3(mapLength, 0.0f, mapDepth);
 		world->AddComponent<Frosty::ECS::CMesh>(PlaneOne, Frosty::AssetManager::GetMesh("Plane"));
 		auto& testMaterial = world->AddComponent<Frosty::ECS::CMaterial>(PlaneOne, Frosty::AssetManager::GetShader("Texture2D"));
-		//testMaterial.Albedo = glm::vec4(0.2f, 0.8f, 0.3f, 1.0f);
+		testMaterial.Albedo = glm::vec4(0.2f, 0.8f, 0.3f, 1.0f);
 		testMaterial.DiffuseTexture = Frosty::AssetManager::GetTexture2D("Brown Mud Diffuse");
-
 
 
 
@@ -768,173 +987,57 @@ namespace MCS
 
 
 
-		//Bot Hitbox
-		auto& BorderBox_1 = world->CreateEntity();
-		auto& BorderTransform_1 = world->GetComponent<Frosty::ECS::CTransform>(BorderBox_1);
-		BorderTransform_1.Position = glm::vec3(mapLength / 2, 1.0f, mapDepth / 2);
-		BorderTransform_1.Scale = glm::vec3(mapLength * 2, 1.0f, mapDepth * HitboxMapInflunce);
 
-		world->AddComponent<Frosty::ECS::CMesh>(BorderBox_1, Frosty::AssetManager::GetMesh("Cube"));
-		auto& BorderBoxMaterial_1 = world->AddComponent<Frosty::ECS::CMaterial>(BorderBox_1, Frosty::AssetManager::GetShader("FlatColor"));
-		world->AddComponent<Frosty::ECS::CMotion>(BorderBox_1, 0.0f);
-		world->AddComponent<Frosty::ECS::CCollision>(BorderBox_1, Frosty::AssetManager::GetBoundingBox("Cube"));
-		BorderBoxMaterial_1.Albedo = glm::vec4(1.0f, 0.0f, 0.0f, 1.0f);
-		world->AddComponent<Frosty::ECS::CTag>(BorderBox_1, "Border");
+		auto& PlaneThree = world->CreateEntity();
+		auto& testTranformThree = world->GetComponent<Frosty::ECS::CTransform>(PlaneThree);
+		testTranformThree.Position = glm::vec3(0.0f, -0.01f, 0.0f);
+		testTranformThree.Scale = glm::vec3(1000.0f, 0.0f, 1000.0f);
+		world->AddComponent<Frosty::ECS::CMesh>(PlaneThree, Frosty::AssetManager::GetMesh("Plane"));
+		auto& testMaterialThree = world->AddComponent<Frosty::ECS::CMaterial>(PlaneThree, Frosty::AssetManager::GetShader("Texture2D"));
+		//testMaterial.Albedo = glm::vec4(0.2f, 0.8f, 0.3f, 1.0f);
+		testMaterialThree.DiffuseTexture = Frosty::AssetManager::GetTexture2D("Brown Mud Diffuse");
 
 
-		//Top Hitbox
-		auto& BorderBox_2 = world->CreateEntity();
-		auto& BorderTransform_2 = world->GetComponent<Frosty::ECS::CTransform>(BorderBox_2);
-		BorderTransform_2.Position = glm::vec3(mapLength / 2, 1.0f, -mapDepth / 2);
-		BorderTransform_2.Scale = glm::vec3(mapLength * 2, 1.0f, mapDepth * HitboxMapInflunce);
+	}
 
-		world->AddComponent<Frosty::ECS::CMesh>(BorderBox_2, Frosty::AssetManager::GetMesh("Cube"));
-		auto& BorderBoxMaterial_2 = world->AddComponent<Frosty::ECS::CMaterial>(BorderBox_2, Frosty::AssetManager::GetShader("FlatColor"));
-		world->AddComponent<Frosty::ECS::CCollision>(BorderBox_2, Frosty::AssetManager::GetBoundingBox("Cube"));
-		world->AddComponent<Frosty::ECS::CMotion>(BorderBox_2, 0.0f);
-		BorderBoxMaterial_2.Albedo = glm::vec4(0.0f, 1.0f, 0.0f, 1.0f);
-		world->AddComponent<Frosty::ECS::CTag>(BorderBox_2, "Border");
+	void generateMapMarkers()
+	{
 
-		//Left Hitbox
-		auto& BorderBox_3 = world->CreateEntity();
-		auto& BorderTransform_3 = world->GetComponent<Frosty::ECS::CTransform>(BorderBox_3);
-		BorderTransform_3.Position = glm::vec3(-mapLength / 2, 1.0f, 0.0);
-		BorderTransform_3.Scale = glm::vec3(mapLength * HitboxMapInflunce, 1.0f, mapDepth);
+		//uint8_t mapLength = 192;
+		//uint8_t mapDepth = 108;
 
-		world->AddComponent<Frosty::ECS::CMesh>(BorderBox_3, Frosty::AssetManager::GetMesh("Cube"));
-		auto& BorderBoxMaterial_3 = world->AddComponent<Frosty::ECS::CMaterial>(BorderBox_3, Frosty::AssetManager::GetShader("FlatColor"));
-		world->AddComponent<Frosty::ECS::CCollision>(BorderBox_3, Frosty::AssetManager::GetBoundingBox("Cube"));
-		world->AddComponent<Frosty::ECS::CMotion>(BorderBox_3, 0.0f);
-		BorderBoxMaterial_3.Albedo = glm::vec4(1.0f, 0.0f, 1.0f, 1.0f);
-		world->AddComponent<Frosty::ECS::CTag>(BorderBox_3, "Border");
+		//float startDebugBoxPosX = -mapLength / 2.0f;
+		//float startDebugBoxPosZ = -mapDepth / 2.0f;
 
 
-		//Right Hitbox
-		auto& BorderBox_4 = world->CreateEntity();
-		auto& BorderTransform_4 = world->GetComponent<Frosty::ECS::CTransform>(BorderBox_4);
-		BorderTransform_4.Position = glm::vec3(mapLength * 1.5, 1.0f, 0.0);
-		BorderTransform_4.Scale = glm::vec3(mapLength * HitboxMapInflunce, 1.0f, mapDepth);
+		//Map Markers
+		//for (int i = 0; i < 3; i++)
+		//{
 
-		world->AddComponent<Frosty::ECS::CMesh>(BorderBox_4, Frosty::AssetManager::GetMesh("Cube"));
-		auto& BorderBoxMaterial_4 = world->AddComponent<Frosty::ECS::CMaterial>(BorderBox_4, Frosty::AssetManager::GetShader("FlatColor"));
-		world->AddComponent<Frosty::ECS::CCollision>(BorderBox_4, Frosty::AssetManager::GetBoundingBox("Cube"));
-		world->AddComponent<Frosty::ECS::CMotion>(BorderBox_4, 0.0f);
-		BorderBoxMaterial_4.Albedo = glm::vec4(1.0f, 1.0f, 0.0f, 1.0f);
-		world->AddComponent<Frosty::ECS::CTag>(BorderBox_4, "Border");
+		//	for (int j = 0; j < 3; j++)
+		//	{
+		//		auto& DebugBox = world->CreateEntity();
+		//		auto& DebugBoxTranform = world->GetComponent<Frosty::ECS::CTransform>(DebugBox);
+		//		DebugBoxTranform.Scale = glm::vec3(1.0f, 10.0f, 1.0f);
+		//		DebugBoxTranform.Position = glm::vec3(startDebugBoxPosX + mapLength * j, 0.0f, startDebugBoxPosZ + ((mapDepth / 2) * i));
+		//		world->AddComponent<Frosty::ECS::CMesh>(DebugBox, Frosty::AssetManager::GetMesh("Cube"));
+		//		auto& DebugBoxMaterial = world->AddComponent<Frosty::ECS::CMaterial>(DebugBox, Frosty::AssetManager::GetShader("FlatColor"));
+		//		DebugBoxMaterial.Albedo = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
+		//	}
+		//}
 
 
 
-		//Middle Top Hitbox
-		auto& BorderBox_5 = world->CreateEntity();
-		auto& BorderTransform_5 = world->GetComponent<Frosty::ECS::CTransform>(BorderBox_5);
-		BorderTransform_5.Position = glm::vec3(mapLength / 2, 1.0f, mapDepth / 2);
-		BorderTransform_5.Scale = glm::vec3(mapLength * HitboxMapInflunce * middleWidth, 1.0f, mapDepth * HitboxMapInflunce * middleDepth);
+	}
 
-		world->AddComponent<Frosty::ECS::CMesh>(BorderBox_5, Frosty::AssetManager::GetMesh("Cube"));
-		world->AddComponent<Frosty::ECS::CCollision>(BorderBox_5, Frosty::AssetManager::GetBoundingBox("Cube"));
-		world->AddComponent<Frosty::ECS::CMotion>(BorderBox_5, 0.0f);
-		auto& BorderBoxMaterial_5 = world->AddComponent<Frosty::ECS::CMaterial>(BorderBox_5, Frosty::AssetManager::GetShader("FlatColor"));
-		BorderBoxMaterial_5.Albedo = glm::vec4(0.3f, 0.4f, 0.8f, 1.0f);
-		world->AddComponent<Frosty::ECS::CTag>(BorderBox_5, "Border");
+	void generateLights()
+	{
+		uint8_t mapLength = 192;
+		uint8_t mapDepth = 108;
+
+		//float Light_Y_Offset = 3.0f;
 
 
-		//Middle Bot Hitbox
-		auto& BorderBox_6 = world->CreateEntity();
-		auto& BorderTransform_6 = world->GetComponent<Frosty::ECS::CTransform>(BorderBox_6);
-		BorderTransform_6.Position = glm::vec3(mapLength / 2, 1.0f, -mapDepth / 2);
-		BorderTransform_6.Scale = glm::vec3(mapLength * HitboxMapInflunce * middleWidth, 1.0f, mapDepth * HitboxMapInflunce * middleDepth);
-
-		world->AddComponent<Frosty::ECS::CMesh>(BorderBox_6, Frosty::AssetManager::GetMesh("Cube"));
-		auto& BorderBoxMaterial_6 = world->AddComponent<Frosty::ECS::CMaterial>(BorderBox_6, Frosty::AssetManager::GetShader("FlatColor"));
-		world->AddComponent<Frosty::ECS::CCollision>(BorderBox_6, Frosty::AssetManager::GetBoundingBox("Cube"));
-		world->AddComponent<Frosty::ECS::CMotion>(BorderBox_6, 0.0f);
-		BorderBoxMaterial_6.Albedo = glm::vec4(0.3f, 0.4f, 0.8f, 1.0f);
-		world->AddComponent<Frosty::ECS::CTag>(BorderBox_6, "Border");
-
-
-
-		//Top Trees
-
-		for (int i = 0; i < 25; i++)
-		{
-			auto& Tree = world->CreateEntity();
-			auto& TreeTranform = world->GetComponent<Frosty::ECS::CTransform>(Tree);
-			TreeTranform.Position = glm::vec3(-(mapLength/2) + (((mapLength*2)/24)  * i), 3.0, (mapDepth/2) + randValue(randOffsetMax, randOffsetMin));
-			world->AddComponent<Frosty::ECS::CMesh>(Tree, Frosty::AssetManager::GetMesh("Donut"));
-			auto& TreeMaterial = world->AddComponent<Frosty::ECS::CMaterial>(Tree, Frosty::AssetManager::GetShader("Texture2D"));
-			TreeMaterial.Albedo = glm::vec4(0.2f, 0.8f, 0.3f, 1.0f);
-			TreeMaterial.DiffuseTexture = Frosty::AssetManager::GetTexture2D("Checkerboard");
-		}
-
-
-
-		//Bot Trees
-
-		for (int i = 0; i < 25; i++)
-		{
-			auto& Tree = world->CreateEntity();
-			auto& TreeTranform = world->GetComponent<Frosty::ECS::CTransform>(Tree);
-			TreeTranform.Position = glm::vec3(-(mapLength / 2) + (((mapLength * 2) / 24) * i), 3.0, (-mapDepth / 2) + randValue(randOffsetMax, randOffsetMin) ) ;
-			world->AddComponent<Frosty::ECS::CMesh>(Tree, Frosty::AssetManager::GetMesh("Donut"));
-			auto& TreeMaterial = world->AddComponent<Frosty::ECS::CMaterial>(Tree, Frosty::AssetManager::GetShader("Texture2D"));
-			TreeMaterial.Albedo = glm::vec4(0.2f, 0.8f, 0.3f, 1.0f);
-			TreeMaterial.DiffuseTexture = Frosty::AssetManager::GetTexture2D("Checkerboard");
-		}
-
-
-		//Left Trees
-
-		for (int i = 1; i < 6; i++)
-		{
-			auto& Tree = world->CreateEntity();
-			auto& TreeTranform = world->GetComponent<Frosty::ECS::CTransform>(Tree);
-			TreeTranform.Position = glm::vec3(-(mapLength / 2) + randValue(randOffsetMax, randOffsetMin), 3.0, (-mapDepth / 2  + (mapDepth/6)*i));
-			world->AddComponent<Frosty::ECS::CMesh>(Tree, Frosty::AssetManager::GetMesh("Donut"));
-			auto& TreeMaterial = world->AddComponent<Frosty::ECS::CMaterial>(Tree, Frosty::AssetManager::GetShader("Texture2D"));
-			TreeMaterial.Albedo = glm::vec4(0.2f, 0.8f, 0.3f, 1.0f);
-			TreeMaterial.DiffuseTexture = Frosty::AssetManager::GetTexture2D("Checkerboard");
-		}
-
-
-
-		//Right Trees
-
-		for (int i = 1; i < 6; i++)
-		{
-			auto& Tree = world->CreateEntity();
-			auto& TreeTranform = world->GetComponent<Frosty::ECS::CTransform>(Tree);
-			TreeTranform.Position = glm::vec3((mapLength*1.5) + randValue(randOffsetMax, randOffsetMin), 3.0, (-mapDepth / 2 + (mapDepth / 6) * i));
-			world->AddComponent<Frosty::ECS::CMesh>(Tree, Frosty::AssetManager::GetMesh("Donut"));
-			auto& TreeMaterial = world->AddComponent<Frosty::ECS::CMaterial>(Tree, Frosty::AssetManager::GetShader("Texture2D"));
-			TreeMaterial.Albedo = glm::vec4(0.2f, 0.8f, 0.3f, 1.0f);
-			TreeMaterial.DiffuseTexture = Frosty::AssetManager::GetTexture2D("Checkerboard");
-		}
-
-
-
-		//Middle Trees
-
-		for (int i = 1; i < 3; i++)
-		{
-			auto& Tree = world->CreateEntity();
-			auto& TreeTranform = world->GetComponent<Frosty::ECS::CTransform>(Tree);
-			TreeTranform.Position = glm::vec3((mapLength / 2) + randValue(randOffsetMax, randOffsetMin), 3.0, (-mapDepth / 2 + (mapDepth / 6) * i));
-			world->AddComponent<Frosty::ECS::CMesh>(Tree, Frosty::AssetManager::GetMesh("Donut"));
-			auto& TreeMaterial = world->AddComponent<Frosty::ECS::CMaterial>(Tree, Frosty::AssetManager::GetShader("Texture2D"));
-			TreeMaterial.Albedo = glm::vec4(0.2f, 0.8f, 0.3f, 1.0f);
-			TreeMaterial.DiffuseTexture = Frosty::AssetManager::GetTexture2D("Checkerboard");
-		}
-
-		for (int i = 1; i < 3; i++)
-		{
-			auto& Tree = world->CreateEntity();
-			auto& TreeTranform = world->GetComponent<Frosty::ECS::CTransform>(Tree);
-			TreeTranform.Position = glm::vec3((mapLength / 2) + randValue(randOffsetMax, randOffsetMin), 3.0,  (mapDepth / 6) * i);
-			world->AddComponent<Frosty::ECS::CMesh>(Tree, Frosty::AssetManager::GetMesh("Donut"));
-			auto& TreeMaterial = world->AddComponent<Frosty::ECS::CMaterial>(Tree, Frosty::AssetManager::GetShader("Texture2D"));
-			TreeMaterial.Albedo = glm::vec4(0.2f, 0.8f, 0.3f, 1.0f);
-			TreeMaterial.DiffuseTexture = Frosty::AssetManager::GetTexture2D("Checkerboard");
-		}
 
 
 		//Lights 
@@ -951,13 +1054,6 @@ namespace MCS
 		//		world->AddComponent<Frosty::ECS::CLight>(Light_1, Frosty::ECS::CLight::LightType::Point, 200.0f, 20.0f);
 		//	}
 		//}
-
-
-		PushLayer(FY_NEW InspectorLayer());
-	}
-
-	Game::~Game()
-	{
 
 	}
 
