@@ -56,19 +56,19 @@ namespace Frosty
 
 	void Renderer::Submit2D(const std::shared_ptr<Shader>& shader, const std::shared_ptr<VertexArray>& vertexArray, std::string& tex, glm::mat4& modelMatrix)
 	{
-		shader->Bind();
-		shader->UploadUniforMat4("model", modelMatrix);
-		//shader->UploadUniformInt(tex, 0);
+		//shader->Bind();
+		//shader->UploadUniforMat4("model", modelMatrix);
+		////shader->UploadUniformInt(tex, 0);
 
-		vertexArray->Bind();
-		RenderCommand::Draw2D(vertexArray);
-		shader->UnBind();
-		vertexArray->Unbind();
+		//vertexArray->Bind();
+		//RenderCommand::Draw2D(vertexArray);
+		//shader->UnBind();
+		//vertexArray->Unbind();
 	}
 
 	void Renderer::SubmitText(const std::shared_ptr<Shader>& shader, const std::shared_ptr<VertexArray>& vertexArray, std::string& text)
 	{
-		shader->Bind();
+		/*shader->Bind();
 		vertexArray->Bind();
 
 		glm::mat4 projection = glm::ortho(0.0f, 800.0f, 0.0f, 600.0f);
@@ -113,12 +113,12 @@ namespace Frosty
 		}
 		glBindTexture(GL_TEXTURE_2D, 0);
 		vertexArray->Unbind();
-		vertexArray->GetVertexBuffer().front()->Unbind();
+		vertexArray->GetVertexBuffer().front()->Unbind();*/
 	}
 
 	void Renderer::SubmitParticles(const std::shared_ptr<Shader>& shader, const std::shared_ptr<VertexArray>& vertexArray, glm::mat4& modelMat, size_t particleCount)
 	{
-		shader->Bind();
+		/*shader->Bind();
 		vertexArray->Bind();
 
 		shader->UploadUniforMat4("viewMat", m_SceneData->ViewMatrix);
@@ -128,7 +128,7 @@ namespace Frosty
 		RenderCommand::DrawParticles(vertexArray, particleCount);
 
 		vertexArray->Unbind();
-		shader->UnBind();
+		shader->UnBind();*/
 	}
 	
 	void Renderer::Submit(ECS::CMaterial* mat, const std::shared_ptr<VertexArray>& vertexArray, const glm::mat4& transform)
@@ -165,6 +165,6 @@ namespace Frosty
 
 		}
 		vertexArray->Bind();
-		RenderCommand::DrawIndexed(vertexArray);
+		RenderCommand::Draw2D(vertexArray);
 	}
 }

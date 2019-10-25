@@ -19,7 +19,7 @@ namespace Frosty
 			 -1.0f, -1.0f, 0.0f, 0.8f, 0.0f, 0.8f, 1.0f, 0.0f, 0.0f
 		};
 	private:
-		Texture m_Texture;
+		SpriteTexture m_Texture;
 		Transform m_Transform;								 //Texture texture;
 
 		std::vector<Canvas> m_Canvas;

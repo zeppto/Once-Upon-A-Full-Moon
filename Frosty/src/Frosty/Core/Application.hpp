@@ -18,10 +18,9 @@
 #include "Frosty/RenderEngine/Shader.hpp"
 #include "Frosty/RenderEngine/Buffer.hpp"
 #include "Frosty/RenderEngine/VertexArray.hpp"
-#include "Frosty/UI/Sprite.h"
-#include "Frosty/UI/Canvas.h"
+//#include "Frosty/UI/Sprite.h"
+//#include "Frosty/UI/Canvas.h"
 #include "Frosty/DEFINITIONS.hpp"
-#include "Frosty/Core/Camera/Camera.hpp"
 #include "Frosty/Particles/ParticleSystem.h"
 
 namespace Frosty
@@ -53,9 +52,9 @@ namespace Frosty
 		void StopGame(bool maximize);
 
 		//~~ States stuff, temp
-		inline StateMachine& getStateMachine() { return states; }
-		void setMainMenuReturn(bool ret) { mainMenuReturn = ret; }
-		bool getMainMenuReturn() { return mainMenuReturn; }
+		//inline StateMachine& getStateMachine() { return states; }
+		//void setMainMenuReturn(bool ret) { mainMenuReturn = ret; }
+		//bool getMainMenuReturn() { return mainMenuReturn; }
 
 	private:
 		void OnWindowCloseEvent(WindowCloseEvent& e);
@@ -80,21 +79,21 @@ namespace Frosty
 
 		// Particle Shader Stuff
 		//~~ States stuff (temp)
-		StateMachine states;
+	/*	StateMachine states;*/
 		bool mainMenuReturn;		
 		
-		std::shared_ptr<Canvas> m_Canvas;
-		std::shared_ptr<Sprite> m_Sprite;
-		std::shared_ptr<ParticleSystem> m_particleSystem;
-
-		std::shared_ptr<Shader> m_Shader;
-		std::shared_ptr<Shader> m_Shader2;
-		std::shared_ptr<Shader> m_textShader;
-		std::shared_ptr<Shader> m_particleShader;
-		std::shared_ptr<Shader> m_computeParticleShader;
-		std::shared_ptr<VertexArray> m_VertexArray;
-		std::shared_ptr<VertexArray> m_TextVertexArray;
-		std::shared_ptr<VertexBuffer> m_textVertBuffer;
+		//std::shared_ptr<Canvas> m_Canvas;
+		//std::shared_ptr<Sprite> m_Sprite;
+		//std::shared_ptr<ParticleSystem> m_particleSystem;
+		//
+		//std::shared_ptr<Shader> m_Shader;
+		//std::shared_ptr<Shader> m_Shader2;
+		//std::shared_ptr<Shader> m_textShader;
+		//std::shared_ptr<Shader> m_particleShader;
+		//std::shared_ptr<Shader> m_computeParticleShader;
+		//std::shared_ptr<VertexArray> m_VertexArray;
+		//std::shared_ptr<VertexArray> m_TextVertexArray;
+		//std::shared_ptr<VertexBuffer> m_textVertBuffer;
 	};
 }
 #endif 

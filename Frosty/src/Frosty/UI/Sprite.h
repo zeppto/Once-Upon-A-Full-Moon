@@ -5,7 +5,7 @@
 
 namespace Frosty
 {
-	struct Texture {
+	struct SpriteTexture {
 		unsigned int id;
 		std::string name;
 	};
@@ -25,7 +25,7 @@ namespace Frosty
 		};
 	private:
 		Transform m_Transform;
-		Texture m_Texture;
+		SpriteTexture m_Texture;
 		unsigned int m_QuadVbo;
 
 		glm::vec4 color = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
@@ -53,7 +53,7 @@ namespace Frosty
 		float* GetQuad();
 		int GetSize();
 
-		Texture& GetTexture();
+		SpriteTexture& GetTexture();
 		Transform &GetTransform();
 
 	private:

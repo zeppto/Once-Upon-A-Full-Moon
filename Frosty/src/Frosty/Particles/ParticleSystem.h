@@ -5,7 +5,6 @@
 #include "Frosty/API/AssetManager/KeyLabel.hpp"
 #include "Frosty/API/AssetManager/AssetFiles/TextureFile.hpp"
 #include "Frosty/RenderEngine/VertexArray.hpp"
-#include "Frosty/API/AssetManager/Assetmanager.hpp"
 
 namespace Frosty
 {

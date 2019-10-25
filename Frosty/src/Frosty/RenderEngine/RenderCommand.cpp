@@ -1,6 +1,6 @@
 #include "fypch.hpp"
 #include "RenderCommand.hpp"
-
+#include "Frosty/Core/Application.hpp"
 #include <Glad/glad.h>
 
 namespace Frosty

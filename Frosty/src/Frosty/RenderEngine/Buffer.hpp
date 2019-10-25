@@ -158,6 +158,8 @@ namespace Frosty
 	private:
 		uint32_t m_RendererID;
 		BufferLayout m_Layout;
+		uint32_t m_NrOfVertices = 0;
+		uint32_t m_Size = 0;
 	};
 
 	class IndexBuffer

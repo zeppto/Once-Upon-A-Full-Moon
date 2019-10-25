@@ -2,6 +2,7 @@
 #define RENDERCOMMAND_HPP
 
 #include "Frosty/RenderEngine/VertexArray.hpp"
+#include "GLFW/glfw3.h"
 
 namespace Frosty
 {
