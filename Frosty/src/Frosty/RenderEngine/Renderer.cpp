@@ -61,17 +61,17 @@ namespace Frosty
 		s_SceneData->DirectionalLights.emplace_back(light);
 	}
 
-	void Renderer::Submit2D(const std::shared_ptr<Shader>& shader, const std::shared_ptr<VertexArray>& vertexArray, std::string& tex, glm::mat4& modelMatrix)
-	{
-		//shader->Bind();
-		//shader->UploadUniforMat4("model", modelMatrix);
-		////shader->UploadUniformInt(tex, 0);
+	//void Renderer::Submit2D(const std::shared_ptr<Shader>& shader, const std::shared_ptr<VertexArray>& vertexArray, std::string& tex, glm::mat4& modelMatrix)
+	//{
+	//	//shader->Bind();
+	//	//shader->UploadUniforMat4("model", modelMatrix);
+	//	////shader->UploadUniformInt(tex, 0);
 
-		//vertexArray->Bind();
-		//RenderCommand::Draw2D(vertexArray);
-		//shader->UnBind();
-		//vertexArray->Unbind();
-	}
+	//	//vertexArray->Bind();
+	//	//RenderCommand::Draw2D(vertexArray);
+	//	//shader->UnBind();
+	//	//vertexArray->Unbind();
+	//}
 
 	void Renderer::SubmitText(const std::shared_ptr<Shader>& shader, const std::shared_ptr<VertexArray>& vertexArray, std::string& text)
 	{
