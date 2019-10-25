@@ -104,6 +104,8 @@ namespace MCS
 					if (world->HasComponent<Frosty::ECS::CFollow>(m_SelectedEntity)) toggles[6] = true;
 					if (world->HasComponent<Frosty::ECS::CLight>(m_SelectedEntity)) toggles[7] = true;
 					if (world->HasComponent<Frosty::ECS::CCollision>(m_SelectedEntity)) toggles[8] = true;
+					if (world->HasComponent<Frosty::ECS::CPlayerAttack>(m_SelectedEntity)) toggles[9] = true;
+					if (world->HasComponent<Frosty::ECS::CHealth>(m_SelectedEntity)) toggles[10] = true;
 				}
 
 				// Information
@@ -170,6 +172,20 @@ namespace MCS
 							world->AddComponent<Frosty::ECS::CCollision>(m_SelectedEntity, Frosty::AssetManager::GetBoundingBox("Cube"));
 						else
 							world->RemoveComponent<Frosty::ECS::CCollision>(m_SelectedEntity);
+					}
+					if (ImGui::MenuItem("Player Attack", "", &toggles[9]))
+					{
+						if (!world->HasComponent<Frosty::ECS::CPlayerAttack>(m_SelectedEntity))
+							world->AddComponent<Frosty::ECS::CPlayerAttack>(m_SelectedEntity);
+						else
+							world->RemoveComponent<Frosty::ECS::CPlayerAttack>(m_SelectedEntity);
+					}
+					if (ImGui::MenuItem("Health", "", &toggles[10]))
+					{
+						if (!world->HasComponent<Frosty::ECS::CHealth>(m_SelectedEntity))
+							world->AddComponent<Frosty::ECS::CHealth>(m_SelectedEntity);
+						else
+							world->RemoveComponent<Frosty::ECS::CHealth>(m_SelectedEntity);
 					}
 					ImGui::EndPopup();
 				}
@@ -256,6 +272,7 @@ namespace MCS
 						float compHeight = 0.0f;
 						if (comp.UseShader->GetName() == "FlatColor") compHeight = 125.0f;
 						else if (comp.UseShader->GetName() == "Texture2D") compHeight = 300.0f;
+						else if (comp.UseShader->GetName() == "UI") compHeight = 125.0f;
 						ImGui::BeginChild("Material", ImVec2(EDITOR_INSPECTOR_WIDTH, compHeight), true);
 
 						if (ImGui::Button("Shader")) ImGui::OpenPopup("shader_select_popup");
@@ -390,6 +407,45 @@ namespace MCS
 							}
 							ImGui::SameLine();
 							ImGui::Text("Normal");
+						}
+
+						if (comp.UseShader->GetName() == "UI")
+						{
+							// Diffuse // 
+							ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(10, 10));
+							//uint32_t selDiffuseID = 0;
+							//comp.DiffuseTexture ? selDiffuseID = comp.DiffuseTexture->GetRenderID() : selDiffuseID = Frosty::AssetManager::GetTexture2D("Checkerboard")->GetRenderID();
+							ImGui::Image(comp.DiffuseTexture ? comp.DiffuseTexture->GetRenderID() : Frosty::AssetManager::GetTexture2D("Checkerboard")->GetRenderID(), ImVec2(64, 64));
+							ImGui::PopStyleVar();
+							if (ImGui::IsItemClicked()) ImGui::OpenPopup("texture_selector");
+							if (ImGui::BeginPopupModal("texture_selector", NULL))
+							{
+								size_t index = 0;
+								ImGuiTreeNodeFlags node_flags = ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen; // ImGuiTreeNodeFlags_Bullet
+								uint32_t diffuseID = 0;
+
+								for (auto& texture : Frosty::AssetManager::GetTextures2D())
+								{
+									ImGui::Image(texture.second->GetRenderID(), ImVec2(64, 64));
+									if (ImGui::IsItemClicked())
+									{
+										if (texture.first == "Checkerboard")
+										{
+											comp.DiffuseTexture->Unbind();
+											comp.DiffuseTexture.reset();
+										}
+										else
+										{
+											comp.DiffuseTexture = texture.second;
+										}
+									}
+								}
+
+								if (ImGui::Button("Close")) ImGui::CloseCurrentPopup();
+								ImGui::EndPopup();
+							}
+							ImGui::SameLine();
+							ImGui::Text("Texture");
 						}
 
 						// Add more parameters like texture etc
@@ -532,6 +588,30 @@ namespace MCS
 							ImGui::EndPopup();
 						}
 						ImGui::EndChild();
+					}
+					if (world->HasComponent<Frosty::ECS::CPlayerAttack>(m_SelectedEntity))
+					{
+						if (ImGui::CollapsingHeader("Player Attack"))
+						{
+							auto& comp = world->GetComponent<Frosty::ECS::CPlayerAttack>(m_SelectedEntity);
+							ImGui::BeginChild("CPlayerAttack", ImVec2(EDITOR_INSPECTOR_WIDTH, 105), true);
+							ImGui::InputFloat("Damage", &comp.Damage, 1.0f, 10.0f, 0);
+							ImGui::InputFloat("Reach", &comp.Reach, 1.0f, 10.0f, 0);
+							ImGui::InputFloat("Width", &comp.Width, 1.0f, 10.0f, 0);
+							ImGui::EndChild();
+						}
+					}
+
+					if (world->HasComponent<Frosty::ECS::CHealth>(m_SelectedEntity))
+					{
+						if (ImGui::CollapsingHeader("Health"))
+						{
+							auto& comp = world->GetComponent<Frosty::ECS::CHealth>(m_SelectedEntity);
+							ImGui::BeginChild("CHealth", ImVec2(EDITOR_INSPECTOR_WIDTH, 105), true);
+							ImGui::InputFloat("Max Health", &comp.MaxHealth, 1.0f, 10.0f, 0);
+							ImGui::InputFloat("Current Health", &comp.CurrentHealth, 1.0f, 10.0f, 0);
+							ImGui::EndChild();
+						}
 					}
 				}
 			}

@@ -22,23 +22,23 @@ namespace Frosty
 			glm::ivec2 bearing;	//Offset from baselne to left/top of glyph
 			uint32_t advance;	//Offset to advance to next glyph
 		};
-
-	private:
-
 	public:
-		UIText(std::string text = "test", std::string font = "Gabriola.ttf", uint32_t fontSize = 32);
-		~UIText();
-
-		bool LoadFont();
 
 	private:
 		std::string m_text;
 		std::string m_font;
-		glm::vec2 m_pos;
-		uint32_t m_fontSize;
+		uint16_t m_fontSize;
 
 	public:
+		UIText(std::string text = "test", std::string font = "Gabriola.ttf", uint16_t fontSize = 32);
+		~UIText();
+
+		bool Init();
+		void SetText(std::string text) { m_text = text; };
+		void SetFont(std::string font) { m_font = font; };
+
+	private:
 
 	};
 }
-#endif //!UITEXT_H
+#endif

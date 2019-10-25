@@ -1,43 +1,35 @@
 #ifndef CANVAS_H
 #define CANVAS_H
-#include "UIElement.h"
-#include "Frosty/UI/Sprite.h"
+#include "Frosty/UI/UIText.h"
+#include "Frosty/UI/UIBar.hpp"
 
 namespace Frosty
 {
-
 	class Canvas
 	{
 	public:
-		float m_Vertices[9 * 6] =
-		{
-			-1.0f, -1.0f, 0.0f, 0.8f, 0.0f, 0.8f, 1.0f, 0.0f, 0.0f,
-			 1.0f, -1.0f, 0.0f, 0.2f, 0.3f, 0.8f, 1.0f, 1.0f, 0.0f,
-			 1.0f, 1.0f, 0.0f, 0.8f, 0.8f, 0.2f, 1.0f, 1.0f, 1.0f,
-			 1.0f, 1.0f, 0.0f, 0.8f, 0.8f, 0.2f, 1.0f, 1.0f, 1.0f,
-			 -1.0f, 1.0f, 0.0f, 0.2f, 0.3f, 0.8f, 1.0f, 0.0f, 1.0f,
-			 -1.0f, -1.0f, 0.0f, 0.8f, 0.0f, 0.8f, 1.0f, 0.0f, 0.0f
-		};
-	private:
-		SpriteTexture m_Texture;
-		Transform m_Transform;								 //Texture texture;
+		//Pos_3, Uv_2, Normal_3, Color_4
 
+	private:
+		uint32_t m_MeshID;
+		uint32_t m_TextureID;
+		Transform m_Transform;
+		//std::shared_ptr<VertexArray> m_vertexArray;
+		//VertexArray test;
+
+		//testing
 		std::vector<Canvas> m_Canvas;
 		std::vector<UIElement> m_Elements; //Button, Text, Texture, Icon, Sprite
-		std::vector<Sprite> m_Sprite;
 
-		//include anchor in Transform class
-		//glm::vec2 anchor;
-		//glm::vec2 pos;
-		//glm::vec2 size;
-
-
+		float** m_ElementVertices;
 	public:
 		Canvas(glm::vec2 size = glm::vec2(1, 1));
 		~Canvas();
 
-		bool Canvas::Init();
-		unsigned int Canvas::LoadTexture();
+		void LoadTexture();
+		void LoadMesh();
+
+		void AddElement(UIElement element);
 
 		void SetAnchor(glm::vec2 anchor);
 		void SetPosition(glm::vec2 pos);
@@ -49,15 +41,18 @@ namespace Frosty
 		glm::vec2 GetScale();
 		glm::vec2 GetRotate();
 
-		uint16_t GetTexture();
+		uint32_t GetTexture();
+		uint32_t GetMesh();
 		Transform& GetTransform();
 
-		float* GetQuad();
-
+		std::vector<std::vector<int32_t>> GetVertices() 
+		{
+			std::vector<std::vector<int32_t>> quads;
+			for (int i = 0; i < m_Elements.size(); i++)
+				quads.emplace_back(m_Elements[i].GetQuadPtrArray());
+			return quads;
+		};
 	private:
-
 	};
 }
-
-
-#endif // !CANVAS_H
+#endif

@@ -17,7 +17,7 @@ namespace Frosty
 		glm::vec3 GetTranslate();
 		glm::vec3 GetRotate();
 		glm::vec3 GetScale();
-
+				  
 		glm::mat4 GetModel();
 
 	private:

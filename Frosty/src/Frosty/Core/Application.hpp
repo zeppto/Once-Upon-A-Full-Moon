@@ -8,6 +8,7 @@
 //#include"Frosty/API/PrefabManager/PrefabManager.h"
 #include "Frosty/RenderEngine/EditorCamera.hpp"
 #include "Frosty/Core/World.hpp"
+//#include "Frosty/UI/Canvas.h"
 
 //pARTICLE bRANCH
 #include "Frosty/StateMachine/StateMachine.hpp"
@@ -94,6 +95,7 @@ namespace Frosty
 		//std::shared_ptr<VertexArray> m_VertexArray;
 		//std::shared_ptr<VertexArray> m_TextVertexArray;
 		//std::shared_ptr<VertexBuffer> m_textVertBuffer;
+		//Canvas m_Canvas;
 	};
 }
 #endif 

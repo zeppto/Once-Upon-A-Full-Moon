@@ -10,7 +10,7 @@ namespace Frosty
 		m_Rotate_vec3 = glm::vec3(0.0f, 0.0f, 0.0f);
 		m_Scale_vec3 = glm::vec3(1.0f, 1.0f, 1.0f);
 
-		m_Translate_mat4 = glm::mat4(
+		this->m_Translate_mat4 = glm::mat4(
 			1.0f, 0.0f, 0.0f, 0.0f,
 			0.0f, 1.0f, 0.0f, 0.0f,
 			0.0f, 0.0f, 1.0f, 0.0f,
@@ -53,11 +53,10 @@ namespace Frosty
 	{
 	}
 
-
 	void Transform::SetAnchor(glm::vec3 anchor)
 	{
-		m_Anchor_vec3 = anchor;
 	}
+
 
 	void Transform::SetTranslate(glm::vec3 translate)
 	{
@@ -136,5 +135,4 @@ namespace Frosty
 	{
 		return (m_Translate_mat4 * m_Rotate_mat4 * m_Scale_mat4);
 	}
-
 }
