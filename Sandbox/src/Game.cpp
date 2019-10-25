@@ -50,7 +50,7 @@ public:
 				Frosty::RenderCommand::SetClearColor(glm::vec4(m_Cameras[i]->Background, 1.0f));
 				Frosty::RenderCommand::Clear();
 				Frosty::Renderer::BeginScene();
-				Frosty::Renderer::SetCamera(m_Transform[i]->Position, m_Cameras[i]->ViewProjectionMatrix);
+				Frosty::Renderer::SetCamera(m_Transform[i]->Position, m_Cameras[i]->ViewMatrix, m_Cameras[i]->ProjectionMatrix);
 			}
 		}
 		else
@@ -58,7 +58,7 @@ public:
 			Frosty::RenderCommand::SetClearColor({ 0.0f, 0.0f, 0.0f, 1.0f });
 			Frosty::RenderCommand::Clear();
 			Frosty::Renderer::BeginScene();
-			Frosty::Renderer::SetCamera(glm::vec3(0.0f, 0.0f, -5.0f), glm::mat4(1.0f));
+			Frosty::Renderer::SetCamera(glm::vec3(0.0f, 0.0f, -5.0f), glm::mat4(1.0f), glm::mat4(1.0f));
 		}
 	}
 
@@ -755,23 +755,46 @@ public:
 
 	inline virtual void Render() override
 	{
+		Frosty::Renderer::GameCameraProps cam = Frosty::Renderer::GetCamera();
+		auto& win = Frosty::Application::Get().GetWindow();
+		glm::vec3 ndcSpacePos;
+		glm::vec2 windowsSpacePos;
 		for (size_t i = 1; i < p_Total; i++)
 		{
 			glm::mat4 transform{1.0f};
 
-			 transform = glm::translate(transform, m_HealthBar[i]->Offset);
+			//cam
 
-			 transform = glm::rotate(transform, glm::radians(m_HealthBar[i]->Rotate.x), { 1.0f, 0.0f, 0.0f });
+			glm::vec4 clipSpace = cam.ProjectionMatrix * (cam.ViewMatrix * glm::vec4(m_Transform[i]->Position + m_HealthBar[i]->Offset, 1.0f));
+			
+			if (clipSpace.w != 0)
+			{
+				ndcSpacePos = glm::vec3( clipSpace.x / clipSpace.w, clipSpace.y / clipSpace.w, clipSpace.z / clipSpace.w);
+				//win.GetViewport()
+				
+				//x  //y
+				windowsSpacePos = glm::vec2((((ndcSpacePos.x) + 1.0) / 2.0) * win.GetViewport().z, (((ndcSpacePos.y) + 1.0) / 2.0) * win.GetViewport().w);
+			
+			}
+			//float distance = glm::length(glm::vec3(cam.CameraPosition - m_Transform[i]->Position));
+			//used to scale the hpBar e.g transform glm::scale * distance; something like that!!!
+			transform = glm::translate(transform, ndcSpacePos);
 
-			 transform = glm::scale(transform, m_HealthBar[i]->HpScale);
+			transform = glm::scale(transform, m_HealthBar[i]->HpScale);
 
+			transform = glm::rotate(transform, glm::radians(m_HealthBar[i]->Rotate.x), { 1.0f, 0.0f, 0.0f });
+
+			
+
+
+			
 
 			if (m_HealthBar[i]->UseShader->GetName() == "UI" && m_HealthBar[i]->Texture) m_HealthBar[i]->Texture->Bind(0);
 
 			Frosty::Renderer::Submit2d(m_HealthBar[i]->Texture.get(), m_HealthBar[i]->UseShader.get(), m_HealthBar[i]->Mesh, transform);
 
 			if (m_HealthBar[i]->UseShader->GetName() == "UI" && m_HealthBar[i]->Texture) m_HealthBar[i]->Texture->Unbind();
-
+			
 		}
 
 	}
@@ -885,13 +908,13 @@ namespace MCS
 		world->AddComponent<Frosty::ECS::CMaterial>(wall, Frosty::AssetManager::GetShader("FlatColor"));
 		world->AddComponent<Frosty::ECS::CMotion>(wall, 5.0f);
 		world->AddComponent<Frosty::ECS::CCollision>(wall, Frosty::AssetManager::GetBoundingBox("Cube"));
-		auto& UIhealth = world->AddComponent<Frosty::ECS::CHealthBar>(wall, glm::vec3(0.5f, 0.0f, 0.0f), Frosty::AssetManager::GetMesh("Plane"), Frosty::AssetManager::GetShader("UI"), Frosty::AssetManager::GetTexture2D("HeartFull"));
-		UIhealth.HpScale = glm::vec3(0.25f, 1.0f, 1.0f);
+		auto& UIhealth = world->AddComponent<Frosty::ECS::CHealthBar>(wall, glm::vec3(0.0f, 6.5f, 0.0f), Frosty::AssetManager::GetMesh("Plane"), Frosty::AssetManager::GetShader("UI"), Frosty::AssetManager::GetTexture2D("Red"));
+		float scaleFact = 0.5f;
+		UIhealth.HpScale = glm::vec3(1.0f, 0.15f, 1.0f) * scaleFact;
 
 		bool UI = true;
 		if (UI)
 		{
-
 			for (size_t i = 0; i < 3; i++)
 			{
 				//Endast Sprites en så länge

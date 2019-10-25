@@ -13,13 +13,26 @@ namespace Frosty
 
 	class Renderer
 	{
+	protected:
+
+
 	public:
+		struct GameCameraProps
+		{
+			glm::vec3 CameraPosition;
+			glm::mat4 ViewMatrix;
+			glm::mat4 ProjectionMatrix;
+			glm::mat4 ViewProjectionMatrix;
+		};
+
 		static void Init();
 
 		static void BeginScene();
 		static void EndScene();
 
-		static void SetCamera(const glm::vec3& pos, const glm::mat4& viewProjection);
+		static 	void Renderer::SetCamera(const glm::vec3& pos, const glm::mat4& view, const glm::mat4& projection);
+		static GameCameraProps GetCamera();
+
 		static void AddLight(const glm::vec3& color, const glm::vec3& pos, float strength, float radius);
 		static void AddLight(const glm::vec3& color, glm::vec3& direction, float strength);
 
@@ -30,11 +43,7 @@ namespace Frosty
 		inline static void Shutdown() { delete s_SceneData; }
 
 	private:
-		struct GameCameraProps
-		{
-			glm::vec3 CameraPosition;
-			glm::mat4 ViewProjectionMatrix;
-		};
+	
 
 		struct PointLight
 		{

@@ -42,6 +42,7 @@ namespace Frosty
 		LoadTexture2D("Heart", "assets/textures/heart.png");
 		LoadTexture2D("HeartFull", "assets/textures/heartFull.png");
 		LoadTexture2D("Sword", "assets/textures/sword.png");
+		LoadTexture2D("Red", "assets/textures/red.png");
 
 		s_Shaders["Texture2D"]->Bind();
 

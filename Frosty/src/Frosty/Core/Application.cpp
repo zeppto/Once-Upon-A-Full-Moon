@@ -81,7 +81,8 @@ namespace Frosty
 				RenderCommand::Clear();
 
 				Renderer::BeginScene();
-				Renderer::SetCamera(m_EditorCamera.GetPosition(), m_EditorCamera.GetViewProjectionMatrix());
+				//Renderer::SetCamera(m_EditorCamera.GetPosition(), m_EditorCamera.GetViewProjectionMatrix());
+				Renderer::SetCamera(m_EditorCamera.GetPosition(), m_EditorCamera.GetViewMatrix(), m_EditorCamera.GetProjectionMatrix());
 			}
 			else
 			{
