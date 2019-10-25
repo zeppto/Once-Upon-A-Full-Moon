@@ -300,6 +300,7 @@ public:
 		p_Signature.set(Frosty::ECS::getComponentTypeID<Frosty::ECS::CTransform>(), true);
 		p_Signature.set(Frosty::ECS::getComponentTypeID<Frosty::ECS::CMotion>(), true);
 		p_Signature.set(Frosty::ECS::getComponentTypeID<Frosty::ECS::CCollision>(), true);
+		p_Signature.set(Frosty::ECS::getComponentTypeID<Frosty::ECS::CTag>(), true);
 	}
 
 	inline virtual void OnUpdate() override
@@ -309,17 +310,22 @@ public:
 			m_Transform[i]->Position += m_Motion[i]->Velocity * Frosty::Time::DeltaTime();
 			//m_Transform[i]->Position += m_Motion[i]->Direction * m_Motion[i]->Speed * Frosty::Time::DeltaTime();
 
+
+
 			for (size_t j = 1; j < p_Total; j++)
 			{
 				if (j != i)
 				{
-					glm::vec3 finalCenterA = m_Transform[i]->Position + glm::vec3(m_Collision[i]->BoundingBox->pos[0], m_Collision[i]->BoundingBox->pos[1], m_Collision[i]->BoundingBox->pos[2]);
-					glm::vec3 finalCenterB = m_Transform[j]->Position + glm::vec3(m_Collision[j]->BoundingBox->pos[0], m_Collision[j]->BoundingBox->pos[1], m_Collision[j]->BoundingBox->pos[2]);
-					glm::vec3 finalLengthA = glm::vec3(m_Collision[i]->BoundingBox->halfSize[0], m_Collision[i]->BoundingBox->halfSize[1], m_Collision[i]->BoundingBox->halfSize[2]) * m_Transform[i]->Scale;
-					glm::vec3 finalLengthB = glm::vec3(m_Collision[j]->BoundingBox->halfSize[0], m_Collision[j]->BoundingBox->halfSize[1], m_Collision[j]->BoundingBox->halfSize[2]) * m_Transform[j]->Scale;
-					glm::vec3 offset = Frosty::CollisionDetection::AABBIntersecPushback(finalLengthA, finalCenterA, finalLengthB, finalCenterB);
-			
-					m_Transform[i]->Position -= offset;
+					if (m_Tag[i]->TagName != m_Tag[j]->TagName)
+					{
+						glm::vec3 finalCenterA = m_Transform[i]->Position + glm::vec3(m_Collision[i]->BoundingBox->pos[0], m_Collision[i]->BoundingBox->pos[1], m_Collision[i]->BoundingBox->pos[2]);
+						glm::vec3 finalCenterB = m_Transform[j]->Position + glm::vec3(m_Collision[j]->BoundingBox->pos[0], m_Collision[j]->BoundingBox->pos[1], m_Collision[j]->BoundingBox->pos[2]);
+						glm::vec3 finalLengthA = glm::vec3(m_Collision[i]->BoundingBox->halfSize[0], m_Collision[i]->BoundingBox->halfSize[1], m_Collision[i]->BoundingBox->halfSize[2]) * m_Transform[i]->Scale;
+						glm::vec3 finalLengthB = glm::vec3(m_Collision[j]->BoundingBox->halfSize[0], m_Collision[j]->BoundingBox->halfSize[1], m_Collision[j]->BoundingBox->halfSize[2]) * m_Transform[j]->Scale;
+						glm::vec3 offset = Frosty::CollisionDetection::AABBIntersecPushback(finalLengthA, finalCenterA, finalLengthB, finalCenterB);
+
+						m_Transform[i]->Position -= offset;
+					}
 				}
 			}
 		}
@@ -335,6 +341,7 @@ public:
 			m_Transform[p_Total] = &world->GetComponent<Frosty::ECS::CTransform>(entity);
 			m_Motion[p_Total] = &world->GetComponent<Frosty::ECS::CMotion>(entity);
 			m_Collision[p_Total] = &world->GetComponent<Frosty::ECS::CCollision>(entity);
+			m_Tag[p_Total] = &world->GetComponent<Frosty::ECS::CTag>(entity);
 
 			p_Total++;
 		}
@@ -371,6 +378,8 @@ private:
 	std::array<Frosty::ECS::CTransform*, Frosty::ECS::MAX_ENTITIES_PER_COMPONENT> m_Transform;
 	std::array<Frosty::ECS::CMotion*, Frosty::ECS::MAX_ENTITIES_PER_COMPONENT> m_Motion;
 	std::array<Frosty::ECS::CCollision*, Frosty::ECS::MAX_ENTITIES_PER_COMPONENT> m_Collision;
+	//Temp
+	std::array<Frosty::ECS::CTag*, Frosty::ECS::MAX_ENTITIES_PER_COMPONENT> m_Tag;
 
 };
 
@@ -660,9 +669,6 @@ namespace MCS
 
 	Game::Game()
 	{
-
-
-
 		auto& world = Application::Get().GetWorld();
 
 		// Add systems
@@ -701,10 +707,8 @@ namespace MCS
 		world->AddComponent<Frosty::ECS::CMaterial>(player, Frosty::AssetManager::GetShader("FlatColor"));
 		world->AddComponent<Frosty::ECS::CMotion>(player, 5.0f);
 		world->AddComponent<Frosty::ECS::CController>(player);
-		world->AddComponent<Frosty::ECS::CCollision>(player);
-
-
-
+		world->AddComponent<Frosty::ECS::CCollision>(player, Frosty::AssetManager::GetBoundingBox("Cube"));
+		world->AddComponent<Frosty::ECS::CTag>(player, "Player");
 
 		std::srand((unsigned)std::time(0));
 
@@ -748,6 +752,8 @@ namespace MCS
 		testMaterial.DiffuseTexture = Frosty::AssetManager::GetTexture2D("Brown Mud Diffuse");
 
 
+
+
 		auto& PlaneTwo = world->CreateEntity();
 		auto& testTranformTwo = world->GetComponent<Frosty::ECS::CTransform>(PlaneTwo);
 		testTranformTwo.Scale = glm::vec3(mapLength, 0.0f, mapDepth);
@@ -759,6 +765,9 @@ namespace MCS
 		testMaterialTwo.NormalTexture = Frosty::AssetManager::GetTexture2D("Rusty Metal Normal");
 		testMaterialTwo.SpecularTexture = Frosty::AssetManager::GetTexture2D("Rusty Metal Normal");
 
+
+
+
 		//Bot Hitbox
 		auto& BorderBox_1 = world->CreateEntity();
 		auto& BorderTransform_1 = world->GetComponent<Frosty::ECS::CTransform>(BorderBox_1);
@@ -768,8 +777,9 @@ namespace MCS
 		world->AddComponent<Frosty::ECS::CMesh>(BorderBox_1, Frosty::AssetManager::GetMesh("Cube"));
 		auto& BorderBoxMaterial_1 = world->AddComponent<Frosty::ECS::CMaterial>(BorderBox_1, Frosty::AssetManager::GetShader("FlatColor"));
 		world->AddComponent<Frosty::ECS::CMotion>(BorderBox_1, 0.0f);
-		world->AddComponent<Frosty::ECS::CCollision>(BorderBox_1);
+		world->AddComponent<Frosty::ECS::CCollision>(BorderBox_1, Frosty::AssetManager::GetBoundingBox("Cube"));
 		BorderBoxMaterial_1.Albedo = glm::vec4(1.0f, 0.0f, 0.0f, 1.0f);
+		world->AddComponent<Frosty::ECS::CTag>(BorderBox_1, "Border");
 
 
 		//Top Hitbox
@@ -780,8 +790,10 @@ namespace MCS
 
 		world->AddComponent<Frosty::ECS::CMesh>(BorderBox_2, Frosty::AssetManager::GetMesh("Cube"));
 		auto& BorderBoxMaterial_2 = world->AddComponent<Frosty::ECS::CMaterial>(BorderBox_2, Frosty::AssetManager::GetShader("FlatColor"));
-		world->AddComponent<Frosty::ECS::CCollision>(BorderBox_2);
+		world->AddComponent<Frosty::ECS::CCollision>(BorderBox_2, Frosty::AssetManager::GetBoundingBox("Cube"));
+		world->AddComponent<Frosty::ECS::CMotion>(BorderBox_2, 0.0f);
 		BorderBoxMaterial_2.Albedo = glm::vec4(0.0f, 1.0f, 0.0f, 1.0f);
+		world->AddComponent<Frosty::ECS::CTag>(BorderBox_2, "Border");
 
 		//Left Hitbox
 		auto& BorderBox_3 = world->CreateEntity();
@@ -791,7 +803,10 @@ namespace MCS
 
 		world->AddComponent<Frosty::ECS::CMesh>(BorderBox_3, Frosty::AssetManager::GetMesh("Cube"));
 		auto& BorderBoxMaterial_3 = world->AddComponent<Frosty::ECS::CMaterial>(BorderBox_3, Frosty::AssetManager::GetShader("FlatColor"));
+		world->AddComponent<Frosty::ECS::CCollision>(BorderBox_3, Frosty::AssetManager::GetBoundingBox("Cube"));
+		world->AddComponent<Frosty::ECS::CMotion>(BorderBox_3, 0.0f);
 		BorderBoxMaterial_3.Albedo = glm::vec4(1.0f, 0.0f, 1.0f, 1.0f);
+		world->AddComponent<Frosty::ECS::CTag>(BorderBox_3, "Border");
 
 
 		//Right Hitbox
@@ -802,7 +817,10 @@ namespace MCS
 
 		world->AddComponent<Frosty::ECS::CMesh>(BorderBox_4, Frosty::AssetManager::GetMesh("Cube"));
 		auto& BorderBoxMaterial_4 = world->AddComponent<Frosty::ECS::CMaterial>(BorderBox_4, Frosty::AssetManager::GetShader("FlatColor"));
+		world->AddComponent<Frosty::ECS::CCollision>(BorderBox_4, Frosty::AssetManager::GetBoundingBox("Cube"));
+		world->AddComponent<Frosty::ECS::CMotion>(BorderBox_4, 0.0f);
 		BorderBoxMaterial_4.Albedo = glm::vec4(1.0f, 1.0f, 0.0f, 1.0f);
+		world->AddComponent<Frosty::ECS::CTag>(BorderBox_4, "Border");
 
 
 
@@ -813,8 +831,11 @@ namespace MCS
 		BorderTransform_5.Scale = glm::vec3(mapLength * HitboxMapInflunce * middleWidth, 1.0f, mapDepth * HitboxMapInflunce * middleDepth);
 
 		world->AddComponent<Frosty::ECS::CMesh>(BorderBox_5, Frosty::AssetManager::GetMesh("Cube"));
+		world->AddComponent<Frosty::ECS::CCollision>(BorderBox_5, Frosty::AssetManager::GetBoundingBox("Cube"));
+		world->AddComponent<Frosty::ECS::CMotion>(BorderBox_5, 0.0f);
 		auto& BorderBoxMaterial_5 = world->AddComponent<Frosty::ECS::CMaterial>(BorderBox_5, Frosty::AssetManager::GetShader("FlatColor"));
 		BorderBoxMaterial_5.Albedo = glm::vec4(0.3f, 0.4f, 0.8f, 1.0f);
+		world->AddComponent<Frosty::ECS::CTag>(BorderBox_5, "Border");
 
 
 		//Middle Bot Hitbox
@@ -825,7 +846,10 @@ namespace MCS
 
 		world->AddComponent<Frosty::ECS::CMesh>(BorderBox_6, Frosty::AssetManager::GetMesh("Cube"));
 		auto& BorderBoxMaterial_6 = world->AddComponent<Frosty::ECS::CMaterial>(BorderBox_6, Frosty::AssetManager::GetShader("FlatColor"));
+		world->AddComponent<Frosty::ECS::CCollision>(BorderBox_6, Frosty::AssetManager::GetBoundingBox("Cube"));
+		world->AddComponent<Frosty::ECS::CMotion>(BorderBox_6, 0.0f);
 		BorderBoxMaterial_6.Albedo = glm::vec4(0.3f, 0.4f, 0.8f, 1.0f);
+		world->AddComponent<Frosty::ECS::CTag>(BorderBox_6, "Border");
 
 
 

@@ -86,7 +86,7 @@ namespace Frosty
 #pragma region Settings
 
 		// Let's define a maximum number of unique components:
-		constexpr std::size_t MAX_COMPONENTS{ 9 };
+		constexpr std::size_t MAX_COMPONENTS{ 10 };
 
 		// Let's define a maximum number of entities that
 		// can have the same component type:
@@ -470,6 +470,23 @@ namespace Frosty
 			virtual void Func() override { }
 		};
 
+		//Temp
+		struct CTag : public BaseComponent
+		{
+			static std::string NAME;
+
+			std::string TagName;
+
+			CTag() = default;
+			CTag(const std::string& Tagname) : TagName(Tagname) { }
+			CTag(const CTag& org) { FY_CORE_ASSERT(false, "Copy constructor in CTag called."); }
+
+			bool operator==(const CTag& other) { return (TagName == other.TagName); }
+
+			virtual void Func() override { }
+		};
+
+
 		static std::string GetComponentName(size_t i)
 		{
 			switch (i)
@@ -483,6 +500,7 @@ namespace Frosty
 			case 6:		return "Follow";
 			case 7:		return "Light";
 			case 8:		return "Collision";
+			case 9:		return "Tag";
 			default:	return "";
 			}
 		}
