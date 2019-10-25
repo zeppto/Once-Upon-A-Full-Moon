@@ -18,5 +18,6 @@ namespace Frosty
 		std::string CCollision::NAME = "Collision";
 		std::string CPlayerAttack::NAME = "PlayerAttack";
 		std::string CHealth::NAME = "Health";
+		std::string CTag::NAME = "Tag";
 	}
 }

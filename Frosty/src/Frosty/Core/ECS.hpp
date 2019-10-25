@@ -86,8 +86,7 @@ namespace Frosty
 #pragma region Settings
 
 		// Let's define a maximum number of unique components:
-		constexpr std::size_t MAX_COMPONENTS{ 11 };
-		constexpr std::size_t MAX_COMPONENTS{ 10 };
+		constexpr std::size_t MAX_COMPONENTS{ 12 };
 
 		// Let's define a maximum number of entities that
 		// can have the same component type:
@@ -539,7 +538,7 @@ namespace Frosty
 			case 8:		return "Collision";
 			case 9:		return "PlayerAttack";
 			case 10:	return "Health";
-			case 9:		return "Tag";
+			case 11:	return "Tag";
 			default:	return "";
 			}
 		}
