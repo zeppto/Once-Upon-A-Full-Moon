@@ -90,4 +90,15 @@ namespace Frosty
 		vertexArray->Bind();
 		RenderCommand::DrawIndexed(vertexArray);
 	}
+
+	//For 2D, might be temp
+	void Renderer::Submit2d(Texture2D* tex,Shader* shader, const std::shared_ptr<VertexArray>& vertexArray, const glm::mat4& transform)
+	{
+		shader->Bind();
+		shader->UploadUniformMat4("u_Transform", transform);
+
+
+		vertexArray->Bind();
+		RenderCommand::DrawIndexed(vertexArray);
+	}
 }

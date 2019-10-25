@@ -732,6 +732,99 @@ private:
 
 };
 
+class HealthBarSystem : public Frosty::ECS::BaseSystem
+{
+public:
+	HealthBarSystem() = default;
+	virtual ~HealthBarSystem() = default;
+
+	virtual void Init() override
+	{
+		p_Signature.set(Frosty::ECS::getComponentTypeID<Frosty::ECS::CTransform>(), true);
+		p_Signature.set(Frosty::ECS::getComponentTypeID<Frosty::ECS::CHealthBar>(), true);
+		//p_Signature.set(Frosty::ECS::getComponentTypeID<Frosty::ECS::CHealth>(), true);
+
+
+	}
+
+	inline virtual void OnUpdate() override
+	{
+		//logic
+
+	}
+
+	inline virtual void Render() override
+	{
+		for (size_t i = 1; i < p_Total; i++)
+		{
+			glm::mat4 transform{1.0f};
+
+			 transform = glm::translate(transform, m_HealthBar[i]->Offset);
+
+			 transform = glm::rotate(transform, glm::radians(m_HealthBar[i]->Rotate.x), { 1.0f, 0.0f, 0.0f });
+
+			 transform = glm::scale(transform, m_HealthBar[i]->HpScale);
+
+
+			if (m_HealthBar[i]->UseShader->GetName() == "UI" && m_HealthBar[i]->Texture) m_HealthBar[i]->Texture->Bind(0);
+
+			Frosty::Renderer::Submit2d(m_HealthBar[i]->Texture.get(), m_HealthBar[i]->UseShader.get(), m_HealthBar[i]->Mesh, transform);
+
+			if (m_HealthBar[i]->UseShader->GetName() == "UI" && m_HealthBar[i]->Texture) m_HealthBar[i]->Texture->Unbind();
+
+		}
+
+	}
+
+	virtual void AddComponent(const std::shared_ptr<Frosty::ECS::Entity>& entity) override
+	{
+		if (Frosty::utils::BitsetFits<Frosty::ECS::MAX_COMPONENTS>(p_Signature, entity->Bitset) && !p_EntityMap.count(entity))
+		{
+			p_EntityMap.emplace(entity, p_Total);
+
+			auto& world = Frosty::Application::Get().GetWorld();
+			m_Transform[p_Total] = &world->GetComponent<Frosty::ECS::CTransform>(entity);
+			m_HealthBar[p_Total] = &world->GetComponent<Frosty::ECS::CHealthBar>(entity);
+			//m_Health[p_Total] = &world->GetComponent<Frosty::ECS::CHealth>(entity);
+
+			p_Total++;
+		}
+	}
+
+	virtual void RemoveEntity(const std::shared_ptr<Frosty::ECS::Entity>& entity) override
+	{
+		Frosty::ECS::ComponentArrayIndex tempIndex = p_EntityMap[entity];
+
+
+		if (tempIndex > 0)
+		{
+			p_Total--;
+			m_Transform[p_Total] = nullptr;
+			m_HealthBar[p_Total] = nullptr;
+			//m_Health[p_Total] = nullptr;
+
+			if (p_Total > 1)
+			{
+				//std::shared_ptr<Entity> entityToUpdate = removeEntityFromData(mEntity);
+
+				if (p_Total > tempIndex)
+				{
+					std::shared_ptr<Frosty::ECS::Entity> entityToUpdate = m_Transform[p_EntityMap[entity]]->EntityPtr;
+					p_EntityMap[entityToUpdate] = tempIndex;
+				}
+			}
+
+			p_EntityMap.erase(entity);
+		}
+	}
+
+private:
+	std::array<Frosty::ECS::CTransform*, Frosty::ECS::MAX_ENTITIES_PER_COMPONENT> m_Transform;
+	std::array<Frosty::ECS::CHealthBar*, Frosty::ECS::MAX_ENTITIES_PER_COMPONENT> m_HealthBar;
+	//std::array<Frosty::ECS::CHealth*, Frosty::ECS::MAX_ENTITIES_PER_COMPONENT> m_Health;
+
+};
+
 namespace MCS
 {
 	Game::Game()
@@ -746,6 +839,7 @@ namespace MCS
 		world->AddSystem<MovementSystem>();
 		world->AddSystem<FollowSystem>();
 		world->AddSystem<CollisionSystem>();
+		world->AddSystem<HealthBarSystem>();
 
 		// Add components
 
@@ -791,6 +885,8 @@ namespace MCS
 		world->AddComponent<Frosty::ECS::CMaterial>(wall, Frosty::AssetManager::GetShader("FlatColor"));
 		world->AddComponent<Frosty::ECS::CMotion>(wall, 5.0f);
 		world->AddComponent<Frosty::ECS::CCollision>(wall, Frosty::AssetManager::GetBoundingBox("Cube"));
+		auto& UIhealth = world->AddComponent<Frosty::ECS::CHealthBar>(wall, glm::vec3(0.5f, 0.0f, 0.0f), Frosty::AssetManager::GetMesh("Plane"), Frosty::AssetManager::GetShader("UI"), Frosty::AssetManager::GetTexture2D("HeartFull"));
+		UIhealth.HpScale = glm::vec3(0.25f, 1.0f, 1.0f);
 
 		bool UI = true;
 		if (UI)
@@ -823,6 +919,10 @@ namespace MCS
 			world->AddComponent<Frosty::ECS::CMesh>(uiHeart1, Frosty::AssetManager::GetMesh("Plane"));
 			auto& uiHeart1Mat = world->AddComponent<Frosty::ECS::CMaterial>(uiHeart1, Frosty::AssetManager::GetShader("UI"));
 			uiHeart1Mat.DiffuseTexture = Frosty::AssetManager::GetTexture2D("Sword");
+
+
+
+
 		}
 		PushLayer(FY_NEW InspectorLayer());
 	}

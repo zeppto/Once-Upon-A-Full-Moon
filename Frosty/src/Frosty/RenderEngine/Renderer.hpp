@@ -1,7 +1,7 @@
 #ifndef RENDERER_HPP
 #define RENDERER_HPP
 #include "RenderCommand.hpp"
-
+#include "Texture.hpp"
 #include "Frosty/RenderEngine/Shader.hpp"
 
 namespace Frosty
@@ -24,6 +24,8 @@ namespace Frosty
 		static void AddLight(const glm::vec3& color, glm::vec3& direction, float strength);
 
 		static void Submit(ECS::CMaterial* mat, const std::shared_ptr<VertexArray>& vertexArray, const glm::mat4& transform);
+		static void Submit2d(Texture2D* tex, Shader* shader, const std::shared_ptr<VertexArray>& vertexArray, const glm::mat4& transform);
+
 
 		inline static void Shutdown() { delete s_SceneData; }
 

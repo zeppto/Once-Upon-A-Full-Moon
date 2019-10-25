@@ -86,7 +86,7 @@ namespace Frosty
 #pragma region Settings
 
 		// Let's define a maximum number of unique components:
-		constexpr std::size_t MAX_COMPONENTS{ 9 };
+		constexpr std::size_t MAX_COMPONENTS{ 10 };
 
 		// Let's define a maximum number of entities that
 		// can have the same component type:
@@ -476,6 +476,26 @@ namespace Frosty
 			virtual void Func() override { }
 		};
 
+		struct CHealthBar : public BaseComponent
+		{
+			static std::string NAME;
+			glm::vec3 Offset{ 0.0f, 0.0f, 0.0f };
+			glm::vec3 Rotate{ 90.0f ,0.0f, 0.0f };
+			glm::vec3 HpScale{ 1.0f, 1.0f, 1.0f };
+			std::shared_ptr<VertexArray> Mesh;
+			std::shared_ptr<Shader> UseShader;
+			std::shared_ptr<Texture2D> Texture;
+
+			CHealthBar() = default;
+			CHealthBar(glm::vec3 offset, std::shared_ptr<VertexArray> mesh, std::shared_ptr<Shader> shader, std::shared_ptr<Texture2D> tex) 
+				: Offset(offset), Mesh(mesh), UseShader(shader), Texture(tex) {}
+			CHealthBar(const CHealthBar& org) { FY_CORE_ASSERT(false, "Copy constructor in CCollision called."); }
+
+
+
+			virtual void Func() override { }
+		};
+
 		static std::string GetComponentName(size_t i)
 		{
 			switch (i)
@@ -489,6 +509,8 @@ namespace Frosty
 			case 6:		return "Follow";
 			case 7:		return "Light";
 			case 8:		return "Collision";
+			case 9:		return "HealthBar";
+
 			default:	return "";
 			}
 		}
