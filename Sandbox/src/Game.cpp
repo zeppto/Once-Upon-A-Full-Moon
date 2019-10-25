@@ -790,9 +790,10 @@ public:
 							m_Health[j]->CurrentHealth--;
 							FY_TRACE("current health ({0})", m_Health[j]->CurrentHealth);
 							haveHitt = true;
+
+							m_Transform[j]->Position -= glm::normalize(m_Transform[i]->Position - m_Transform[j]->Position) * glm::vec3(3.0f);
 						}
 
-						//m_Transform[i]->Position -= offset;
 					}
 					else if (m_PlayerAttack[i]->Cooldown < 0.20f)
 					{

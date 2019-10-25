@@ -41,6 +41,7 @@ glm::vec3 Frosty::CollisionDetection::AABBIntersecPushback(glm::vec3 pushbackLen
 {
 	glm::vec3 toPush(0.0f), toReturn(0.0f), pbMin = pushbackCenter - pushbackLength, pbMax = pushbackCenter + pushbackLength,
 		otherMin = otherCenter - otherLength, otherMax = otherCenter + otherLength;
+	glm::vec3 toPush1(0.0f),toPush2(0.0f);
 	float smallestPush = 0;
 	bool isZero = false;
 	if (AABBIntersect(pushbackLength, pushbackCenter, otherLength, otherCenter))
@@ -55,7 +56,7 @@ glm::vec3 Frosty::CollisionDetection::AABBIntersecPushback(glm::vec3 pushbackLen
 				if (toPush[i] == 0)
 					isZero = true;
 			}
-			if (otherMax[i] >= pbMin[i] && otherMax[i] < pbMax[i])
+			if (otherMax[i] >= pbMin[i] && otherMin[i] < pbMin[i])
 			{
 				toPush[i] = pbMin[i] - otherMax[i];
 				if (abs(smallestPush) > abs(toPush[i]) || !isZero && smallestPush == 0)
@@ -63,11 +64,16 @@ glm::vec3 Frosty::CollisionDetection::AABBIntersecPushback(glm::vec3 pushbackLen
 				if (toPush[i] == 0)
 					isZero = true;
 			}
+			toPush1[i] = pbMax[i] - otherMin[i];
+			toPush2[i] = pbMin[i] - otherMax[i];
 		}
 		for (int i = 0; i < 3; i++)
 		{
 			if (smallestPush == toPush[i])
 			{
+				if(smallestPush < -1)
+					FY_TRACE("puch back ({0}) in ({1})", smallestPush, i);
+				FY_TRACE("puch back ({0}) in ({1})", smallestPush, i);
 				toReturn[i] = smallestPush;
 				break;
 			}
