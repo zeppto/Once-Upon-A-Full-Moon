@@ -2,6 +2,7 @@
 #include "Prefab.hpp"
 
 
+
 namespace Frosty
 {
 	uint32_t Prefab::s_NrOf_Prefabs = 0;
@@ -22,7 +23,7 @@ namespace Frosty
 			m_PrefabID = s_Unique_ID++;
 			s_NrOf_Prefabs++;
 
-			m_ModelKey = other.m_ModelKey;
+			m_MeshKey = other.m_MeshKey;
 			m_MaterialKey = other.m_MaterialKey;
 		}
 	}
@@ -33,9 +34,9 @@ namespace Frosty
 	{
 	}
 
-	void Prefab::SetModelKey(KeyLabel<ModelTemplate> modelKey)
+	void Prefab::SetMeshKey(KeyLabel<Mesh> MeshKey)
 	{
-		m_ModelKey = modelKey;
+		m_MeshKey = MeshKey;
 	}
 
 	void Prefab::SetMaterialKey(KeyLabel<LinkedMaterial> materialKey)
@@ -43,9 +44,9 @@ namespace Frosty
 		m_MaterialKey = materialKey;
 	}
 
-	KeyLabel<ModelTemplate> Prefab::GetModelKey() 
+	KeyLabel<Mesh> Prefab::GetMeshKey()
 	{
-		return m_ModelKey;
+		return m_MeshKey;
 	}
 
 	KeyLabel<LinkedMaterial> Prefab::GetMaterialKey()
@@ -70,13 +71,13 @@ namespace Frosty
 		//	returnValue = false;
 		//}
 
-		if (!Assetmanager::GetAssetmanager()->LinkKey(modelName, &m_ModelKey))
+		if (!Assetmanager::LinkKey(modelName, &m_MeshKey))
 		{
 			returnValue = false;
 		}
 
 
-		if (!Assetmanager::GetAssetmanager()->LinkKey(materialName, &m_MaterialKey))
+		if (!Assetmanager::LinkKey(materialName, &m_MaterialKey))
 		{
 			returnValue = false;
 		}
@@ -128,12 +129,12 @@ namespace Frosty
 	Prefab& Prefab::operator=(Prefab& other)
 	{
 		m_MaterialKey = other.m_MaterialKey;
-		m_ModelKey = other.m_ModelKey;
+		m_MeshKey = other.m_MeshKey;
 		return *this;
 	}
 	bool Prefab::operator==(Prefab& other)
 	{
-		if (m_ModelKey == other.m_ModelKey && m_MaterialKey == other.m_MaterialKey)
+		if (m_MeshKey == other.m_MeshKey && m_MaterialKey == other.m_MaterialKey)
 		{
 			return true;
 		}

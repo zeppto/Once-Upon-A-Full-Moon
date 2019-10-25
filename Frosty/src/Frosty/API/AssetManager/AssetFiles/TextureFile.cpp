@@ -7,126 +7,121 @@ namespace Frosty
 {
 
 
-	TextureFile::TextureFile()
+	TextureFile::TextureFile(const FileMetaData& MetaData) : AssetFile(MetaData)
 	{
-		m_FilePath = "";
-		m_Buffer_ID = -1;
 		m_Components = -1;
 		m_Image_Width = 0;
 		m_Image_Height = 0;
-		m_Loaded_In_Gpu = false;
-	}
-
-	TextureFile::TextureFile(const std::string& FilePath)
-	{
-		m_Buffer_ID = -1;
-		m_Components = -1;
-		m_Image_Width = 0;
-		m_Image_Height = 0;
-		m_FilePath = FilePath;
-		m_Loaded_In_Gpu = false;
+		m_ImageData = nullptr;
 	}
 
 	TextureFile::~TextureFile()
 	{
-		ReleaseFromGpu();
+		if (m_OnGPU)
+		{
+			DeleteFromGPU();
+		}
+		if (m_OnMem)
+		{
+			DeleteFromMem();
+		}
 	}
 
-	bool TextureFile::LoadToGpu()
+
+	bool TextureFile::LoadToMem(const bool& Reload)
+	{
+
+		if (!m_OnMem || Reload)
+		{
+			DeleteFromMem();
+			m_ImageData = stbi_load((m_MetaData.FullFilePath.c_str()), &m_Image_Width, &m_Image_Height, &m_Components, STBI_rgb_alpha);
+
+			if (m_ImageData != nullptr)
+			{
+				m_OnMem = true;
+			}
+			else
+			{
+				FY_CORE_WARN("STBI Could not load image, FilePath: {0}", m_MetaData.FullFilePath);
+			}
+		}
+		else
+		{
+			FY_CORE_INFO("Texture: {0}, Is already loaded on Memory", m_MetaData.FileName);
+		}
+
+		return !m_OnMem;
+	}
+
+	bool TextureFile::DeleteFromMem()
+	{
+		if (m_OnMem)
+		{
+			if (m_ImageData != nullptr)
+			{
+				stbi_image_free(m_ImageData);
+				m_OnMem = false;
+			}
+			else
+			{
+				FY_CORE_WARN("Texture: {0},  Ptr was Null in a delete", m_MetaData.FileName);
+			}
+		}
+		{
+			FY_CORE_INFO("Texture: {0},  Is already deleted from Memory", m_MetaData.FileName);
+		}
+		return !m_OnMem;
+	}
+
+	bool TextureFile::LoadToGPU()
 	{
 		bool returnValue = false;
 
-		unsigned int tempBufferId = -1;
-		int textureWidth, textureHeight, components;
-		unsigned char* imageData = stbi_load((m_FilePath.c_str()), &textureWidth, &textureHeight, &components, STBI_rgb_alpha);
-
-		if (imageData != nullptr)
+		if (m_ImageData != nullptr)
 		{
 
-			if (m_Loaded_In_Gpu)
+			if (m_OnGPU)
 			{
-				ReleaseFromGpu();
+				DeleteFromGPU();
 			}
 
 
 			returnValue = true;
-			glGenTextures(1, &tempBufferId);
-			glActiveTexture(tempBufferId);
-			glBindTexture(GL_TEXTURE_2D, tempBufferId);
+			glGenTextures(1, &m_GPU_Data_ID);
+		//	glActiveTexture(m_GPU_Data_ID);
+			glBindTexture(GL_TEXTURE_2D, m_GPU_Data_ID);
 
-			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, textureWidth, textureHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, imageData);
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, m_Image_Width, m_Image_Height, 0, GL_RGBA, GL_UNSIGNED_BYTE, m_ImageData);
 			glGenerateMipmap(GL_TEXTURE_2D);
 
-
-			m_Buffer_ID = (uint16_t)tempBufferId;
-			m_Image_Height = (uint16_t)textureHeight;
-			m_Image_Width = (uint16_t)textureWidth;
-			m_Components = (uint8_t)components;
-			m_Loaded_In_Gpu = true;
+			m_OnGPU = true;
 
 			glBindTexture(GL_TEXTURE_2D, 0);
 
 		}
 		else
 		{
-			FY_CORE_WARN("STBI Could not load image, FilePath: {0}", m_FilePath);
+			FY_CORE_WARN("Cannot load a empty file into the GPU, FilePath: {0}", m_MetaData.FullFilePath);
 		}
-		stbi_image_free(imageData);
+
 		return returnValue;
+
 	}
 
-	bool TextureFile::LoadToGpu(const std::string& FilePath)
-	{
-		bool returnValue = false;
-
-		unsigned int tempBufferId = (uint16_t)(-1);
-		int textureWidth, textureHeight, components;
-		unsigned char* imageData = stbi_load((FilePath.c_str()), &textureWidth, &textureHeight, &components, STBI_rgb_alpha);
-
-		if (imageData != nullptr)
-		{
-
-			if (m_Loaded_In_Gpu)
-			{
-				ReleaseFromGpu();
-			}
-
-			returnValue = true;
-			glGenTextures(1, &tempBufferId);
-			glActiveTexture(tempBufferId);
-			glBindTexture(GL_TEXTURE_2D, tempBufferId);
-
-			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, textureWidth, textureHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, imageData);
-			glGenerateMipmap(GL_TEXTURE_2D);
-
-
-			m_Buffer_ID = (uint16_t)tempBufferId;
-			m_Image_Height = (uint16_t)textureHeight;
-			m_Image_Width = (uint16_t)textureWidth;
-			m_Components = (uint8_t)components;
-			m_FilePath = FilePath;
-			m_Loaded_In_Gpu = true;
-
-		}
-		else
-		{
-			FY_CORE_WARN("STBI Could not load image, FilePath: {0}", FilePath);
-		}
-		stbi_image_free(imageData);
-		return returnValue;
-	}
-
-	void TextureFile::ReleaseFromGpu()
+	bool TextureFile::DeleteFromGPU()
 	{
 
-		unsigned int i = m_Buffer_ID;
-		glDeleteTextures(1, &i);
+		glDeleteTextures(1, &m_GPU_Data_ID);
 
-		m_Loaded_In_Gpu = false;
-		m_Buffer_ID = -1;
+		m_OnGPU = false;
+		m_GPU_Data_ID = -1;
+
 		m_Image_Width = 0;
 		m_Image_Height = 0;
 
+		//Open gl Error check?
+
+		return true;
 	}
 
 

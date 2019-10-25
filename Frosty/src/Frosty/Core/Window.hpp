@@ -1,6 +1,5 @@
 #ifndef WINDOW_HPP
 #define WINDOW_HPP
-
 #include <fypch.hpp>		// This is already included in the cpp file so we shouldn't need it here but doesn't work otherwise
 #include "Frosty/Core/BaseWindow.hpp"
 
@@ -25,7 +24,11 @@ namespace Frosty
 		virtual inline unsigned int GetPositionX() const override { return m_Data.PositionX; }
 		virtual inline unsigned int GetPositionY() const override { return m_Data.PositionY; }
 		virtual std::pair<unsigned int, unsigned int> GetPosition() const override { return { m_Data.PositionX, m_Data.PositionY }; }
-		virtual glm::vec4 GetViewport() const override;
+		virtual const glm::vec4& GetViewport() const override;
+
+		virtual bool IsEditorModeActivated() override { return m_Data.EditorMode; }
+		virtual void ActivateEditorMode() override;
+		virtual void ActivateGameMode() override;
 
 		virtual bool IsMaximized() const override { return m_Data.Maximized; }
 		virtual void Maximize() override { glfwMaximizeWindow(m_Window); }
@@ -44,12 +47,9 @@ namespace Frosty
 
 		virtual void Shutdown() override { glfwTerminate(); }
 
-		void UpdateViewport();
-
 		void OnWindowResizeEvent(WindowResizeEvent& e);
 		void OnWindowMovedEvent(WindowMovedEvent& e);
 
-		//void UpdateViewPort();
 	private:
 		GLFWwindow* m_Window;
 
@@ -60,6 +60,8 @@ namespace Frosty
 			unsigned int Width, Height;
 			unsigned int PositionX, PositionY;
 			bool VSync;
+			glm::vec4 Viewport;
+			bool EditorMode{ true };
 		};
 		WindowData m_Data;
 

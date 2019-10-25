@@ -14,6 +14,11 @@ namespace Frosty
 		glBufferData(GL_ARRAY_BUFFER, size, vertices, GL_STATIC_DRAW);
 	}
 
+	VertexBuffer::VertexBuffer()
+	{
+		glGenBuffers(1, &m_RendererID);
+	}
+
 	VertexBuffer::~VertexBuffer()
 	{
 		glDeleteBuffers(1, &m_RendererID);
@@ -29,13 +34,38 @@ namespace Frosty
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 	}
 
-	VertexBuffer* VertexBuffer::Create(const void* vertices, uint32_t size)
+	VertexBuffer * VertexBuffer::Create(const void * vertices, uint32_t size)
 	{
 		return new VertexBuffer(vertices, size);
 	}
 
-	// Indexbuffer --------------------------------------------------------------------
+	VertexBuffer * VertexBuffer::Create()
+	{
+		return new VertexBuffer();
+	}
 
+	void VertexBuffer::SetData(float * vertices, uint32_t size, uint32_t type)
+	{
+		glBindBuffer(GL_ARRAY_BUFFER, m_RendererID);
+		glBufferData(GL_ARRAY_BUFFER, size, vertices, type);
+	}
+
+	void VertexBuffer::SetNrOfVertices(uint32_t count)
+	{
+		m_NrOfVertices = count;
+	}
+
+	uint32_t VertexBuffer::GetNrOfVertices()const
+	{
+		return m_NrOfVertices;
+	}
+
+	uint32_t VertexBuffer::GetSize() const
+	{
+		return m_Size;
+	}	
+
+	// Indexbuffer --------------------------------------------------------------------
 	IndexBuffer::IndexBuffer(const void* indices, uint32_t count)
 		: m_Count(count)
 	{

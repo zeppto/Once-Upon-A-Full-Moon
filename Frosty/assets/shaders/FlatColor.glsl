@@ -8,7 +8,7 @@ uniform mat4 u_Transform;
 
 void main()
 {
-	gl_Position = u_ViewProjection * u_Transform * vec4(a_Position, 1.0f);
+	gl_Position = vec4(a_Position, 1.0f);
 }
 
 #type fragment
@@ -20,5 +20,5 @@ uniform vec4 u_Color;
 
 void main()
 {
-	color = u_Color;
+	color = vec4(1.0,1.0,1.0,1.0);
 }
