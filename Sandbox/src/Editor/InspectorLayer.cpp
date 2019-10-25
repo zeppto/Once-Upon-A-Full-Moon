@@ -105,9 +105,9 @@ namespace MCS
 					if (world->HasComponent<Frosty::ECS::CLight>(m_SelectedEntity)) toggles[7] = true;
 					if (world->HasComponent<Frosty::ECS::CCollision>(m_SelectedEntity)) toggles[8] = true;
 					if (world->HasComponent<Frosty::ECS::CPlayerAttack>(m_SelectedEntity)) toggles[9] = true;
-					if (world->HasComponent<Frosty::ECS::CHealth>(m_SelectedEntity)) toggles[10] = true;
-					if (world->HasComponent<Frosty::ECS::CConsumables>(m_SelectedEntity)) toggles[11] = true;
 					if (world->HasComponent<Frosty::ECS::CEnemyAttack>(m_SelectedEntity)) toggles[10] = true;
+					if (world->HasComponent<Frosty::ECS::CHealth>(m_SelectedEntity)) toggles[11] = true;
+					if (world->HasComponent<Frosty::ECS::CConsumables>(m_SelectedEntity)) toggles[12] = true;
 				}
 
 				// Information
@@ -182,21 +182,21 @@ namespace MCS
 						else
 							world->RemoveComponent<Frosty::ECS::CPlayerAttack>(m_SelectedEntity);
 					}
-					if (ImGui::MenuItem("Enemy Attack", "", &toggles[9]))
+					if (ImGui::MenuItem("Enemy Attack", "", &toggles[10]))
 					{
 						if (!world->HasComponent<Frosty::ECS::CEnemyAttack>(m_SelectedEntity))
 							world->AddComponent<Frosty::ECS::CEnemyAttack>(m_SelectedEntity);
 						else
 							world->RemoveComponent<Frosty::ECS::CEnemyAttack>(m_SelectedEntity);
 					}
-					if (ImGui::MenuItem("Health", "", &toggles[10]))
+					if (ImGui::MenuItem("Health", "", &toggles[11]))
 					{
 						if (!world->HasComponent<Frosty::ECS::CHealth>(m_SelectedEntity))
 							world->AddComponent<Frosty::ECS::CHealth>(m_SelectedEntity);
 						else
 							world->RemoveComponent<Frosty::ECS::CHealth>(m_SelectedEntity);
 					}
-					if (ImGui::MenuItem("Consumables", "", &toggles[11]))
+					if (ImGui::MenuItem("Consumables", "", &toggles[12]))
 					{
 						if (!world->HasComponent<Frosty::ECS::CConsumables>(m_SelectedEntity))
 							world->AddComponent<Frosty::ECS::CConsumables>(m_SelectedEntity);

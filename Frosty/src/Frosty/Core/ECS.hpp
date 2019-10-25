@@ -86,7 +86,7 @@ namespace Frosty
 #pragma region Settings
 
 		// Let's define a maximum number of unique components:
-		constexpr std::size_t MAX_COMPONENTS{ 13 };
+		constexpr std::size_t MAX_COMPONENTS{ 14 };
 
 		// Let's define a maximum number of entities that
 		// can have the same component type:
