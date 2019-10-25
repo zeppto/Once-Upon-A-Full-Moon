@@ -751,6 +751,7 @@ public:
 			//FY_TRACE("playerAttack ({0})", i);
 
 			//tips hoger ar fram utan rotation
+			bool haveHitt = false;
 			if (Frosty::InputManager::IsKeyReleased(FY_KEY_SPACE))
 			{
 				m_PlayerAttack[i]->Cooldown += Frosty::Time::DeltaTime();
@@ -776,7 +777,7 @@ public:
 							FY_TRACE("playerAttack ({0})", j);
 							m_Health[j]->CurrentHealth--;
 							FY_TRACE("current health ({0})", m_Health[j]->CurrentHealth);
-							m_PlayerAttack[i]->Cooldown = 0;
+							haveHitt = true;
 						}
 
 						//m_Transform[i]->Position -= offset;
@@ -787,6 +788,8 @@ public:
 					}
 				}
 			}
+			if(haveHitt)
+				m_PlayerAttack[i]->Cooldown = 0;
 		}
 	}
 
