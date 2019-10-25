@@ -1116,7 +1116,7 @@ namespace MCS
 		lightTransform.Rotation = glm::vec3(180.0f, 0.0f, 10.0f);
 		//world->AddComponent<Frosty::ECS::CMesh>(light, Frosty::AssetManager::GetMesh("Cube"));
 		//world->AddComponent<Frosty::ECS::CMaterial>(light, Frosty::AssetManager::GetShader("FlatColor"));
-		world->AddComponent<Frosty::ECS::CLight>(light, Frosty::ECS::CLight::LightType::Point, 0.6f, 100.0f);
+		world->AddComponent<Frosty::ECS::CLight>(light, Frosty::ECS::CLight::LightType::Point, 0.6f, 200.0f);
 		
 		//auto& player = world->CreateEntity();
 		//auto& playerTransform = world->GetComponent<Frosty::ECS::CTransform>(player);
