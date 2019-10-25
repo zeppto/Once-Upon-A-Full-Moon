@@ -791,7 +791,8 @@ public:
 							FY_TRACE("current health ({0})", m_Health[j]->CurrentHealth);
 							haveHitt = true;
 							glm::vec3 knockback = m_Transform[i]->Position - m_Transform[j]->Position;
-							m_Transform[j]->Position -= glm::normalize(knockback) * glm::vec3(4.0f);
+							m_Transform[j]->Position.x -= glm::normalize(knockback).x * 4.0f;
+							m_Transform[j]->Position.z -= glm::normalize(knockback).z * 4.0f;
 						}
 
 					}
@@ -908,7 +909,8 @@ public:
 						haveHit = true;
 
 						glm::vec3 knockback = m_Transform[j]->Position - m_Transform[i]->Position;
-						m_Transform[i]->Position -= glm::normalize(knockback) * glm::vec3(4.0f);
+						m_Transform[i]->Position.x -= glm::normalize(knockback).x * 4.0f;
+						m_Transform[i]->Position.z -= glm::normalize(knockback).z * 4.0f;
 					}
 				}
 				else if (m_EnemyAttack[i]->Cooldown < 0.20f)
