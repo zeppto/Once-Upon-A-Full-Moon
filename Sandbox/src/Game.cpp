@@ -741,7 +741,7 @@ public:
 		p_Signature.set(Frosty::ECS::getComponentTypeID<Frosty::ECS::CTransform>(), true);
 		p_Signature.set(Frosty::ECS::getComponentTypeID<Frosty::ECS::CCollision>(), true);
 		p_Signature.set(Frosty::ECS::getComponentTypeID<Frosty::ECS::CPlayerAttack>(), true);
-		//p_Signature.set(Frosty::ECS::getComponentTypeID<Frosty::ECS::CHp>(), true);
+		p_Signature.set(Frosty::ECS::getComponentTypeID<Frosty::ECS::CHealth>(), true);
 	}
 
 	inline virtual void OnInput() override
@@ -751,26 +751,39 @@ public:
 			//FY_TRACE("playerAttack ({0})", i);
 
 			//tips hoger ar fram utan rotation
+			if (Frosty::InputManager::IsKeyReleased(FY_KEY_SPACE))
+			{
+				m_PlayerAttack[i]->Cooldown += Frosty::Time::DeltaTime();
+			}
 			if (Frosty::InputManager::IsKeyPressed(FY_KEY_SPACE))
 			{
 				for (size_t j = 1; j < p_Total; j++)
 				{
-					if (j != i && m_PlayerAttack[i]->IsPlayer)
+					if (j != i && m_PlayerAttack[i]->IsPlayer && m_PlayerAttack[i]->Cooldown > 0.40f)
 					{
 						glm::mat4 rotationMat(1.0f);
 						rotationMat = glm::rotate(rotationMat, glm::radians(m_Transform[i]->Rotation.y), { 0.0f, 1.0f, 0.0f });
-						rotationMat = glm::translate(rotationMat, glm::vec3(m_Collision[i]->BoundingBox->halfSize[0] + (m_PlayerAttack[i]->Reach / 2), 0, 0));
+						//rotationMat = glm::translate(rotationMat, glm::vec3(0, 0, m_Collision[i]->BoundingBox->halfSize[0] + (m_PlayerAttack[i]->Reach / 2)));
+						rotationMat = glm::translate(rotationMat, glm::vec3(0, 0, m_Collision[i]->BoundingBox->halfSize[0] + m_Collision[i]->BoundingBox->halfSize[0]));
 						glm::vec3 hitboxPos = glm::vec3(rotationMat[3]);
 
-						glm::vec3 finalCenterA = m_Transform[i]->Position + glm::vec3(m_Collision[i]->BoundingBox->pos[0], m_Collision[i]->BoundingBox->pos[1], m_Collision[i]->BoundingBox->pos[2]) +
-							hitboxPos;
+						glm::vec3 finalCenterA = m_Transform[i]->Position + glm::vec3(m_Collision[i]->BoundingBox->pos[0], m_Collision[i]->BoundingBox->pos[1], m_Collision[i]->BoundingBox->pos[2]) + hitboxPos;
 						glm::vec3 finalCenterB = m_Transform[j]->Position + glm::vec3(m_Collision[j]->BoundingBox->pos[0], m_Collision[j]->BoundingBox->pos[1], m_Collision[j]->BoundingBox->pos[2]);
 						glm::vec3 finalLengthA = glm::vec3(m_Collision[i]->BoundingBox->halfSize[0], m_Collision[i]->BoundingBox->halfSize[1], m_Collision[i]->BoundingBox->halfSize[2]) * m_Transform[i]->Scale;
 						glm::vec3 finalLengthB = glm::vec3(m_Collision[j]->BoundingBox->halfSize[0], m_Collision[j]->BoundingBox->halfSize[1], m_Collision[j]->BoundingBox->halfSize[2]) * m_Transform[j]->Scale;
-						if(Frosty::CollisionDetection::AABBIntersect(finalLengthA, finalCenterA, finalLengthB, finalCenterB))
+						if (Frosty::CollisionDetection::AABBIntersect(finalLengthA, finalCenterA, finalLengthB, finalCenterB))
+						{
 							FY_TRACE("playerAttack ({0})", j);
+							m_Health[j]->CurrentHealth--;
+							FY_TRACE("current health ({0})", m_Health[j]->CurrentHealth);
+							m_PlayerAttack[i]->Cooldown = 0;
+						}
 
 						//m_Transform[i]->Position -= offset;
+					}
+					else if (m_PlayerAttack[i]->Cooldown < 0.30f)
+					{
+						m_PlayerAttack[i]->Cooldown += Frosty::Time::DeltaTime();
 					}
 				}
 			}
@@ -794,7 +807,7 @@ public:
 			m_Transform[p_Total] = &world->GetComponent<Frosty::ECS::CTransform>(entity);
 			m_Collision[p_Total] = &world->GetComponent<Frosty::ECS::CCollision>(entity);
 			m_PlayerAttack[p_Total] = &world->GetComponent<Frosty::ECS::CPlayerAttack>(entity);
-			//m_Hp[p_Total] = &world->GetComponent<Frosty::ECS::CHp>(entity);
+			m_Health[p_Total] = &world->GetComponent<Frosty::ECS::CHealth>(entity);
 
 			p_Total++;
 		}
@@ -810,7 +823,7 @@ public:
 			m_Transform[p_Total] = nullptr;
 			m_Collision[p_Total] = nullptr;
 			m_PlayerAttack[p_Total] = nullptr;
-			//m_Hp[p_Total] = nullptr;
+			m_Health[p_Total] = nullptr;
 
 			//std::shared_ptr<Entity> entityToUpdate = removeEntityFromData(mEntity);
 
@@ -828,7 +841,7 @@ private:
 	std::array<Frosty::ECS::CTransform*, Frosty::ECS::MAX_ENTITIES_PER_COMPONENT> m_Transform;
 	std::array<Frosty::ECS::CCollision*, Frosty::ECS::MAX_ENTITIES_PER_COMPONENT> m_Collision;
 	std::array<Frosty::ECS::CPlayerAttack*, Frosty::ECS::MAX_ENTITIES_PER_COMPONENT> m_PlayerAttack;
-	//std::array<Frosty::ECS::CHp*, Frosty::ECS::MAX_ENTITIES_PER_COMPONENT> m_Hp;
+	std::array<Frosty::ECS::CHealth*, Frosty::ECS::MAX_ENTITIES_PER_COMPONENT> m_Health;
 
 };
 
@@ -882,6 +895,7 @@ namespace MCS
 		world->AddComponent<Frosty::ECS::CController>(player);
 		world->AddComponent<Frosty::ECS::CCollision>(player, Frosty::AssetManager::GetBoundingBox("Cylinder"));
 		world->AddComponent<Frosty::ECS::CPlayerAttack>(player, 1.0f, 1.0f, 2.0f, true);
+		world->AddComponent<Frosty::ECS::CHealth>(player);
 
 		auto& Enemy = world->CreateEntity();
 		auto& EnemyTransform = world->GetComponent<Frosty::ECS::CTransform>(Enemy);
@@ -891,6 +905,7 @@ namespace MCS
 		world->AddComponent<Frosty::ECS::CMotion>(Enemy, 8.0f);
 		world->AddComponent<Frosty::ECS::CCollision>(Enemy, Frosty::AssetManager::GetBoundingBox("Cube"));
 		world->AddComponent<Frosty::ECS::CPlayerAttack>(Enemy, 1.0f, 1.0f, 2.0f, false);
+		world->AddComponent<Frosty::ECS::CHealth>(Enemy);
 
 		auto& Enemy2 = world->CreateEntity();
 		auto& Enemy2Transform = world->GetComponent<Frosty::ECS::CTransform>(Enemy2);
@@ -901,6 +916,7 @@ namespace MCS
 		world->AddComponent<Frosty::ECS::CMotion>(Enemy2, 8.0f);
 		world->AddComponent<Frosty::ECS::CCollision>(Enemy2, Frosty::AssetManager::GetBoundingBox("Cube"));
 		world->AddComponent<Frosty::ECS::CPlayerAttack>(Enemy2, 1.0f, 1.0f, 2.0f, false);
+		world->AddComponent<Frosty::ECS::CHealth>(Enemy2);
 
 
 		

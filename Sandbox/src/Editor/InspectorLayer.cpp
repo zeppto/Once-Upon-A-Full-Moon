@@ -549,29 +549,29 @@ namespace MCS
 						}
 						ImGui::EndChild();
 					}
-					if (world->HasComponent<Frosty::ECS::CPlayerAttack>(m_SelectedEntity))
+				}
+				if (world->HasComponent<Frosty::ECS::CPlayerAttack>(m_SelectedEntity))
+				{
+					if (ImGui::CollapsingHeader("Player Attack"))
 					{
-						if (ImGui::CollapsingHeader("Player Attack"))
-						{
-							auto& comp = world->GetComponent<Frosty::ECS::CPlayerAttack>(m_SelectedEntity);
-							ImGui::BeginChild("CPlayerAttack", ImVec2(EDITOR_INSPECTOR_WIDTH, 105), true);
-							ImGui::InputFloat("Damage", &comp.Damage, 1.0f, 10.0f, 0);
-							ImGui::InputFloat("Reach", &comp.Reach, 1.0f, 10.0f, 0);
-							ImGui::InputFloat("Width", &comp.Width, 1.0f, 10.0f, 0);
-							ImGui::EndChild();
-						}
+						auto& comp = world->GetComponent<Frosty::ECS::CPlayerAttack>(m_SelectedEntity);
+						ImGui::BeginChild("CPlayerAttack", ImVec2(EDITOR_INSPECTOR_WIDTH, 105), true);
+						ImGui::InputFloat("Damage", &comp.Damage, 1.0f, 10.0f, 0);
+						ImGui::InputFloat("Reach", &comp.Reach, 1.0f, 10.0f, 0);
+						ImGui::InputFloat("Cooldown", &comp.Cooldown, 1.0f, 10.0f, 0);
+						ImGui::EndChild();
 					}
+				}
 
-					if (world->HasComponent<Frosty::ECS::CHealth>(m_SelectedEntity))
+				if (world->HasComponent<Frosty::ECS::CHealth>(m_SelectedEntity))
+				{
+					if (ImGui::CollapsingHeader("Health"))
 					{
-						if (ImGui::CollapsingHeader("Health"))
-						{
-							auto& comp = world->GetComponent<Frosty::ECS::CHealth>(m_SelectedEntity);
-							ImGui::BeginChild("CHealth", ImVec2(EDITOR_INSPECTOR_WIDTH, 105), true);
-							ImGui::InputFloat("Max Health", &comp.MaxHealth, 1.0f, 10.0f, 0);
-							ImGui::InputFloat("Current Health", &comp.CurrentHealth, 1.0f, 10.0f, 0);
-							ImGui::EndChild();
-						}
+						auto& comp = world->GetComponent<Frosty::ECS::CHealth>(m_SelectedEntity);
+						ImGui::BeginChild("CHealth", ImVec2(EDITOR_INSPECTOR_WIDTH, 105), true);
+						ImGui::InputFloat("Max Health", &comp.MaxHealth, 1.0f, 10.0f, 0);
+						ImGui::InputFloat("Current Health", &comp.CurrentHealth, 1.0f, 10.0f, 0);
+						ImGui::EndChild();
 					}
 				}
 			}
