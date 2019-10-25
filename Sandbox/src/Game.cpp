@@ -608,11 +608,11 @@ public:
 				float distance = glm::distance(m_Transform[i]->Position, m_Follow[i]->Target->Position);
 				if (distance > m_Follow[i]->StopDistance)
 				{
-					m_Motion[i]->Direction = glm::normalize(m_Follow[i]->Target->Position - m_Transform[i]->Position);
+					m_Motion[i]->Velocity = glm::normalize(m_Follow[i]->Target->Position - m_Transform[i]->Position) * m_Motion[i]->Speed;
 				}
 				else
 				{
-					m_Motion[i]->Direction = glm::vec3(0.0f);
+					m_Motion[i]->Velocity = glm::vec3(0.0f);
 				}
 			}
 		}
@@ -763,7 +763,7 @@ public:
 			{
 				for (size_t j = 1; j < p_Total; j++)
 				{
-					if (j != i && m_PlayerAttack[i]->IsPlayer && m_PlayerAttack[i]->Cooldown > 0.40f)
+					if (j != i && m_PlayerAttack[i]->IsPlayer && m_PlayerAttack[i]->Cooldown > 0.30f)
 					{
 						glm::mat4 rotationMat(1.0f);
 						rotationMat = glm::rotate(rotationMat, glm::radians(m_Transform[i]->Rotation.y), { 0.0f, 1.0f, 0.0f });
@@ -785,7 +785,7 @@ public:
 
 						//m_Transform[i]->Position -= offset;
 					}
-					else if (m_PlayerAttack[i]->Cooldown < 0.30f)
+					else if (m_PlayerAttack[i]->Cooldown < 0.20f)
 					{
 						m_PlayerAttack[i]->Cooldown += Frosty::Time::DeltaTime();
 					}
@@ -973,14 +973,16 @@ private:
 		auto& player = world->CreateEntity();
 		auto& playerTransform = world->GetComponent<Frosty::ECS::CTransform>(player);
 		playerTransform.Position = glm::vec3(0.0f, 1.0f, 0.0f);
-		playerTransform.Scale *= 0.2f;
-		world->AddComponent<Frosty::ECS::CMesh>(player, Frosty::AssetManager::GetMesh("3D"));
+		playerTransform.Scale *= 2.2f;
+		world->AddComponent<Frosty::ECS::CMesh>(player, Frosty::AssetManager::GetMesh("Cube"));
 		world->AddComponent<Frosty::ECS::CMaterial>(player, Frosty::AssetManager::GetShader("FlatColor"));
 		world->AddComponent<Frosty::ECS::CMotion>(player, 5.0f);
 		world->AddComponent<Frosty::ECS::CController>(player);
 		world->AddComponent<Frosty::ECS::CHealth>(player);
+		//
+		world->AddComponent<Frosty::ECS::CPlayerAttack>(player, 1.0f, 1.0f, 2.0f, true);
 
-		world->AddComponent<Frosty::ECS::CCollision>(player, Frosty::AssetManager::GetBoundingBox("3D"));
+		world->AddComponent<Frosty::ECS::CCollision>(player, Frosty::AssetManager::GetBoundingBox("Cube"));
 		auto& gameCameraEntity = world->GetSceneCamera();
 		world->GetComponent<Frosty::ECS::CCamera>(gameCameraEntity).Target = &playerTransform;
 
@@ -1003,6 +1005,8 @@ private:
 			world->AddComponent<Frosty::ECS::CFollow>(enemy);
 			world->AddComponent<Frosty::ECS::CHealth>(enemy);
 			world->AddComponent<Frosty::ECS::CCollision>(enemy, Frosty::AssetManager::GetBoundingBox("Cube"));
+			//temp
+			world->AddComponent<Frosty::ECS::CPlayerAttack>(enemy);
 		}
 		else
 		{
@@ -1014,6 +1018,8 @@ private:
 			world->AddComponent<Frosty::ECS::CFollow>(enemy);
 			world->AddComponent<Frosty::ECS::CHealth>(enemy, 30);
 			world->AddComponent<Frosty::ECS::CCollision>(enemy, Frosty::AssetManager::GetBoundingBox("Cube"));
+			//temp
+			world->AddComponent<Frosty::ECS::CPlayerAttack>(enemy);
 			m_NrOfEnemies = 1;
 		}
 
