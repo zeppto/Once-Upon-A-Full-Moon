@@ -1088,7 +1088,7 @@ private:
 		m_EnemySpawnTimer = float(std::clock());
 	}
 
-	const glm::vec3& GetSpawnPosition()
+	const glm::vec3 GetSpawnPosition()
 	{
 		float x = float(rand() % (2 * TERRAIN_WIDTH) - TERRAIN_WIDTH);
 		float z = float(rand() % TERRAIN_HEIGHT - float(TERRAIN_HEIGHT * 0.5f));
