@@ -609,11 +609,11 @@ public:
 				float distance = glm::distance(m_Transform[i]->Position, m_Follow[i]->Target->Position);
 				if (distance > m_Follow[i]->StopDistance)
 				{
-					m_Motion[i]->Direction = glm::normalize(m_Follow[i]->Target->Position - m_Transform[i]->Position);
+					m_Motion[i]->Velocity = glm::normalize(m_Follow[i]->Target->Position - m_Transform[i]->Position) * m_Motion[i]->Speed;
 				}
 				else
 				{
-					m_Motion[i]->Direction = glm::vec3(0.0f);
+					m_Motion[i]->Velocity = glm::vec3(0.0f);
 				}
 			}
 		}
