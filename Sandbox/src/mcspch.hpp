@@ -6,6 +6,10 @@
 #include <math.h>
 #include <memory>
 
+#include <stdio.h>
+#include <stdlib.h>
+
+
 #include <vector>
 
 #include <Frosty.h>
