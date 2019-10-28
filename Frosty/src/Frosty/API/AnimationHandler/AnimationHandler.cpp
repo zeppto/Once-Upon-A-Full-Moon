@@ -43,6 +43,7 @@ int Frosty::AnimationHandler::getNrOfJoints()
 
 void Frosty::AnimationHandler::CalculateAnimMatrix( float * currentAnimTime)
 {
+	float duration = animPtr->duration;
 	if (*currentAnimTime > animPtr->duration)
 	{
 		*currentAnimTime = 0;

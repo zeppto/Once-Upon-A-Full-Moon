@@ -173,7 +173,7 @@ namespace Frosty
 	void Renderer::animSubmit(ECS::CMaterial* mat, const std::shared_ptr<VertexArray>& vertexArray, const glm::mat4& transform)
 	{
 		mat->UseShader->Bind();
-		mat->UseShader->UploadUniformMat4("u_ViewProjection", s_SceneData->ViewProjectionMatrix);
+		mat->UseShader->UploadUniformMat4("u_ViewProjection", s_SceneData->GameCamera.ViewProjectionMatrix);
 		mat->UseShader->UploadUniformMat4("u_Transform", transform);
 		mat->UseShader->AssignUniformBlock("a_jointDataBlock");
 

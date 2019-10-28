@@ -75,31 +75,7 @@ namespace Frosty
 		tempFile.getVertices(0, vertices);
 		tempFile.getIndices(0, indices);
 
-		tempFile.getVertices(0, lunaVertices);
-		std::vector<uint32_t> indices;
-		unsigned int indexCounter = 0;
-		int index = -1;
-		for (unsigned int i = 0; i < lunaVertices.size(); i++)
-		{
-			index = -1;
-			for (unsigned int j = 0; j < vertices.size() && index != -1; j++)
-			{
-				if (vertices[j] == lunaVertices[i])
-				{
-					index = j;
-				}
-			}
 
-			if (index == -1)
-			{
-				vertices.emplace_back(lunaVertices[i]);
-				indices.emplace_back(indexCounter++);
-			}
-			else
-			{
-				indices.emplace_back(index);
-			}
-		}
 		// Bounding Box
 		s_BoundingBoxes.emplace(name, FY_NEW Luna::BoundingBox(tempFile.getBoundingBox(0)));
 

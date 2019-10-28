@@ -2,6 +2,7 @@
 #define PREFAB_H 
 #include "PrefabInstance.hpp"
 #include"..\AssetManager\AM.hpp"
+#include "Frosty/API/AnimationHandler/AnimationHandler.h"
 
 namespace Frosty
 {
