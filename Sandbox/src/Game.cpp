@@ -815,7 +815,6 @@ public:
 						//world->AddComponent<Frosty::ECS::CTag>(arrow, "arrow");
 						//world->AddComponent<Frosty::ECS::CCollision>(arrow, Frosty::AssetManager::GetBoundingBox("Cube"));
 
->>>>>>> Stashed changes
 					}
 					else if (m_PlayerAttack[i]->Cooldown < 0.20f)
 					{

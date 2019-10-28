@@ -484,6 +484,9 @@ namespace Frosty
 			float Damage{ 2.0f };
 			//temp
 			bool IsPlayer{ false };
+			// arrow attack
+			float timeAlive{ 5.0f };
+
 
 			CPlayerAttack() = default;
 			//CPlayerAttack(float reach, float width, float damage) : Reach(reach), Width(width), Damage(damage) { }
