@@ -880,7 +880,17 @@ public:
 			{
 				if (m_Health[i]->EntityPtr == m_Player)
 				{
-					m_Health[i]->CurrentHealth -= 0.5f;
+					auto& world = Frosty::Application::Get().GetWorld();
+					auto& currentState = world->GetComponent<Frosty::ECS::CCharacterState>(m_Health[i]->EntityPtr);
+					if (currentState.m_CharacterState != currentState.ATTACKING && !keepTrack) { // For the purpose of cooldown
+						m_Health[i]->CurrentHealth -= 4.0f;
+						currentState.m_CharacterState = currentState.ATTACKING;
+						m_PlayerCooldownTimer = float(std::clock());
+						world->RemoveComponent<Frosty::ECS::CMaterial>(m_Player); // Re-apply the material with a different one
+						world->AddComponent<Frosty::ECS::CMaterial>(m_Player, Frosty::AssetManager::GetShader("Texture2D"));
+						keepTrack = true;
+					}
+
 					found = true;
 				}
 			}
@@ -921,6 +931,23 @@ public:
 		else if ((p_Total - 2) < m_NrOfEnemies && (std::clock() - m_EnemySpawnTimer) >= 6000)
 		{
 			SpawnEnemy();
+		}
+
+		// If player has began the cooldown timer for attacking
+		if ((std::clock() - m_PlayerCooldownTimer) >= 2000 && keepTrack)
+		{
+			if (m_Player != nullptr)
+			{
+				auto& world = Frosty::Application::Get().GetWorld();
+				auto& currentState = world->GetComponent<Frosty::ECS::CCharacterState>(m_Player);
+				auto& playerMaterial = world->GetComponent<Frosty::ECS::CMaterial>(m_Player);
+				world->RemoveComponent<Frosty::ECS::CMaterial>(m_Player); // Re-apply the material with a different one
+				world->AddComponent<Frosty::ECS::CMaterial>(m_Player, Frosty::AssetManager::GetShader("FlatColor"));
+				currentState.m_CharacterState = currentState.IDLE;
+			}
+
+			m_PlayerCooldownTimer = 0.0f;
+			keepTrack = false;
 		}
 
 		// If health below 0 --> remove
@@ -995,6 +1022,7 @@ private:
 		world->AddComponent<Frosty::ECS::CCollision>(player, Frosty::AssetManager::GetBoundingBox("Cube"));
 		auto& gameCameraEntity = world->GetSceneCamera();
 		world->GetComponent<Frosty::ECS::CCamera>(gameCameraEntity).Target = &playerTransform;
+		world->AddComponent<Frosty::ECS::CCharacterState>(player);
 
 		m_Player = player;
 	}
@@ -1016,6 +1044,7 @@ private:
 			world->AddComponent<Frosty::ECS::CHealth>(enemy);
 			world->AddComponent<Frosty::ECS::CCollision>(enemy, Frosty::AssetManager::GetBoundingBox("Cube"));
 			world->AddComponent<Frosty::ECS::CTag>(enemy, "Enemy");
+			world->AddComponent<Frosty::ECS::CCharacterState>(enemy);
 			//temp
 			world->AddComponent<Frosty::ECS::CPlayerAttack>(enemy);
 		}
@@ -1030,6 +1059,7 @@ private:
 			world->AddComponent<Frosty::ECS::CHealth>(enemy, 30.0f);
 			world->AddComponent<Frosty::ECS::CCollision>(enemy, Frosty::AssetManager::GetBoundingBox("Cube"));
 			world->AddComponent<Frosty::ECS::CTag>(enemy, "Enemy");
+			world->AddComponent<Frosty::ECS::CCharacterState>(enemy);
 			//temp
 			world->AddComponent<Frosty::ECS::CPlayerAttack>(enemy);
 			m_NrOfEnemies = 1;
@@ -1103,7 +1133,10 @@ private:
 	std::shared_ptr<Frosty::ECS::Entity> m_Entity = nullptr;
 
 	float m_PlayerSpawnTimer;
+	float m_PlayerCooldownTimer;
 	float m_EnemySpawnTimer;
+
+	bool keepTrack;
 
 	// Temp
 	int m_KillCount = 0;
