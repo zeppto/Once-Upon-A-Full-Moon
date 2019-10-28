@@ -615,6 +615,7 @@ namespace MCS
 						ImGui::InputFloat("Damage", &comp.Damage, 1.0f, 10.0f, 0);
 						ImGui::InputFloat("Reach", &comp.Reach, 1.0f, 10.0f, 0);
 						ImGui::InputFloat("Cooldown", &comp.Cooldown, 1.0f, 10.0f, 0);
+						//ImGui::Checkbox("is player: ", &comp.IsPlayer);
 						ImGui::EndChild();
 					}
 				}

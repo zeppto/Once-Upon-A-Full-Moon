@@ -71,13 +71,74 @@ glm::vec3 Frosty::CollisionDetection::AABBIntersecPushback(glm::vec3 pushbackLen
 		{
 			if (smallestPush == toPush[i])
 			{
-				if(smallestPush < -1)
-					FY_TRACE("puch back ({0}) in ({1})", smallestPush, i);
-				FY_TRACE("puch back ({0}) in ({1})", smallestPush, i);
 				toReturn[i] = smallestPush;
 				break;
 			}
 		}
 	}
 	return toReturn;
+}
+
+bool Frosty::CollisionDetection::AABBRayIntersect(glm::vec3 rayStart, glm::vec3 rayLength, glm::vec3 AABBLength, glm::vec3 AABBCenter)
+{
+	bool intersect = true;
+	glm::vec3 min = AABBCenter - AABBLength;
+	glm::vec3 max = AABBCenter + AABBLength;
+	glm::vec3 t;
+	int planeID = 0;
+	for (int i = 0; i < 3; i++)
+	{
+		if (rayStart[i] < min[i])
+		{
+			t[i] = min[i] - rayStart[i];
+			if (t[i] > rayLength[i])
+				intersect = false;
+			t[i] /= rayLength[i];
+		}
+		else if (rayStart[i] > max[i])
+		{
+			t[i] = max[i] - rayStart[i];
+			if (t[i] < rayLength[i])
+				intersect = false;
+			t[i] /= rayLength[i];
+		}
+	}
+
+	if (t[1] > t[0])
+		planeID = 1;
+	if (t[2] > t[0])
+		planeID = 2;
+
+	switch (planeID)
+	{
+		case 0:
+		{
+			float y = rayStart.y + rayLength.y * t[0];
+			if(y < min.y || y > max.y)
+				intersect = false;
+			float z = rayStart.z + rayLength.z * t[0];
+			if (z < min.z || z > max.z)
+				intersect = false;
+		}break;
+		case 1:
+		{
+			float x = rayStart.x + rayLength.x * t[1];
+			if (x < min.x || x > max.x)
+				intersect = false;
+			float z = rayStart.z + rayLength.z * t[1];
+			if (z < min.z || z > max.z)
+				intersect = false;
+		}break;
+		case 2:
+		{
+			float y = rayStart.y + rayLength.y * t[2];
+			if (y < min.y || y > max.y)
+				intersect = false;
+			float x = rayStart.x + rayLength.x * t[2];
+			if (x < min.x || x > max.x)
+				intersect = false;
+		}break;
+	}
+
+	return intersect;
 }

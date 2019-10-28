@@ -486,7 +486,10 @@ namespace Frosty
 			//temp
 			bool IsPlayer{ false };
 			// arrow attack
+			float CooldownArrow{ 1.0f };
 			float timeAlive{ 5.0f };
+			//
+			bool IsMelee{ true };
 
 
 			CPlayerAttack() = default;

@@ -14,6 +14,7 @@ namespace Frosty
 		// Move all this code later out to front-end
 		//AddMesh("Clock", "assets/models/clock/clock.lu");
 		//AddMesh("Table", "assets/models/table/table.lu");
+
 		AddMesh("Plane", "assets/primitives/plane/plane.lu");
 		AddMesh("Sphere", "assets/primitives/sphere/sphere.lu");
 		AddMesh("Icosahedron", "assets/primitives/icosahedron/icosahedron.lu");
