@@ -86,7 +86,7 @@ namespace Frosty
 #pragma region Settings
 
 		// Let's define a maximum number of unique components:
-		constexpr std::size_t MAX_COMPONENTS{ 13 };
+		constexpr std::size_t MAX_COMPONENTS{ 15 };
 
 		// Let's define a maximum number of entities that
 		// can have the same component type:
@@ -404,14 +404,14 @@ namespace Frosty
 		{
 			static std::string NAME;
 			static const int DASH_COOLDOWN = 3000;
-			static const int DASH_DISTANCE = 20000;
+			static const int DASH_DISTANCE = 10000;
 			glm::vec3 Direction{ 0.0f, 0.0f, 0.0f };
 			float Speed{ 0.0f };
 			glm::vec3 Velocity{ 0.0f };
 			bool DashActive{ false };
 			float DashCurrentCooldown{ 0.0f };
 			float DistanceDashed{ 0.0f };
-			float DashSpeedMultiplier{ 20.0f };
+			float DashSpeedMultiplier{ 10.0f };
 
 			CMotion() = default;
 			CMotion(float speed) : Speed(speed) { }
@@ -438,7 +438,7 @@ namespace Frosty
 		{
 			static std::string NAME;
 			CTransform* Target{ nullptr };
-			float StopDistance{ 3.0f };
+			float StopDistance{ 0.0f };
 
 			CFollow() = default;
 			CFollow(const CFollow& org) { FY_CORE_ASSERT(false, "Copy constructor in CFollow called."); }
@@ -494,6 +494,22 @@ namespace Frosty
 			virtual void Func() override { }
 		};
 		
+		struct CEnemyAttack : public BaseComponent
+		{
+			static std::string NAME;
+
+			float Radius = 3.0f;
+			float Cooldown = 0.3f;
+			float Damage = 2.0f;
+			bool IsPlayer = false;
+
+			CEnemyAttack() = default;			
+			CEnemyAttack(float radius, float cooldown, float damage, bool isPlayer) : Radius(radius), Cooldown(cooldown), Damage(damage), IsPlayer(isPlayer) { }
+			CEnemyAttack(const CEnemyAttack& org) { FY_CORE_ASSERT(false, "Copy constructor in CEnemyAttack called."); }
+
+			virtual void Func() override { }
+		};
+
 		struct CHealth : public BaseComponent
 		{
 			static std::string NAME;
@@ -547,6 +563,39 @@ namespace Frosty
 			virtual void Func() override { }
 		};
 
+		struct CCharacterState : public BaseComponent
+		{
+			static std::string NAME;
+
+			/*
+			Note: More states can be added but avoid changing first and last location in the enums
+			*/
+
+			// Basic states characters in the game can find themselves in
+			enum CharacterStates {
+				IDLE, // If we want player or enemy standing still
+				WALKING,
+				ATTACKING,
+				DODGING, // Exclusive to player
+				DEAD,
+				C_COUNT
+			} m_CharacterState; // Object reference
+
+			// Possible states related to character attributes
+			enum CharacterAttributeStates {
+				CHARACTER_NOATTRIBUTE,
+				CHARACTER_INVINCIBLE, // When player is invincible, cannot take any damage of any kind while this is active
+				CA_COUNT
+			} m_CharacterAttributeState; // Object reference
+
+			CCharacterState() = default;
+			CCharacterState(CharacterStates m_CharacterState, CharacterAttributeStates m_CharacterAttributeState) :
+				m_CharacterState(m_CharacterState), m_CharacterAttributeState(m_CharacterAttributeState) { }
+			CCharacterState(const CCharacterState& org) { FY_CORE_ASSERT(false, "Copy constructor in CCharacterState called."); }
+
+			virtual void Func() override { }
+		};
+
 		static std::string GetComponentName(size_t i)
 		{
 			switch (i)
@@ -564,6 +613,7 @@ namespace Frosty
 			case 10:	return "Health";
 			case 11:	return "Tag";
 			case 12:	return "Consumables";
+			case 13:	return "CharacterState";
 			default:	return "";
 			}
 		}
