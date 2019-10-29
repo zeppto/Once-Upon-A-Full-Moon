@@ -24,6 +24,7 @@ namespace Frosty
 		AddMesh("Cube", "assets/primitives/cube/cube.lu");
 		AddMesh("Cone", "assets/primitives/cone/cone.lu");
 		AddMesh("3D", "assets/primitives/3D/3D.lu");
+		AddMesh("CharTest", "assets/models/character_test/char_test.lu");
 
 		AddMesh("Tree1", "assets/models/trees/tree1.lu");
 		AddMesh("Tree2", "assets/models/trees/tree2.lu");
