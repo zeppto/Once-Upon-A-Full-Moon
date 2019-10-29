@@ -14,6 +14,7 @@ namespace Frosty
 		// Move all this code later out to front-end
 		//AddMesh("Clock", "assets/models/clock/clock.lu");
 		//AddMesh("Table", "assets/models/table/table.lu");
+
 		AddMesh("Plane", "assets/primitives/plane/plane.lu");
 		AddMesh("Sphere", "assets/primitives/sphere/sphere.lu");
 		AddMesh("Icosahedron", "assets/primitives/icosahedron/icosahedron.lu");
@@ -23,6 +24,7 @@ namespace Frosty
 		AddMesh("Cube", "assets/primitives/cube/cube.lu");
 		AddMesh("Cone", "assets/primitives/cone/cone.lu");
 		AddMesh("3D", "assets/primitives/3D/3D.lu");
+		AddMesh("CharTest", "assets/models/character_test/char_test.lu");
 
 		AddMesh("Tree1", "assets/models/trees/tree1.lu");
 		AddMesh("Tree2", "assets/models/trees/tree2.lu");
@@ -54,6 +56,7 @@ namespace Frosty
 		LoadTexture2D("Heart", "assets/textures/heart.png");
 		LoadTexture2D("HeartFull", "assets/textures/heartFull.png");
 		LoadTexture2D("Sword", "assets/textures/sword.png");
+		LoadTexture2D("Red", "assets/textures/red.png");
 
 
 		LoadTexture2D("Tree1", "assets/textures/testPineLeves2.tga");						// TEMPORARY
