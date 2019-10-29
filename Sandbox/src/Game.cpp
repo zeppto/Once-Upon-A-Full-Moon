@@ -774,6 +774,7 @@ public:
 			//FY_TRACE("playerAttack ({0})", i);
 
 			//tips hoger ar fram utan rotation
+			bool hasHitt = false;
 			if (m_PlayerAttack[i]->IsPlayer)
 			{
 				m_PlayerAttack[i]->Cooldown += Frosty::Time::DeltaTime();
@@ -803,10 +804,9 @@ public:
 					{
 						for (size_t j = 1; j < p_Total; j++)
 						{
-							if (j != i && m_PlayerAttack[i]->IsPlayer && m_PlayerAttack[i]->Cooldown > 0.00f && m_CanAttackNormal)
+							if (j != i && m_PlayerAttack[i]->IsPlayer && m_PlayerAttack[i]->Cooldown > 0.00f && m_CanAttackNormal && m_Collision[j]->EntityPtr != nullptr)
 							{
-								m_CanAttackNormal = false;
-								m_PlayerAttack[i]->Cooldown = -0.20f;
+								hasHitt = true;
 
 								glm::mat4 rotationMat(1.0f);
 								rotationMat = glm::rotate(rotationMat, glm::radians(m_Transform[i]->Rotation.y), { 0.0f, 1.0f, 0.0f });
@@ -828,11 +828,16 @@ public:
 									FY_TRACE("current health ({0})", m_Health[j]->CurrentHealth);
 									//nockBack
 									//enemy sak ta hand om sin egen push back, har sak bara skickas till enemyn att du ska push backa
-									m_Transform[j]->Position.x -= glm::normalize(m_Transform[i]->Position - m_Transform[j]->Position).x * 3.0f;
-									m_Transform[j]->Position.z -= glm::normalize(m_Transform[i]->Position - m_Transform[j]->Position).z * 3.0f;
+									m_Transform[j]->Position.x -= glm::normalize(m_Transform[i]->Position - m_Transform[j]->Position).x * 4.0f;
+									m_Transform[j]->Position.z -= glm::normalize(m_Transform[i]->Position - m_Transform[j]->Position).z * 4.0f;
 
 								}
 							}
+						}
+						if (hasHitt)
+						{
+							m_CanAttackNormal = false;
+							m_PlayerAttack[i]->Cooldown = -0.10f;
 						}
 					}
 					//area attack 
@@ -844,17 +849,16 @@ public:
 					{
 						for (size_t j = 1; j < p_Total; j++)
 						{
-							if (j != i && m_PlayerAttack[i]->IsPlayer && m_PlayerAttack[i]->Cooldown > 0.00f && m_CanAttackArea)
+							if (j != i && m_PlayerAttack[i]->IsPlayer && m_PlayerAttack[i]->Cooldown > 0.00f && m_CanAttackArea && m_Collision[j]->EntityPtr != nullptr)
 							{
-								m_CanAttackArea = false;
-								m_PlayerAttack[i]->Cooldown = -0.50f;
+								hasHitt = true;
 
 								//temp *2 make it better
 								glm::vec3 finalCenterA = m_Transform[i]->Position + glm::vec3(m_Collision[i]->BoundingBox->pos[0], m_Collision[i]->BoundingBox->pos[1],
 									m_Collision[i]->BoundingBox->pos[2]);
 								glm::vec3 finalCenterB = m_Transform[j]->Position + glm::vec3(m_Collision[j]->BoundingBox->pos[0], m_Collision[j]->BoundingBox->pos[1], m_Collision[j]->BoundingBox->pos[2]);
 								glm::vec3 finalLengthA = glm::vec3(m_Collision[i]->BoundingBox->halfSize[0],
-									m_Collision[i]->BoundingBox->halfSize[1], m_Collision[i]->BoundingBox->halfSize[2]) * m_Transform[i]->Scale * glm::vec3(2.50f);
+									m_Collision[i]->BoundingBox->halfSize[1], m_Collision[i]->BoundingBox->halfSize[2]) * m_Transform[i]->Scale * glm::vec3(3.00f);
 								glm::vec3 finalLengthB = glm::vec3(m_Collision[j]->BoundingBox->halfSize[0], m_Collision[j]->BoundingBox->halfSize[1],
 									m_Collision[j]->BoundingBox->halfSize[2]) * m_Transform[j]->Scale;
 								if (Frosty::CollisionDetection::AABBIntersect(finalLengthA, finalCenterA, finalLengthB, finalCenterB))
@@ -865,11 +869,16 @@ public:
 
 									//nockBack
 									//enemy sak ta hand om sin egen push back, har sak bara skickas till enemyn att du ska push backa
-									m_Transform[j]->Position.x -= glm::normalize(m_Transform[i]->Position - m_Transform[j]->Position).x * 4.0f;
-									m_Transform[j]->Position.z -= glm::normalize(m_Transform[i]->Position - m_Transform[j]->Position).z * 4.0f;
+									m_Transform[j]->Position.x -= glm::normalize(m_Transform[i]->Position - m_Transform[j]->Position).x * 5.0f;
+									m_Transform[j]->Position.z -= glm::normalize(m_Transform[i]->Position - m_Transform[j]->Position).z * 5.0f;
 
 								}
 							}
+						}
+						if (hasHitt)
+						{
+							m_CanAttackArea = false;
+							m_PlayerAttack[i]->Cooldown = -0.50f;
 						}
 					}
 					//strong slim attack 
@@ -881,10 +890,9 @@ public:
 					{
 						for (size_t j = 1; j < p_Total; j++)
 						{
-							if (j != i && m_PlayerAttack[i]->IsPlayer && m_PlayerAttack[i]->Cooldown > 0.00f && m_CanAttackStrong)
+							if (j != i && m_PlayerAttack[i]->IsPlayer && m_PlayerAttack[i]->Cooldown > 0.00f && m_CanAttackStrong && m_Collision[j]->EntityPtr != nullptr)
 							{
-								m_CanAttackStrong = false;
-								m_PlayerAttack[i]->Cooldown = -1.00f;
+								hasHitt = true;
 
 								glm::mat4 rotationMat(1.0f);
 								rotationMat = glm::rotate(rotationMat, glm::radians(m_Transform[i]->Rotation.y), { 0.0f, 1.0f, 0.0f });
@@ -909,6 +917,11 @@ public:
 								}
 							}
 						}
+						if (hasHitt)
+						{
+							m_CanAttackStrong = false;
+							m_PlayerAttack[i]->Cooldown = -1.00f;
+						}
 					}
 				}
 				else
@@ -924,7 +937,7 @@ public:
 						if (m_PlayerAttack[i]->IsPlayer && m_PlayerAttack[i]->Cooldown > 0.00f && m_CanAttackNormal)
 						{
 							m_CanAttackNormal = false;
-							m_PlayerAttack[i]->Cooldown = -0.30f;
+							m_PlayerAttack[i]->Cooldown = -0.40f;
 
 							glm::mat4 rotationMat(1.0f);
 							rotationMat = glm::rotate(rotationMat, glm::radians(m_Transform[i]->Rotation.y), { 0.0f, 1.0f, 0.0f });
@@ -937,18 +950,18 @@ public:
 							auto& arrow = world->CreateEntity();
 							auto& arrowTransform = world->GetComponent<Frosty::ECS::CTransform>(arrow);
 							arrowTransform.Position = m_Transform[i]->Position - glm::normalize(m_Transform[i]->Position - (m_Transform[i]->Position + hitboxPos)) * m_Collision[i]->BoundingBox->halfSize[0] * 2.0f * m_Transform[i]->Scale;
-							arrowTransform.Scale *= 1.2f;
+							arrowTransform.Scale *= 0.9f;
 							arrowTransform.Rotation = m_Transform[i]->Rotation;
 							world->AddComponent<Frosty::ECS::CMesh>(arrow, Frosty::AssetManager::GetMesh("Cube"));
 							world->AddComponent<Frosty::ECS::CMaterial>(arrow, Frosty::AssetManager::GetShader("FlatColor"));
-							auto& arrowMotion = world->AddComponent<Frosty::ECS::CMotion>(arrow, 20.0f);
+							auto& arrowMotion = world->AddComponent<Frosty::ECS::CMotion>(arrow, 40.0f);
 							arrowMotion.Direction = -glm::normalize(m_Transform[i]->Position - (m_Transform[i]->Position + hitboxPos));
 							arrowMotion.Direction.y = 0;
 							FY_TRACE("playerAttack Direction({0}, {1}, {2})", -glm::normalize(m_Transform[i]->Position - (m_Transform[i]->Position + hitboxPos)).x, -glm::normalize(m_Transform[i]->Position - (m_Transform[i]->Position + hitboxPos)).y, -glm::normalize(m_Transform[i]->Position - (m_Transform[i]->Position + hitboxPos)).z);
 							world->AddComponent<Frosty::ECS::CTag>(arrow, "arrow");
 							world->AddComponent<Frosty::ECS::CCollision>(arrow, Frosty::AssetManager::GetBoundingBox("Cube"));
 							world->AddComponent<Frosty::ECS::CHealth>(arrow, 1.0f);
-							m_PlayerAttack[i]->CooldownArrow = 0;
+							world->AddComponent<Frosty::ECS::CArrow>(arrow);
 
 						}
 					}
@@ -962,7 +975,7 @@ public:
 						if (m_PlayerAttack[i]->IsPlayer && m_PlayerAttack[i]->Cooldown > 0.00f && m_CanAttackArea)
 						{
 							m_CanAttackArea = false;
-							m_PlayerAttack[i]->Cooldown = -0.70f;
+							m_PlayerAttack[i]->Cooldown = -0.80f;
 
 							for (int k = 0; k < 3; k++)
 							{
@@ -981,18 +994,18 @@ public:
 								auto& arrow = world->CreateEntity();
 								auto& arrowTransform = world->GetComponent<Frosty::ECS::CTransform>(arrow);
 								arrowTransform.Position = m_Transform[i]->Position - glm::normalize(m_Transform[i]->Position - (m_Transform[i]->Position + hitboxPos)) * m_Collision[i]->BoundingBox->halfSize[0] * 2.0f * m_Transform[i]->Scale;
-								arrowTransform.Scale *= 1.2f;
+								arrowTransform.Scale *= 0.9f;
 								arrowTransform.Rotation = m_Transform[i]->Rotation;
 								world->AddComponent<Frosty::ECS::CMesh>(arrow, Frosty::AssetManager::GetMesh("Cube"));
 								world->AddComponent<Frosty::ECS::CMaterial>(arrow, Frosty::AssetManager::GetShader("FlatColor"));
-								auto& arrowMotion = world->AddComponent<Frosty::ECS::CMotion>(arrow, 20.0f);
+								auto& arrowMotion = world->AddComponent<Frosty::ECS::CMotion>(arrow, 40.0f);
 								arrowMotion.Direction = -glm::normalize(m_Transform[i]->Position - (m_Transform[i]->Position + hitboxPos));
 								arrowMotion.Direction.y = 0;
 								FY_TRACE("playerAttack Direction({0}, {1}, {2})", -glm::normalize(m_Transform[i]->Position - (m_Transform[i]->Position + hitboxPos)).x, -glm::normalize(m_Transform[i]->Position - (m_Transform[i]->Position + hitboxPos)).y, -glm::normalize(m_Transform[i]->Position - (m_Transform[i]->Position + hitboxPos)).z);
 								world->AddComponent<Frosty::ECS::CTag>(arrow, "arrow");
 								world->AddComponent<Frosty::ECS::CCollision>(arrow, Frosty::AssetManager::GetBoundingBox("Cube"));
 								world->AddComponent<Frosty::ECS::CHealth>(arrow, 1.0f);
-								m_PlayerAttack[i]->CooldownArrow = 0;
+								world->AddComponent<Frosty::ECS::CArrow>(arrow);
 							}
 
 						}
@@ -1008,7 +1021,7 @@ public:
 						if (m_PlayerAttack[i]->IsPlayer && m_PlayerAttack[i]->Cooldown > 0.00f && m_CanAttackStrong)
 						{
 							m_CanAttackStrong = false;
-							m_PlayerAttack[i]->Cooldown = -1.20f;
+							m_PlayerAttack[i]->Cooldown = -1.40f;
 
 							glm::mat4 rotationMat(1.0f);
 							rotationMat = glm::rotate(rotationMat, glm::radians(m_Transform[i]->Rotation.y), { 0.0f, 1.0f, 0.0f });
@@ -1021,18 +1034,18 @@ public:
 							auto& arrow = world->CreateEntity();
 							auto& arrowTransform = world->GetComponent<Frosty::ECS::CTransform>(arrow);
 							arrowTransform.Position = m_Transform[i]->Position - glm::normalize(m_Transform[i]->Position - (m_Transform[i]->Position + hitboxPos)) * m_Collision[i]->BoundingBox->halfSize[0] * 2.0f * m_Transform[i]->Scale;
-							arrowTransform.Scale *= 1.2f;
+							arrowTransform.Scale *= 0.9f;
 							arrowTransform.Rotation = m_Transform[i]->Rotation;
 							world->AddComponent<Frosty::ECS::CMesh>(arrow, Frosty::AssetManager::GetMesh("Cube"));
 							world->AddComponent<Frosty::ECS::CMaterial>(arrow, Frosty::AssetManager::GetShader("FlatColor"));
-							auto& arrowMotion = world->AddComponent<Frosty::ECS::CMotion>(arrow, 20.0f);
+							auto& arrowMotion = world->AddComponent<Frosty::ECS::CMotion>(arrow, 40.0f);
 							arrowMotion.Direction = -glm::normalize(m_Transform[i]->Position - (m_Transform[i]->Position + hitboxPos));
 							arrowMotion.Direction.y = 0;
 							FY_TRACE("playerAttack Direction({0}, {1}, {2})", -glm::normalize(m_Transform[i]->Position - (m_Transform[i]->Position + hitboxPos)).x, -glm::normalize(m_Transform[i]->Position - (m_Transform[i]->Position + hitboxPos)).y, -glm::normalize(m_Transform[i]->Position - (m_Transform[i]->Position + hitboxPos)).z);
-							world->AddComponent<Frosty::ECS::CTag>(arrow, "strongArrow");
+							world->AddComponent<Frosty::ECS::CTag>(arrow, "arrow");
 							world->AddComponent<Frosty::ECS::CCollision>(arrow, Frosty::AssetManager::GetBoundingBox("Cube"));
 							world->AddComponent<Frosty::ECS::CHealth>(arrow, 10.0f);
-							m_PlayerAttack[i]->CooldownArrow = 0;
+							world->AddComponent<Frosty::ECS::CArrow>(arrow, 3.0f, 50, true);
 
 						}
 						m_CanAttackArea = false;
@@ -1113,6 +1126,8 @@ public:
 		p_Signature.set(Frosty::ECS::getComponentTypeID<Frosty::ECS::CCollision>(), true);
 		p_Signature.set(Frosty::ECS::getComponentTypeID<Frosty::ECS::CHealth>(), true);
 		p_Signature.set(Frosty::ECS::getComponentTypeID<Frosty::ECS::CTag>(), true);
+		//
+		p_Signature.set(Frosty::ECS::getComponentTypeID<Frosty::ECS::CArrow>(), true);
 	}
 
 	inline virtual void OnInput() override
@@ -1128,46 +1143,43 @@ public:
 		{
 			for (size_t j = 1; j < p_Total; j++)
 			{
-				if (j != i && (m_Tag[i]->TagName == "arrow" || m_Tag[i]->TagName == "strongArrow"))
+				if (m_Tag[j]->TagName == "Enemy" && (m_Tag[i]->TagName == "arrow"))
 				{
-					//temp
-					if (m_Tag[j]->TagName == "Enemy")
-						//	if (m_Tag[i]->TagName != m_Tag[j]->TagName)
+
+					glm::vec3 finalCenterA = m_Transform[i]->Position + glm::vec3(m_Collision[i]->BoundingBox->pos[0], m_Collision[i]->BoundingBox->pos[1], m_Collision[i]->BoundingBox->pos[2]);
+					glm::vec3 finalCenterB = m_Transform[j]->Position + glm::vec3(m_Collision[j]->BoundingBox->pos[0], m_Collision[j]->BoundingBox->pos[1], m_Collision[j]->BoundingBox->pos[2]);
+					glm::vec3 finalLengthA = glm::vec3(m_Collision[i]->BoundingBox->halfSize[0], m_Collision[i]->BoundingBox->halfSize[1], m_Collision[i]->BoundingBox->halfSize[2]) * m_Transform[i]->Scale;
+					glm::vec3 finalLengthB = glm::vec3(m_Collision[j]->BoundingBox->halfSize[0], m_Collision[j]->BoundingBox->halfSize[1], m_Collision[j]->BoundingBox->halfSize[2]) * m_Transform[j]->Scale;
+					if (Frosty::CollisionDetection::AABBIntersect(finalLengthA, finalCenterA, finalLengthB, finalCenterB))
 					{
-						glm::vec3 finalCenterA = m_Transform[i]->Position + glm::vec3(m_Collision[i]->BoundingBox->pos[0], m_Collision[i]->BoundingBox->pos[1], m_Collision[i]->BoundingBox->pos[2]);
-						glm::vec3 finalCenterB = m_Transform[j]->Position + glm::vec3(m_Collision[j]->BoundingBox->pos[0], m_Collision[j]->BoundingBox->pos[1], m_Collision[j]->BoundingBox->pos[2]);
-						glm::vec3 finalLengthA = glm::vec3(m_Collision[i]->BoundingBox->halfSize[0], m_Collision[i]->BoundingBox->halfSize[1], m_Collision[i]->BoundingBox->halfSize[2]) * m_Transform[i]->Scale;
-						glm::vec3 finalLengthB = glm::vec3(m_Collision[j]->BoundingBox->halfSize[0], m_Collision[j]->BoundingBox->halfSize[1], m_Collision[j]->BoundingBox->halfSize[2]) * m_Transform[j]->Scale;
-						if (Frosty::CollisionDetection::AABBIntersect(finalLengthA, finalCenterA, finalLengthB, finalCenterB))
+						if (m_Tag[i]->TagName == "arrow")
 						{
-							if (m_Tag[i]->TagName == "arrow")
+							if (m_Arrow[i]->IsPiercing && m_Arrow[i]->alradyHitt == j)
 							{
-								FY_TRACE("playerAttack ({0})", j);
-								m_Health[j]->CurrentHealth--;
-								m_Health[i]->CurrentHealth--;
-								FY_TRACE("current health ({0})", m_Health[j]->CurrentHealth);
 							}
 							else
 							{
 								FY_TRACE("playerAttack ({0})", j);
-								m_Health[j]->CurrentHealth -= 3;
+								m_Health[j]->CurrentHealth -= m_Arrow[i]->Damage;
 								m_Health[i]->CurrentHealth--;
 								FY_TRACE("current health ({0})", m_Health[j]->CurrentHealth);
+								if (m_Arrow[i]->IsPiercing)
+									m_Arrow[i]->alradyHitt = j;
 							}
-
-							//nockBack
-							//enemy sak ta hand om sin egen push back, har sak bara skickas till enemyn att du ska push backa
-							m_Transform[j]->Position.x -= glm::normalize(m_Transform[i]->Position - m_Transform[j]->Position).x * 3.0f;
-							m_Transform[j]->Position.z -= glm::normalize(m_Transform[i]->Position - m_Transform[j]->Position).z * 3.0f;
 						}
+
+						//nockBack
+						//enemy sak ta hand om sin egen push back, har sak bara skickas till enemyn att du ska push backa
+						m_Transform[j]->Position.x -= glm::normalize(m_Transform[i]->Position - m_Transform[j]->Position).x * 1.0f;
+						m_Transform[j]->Position.z -= glm::normalize(m_Transform[i]->Position - m_Transform[j]->Position).z * 1.0f;
 					}
 				}
 			}
 			//temp death timer
-			if (m_Tag[i]->TagName == "arrow" || m_Tag[i]->TagName == "strongArrow")
+			if (m_Tag[i]->TagName == "arrow")
 			{
-				m_Health[i]->MaxHealth++;
-				if (m_Health[i]->MaxHealth > 70)
+				m_Arrow[i]->Lifetime--;
+				if (m_Arrow[i]->Lifetime < 0)
 					m_Health[i]->CurrentHealth--;
 			}
 		}
@@ -1184,6 +1196,8 @@ public:
 			m_Collision[p_Total] = &world->GetComponent<Frosty::ECS::CCollision>(entity);
 			m_Health[p_Total] = &world->GetComponent<Frosty::ECS::CHealth>(entity);
 			m_Tag[p_Total] = &world->GetComponent<Frosty::ECS::CTag>(entity);
+			//
+			m_Arrow[p_Total] = &world->GetComponent<Frosty::ECS::CArrow>(entity);
 
 			p_Total++;
 		}
@@ -1200,6 +1214,8 @@ public:
 			m_Collision[p_Total] = nullptr;
 			m_Health[p_Total] = nullptr;
 			m_Tag[p_Total] = nullptr;
+			//
+			m_Arrow[p_Total] = nullptr;
 
 			//std::shared_ptr<Entity> entityToUpdate = removeEntityFromData(mEntity);
 
@@ -1218,7 +1234,8 @@ private:
 	std::array<Frosty::ECS::CCollision*, Frosty::ECS::MAX_ENTITIES_PER_COMPONENT> m_Collision;
 	std::array<Frosty::ECS::CHealth*, Frosty::ECS::MAX_ENTITIES_PER_COMPONENT> m_Health;
 	std::array<Frosty::ECS::CTag*, Frosty::ECS::MAX_ENTITIES_PER_COMPONENT> m_Tag;
-
+	//
+	std::array<Frosty::ECS::CArrow*, Frosty::ECS::MAX_ENTITIES_PER_COMPONENT> m_Arrow;
 };
 
 class EnemyAttackSystem : public Frosty::ECS::BaseSystem
@@ -1248,7 +1265,7 @@ public:
 
 			for (size_t j = 1; j < p_Total; j++)
 			{
-				if (j != i && m_EnemyAttack[i]->IsPlayer && m_EnemyAttack[i]->Cooldown > 0.30f)
+				if (j != i && m_EnemyAttack[i]->IsPlayer && m_EnemyAttack[i]->Cooldown > 0.30f && m_Collision[j]->EntityPtr != nullptr)
 				{
 					//glm::mat4 rotationMat(1.0f);
 					//rotationMat = glm::rotate(rotationMat, glm::radians(m_Transform[i]->Rotation.y), { 0.0f, 1.0f, 0.0f });
@@ -1459,7 +1476,7 @@ private:
 		playerTransform.Scale *= 2.2f;
 		world->AddComponent<Frosty::ECS::CMesh>(player, Frosty::AssetManager::GetMesh("Cube"));
 		world->AddComponent<Frosty::ECS::CMaterial>(player, Frosty::AssetManager::GetShader("FlatColor"));
-		world->AddComponent<Frosty::ECS::CMotion>(player, 10.0f);
+		world->AddComponent<Frosty::ECS::CMotion>(player, 20.0f);
 		world->AddComponent<Frosty::ECS::CController>(player);
 		world->AddComponent<Frosty::ECS::CConsumables>(player);
 		world->AddComponent<Frosty::ECS::CHealth>(player);
@@ -1486,7 +1503,7 @@ private:
 			enemyTransform.Scale *= 2.f;
 			world->AddComponent<Frosty::ECS::CMesh>(enemy, Frosty::AssetManager::GetMesh("Cube"));
 			world->AddComponent<Frosty::ECS::CMaterial>(enemy, Frosty::AssetManager::GetShader("FlatColor"));
-			world->AddComponent<Frosty::ECS::CMotion>(enemy, 7.0f);
+			world->AddComponent<Frosty::ECS::CMotion>(enemy, 15.0f);
 			world->AddComponent<Frosty::ECS::CFollow>(enemy);
 			world->AddComponent<Frosty::ECS::CHealth>(enemy);
 			world->AddComponent<Frosty::ECS::CCollision>(enemy, Frosty::AssetManager::GetBoundingBox("Cube"));
@@ -1494,6 +1511,7 @@ private:
 			//temp
 			world->AddComponent<Frosty::ECS::CPlayerAttack>(enemy);
 			world->AddComponent<Frosty::ECS::CEnemyAttack>(enemy);
+			world->AddComponent<Frosty::ECS::CArrow>(enemy);
 		}
 		else
 		{
@@ -1501,7 +1519,7 @@ private:
 			enemyTransform.Scale *= 6.f;
 			world->AddComponent<Frosty::ECS::CMesh>(enemy, Frosty::AssetManager::GetMesh("Cube"));
 			world->AddComponent<Frosty::ECS::CMaterial>(enemy, Frosty::AssetManager::GetShader("FlatColor"));
-			world->AddComponent<Frosty::ECS::CMotion>(enemy, 9.0f);
+			world->AddComponent<Frosty::ECS::CMotion>(enemy, 19.0f);
 			world->AddComponent<Frosty::ECS::CFollow>(enemy);
 			world->AddComponent<Frosty::ECS::CHealth>(enemy, 30.0f);
 			world->AddComponent<Frosty::ECS::CCollision>(enemy, Frosty::AssetManager::GetBoundingBox("Cube"));
@@ -1509,6 +1527,7 @@ private:
 			//temp
 			world->AddComponent<Frosty::ECS::CPlayerAttack>(enemy);
 			world->AddComponent<Frosty::ECS::CEnemyAttack>(enemy);
+			world->AddComponent<Frosty::ECS::CArrow>(enemy);
 
 			m_NrOfEnemies = 1;
 		}
@@ -1539,18 +1558,30 @@ private:
 	{
 		m_Entity = m_Health[position]->EntityPtr;
 		auto& world = Frosty::Application::Get().GetWorld();
-		world->RemoveEntity(m_Entity);
 
+		FY_TRACE("TAG ON DEAD " + m_Tag[position]->TagName);
 		if (m_Tag[position]->TagName == "Enemy")
 		{
-			m_EnemySpawnTimer = float(std::clock());
-			m_KillCount++;
-			m_NrOfEnemies--;
-
-			if (m_NrOfEnemies == 0)
+			//ful fix (när en fiende dör av en pil försvinder båda vilket buggar spelet)
+			if (m_Health[position]->MaxHealth == 0)
 			{
-				m_NrOfEnemies = m_KillCount + 1;
+				m_EnemySpawnTimer = float(std::clock());
+				m_KillCount++;
+				m_NrOfEnemies--;
+
+				if (m_NrOfEnemies == 0)
+				{
+					m_NrOfEnemies = m_KillCount + 1;
+				}
+
+				world->RemoveEntity(m_Entity);
 			}
+			else
+				m_Health[position]->MaxHealth = 0;
+		}
+		else
+		{
+			world->RemoveEntity(m_Entity);
 		}
 	}
 

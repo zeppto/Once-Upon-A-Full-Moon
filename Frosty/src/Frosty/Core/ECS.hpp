@@ -86,14 +86,14 @@ namespace Frosty
 #pragma region Settings
 
 		// Let's define a maximum number of unique components:
-		constexpr std::size_t MAX_COMPONENTS{ 14 };
+		constexpr std::size_t MAX_COMPONENTS{ 15 };
 
 		// Let's define a maximum number of entities that
 		// can have the same component type:
 		constexpr std::size_t MAX_ENTITIES_PER_COMPONENT{ 1024 };
 
 		// Defining the maximum nr of systems
-		constexpr std::size_t MAX_SYSTEMS{ 16 };
+		constexpr std::size_t MAX_SYSTEMS{ 18 };
 
 #pragma endregion Settings
 
@@ -485,18 +485,33 @@ namespace Frosty
 			float Damage{ 2.0f };
 			//temp
 			bool IsPlayer{ false };
-			// arrow attack
-			float CooldownArrow{ 1.0f };
-			float timeAlive{ 5.0f };
 			//
 			bool IsMelee{ true };
 
 
 			CPlayerAttack() = default;
 			//CPlayerAttack(float reach, float width, float damage) : Reach(reach), Width(width), Damage(damage) { }
-			CPlayerAttack(float reach, float cooldown, float damage, bool isPlayer) : Reach(reach), Cooldown(cooldown), Damage(damage), IsPlayer(isPlayer){ }
+			//CPlayerAttack(float reach, float cooldown, float damage, bool isPlayer, bool isMelee) : Reach(reach), Cooldown(cooldown), Damage(damage), IsPlayer(isPlayer), IsMelee(isMelee){ }
+			CPlayerAttack(float reach, float cooldown, float damage, bool isPlayer) : Reach(reach), Cooldown(cooldown), Damage(damage), IsPlayer(isPlayer) { }
 			CPlayerAttack(const CPlayerAttack& org) { FY_CORE_ASSERT(false, "Copy constructor in CPlayerAttack called."); }
 			
+			virtual void Func() override { }
+		};
+
+		struct CArrow : public BaseComponent
+		{
+			static std::string NAME;
+			float Damage{ 1.0f };
+			int Lifetime{ 70 };
+			bool IsPiercing{ false };
+			// for piercing arrow
+			int alradyHitt{ 0 };
+
+
+			CArrow() = default;
+			CArrow(float damage, int lifetime, bool isPiercing) : Damage(damage), Lifetime(lifetime), IsPiercing(isPiercing){ }
+			CArrow(const CArrow& org) { FY_CORE_ASSERT(false, "Copy constructor in CArrow called."); }
+
 			virtual void Func() override { }
 		};
 		
