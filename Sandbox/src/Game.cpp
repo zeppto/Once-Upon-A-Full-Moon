@@ -518,12 +518,10 @@ private:
 		auto& gameCameraCamerComp = Frosty::Application::Get().GetWorld()->GetComponent<Frosty::ECS::CCamera>(gameCameraEntity);
 		glm::vec2 mousePos = glm::vec2(Frosty::InputManager::GetMouseX(), Frosty::InputManager::GetMouseY());
 
-		// Todo: Make it work even in editor mode
-
 		// Convert from viewport to NDC
 		glm::vec2 NDC = glm::vec2(
-			(2.0f * mousePos.x) / viewport.z - 1.0f,
-			(2.0f * mousePos.y) / viewport.w - 1.0f
+			(2.0f * (mousePos.x - viewport.x)) / viewport.z - 1.0f,
+			(2.0f * (mousePos.y - viewport.y)) / viewport.w - 1.0f
 		);
 
 		// Convert from NDC to clip
@@ -661,6 +659,8 @@ private:
 	std::array<Frosty::ECS::CTransform*, Frosty::ECS::MAX_ENTITIES_PER_COMPONENT> m_Transform;
 	std::array<Frosty::ECS::CFollow*, Frosty::ECS::MAX_ENTITIES_PER_COMPONENT> m_Follow;
 	std::array<Frosty::ECS::CMotion*, Frosty::ECS::MAX_ENTITIES_PER_COMPONENT> m_Motion;
+
+
 
 };
 

@@ -66,6 +66,19 @@ project "Frosty"
 		"%{IncludeDir.FreeType}"
 	}
 
+	excludes
+	{
+		"%{prj.name}/src/Frosty/API/AssetManager/*.cpp",
+		"%{prj.name}/src/Frosty/API/AssetManager/*.hpp",
+		"%{prj.name}/src/Frosty/API/AssetManager/AssetFiles/*.cpp",
+		"%{prj.name}/src/Frosty/API/AssetManager/AssetFiles/*.hpp",
+		"%{prj.name}/src/Frosty/API/PrefabManager/*.cpp",
+		"%{prj.name}/src/Frosty/API/PrefabManager/*.hpp",
+		"%{prj.name}/src/Frosty/API/PrefabManager/*.h",
+		"%{prj.name}/src/Frosty/RenderEngine/ForwardPlus.cpp",
+		"%{prj.name}/src/Frosty/RenderEngine/ForwardPlus.hpp"
+	}
+
 	libdirs
 	{
 		"%{prj.name}/vendor/GLFW/lib",
@@ -153,6 +166,14 @@ project "Sandbox"
 		"%{IncludeDir.ImGui}",
 		"%{IncludeDir.glm}",
 		"%{IncludeDir.FreeType}"
+	}
+	
+	excludes
+	{
+		"%{prj.name}/src/ObjectHandler/*.cpp",
+		"%{prj.name}/src/ObjectHandler/*.hpp",
+		"%{prj.name}/src/ObjectHandler/Player/*.cpp",
+		"%{prj.name}/src/ObjectHandler/Player/*.hpp"
 	}
 
 	links

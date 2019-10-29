@@ -471,7 +471,7 @@ namespace Frosty
 
 			CCollision() = default;
 			CCollision(const std::shared_ptr<Luna::BoundingBox>& bb) : BoundingBox(bb) { }
-			CCollision(const CCollision & org) { FY_CORE_ASSERT(false, "Copy constructor in CCollision called."); }
+			CCollision(const CCollision& org) { FY_CORE_ASSERT(false, "Copy constructor in CCollision called."); }
 
 			virtual void Func() override { }
 		};
