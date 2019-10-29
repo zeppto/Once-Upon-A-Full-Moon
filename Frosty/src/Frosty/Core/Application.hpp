@@ -13,7 +13,7 @@
 //pARTICLE bRANCH
 #include "Frosty/StateMachine/StateMachine.hpp"
 #include "Frosty/Core/InputManager.hpp"
-#include "Frosty/StateMachine/MainMenuState.h"
+//#include "Frosty/StateMachine/MainMenuState.h"
 
 // test
 #include "Frosty/RenderEngine/Shader.hpp"
@@ -22,7 +22,7 @@
 //#include "Frosty/UI/Sprite.h"
 //#include "Frosty/UI/Canvas.h"
 #include "Frosty/DEFINITIONS.hpp"
-#include "Frosty/Particles/ParticleSystem.h"
+//#include "Frosty/Particles/ParticleSystem.h"
 
 namespace Frosty
 {
