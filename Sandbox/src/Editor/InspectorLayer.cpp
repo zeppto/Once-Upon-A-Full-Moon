@@ -105,7 +105,9 @@ namespace MCS
 					if (world->HasComponent<Frosty::ECS::CLight>(m_SelectedEntity)) toggles[7] = true;
 					if (world->HasComponent<Frosty::ECS::CCollision>(m_SelectedEntity)) toggles[8] = true;
 					if (world->HasComponent<Frosty::ECS::CPlayerAttack>(m_SelectedEntity)) toggles[9] = true;
-					if (world->HasComponent<Frosty::ECS::CHealth>(m_SelectedEntity)) toggles[10] = true;
+					if (world->HasComponent<Frosty::ECS::CEnemyAttack>(m_SelectedEntity)) toggles[10] = true;
+					if (world->HasComponent<Frosty::ECS::CHealth>(m_SelectedEntity)) toggles[11] = true;
+					if (world->HasComponent<Frosty::ECS::CConsumables>(m_SelectedEntity)) toggles[12] = true;
 				}
 
 				// Information
@@ -180,12 +182,26 @@ namespace MCS
 						else
 							world->RemoveComponent<Frosty::ECS::CPlayerAttack>(m_SelectedEntity);
 					}
-					if (ImGui::MenuItem("Health", "", &toggles[10]))
+					if (ImGui::MenuItem("Enemy Attack", "", &toggles[10]))
+					{
+						if (!world->HasComponent<Frosty::ECS::CEnemyAttack>(m_SelectedEntity))
+							world->AddComponent<Frosty::ECS::CEnemyAttack>(m_SelectedEntity);
+						else
+							world->RemoveComponent<Frosty::ECS::CEnemyAttack>(m_SelectedEntity);
+					}
+					if (ImGui::MenuItem("Health", "", &toggles[11]))
 					{
 						if (!world->HasComponent<Frosty::ECS::CHealth>(m_SelectedEntity))
 							world->AddComponent<Frosty::ECS::CHealth>(m_SelectedEntity);
 						else
 							world->RemoveComponent<Frosty::ECS::CHealth>(m_SelectedEntity);
+					}
+					if (ImGui::MenuItem("Consumables", "", &toggles[12]))
+					{
+						if (!world->HasComponent<Frosty::ECS::CConsumables>(m_SelectedEntity))
+							world->AddComponent<Frosty::ECS::CConsumables>(m_SelectedEntity);
+						else
+							world->RemoveComponent<Frosty::ECS::CConsumables>(m_SelectedEntity);
 					}
 					ImGui::EndPopup();
 				}
@@ -594,29 +610,50 @@ namespace MCS
 						}
 						ImGui::EndChild();
 					}
-					if (world->HasComponent<Frosty::ECS::CPlayerAttack>(m_SelectedEntity))
+				}
+				if (world->HasComponent<Frosty::ECS::CPlayerAttack>(m_SelectedEntity))
+				{
+					if (ImGui::CollapsingHeader("Player Attack"))
 					{
-						if (ImGui::CollapsingHeader("Player Attack"))
-						{
-							auto& comp = world->GetComponent<Frosty::ECS::CPlayerAttack>(m_SelectedEntity);
-							ImGui::BeginChild("CPlayerAttack", ImVec2(EDITOR_INSPECTOR_WIDTH, 105), true);
-							ImGui::InputFloat("Damage", &comp.Damage, 1.0f, 10.0f, 0);
-							ImGui::InputFloat("Reach", &comp.Reach, 1.0f, 10.0f, 0);
-							ImGui::InputFloat("Width", &comp.Width, 1.0f, 10.0f, 0);
-							ImGui::EndChild();
-						}
+						auto& comp = world->GetComponent<Frosty::ECS::CPlayerAttack>(m_SelectedEntity);
+						ImGui::BeginChild("CPlayerAttack", ImVec2(EDITOR_INSPECTOR_WIDTH, 105), true);
+						ImGui::InputFloat("Damage", &comp.Damage, 1.0f, 10.0f, 0);
+						ImGui::InputFloat("Reach", &comp.Reach, 1.0f, 10.0f, 0);
+						ImGui::InputFloat("Cooldown", &comp.Cooldown, 1.0f, 10.0f, 0);
+						ImGui::EndChild();
 					}
-
-					if (world->HasComponent<Frosty::ECS::CHealth>(m_SelectedEntity))
+				}
+				if (world->HasComponent<Frosty::ECS::CEnemyAttack>(m_SelectedEntity))
+				{
+					if (ImGui::CollapsingHeader("Enemy Attack"))
 					{
-						if (ImGui::CollapsingHeader("Health"))
-						{
-							auto& comp = world->GetComponent<Frosty::ECS::CHealth>(m_SelectedEntity);
-							ImGui::BeginChild("CHealth", ImVec2(EDITOR_INSPECTOR_WIDTH, 105), true);
-							ImGui::InputFloat("Max Health", &comp.MaxHealth, 1.0f, 10.0f, 0);
-							ImGui::InputFloat("Current Health", &comp.CurrentHealth, 1.0f, 10.0f, 0);
-							ImGui::EndChild();
-						}
+						auto& comp = world->GetComponent<Frosty::ECS::CEnemyAttack>(m_SelectedEntity);
+						ImGui::BeginChild("CEnemyAttack", ImVec2(EDITOR_INSPECTOR_WIDTH, 105), true);
+						ImGui::InputFloat("Damage", &comp.Damage, 1.0f, 10.0f, 0);
+						ImGui::InputFloat("Reach", &comp.Radius, 1.0f, 10.0f, 0);
+						ImGui::InputFloat("Cooldown", &comp.Cooldown, 1.0f, 10.0f, 0);
+						ImGui::EndChild();
+					}
+				}
+				if (world->HasComponent<Frosty::ECS::CHealth>(m_SelectedEntity))
+				{
+					if (ImGui::CollapsingHeader("Health"))
+					{
+						auto& comp = world->GetComponent<Frosty::ECS::CHealth>(m_SelectedEntity);
+						ImGui::BeginChild("CHealth", ImVec2(EDITOR_INSPECTOR_WIDTH, 70), true);
+						ImGui::InputFloat("Max Health", &comp.MaxHealth, 1.0f, 10.0f, 0);
+						ImGui::InputFloat("Current Health", &comp.CurrentHealth, 1.0f, 10.0f, 0);
+						ImGui::EndChild();
+					}
+				}
+				if (world->HasComponent<Frosty::ECS::CConsumables>(m_SelectedEntity))
+				{
+					if (ImGui::CollapsingHeader("Consumables"))
+					{
+						auto& comp = world->GetComponent<Frosty::ECS::CConsumables>(m_SelectedEntity);
+						ImGui::BeginChild("CConsumables", ImVec2(EDITOR_INSPECTOR_WIDTH, 45), true);
+						ImGui::InputInt("Healing Potions", &comp.CurrentNrOfHealingPotions, 1.0f, 10.0f, 0);
+						ImGui::EndChild();
 					}
 				}
 			}

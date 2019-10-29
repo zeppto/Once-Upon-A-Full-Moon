@@ -1,6 +1,5 @@
 #ifndef WINDOW_HPP
 #define WINDOW_HPP
-
 #include <fypch.hpp>		// This is already included in the cpp file so we shouldn't need it here but doesn't work otherwise
 #include "Frosty/Core/BaseWindow.hpp"
 

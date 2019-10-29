@@ -1,9 +1,8 @@
 #include "fypch.hpp"
 #include "UIElement.h"
-#include "Frosty/API/Assetmanager.hpp"
 
-namespace Frosty 
-{
+namespace Frosty {
+
 	UIElement::UIElement()
 	{
 
@@ -13,4 +12,5 @@ namespace Frosty
 	{
 
 	}
+
 }
