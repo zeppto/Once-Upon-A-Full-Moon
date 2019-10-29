@@ -183,6 +183,6 @@ namespace Frosty
 
 
 		vertexArray->Bind();
-		RenderCommand::DrawIndexed(vertexArray);
+		RenderCommand::Draw2D(vertexArray);
 	}
 }

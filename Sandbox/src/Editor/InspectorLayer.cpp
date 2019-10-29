@@ -108,6 +108,8 @@ namespace MCS
 					if (world->HasComponent<Frosty::ECS::CEnemyAttack>(m_SelectedEntity)) toggles[10] = true;
 					if (world->HasComponent<Frosty::ECS::CHealth>(m_SelectedEntity)) toggles[11] = true;
 					if (world->HasComponent<Frosty::ECS::CConsumables>(m_SelectedEntity)) toggles[12] = true;
+					if (world->HasComponent<Frosty::ECS::CHealthBar>(m_SelectedEntity)) toggles[13] = true;
+
 				}
 
 				// Information
@@ -202,6 +204,13 @@ namespace MCS
 							world->AddComponent<Frosty::ECS::CConsumables>(m_SelectedEntity);
 						else
 							world->RemoveComponent<Frosty::ECS::CConsumables>(m_SelectedEntity);
+					}
+					if (ImGui::MenuItem("HealthBar", "", &toggles[13]))
+					{
+						if (!world->HasComponent<Frosty::ECS::CHealthBar>(m_SelectedEntity))
+							world->AddComponent<Frosty::ECS::CHealthBar>(m_SelectedEntity);
+						else
+							world->RemoveComponent<Frosty::ECS::CHealthBar>(m_SelectedEntity);
 					}
 					ImGui::EndPopup();
 				}
@@ -648,6 +657,16 @@ namespace MCS
 						auto& comp = world->GetComponent<Frosty::ECS::CConsumables>(m_SelectedEntity);
 						ImGui::BeginChild("CConsumables", ImVec2(EDITOR_INSPECTOR_WIDTH, 45), true);
 						ImGui::InputInt("Healing Potions", &comp.CurrentNrOfHealingPotions, 1.0f, 10.0f, 0);
+						ImGui::EndChild();
+					}
+				}
+				if (world->HasComponent<Frosty::ECS::CHealthBar>(m_SelectedEntity))
+				{
+					if (ImGui::CollapsingHeader("HealthBar"))
+					{
+						auto& comp = world->GetComponent<Frosty::ECS::CHealthBar>(m_SelectedEntity);
+						ImGui::BeginChild("CHealthBar", ImVec2(EDITOR_INSPECTOR_WIDTH, 30), true);
+						ImGui::Text("Health bar will now appear over entity");
 						ImGui::EndChild();
 					}
 				}

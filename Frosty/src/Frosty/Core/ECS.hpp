@@ -566,16 +566,18 @@ namespace Frosty
 		struct CHealthBar : public BaseComponent
 		{
 			static std::string NAME;
-			glm::vec3 Offset{ 0.0f, 0.0f, 0.0f };
-			glm::vec3 Rotate{ 90.0f ,0.0f, 0.0f };
-			glm::vec3 HpScale{ 1.0f, 1.0f, 1.0f };
+			glm::vec3 BarOffset{ 0.0f, 5.0f, 0.0f };
 			std::shared_ptr<VertexArray> Mesh;
 			std::shared_ptr<Shader> UseShader;
 			std::shared_ptr<Texture2D> Texture;
 
+			glm::mat4 hpTransform{ 1.0f };
+
+			float pivot;
+
 			CHealthBar() = default;
-			CHealthBar(glm::vec3 offset, std::shared_ptr<VertexArray> mesh, std::shared_ptr<Shader> shader, std::shared_ptr<Texture2D> tex) 
-				: Offset(offset), Mesh(mesh), UseShader(shader), Texture(tex) {}
+			CHealthBar(glm::vec3 barOffset, std::shared_ptr<VertexArray> mesh, std::shared_ptr<Shader> shader, std::shared_ptr<Texture2D> tex)
+				: BarOffset(barOffset), Mesh(mesh), UseShader(shader), Texture(tex) {}
 			CHealthBar(const CHealthBar& org) { FY_CORE_ASSERT(false, "Copy constructor in CCollision called."); }
 
 
@@ -600,7 +602,7 @@ namespace Frosty
 			case 10:	return "Health";
 			case 11:	return "Tag";
 			case 12:	return "Consumables";
-			case 13:		return "HealthBar";
+			case 13:	return "HealthBar";
 
 			default:	return "";
 			}
