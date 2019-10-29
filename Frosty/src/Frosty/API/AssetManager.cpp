@@ -55,6 +55,7 @@ namespace Frosty
 		LoadTexture2D("Heart", "assets/textures/heart.png");
 		LoadTexture2D("HeartFull", "assets/textures/heartFull.png");
 		LoadTexture2D("Sword", "assets/textures/sword.png");
+		LoadTexture2D("Red", "assets/textures/red.png");
 
 
 		LoadTexture2D("Tree1", "assets/textures/testPineLeves2.tga");						// TEMPORARY
