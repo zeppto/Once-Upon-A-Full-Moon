@@ -2,11 +2,13 @@
 #define EVENT_SYSTEM_HPP
 
 #include <fypch.hpp>
+#include <Frosty/Core/ECS.hpp>
 
 namespace Frosty
 {
 	using EventId = size_t;
 	using ButtonID = size_t;
+	struct Entity;
 
 	enum class EventType
 	{
@@ -14,7 +16,8 @@ namespace Frosty
 		WindowClose, WindowMaximized, WindowResize, WindowFocus, WindowLostFocus, WindowMoved,
 		KeyPressed, KeyReleased,
 		MouseButtonPressed, MouseButtonReleased, MouseMoved, MouseScrolled,
-		ButtonClicked
+		ButtonClicked,
+		ArrowHit
 	};
 
 #define EVENT_TYPE(type) static EventType GetStaticType() { return EventType::##type; }\
@@ -265,6 +268,25 @@ namespace Frosty
 		EVENT_TYPE(ButtonClicked)
 	};
 
+#pragma endregion
+
+#pragma region ArrowEvent
+	class ArrowEvent : public BaseEvent
+	{
+	public:
+		ArrowEvent(const std::shared_ptr<ECS::Entity>& arrowE, const std::shared_ptr<ECS::Entity>& enemyE)
+			: m_ArrowEntity(arrowE), m_EntetyEntity(enemyE) { }
+
+		inline std::shared_ptr<ECS::Entity> GetArrowEntity() const { return m_ArrowEntity; }
+		inline std::shared_ptr<ECS::Entity> GetEnemyEntity() const { return m_EntetyEntity; }
+
+		EVENT_TYPE(ArrowHit)
+	private:
+		std::shared_ptr<ECS::Entity> m_ArrowEntity;
+		std::shared_ptr<ECS::Entity> m_EntetyEntity;
+		//size_t m_ArrowEntityID;
+		//size_t m_EntetyEntityID;
+	};
 #pragma endregion
 
 #pragma region System

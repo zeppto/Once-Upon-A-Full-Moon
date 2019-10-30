@@ -1,6 +1,7 @@
 #include <mcspch.hpp>
 #include "Game.hpp"
 #include "Frosty/API/AssetManager.hpp"
+#include "Frosty/Core/EventSystem.hpp"
 
 class CameraSystem : public Frosty::ECS::BaseSystem
 {
@@ -311,7 +312,7 @@ public:
 		for (size_t i = 1; i < p_Total; i++)
 		{
 			//for arrow
-			if (m_Tag[i]->TagName == "arrow" || m_Tag[i]->TagName == "strongArrow")
+			if (m_Tag[i]->TagName == "arrow")
 			{
 				m_Motion[i]->Velocity = m_Motion[i]->Direction * m_Motion[i]->Speed;
 				m_Transform[i]->Position += m_Motion[i]->Velocity * Frosty::Time::DeltaTime();
@@ -333,7 +334,7 @@ public:
 
 				for (size_t j = 1; j < p_Total; j++)
 				{
-					if (j != i)
+					if (j != i && m_Tag[j]->TagName != "arrow")
 					{
 						//temp
 						if (m_Tag[i]->TagName != m_Tag[j]->TagName || m_Tag[i]->TagName == "Enemy")
@@ -960,7 +961,7 @@ public:
 							FY_TRACE("playerAttack Direction({0}, {1}, {2})", -glm::normalize(m_Transform[i]->Position - (m_Transform[i]->Position + hitboxPos)).x, -glm::normalize(m_Transform[i]->Position - (m_Transform[i]->Position + hitboxPos)).y, -glm::normalize(m_Transform[i]->Position - (m_Transform[i]->Position + hitboxPos)).z);
 							world->AddComponent<Frosty::ECS::CTag>(arrow, "arrow");
 							world->AddComponent<Frosty::ECS::CCollision>(arrow, Frosty::AssetManager::GetBoundingBox("Cube"));
-							world->AddComponent<Frosty::ECS::CHealth>(arrow, 1.0f);
+							//world->AddComponent<Frosty::ECS::CHealth>(arrow, 1.0f);
 							world->AddComponent<Frosty::ECS::CArrow>(arrow);
 
 						}
@@ -1004,9 +1005,28 @@ public:
 								FY_TRACE("playerAttack Direction({0}, {1}, {2})", -glm::normalize(m_Transform[i]->Position - (m_Transform[i]->Position + hitboxPos)).x, -glm::normalize(m_Transform[i]->Position - (m_Transform[i]->Position + hitboxPos)).y, -glm::normalize(m_Transform[i]->Position - (m_Transform[i]->Position + hitboxPos)).z);
 								world->AddComponent<Frosty::ECS::CTag>(arrow, "arrow");
 								world->AddComponent<Frosty::ECS::CCollision>(arrow, Frosty::AssetManager::GetBoundingBox("Cube"));
-								world->AddComponent<Frosty::ECS::CHealth>(arrow, 1.0f);
+								//world->AddComponent<Frosty::ECS::CHealth>(arrow, 1.0f);
 								world->AddComponent<Frosty::ECS::CArrow>(arrow);
 							}
+							auto& world = Frosty::Application::Get().GetWorld();
+							auto& enemy = world->CreateEntity();
+							auto& enemyTransform = world->GetComponent<Frosty::ECS::CTransform>(enemy);
+							//enemyTransform.Position = -glm::normalize(m_Transform[i]->Position - (m_Transform[i]->Position + hitboxPos))* 20.0f;
+							enemyTransform.Scale *= 2.f;
+							world->AddComponent<Frosty::ECS::CMesh>(enemy, Frosty::AssetManager::GetMesh("Cube"));
+							world->AddComponent<Frosty::ECS::CMaterial>(enemy, Frosty::AssetManager::GetShader("FlatColor"));
+							world->AddComponent<Frosty::ECS::CMotion>(enemy, 15.0f);
+							world->AddComponent<Frosty::ECS::CFollow>(enemy);
+							world->AddComponent<Frosty::ECS::CHealth>(enemy);
+							world->AddComponent<Frosty::ECS::CCollision>(enemy, Frosty::AssetManager::GetBoundingBox("Cube"));
+							world->AddComponent<Frosty::ECS::CTag>(enemy, "Enemy");
+							//temp
+							world->AddComponent<Frosty::ECS::CPlayerAttack>(enemy);
+							world->AddComponent<Frosty::ECS::CEnemyAttack>(enemy);
+							//world->AddComponent<Frosty::ECS::CArrow>(enemy);
+							world->AddComponent<Frosty::ECS::CHealthBar>(enemy);
+							auto& comp = world->GetComponent<Frosty::ECS::CFollow>(enemy);
+							comp.Target = &world->GetComponent<Frosty::ECS::CTransform>(m_PlayerAttack[i]->EntityPtr);
 
 						}
 						m_CanAttackArea = false;
@@ -1044,7 +1064,7 @@ public:
 							FY_TRACE("playerAttack Direction({0}, {1}, {2})", -glm::normalize(m_Transform[i]->Position - (m_Transform[i]->Position + hitboxPos)).x, -glm::normalize(m_Transform[i]->Position - (m_Transform[i]->Position + hitboxPos)).y, -glm::normalize(m_Transform[i]->Position - (m_Transform[i]->Position + hitboxPos)).z);
 							world->AddComponent<Frosty::ECS::CTag>(arrow, "arrow");
 							world->AddComponent<Frosty::ECS::CCollision>(arrow, Frosty::AssetManager::GetBoundingBox("Cube"));
-							world->AddComponent<Frosty::ECS::CHealth>(arrow, 10.0f);
+							//world->AddComponent<Frosty::ECS::CHealth>(arrow, 10.0f);
 							world->AddComponent<Frosty::ECS::CArrow>(arrow, 3.0f, 50, true);
 
 						}
@@ -1114,6 +1134,74 @@ private:
 
 };
 
+class ArrowSystem : public Frosty::ECS::BaseSystem
+{
+public:
+	ArrowSystem() = default;
+	virtual ~ArrowSystem() = default;
+
+	virtual void Init() override
+	{
+		p_Signature.set(Frosty::ECS::getComponentTypeID<Frosty::ECS::CArrow>(), true);
+	}
+
+	virtual void OnUpdate() override
+	{
+		for (size_t i = 1; i < p_Total; i++)
+		{
+			m_Arrow[i]->Lifetime--;
+			if (m_Arrow[i]->Lifetime < 0)
+			{
+				//auto& world = Frosty::Application::Get().GetWorld();
+				//world->RemoveEntity(m_Arrow[i]->EntityPtr);
+
+				m_Entity = m_Arrow[i]->EntityPtr;
+				auto& world = Frosty::Application::Get().GetWorld();
+				world->RemoveEntity(m_Entity);
+			}
+		}
+	}
+
+	virtual void AddComponent(const std::shared_ptr<Frosty::ECS::Entity>& entity) override
+	{
+		if (Frosty::utils::BitsetFits<Frosty::ECS::MAX_COMPONENTS>(p_Signature, entity->Bitset) && !p_EntityMap.count(entity))
+		{
+			p_EntityMap.emplace(entity, p_Total);
+
+			auto& world = Frosty::Application::Get().GetWorld();
+			m_Arrow[p_Total] = &world->GetComponent<Frosty::ECS::CArrow>(entity);
+
+			p_Total++;
+		}
+	}
+
+	virtual void RemoveEntity(const std::shared_ptr<Frosty::ECS::Entity>& entity) override
+	{
+		Frosty::ECS::ComponentArrayIndex tempIndex = p_EntityMap[entity];
+
+		if (tempIndex > 0)
+		{
+			p_Total--;
+			m_Arrow[p_Total] = nullptr;
+
+			//std::shared_ptr<Entity> entityToUpdate = removeEntityFromData(mEntity);
+
+			if (p_Total > tempIndex)
+			{
+				std::shared_ptr<Frosty::ECS::Entity> entityToUpdate = m_Arrow[p_EntityMap[entity]]->EntityPtr;
+				p_EntityMap[entityToUpdate] = tempIndex;
+			}
+
+			p_EntityMap.erase(entity);
+		}
+	}
+
+private:
+	std::array<Frosty::ECS::CArrow*, Frosty::ECS::MAX_ENTITIES_PER_COMPONENT> m_Arrow;
+
+	std::shared_ptr<Frosty::ECS::Entity> m_Entity = nullptr;
+};
+
 class CombatSystem : public Frosty::ECS::BaseSystem
 {
 public:
@@ -1124,10 +1212,18 @@ public:
 	{
 		p_Signature.set(Frosty::ECS::getComponentTypeID<Frosty::ECS::CTransform>(), true);
 		p_Signature.set(Frosty::ECS::getComponentTypeID<Frosty::ECS::CCollision>(), true);
-		p_Signature.set(Frosty::ECS::getComponentTypeID<Frosty::ECS::CHealth>(), true);
+		//p_Signature.set(Frosty::ECS::getComponentTypeID<Frosty::ECS::CHealth>(), true);
 		p_Signature.set(Frosty::ECS::getComponentTypeID<Frosty::ECS::CTag>(), true);
 		//
-		p_Signature.set(Frosty::ECS::getComponentTypeID<Frosty::ECS::CArrow>(), true);
+		//p_Signature.set(Frosty::ECS::getComponentTypeID<Frosty::ECS::CArrow>(), true);
+
+		//temp (ta emot event)
+		//temp bool for only one subskription
+		if (onlyOneSub)
+		{
+			onlyOneSub = false;
+			Frosty::EventBus::GetEventBus()->Subscribe<CombatSystem, Frosty::BaseEvent>(this, &CombatSystem::OnEvent);
+		}
 	}
 
 	inline virtual void OnInput() override
@@ -1143,7 +1239,7 @@ public:
 		{
 			for (size_t j = 1; j < p_Total; j++)
 			{
-				if (m_Tag[j]->TagName == "Enemy" && (m_Tag[i]->TagName == "arrow"))
+				if (m_Tag[j]->TagName == "Enemy" && m_Tag[i]->TagName == "arrow")
 				{
 
 					glm::vec3 finalCenterA = m_Transform[i]->Position + glm::vec3(m_Collision[i]->BoundingBox->pos[0], m_Collision[i]->BoundingBox->pos[1], m_Collision[i]->BoundingBox->pos[2]);
@@ -1152,36 +1248,17 @@ public:
 					glm::vec3 finalLengthB = glm::vec3(m_Collision[j]->BoundingBox->halfSize[0], m_Collision[j]->BoundingBox->halfSize[1], m_Collision[j]->BoundingBox->halfSize[2]) * m_Transform[j]->Scale;
 					if (Frosty::CollisionDetection::AABBIntersect(finalLengthA, finalCenterA, finalLengthB, finalCenterB))
 					{
-						if (m_Tag[i]->TagName == "arrow")
-						{
-							if (m_Arrow[i]->IsPiercing && m_Arrow[i]->alradyHitt == j)
-							{
-							}
-							else
-							{
-								FY_TRACE("playerAttack ({0})", j);
-								m_Health[j]->CurrentHealth -= m_Arrow[i]->Damage;
-								m_Health[i]->CurrentHealth--;
-								FY_TRACE("current health ({0})", m_Health[j]->CurrentHealth);
-								if (m_Arrow[i]->IsPiercing)
-									m_Arrow[i]->alradyHitt = j;
-							}
-						}
-
-						//nockBack
-						//enemy sak ta hand om sin egen push back, har sak bara skickas till enemyn att du ska push backa
-						m_Transform[j]->Position.x -= glm::normalize(m_Transform[i]->Position - m_Transform[j]->Position).x * 1.0f;
-						m_Transform[j]->Position.z -= glm::normalize(m_Transform[i]->Position - m_Transform[j]->Position).z * 1.0f;
+						Frosty::EventBus::GetEventBus()->Publish<Frosty::ArrowEvent>(Frosty::ArrowEvent(m_Transform[i]->EntityPtr, m_Transform[j]->EntityPtr));
 					}
 				}
 			}
-			//temp death timer
-			if (m_Tag[i]->TagName == "arrow")
-			{
-				m_Arrow[i]->Lifetime--;
-				if (m_Arrow[i]->Lifetime < 0)
-					m_Health[i]->CurrentHealth--;
-			}
+			////temp death timer
+			//if (m_Tag[i]->TagName == "arrow")
+			//{
+			//	m_Arrow[i]->Lifetime--;
+			//	if (m_Arrow[i]->Lifetime < 0)
+			//		m_Health[i]->CurrentHealth--;
+			//}
 		}
 	}
 
@@ -1194,10 +1271,10 @@ public:
 			auto& world = Frosty::Application::Get().GetWorld();
 			m_Transform[p_Total] = &world->GetComponent<Frosty::ECS::CTransform>(entity);
 			m_Collision[p_Total] = &world->GetComponent<Frosty::ECS::CCollision>(entity);
-			m_Health[p_Total] = &world->GetComponent<Frosty::ECS::CHealth>(entity);
+			//m_Health[p_Total] = &world->GetComponent<Frosty::ECS::CHealth>(entity);
 			m_Tag[p_Total] = &world->GetComponent<Frosty::ECS::CTag>(entity);
 			//
-			m_Arrow[p_Total] = &world->GetComponent<Frosty::ECS::CArrow>(entity);
+			//m_Arrow[p_Total] = &world->GetComponent<Frosty::ECS::CArrow>(entity);
 
 			p_Total++;
 		}
@@ -1212,10 +1289,10 @@ public:
 			p_Total--;
 			m_Transform[p_Total] = nullptr;
 			m_Collision[p_Total] = nullptr;
-			m_Health[p_Total] = nullptr;
+			//m_Health[p_Total] = nullptr;
 			m_Tag[p_Total] = nullptr;
 			//
-			m_Arrow[p_Total] = nullptr;
+			//m_Arrow[p_Total] = nullptr;
 
 			//std::shared_ptr<Entity> entityToUpdate = removeEntityFromData(mEntity);
 
@@ -1230,12 +1307,70 @@ public:
 	}
 
 private:
+	void CombatSystem::OnEvent(Frosty::BaseEvent& e)
+	{
+		switch (e.GetEventType())
+		{
+		case Frosty::EventType::ArrowHit:
+			OnArrowHitEvent(static_cast<Frosty::ArrowEvent&>(e));
+			break;
+		default:
+			break;
+		}
+	}
+
+	void CombatSystem::OnArrowHitEvent(Frosty::ArrowEvent& e)
+	{
+		FY_TRACE("you hitt ({0})", e.GetEnemyEntity()->Id);
+		auto& world = Frosty::Application::Get().GetWorld();
+		//auto& entityArrow = world->GetEntityManager()->At(e.GetEnemyEntityID()-1);
+		auto& healthCompEnemy = world->GetComponent<Frosty::ECS::CHealth>(e.GetEnemyEntity());
+		//healthCompEnemy.CurrentHealth--;
+
+		//auto& entityEnemy = world->GetEntityManager()->At(e.GetArrowEntityID());
+		//auto& healthCompArrow = world->GetComponent<Frosty::ECS::CHealth>(e.GetArrowEntity());
+		auto& ArrowComp = world->GetComponent<Frosty::ECS::CArrow>(e.GetArrowEntity());
+		//healthCompArrow.CurrentHealth--;
+		FY_TRACE("whith arrow id ({0})", e.GetArrowEntity()->Id);
+
+		if (ArrowComp.alradyHitt != e.GetEnemyEntity()->Id)
+		{
+			//FY_TRACE("playerAttack ({0})", j);
+			healthCompEnemy.CurrentHealth -= ArrowComp.Damage;
+			//m_Health[i]->CurrentHealth--;
+			//FY_TRACE("current health ({0})", m_Health[j]->CurrentHealth);
+			////if (m_Arrow[i]->IsPiercing)
+			ArrowComp.alradyHitt = e.GetEnemyEntity()->Id;
+			if(!ArrowComp.IsPiercing)
+				ArrowComp.Lifetime = 0;
+		}
+		//else
+		//{
+
+		//FY_TRACE("playerAttack ({0})", j);
+		//m_Health[j]->CurrentHealth -= m_Arrow[i]->Damage;
+		//m_Health[i]->CurrentHealth--;
+		//FY_TRACE("current health ({0})", m_Health[j]->CurrentHealth);
+		////if (m_Arrow[i]->IsPiercing)
+		//m_Arrow[i]->alradyHitt = j;
+
+		//nockBack
+		//enemy sak ta hand om sin egen push back, har sak bara skickas till enemyn att du ska push backa
+		//m_Transform[j]->Position.x -= glm::normalize(m_Transform[i]->Position - m_Transform[j]->Position).x * 1.0f;
+		//m_Transform[j]->Position.z -= glm::normalize(m_Transform[i]->Position - m_Transform[j]->Position).z * 1.0f;
+		
+	}
+
+private:
 	std::array<Frosty::ECS::CTransform*, Frosty::ECS::MAX_ENTITIES_PER_COMPONENT> m_Transform;
 	std::array<Frosty::ECS::CCollision*, Frosty::ECS::MAX_ENTITIES_PER_COMPONENT> m_Collision;
-	std::array<Frosty::ECS::CHealth*, Frosty::ECS::MAX_ENTITIES_PER_COMPONENT> m_Health;
+	//std::array<Frosty::ECS::CHealth*, Frosty::ECS::MAX_ENTITIES_PER_COMPONENT> m_Health;
 	std::array<Frosty::ECS::CTag*, Frosty::ECS::MAX_ENTITIES_PER_COMPONENT> m_Tag;
 	//
-	std::array<Frosty::ECS::CArrow*, Frosty::ECS::MAX_ENTITIES_PER_COMPONENT> m_Arrow;
+	//std::array<Frosty::ECS::CArrow*, Frosty::ECS::MAX_ENTITIES_PER_COMPONENT> m_Arrow;
+
+	//temp bool for only one subskription
+	bool onlyOneSub = true;
 };
 
 class EnemyAttackSystem : public Frosty::ECS::BaseSystem
@@ -1450,6 +1585,7 @@ public:
 		{
 			p_Total--;
 			m_Health[p_Total] = nullptr;
+			m_Tag[p_Total] = nullptr;
 
 			if (p_Total > 1)
 			{
@@ -1512,7 +1648,7 @@ private:
 			//temp
 			world->AddComponent<Frosty::ECS::CPlayerAttack>(enemy);
 			world->AddComponent<Frosty::ECS::CEnemyAttack>(enemy);
-			world->AddComponent<Frosty::ECS::CArrow>(enemy);
+			//world->AddComponent<Frosty::ECS::CArrow>(enemy);
 			world->AddComponent<Frosty::ECS::CHealthBar>(enemy);
 		}
 		else
@@ -1529,7 +1665,7 @@ private:
 			//temp
 			world->AddComponent<Frosty::ECS::CPlayerAttack>(enemy);
 			world->AddComponent<Frosty::ECS::CEnemyAttack>(enemy);
-			world->AddComponent<Frosty::ECS::CArrow>(enemy);
+			//world->AddComponent<Frosty::ECS::CArrow>(enemy);
 			world->AddComponent<Frosty::ECS::CHealthBar>(enemy);
 
 			m_NrOfEnemies = 1;
@@ -1563,29 +1699,29 @@ private:
 		auto& world = Frosty::Application::Get().GetWorld();
 
 		FY_TRACE("TAG ON DEAD " + m_Tag[position]->TagName);
-		if (m_Tag[position]->TagName == "Enemy")
-		{
-			//ful fix (när en fiende dör av en pil försvinder båda vilket buggar spelet)
-			if (m_Health[position]->MaxHealth == 0)
-			{
-				m_EnemySpawnTimer = float(std::clock());
-				m_KillCount++;
-				m_NrOfEnemies--;
+		//if (m_Tag[position]->TagName == "Enemy")
+		//{
+		//	//ful fix (när en fiende dör av en pil försvinder båda vilket buggar spelet)
+		//	if (m_Health[position]->MaxHealth == 0)
+		//	{
+		//		m_EnemySpawnTimer = float(std::clock());
+		//		m_KillCount++;
+		//		m_NrOfEnemies--;
 
-				if (m_NrOfEnemies == 0)
-				{
-					m_NrOfEnemies = m_KillCount + 1;
-				}
+		//		if (m_NrOfEnemies == 0)
+		//		{
+		//			m_NrOfEnemies = m_KillCount + 1;
+		//		}
 
-				world->RemoveEntity(m_Entity);
-			}
-			else
-				m_Health[position]->MaxHealth = 0;
-		}
-		else
-		{
+		//		world->RemoveEntity(m_Entity);
+		//	}
+		//	else
+		//		m_Health[position]->MaxHealth = 0;
+		//}
+		//else
+		//{
 			world->RemoveEntity(m_Entity);
-		}
+		//}
 	}
 
 	void RemoveAllEnemies()
@@ -1899,6 +2035,7 @@ namespace MCS
 		world->AddSystem<ConsumablesSystem>();
 		world->AddSystem<CombatSystem>();
 		world->AddSystem<HealthBarSystem>();
+		world->AddSystem<ArrowSystem>();
 
 		// Add components
 
@@ -1919,16 +2056,6 @@ namespace MCS
 		auto& lightTransform = world->GetComponent<Frosty::ECS::CTransform>(light);
 		lightTransform.Rotation = glm::vec3(60.0f, 0.0f, -10.0f);
 		world->AddComponent<Frosty::ECS::CLight>(light, Frosty::ECS::CLight::LightType::Directional, 0.6f, glm::vec3(0.8f, 0.9f, 1.f));
-
-		auto& wall = world->CreateEntity();
-		auto& wallTransform = world->GetComponent<Frosty::ECS::CTransform>(wall);
-		wallTransform.Position = glm::vec3(7.0f, 5.0f, 0.0f);
-		wallTransform.Scale = glm::vec3(1.0f, 10.0f, 10.0f);
-		world->AddComponent<Frosty::ECS::CMesh>(wall, Frosty::AssetManager::GetMesh("Cube"));
-		world->AddComponent<Frosty::ECS::CMaterial>(wall, Frosty::AssetManager::GetShader("FlatColor"));
-		world->AddComponent<Frosty::ECS::CMotion>(wall, 5.0f);
-		world->AddComponent<Frosty::ECS::CCollision>(wall, Frosty::AssetManager::GetBoundingBox("Cube"));
-		auto& UIhealth = world->AddComponent<Frosty::ECS::CHealthBar>(wall);
 
 		generateTrees();
 		generateBorders();

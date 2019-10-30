@@ -82,6 +82,7 @@ void Application::InitPrefabBuffers()
 		////m_Sprite->SetScale(glm::vec3(0.2, 0.2, 0.2));
 		////m_Sprite->SetPosition(glm::vec3(0.7, -0.7, 0.0));
 		////m_Sprite->Init();
+		////m_Sprite->Init();
 		////
 
 		////Layout
