@@ -39,7 +39,7 @@ int Frosty::AnimationHandler::getNrOfJoints()
 	return jointVec.size();
 }
 
-#define MAXBONES 80
+#define MAXBONES 64
 
 void Frosty::AnimationHandler::CalculateAnimMatrix( float * currentAnimTime)
 {

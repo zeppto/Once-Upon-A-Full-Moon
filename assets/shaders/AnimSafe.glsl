@@ -28,7 +28,7 @@ void main()
 	jointTransform += skinData[a_joints[2]] * a_weights.z;
 	jointTransform += skinData[a_joints[3]] * a_weights.w;
 	
-	gl_Position = jointTransform * vec4(a_Position,1.0);
+	gl_Position = u_ViewProjection * u_Transform * (vec4(a_Position,1.0));
 	
 	v_TextureCoords = a_TextureCoords;
 	pos = gl_Position;

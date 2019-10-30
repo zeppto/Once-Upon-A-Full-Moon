@@ -102,7 +102,7 @@ namespace Frosty
 		indexBuffer.reset(IndexBuffer::Create(&indices.front(), (uint32_t)indices.size()));
 		s_Meshes[name]->SetIndexBuffer(indexBuffer);
 
-		if (tempFile.getAnimation().keyframeCount != 0)
+		if (tempFile.getAnimation().duration != 0)
 		{
 			std::vector<Luna::Joint> joints;
 			tempFile.getJoints(joints);

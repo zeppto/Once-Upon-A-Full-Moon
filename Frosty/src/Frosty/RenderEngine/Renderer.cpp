@@ -183,7 +183,7 @@ namespace Frosty
 
 		vertexArray->Bind();
 		RenderCommand::Draw2D(vertexArray);
-		dt += 0.003;
+		/*dt += 0.003;*/
 	}
 
 }
