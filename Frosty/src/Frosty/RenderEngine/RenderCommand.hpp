@@ -13,9 +13,11 @@ namespace Frosty
 		static void SetClearColor(const glm::vec4& color);
 		static void Clear();
 
-		static void DrawIndexed(const std::shared_ptr<VertexArray>& vertexArray);	
-	private:
-		//static Renderer* m_Renderer;
+		//static void DrawIndexed(const std::shared_ptr<VertexArray>& vertexArray);
+		static void Draw2D(const std::shared_ptr<VertexArray>& vertexArray);
+		//static void DrawParticles(const std::shared_ptr<VertexArray>& vertexArray, size_t count);
+		//static void DrawUIText();
+
 	};
 }
-#endif
+#endif // !RENDERCOMMAND_HPP

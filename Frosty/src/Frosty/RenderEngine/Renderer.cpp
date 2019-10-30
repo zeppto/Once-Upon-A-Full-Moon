@@ -23,10 +23,17 @@ namespace Frosty
 		s_SceneData->DirectionalLights.clear();
 	}
 
-	void Renderer::SetCamera(const glm::vec3& pos, const glm::mat4& viewProjection)
+	void Renderer::SetCamera(const glm::vec3& pos, const glm::mat4& view, const glm::mat4& projection)
 	{
 		s_SceneData->GameCamera.CameraPosition = pos;
-		s_SceneData->GameCamera.ViewProjectionMatrix = viewProjection;
+		s_SceneData->GameCamera.ViewMatrix = view;
+		s_SceneData->GameCamera.ProjectionMatrix = projection;
+		s_SceneData->GameCamera.ViewProjectionMatrix = projection * view;
+	}
+
+	Renderer::GameCameraProps Renderer::GetCamera()
+	{
+		return s_SceneData->GameCamera;
 	}
 
 	void Renderer::AddLight(const glm::vec3& color, const glm::vec3& pos, float strength, float radius)
@@ -53,6 +60,83 @@ namespace Frosty
 		s_SceneData->DirectionalLights.emplace_back(light);
 	}
 
+	//void Renderer::Submit2D(const std::shared_ptr<Shader>& shader, const std::shared_ptr<VertexArray>& vertexArray, std::string& tex, glm::mat4& modelMatrix)
+	//{
+	//	//shader->Bind();
+	//	//shader->UploadUniforMat4("model", modelMatrix);
+	//	////shader->UploadUniformInt(tex, 0);
+
+	//	//vertexArray->Bind();
+	//	//RenderCommand::Draw2D(vertexArray);
+	//	//shader->UnBind();
+	//	//vertexArray->Unbind();
+	//}
+
+	void Renderer::SubmitText(const std::shared_ptr<Shader>& shader, const std::shared_ptr<VertexArray>& vertexArray, std::string& text)
+	{
+		/*shader->Bind();
+		vertexArray->Bind();
+
+		glm::mat4 projection = glm::ortho(0.0f, 800.0f, 0.0f, 600.0f);
+		glm::vec3 color = glm::vec3(1.0f, 0.0f, 1.0f);
+
+		shader->UploadUniforMat4("projection", projection);
+		shader->UploadUniformInt("text", 1);
+		shader->UploadUniformFloat3("textColor", color);
+
+		std::string::const_iterator c;
+		float x = 25.0f;
+		float y = 24.0f;
+		float scale = 1.0f;
+		glm::vec3 vec = glm::vec3(0.5f, 0.8f, 0.2f);
+		for (c = text.begin(); c != text.end(); c++) {
+			Character ch = Assetmanager::GetAssetmanager()->GetFontMetaData("Gabriola")->GetData()->m_characters.at(*c);
+			float xpos = x + ch.bearing.x * scale;
+			float ypos = y - (ch.size.y - ch.bearing.y) * scale;
+			float width = ch.size.x * scale;
+			float height = ch.size.y * scale;
+
+			float verts[6][4]
+			{
+				{ xpos,			ypos + height,	0.0f, 0.0f },
+				{ xpos,			ypos,			0.0f, 1.0f },
+				{ xpos + width,	ypos,			1.0f, 1.0f },
+
+				{ xpos,			ypos + height,	0.0f, 0.0f },
+				{ xpos + width, ypos,			1.0f, 1.0f },
+				{ xpos + width, ypos + height,	1.0f, 0.0f }
+			};
+
+			vertexArray->GetVertexBuffer().front()->Bind();
+			vertexArray->GetVertexBuffer().front()->SetData(*verts, sizeof(verts), GL_DYNAMIC_DRAW);
+
+			glActiveTexture(GL_TEXTURE1);
+			glBindTexture(GL_TEXTURE_2D, ch.textureID);
+
+			RenderCommand::Draw2D(vertexArray);
+
+			x += (ch.advance >> 6) * scale;
+		}
+		glBindTexture(GL_TEXTURE_2D, 0);
+		vertexArray->Unbind();
+		vertexArray->GetVertexBuffer().front()->Unbind();*/
+	}
+
+	void Renderer::SubmitParticles(const std::shared_ptr<Shader>& shader, const std::shared_ptr<VertexArray>& vertexArray, glm::mat4& modelMat, size_t particleCount)
+	{
+		/*shader->Bind();
+		vertexArray->Bind();
+
+		shader->UploadUniforMat4("viewMat", m_SceneData->ViewMatrix);
+		shader->UploadUniforMat4("projectionMat", m_SceneData->ProjectionMatrix);
+		shader->UploadUniforMat4("modelMat", modelMat);
+
+		RenderCommand::DrawParticles(vertexArray, particleCount);
+
+		vertexArray->Unbind();
+		shader->UnBind();*/
+	}
+	
 	void Renderer::Submit(ECS::CMaterial* mat, const std::shared_ptr<VertexArray>& vertexArray, const glm::mat4& transform)
 	{
 		mat->UseShader->Bind();
@@ -86,7 +170,22 @@ namespace Frosty
 			mat->UseShader->UploadUniformFloat("u_SpecularStrength", mat->SpecularStrength);
 
 		}
+		else if (mat->UseShader->GetName() == "Texture2D")
+		{
+			mat->UseShader->UploadUniformFloat2("u_TextureCoordScale", mat->TextureScale);
+		}
 		vertexArray->Bind();
-		RenderCommand::DrawIndexed(vertexArray);
+		RenderCommand::Draw2D(vertexArray);
+	}
+
+	//For 2D, might be temp
+	void Renderer::Submit2d(Texture2D* tex,Shader* shader, const std::shared_ptr<VertexArray>& vertexArray, const glm::mat4& transform)
+	{
+		shader->Bind();
+		shader->UploadUniformMat4("u_Transform", transform);
+
+
+		vertexArray->Bind();
+		RenderCommand::Draw2D(vertexArray);
 	}
 }

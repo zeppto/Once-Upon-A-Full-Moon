@@ -1,4 +1,4 @@
-//#include "mcspch.hpp"
+#include "mcspch.hpp"
 //#include "GameObject.hpp"
 //
 //GameObject::GameObject(glm::vec3 color, glm::vec3 position, glm::vec3 rotation, glm::vec3 scale, int maxHp, std::string modelFilename)
