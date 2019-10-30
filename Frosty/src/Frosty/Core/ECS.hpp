@@ -361,7 +361,7 @@ namespace Frosty
 			CTransform* Target{ nullptr };
 			glm::vec3 Front{ 0.0f, 0.0f, -1.0f };
 			glm::vec3 Background{ 0.2f };
-			float FieldOfView{ 60.0f };
+			float FieldOfView{ 40.0f };
 			float Near{ 0.03f };
 			float Far{ 1000.0f };
 			glm::mat4 ViewMatrix{ 1.0f };
