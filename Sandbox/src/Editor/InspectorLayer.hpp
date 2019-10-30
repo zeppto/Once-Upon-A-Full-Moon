@@ -30,7 +30,7 @@ namespace MCS
 		int m_PreviousControllerHotkey;
 
 		// Main Menu
-		bool m_MaximizeOnPlay{ false };
+		bool m_MaximizeOnPlay{ true };
 
 		// Static stuff (Mostly temporary)
 		static bool s_VSync;
