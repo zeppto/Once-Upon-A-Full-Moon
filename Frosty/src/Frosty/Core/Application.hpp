@@ -10,7 +10,7 @@
 #include "Frosty/Core/World.hpp"
 //#include "Frosty/UI/Canvas.h"
 
-//pARTICLE bRANCH
+//Particle Branch
 #include "Frosty/StateMachine/StateMachine.hpp"
 #include "Frosty/Core/InputManager.hpp"
 //#include "Frosty/StateMachine/MainMenuState.h"
