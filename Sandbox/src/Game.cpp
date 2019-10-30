@@ -786,10 +786,16 @@ public:
 				if (Frosty::InputManager::IsKeyPressed(FY_KEY_ENTER) && m_CanSwitchWepond)
 				{
 					m_CanSwitchWepond = false;
-					if (m_PlayerAttack[i]->IsMelee)
+					if (m_PlayerAttack[i]->IsMelee) {
 						m_PlayerAttack[i]->IsMelee = false;
-					else
+						m_PlayerAttack[i]->CurrTexture = 1;
+
+					}
+					else {
 						m_PlayerAttack[i]->IsMelee = true;
+						m_PlayerAttack[i]->CurrTexture = 0;
+					}
+
 				}
 
 				if (m_PlayerAttack[i]->IsMelee)
@@ -1059,6 +1065,23 @@ public:
 	{
 		for (size_t i = 1; i < p_Total; i++)
 		{
+
+		}
+	}
+
+	virtual void Render() override
+	{
+
+		for (size_t i = 1; i < p_Total; i++)
+		{
+
+			if (m_PlayerAttack[i]->Texture[m_PlayerAttack[i]->CurrTexture] && m_PlayerAttack[i]->UseShader->GetName() == "UI")
+				m_PlayerAttack[i]->Texture[m_PlayerAttack[i]->CurrTexture]->Bind(0);
+	
+			Frosty::Renderer::Submit2d(m_PlayerAttack[i]->Texture[m_PlayerAttack[i]->CurrTexture].get(), m_PlayerAttack[i]->UseShader.get(), m_PlayerAttack[i]->Mesh, m_PlayerAttack[i]->TextureTransform);
+
+			if (m_PlayerAttack[i]->UseShader->GetName() == "UI" && m_PlayerAttack[i]->Texture[m_PlayerAttack[i]->CurrTexture])
+				m_PlayerAttack[i]->Texture[m_PlayerAttack[i]->CurrTexture]->Unbind();
 		}
 	}
 
@@ -1073,6 +1096,19 @@ public:
 			m_Collision[p_Total] = &world->GetComponent<Frosty::ECS::CCollision>(entity);
 			m_PlayerAttack[p_Total] = &world->GetComponent<Frosty::ECS::CPlayerAttack>(entity);
 			m_Health[p_Total] = &world->GetComponent<Frosty::ECS::CHealth>(entity);
+
+			if (!m_PlayerAttack[p_Total]->Mesh)
+			{
+				m_PlayerAttack[p_Total]->Mesh = Frosty::AssetManager::GetMesh("Plane");
+				m_PlayerAttack[p_Total]->UseShader = Frosty::AssetManager::GetShader("UI");
+				m_PlayerAttack[p_Total]->Texture[0] = Frosty::AssetManager::GetTexture2D("Sword");
+				m_PlayerAttack[p_Total]->Texture[1] = Frosty::AssetManager::GetTexture2D("Bow");
+			}
+
+				m_PlayerAttack[p_Total]->TextureTransform = glm::translate(m_PlayerAttack[p_Total]->TextureTransform, glm::vec3(-0.75f, -0.75f, 0.0f));
+				m_PlayerAttack[p_Total]->TextureTransform = glm::scale(m_PlayerAttack[p_Total]->TextureTransform, glm::vec3(0.25f));
+				m_PlayerAttack[p_Total]->TextureTransform = glm::rotate(m_PlayerAttack[p_Total]->TextureTransform, glm::radians(90.0f), { 1.0f, 0.0f, 0.0f });
+
 
 			p_Total++;
 		}
@@ -1483,7 +1519,7 @@ private:
 		world->AddComponent<Frosty::ECS::CTag>(player,"Player");
 		world->AddComponent<Frosty::ECS::CPlayerAttack>(player, 1.5f, 1.0f, 2.0f, true);
 		world->AddComponent<Frosty::ECS::CEnemyAttack>(player, 1.0f, 1.0f, 2.0f, true);
-		world->AddComponent<Frosty::ECS::CHealthBar>(player);
+		world->AddComponent<Frosty::ECS::CHealthBar>(player, glm::vec3(0.0f, 10.0f, 0.0f));
 
 		world->AddComponent<Frosty::ECS::CCollision>(player, Frosty::AssetManager::GetBoundingBox("Cube"));
 		auto& gameCameraEntity = world->GetSceneCamera();
@@ -1752,7 +1788,7 @@ public:
 
 				float pivot = 0.5f;
 
-				glm::vec3 offset = glm::vec3((m_Health[i]->CurrentHealth / m_Health[i]->MaxHealth) / 2, 0, 0);
+				glm::vec3 offset = m_HealthBar[i]->BarOffset + glm::vec3( 0, 0, 0);
 
 				glm::vec3 TmaxHP = glm::vec3(m_Health[i]->MaxHealth, 1, 1);
 				glm::vec3 TcurrHP = glm::vec3(m_Health[i]->CurrentHealth, 1, 1);
@@ -1778,29 +1814,6 @@ public:
 
 			}
 
-			if (false)
-			{
-
-				float pivot = 0.5f;
-
-				//translate
-				//world position to screen position
-				float HP = 1.0f;
-				glm::vec3 TmaxHP = glm::vec3(m_Health[i]->MaxHealth, 1, 1);
-				glm::vec3 TcurrHP = glm::vec3(m_Health[i]->CurrentHealth, 1, 1);
-
-				m_HealthBar[i]->hpTransform = glm::translate(glm::mat4{ 1.0f }, glm::vec3(TcurrHP.x / TmaxHP.x - 1.0f, 0.0f, 0.0f));
-
-
-				m_HealthBar[i]->hpTransform = glm::scale(m_HealthBar[i]->hpTransform, glm::vec3((TcurrHP.x / TmaxHP.x) * 2, 1.0f, 1.0f));
-
-
-				//rotate
-				m_HealthBar[i]->hpTransform = glm::rotate(m_HealthBar[i]->hpTransform, glm::radians(90.0f), { 1.0f, 0.0f, 0.0f });
-
-			}
-
-			
 			if (m_HealthBar[i]->Texture && m_HealthBar[i]->UseShader->GetName() == "UI")
 			{
 				m_HealthBar[i]->Texture->Bind(0);
@@ -1820,6 +1833,8 @@ public:
 		if (Frosty::utils::BitsetFits<Frosty::ECS::MAX_COMPONENTS>(p_Signature, entity->Bitset) && !p_EntityMap.count(entity))
 		{
 			p_EntityMap.emplace(entity, p_Total);
+
+			
 
 			auto& world = Frosty::Application::Get().GetWorld();
 			m_Transform[p_Total] = &world->GetComponent<Frosty::ECS::CTransform>(entity);
@@ -1933,39 +1948,6 @@ namespace MCS
 		generateTrees();
 		generateBorders();
 		generatePlanes();
-
-		bool UI = true;
-		if (UI)
-		{
-			for (size_t i = 0; i < 3; i++)
-			{
-				//Endast Sprites en s� l�nge
-				auto& uiHeart1 = world->CreateEntity();
-				auto& uiHeart1Transform = world->GetComponent<Frosty::ECS::CTransform>(uiHeart1);
-				uiHeart1Transform.Position = glm::vec3(-0.9f + (i * 0.1), 0.9f, 0.0f);
-
-				uiHeart1Transform.Rotation = glm::vec3(90.0f, 0.0f, 0.0f);
-				uiHeart1Transform.Scale = glm::vec3(0.09f, 1.0f, 0.14f);
-				world->AddComponent<Frosty::ECS::CMesh>(uiHeart1, Frosty::AssetManager::GetMesh("Plane"));
-				auto& uiHeart1Mat = world->AddComponent<Frosty::ECS::CMaterial>(uiHeart1, Frosty::AssetManager::GetShader("UI"));
-				uiHeart1Mat.DiffuseTexture = Frosty::AssetManager::GetTexture2D("HeartFull");
-				if (i == 2)
-				{
-					uiHeart1Mat.DiffuseTexture = Frosty::AssetManager::GetTexture2D("Heart");
-				}
-			}
-
-			auto& uiHeart1 = world->CreateEntity();
-			auto& uiHeart1Transform = world->GetComponent<Frosty::ECS::CTransform>(uiHeart1);
-			uiHeart1Transform.Position = glm::vec3(-0.8f, -0.7f, 0.0f);
-
-			uiHeart1Transform.Rotation = glm::vec3(90.0f, 0.0f, 0.0f);
-			uiHeart1Transform.Scale = glm::vec3(0.2f, 1.0f, 0.3f);
-			world->AddComponent<Frosty::ECS::CMesh>(uiHeart1, Frosty::AssetManager::GetMesh("Plane"));
-			auto& uiHeart1Mat = world->AddComponent<Frosty::ECS::CMaterial>(uiHeart1, Frosty::AssetManager::GetShader("UI"));
-			uiHeart1Mat.DiffuseTexture = Frosty::AssetManager::GetTexture2D("Sword");
-
-		}
 
 		PushLayer(FY_NEW InspectorLayer());
 	}

@@ -488,6 +488,12 @@ namespace Frosty
 			//
 			bool IsMelee{ true };
 
+			std::shared_ptr<VertexArray> Mesh;
+			std::shared_ptr<Shader> UseShader;
+			std::shared_ptr<Texture2D> Texture[2];
+			glm::mat4 TextureTransform{ 1.0f };
+
+			uint8_t CurrTexture = 0;
 
 			CPlayerAttack() = default;
 			//CPlayerAttack(float reach, float width, float damage) : Reach(reach), Width(width), Damage(damage) { }
@@ -597,6 +603,8 @@ namespace Frosty
 			float pivot;
 
 			CHealthBar() = default;
+			CHealthBar(glm::vec3 barOffset)
+				:BarOffset(barOffset) {}
 			CHealthBar(glm::vec3 barOffset, std::shared_ptr<VertexArray> mesh, std::shared_ptr<Shader> shader, std::shared_ptr<Texture2D> tex)
 				: BarOffset(barOffset), Mesh(mesh), UseShader(shader), Texture(tex) {}
 			CHealthBar(const CHealthBar& org) { FY_CORE_ASSERT(false, "Copy constructor in CCollision called."); }
