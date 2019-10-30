@@ -1,6 +1,7 @@
 #include <mcspch.hpp>
 #include "Game.hpp"
 #include "Frosty/API/AssetManager.hpp"
+#include "Frosty/Events/CombatEvent.hpp"
 
 #include "Systems/CombatSystem.hpp"
 
@@ -1062,6 +1063,7 @@ public:
 	{
 		for (size_t i = 1; i < p_Total; i++)
 		{
+
 		}
 	}
 
@@ -1873,6 +1875,7 @@ private:
 	std::array<Frosty::ECS::CHealth*, Frosty::ECS::MAX_ENTITIES_PER_COMPONENT> m_Health;
 
 };
+
 
 namespace MCS
 {
