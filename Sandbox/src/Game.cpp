@@ -1242,8 +1242,9 @@ private:
 		auto& playerTransform = world->GetComponent<Frosty::ECS::CTransform>(player);
 		playerTransform.Position = glm::vec3(0.0f, 1.0f, 0.0f);
 		playerTransform.Scale *= 2.2f;
-		world->AddComponent<Frosty::ECS::CMesh>(player, Frosty::AssetManager::GetMesh("Cube"));
-		world->AddComponent<Frosty::ECS::CMaterial>(player, Frosty::AssetManager::GetShader("FlatColor"));
+		world->AddComponent<Frosty::ECS::CMesh>(player, Frosty::AssetManager::GetMesh("Scarlet"));
+		world->AddComponent<Frosty::ECS::CMaterial>(player, Frosty::AssetManager::GetShader("Texture2D"));
+		world->GetComponent<Frosty::ECS::CMaterial>(player).DiffuseTexture = Frosty::AssetManager::GetTexture2D("Scarlet_diffuse");
 		world->AddComponent<Frosty::ECS::CMotion>(player, 20.0f);
 		world->AddComponent<Frosty::ECS::CController>(player);
 		world->AddComponent<Frosty::ECS::CConsumables>(player);
