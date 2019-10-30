@@ -25,6 +25,7 @@ namespace Frosty
 		AddMesh("Cone", "assets/primitives/cone/cone.lu");
 		AddMesh("3D", "assets/primitives/3D/3D.lu");
 		AddMesh("CharTest", "assets/models/character_test/char_test.lu");
+		AddMesh("Scarlet", "assets/models/Scarlet_static/Scarlet_static.lu");
 
 		AddMesh("Tree1", "assets/models/trees/tree1.lu");
 		AddMesh("Tree2", "assets/models/trees/tree2.lu");
@@ -42,8 +43,8 @@ namespace Frosty
 		s_Shaders.emplace("UI", FY_NEW Shader("assets/shaders/UI.glsl", "UI"));
 
 		LoadTexture2D("Clock Diffuse", "assets/textures/clock_diffuse.png");
-		LoadTexture2D("Clock Normal", "assets/textures/clock_normal.png");
-		LoadTexture2D("Clock Specular", "assets/textures/clock_specular.png");
+		//LoadTexture2D("Clock Normal", "assets/textures/clock_normal.png");
+		//LoadTexture2D("Clock Specular", "assets/textures/clock_specular.png");
 		LoadTexture2D("Table Diffuse", "assets/textures/polySurface15_diffuse.png");
 		LoadTexture2D("Brown Mud Diffuse", "assets/textures/brown_mud_diffuse.png");
 		LoadTexture2D("Checkerboard", "assets/textures/Checkerboard.png");
@@ -51,12 +52,16 @@ namespace Frosty
 		LoadTexture2D("Rusty Metal Normal", "assets/textures/rusty_metal_normal.png");
 		LoadTexture2D("Rusty Metal Specular", "assets/textures/rusty_metal_specular.png");
 		LoadTexture2D("Forest Ground", "assets/textures/forest_ground.jpg");
-		LoadTexture2D("Normal Test", "assets/textures/cube_normal.png");					// TEMPORARY
-		LoadTexture2D("Cherno Logo", "assets/textures/ChernoLogo.png");						// TEMPORARY
+		//LoadTexture2D("Normal Test", "assets/textures/cube_normal.png");					// TEMPORARY
+		//LoadTexture2D("Cherno Logo", "assets/textures/ChernoLogo.png");					// TEMPORARY
 		LoadTexture2D("Heart", "assets/textures/heart.png");
 		LoadTexture2D("HeartFull", "assets/textures/heartFull.png");
-		LoadTexture2D("Sword", "assets/textures/sword.png");
+		LoadTexture2D("Sword", "assets/textures/sword.jpg");
+		LoadTexture2D("Bow", "assets/textures/bow.png");
 		LoadTexture2D("Red", "assets/textures/red.png");
+		LoadTexture2D("Scarlet_diffuse", "assets/textures/Scarlet_diffuse.tga");
+		LoadTexture2D("Scarlet_normal", "assets/textures/Scarlet_normal.tga");
+		LoadTexture2D("Scarlet_specular", "assets/textures/Scarlet_specular.tga");
 
 
 		LoadTexture2D("Tree1", "assets/textures/testPineLeves2.tga");						// TEMPORARY

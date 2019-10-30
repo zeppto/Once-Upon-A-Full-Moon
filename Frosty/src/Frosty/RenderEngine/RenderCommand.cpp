@@ -75,7 +75,10 @@ namespace Frosty
 
 	void RenderCommand::Draw2D(const std::shared_ptr<VertexArray>& vertexArray)
 	{
+		//glEnable(GL_BLEND); //For transparency
+		//glBlendFunc(GL_SRC_ALPHA, GL_ONE);
 		glDrawElements(GL_TRIANGLES, vertexArray->GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, nullptr);
+		//glDisable(GL_BLEND);
 	}
 
 	//void RenderCommand::DrawParticles(const std::shared_ptr<VertexArray>& vertexArray, size_t count)

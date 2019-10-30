@@ -20,8 +20,8 @@ out mat3 v_TBN;
 void main()
 {
 	v_FragPosition = vec3(u_Transform * vec4(a_Position, 1.0));
-	//v_TextureCoords = a_TextureCoords;
-	v_TextureCoords = vec2(u_Transform[0][0] * a_TextureCoords.x / u_TextureCoordScale.x, u_Transform[2][2] * a_TextureCoords.y / u_TextureCoordScale.y);
+	v_TextureCoords = a_TextureCoords;
+	//v_TextureCoords = vec2(u_Transform[0][0] * a_TextureCoords.x / u_TextureCoordScale.x, u_Transform[2][2] * a_TextureCoords.y / u_TextureCoordScale.y);
 	v_Normal = mat3(transpose(inverse(u_Transform))) * a_Normal;		// Oldie but goldie
 
 	vec3 T = normalize(vec3(u_Transform * vec4(a_Tangent,   0.0)));
