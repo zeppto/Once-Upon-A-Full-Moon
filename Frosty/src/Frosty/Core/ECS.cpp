@@ -22,5 +22,7 @@ namespace Frosty
 		std::string CTag::NAME = "Tag";
 		std::string CConsumables::NAME = "Consumables";
 		std::string CCharacterState::NAME = "CharacterState";
+		std::string CArrow::NAME = "Arrow";
+		std::string CHealthBar::NAME = "HealthBar";
 	}
 }

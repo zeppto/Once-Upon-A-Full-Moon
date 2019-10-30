@@ -16,6 +16,8 @@ namespace Frosty
 
 		static glm::vec3 AABBIntersecPushback(glm::vec3 pushbackLength, glm::vec3 pushbackCenter, glm::vec3 otherLength, glm::vec3 otherCenter);
 
+		static bool AABBRayIntersect(glm::vec3 rayStart, glm::vec3 rayLength, glm::vec3 AABBLength, glm::vec3 AABBCenter);
+
 
 	private:
 		 

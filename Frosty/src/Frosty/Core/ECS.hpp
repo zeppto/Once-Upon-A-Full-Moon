@@ -86,14 +86,14 @@ namespace Frosty
 #pragma region Settings
 
 		// Let's define a maximum number of unique components:
-		constexpr std::size_t MAX_COMPONENTS{ 15 };
+		constexpr std::size_t MAX_COMPONENTS{ 16 };
 
 		// Let's define a maximum number of entities that
 		// can have the same component type:
 		constexpr std::size_t MAX_ENTITIES_PER_COMPONENT{ 1024 };
 
 		// Defining the maximum nr of systems
-		constexpr std::size_t MAX_SYSTEMS{ 16 };
+		constexpr std::size_t MAX_SYSTEMS{ 18 };
 
 #pragma endregion Settings
 
@@ -485,12 +485,33 @@ namespace Frosty
 			float Damage{ 2.0f };
 			//temp
 			bool IsPlayer{ false };
+			//
+			bool IsMelee{ true };
+
 
 			CPlayerAttack() = default;
 			//CPlayerAttack(float reach, float width, float damage) : Reach(reach), Width(width), Damage(damage) { }
-			CPlayerAttack(float reach, float cooldown, float damage, bool isPlayer) : Reach(reach), Cooldown(cooldown), Damage(damage), IsPlayer(isPlayer){ }
+			//CPlayerAttack(float reach, float cooldown, float damage, bool isPlayer, bool isMelee) : Reach(reach), Cooldown(cooldown), Damage(damage), IsPlayer(isPlayer), IsMelee(isMelee){ }
+			CPlayerAttack(float reach, float cooldown, float damage, bool isPlayer) : Reach(reach), Cooldown(cooldown), Damage(damage), IsPlayer(isPlayer) { }
 			CPlayerAttack(const CPlayerAttack& org) { FY_CORE_ASSERT(false, "Copy constructor in CPlayerAttack called."); }
 			
+			virtual void Func() override { }
+		};
+
+		struct CArrow : public BaseComponent
+		{
+			static std::string NAME;
+			float Damage{ 1.0f };
+			int Lifetime{ 70 };
+			bool IsPiercing{ false };
+			// for piercing arrow
+			int alradyHitt{ 0 };
+
+
+			CArrow() = default;
+			CArrow(float damage, int lifetime, bool isPiercing) : Damage(damage), Lifetime(lifetime), IsPiercing(isPiercing){ }
+			CArrow(const CArrow& org) { FY_CORE_ASSERT(false, "Copy constructor in CArrow called."); }
+
 			virtual void Func() override { }
 		};
 		
@@ -563,6 +584,7 @@ namespace Frosty
 			virtual void Func() override { }
 		};
 
+
 		struct CCharacterState : public BaseComponent
 		{
 			static std::string NAME;
@@ -594,6 +616,26 @@ namespace Frosty
 			CCharacterState(const CCharacterState& org) { FY_CORE_ASSERT(false, "Copy constructor in CCharacterState called."); }
 
 			virtual void Func() override { }
+		}
+
+		struct CHealthBar : public BaseComponent
+		{
+			static std::string NAME;
+			glm::vec3 BarOffset{ 0.0f, 5.0f, 0.0f };
+			std::shared_ptr<VertexArray> Mesh;
+			std::shared_ptr<Shader> UseShader;
+			std::shared_ptr<Texture2D> Texture;
+
+			glm::mat4 hpTransform{ 1.0f };
+
+			float pivot;
+
+			CHealthBar() = default;
+			CHealthBar(glm::vec3 barOffset, std::shared_ptr<VertexArray> mesh, std::shared_ptr<Shader> shader, std::shared_ptr<Texture2D> tex)
+				: BarOffset(barOffset), Mesh(mesh), UseShader(shader), Texture(tex) {}
+			CHealthBar(const CHealthBar& org) { FY_CORE_ASSERT(false, "Copy constructor in CCollision called."); }
+
+			virtual void Func() override { }
 		};
 
 		static std::string GetComponentName(size_t i)
@@ -614,6 +656,7 @@ namespace Frosty
 			case 11:	return "Tag";
 			case 12:	return "Consumables";
 			case 13:	return "CharacterState";
+			case 14:	return "HealthBar";
 			default:	return "";
 			}
 		}
