@@ -391,7 +391,7 @@ namespace Frosty
 			std::shared_ptr<Texture2D> NormalTexture;
 			float SpecularStrength{ 0.5f };
 			int Shininess{ 16 };
-			float TextureScale{ 0.0f };
+			glm::vec2 TextureScale{ 1.0f };
 
 			CMaterial() = default;
 			CMaterial(const std::shared_ptr<Shader>& shader) : UseShader(shader) { }

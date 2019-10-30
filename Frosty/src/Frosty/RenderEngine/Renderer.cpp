@@ -173,7 +173,7 @@ namespace Frosty
 		}
 		else if (mat->UseShader->GetName() == "Texture2D")
 		{
-			mat->UseShader->UploadUniformFloat("u_TextureCoordScale", mat->TextureScale);
+			mat->UseShader->UploadUniformFloat2("u_TextureCoordScale", mat->TextureScale);
 		}
 		vertexArray->Bind();
 		RenderCommand::Draw2D(vertexArray);
