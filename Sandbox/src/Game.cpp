@@ -946,24 +946,26 @@ public:
 							rotationMat = glm::translate(rotationMat, glm::vec3(0, 0, m_Collision[i]->BoundingBox->halfSize[0] + (m_Collision[i]->BoundingBox->halfSize[0] * m_PlayerAttack[i]->Reach)));
 							glm::vec3 hitboxPos = glm::vec3(rotationMat[3]);
 
-							//test --- to create arrow (do a call to an other funktinon insted that adds and removes arrows)
+							if (numberOfUsedArrows == 9)
+								numberOfUsedArrows = 0;
+							//arrowIDs[0];
 							auto& world = Frosty::Application::Get().GetWorld();
-							auto& arrow = world->CreateEntity();
-							auto& arrowTransform = world->GetComponent<Frosty::ECS::CTransform>(arrow);
-							arrowTransform.Position = m_Transform[i]->Position - glm::normalize(m_Transform[i]->Position - (m_Transform[i]->Position + hitboxPos)) * m_Collision[i]->BoundingBox->halfSize[0] * 2.0f * m_Transform[i]->Scale;
-							arrowTransform.Scale *= 0.9f;
-							arrowTransform.Rotation = m_Transform[i]->Rotation;
-							world->AddComponent<Frosty::ECS::CMesh>(arrow, Frosty::AssetManager::GetMesh("Cube"));
-							world->AddComponent<Frosty::ECS::CMaterial>(arrow, Frosty::AssetManager::GetShader("FlatColor"));
-							auto& arrowMotion = world->AddComponent<Frosty::ECS::CMotion>(arrow, 40.0f);
-							arrowMotion.Direction = -glm::normalize(m_Transform[i]->Position - (m_Transform[i]->Position + hitboxPos));
-							arrowMotion.Direction.y = 0;
-							FY_TRACE("playerAttack Direction({0}, {1}, {2})", -glm::normalize(m_Transform[i]->Position - (m_Transform[i]->Position + hitboxPos)).x, -glm::normalize(m_Transform[i]->Position - (m_Transform[i]->Position + hitboxPos)).y, -glm::normalize(m_Transform[i]->Position - (m_Transform[i]->Position + hitboxPos)).z);
-							world->AddComponent<Frosty::ECS::CTag>(arrow, "arrow");
-							world->AddComponent<Frosty::ECS::CCollision>(arrow, Frosty::AssetManager::GetBoundingBox("Cube"));
-							//world->AddComponent<Frosty::ECS::CHealth>(arrow, 1.0f);
-							world->AddComponent<Frosty::ECS::CArrow>(arrow);
-
+							auto& arrowComp = world->GetComponent<Frosty::ECS::CArrow>(arrowIDs[numberOfUsedArrows]);
+							arrowComp.Lifetime = 70;
+							auto& transformComp = world->GetComponent<Frosty::ECS::CTransform>(arrowIDs[numberOfUsedArrows]);
+							transformComp.Position = m_Transform[i]->Position - glm::normalize(m_Transform[i]->Position - (m_Transform[i]->Position + hitboxPos)) * m_Collision[i]->BoundingBox->halfSize[0] * 2.0f * m_Transform[i]->Scale;
+							transformComp.Rotation = m_Transform[i]->Rotation;
+							auto& motinComp = world->GetComponent<Frosty::ECS::CMotion>(arrowIDs[numberOfUsedArrows]);
+							motinComp.Direction = -glm::normalize(m_Transform[i]->Position - (m_Transform[i]->Position + hitboxPos));
+							motinComp.Direction.y = 0;	
+							auto& tagComp = world->GetComponent<Frosty::ECS::CTag>(arrowIDs[numberOfUsedArrows]);
+							tagComp.TagName = "arrow";
+							//std::shared_ptr<Frosty::ECS::Entity> temp = arrowIDs[numberOfUsedArrows];
+							//arrowIDs[numberOfUsedArrows] = arrowIDs[0];
+							//arrowIDs[0] = temp;
+							//FY_TRACE("test4 ({0})", numberOfUsedArrows);
+							//FY_TRACE("test4 ({0})", (numberOfUsedArrows + 1) % 9);
+							numberOfUsedArrows++;
 						}
 					}
 					//3 arrows
@@ -1077,8 +1079,24 @@ public:
 
 	virtual void OnUpdate() override
 	{
-		for (size_t i = 1; i < p_Total; i++)
+		if (numberOfArrows < 9)
 		{
+			auto& world = Frosty::Application::Get().GetWorld();
+			auto& arrow = world->CreateEntity();
+			auto& arrowTransform = world->GetComponent<Frosty::ECS::CTransform>(arrow);
+			//arrowTransform.Position = m_Transform[i]->Position - glm::normalize(m_Transform[i]->Position - (m_Transform[i]->Position + hitboxPos)) * m_Collision[i]->BoundingBox->halfSize[0] * 2.0f * m_Transform[i]->Scale;
+			arrowTransform.Scale *= 0.9f;
+			//arrowTransform.Rotation = m_Transform[i]->Rotation;
+			world->AddComponent<Frosty::ECS::CMesh>(arrow, Frosty::AssetManager::GetMesh("Cube"));
+			world->AddComponent<Frosty::ECS::CMaterial>(arrow, Frosty::AssetManager::GetShader("FlatColor"));
+			auto& arrowMotion = world->AddComponent<Frosty::ECS::CMotion>(arrow, 40.0f);
+			//FY_TRACE("playerAttack Direction({0}, {1}, {2})", -glm::normalize(m_Transform[i]->Position - (m_Transform[i]->Position + hitboxPos)).x, -glm::normalize(m_Transform[i]->Position - (m_Transform[i]->Position + hitboxPos)).y, -glm::normalize(m_Transform[i]->Position - (m_Transform[i]->Position + hitboxPos)).z);
+			world->AddComponent<Frosty::ECS::CTag>(arrow, "arrow");
+			world->AddComponent<Frosty::ECS::CCollision>(arrow, Frosty::AssetManager::GetBoundingBox("Cube"));
+			//world->AddComponent<Frosty::ECS::CHealth>(arrow, 1.0f);
+			world->AddComponent<Frosty::ECS::CArrow>(arrow);
+			arrowIDs[numberOfArrows] = arrow;
+			numberOfArrows++;
 		}
 	}
 
@@ -1131,6 +1149,11 @@ private:
 	bool m_CanAttackArea = true;
 	bool m_CanAttackStrong = true;
 	bool m_CanSwitchWepond = false;
+	//9 st
+	int numberOfArrows = 0;
+	int numberOfUsedArrows = 0;
+	std::shared_ptr<Frosty::ECS::Entity> arrowIDs[9] = { nullptr };
+	//int arrowIDs[9] = { -1 };
 
 };
 
@@ -1142,7 +1165,10 @@ public:
 
 	virtual void Init() override
 	{
+		p_Signature.set(Frosty::ECS::getComponentTypeID<Frosty::ECS::CTransform>(), true);
 		p_Signature.set(Frosty::ECS::getComponentTypeID<Frosty::ECS::CArrow>(), true);
+		p_Signature.set(Frosty::ECS::getComponentTypeID<Frosty::ECS::CMotion>(), true);
+		p_Signature.set(Frosty::ECS::getComponentTypeID<Frosty::ECS::CTag>(), true);
 	}
 
 	virtual void OnUpdate() override
@@ -1155,9 +1181,13 @@ public:
 				//auto& world = Frosty::Application::Get().GetWorld();
 				//world->RemoveEntity(m_Arrow[i]->EntityPtr);
 
-				m_Entity = m_Arrow[i]->EntityPtr;
-				auto& world = Frosty::Application::Get().GetWorld();
-				world->RemoveEntity(m_Entity);
+				//m_Entity = m_Arrow[i]->EntityPtr;
+				//auto& world = Frosty::Application::Get().GetWorld();
+				//world->RemoveEntity(m_Entity);
+
+				m_Motion[i]->Velocity = glm::vec3(0.0f);
+				//m_Transform[i]->Position = glm::vec3(-1000.0f);
+				m_Tag[i]->TagName == "deade";
 			}
 		}
 	}
@@ -1169,7 +1199,10 @@ public:
 			p_EntityMap.emplace(entity, p_Total);
 
 			auto& world = Frosty::Application::Get().GetWorld();
+			m_Transform[p_Total] = &world->GetComponent<Frosty::ECS::CTransform>(entity);
 			m_Arrow[p_Total] = &world->GetComponent<Frosty::ECS::CArrow>(entity);
+			m_Motion[p_Total] = &world->GetComponent<Frosty::ECS::CMotion>(entity);
+			m_Tag[p_Total] = &world->GetComponent<Frosty::ECS::CTag>(entity);
 
 			p_Total++;
 		}
@@ -1182,7 +1215,10 @@ public:
 		if (tempIndex > 0)
 		{
 			p_Total--;
+			m_Transform[p_Total] = nullptr;
 			m_Arrow[p_Total] = nullptr;
+			m_Motion[p_Total] = nullptr;
+			m_Tag[p_Total] = nullptr;
 
 			//std::shared_ptr<Entity> entityToUpdate = removeEntityFromData(mEntity);
 
@@ -1197,9 +1233,12 @@ public:
 	}
 
 private:
+	std::array<Frosty::ECS::CTransform*, Frosty::ECS::MAX_ENTITIES_PER_COMPONENT> m_Transform;
 	std::array<Frosty::ECS::CArrow*, Frosty::ECS::MAX_ENTITIES_PER_COMPONENT> m_Arrow;
+	std::array<Frosty::ECS::CMotion*, Frosty::ECS::MAX_ENTITIES_PER_COMPONENT> m_Motion;
+	std::array<Frosty::ECS::CTag*, Frosty::ECS::MAX_ENTITIES_PER_COMPONENT> m_Tag;
 
-	std::shared_ptr<Frosty::ECS::Entity> m_Entity = nullptr;
+	//std::shared_ptr<Frosty::ECS::Entity> m_Entity = nullptr;
 };
 
 class CombatSystem : public Frosty::ECS::BaseSystem
