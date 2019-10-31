@@ -10,7 +10,9 @@ namespace Frosty
 	{
 	public:
 		//Shader(const std::string & filepath, const std::string& shaderName = "Unnamed");
-		Shader(const std::string& vertexSrc, const std::string& fragmentSrc, const std::string& shaderName = "Unnamed");
+		Shader(const std::string& vertexSrc, const std::string& fragmentSrc, const std::string& shaderName);
+		Shader(const std::string& vertexSrc, const std::string& geometrySrc, const std::string& fragmentSrc, const std::string& shaderName);
+		Shader(const std::string& computeSrc, const std::string& shaderName);
 		virtual ~Shader();
 
 		void Bind()const;
@@ -49,7 +51,7 @@ namespace Frosty
 		void Add(const std::string& name, const std::shared_ptr<Shader>& shader);
 		void Add(const std::shared_ptr<Shader>& shader);
 
-		std::shared_ptr<Shader> Load(const std::string& filepathVertex, const std::string& filepathFragment);
+		//std::shared_ptr<Shader> Load(const std::string& filepathVertex, const std::string& filepathFragment);
 		std::shared_ptr<Shader> Load(const std::string& name, const std::string& filepathVertex, const std::string& filepathFragment);
 
 		std::shared_ptr<Shader> Get(const std::string& name);

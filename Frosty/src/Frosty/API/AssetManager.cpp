@@ -41,6 +41,10 @@ namespace Frosty
 		s_Shaders.emplace("FlatColor", FY_NEW Shader("assets/shaders/FlatColorVertex.glsl", "assets/shaders/FlatColorFragment.glsl", "FlatColor"));
 		s_Shaders.emplace("Texture2D", FY_NEW Shader("assets/shaders/Texture2DVertex.glsl", "assets/shaders/Texture2DFragment.glsl", "Texture2D"));
 		s_Shaders.emplace("UI", FY_NEW Shader("assets/shaders/UIVertex.glsl","assets/shaders/UIFragment.glsl", "UI"));
+		s_Shaders.emplace("Particles", FY_NEW Shader("assets/shaders/ParticleVertex.glsl", "assets/shaders/ParticleGeometry.glsl", "assets/shaders/ParticleFragment.glsl", "Particles"));
+		
+		//Don't try to apply a compute shader as a material! This might have to be separate from normal shaders just to avoid confusion.
+		s_Shaders.emplace("ParticleCompute", FY_NEW Shader("assets/shaders/ParticleCompute.glsl", "ParticleCompute"));
 
 		LoadTexture2D("Clock Diffuse", "assets/textures/clock_diffuse.png");
 		//LoadTexture2D("Clock Normal", "assets/textures/clock_normal.png");
