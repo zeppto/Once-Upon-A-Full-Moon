@@ -361,7 +361,7 @@ namespace Frosty
 			CTransform* Target{ nullptr };
 			glm::vec3 Front{ 0.0f, 0.0f, -1.0f };
 			glm::vec3 Background{ 0.2f };
-			float FieldOfView{ 60.0f };
+			float FieldOfView{ 40.0f };
 			float Near{ 0.03f };
 			float Far{ 1000.0f };
 			glm::mat4 ViewMatrix{ 1.0f };
@@ -391,6 +391,7 @@ namespace Frosty
 			std::shared_ptr<Texture2D> NormalTexture;
 			float SpecularStrength{ 0.5f };
 			int Shininess{ 16 };
+			glm::vec2 TextureScale{ 1.0f };
 
 			CMaterial() = default;
 			CMaterial(const std::shared_ptr<Shader>& shader) : UseShader(shader) { }
@@ -472,7 +473,7 @@ namespace Frosty
 
 			CCollision() = default;
 			CCollision(const std::shared_ptr<Luna::BoundingBox>& bb) : BoundingBox(bb) { }
-			CCollision(const CCollision & org) { FY_CORE_ASSERT(false, "Copy constructor in CCollision called."); }
+			CCollision(const CCollision& org) { FY_CORE_ASSERT(false, "Copy constructor in CCollision called."); }
 
 			virtual void Func() override { }
 		};
@@ -488,6 +489,12 @@ namespace Frosty
 			//
 			bool IsMelee{ true };
 
+			std::shared_ptr<VertexArray> Mesh;
+			std::shared_ptr<Shader> UseShader;
+			std::shared_ptr<Texture2D> Texture[2];
+			glm::mat4 TextureTransform{ 1.0f };
+
+			uint8_t CurrTexture = 0;
 
 			CPlayerAttack() = default;
 			//CPlayerAttack(float reach, float width, float damage) : Reach(reach), Width(width), Damage(damage) { }
@@ -631,6 +638,8 @@ namespace Frosty
 			float pivot;
 
 			CHealthBar() = default;
+			CHealthBar(glm::vec3 barOffset)
+				:BarOffset(barOffset) {}
 			CHealthBar(glm::vec3 barOffset, std::shared_ptr<VertexArray> mesh, std::shared_ptr<Shader> shader, std::shared_ptr<Texture2D> tex)
 				: BarOffset(barOffset), Mesh(mesh), UseShader(shader), Texture(tex) {}
 			CHealthBar(const CHealthBar& org) { FY_CORE_ASSERT(false, "Copy constructor in CCollision called."); }

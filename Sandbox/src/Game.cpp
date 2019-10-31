@@ -1904,6 +1904,22 @@ private:
 
 };
 
+#include "Frosty/Events/CombatEvent.hpp"
+
+#include "Systems/CombatSystem.hpp"
+#include "Systems/EnemyAttackSystem.hpp"
+#include "Systems/ConsumablesSystem.hpp"
+#include "Systems/HealthBarSystem.hpp"
+#include "Systems/LightSystem.hpp"
+#include "Systems/SpawnSystem.hpp"
+#include "Systems/CameraSystem.hpp"
+#include "Systems/FollowSystem.hpp"
+#include "Systems/RenderSystem.hpp"
+#include "Systems/MovementSystem.hpp"
+#include "Systems/PlayerControllerSystem.hpp"
+#include "Systems/CollisionSystem.hpp"
+#include "Systems/PlayerAttackSystem.hpp"
+
 namespace MCS
 {
 	void generateTrees();
@@ -1917,7 +1933,7 @@ namespace MCS
 	{
 
 		auto& world = Application::Get().GetWorld();
-		std::srand((unsigned)std::time(0));
+		std::srand((unsigned)std::time(0)); //We already seed in main. We shouldn't seed twice
 		// Add systems
 		world->AddSystem<CameraSystem>();
 		world->AddSystem<LightSystem>();
@@ -1938,6 +1954,17 @@ namespace MCS
 		//world->InitiateComponent<Frosty::ECS::CTransform>();
 		//world->InitiateComponent<Frosty::ECS::CCamera>();
 		world->Start();
+
+
+
+
+		//auto& plane = world->CreateEntity();
+		//auto& planeTransform = world->GetComponent<Frosty::ECS::CTransform>(plane);
+		//planeTransform.Scale = glm::vec3(100.0f, 1.0f, 100.0f);
+		//world->AddComponent<Frosty::ECS::CMesh>(plane, Frosty::AssetManager::GetMesh("Plane"));
+		//auto& planeMat = world->AddComponent<Frosty::ECS::CMaterial>(plane, Frosty::AssetManager::GetShader("Texture2D"));
+		//planeMat.DiffuseTexture = Frosty::AssetManager::GetTexture2D("Brown Mud Diffuse");
+		//planeMat.TextureScale = 10.0f;
 		
 		//auto& light = world->CreateEntity();
 		//auto& lightTransform = world->GetComponent<Frosty::ECS::CTransform>(light);
@@ -1966,39 +1993,6 @@ namespace MCS
 		generateTrees();
 		generateBorders();
 		generatePlanes();
-
-		bool UI = true;
-		if (UI)
-		{
-			for (size_t i = 0; i < 3; i++)
-			{
-				//Endast Sprites en s� l�nge
-				auto& uiHeart1 = world->CreateEntity();
-				auto& uiHeart1Transform = world->GetComponent<Frosty::ECS::CTransform>(uiHeart1);
-				uiHeart1Transform.Position = glm::vec3(-0.9f + (i * 0.1), 0.9f, 0.0f);
-
-				uiHeart1Transform.Rotation = glm::vec3(90.0f, 0.0f, 0.0f);
-				uiHeart1Transform.Scale = glm::vec3(0.09f, 1.0f, 0.14f);
-				world->AddComponent<Frosty::ECS::CMesh>(uiHeart1, Frosty::AssetManager::GetMesh("Plane"));
-				auto& uiHeart1Mat = world->AddComponent<Frosty::ECS::CMaterial>(uiHeart1, Frosty::AssetManager::GetShader("UI"));
-				uiHeart1Mat.DiffuseTexture = Frosty::AssetManager::GetTexture2D("HeartFull");
-				if (i == 2)
-				{
-					uiHeart1Mat.DiffuseTexture = Frosty::AssetManager::GetTexture2D("Heart");
-				}
-			}
-
-			auto& uiHeart1 = world->CreateEntity();
-			auto& uiHeart1Transform = world->GetComponent<Frosty::ECS::CTransform>(uiHeart1);
-			uiHeart1Transform.Position = glm::vec3(-0.8f, -0.7f, 0.0f);
-
-			uiHeart1Transform.Rotation = glm::vec3(90.0f, 0.0f, 0.0f);
-			uiHeart1Transform.Scale = glm::vec3(0.2f, 1.0f, 0.3f);
-			world->AddComponent<Frosty::ECS::CMesh>(uiHeart1, Frosty::AssetManager::GetMesh("Plane"));
-			auto& uiHeart1Mat = world->AddComponent<Frosty::ECS::CMaterial>(uiHeart1, Frosty::AssetManager::GetShader("UI"));
-			uiHeart1Mat.DiffuseTexture = Frosty::AssetManager::GetTexture2D("Sword");
-
-		}
 
 		PushLayer(FY_NEW InspectorLayer());
 	}
@@ -2137,11 +2131,11 @@ namespace MCS
 		uint8_t mapLength = 192;
 		uint8_t mapDepth = 108;
 
-		float HB_Y_pos = 1;
+		float HB_Y_pos = 1.0f;
 		float HB_Y_scale = 100.0f;
-		float middleWidth = 0.5;
-		float middleDepth = 5;
-		float HitboxMapInflunce = 0.15;
+		float middleWidth = 0.5f;
+		float middleDepth = 5.0f;
+		float HitboxMapInflunce = 0.15f;
 
 
 		//Bot Hitbox
@@ -2253,31 +2247,36 @@ namespace MCS
 	{
 		auto& world = Frosty::Application::Get().GetWorld();
 
-		uint8_t mapLength = 192;
-		uint8_t mapDepth = 108;
+		uint8_t mapLength = 240;
+		uint8_t mapDepth = 200;
 
 		//Planes
 
 		auto& PlaneOne = world->CreateEntity();
 		auto& testTranform = world->GetComponent<Frosty::ECS::CTransform>(PlaneOne);
+		testTranform.Position.x = -24.0f;
 		testTranform.Scale = glm::vec3(mapLength, 1.0f, mapDepth);
 		world->AddComponent<Frosty::ECS::CMesh>(PlaneOne, Frosty::AssetManager::GetMesh("Plane"));
 		auto& testMaterial = world->AddComponent<Frosty::ECS::CMaterial>(PlaneOne, Frosty::AssetManager::GetShader("Texture2D"));
 		testMaterial.Albedo = glm::vec4(0.2f, 0.8f, 0.3f, 1.0f);
 		testMaterial.DiffuseTexture = Frosty::AssetManager::GetTexture2D("Brown Mud Diffuse");
+		testMaterial.TextureScale = glm::vec2(mapDepth / 10.0f, mapLength / 10.0f);
+		//testMaterial.TextureScale = glm::vec2(23.0f, 20.0f);
+
 
 
 
 		auto& PlaneTwo = world->CreateEntity();
 		auto& testTranformTwo = world->GetComponent<Frosty::ECS::CTransform>(PlaneTwo);
 		testTranformTwo.Scale = glm::vec3(mapLength, 1.0f, mapDepth);
-		testTranformTwo.Position = glm::vec3(mapLength, 0.0f, 0.0f);
+		testTranformTwo.Position = glm::vec3(192.0f, 0.0f, 0.0f);
 		world->AddComponent<Frosty::ECS::CMesh>(PlaneTwo, Frosty::AssetManager::GetMesh("Plane"));
 		auto& testMaterialTwo = world->AddComponent<Frosty::ECS::CMaterial>(PlaneTwo, Frosty::AssetManager::GetShader("Texture2D"));
 		testMaterialTwo.Albedo = glm::vec4(0.2f, 0.8f, 0.3f, 1.0f);
 		testMaterialTwo.DiffuseTexture = Frosty::AssetManager::GetTexture2D("Brown Mud Diffuse");
 		testMaterialTwo.NormalTexture = Frosty::AssetManager::GetTexture2D("Rusty Metal Normal");
 		testMaterialTwo.SpecularTexture = Frosty::AssetManager::GetTexture2D("Rusty Metal Normal");
+		testMaterialTwo.TextureScale = glm::vec2(mapDepth / 10.0f, mapLength / 10.0f);
 
 
 
@@ -2285,7 +2284,7 @@ namespace MCS
 
 		auto& PlaneThree = world->CreateEntity();
 		auto& testTranformThree = world->GetComponent<Frosty::ECS::CTransform>(PlaneThree);
-		testTranformThree.Position = glm::vec3(0.0f, -0.05f, 0.0f);
+		testTranformThree.Position = glm::vec3(0.0f, -0.10f, 0.0f);
 		testTranformThree.Scale = glm::vec3(1000.0f, 1.0f, 1000.0f);
 		world->AddComponent<Frosty::ECS::CMesh>(PlaneThree, Frosty::AssetManager::GetMesh("Plane"));
 		auto& testMaterialThree = world->AddComponent<Frosty::ECS::CMaterial>(PlaneThree, Frosty::AssetManager::GetShader("Texture2D"));
@@ -2370,3 +2369,7 @@ namespace MCS
 
 }
 
+/*
+HEAD is mine
+other is from remote
+*/
