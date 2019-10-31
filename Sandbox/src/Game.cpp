@@ -379,14 +379,14 @@ namespace MCS
 
 
 
-		//auto& PlaneThree = world->CreateEntity();
-		//auto& testTranformThree = world->GetComponent<Frosty::ECS::CTransform>(PlaneThree);
-		//testTranformThree.Position = glm::vec3(0.0f, -0.05f, 0.0f);
-		//testTranformThree.Scale = glm::vec3(1000.0f, 1.0f, 1000.0f);
-		//world->AddComponent<Frosty::ECS::CMesh>(PlaneThree, Frosty::AssetManager::GetMesh("Plane"));
-		//auto& testMaterialThree = world->AddComponent<Frosty::ECS::CMaterial>(PlaneThree, Frosty::AssetManager::GetShader("Texture2D"));
-		////testMaterial.Albedo = glm::vec4(0.2f, 0.8f, 0.3f, 1.0f);
-		//testMaterialThree.DiffuseTexture = Frosty::AssetManager::GetTexture2D("Brown Mud Diffuse");
+		auto& PlaneThree = world->CreateEntity();
+		auto& testTranformThree = world->GetComponent<Frosty::ECS::CTransform>(PlaneThree);
+		testTranformThree.Position = glm::vec3(0.0f, -0.10f, 0.0f);
+		testTranformThree.Scale = glm::vec3(1000.0f, 1.0f, 1000.0f);
+		world->AddComponent<Frosty::ECS::CMesh>(PlaneThree, Frosty::AssetManager::GetMesh("Plane"));
+		auto& testMaterialThree = world->AddComponent<Frosty::ECS::CMaterial>(PlaneThree, Frosty::AssetManager::GetShader("Texture2D"));
+		//testMaterial.Albedo = glm::vec4(0.2f, 0.8f, 0.3f, 1.0f);
+		testMaterialThree.DiffuseTexture = Frosty::AssetManager::GetTexture2D("Brown Mud Diffuse");
 
 
 	}
