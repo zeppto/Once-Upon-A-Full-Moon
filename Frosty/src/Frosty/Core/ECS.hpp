@@ -459,7 +459,7 @@ namespace Frosty
 
 			CLight() = default;
 			CLight(LightType lightType) : Type(lightType) { }
-			CLight(LightType lightType, float strength, glm::vec3 color, float radius) : Type(lightType), Strength(strength), Color(color), Radius(radius) { }
+			CLight(LightType lightType, float strength, float radius) : Type(lightType), Strength(strength), Radius(radius) { }
 			CLight(LightType lightType, float strength, glm::vec3 color) : Type(lightType), Strength(strength), Color(color) { }
 			CLight(const CLight& org) { FY_CORE_ASSERT(false, "Copy constructor in CLight called."); }
 

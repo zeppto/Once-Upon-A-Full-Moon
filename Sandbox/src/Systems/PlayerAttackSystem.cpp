@@ -34,8 +34,7 @@ void PlayerAttackSystem::OnInput()
 					m_PlayerAttack[i]->CurrTexture = 1;
 
 				}
-				else
-				{
+				else {
 					m_PlayerAttack[i]->IsMelee = true;
 					m_PlayerAttack[i]->CurrTexture = 0;
 				}
