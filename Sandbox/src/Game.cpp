@@ -446,23 +446,12 @@ namespace MCS
 
 	float randValue(int max, int min)
 	{
-
-
-
 		int dif = max - min;
 
 		float returnValue = std::rand() % dif;
 
 		returnValue += min;
 
-
 		return returnValue;
 	}
-
-
 }
-
-/*
-HEAD is mine
-other is from remote
-*/

@@ -16,28 +16,32 @@ namespace Frosty
 		return 0;
 	}
 
-	Shader::Shader(const std::string& filepath, const std::string& shaderName)
+	//Shader::Shader(const std::string& filepath, const std::string& shaderName)
+	//	: m_Name(shaderName)
+	//{
+	//	std::string source = ReadFile(filepath);
+	//	auto shaderSource = PreProcess(source);
+	//	Compile(shaderSource);
+
+	//	// Extract name from filepath
+	//	auto lastSlash = filepath.find_last_of("/\\");
+	//	lastSlash = lastSlash == std::string::npos ? 0 : lastSlash + 1;
+	//	auto lastDot = filepath.rfind('.');
+	//	auto count = lastDot == std::string::npos ? filepath.size() - lastSlash : lastDot - lastSlash;
+	//}
+
+	Shader::Shader(const std::string& vertexSrc, const std::string& fragmentSrc, const std::string& shaderName)
 		: m_Name(shaderName)
 	{
-		std::string source = ReadFile(filepath);
-		auto shaderSource = PreProcess(source);
-		Compile(shaderSource);
+		std::string vertexSource = ReadFile(vertexSrc);
+		std::string fragmentSource = ReadFile(fragmentSrc);
 
-		// Extract name from filepath
-		auto lastSlash = filepath.find_last_of("/\\");
-		lastSlash = lastSlash == std::string::npos ? 0 : lastSlash + 1;
-		auto lastDot = filepath.rfind('.');
-		auto count = lastDot == std::string::npos ? filepath.size() - lastSlash : lastDot - lastSlash;
+		std::unordered_map<GLenum, std::string> shaderSources;
+		shaderSources[GL_VERTEX_SHADER] = vertexSource;
+		shaderSources[GL_FRAGMENT_SHADER] = fragmentSource;
+
+		Compile(shaderSources);
 	}
-
-	/*Shader::Shader(const std::string& vertexSrc, const std::string& fragmentSrc, const std::string& shaderName)
-		: m_Name(shaderName)
-	{
-		std::unordered_map<GLenum, std::string> sources;
-		sources[GL_VERTEX_SHADER] = vertexSrc;
-		sources[GL_FRAGMENT_SHADER] = fragmentSrc;
-		Compile(sources);
-	}*/
 
 	Shader::~Shader()
 	{
@@ -259,18 +263,18 @@ namespace Frosty
 		m_Shaders[name] = shader;
 	}
 
-	std::shared_ptr<Shader> ShaderLibrary::Load(const std::string& filepath)
+	std::shared_ptr<Shader> ShaderLibrary::Load(const std::string& filepathVertex, const std::string& filepathFragment)
 	{
 		std::shared_ptr<Shader> shader;
-		shader.reset(FY_NEW Shader(filepath));
+		shader.reset(FY_NEW Shader(filepathVertex, filepathFragment));
 		Add(shader);
 		return shader;
 	}
 
-	std::shared_ptr<Shader> ShaderLibrary::Load(const std::string& name, const std::string& filepath)
+	std::shared_ptr<Shader> ShaderLibrary::Load(const std::string& name, const std::string& filepathVertex, const std::string& filepathFragment)
 	{
 		std::shared_ptr<Shader> shader;
-		shader.reset(FY_NEW Shader(filepath));
+		shader.reset(FY_NEW Shader(filepathVertex, filepathFragment));
 		Add(shader);
 		return shader;
 	}
