@@ -55,7 +55,7 @@ void SpawnSystem::OnUpdate()
 	{
 		SpawnPlayer();
 	}
-	else if ((p_Total - 2) < m_NrOfEnemies && (std::clock() - m_EnemySpawnTimer) >= 6000)
+	else if ((p_Total - 2) < m_NrOfEnemies && (std::clock() - m_EnemySpawnTimer) >= 2000)
 	{
 		SpawnEnemy();
 	}
@@ -214,9 +214,9 @@ void SpawnSystem::RemoveEnemyAt(size_t position)
 	FY_TRACE("TAG ON DEAD " + m_Tag[position]->TagName);
 	if (m_Tag[position]->TagName == "Enemy")
 	{
-		//ful fix (när en fiende dör av en pil försvinder båda vilket buggar spelet)
-		if (m_Health[position]->MaxHealth == 0)
-		{
+		////ful fix (när en fiende dör av en pil försvinder båda vilket buggar spelet)
+		//if (m_Health[position]->MaxHealth == 0)
+		//{
 			m_EnemySpawnTimer = float(std::clock());
 			m_KillCount++;
 			m_NrOfEnemies--;
@@ -227,9 +227,9 @@ void SpawnSystem::RemoveEnemyAt(size_t position)
 			}
 
 			world->RemoveEntity(m_Entity);
-		}
-		else
-			m_Health[position]->MaxHealth = 0;
+		//}
+		//else
+		//	m_Health[position]->MaxHealth = 0;
 	}
 	else
 	{
