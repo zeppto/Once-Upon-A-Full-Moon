@@ -10,6 +10,19 @@
 
 namespace Frosty
 {
+	struct AnimVert
+	{
+		float position[3] = { 0.0f };
+		float uv[2] = { 0.0f };
+		float normal[3] = { 0.0f };
+		float tangent[3] = { 0.0f };
+		float bitangent[3] = { 0.0f };
+
+		Luna::Weights weights;
+		Luna::Joint joints[4];
+
+	};
+
 	class AssetManager
 	{
 	protected:
@@ -39,6 +52,8 @@ namespace Frosty
 	private:
 		// Meshes
 		static void AddMesh(const std::string& name, const std::string& filepath);
+		static void AddAnimatedMesh(const std::string& name, const std::string& filepath);
+		static std::vector<AnimVert> MakeAnimVerts(Luna::Reader & tmpFile);
 
 		// Textures
 		static void LoadTexture2D(const std::string& name, const std::string& filepath);
