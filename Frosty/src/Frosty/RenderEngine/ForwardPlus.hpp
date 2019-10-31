@@ -8,8 +8,8 @@
 	3) Sort the information in three buffers;
 	   array of all lights, array representing cells with an offset + nrOflights, array which holds the lights that the cells are refering to	*/
 
-//#include "Frosty/API/Lights/LightManager.hpp"
-//#include "Frosty/Core/Camera/Camera.hpp"
+#include "Frosty/API/Lights/LightManager.hpp"
+#include "Frosty/Core/Camera/Camera.hpp"
 
 
 namespace Frosty

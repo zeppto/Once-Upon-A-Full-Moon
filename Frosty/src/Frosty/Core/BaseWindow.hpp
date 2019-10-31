@@ -2,6 +2,7 @@
 #define BASE_WINDOW_HPP
 
 #include <fypch.hpp>
+#include "Frosty/Core/Base.hpp"
 
 namespace Frosty
 {

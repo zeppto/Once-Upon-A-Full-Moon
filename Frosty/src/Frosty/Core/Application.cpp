@@ -339,7 +339,7 @@ void Application::InitPrefabBuffers()
 		//{
 		//	std::cout << "Options was clicked!!" << std::endl;
 		//}
-		if (e.GetKeyCode() == FY_KEY_M)
+		if (e.GetKeyCode() == GLFW_KEY_M)
 		{
 			/*states.GetActiveState()->OnInput();*/
 		}

@@ -12,7 +12,6 @@
 
 #include <fstream>
 
-
 #include <string>
 #include <sstream>
 #include <vector>
@@ -28,6 +27,6 @@
 
 #include <Frosty/Core/Base.hpp>
 #include <Frosty/Core/Log.hpp>
-#include <Frosty/Events/EventSystem.hpp>
-#include <Frosty/Core/Time.hpp>		// Remove
+#include <Frosty/Core/EventSystem.hpp>
+#include <Frosty/Core/Time.hpp>
 #endif

@@ -10,7 +10,8 @@ namespace Frosty
 
 	void Renderer::Init()
 	{
-		RenderCommand::Init();
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	}
 
 	void Renderer::BeginScene()
@@ -169,10 +170,6 @@ namespace Frosty
 			mat->UseShader->UploadUniformFloat4("u_ObjectColor", mat->Albedo);
 			mat->UseShader->UploadUniformFloat("u_SpecularStrength", mat->SpecularStrength);
 
-		}
-		else if (mat->UseShader->GetName() == "Texture2D")
-		{
-			mat->UseShader->UploadUniformFloat2("u_TextureCoordScale", mat->TextureScale);
 		}
 		vertexArray->Bind();
 		RenderCommand::Draw2D(vertexArray);
