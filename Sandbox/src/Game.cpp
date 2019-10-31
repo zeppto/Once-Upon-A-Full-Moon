@@ -83,16 +83,6 @@ namespace MCS
 		lightTransform2.Rotation = glm::vec3(-190.f, 8.f, -10.f);
 		world->AddComponent<Frosty::ECS::CLight>(light2, Frosty::ECS::CLight::LightType::Directional, 0.3f, glm::vec3(0.6f, 0.7f, 1.f));
 
-		auto& wall = world->CreateEntity();
-		auto& wallTransform = world->GetComponent<Frosty::ECS::CTransform>(wall);
-		wallTransform.Position = glm::vec3(7.0f, 5.0f, 0.0f);
-		wallTransform.Scale = glm::vec3(1.0f, 10.0f, 10.0f);
-		world->AddComponent<Frosty::ECS::CMesh>(wall, Frosty::AssetManager::GetMesh("Cube"));
-		world->AddComponent<Frosty::ECS::CMaterial>(wall, Frosty::AssetManager::GetShader("FlatColor"));
-		world->AddComponent<Frosty::ECS::CMotion>(wall, 5.0f);
-		world->AddComponent<Frosty::ECS::CCollision>(wall, Frosty::AssetManager::GetBoundingBox("Cube"));
-		auto& UIhealth = world->AddComponent<Frosty::ECS::CHealthBar>(wall);
-
 		generateTrees();
 		generateBorders();
 		generatePlanes();
