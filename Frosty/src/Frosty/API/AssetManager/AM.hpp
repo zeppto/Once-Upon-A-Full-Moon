@@ -12,6 +12,11 @@
 #define FILE_TYPE_PNG "png"
 #define FILE_TYPE_LUNA "lu"
 #define FILE_TYPE_TTF "ttf"
+#define FILE_TYPE_TGA "tga"
+#define FILE_TYPE_GLSL "glsl"
+
+#define MAT_NAME "Mat_" //(followed by a number)
+#define MAT_NAME_FOLLOW ":"
 
 namespace Frosty
 {
@@ -22,7 +27,9 @@ namespace Frosty
 		JPG,
 		PNG,
 		LUNA,
-		TTFF
+		TTFF,
+		TGA,
+		GLSL
 	};
 
 
@@ -39,32 +46,26 @@ namespace Frosty
 		static uint16_t s_Failed_Loading_Attempts;
 		static uint16_t s_Success_Loading_Attempts;
 
-		//Not able to use shared here
-		//static std::unordered_map<std::string, std::shared_ptr<AssetFile>>  s_Assets;
-
 		static std::unordered_map<std::string, Mesh> s_Meshes;
 		static std::unordered_map<std::string, Animation> s_Animaions;
 		static std::unordered_map<std::string, TextureFile> s_Textures;
 		static std::unordered_map<std::string, LinkedMaterial> s_LinkedMaterials;
 
+		static std::unordered_map <FileType, std::list<TextureFile*>> s_TextureWatchList;
+
 		static std::vector<std::string> s_FilePath_Vector;
 
-		////was not allowed to itterate the unorderedmap
-		//static std::vector<std::string> s_MeshNames;
-		//static std::vector<std::string> s_AnimationsNames;
-		//static std::vector<std::string> s_TexturesNames;
-		//static std::vector<std::string> s_MaterialNames;
-
-
+		static bool s_AutoLoad;
 
 		friend class Application;
+		using directory_iterator = std::filesystem::directory_iterator;
 
 	public:		//Functions
 
 		static Assetmanager* Get();
 		~Assetmanager();
 
-		bool LoadFile(const std::string& FullFilePath, const std::string& PreFab_Name = "");
+		bool LoadFile(const std::string& FullFilePath, const std::string& TagName = "");
 		void LoadFiles();
 
 		void PrintLoadInfo() const;
@@ -95,8 +96,7 @@ namespace Frosty
 
 		inline static void Delete() { if (s_Instance != nullptr) { delete s_Instance; } }
 
-		bool ConnectMaterialWithTexture(LinkedMaterial& Material, const FileMetaData& MetaData);
-		bool LoadMaterialTextures(LinkedMaterial*& Material);
+		inline static void AddTexPtrToWatchList(const FileType& type, TextureFile*& ref) { s_TextureWatchList[type].emplace_back(ref);}
 
 		static bool FileLoaded(const std::string& FilePath);
 		static bool AssetLoaded(const std::string& AssetName);
@@ -112,10 +112,12 @@ namespace Frosty
 		bool GetFileInformation(FileMetaData& FileNameInformation);
 		int8_t GetFileType(const std::string& fileType) const;
 
+		void LoadDir(const std::string& dir);
+		void InitWatchList();
 
-		const std::string CutFileExtentionFromString(const char* in_char_ptr);
 
-
+		const std::string CutFileName(const char* in_char_ptr);
+		const std::string CutFileExtention(const char* in_char_ptr);
 
 	};
 

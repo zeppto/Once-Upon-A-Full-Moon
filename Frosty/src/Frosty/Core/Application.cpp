@@ -4,7 +4,7 @@
 #include "Frosty/RenderEngine/Renderer.hpp"
 #include "Frosty/API/AssetManager.hpp"
 #include "Frosty/Core/KeyCodes.h"
-//#include"Frosty/API/AssetManager/AM.hpp"
+#include"Frosty/API/AssetManager/AM.hpp"
 
 //Particle Branch Includes
 #include "Frosty/RenderEngine/VertexArray.hpp"
@@ -16,11 +16,14 @@ namespace Frosty
 	
 	Application::Application()
 	{
+
 		Log::Init();
 		FY_CORE_INFO("Logger initialized..");
 
 		FY_CORE_ASSERT(!s_Instance, "Application already exists!");
 		s_Instance = this;
+
+
 
 		EventBus::GetEventBus()->Subscribe<Application, BaseEvent>(this, &Application::OnEvent);
 
@@ -57,8 +60,12 @@ namespace Frosty
 		//	FY_CORE_ERROR("Could not load shader source.");
 		//}
 		MotherLoader::GetMotherLoader()->LoadFiles();
+		*/
+		Assetmanager::Get()->LoadFiles();
 
-		Assetmanager::GetAssetmanager()->LoadFile(m_particleSystem->GetTexturePath()); //Test*/
+		Assetmanager::GetTexture();
+
+
 	}
 
 	Application::~Application()
