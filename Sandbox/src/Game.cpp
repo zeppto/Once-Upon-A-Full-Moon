@@ -74,18 +74,14 @@ namespace MCS
 		// Night Light
 		auto& light = world->CreateEntity();
 		auto& lightTransform = world->GetComponent<Frosty::ECS::CTransform>(light);
-		lightTransform.Rotation = glm::vec3(60.0f, 0.0f, -10.0f);
-		world->AddComponent<Frosty::ECS::CLight>(light, Frosty::ECS::CLight::LightType::Directional, 0.6f, glm::vec3(0.8f, 0.9f, 1.f));
+		lightTransform.Rotation = glm::vec3(120.f, 8.f, -10.f);
+		world->AddComponent<Frosty::ECS::CLight>(light, Frosty::ECS::CLight::LightType::Directional, 0.9f, glm::vec3(0.6f, 0.7f, 1.f));
 
-		auto& wall = world->CreateEntity();
-		auto& wallTransform = world->GetComponent<Frosty::ECS::CTransform>(wall);
-		wallTransform.Position = glm::vec3(7.0f, 5.0f, 0.0f);
-		wallTransform.Scale = glm::vec3(1.0f, 10.0f, 10.0f);
-		world->AddComponent<Frosty::ECS::CMesh>(wall, Frosty::AssetManager::GetMesh("Cube"));
-		world->AddComponent<Frosty::ECS::CMaterial>(wall, Frosty::AssetManager::GetShader("FlatColor"));
-		world->AddComponent<Frosty::ECS::CMotion>(wall, 5.0f);
-		world->AddComponent<Frosty::ECS::CCollision>(wall, Frosty::AssetManager::GetBoundingBox("Cube"));
-		auto& UIhealth = world->AddComponent<Frosty::ECS::CHealthBar>(wall);
+		// Night Light (makeshift reflection)
+		auto& light2 = world->CreateEntity();
+		auto& lightTransform2 = world->GetComponent<Frosty::ECS::CTransform>(light2);
+		lightTransform2.Rotation = glm::vec3(-190.f, 8.f, -10.f);
+		world->AddComponent<Frosty::ECS::CLight>(light2, Frosty::ECS::CLight::LightType::Directional, 0.3f, glm::vec3(0.6f, 0.7f, 1.f));
 
 		generateTrees();
 		generateBorders();
@@ -450,23 +446,12 @@ namespace MCS
 
 	float randValue(int max, int min)
 	{
-
-
-
 		int dif = max - min;
 
 		float returnValue = std::rand() % dif;
 
 		returnValue += min;
 
-
 		return returnValue;
 	}
-
-
 }
-
-/*
-HEAD is mine
-other is from remote
-*/

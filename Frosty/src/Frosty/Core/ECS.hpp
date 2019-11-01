@@ -459,7 +459,7 @@ namespace Frosty
 
 			CLight() = default;
 			CLight(LightType lightType) : Type(lightType) { }
-			CLight(LightType lightType, float strength, float radius) : Type(lightType), Strength(strength), Radius(radius) { }
+			CLight(LightType lightType, float strength, glm::vec3 color, float radius) : Type(lightType), Strength(strength), Color(color), Radius(radius) { }
 			CLight(LightType lightType, float strength, glm::vec3 color) : Type(lightType), Strength(strength), Color(color) { }
 			CLight(const CLight& org) { FY_CORE_ASSERT(false, "Copy constructor in CLight called."); }
 
@@ -591,6 +591,40 @@ namespace Frosty
 			virtual void Func() override { }
 		};
 
+
+		struct CCharacterState : public BaseComponent
+		{
+			static std::string NAME;
+
+			/*
+			Note: More states can be added but avoid changing first and last location in the enums
+			*/
+
+			// Basic states characters in the game can find themselves in
+			enum CharacterStates {
+				IDLE, // If we want player or enemy standing still
+				WALKING,
+				ATTACKING,
+				DODGING, // Exclusive to player
+				DEAD,
+				C_COUNT
+			} m_CharacterState; // Object reference
+
+			// Possible states related to character attributes
+			enum CharacterAttributeStates {
+				CHARACTER_NOATTRIBUTE,
+				CHARACTER_INVINCIBLE, // When player is invincible, cannot take any damage of any kind while this is active
+				CA_COUNT
+			} m_CharacterAttributeState; // Object reference
+
+			CCharacterState() = default;
+			CCharacterState(CharacterStates m_CharacterState, CharacterAttributeStates m_CharacterAttributeState) :
+				m_CharacterState(m_CharacterState), m_CharacterAttributeState(m_CharacterAttributeState) { }
+			CCharacterState(const CCharacterState& org) { FY_CORE_ASSERT(false, "Copy constructor in CCharacterState called."); }
+
+			virtual void Func() override { }
+		};
+
 		struct CHealthBar : public BaseComponent
 		{
 			static std::string NAME;
@@ -609,8 +643,6 @@ namespace Frosty
 			CHealthBar(glm::vec3 barOffset, std::shared_ptr<VertexArray> mesh, std::shared_ptr<Shader> shader, std::shared_ptr<Texture2D> tex)
 				: BarOffset(barOffset), Mesh(mesh), UseShader(shader), Texture(tex) {}
 			CHealthBar(const CHealthBar& org) { FY_CORE_ASSERT(false, "Copy constructor in CCollision called."); }
-
-
 
 			virtual void Func() override { }
 		};
@@ -632,8 +664,8 @@ namespace Frosty
 			case 10:	return "Health";
 			case 11:	return "Tag";
 			case 12:	return "Consumables";
-			case 13:	return "HealthBar";
-
+			case 13:	return "CharacterState";
+			case 14:	return "HealthBar";
 			default:	return "";
 			}
 		}
