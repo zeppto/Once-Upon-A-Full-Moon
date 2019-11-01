@@ -9,9 +9,10 @@ namespace Frosty
 
 	class ArrowHitEvent : public BaseEvent
 	{
-		ArrowHitEvent(std::shared_ptr<ECS::Entity> attack) { }
+	public:
+		ArrowHitEvent(const std::shared_ptr<ECS::Entity> attack) : m_Attacker(attack) { }
 
-		std::shared_ptr<ECS::Entity> getAttack() { return m_Attacker; };
+		std::shared_ptr<ECS::Entity> getAttack() { return m_Attacker;  }
 
 		EVENT_TYPE(ArrowHit)
 
@@ -22,13 +23,41 @@ namespace Frosty
 
 	class NormalAttackEvent : public BaseEvent
 	{
-		NormalAttackEvent() { }
+	public:
+		NormalAttackEvent(const std::shared_ptr<ECS::Entity> player) : m_Player(player) { }
 
-		EVENT_TYPE(ArrowHit)
+		std::shared_ptr<ECS::Entity> getPlayer() { return m_Player; }
+
+		EVENT_TYPE(NormalHit)
 
 	private:
-		std::shared_ptr<ECS::Entity> m_Attacker;
+		std::shared_ptr<ECS::Entity> m_Player;
+	};
 
+	class AreaAttackEvent : public BaseEvent
+	{
+	public:
+		AreaAttackEvent(const std::shared_ptr<ECS::Entity> player) : m_Player(player) { }
+
+		std::shared_ptr<ECS::Entity> getPlayer() { return m_Player; }
+
+		EVENT_TYPE(AreaHit)
+
+	private:
+		std::shared_ptr<ECS::Entity> m_Player;
+	};
+
+	class StrongAttackEvent : public BaseEvent
+	{
+	public:
+		StrongAttackEvent(const std::shared_ptr<ECS::Entity> player) : m_Player(player) { }
+
+		std::shared_ptr<ECS::Entity> getPlayer() { return m_Player; }
+
+		EVENT_TYPE(StrongHit)
+
+	private:
+		std::shared_ptr<ECS::Entity> m_Player;
 	};
 }
 

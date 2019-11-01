@@ -1,13 +1,15 @@
 #include <fypch.hpp>
 #include <mcspch.hpp>
 #include "PlayerControllerSystem.hpp"
-#include "Frosty/Events/CombatEvent.hpp"
 
 void PlayerControllerSystem::Init()
 {
 	p_Signature.set(Frosty::ECS::getComponentTypeID<Frosty::ECS::CController>(), true);
 	p_Signature.set(Frosty::ECS::getComponentTypeID<Frosty::ECS::CMotion>(), true);
 	p_Signature.set(Frosty::ECS::getComponentTypeID<Frosty::ECS::CPlayerAttack>(), true);
+
+	//Frosty::EventBus::GetEventBus()->Subscribe<PlayerControllerSystem, Frosty::BaseEvent>(this, &PlayerControllerSystem::OnEvent);
+
 }
 
 void PlayerControllerSystem::OnInput()
@@ -78,6 +80,7 @@ void PlayerControllerSystem::OnInput()
 
 		//attack controlls
 		//attack
+		//normal attack 
 		if (Frosty::InputManager::IsMouseButtonReleased(FY_MOUSE_BUTTON_LEFT))
 		{
 			//to prevent attacks if the player never releses the butten
@@ -85,10 +88,35 @@ void PlayerControllerSystem::OnInput()
 		}
 		if (Frosty::InputManager::IsMouseButtonPressed(FY_MOUSE_BUTTON_LEFT) && m_CanAttackNormal && m_PlayerAttack[i]->Cooldown > 0.0f)
 		{
-			Frosty::EventBus::GetEventBus()->Publish<Frosty::ArrowHitEvent>(Frosty::ArrowHitEvent(m_PlayerAttack[i]->EntityPtr));
+			m_CanAttackNormal = false;
+			//sends the player to make the attack
+			Frosty::EventBus::GetEventBus()->Publish<Frosty::NormalAttackEvent>(Frosty::NormalAttackEvent(m_PlayerAttack[i]->EntityPtr));
+		}
+		//area attack
+		if (Frosty::InputManager::IsMouseButtonReleased(FY_MOUSE_BUTTON_RIGHT))
+		{
+			m_CanAttackArea = true;
+		}
+		if (Frosty::InputManager::IsMouseButtonPressed(FY_MOUSE_BUTTON_RIGHT) && m_CanAttackArea && m_PlayerAttack[i]->Cooldown > 0.0f)
+		{
+			m_CanAttackArea = false;
+			//sends the player to make the attack
+			Frosty::EventBus::GetEventBus()->Publish<Frosty::AreaAttackEvent>(Frosty::AreaAttackEvent(m_PlayerAttack[i]->EntityPtr));
+		}
+		//strong attack
+		if (Frosty::InputManager::IsKeyReleased(FY_KEY_SPACE))
+		{
+			m_CanAttackStrong = true;
+		}
+		if (Frosty::InputManager::IsKeyPressed(FY_KEY_SPACE) && m_CanAttackStrong && m_PlayerAttack[i]->Cooldown > 0.0f)
+		{
+			m_CanAttackStrong = false;
+			//sends the player to make the attack
+			Frosty::EventBus::GetEventBus()->Publish<Frosty::StrongAttackEvent>(Frosty::StrongAttackEvent(m_PlayerAttack[i]->EntityPtr));
 		}
 	}
 }
+
 
 void PlayerControllerSystem::OnUpdate()
 {

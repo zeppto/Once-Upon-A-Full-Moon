@@ -37,7 +37,7 @@ void MovementSystem::OnUpdate()
 
 			for (size_t j = 1; j < p_Total; j++)
 			{
-				if (j != i)
+				if (j != i && m_Tag[j]->TagName != "arrow")
 				{
 					//temp
 					if (m_Tag[i]->TagName != m_Tag[j]->TagName || m_Tag[i]->TagName == "Enemy")

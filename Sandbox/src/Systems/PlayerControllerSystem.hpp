@@ -1,6 +1,7 @@
 #ifndef PLAYER_CONTROLLER_SYSTEM_HPP
 #define PLAYER_CONTROLLER_SYSTEM_HPP
 #include "Frosty.h"
+#include "Frosty/Events/CombatEvent.hpp"
 
 class PlayerControllerSystem : public Frosty::ECS::BaseSystem
 {
