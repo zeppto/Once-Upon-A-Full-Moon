@@ -9,7 +9,20 @@ namespace Frosty
 
 	class ArrowHitEvent : public BaseEvent
 	{
-		ArrowHitEvent() { }
+		ArrowHitEvent(std::shared_ptr<ECS::Entity> attack) { }
+
+		std::shared_ptr<ECS::Entity> getAttack() { return m_Attacker; };
+
+		EVENT_TYPE(ArrowHit)
+
+	private:
+		std::shared_ptr<ECS::Entity> m_Attacker;
+
+	};
+
+	class NormalAttackEvent : public BaseEvent
+	{
+		NormalAttackEvent() { }
 
 		EVENT_TYPE(ArrowHit)
 

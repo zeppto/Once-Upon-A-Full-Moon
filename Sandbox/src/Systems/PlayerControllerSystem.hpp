@@ -29,6 +29,12 @@ private:
 	std::array<Frosty::ECS::CTransform*, Frosty::ECS::MAX_ENTITIES_PER_COMPONENT> m_Transform;
 	std::array<Frosty::ECS::CController*, Frosty::ECS::MAX_ENTITIES_PER_COMPONENT> m_Controller;
 	std::array<Frosty::ECS::CMotion*, Frosty::ECS::MAX_ENTITIES_PER_COMPONENT> m_Motion;
+	std::array<Frosty::ECS::CPlayerAttack*, Frosty::ECS::MAX_ENTITIES_PER_COMPONENT> m_PlayerAttack;
+
+	//to prevent attacks if the player never releses the butten
+	bool m_CanAttackNormal = true;
+	bool m_CanAttackArea = true;
+	bool m_CanAttackStrong = true;
 };
 
 #endif // !PLAYER_CONTROLLER_SYSTEM_HPP

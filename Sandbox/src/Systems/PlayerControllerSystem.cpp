@@ -1,11 +1,13 @@
 #include <fypch.hpp>
 #include <mcspch.hpp>
 #include "PlayerControllerSystem.hpp"
+#include "Frosty/Events/CombatEvent.hpp"
 
 void PlayerControllerSystem::Init()
 {
 	p_Signature.set(Frosty::ECS::getComponentTypeID<Frosty::ECS::CController>(), true);
 	p_Signature.set(Frosty::ECS::getComponentTypeID<Frosty::ECS::CMotion>(), true);
+	p_Signature.set(Frosty::ECS::getComponentTypeID<Frosty::ECS::CPlayerAttack>(), true);
 }
 
 void PlayerControllerSystem::OnInput()
@@ -73,6 +75,18 @@ void PlayerControllerSystem::OnInput()
 				}
 			}
 		}
+
+		//attack controlls
+		//attack
+		if (Frosty::InputManager::IsMouseButtonReleased(FY_MOUSE_BUTTON_LEFT))
+		{
+			//to prevent attacks if the player never releses the butten
+			m_CanAttackNormal = true;
+		}
+		if (Frosty::InputManager::IsMouseButtonPressed(FY_MOUSE_BUTTON_LEFT) && m_CanAttackNormal && m_PlayerAttack[i]->Cooldown > 0.0f)
+		{
+			Frosty::EventBus::GetEventBus()->Publish<Frosty::ArrowHitEvent>(Frosty::ArrowHitEvent(m_PlayerAttack[i]->EntityPtr));
+		}
 	}
 }
 
@@ -91,6 +105,7 @@ void PlayerControllerSystem::AddComponent(const std::shared_ptr<Frosty::ECS::Ent
 		m_Transform[p_Total] = &world->GetComponent<Frosty::ECS::CTransform>(entity);
 		m_Controller[p_Total] = &world->GetComponent<Frosty::ECS::CController>(entity);
 		m_Motion[p_Total] = &world->GetComponent<Frosty::ECS::CMotion>(entity);
+		m_PlayerAttack[p_Total] = &world->GetComponent<Frosty::ECS::CPlayerAttack>(entity);
 
 		p_Total++;
 	}
@@ -106,6 +121,7 @@ void PlayerControllerSystem::RemoveEntity(const std::shared_ptr<Frosty::ECS::Ent
 		m_Transform[p_Total] = nullptr;
 		m_Controller[p_Total] = nullptr;
 		m_Motion[p_Total] = nullptr;
+		m_PlayerAttack[p_Total] = nullptr;
 
 		if (p_Total > 1)
 		{
