@@ -706,3 +706,35 @@ namespace Frosty
 }
 
 #endif // !ECS_HPP
+
+
+/*
+struct CItem : public BaseComponent
+{
+
+};
+
+struct CArmor : public CItem
+{
+
+};
+
+struct CConsumables : public CItem
+{
+
+};
+
+struct CFood : public CConsumables
+{
+
+};
+
+struct CGooseOmelette : public CFood
+{
+	// This gives you increase of max hp
+};
+
+struct CPorkOmelette : public CFood
+{
+	// Gives you ms
+};*/
