@@ -45,6 +45,7 @@ namespace MCS
 		world->AddSystem<ConsumablesSystem>();
 		world->AddSystem<CombatSystem>();
 		world->AddSystem<HealthBarSystem>();
+		world->AddSystem<ArrowSystem>();
 
 		// Add components
 
