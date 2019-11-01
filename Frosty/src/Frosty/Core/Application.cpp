@@ -61,9 +61,37 @@ namespace Frosty
 		//}
 		MotherLoader::GetMotherLoader()->LoadFiles();
 		*/
+
+
+
+
 		Assetmanager::Get()->LoadFiles();
 
-		Assetmanager::GetTexture();
+		//std::unordered_map<std::string, LinkedMaterial>::iterator it = Assetmanager::GetMaterialMap()->begin();
+
+		//while (it != Assetmanager::GetMaterialMap()->end())
+		//{
+		//	FY_CORE_INFO("Mat: {0}", it->first);
+
+		//	if (it->second.GetDiffuse() != nullptr)
+		//	{
+		//	FY_CORE_INFO("Has Dif");
+		//	}
+		//	if (it->second.GetNormal() != nullptr)
+		//	{
+		//		FY_CORE_INFO("Has Norm");
+		//	}
+		//	if (it->second.GetGlow() != nullptr)
+		//	{
+		//		FY_CORE_INFO("Has Glow");
+		//	}
+		//	it++;
+		//}
+
+
+
+
+
 
 
 	}

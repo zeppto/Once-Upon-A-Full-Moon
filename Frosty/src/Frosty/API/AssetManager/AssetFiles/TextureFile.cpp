@@ -33,7 +33,10 @@ namespace Frosty
 
 		if (!m_OnMem || Reload)
 		{
-			DeleteFromMem();
+			if (m_OnMem)
+			{
+				DeleteFromMem();
+			}
 			m_ImageData = stbi_load((m_MetaData.FullFilePath.c_str()), &m_Image_Width, &m_Image_Height, &m_Components, STBI_rgb_alpha);
 
 			if (m_ImageData != nullptr)
@@ -88,7 +91,7 @@ namespace Frosty
 
 			returnValue = true;
 			glGenTextures(1, &m_GPU_Data_ID);
-			glActiveTexture(m_GPU_Data_ID);
+		//	glActiveTexture(m_GPU_Data_ID);
 			glBindTexture(GL_TEXTURE_2D, m_GPU_Data_ID);
 
 			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, m_Image_Width, m_Image_Height, 0, GL_RGBA, GL_UNSIGNED_BYTE, m_ImageData);

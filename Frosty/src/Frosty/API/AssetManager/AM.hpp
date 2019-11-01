@@ -51,7 +51,7 @@ namespace Frosty
 		static std::unordered_map<std::string, TextureFile> s_Textures;
 		static std::unordered_map<std::string, LinkedMaterial> s_LinkedMaterials;
 
-		static std::unordered_map <FileType, std::list<TextureFile*>> s_TextureWatchList;
+		static std::unordered_map <std::string, std::list<TextureFile**>> s_TextureWatchList;
 
 		static std::vector<std::string> s_FilePath_Vector;
 
@@ -83,8 +83,6 @@ namespace Frosty
 
 		static bool AddAnimation(Animation& Animation);
 
-		//If wanted/needed make declarations in cpp
-
 		inline static Mesh* GetMesh(const std::string& MeshName) { return  MeshLoaded(MeshName) ? &s_Meshes[MeshName] : nullptr; }
 		inline static TextureFile* GetTexture(const std::string& FileName) { return  TextureLoaded(FileName) ? &s_Textures[FileName] : nullptr; }
 		inline static Animation* GetAnimation(const std::string& AnimationName) { return  AnimationLoaded(AnimationName) ? &s_Animaions[AnimationName] : nullptr; }
@@ -92,11 +90,17 @@ namespace Frosty
 
 
 
+		inline static std::unordered_map<std::string, Mesh>* GetMeshMap() { return  &s_Meshes; }
+		inline static std::unordered_map<std::string, Animation>* GetAnimationMap() { return &s_Animaions;}
+		inline static std::unordered_map<std::string, TextureFile>* GetTextureMap () { return &s_Textures;}
+		inline static std::unordered_map<std::string, LinkedMaterial>* GetMaterialMap() { return &s_LinkedMaterials; }
+
+
 	private:	//Functions
 
 		inline static void Delete() { if (s_Instance != nullptr) { delete s_Instance; } }
 
-		inline static void AddTexPtrToWatchList(const FileType& type, TextureFile*& ref) { s_TextureWatchList[type].emplace_back(ref);}
+		inline static void AddTexPtrToWatchList(const std::string& fileName, TextureFile*& ref) { s_TextureWatchList[fileName].emplace_back(&ref); }
 
 		static bool FileLoaded(const std::string& FilePath);
 		static bool AssetLoaded(const std::string& AssetName);
@@ -113,7 +117,7 @@ namespace Frosty
 		int8_t GetFileType(const std::string& fileType) const;
 
 		void LoadDir(const std::string& dir);
-		void InitWatchList();
+		void ConnectWatchList();
 
 
 		const std::string CutFileName(const char* in_char_ptr);
