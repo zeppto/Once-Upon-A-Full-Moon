@@ -23,6 +23,7 @@ namespace Frosty
 		s_Instance = this;
 
 		EventBus::GetEventBus()->Subscribe<Application, BaseEvent>(this, &Application::OnEvent);
+		EventBus::GetEventBus()->Subscribe<Application, MouseMovedEvent>(this, &Application::OnMouseMovedEvent);
 
 		//m_Window.reset(FY_NEW Window());
 		m_Window.reset(BaseWindow::Create());

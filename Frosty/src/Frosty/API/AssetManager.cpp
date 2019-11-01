@@ -12,8 +12,6 @@ namespace Frosty
 	void AssetManager::Init()
 	{
 		// Move all this code later out to front-end
-		//AddMesh("Clock", "assets/models/clock/clock.lu");
-		//AddMesh("Table", "assets/models/table/table.lu");
 
 		AddMesh("Plane", "assets/primitives/plane/plane.lu");
 		AddMesh("Sphere", "assets/primitives/sphere/sphere.lu");
@@ -42,9 +40,6 @@ namespace Frosty
 		s_Shaders.emplace("Texture2D", FY_NEW Shader("assets/shaders/Texture2D.glsl", "Texture2D"));
 		s_Shaders.emplace("UI", FY_NEW Shader("assets/shaders/UI.glsl", "UI"));
 
-		LoadTexture2D("Clock Diffuse", "assets/textures/clock_diffuse.png");
-		//LoadTexture2D("Clock Normal", "assets/textures/clock_normal.png");
-		//LoadTexture2D("Clock Specular", "assets/textures/clock_specular.png");
 		LoadTexture2D("Table Diffuse", "assets/textures/polySurface15_diffuse.png");
 		LoadTexture2D("Brown Mud Diffuse", "assets/textures/brown_mud_diffuse.png");
 		LoadTexture2D("Checkerboard", "assets/textures/Checkerboard.png");
@@ -52,8 +47,6 @@ namespace Frosty
 		LoadTexture2D("Rusty Metal Normal", "assets/textures/rusty_metal_normal.png");
 		LoadTexture2D("Rusty Metal Specular", "assets/textures/rusty_metal_specular.png");
 		LoadTexture2D("Forest Ground", "assets/textures/forest_ground.jpg");
-		//LoadTexture2D("Normal Test", "assets/textures/cube_normal.png");					// TEMPORARY
-		//LoadTexture2D("Cherno Logo", "assets/textures/ChernoLogo.png");					// TEMPORARY
 		LoadTexture2D("Heart", "assets/textures/heart.png");
 		LoadTexture2D("HeartFull", "assets/textures/heartFull.png");
 		LoadTexture2D("Sword", "assets/textures/sword.jpg");
@@ -128,6 +121,7 @@ namespace Frosty
 
 	void AssetManager::LoadTexture2D(const std::string& name, const std::string& filepath)
 	{
+		FY_CORE_TRACE("{0}", sizeof(Texture2D));
 		s_Textures2D.emplace(name, FY_NEW Texture2D(name, filepath));
 	}
 
