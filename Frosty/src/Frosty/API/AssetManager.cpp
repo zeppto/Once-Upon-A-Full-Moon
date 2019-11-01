@@ -12,8 +12,6 @@ namespace Frosty
 	void AssetManager::Init()
 	{
 		// Move all this code later out to front-end
-		//AddMesh("Clock", "assets/models/clock/clock.lu");
-		//AddMesh("Table", "assets/models/table/table.lu");
 
 		AddMesh("Plane", "assets/primitives/plane/plane.lu");
 		AddMesh("Sphere", "assets/primitives/sphere/sphere.lu");
@@ -25,6 +23,7 @@ namespace Frosty
 		AddMesh("Cone", "assets/primitives/cone/cone.lu");
 		AddMesh("3D", "assets/primitives/3D/3D.lu");
 		AddMesh("CharTest", "assets/models/character_test/char_test.lu");
+		AddMesh("Scarlet", "assets/models/Scarlet_static/Scarlet_static.lu");
 
 		AddMesh("Tree1", "assets/models/trees/tree1.lu");
 		AddMesh("Tree2", "assets/models/trees/tree2.lu");
@@ -37,13 +36,14 @@ namespace Frosty
 		AddMesh("Tree9", "assets/models/trees/tree9.lu");
 		AddMesh("Tree10", "assets/models/trees/tree10.lu");
 
-		s_Shaders.emplace("FlatColor", FY_NEW Shader("assets/shaders/FlatColor.glsl", "FlatColor"));
-		s_Shaders.emplace("Texture2D", FY_NEW Shader("assets/shaders/Texture2D.glsl", "Texture2D"));
-		s_Shaders.emplace("UI", FY_NEW Shader("assets/shaders/UI.glsl", "UI"));
+		s_Shaders.emplace("FlatColor", FY_NEW Shader("assets/shaders/FlatColorVertex.glsl", "assets/shaders/FlatColorFragment.glsl", "FlatColor"));
+		s_Shaders.emplace("Texture2D", FY_NEW Shader("assets/shaders/Texture2DVertex.glsl", "assets/shaders/Texture2DFragment.glsl", "Texture2D"));
+		s_Shaders.emplace("UI", FY_NEW Shader("assets/shaders/UIVertex.glsl","assets/shaders/UIFragment.glsl", "UI"));
+		s_Shaders.emplace("Particles", FY_NEW Shader("assets/shaders/ParticleVertex.glsl", "assets/shaders/ParticleGeometry.glsl", "assets/shaders/ParticleFragment.glsl", "Particles"));
+		
+		//Don't try to apply a compute shader as a material! This might have to be separate from normal shaders just to avoid confusion.
+		s_Shaders.emplace("ParticleCompute", FY_NEW Shader("assets/shaders/ParticleCompute.glsl", "ParticleCompute"));
 
-		LoadTexture2D("Clock Diffuse", "assets/textures/clock_diffuse.png");
-		LoadTexture2D("Clock Normal", "assets/textures/clock_normal.png");
-		LoadTexture2D("Clock Specular", "assets/textures/clock_specular.png");
 		LoadTexture2D("Table Diffuse", "assets/textures/polySurface15_diffuse.png");
 		LoadTexture2D("Brown Mud Diffuse", "assets/textures/brown_mud_diffuse.png");
 		LoadTexture2D("Checkerboard", "assets/textures/Checkerboard.png");
@@ -51,12 +51,14 @@ namespace Frosty
 		LoadTexture2D("Rusty Metal Normal", "assets/textures/rusty_metal_normal.png");
 		LoadTexture2D("Rusty Metal Specular", "assets/textures/rusty_metal_specular.png");
 		LoadTexture2D("Forest Ground", "assets/textures/forest_ground.jpg");
-		LoadTexture2D("Normal Test", "assets/textures/cube_normal.png");					// TEMPORARY
-		LoadTexture2D("Cherno Logo", "assets/textures/ChernoLogo.png");						// TEMPORARY
 		LoadTexture2D("Heart", "assets/textures/heart.png");
 		LoadTexture2D("HeartFull", "assets/textures/heartFull.png");
-		LoadTexture2D("Sword", "assets/textures/sword.png");
+		LoadTexture2D("Sword", "assets/textures/sword.jpg");
+		LoadTexture2D("Bow", "assets/textures/bow.png");
 		LoadTexture2D("Red", "assets/textures/red.png");
+		LoadTexture2D("Scarlet_diffuse", "assets/textures/Scarlet_diffuse.tga");
+		LoadTexture2D("Scarlet_normal", "assets/textures/Scarlet_normal.tga");
+		LoadTexture2D("Scarlet_specular", "assets/textures/Scarlet_specular.tga");
 
 
 		LoadTexture2D("Tree1", "assets/textures/testPineLeves2.tga");						// TEMPORARY
@@ -123,6 +125,7 @@ namespace Frosty
 
 	void AssetManager::LoadTexture2D(const std::string& name, const std::string& filepath)
 	{
+		FY_CORE_TRACE("{0}", sizeof(Texture2D));
 		s_Textures2D.emplace(name, FY_NEW Texture2D(name, filepath));
 	}
 

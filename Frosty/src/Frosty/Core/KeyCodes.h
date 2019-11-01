@@ -126,8 +126,8 @@
 #define FY_KEY_MENU               348
 
 /*  */
-#define FY_RELEASE                0
-#define FY_PRESS                  1
-#define FY_REPEAT                 2
+#define FY_BUTTON_RELEASE         0
+#define FY_BUTTON_PRESS	          1
+#define FY_BUTTON_REPEAT          2
 
 #endif // !KEY_CODES_H

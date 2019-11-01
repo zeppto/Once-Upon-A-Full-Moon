@@ -184,14 +184,6 @@ project "Sandbox"
 		"%{IncludeDir.glm}",
 		"%{IncludeDir.FreeType}"
 	}
-	
-	excludes
-	{
-		"%{prj.name}/src/ObjectHandler/*.cpp",
-		"%{prj.name}/src/ObjectHandler/*.hpp",
-		"%{prj.name}/src/ObjectHandler/Player/*.cpp",
-		"%{prj.name}/src/ObjectHandler/Player/*.hpp"
-	}
 
 	links
 	{

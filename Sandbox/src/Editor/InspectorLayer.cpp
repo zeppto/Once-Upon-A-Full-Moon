@@ -378,9 +378,13 @@ namespace MCS
 								size_t index = 0;
 								ImGuiTreeNodeFlags node_flags = ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen; // ImGuiTreeNodeFlags_Bullet
 								uint32_t glossID = 0;
+								int nrOfCols = 2;
+								int col = 0;
 
 								for (auto& texture : Frosty::AssetManager::GetTextures2D())
 								{
+									ImGui::SetCursorPos(ImVec2((col % nrOfCols) * 66.0f, ImGui::GetCursorPosY() - (col % nrOfCols) * 68.0f));
+									col++;
 									ImGui::Image(texture.second->GetRenderID(), ImVec2(64, 64));
 									if (ImGui::IsItemClicked())
 									{
@@ -414,9 +418,13 @@ namespace MCS
 								size_t index = 0;
 								ImGuiTreeNodeFlags node_flags = ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen; // ImGuiTreeNodeFlags_Bullet
 								uint32_t normalID = 0;
+								int nrOfCols = 2;
+								int col = 0;
 
 								for (auto& texture : Frosty::AssetManager::GetTextures2D())
 								{
+									ImGui::SetCursorPos(ImVec2((col % nrOfCols) * 66.0f, ImGui::GetCursorPosY() - (col % nrOfCols) * 68.0f));
+									col++;
 									ImGui::Image(texture.second->GetRenderID(), ImVec2(64, 64));
 									if (ImGui::IsItemClicked())
 									{
