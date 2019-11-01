@@ -36,9 +36,13 @@ namespace Frosty
 		AddMesh("Tree9", "assets/models/trees/tree9.lu");
 		AddMesh("Tree10", "assets/models/trees/tree10.lu");
 
-		s_Shaders.emplace("FlatColor", FY_NEW Shader("assets/shaders/FlatColor.glsl", "FlatColor"));
-		s_Shaders.emplace("Texture2D", FY_NEW Shader("assets/shaders/Texture2D.glsl", "Texture2D"));
-		s_Shaders.emplace("UI", FY_NEW Shader("assets/shaders/UI.glsl", "UI"));
+		s_Shaders.emplace("FlatColor", FY_NEW Shader("assets/shaders/FlatColorVertex.glsl", "assets/shaders/FlatColorFragment.glsl", "FlatColor"));
+		s_Shaders.emplace("Texture2D", FY_NEW Shader("assets/shaders/Texture2DVertex.glsl", "assets/shaders/Texture2DFragment.glsl", "Texture2D"));
+		s_Shaders.emplace("UI", FY_NEW Shader("assets/shaders/UIVertex.glsl","assets/shaders/UIFragment.glsl", "UI"));
+		s_Shaders.emplace("Particles", FY_NEW Shader("assets/shaders/ParticleVertex.glsl", "assets/shaders/ParticleGeometry.glsl", "assets/shaders/ParticleFragment.glsl", "Particles"));
+		
+		//Don't try to apply a compute shader as a material! This might have to be separate from normal shaders just to avoid confusion.
+		s_Shaders.emplace("ParticleCompute", FY_NEW Shader("assets/shaders/ParticleCompute.glsl", "ParticleCompute"));
 
 		LoadTexture2D("Table Diffuse", "assets/textures/polySurface15_diffuse.png");
 		LoadTexture2D("Brown Mud Diffuse", "assets/textures/brown_mud_diffuse.png");
