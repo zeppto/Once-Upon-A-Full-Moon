@@ -616,7 +616,7 @@ namespace Frosty
 				glm::vec4 position = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
 				glm::vec4 color = glm::vec4(1.0);
 				glm::vec4 startPos = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
-				glm::vec4 direction = glm::vec4(0.0, 1.0, 0.0, 1.0);;
+				glm::vec4 direction = glm::vec4(0.0, 1.0, 0.0, 1.0);
 				float lifetime = 2.0f;
 				float speed = 2.0f;
 				//int padding[]; //In case padding is needed
@@ -624,14 +624,19 @@ namespace Frosty
 
 			static const uint32_t MAX_PARTICLE_COUNT = 1000; //Unsure if this can possibly be static, but max particle count should be defined in Frosty
 
-			std::string name;
-			uint32_t particleCount;
-			float emitRate;
+			static std::string NAME;
+			uint32_t particleCount = 10;
+			float emitRate = 5.0f;
 
 			Particle particles[MAX_PARTICLE_COUNT];
 			std::shared_ptr<VertexArray> particleVertArray;
 			std::shared_ptr<Shader> shader;
 			std::shared_ptr<Texture2D> texture;
+
+			CParticleSystem() = default;
+			CParticleSystem(std::shared_ptr<VertexArray> verts, std::shared_ptr<Shader> shader, std::shared_ptr<Texture2D> tex)
+				: particleVertArray(verts), shader(shader), texture(tex) {}
+			CParticleSystem(const CConsumables& org) { FY_CORE_ASSERT(false, "Copy constructor in CParticleSystem called."); }
 		};
 
 		static std::string GetComponentName(size_t i)

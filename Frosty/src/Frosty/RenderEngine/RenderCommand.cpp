@@ -81,8 +81,8 @@ namespace Frosty
 		//glDisable(GL_BLEND);
 	}
 
-	//void RenderCommand::DrawParticles(const std::shared_ptr<VertexArray>& vertexArray, size_t count)
-	//{
-	//	glDrawArrays(GL_POINTS, 0, count);
-	//}
+	void RenderCommand::DrawParticles(const std::shared_ptr<VertexArray>& vertexArray, size_t count)
+	{
+		glDrawArrays(GL_POINTS, 0, count);
+	}
 }

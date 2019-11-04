@@ -47,7 +47,7 @@ namespace MCS
 		world->AddSystem<CombatSystem>();
 		world->AddSystem<HealthBarSystem>();
 
-		world->AddSystem<ParticleSystem>(); //This is just one particle system
+		world->AddSystem<ParticleSystem>();
 
 		// Add components
 

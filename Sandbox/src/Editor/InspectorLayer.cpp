@@ -109,7 +109,7 @@ namespace MCS
 					if (world->HasComponent<Frosty::ECS::CHealth>(m_SelectedEntity)) toggles[11] = true;
 					if (world->HasComponent<Frosty::ECS::CConsumables>(m_SelectedEntity)) toggles[12] = true;
 					if (world->HasComponent<Frosty::ECS::CHealthBar>(m_SelectedEntity)) toggles[13] = true;
-
+					if (world->HasComponent<Frosty::ECS::CParticleSystem>(m_SelectedEntity)) toggles[14] = true;
 				}
 
 				// Information
