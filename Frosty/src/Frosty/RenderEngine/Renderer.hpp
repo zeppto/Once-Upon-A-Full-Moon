@@ -20,8 +20,8 @@ namespace Frosty
 		struct GameCameraProps
 		{
 			glm::vec3 CameraPosition;
-			glm::mat4 ViewMatrix;
-			glm::mat4 ProjectionMatrix;
+			//glm::mat4 ViewMatrix;
+			//glm::mat4 ProjectionMatrix;
 			glm::mat4 ViewProjectionMatrix;
 		};
 

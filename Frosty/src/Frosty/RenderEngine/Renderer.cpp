@@ -26,8 +26,8 @@ namespace Frosty
 	void Renderer::SetCamera(const glm::vec3& pos, const glm::mat4& view, const glm::mat4& projection)
 	{
 		s_SceneData->GameCamera.CameraPosition = pos;
-		s_SceneData->GameCamera.ViewMatrix = view;
-		s_SceneData->GameCamera.ProjectionMatrix = projection;
+		//s_SceneData->GameCamera.ViewMatrix = view;
+		//s_SceneData->GameCamera.ProjectionMatrix = projection;
 		s_SceneData->GameCamera.ViewProjectionMatrix = projection * view;
 	}
 

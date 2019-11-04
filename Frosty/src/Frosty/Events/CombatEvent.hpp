@@ -5,7 +5,7 @@
 
 namespace Frosty
 {
-	struct ECS::Entity;
+	namespace ECS { struct Entity; }
 
 	class ArrowHitEvent : public BaseEvent
 	{

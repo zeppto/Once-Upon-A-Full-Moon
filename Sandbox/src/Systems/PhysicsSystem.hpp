@@ -1,25 +1,31 @@
-#ifndef LIGHT_SYSTEM_HPP
-#define LIGHT_SYSTEM_HPP
+#ifndef PHYSICS_SYSTEM_HPP
+#define PHYSICS_SYSTEM_HPP
+
 
 namespace MCS
 {
-	class LightSystem : public Frosty::ECS::BaseSystem
+	class PhysicsSystem : public Frosty::ECS::BaseSystem
 	{
 	public:
-		LightSystem() = default;
-		virtual ~LightSystem() = default;
+		PhysicsSystem() = default;
+		virtual ~PhysicsSystem() = default;
 
 		virtual void Init() override;
 		virtual void OnUpdate() override;
-		virtual void Render() override;
 
 		virtual void AddComponent(const std::shared_ptr<Frosty::ECS::Entity>& entity) override;
-
 		virtual void RemoveEntity(const std::shared_ptr<Frosty::ECS::Entity>& entity) override;
 
 	private:
+		void CheckCollision(size_t index);
+
+	private:
 		std::array<Frosty::ECS::CTransform*, Frosty::ECS::MAX_ENTITIES_PER_COMPONENT> m_Transform;
-		std::array<Frosty::ECS::CLight*, Frosty::ECS::MAX_ENTITIES_PER_COMPONENT> m_Light;
+		std::array<Frosty::ECS::CPhysics*, Frosty::ECS::MAX_ENTITIES_PER_COMPONENT> m_Physics;
+
+		Frosty::World* m_World{ nullptr };
+
 	};
 }
-#endif // !LIGHT_SYSTEM_HPP
+
+#endif // !PHYSICS_SYSTEM_HPP
