@@ -33,7 +33,7 @@ void MovementSystem::OnUpdate()
 					m_Motion[i]->DistanceDashed = 0.0f;
 				}
 			}
-			m_Transform[i]->Position += m_Motion[i]->Velocity * Frosty::Time::DeltaTime();
+			m_Transform[i]->Position += m_Motion[i]->Velocity * m_Motion[i]->SpeedMultiplier * Frosty::Time::DeltaTime();
 
 			for (size_t j = 1; j < p_Total; j++)
 			{

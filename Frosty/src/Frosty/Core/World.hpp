@@ -31,7 +31,7 @@ namespace Frosty
 			std::unique_ptr<SystemType> systemPtr{ system };
 			m_Systems[m_TotalSystems] = std::move(systemPtr);
 			//m_Systems[m_TotalSystems]->attachWorld(this);
-			m_Systems[m_TotalSystems++]->Init();
+			m_TotalSystems++;
 		}
 
 		// Scene Functions

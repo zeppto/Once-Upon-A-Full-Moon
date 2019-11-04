@@ -407,12 +407,14 @@ namespace Frosty
 			static const int DASH_COOLDOWN = 3000;
 			static const int DASH_DISTANCE = 10000;
 			glm::vec3 Direction{ 0.0f, 0.0f, 0.0f };
+			float maxSpeed{ 100.f };
 			float Speed{ 0.0f };
 			glm::vec3 Velocity{ 0.0f };
 			bool DashActive{ false };
 			float DashCurrentCooldown{ 0.0f };
 			float DistanceDashed{ 0.0f };
 			float DashSpeedMultiplier{ 10.0f };
+			float SpeedMultiplier{ 1.f };			// Used in combination with Speed Boost Potion
 
 			CMotion() = default;
 			CMotion(float speed) : Speed(speed) { }
@@ -449,9 +451,10 @@ namespace Frosty
 
 		struct CLight : public BaseComponent
 		{
+			static std::string NAME;
+			
 			enum LightType { Point, Directional };
 
-			static std::string NAME;
 			LightType Type{ LightType::Point };
 			glm::vec3 Color{ 1.0f, 0.96f, 0.84f };
 			float Radius{ 20.0f };
@@ -541,11 +544,13 @@ namespace Frosty
 		struct CHealth : public BaseComponent
 		{
 			static std::string NAME;
-			float MaxHealth{ 5 };
-			float CurrentHealth{ 5 };
+			float MaxTotalHealth{ 20.f };		// How much an entity can upgrate its maximum health to (mostly for the player when consuming potions)
+			float MaxHealth{ 5.f };
+			float CurrentHealth{ 5.f };
 
 			CHealth() = default;
 			CHealth(float health) : MaxHealth(health), CurrentHealth(health) {};
+			CHealth(float health, float maxTotalHealth) : MaxHealth(health), CurrentHealth(health), MaxTotalHealth(maxTotalHealth) {};
 			CHealth(const CHealth& org) { FY_CORE_ASSERT(false, "Copy constructor in CHealth called."); }
 
 			virtual void Func() override { }
@@ -567,26 +572,44 @@ namespace Frosty
 			virtual void Func() override { }
 		};
 
-		struct CConsumables : public BaseComponent
+		struct CInventory : public BaseComponent
 		{
 			static std::string NAME;
 
-			// Healing Potions - heals consumer (temp)
-			int MaxNrOfHealingPotions{ 5 };
-			int CurrentNrOfHealingPotions{ 3 };
-			float Heal{ 5.f };					// Heals 5 hearts
-			float HealingCooldown{ 3.f };		// Consumer can only drink Healing Potion every 3rd second
+
+			// HEALING POTION - heals consumer (temp)
+			int MaxHealingPotions{ 5 };							// Max number of healing potions
+			int CurrentHealingPotions{ 3 };						// Current number of potions in inventory
+			float Heal{ 5.f };									// Heals 5 hearts
+			float HealingCooldown{ 3.f };						// Consumer can only drink Healing Potion every 3rd second
 			float HealingTimer{ float(std::clock()) };			// Timer used to check cooldown
 
-			// Increase Health Potions - inreases max health on consumer (const)
+			// INCREASE HEALTH POTION - inreases max health on consumer (const)
+			int MaxIncreaseHPPotions{ 5 };
+			int CurrentIncreaseHPPotions{ 3 };
+			float IncreaseHP{ 3.f };
+			float IncreaseHPCooldown{ 3.f };
+			float IncreaseHPTimer{ float(std::clock()) };
 
-			// Speed Booster - boosts speed during a time interval (temp)
+			// SPEED BOOSTER POTION - boosts speed during a time interval (temp)
+			int MaxSpeedPotions{ 5 };
+			int CurrentSpeedPotions{ 3 };
+			float IncreaseSpeedTemporary{ 0.3f };
+			float SpeedCooldown{ 5.f };
+			float SpeedTimer{ float(std::clock()) };
 
-			// Speed Boots - boots add speed by a small procentage (const)
+			// SPEED BOOTS - boots add speed by a small procentage (const)
+			int MaxSpeedBoots{ 5 };
+			int CurrentSpeedBoots{ 0 };
+			float IncreaseSpeed{ 3.f };
+
+			// BAIT - chunks of meat used to distract the wolf
+
+			// WOLFSBANE - poisonous flower which can be mixed with bait
 
 
-			CConsumables() = default;
-			CConsumables(const CConsumables& org) { FY_CORE_ASSERT(false, "Copy constructor in CConsumables called."); }
+			CInventory() = default;
+			CInventory(const CInventory& org) { FY_CORE_ASSERT(false, "Copy constructor in CInventory called."); }
 
 			virtual void Func() override { }
 		};
@@ -663,7 +686,7 @@ namespace Frosty
 			case 9:		return "PlayerAttack";
 			case 10:	return "Health";
 			case 11:	return "Tag";
-			case 12:	return "Consumables";
+			case 12:	return "Inventory";
 			case 13:	return "CharacterState";
 			case 14:	return "HealthBar";
 			default:	return "";

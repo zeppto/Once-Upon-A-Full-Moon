@@ -5,7 +5,7 @@
 
 #include "Systems/CombatSystem.hpp"
 #include "Systems/EnemyAttackSystem.hpp"
-#include "Systems/ConsumablesSystem.hpp"
+#include "Systems/InventorySystem.hpp"
 #include "Systems/HealthBarSystem.hpp"
 #include "Systems/LightSystem.hpp"
 #include "Systems/SpawnSystem.hpp"
@@ -42,7 +42,7 @@ namespace MCS
 		world->AddSystem<PlayerAttackSystem>();
 		world->AddSystem<EnemyAttackSystem>();
 		world->AddSystem<SpawnSystem>();
-		world->AddSystem<ConsumablesSystem>();
+		world->AddSystem<InventorySystem>();
 		world->AddSystem<CombatSystem>();
 		world->AddSystem<HealthBarSystem>();
 
