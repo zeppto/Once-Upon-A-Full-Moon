@@ -1,4 +1,3 @@
-#include <fypch.hpp>
 #include <mcspch.hpp>
 #include "FollowSystem.hpp"
 

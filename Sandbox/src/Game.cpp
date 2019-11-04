@@ -16,6 +16,7 @@
 #include "Systems/PlayerControllerSystem.hpp"
 #include "Systems/CollisionSystem.hpp"
 #include "Systems/PlayerAttackSystem.hpp"
+#include "Systems/ParticleSystem.hpp"
 
 namespace MCS
 {
@@ -45,6 +46,8 @@ namespace MCS
 		world->AddSystem<ConsumablesSystem>();
 		world->AddSystem<CombatSystem>();
 		world->AddSystem<HealthBarSystem>();
+
+		world->AddSystem<ParticleSystem>();
 
 		// Add components
 

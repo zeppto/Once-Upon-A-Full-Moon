@@ -8,7 +8,7 @@ out vec4 finalColor;
 out vec2 uvs;
 uniform mat4 projectionMat;
 
-const float size = 0.2;  //Temporary constant. Take in as uniform later.
+const float size = 0.5;  //Temporary constant. Take in as uniform later.
 const vec2 offsets[4] = { vec2(0.0f, 0.0f), vec2(1.0f, 0.0f), vec2(0.0f, 1.0f), vec2(1.0f, 1.0f) };
 
 void main()

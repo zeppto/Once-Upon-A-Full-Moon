@@ -59,6 +59,7 @@ namespace Frosty
 		LoadTexture2D("Scarlet_diffuse", "assets/textures/Scarlet_diffuse.tga");
 		LoadTexture2D("Scarlet_normal", "assets/textures/Scarlet_normal.tga");
 		LoadTexture2D("Scarlet_specular", "assets/textures/Scarlet_specular.tga");
+		LoadTexture2D("particle", "assets/textures/particle.png");
 
 
 		LoadTexture2D("Tree1", "assets/textures/testPineLeves2.tga");						// TEMPORARY

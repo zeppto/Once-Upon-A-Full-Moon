@@ -109,7 +109,7 @@ namespace MCS
 					if (world->HasComponent<Frosty::ECS::CHealth>(m_SelectedEntity)) toggles[11] = true;
 					if (world->HasComponent<Frosty::ECS::CConsumables>(m_SelectedEntity)) toggles[12] = true;
 					if (world->HasComponent<Frosty::ECS::CHealthBar>(m_SelectedEntity)) toggles[13] = true;
-
+					if (world->HasComponent<Frosty::ECS::CParticleSystem>(m_SelectedEntity)) toggles[14] = true;
 				}
 
 				// Information
@@ -211,6 +211,12 @@ namespace MCS
 							world->AddComponent<Frosty::ECS::CHealthBar>(m_SelectedEntity);
 						else
 							world->RemoveComponent<Frosty::ECS::CHealthBar>(m_SelectedEntity);
+					}
+					if (ImGui::MenuItem("Particle System", "", &toggles[14])) {
+						if (!world->HasComponent<Frosty::ECS::CParticleSystem>(m_SelectedEntity))
+							world->AddComponent<Frosty::ECS::CParticleSystem>(m_SelectedEntity);
+						else
+							world->RemoveComponent<Frosty::ECS::CParticleSystem>(m_SelectedEntity);
 					}
 					ImGui::EndPopup();
 				}
@@ -681,6 +687,15 @@ namespace MCS
 						auto& comp = world->GetComponent<Frosty::ECS::CHealthBar>(m_SelectedEntity);
 						ImGui::BeginChild("CHealthBar", ImVec2(EDITOR_INSPECTOR_WIDTH, 30), true);
 						ImGui::Text("Health bar will now appear over entity");
+						ImGui::EndChild();
+					}
+				}
+				if (world->HasComponent<Frosty::ECS::CParticleSystem>(m_SelectedEntity))
+				{
+					if (ImGui::CollapsingHeader("Particle System")) {
+						Frosty::ECS::CParticleSystem comp = world->GetComponent<Frosty::ECS::CParticleSystem>(m_SelectedEntity); //Please don't use auto. It's not clear what's returned.
+						ImGui::BeginChild("CParticleSystem", ImVec2(EDITOR_INSPECTOR_WIDTH, 45), true);
+						ImGui::Text("Test text"); //TODO: output proper info
 						ImGui::EndChild();
 					}
 				}

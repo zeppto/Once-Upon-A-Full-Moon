@@ -24,5 +24,6 @@ namespace Frosty
 		std::string CCharacterState::NAME = "CharacterState";
 		std::string CArrow::NAME = "Arrow";
 		std::string CHealthBar::NAME = "HealthBar";
+		std::string CParticleSystem::NAME = "Particle System";
 	}
 }
