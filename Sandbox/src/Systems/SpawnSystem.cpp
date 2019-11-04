@@ -70,6 +70,7 @@ void SpawnSystem::OnUpdate()
 		else if (m_Health[i]->CurrentHealth <= 0.f)
 		{
 			RemoveEnemyAt(i);
+			i = 0;
 		}
 	}
 }
@@ -127,7 +128,7 @@ void SpawnSystem::SpawnPlayer()
 	//world->GetComponent<Frosty::ECS::CMaterial>(player).TextureScale = playerTransform.Scale;
 	world->AddComponent<Frosty::ECS::CMotion>(player, 20.0f);
 	world->AddComponent<Frosty::ECS::CController>(player);
-	world->AddComponent<Frosty::ECS::CConsumables>(player);
+	world->AddComponent<Frosty::ECS::CInventory>(player);
 	world->AddComponent<Frosty::ECS::CHealth>(player);
 	world->AddComponent<Frosty::ECS::CTag>(player, "Player");
 	world->AddComponent<Frosty::ECS::CPlayerAttack>(player, 1.5f, 1.0f, 2.0f, true);
