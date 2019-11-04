@@ -60,18 +60,6 @@ namespace Frosty
 		s_SceneData->DirectionalLights.emplace_back(light);
 	}
 
-	//void Renderer::Submit2D(const std::shared_ptr<Shader>& shader, const std::shared_ptr<VertexArray>& vertexArray, std::string& tex, glm::mat4& modelMatrix)
-	//{
-	//	//shader->Bind();
-	//	//shader->UploadUniforMat4("model", modelMatrix);
-	//	////shader->UploadUniformInt(tex, 0);
-
-	//	//vertexArray->Bind();
-	//	//RenderCommand::Draw2D(vertexArray);
-	//	//shader->UnBind();
-	//	//vertexArray->Unbind();
-	//}
-
 	void Renderer::SubmitText(const std::shared_ptr<Shader>& shader, const std::shared_ptr<VertexArray>& vertexArray, std::string& text)
 	{
 		/*shader->Bind();
@@ -122,10 +110,18 @@ namespace Frosty
 		vertexArray->GetVertexBuffer().front()->Unbind();*/
 	}
 
-	void Renderer::SubmitParticles(const std::shared_ptr<Shader>& shader, const std::shared_ptr<VertexArray>& vertexArray, glm::mat4& modelMat, size_t particleCount)
+	void Renderer::SubmitParticles(const std::shared_ptr<Shader>& shader, const std::shared_ptr<Shader>& computeShader, const std::shared_ptr<VertexArray>& vertexArray, glm::mat4& modelMat, size_t particleCount, float maxLifetime)
 	{
-		shader->Bind();
+		computeShader->Bind();
 		vertexArray->Bind();
+		vertexArray->BindShaderStorageBuffer();
+
+		computeShader->UploadUniformFloat("dt", Frosty::Time::DeltaTime());
+		computeShader->UploadUniformFloat("max_lifetime", maxLifetime);
+
+		ComputeCommand::Send(particleCount);
+
+		shader->Bind();
 
 		shader->UploadUniformMat4("viewMat", s_SceneData->GameCamera.ViewMatrix);
 		shader->UploadUniformMat4("projectionMat", s_SceneData->GameCamera.ProjectionMatrix);

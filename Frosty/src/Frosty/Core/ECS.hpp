@@ -619,7 +619,7 @@ namespace Frosty
 				glm::vec4 direction = glm::vec4(0.0, 1.0, 0.0, 1.0);
 				float lifetime = 2.0f;
 				float speed = 2.0f;
-				//int padding[]; //In case padding is needed
+				//int padding[2]; //In case padding is needed
 			};
 
 			static const uint32_t MAX_PARTICLE_COUNT = 1000; //Unsure if this can possibly be static, but max particle count should be defined in Frosty
@@ -631,6 +631,7 @@ namespace Frosty
 			Particle particles[MAX_PARTICLE_COUNT];
 			std::shared_ptr<VertexArray> particleVertArray;
 			std::shared_ptr<Shader> shader;
+			std::shared_ptr<Shader> computeShader;
 			std::shared_ptr<Texture2D> texture;
 
 			CParticleSystem() = default;

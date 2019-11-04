@@ -77,6 +77,11 @@ namespace Frosty
 		m_IndexBuffer = indexBuffer;		
 	}
 
+	void VertexArray::BindShaderStorageBuffer()
+	{
+		glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, m_RendererID);
+	}
+
 	const std::vector<std::shared_ptr<VertexBuffer>>& VertexArray::GetVertexBuffer() 
 	{
 		return m_VertexBuffer;

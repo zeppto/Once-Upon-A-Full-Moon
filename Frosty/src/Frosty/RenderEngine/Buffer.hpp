@@ -19,6 +19,12 @@ namespace Frosty
 		Bool
 	};
 
+	enum BufferType
+	{
+		STATIC,
+		DYNAMIC
+	};
+
 	static uint32_t ShaderDataTypeSize(ShaderDataType type)
 	{
 		switch (type)
@@ -136,7 +142,7 @@ namespace Frosty
 	class VertexBuffer
 	{
 	public:
-		VertexBuffer(const void* vertices, uint32_t size);
+		VertexBuffer(const void* vertices, uint32_t size, BufferType type);
 		VertexBuffer();
 		virtual ~VertexBuffer();
 
@@ -150,7 +156,7 @@ namespace Frosty
 		BufferLayout GetLayout()const { return m_Layout; }
 		void SetLayout(const BufferLayout& layout) { m_Layout = layout; }
 
-		static VertexBuffer* Create(const void* vertices, uint32_t size);
+		static VertexBuffer* Create(const void* vertices, uint32_t size, BufferType type);
 		static VertexBuffer* Create();
 
 		void SetData(float* vertices, uint32_t size, uint32_t type);

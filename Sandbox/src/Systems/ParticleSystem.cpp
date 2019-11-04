@@ -24,19 +24,10 @@ void ParticleSystem::Render()
 
 		m_ParticleSystem[i]->shader->Bind();
 		m_ParticleSystem[i]->texture->Bind();
-		Frosty::Renderer::SubmitParticles(m_ParticleSystem[i]->shader, m_ParticleSystem[i]->particleVertArray, transform, m_ParticleSystem[i]->particleCount);
+		Frosty::Renderer::SubmitParticles(m_ParticleSystem[i]->shader, m_ParticleSystem[i]->computeShader, m_ParticleSystem[i]->particleVertArray, transform, m_ParticleSystem[i]->particleCount, 2.0f);
 		m_ParticleSystem[i]->shader->UnBind();
 		m_ParticleSystem[i]->texture->Unbind();
 	}
-
-//m_particleShader->Bind();
-//glEnable(GL_BLEND);
-//glBlendFunc(GL_SRC_ALPHA, GL_ONE);
-//m_particleSystem->LoadTexture();
-//glBindTexture(GL_TEXTURE_2D, m_particleSystem->GetTextureID());
-//Renderer::SubmitParticles(m_particleShader, m_particleSystem->GetVertexArray(), m_particleSystem->GetModelMatrix(), m_particleSystem->GetParticleCount());
-//m_particleShader->UnBind();
-//glDisable(GL_BLEND);
 }
 
 void ParticleSystem::AddComponent(const std::shared_ptr<Frosty::ECS::Entity>& entity)
@@ -47,12 +38,13 @@ void ParticleSystem::AddComponent(const std::shared_ptr<Frosty::ECS::Entity>& en
 
 		auto& world = Frosty::Application::Get().GetWorld();
 		m_Transform[p_Total] = &world->GetComponent<Frosty::ECS::CTransform>(entity);
+		m_Transform[p_Total]->Position = glm::vec3(0.0f, 7.0f, 0.0f); //Debug
 		m_ParticleSystem[p_Total] = &world->GetComponent<Frosty::ECS::CParticleSystem>(entity);
 
 		m_ParticleSystem[p_Total]->particleVertArray.reset(Frosty::VertexArray::Create());
 
 		std::shared_ptr<Frosty::VertexBuffer> vertBuffer;
-		vertBuffer.reset(Frosty::VertexBuffer::Create(m_ParticleSystem[p_Total]->particles, sizeof(m_ParticleSystem[p_Total]->particles)));
+		vertBuffer.reset(Frosty::VertexBuffer::Create(m_ParticleSystem[p_Total]->particles, sizeof(m_ParticleSystem[p_Total]->particles), Frosty::BufferType::DYNAMIC));
 
 		Frosty::BufferLayout layout =
 		{
@@ -69,7 +61,7 @@ void ParticleSystem::AddComponent(const std::shared_ptr<Frosty::ECS::Entity>& en
 		m_ParticleSystem[p_Total]->particleVertArray->AddVertexBuffer(vertBuffer); //Add to array
 
 		m_ParticleSystem[p_Total]->shader = Frosty::AssetManager::GetShader("Particles");
-		std::string test = m_ParticleSystem[p_Total]->shader->GetName();
+		m_ParticleSystem[p_Total]->computeShader = Frosty::AssetManager::GetShader("ParticleCompute");
 		m_ParticleSystem[p_Total]->texture = Frosty::AssetManager::GetTexture2D("particle");
 
 		p_Total++;

@@ -4,8 +4,8 @@
 
 layout(local_size_x = 1, local_size_y = 1, local_size_z = 1) in; //Threads
 
-uniform float maxLifetime; //Can be stored per particle instead of uniform for all
 uniform float deltaTime;
+uniform float maxLifetime; //Can be stored per particle instead of uniform for all
 
 struct Particle
 {
