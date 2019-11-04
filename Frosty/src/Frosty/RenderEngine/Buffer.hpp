@@ -152,6 +152,7 @@ namespace Frosty
 		void SetNrOfVertices(uint32_t count);
 		uint32_t GetNrOfVertices()const;
 		uint32_t GetSize()const;
+		uint32_t GetID()const;
 
 		BufferLayout GetLayout()const { return m_Layout; }
 		void SetLayout(const BufferLayout& layout) { m_Layout = layout; }

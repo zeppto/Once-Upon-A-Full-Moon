@@ -22,10 +22,13 @@ void ParticleSystem::Render()
 		transform = glm::rotate(transform, glm::radians(m_Transform[i]->Rotation.z), { 0.0f, 0.0f, 1.0f });
 		transform = glm::scale(transform, m_Transform[i]->Scale);
 
-		m_ParticleSystem[i]->shader->Bind();
 		m_ParticleSystem[i]->texture->Bind();
+
+		unsigned int test = sizeof(m_ParticleSystem[i]->particles); //Debug
+		unsigned int test2 = sizeof(Frosty::ECS::CParticleSystem::Particle); //Debug
+
 		Frosty::Renderer::SubmitParticles(m_ParticleSystem[i]->shader, m_ParticleSystem[i]->computeShader, m_ParticleSystem[i]->particleVertArray, transform, m_ParticleSystem[i]->particleCount, 2.0f);
-		m_ParticleSystem[i]->shader->UnBind();
+
 		m_ParticleSystem[i]->texture->Unbind();
 	}
 }
@@ -50,10 +53,10 @@ void ParticleSystem::AddComponent(const std::shared_ptr<Frosty::ECS::Entity>& en
 		{
 			{ Frosty::ShaderDataType::Float4,	"pos" },
 			{ Frosty::ShaderDataType::Float4,	"color" },
-			{ Frosty::ShaderDataType::Float4,	"startPos" },
-			{ Frosty::ShaderDataType::Float4,	"dir" },
-			{ Frosty::ShaderDataType::Float,	"lifetime" },
-			{ Frosty::ShaderDataType::Float,	"speed" }
+			//{ Frosty::ShaderDataType::Float4,	"startPos" },
+			//{ Frosty::ShaderDataType::Float4,	"dir" },
+			//{ Frosty::ShaderDataType::Float,	"lifetime" },
+			//{ Frosty::ShaderDataType::Float,	"speed" }
 		};
 
 		vertBuffer->SetLayout(layout);

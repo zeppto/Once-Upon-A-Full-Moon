@@ -69,7 +69,13 @@ namespace Frosty
 	uint32_t VertexBuffer::GetSize() const
 	{
 		return m_Size;
-	}	
+	}
+
+	uint32_t VertexBuffer::GetID() const
+	{
+		return m_RendererID;
+	}
+
 
 	// Indexbuffer --------------------------------------------------------------------
 	IndexBuffer::IndexBuffer(const void* indices, uint32_t count)

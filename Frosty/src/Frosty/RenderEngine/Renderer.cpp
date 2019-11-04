@@ -113,15 +113,15 @@ namespace Frosty
 	void Renderer::SubmitParticles(const std::shared_ptr<Shader>& shader, const std::shared_ptr<Shader>& computeShader, const std::shared_ptr<VertexArray>& vertexArray, glm::mat4& modelMat, size_t particleCount, float maxLifetime)
 	{
 		computeShader->Bind();
-		vertexArray->Bind();
 		vertexArray->BindShaderStorageBuffer();
 
-		computeShader->UploadUniformFloat("dt", Frosty::Time::DeltaTime());
-		computeShader->UploadUniformFloat("max_lifetime", maxLifetime);
+		computeShader->UploadUniformFloat("deltaTime", Frosty::Time::DeltaTime());
+		computeShader->UploadUniformFloat("maxLifetime", maxLifetime);
 
 		ComputeCommand::Send(particleCount);
 
 		shader->Bind();
+		vertexArray->Bind();
 
 		shader->UploadUniformMat4("viewMat", s_SceneData->GameCamera.ViewMatrix);
 		shader->UploadUniformMat4("projectionMat", s_SceneData->GameCamera.ProjectionMatrix);
