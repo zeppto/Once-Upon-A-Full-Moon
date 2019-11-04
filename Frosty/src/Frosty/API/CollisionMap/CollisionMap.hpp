@@ -7,6 +7,16 @@
 namespace Frosty
 {
 
+
+
+	struct ModelBatch
+	{
+		std::vector<glm::vec3> m_Verticies;
+		std::list<glm::mat4> Transforms;
+	};
+
+
+
 	class CollisionMap
 	{
 
@@ -20,20 +30,22 @@ namespace Frosty
 		unsigned int QuadVAO = -1;
 
 		unsigned int m_VertexArray = -1;
-		unsigned int m_GBuffer;
-		unsigned int m_Texture;
+		unsigned int s_GBuffer;
+		unsigned int s_Texture;
 
 		std::string m_VertexSrc;
 		std::string m_FragmentSrc;
 		uint32_t m_RendererID;
+
+		static std::list<ModelBatch> s_Objects;
 
 		const uint8_t m_Pix_Cord_Ratio = 10;
 
 		static CollisionMap* s_Instance;
 		std::shared_ptr <Camera> m_Camera;
 
-		const uint16_t MAP_WITDH_PIXELS = 1920;
-		const uint16_t MAP_HEIGHT_PIXELS = 1080;
+		const uint16_t MAP_WITDH_PIXELS = 1280;
+		const uint16_t MAP_HEIGHT_PIXELS = 720;
 
 		glm::mat4 m_View;
 		glm::mat4 m_OrthoGraphic;
@@ -52,6 +64,12 @@ namespace Frosty
 		static CollisionMap* Get();
 		virtual ~CollisionMap() {};
 
+		inline void AddToRenderList(const ModelBatch& Batch) { s_Objects.push_back(Batch); }
+
+		std::shared_ptr<bool> GetBoolMap() {return RenderTriangle(); }
+
+		//RenderBoolMap();
+
 		void Initiate();
 
 		std::shared_ptr<Camera>& GetCamera();
@@ -65,7 +83,7 @@ namespace Frosty
 		void InitiateGBuffer();
 		void InitiateShaders();
 		void InitiateProgram();
-		void RenderTriangle();
+		std::shared_ptr<bool> RenderTriangle();
 	};
 
 
