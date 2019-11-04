@@ -16,6 +16,7 @@
 #include "Systems/PlayerControllerSystem.hpp"
 #include "Systems/CollisionSystem.hpp"
 #include "Systems/PlayerAttackSystem.hpp"
+#include "LevelHandeler/MapGenerator.hpp"
 
 namespace MCS
 {
@@ -52,7 +53,8 @@ namespace MCS
 		//world->InitiateComponent<Frosty::ECS::CCamera>();
 		world->Start();
 
-
+		MapGenerator map;
+		map.generateMap();
 
 
 		//auto& plane = world->CreateEntity();
