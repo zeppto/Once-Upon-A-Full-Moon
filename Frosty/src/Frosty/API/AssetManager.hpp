@@ -18,8 +18,8 @@ namespace Frosty
 		float tangent[3] = { 0.0f };
 		float bitangent[3] = { 0.0f };
 
-		Luna::Weights weights;
-		Luna::Joint joints[4];
+		float weights[4] = { 0.0f };
+		int joints[4] = { 0 };
 
 	};
 

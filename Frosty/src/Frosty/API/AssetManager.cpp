@@ -134,7 +134,7 @@ namespace Frosty
 		{ ShaderDataType::Float3, "a_Tangent" },
 		{ ShaderDataType::Float3, "a_Bitangent" },
 		{ ShaderDataType::Float4, "a_Weights" },
-		{ ShaderDataType::Float4, "a_Joints" }
+		{ ShaderDataType::Int4, "a_Joints" }
 		};
 
   		vertexBuffer->SetLayout(layout);
@@ -204,12 +204,15 @@ namespace Frosty
 			vertices[i].bitangent[2] = initVertices[i].bitangent[2];
 
 			//The relevant weights know which four joints are most relevant for the verts.
-			vertices[i].weights = weights[i];
+			vertices[i].weights[0] = weights[i].weights[0];
+			vertices[i].weights[1] = weights[i].weights[1];
+			vertices[i].weights[2] = weights[i].weights[2];
+			vertices[i].weights[3] = weights[i].weights[3];
 
-			vertices[i].joints[0] = joints[vertices[i].weights.jointIDs[0]];
-			vertices[i].joints[1] = joints[vertices[i].weights.jointIDs[1]];
-			vertices[i].joints[2] = joints[vertices[i].weights.jointIDs[2]];
-			vertices[i].joints[3] = joints[vertices[i].weights.jointIDs[3]];
+			vertices[i].joints[0] = weights[i].jointIDs[0];
+			vertices[i].joints[1] = weights[i].jointIDs[1];
+			vertices[i].joints[2] = weights[i].jointIDs[2];
+			vertices[i].joints[3] = weights[i].jointIDs[3];
 		}
 
 		return vertices;
