@@ -6,6 +6,8 @@
 
 namespace Frosty
 {
+	class Layer;
+
 	class World
 	{
 	public:
@@ -18,20 +20,21 @@ namespace Frosty
 
 		// System Functions
 		void Init();
-		void Start();
+		void Awake();
+		void OnStart();
 		void OnInput();
 		void OnUpdate();
+		void OnEvent(BaseEvent& e);
 		void BeginScene();
 		void Render();
 
 		template<typename SystemType>
 		inline void AddSystem()
-		{
-			SystemType* system(new SystemType());
+		{ 
+			SystemType* system(FY_NEW SystemType());
 			std::unique_ptr<SystemType> systemPtr{ system };
 			m_Systems[m_TotalSystems] = std::move(systemPtr);
-			//m_Systems[m_TotalSystems]->attachWorld(this);
-			m_Systems[m_TotalSystems++]->Init();
+			m_TotalSystems++;
 		}
 
 		// Scene Functions
@@ -41,7 +44,7 @@ namespace Frosty
 		const std::shared_ptr<ECS::Entity>& GetSceneCamera() const { return m_Scene->GetCamera(); }
 
 		// Entity Functions
-		inline std::shared_ptr<ECS::Entity>& CreateEntity() { return m_Scene->CreateEntity(); }
+		inline std::shared_ptr<ECS::Entity>& CreateEntity(const glm::vec3& position = glm::vec3(0.0f), const glm::vec3& rotation = glm::vec3(0.0f), const glm::vec3& scale = glm::vec3(1.0f)) { return m_Scene->CreateEntity(position, rotation, scale); }
 		void RemoveEntity(std::shared_ptr<ECS::Entity>& entity);
 		inline std::unique_ptr<ECS::EntityManager>& GetEntityManager() { return m_Scene->GetEntityManager(); }
 		template<typename ComponentType>
@@ -49,6 +52,7 @@ namespace Frosty
 		{
 			return m_Scene->HasComponent<ComponentType>(entity);
 		}
+		void AddToDestroyList(const std::shared_ptr<ECS::Entity>& entity);
 		//std::vector<std::shared_ptr<ECS::Entity>> GetEntitiesInRadius(const glm::vec3& position, float radius);
 		
 		// Component Functions
@@ -95,12 +99,17 @@ namespace Frosty
 		}
 		
 	private:
+		void HandleDestroyedEntities();
+
+	private:
 		// Scene Declarations
 		std::unique_ptr<Scene> m_Scene;
 
 		// System Declarations 
 		std::array<std::unique_ptr<ECS::BaseSystem>, ECS::MAX_SYSTEMS> m_Systems;
 		size_t m_TotalSystems{ 1 };
+
+		std::vector<std::shared_ptr<ECS::Entity>> m_DestroyedEntities;
 
 		// Component Declarations
 		//std::array<std::unique_ptr<ECS::BaseComponent>, ECS::MAX_COMPONENTS> m_ComponentList;

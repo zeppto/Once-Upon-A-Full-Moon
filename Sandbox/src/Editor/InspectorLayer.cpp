@@ -43,12 +43,6 @@ namespace MCS
 			if (ImGui::Checkbox("VSync: ", &s_VSync)) m_App->GetWindow().SetVSync(s_VSync);
 			if (ImGui::Button("Create Entity", ImVec2(100.0f, 20.0f))) world->CreateEntity();
 
-			if (m_SelectedEntity)
-			{
-				auto& comp = m_App->GetWorld()->GetComponent<Frosty::ECS::CTransform>(m_SelectedEntity);
-				glm::vec3 radRot = glm::radians(comp.Rotation);
-				ImGui::InputFloat3("Rotations in rad", glm::value_ptr(radRot));
-			}
 			static int selection_mask = 0;
 			int node_clicked = -1;
 			unsigned int counter = 0;
@@ -99,17 +93,16 @@ namespace MCS
 					if (world->HasComponent<Frosty::ECS::CMesh>(m_SelectedEntity)) toggles[1] = true;
 					if (world->HasComponent<Frosty::ECS::CCamera>(m_SelectedEntity)) toggles[2] = true;
 					if (world->HasComponent<Frosty::ECS::CMaterial>(m_SelectedEntity)) toggles[3] = true;
-					if (world->HasComponent<Frosty::ECS::CMotion>(m_SelectedEntity)) toggles[4] = true;
-					if (world->HasComponent<Frosty::ECS::CController>(m_SelectedEntity)) toggles[5] = true;
-					if (world->HasComponent<Frosty::ECS::CFollow>(m_SelectedEntity)) toggles[6] = true;
-					if (world->HasComponent<Frosty::ECS::CLight>(m_SelectedEntity)) toggles[7] = true;
-					if (world->HasComponent<Frosty::ECS::CCollision>(m_SelectedEntity)) toggles[8] = true;
-					if (world->HasComponent<Frosty::ECS::CPlayerAttack>(m_SelectedEntity)) toggles[9] = true;
-					if (world->HasComponent<Frosty::ECS::CEnemyAttack>(m_SelectedEntity)) toggles[10] = true;
-					if (world->HasComponent<Frosty::ECS::CHealth>(m_SelectedEntity)) toggles[11] = true;
-					if (world->HasComponent<Frosty::ECS::CConsumables>(m_SelectedEntity)) toggles[12] = true;
-					if (world->HasComponent<Frosty::ECS::CHealthBar>(m_SelectedEntity)) toggles[13] = true;
-					if (world->HasComponent<Frosty::ECS::CParticleSystem>(m_SelectedEntity)) toggles[14] = true;
+					if (world->HasComponent<Frosty::ECS::CPlayer>(m_SelectedEntity)) toggles[4] = true;
+					if (world->HasComponent<Frosty::ECS::CFollow>(m_SelectedEntity)) toggles[5] = true;
+					if (world->HasComponent<Frosty::ECS::CLight>(m_SelectedEntity)) toggles[6] = true;
+					if (world->HasComponent<Frosty::ECS::CPhysics>(m_SelectedEntity)) toggles[7] = true;
+					if (world->HasComponent<Frosty::ECS::CPlayerAttack>(m_SelectedEntity)) toggles[8] = true;
+					if (world->HasComponent<Frosty::ECS::CEnemyAttack>(m_SelectedEntity)) toggles[9] = true;
+					if (world->HasComponent<Frosty::ECS::CHealth>(m_SelectedEntity)) toggles[10] = true;
+					if (world->HasComponent<Frosty::ECS::CConsumables>(m_SelectedEntity)) toggles[11] = true;
+					if (world->HasComponent<Frosty::ECS::CHealthBar>(m_SelectedEntity)) toggles[12] = true;
+					if (world->HasComponent<Frosty::ECS::CParticleSystem>(m_SelectedEntity)) toggles[13] = true;
 				}
 
 				// Information
@@ -142,70 +135,63 @@ namespace MCS
 						else
 							world->RemoveComponent<Frosty::ECS::CMaterial>(m_SelectedEntity);
 					}
-					if (ImGui::MenuItem("Motion", "", &toggles[4]))
+					if (ImGui::MenuItem("Player", "", &toggles[4]))
 					{
-						if (!world->HasComponent<Frosty::ECS::CMotion>(m_SelectedEntity))
-							world->AddComponent<Frosty::ECS::CMotion>(m_SelectedEntity);
+						if (!world->HasComponent<Frosty::ECS::CPlayer>(m_SelectedEntity))
+							world->AddComponent<Frosty::ECS::CPlayer>(m_SelectedEntity);
 						else
-							world->RemoveComponent<Frosty::ECS::CMotion>(m_SelectedEntity);
+							world->RemoveComponent<Frosty::ECS::CPlayer>(m_SelectedEntity);
 					}
-					if (ImGui::MenuItem("Controller", "", &toggles[5]))
-					{
-						if (!world->HasComponent<Frosty::ECS::CController>(m_SelectedEntity))
-							world->AddComponent<Frosty::ECS::CController>(m_SelectedEntity);
-						else
-							world->RemoveComponent<Frosty::ECS::CController>(m_SelectedEntity);
-					}
-					if (ImGui::MenuItem("Follow", "", &toggles[6]))
+					if (ImGui::MenuItem("Follow", "", &toggles[5]))
 					{
 						if (!world->HasComponent<Frosty::ECS::CFollow>(m_SelectedEntity))
 							world->AddComponent<Frosty::ECS::CFollow>(m_SelectedEntity);
 						else
 							world->RemoveComponent<Frosty::ECS::CFollow>(m_SelectedEntity);
 					}
-					if (ImGui::MenuItem("Light", "", &toggles[7]))
+					if (ImGui::MenuItem("Light", "", &toggles[6]))
 					{
 						if (!world->HasComponent<Frosty::ECS::CLight>(m_SelectedEntity))
 							world->AddComponent<Frosty::ECS::CLight>(m_SelectedEntity, Frosty::ECS::CLight::LightType::Point);
 						else
 							world->RemoveComponent<Frosty::ECS::CLight>(m_SelectedEntity);
 					}
-					if (ImGui::MenuItem("Collision", "", &toggles[8]))
+					if (ImGui::MenuItem("Physics", "", &toggles[7]))
 					{
-						if (!world->HasComponent<Frosty::ECS::CCollision>(m_SelectedEntity))
-							world->AddComponent<Frosty::ECS::CCollision>(m_SelectedEntity, Frosty::AssetManager::GetBoundingBox("Cube"));
+						if (!world->HasComponent<Frosty::ECS::CPhysics>(m_SelectedEntity))
+							world->AddComponent<Frosty::ECS::CPhysics>(m_SelectedEntity, Frosty::AssetManager::GetBoundingBox("Cube"));
 						else
-							world->RemoveComponent<Frosty::ECS::CCollision>(m_SelectedEntity);
+							world->RemoveComponent<Frosty::ECS::CPhysics>(m_SelectedEntity);
 					}
-					if (ImGui::MenuItem("Player Attack", "", &toggles[9]))
+					if (ImGui::MenuItem("Player Attack", "", &toggles[8]))
 					{
 						if (!world->HasComponent<Frosty::ECS::CPlayerAttack>(m_SelectedEntity))
 							world->AddComponent<Frosty::ECS::CPlayerAttack>(m_SelectedEntity);
 						else
 							world->RemoveComponent<Frosty::ECS::CPlayerAttack>(m_SelectedEntity);
 					}
-					if (ImGui::MenuItem("Enemy Attack", "", &toggles[10]))
+					if (ImGui::MenuItem("Enemy Attack", "", &toggles[9]))
 					{
 						if (!world->HasComponent<Frosty::ECS::CEnemyAttack>(m_SelectedEntity))
 							world->AddComponent<Frosty::ECS::CEnemyAttack>(m_SelectedEntity);
 						else
 							world->RemoveComponent<Frosty::ECS::CEnemyAttack>(m_SelectedEntity);
 					}
-					if (ImGui::MenuItem("Health", "", &toggles[11]))
+					if (ImGui::MenuItem("Health", "", &toggles[10]))
 					{
 						if (!world->HasComponent<Frosty::ECS::CHealth>(m_SelectedEntity))
 							world->AddComponent<Frosty::ECS::CHealth>(m_SelectedEntity);
 						else
 							world->RemoveComponent<Frosty::ECS::CHealth>(m_SelectedEntity);
 					}
-					if (ImGui::MenuItem("Consumables", "", &toggles[12]))
+					if (ImGui::MenuItem("Consumables", "", &toggles[11]))
 					{
 						if (!world->HasComponent<Frosty::ECS::CConsumables>(m_SelectedEntity))
 							world->AddComponent<Frosty::ECS::CConsumables>(m_SelectedEntity);
 						else
 							world->RemoveComponent<Frosty::ECS::CConsumables>(m_SelectedEntity);
 					}
-					if (ImGui::MenuItem("HealthBar", "", &toggles[13]))
+					if (ImGui::MenuItem("HealthBar", "", &toggles[12]))
 					{
 						if (!world->HasComponent<Frosty::ECS::CHealthBar>(m_SelectedEntity))
 							world->AddComponent<Frosty::ECS::CHealthBar>(m_SelectedEntity);
@@ -496,21 +482,11 @@ namespace MCS
 						ImGui::EndChild();
 					}
 				}
-				if (world->HasComponent<Frosty::ECS::CMotion>(m_SelectedEntity))
+				if (world->HasComponent<Frosty::ECS::CPlayer>(m_SelectedEntity))
 				{
-					if (ImGui::CollapsingHeader("Motion"))
+					if (ImGui::CollapsingHeader("Player"))
 					{
-						auto& comp = world->GetComponent<Frosty::ECS::CMotion>(m_SelectedEntity);
-						ImGui::BeginChild("CMotion", ImVec2(EDITOR_INSPECTOR_WIDTH, 35), true);
-						ImGui::InputFloat("Speed", &comp.Speed, 1.0f, 10.0f, 0);
-						ImGui::EndChild();
-					}
-				}
-				if (world->HasComponent<Frosty::ECS::CController>(m_SelectedEntity))
-				{
-					if (ImGui::CollapsingHeader("Controller"))
-					{
-						auto& comp = world->GetComponent<Frosty::ECS::CController>(m_SelectedEntity);
+						auto& comp = world->GetComponent<Frosty::ECS::CPlayer>(m_SelectedEntity);
 						ImGui::BeginChild("CController", ImVec2(EDITOR_INSPECTOR_WIDTH, 110), true);
 
 						if (ImGui::Button(std::to_string(comp.MoveLeftKey).c_str(), ImVec2(100.0f, 0.0f)))
@@ -605,12 +581,13 @@ namespace MCS
 						ImGui::EndChild();
 					}
 				}
-				if (world->HasComponent<Frosty::ECS::CCollision>(m_SelectedEntity))
+				if (world->HasComponent<Frosty::ECS::CPhysics>(m_SelectedEntity))
 				{
-					if (ImGui::CollapsingHeader("Collision"))
+					if (ImGui::CollapsingHeader("Physics"))
 					{
-						auto& comp = world->GetComponent<Frosty::ECS::CCollision>(m_SelectedEntity);
-						ImGui::BeginChild("CCollision", ImVec2(EDITOR_INSPECTOR_WIDTH, 35), true);
+						auto& comp = world->GetComponent<Frosty::ECS::CPhysics>(m_SelectedEntity);
+						ImGui::BeginChild("CPhysics", ImVec2(EDITOR_INSPECTOR_WIDTH, 35), true);
+						ImGui::InputFloat("Speed", &comp.Speed, 1.0f, 10.0f, 0);
 						if (ImGui::Button("Select bounding box.."))
 							ImGui::OpenPopup("Bounding box selector");
 						if (ImGui::BeginPopupModal("Bounding box selector", NULL, ImGuiWindowFlags_MenuBar))
@@ -623,7 +600,7 @@ namespace MCS
 								ImGui::TreeNodeEx((void*)(intptr_t)index, node_flags, "%s", bb.first.c_str());
 								if (ImGui::IsItemClicked())
 								{
-									world->GetComponent<Frosty::ECS::CCollision>(m_SelectedEntity).BoundingBox = bb.second;
+									world->GetComponent<Frosty::ECS::CPhysics>(m_SelectedEntity).BoundingBox = bb.second;
 								}
 							}
 

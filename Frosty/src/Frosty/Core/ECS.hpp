@@ -86,7 +86,7 @@ namespace Frosty
 #pragma region Settings
 
 		// Let's define a maximum number of unique components:
-		constexpr std::size_t MAX_COMPONENTS{ 17 };
+		constexpr std::size_t MAX_COMPONENTS{ 21 };
 
 		// Let's define a maximum number of entities that
 		// can have the same component type:
@@ -237,6 +237,7 @@ namespace Frosty
 		struct BaseComponent
 		{
 			std::shared_ptr<Entity> EntityPtr{ nullptr };
+			virtual void Func() = 0;
 		};
 
 		struct BaseComponentManager
@@ -332,11 +333,14 @@ namespace Frosty
 			glm::vec3 Position{ 0.0f };
 			glm::vec3 Rotation{ 0.0f };
 			glm::vec3 Scale{ 1.0f };
-			bool UpdateTransform{ false };				// Not sure if this is needed outside the editor
+			glm::mat4 ModelMatrix{ 1.0f };
+			bool UpdateTransform{ false };
 
 			CTransform() = default;
 			CTransform(const glm::vec3& position, const glm::vec3& rotation, const glm::vec3& scale) : Position(position), Rotation(rotation), Scale(scale) { }
 			CTransform(const CTransform& org) { FY_CORE_ASSERT(false, "Copy constructor in CTransform called."); }
+
+			virtual void Func() override { }
 		};
 
 		struct CMesh : public BaseComponent
@@ -347,6 +351,8 @@ namespace Frosty
 			CMesh() = default;
 			CMesh(std::shared_ptr<VertexArray> mesh) : Mesh(mesh) { }
 			CMesh(const CMesh& org) { FY_CORE_ASSERT(false, "Copy constructor in CMesh called."); }
+
+			virtual void Func() override { }
 		};
 
 		struct CCamera : public BaseComponent
@@ -369,6 +375,8 @@ namespace Frosty
 			{
 			}
 			CCamera(const CCamera& org) { FY_CORE_ASSERT(false, "Copy constructor in CCamera called."); }
+
+			virtual void Func() override { }
 		};
 
 		struct CMaterial : public BaseComponent
@@ -387,36 +395,24 @@ namespace Frosty
 			CMaterial() = default;
 			CMaterial(const std::shared_ptr<Shader>& shader) : UseShader(shader) { }
 			CMaterial(const CMaterial& org) { FY_CORE_ASSERT(false, "Copy constructor in CMaterial called."); }
+
+			virtual void Func() override { }
 		};
 
-		struct CMotion : public BaseComponent
-		{
-			static std::string NAME;
-			static const int DASH_COOLDOWN = 3000;
-			static const int DASH_DISTANCE = 10000;
-			glm::vec3 Direction{ 0.0f, 0.0f, 0.0f };
-			float Speed{ 0.0f };
-			glm::vec3 Velocity{ 0.0f };
-			bool DashActive{ false };
-			float DashCurrentCooldown{ 0.0f };
-			float DistanceDashed{ 0.0f };
-			float DashSpeedMultiplier{ 10.0f };
-
-			CMotion() = default;
-			CMotion(float speed) : Speed(speed) { }
-			CMotion(const CMotion& org) { FY_CORE_ASSERT(false, "Copy constructor in CMotion called."); }
-		};
-
-		struct CController : public BaseComponent
+		struct CPlayer : public BaseComponent
 		{
 			static std::string NAME;
 			int MoveLeftKey{ FY_KEY_A };
 			int MoveForwardKey{ FY_KEY_W };
 			int MoveRightKey{ FY_KEY_D };
 			int MoveBackKey{ FY_KEY_S };
+			int DashKey{ FY_KEY_LEFT_SHIFT };
+			int BasicAttackKey{ FY_KEY_SPACE };
 
-			CController() = default;
-			CController(const CController& org) { FY_CORE_ASSERT(false, "Copy constructor in CController called."); }
+			CPlayer() = default;
+			CPlayer(const CPlayer& org) { FY_CORE_ASSERT(false, "Copy constructor in CPlayer called."); }
+
+			virtual void Func() override { }
 		};
 
 		struct CFollow : public BaseComponent
@@ -426,7 +422,10 @@ namespace Frosty
 			float StopDistance{ 0.0f };
 
 			CFollow() = default;
+			CFollow(CTransform* target) : Target(target) { }
 			CFollow(const CFollow& org) { FY_CORE_ASSERT(false, "Copy constructor in CFollow called."); }
+
+			virtual void Func() override { }
 		};
 
 		struct CLight : public BaseComponent
@@ -444,16 +443,23 @@ namespace Frosty
 			CLight(LightType lightType, float strength, glm::vec3 color, float radius) : Type(lightType), Strength(strength), Color(color), Radius(radius) { }
 			CLight(LightType lightType, float strength, glm::vec3 color) : Type(lightType), Strength(strength), Color(color) { }
 			CLight(const CLight& org) { FY_CORE_ASSERT(false, "Copy constructor in CLight called."); }
+
+			virtual void Func() override { }
 		};
 
-		struct CCollision : public BaseComponent
+		struct CPhysics : public BaseComponent
 		{
 			static std::string NAME;
 			std::shared_ptr<Luna::BoundingBox> BoundingBox;
+			glm::vec3 Direction{ 0.0f, 0.0f, 0.0f };
+			float Speed{ 0.0f };
+			glm::vec3 Velocity{ 0.0f };
 
-			CCollision() = default;
-			CCollision(const std::shared_ptr<Luna::BoundingBox>& bb) : BoundingBox(bb) { }
-			CCollision(const CCollision& org) { FY_CORE_ASSERT(false, "Copy constructor in CCollision called."); }
+			CPhysics() = default;
+			CPhysics(const std::shared_ptr<Luna::BoundingBox>& bb, float speed = 0.0f) : BoundingBox(bb), Speed(speed) { }
+			CPhysics(const CPhysics& org) { FY_CORE_ASSERT(false, "Copy constructor in CPhysics called."); }
+
+			virtual void Func() override { }
 		};
 
 		struct CPlayerAttack : public BaseComponent
@@ -479,21 +485,23 @@ namespace Frosty
 			//CPlayerAttack(float reach, float cooldown, float damage, bool isPlayer, bool isMelee) : Reach(reach), Cooldown(cooldown), Damage(damage), IsPlayer(isPlayer), IsMelee(isMelee){ }
 			CPlayerAttack(float reach, float cooldown, float damage, bool isPlayer) : Reach(reach), Cooldown(cooldown), Damage(damage), IsPlayer(isPlayer) { }
 			CPlayerAttack(const CPlayerAttack& org) { FY_CORE_ASSERT(false, "Copy constructor in CPlayerAttack called."); }
+
+			virtual void Func() override { }
 		};
 
 		struct CArrow : public BaseComponent
 		{
 			static std::string NAME;
 			float Damage{ 1.0f };
-			int Lifetime{ 70 };
+			float Lifetime{ 3.0f };
 			bool IsPiercing{ false };
-			// for piercing arrow
-			int alradyHitt{ 0 };
 
 
 			CArrow() = default;
-			CArrow(float damage, int lifetime, bool isPiercing) : Damage(damage), Lifetime(lifetime), IsPiercing(isPiercing){ }
+			CArrow(float damage, float lifetime = 7.0f, bool isPiercing = false) : Damage(damage), Lifetime(lifetime), IsPiercing(isPiercing){ }
 			CArrow(const CArrow& org) { FY_CORE_ASSERT(false, "Copy constructor in CArrow called."); }
+
+			virtual void Func() override { }
 		};
 		
 		struct CEnemyAttack : public BaseComponent
@@ -508,6 +516,8 @@ namespace Frosty
 			CEnemyAttack() = default;			
 			CEnemyAttack(float radius, float cooldown, float damage, bool isPlayer) : Radius(radius), Cooldown(cooldown), Damage(damage), IsPlayer(isPlayer) { }
 			CEnemyAttack(const CEnemyAttack& org) { FY_CORE_ASSERT(false, "Copy constructor in CEnemyAttack called."); }
+
+			virtual void Func() override { }
 		};
 
 		struct CHealth : public BaseComponent
@@ -519,6 +529,8 @@ namespace Frosty
 			CHealth() = default;
 			CHealth(float health) : MaxHealth(health), CurrentHealth(health) {};
 			CHealth(const CHealth& org) { FY_CORE_ASSERT(false, "Copy constructor in CHealth called."); }
+
+			virtual void Func() override { }
 		};
 
 		//Temp
@@ -533,6 +545,8 @@ namespace Frosty
 			CTag(const CTag& org) { FY_CORE_ASSERT(false, "Copy constructor in CTag called."); }
 
 			bool operator==(const CTag& other) { return (TagName == other.TagName); }
+
+			virtual void Func() override { }
 		};
 
 		struct CConsumables : public BaseComponent
@@ -555,8 +569,9 @@ namespace Frosty
 
 			CConsumables() = default;
 			CConsumables(const CConsumables& org) { FY_CORE_ASSERT(false, "Copy constructor in CConsumables called."); }
-		};
 
+			virtual void Func() override { }
+		};
 
 		struct CCharacterState : public BaseComponent
 		{
@@ -587,6 +602,8 @@ namespace Frosty
 			CCharacterState(CharacterStates m_CharacterState, CharacterAttributeStates m_CharacterAttributeState) :
 				m_CharacterState(m_CharacterState), m_CharacterAttributeState(m_CharacterAttributeState) { }
 			CCharacterState(const CCharacterState& org) { FY_CORE_ASSERT(false, "Copy constructor in CCharacterState called."); }
+
+			virtual void Func() override { }
 		};
 
 		struct CHealthBar : public BaseComponent
@@ -602,11 +619,69 @@ namespace Frosty
 			float pivot;
 
 			CHealthBar() = default;
-			CHealthBar(glm::vec3 barOffset)
-				:BarOffset(barOffset) {}
+			CHealthBar(glm::vec3 barOffset) : BarOffset(barOffset) { }
 			CHealthBar(glm::vec3 barOffset, std::shared_ptr<VertexArray> mesh, std::shared_ptr<Shader> shader, std::shared_ptr<Texture2D> tex)
-				: BarOffset(barOffset), Mesh(mesh), UseShader(shader), Texture(tex) {}
-			CHealthBar(const CHealthBar& org) { FY_CORE_ASSERT(false, "Copy constructor in CCollision called."); }
+				: BarOffset(barOffset), Mesh(mesh), UseShader(shader), Texture(tex) { }
+			CHealthBar(const CHealthBar& org) { FY_CORE_ASSERT(false, "Copy constructor in CHealthBar called."); }
+
+			virtual void Func() override { }
+		};
+
+		struct CDash : public BaseComponent
+		{
+			static std::string NAME;
+			static const int COOLDOWN = 3000;
+			static const int DISTANCE = 16000;
+			bool Active{ false };
+			float CurrentCooldown{ 0.0f };
+			float DistanceDashed{ 0.0f };
+			float SpeedMultiplier{ 7.0f };
+
+			CDash() = default;
+			CDash(const CDash& org) { FY_CORE_ASSERT(false, "Copy constructor in CDash called."); }
+
+			virtual void Func() override { }
+		};
+
+		struct CBasicAttack : public BaseComponent
+		{
+			enum class AttackType
+			{
+				Melee, Range
+			};
+			static std::string NAME;
+			static const int COOLDOWN = 1300;
+			float CurrentCooldown{ 0.0f };
+			AttackType Type{ AttackType::Melee };
+
+			CBasicAttack() = default;
+			CBasicAttack(AttackType attackType) : Type(attackType) { }
+			CBasicAttack(const CBasicAttack& org) { FY_CORE_ASSERT(false, "Copy constructor in CBasicAttack called."); }
+
+			virtual void Func() override { }
+		};
+
+		struct CDestroy : public BaseComponent
+		{
+			static std::string NAME;
+
+			CDestroy() = default;
+			CDestroy(const CDestroy& org) { FY_CORE_ASSERT(false, "Copy constructor in CDestroy called."); }
+
+			virtual void Func() override { }
+		};
+
+		struct CSword : public BaseComponent
+		{
+			static std::string NAME;
+			float Damage{ 1.0f };
+			float Lifetime{ 1.0f };
+
+			CSword() = default;
+			CSword(float damage, float time) : Damage(damage), Lifetime(time) { }
+			CSword(const CSword& org) { FY_CORE_ASSERT(false, "Copy constructor in CSword called."); }
+
+			virtual void Func() override { }
 		};
 
 		struct CParticleSystem : public BaseComponent
@@ -621,9 +696,7 @@ namespace Frosty
 				float speed = 2.0f;
 				//int padding[]; //In case padding is needed
 			};
-
 			static const uint32_t MAX_PARTICLE_COUNT = 1000; //Unsure if this can possibly be static, but max particle count should be defined in Frosty
-
 			static std::string NAME;
 			uint32_t particleCount = 10;
 			float emitRate = 5.0f;
@@ -636,7 +709,9 @@ namespace Frosty
 			CParticleSystem() = default;
 			CParticleSystem(std::shared_ptr<VertexArray> verts, std::shared_ptr<Shader> shader, std::shared_ptr<Texture2D> tex)
 				: particleVertArray(verts), shader(shader), texture(tex) {}
-			CParticleSystem(const CConsumables& org) { FY_CORE_ASSERT(false, "Copy constructor in CParticleSystem called."); }
+			CParticleSystem(const CParticleSystem& org) { FY_CORE_ASSERT(false, "Copy constructor in CParticleSystem called."); }
+
+			virtual void Func() override { }
 		};
 
 		static std::string GetComponentName(size_t i)
@@ -647,18 +722,23 @@ namespace Frosty
 			case 1:		return "Mesh";
 			case 2:		return "Camera";
 			case 3:		return "Material";
-			case 4:		return "Motion";
-			case 5:		return "Controller";
-			case 6:		return "Follow";
-			case 7:		return "Light";
-			case 8:		return "Collision";
-			case 9:		return "PlayerAttack";
-			case 10:	return "Health";
-			case 11:	return "Tag";
-			case 12:	return "Consumables";
-			case 13:	return "CharacterState";
-			case 14:	return "HealthBar";
-			case 15:	return "ParticleSystem";
+			case 4:		return "Controller";
+			case 5:		return "Follow";
+			case 6:		return "Light";
+			case 7:		return "Physics";
+			case 8:		return "PlayerAttack";
+			case 9:		return "Arrow";
+			case 10:	return "EnemyAttack";
+			case 11:	return "Health";
+			case 12:	return "Tag";
+			case 13:	return "Consumables";
+			case 14:	return "CharacterState";
+			case 15:	return "HealthBar";
+			case 16:	return "Dash";
+			case 17:	return "BasicAttack";
+			case 18:	return "Destroy";
+			case 19:	return "Sword";
+			case 20:	return "ParticleSystem";
 			default:	return "";
 			}
 		}
@@ -675,8 +755,10 @@ namespace Frosty
 			virtual ~BaseSystem() = default;
 
 			virtual void Init() = 0;
+			virtual void OnStart() { }
 			virtual void OnInput() { }
-			virtual void OnUpdate() = 0;
+			virtual void OnUpdate() { }
+			virtual void OnEvent(BaseEvent& e) { }
 			virtual void BeginScene() { }
 			virtual void Render() { }
 

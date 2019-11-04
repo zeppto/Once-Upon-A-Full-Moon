@@ -70,7 +70,7 @@ namespace Frosty
 		//PrefabManager::Delete();
 	}
 
-void Application::InitPrefabBuffers()
+	void Application::InitPrefabBuffers()
 	{
 		//m_VertexArray.reset(VertexArray::Create());
 		//
@@ -162,6 +162,7 @@ void Application::InitPrefabBuffers()
 			/// Frame Start
 			Time::OnUpdate();
 
+
 			//states.GetActiveState()->OnUpdate();
 			//if (mainMenuReturn == true)
 			//{
@@ -169,11 +170,6 @@ void Application::InitPrefabBuffers()
 			//	mainMenuReturn = false;
 			//}
 
-			/// Input
-			if (m_GameRunning)
-			{
-				m_World->OnInput();
-			}
 
 
 			////TEST SPRITE
@@ -201,31 +197,26 @@ void Application::InitPrefabBuffers()
 			//Renderer::SubmitText(m_textShader, m_TextVertexArray, tempText);
 			//glDisable(GL_BLEND);
 
-			/// Update
 			m_EditorCamera.OnUpdate();
-
 			for (Layer* layer : m_LayerHandler)
 			{
 				layer->OnUpdate();
 			}
 
-			if (m_GameRunning)
-			{
-				m_World->OnUpdate();
-			}
-
-			/// Render
 			if (!m_GameRunning)
 			{
 				RenderCommand::SetClearColor({ 0.2f, 0.2f, 0.2f, 1.0f });
 				RenderCommand::Clear();
-
+			
 				Renderer::BeginScene();
 				//Renderer::SetCamera(m_EditorCamera.GetPosition(), m_EditorCamera.GetViewProjectionMatrix());
 				Renderer::SetCamera(m_EditorCamera.GetPosition(), m_EditorCamera.GetViewMatrix(), m_EditorCamera.GetProjectionMatrix());
 			}
 			else
 			{
+				m_World->OnStart();
+				m_World->OnInput();
+				m_World->OnUpdate();
 				m_World->BeginScene();
 			}
 
@@ -299,10 +290,10 @@ void Application::InitPrefabBuffers()
 	{
 		switch (e.GetEventType())
 		{
-		case Frosty::EventType::WindowClose:
+		case EventType::WindowClose:
 			OnWindowCloseEvent(static_cast<WindowCloseEvent&>(e));
 			break;
-		case Frosty::EventType::KeyPressed:
+		case EventType::KeyPressed:
 			OnKeyPressedEvent(static_cast<KeyPressedEvent&>(e));
 			break;
 		default:
@@ -320,6 +311,11 @@ void Application::InitPrefabBuffers()
 			{
 				break;
 			}
+		}
+
+		if (m_GameRunning)
+		{
+			m_World->OnEvent(e);
 		}
 	}
 

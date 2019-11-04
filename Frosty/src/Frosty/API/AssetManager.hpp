@@ -19,7 +19,7 @@ namespace Frosty
 		virtual ~AssetManager() = default;
 
 		static void Init();
-		
+
 		// Meshes
 		inline static std::shared_ptr<VertexArray>& GetMesh(const std::string& name) { FY_CORE_ASSERT(s_Meshes.count(name), "Mesh error!\n{0} doesn't exist!", name); return s_Meshes[name]; }
 		inline static std::map<std::string, std::shared_ptr<VertexArray>>& GetMeshes() { return s_Meshes; }

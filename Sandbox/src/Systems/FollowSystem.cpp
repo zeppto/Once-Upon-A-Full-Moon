@@ -5,7 +5,7 @@ void FollowSystem::Init()
 {
 	p_Signature.set(Frosty::ECS::getComponentTypeID<Frosty::ECS::CTransform>(), true);
 	p_Signature.set(Frosty::ECS::getComponentTypeID<Frosty::ECS::CFollow>(), true);
-	p_Signature.set(Frosty::ECS::getComponentTypeID<Frosty::ECS::CMotion>(), true);
+	p_Signature.set(Frosty::ECS::getComponentTypeID<Frosty::ECS::CPhysics>(), true);
 }
 
 void FollowSystem::OnUpdate()
@@ -14,14 +14,14 @@ void FollowSystem::OnUpdate()
 	{
 		if (m_Follow[i]->Target)
 		{
-			float distance = glm::distance(m_Transform[i]->Position, m_Follow[i]->Target->Position);
+			float distance = glm::distance({ m_Transform[i]->Position.x, 0.0f, m_Transform[i]->Position.z }, m_Follow[i]->Target->Position);
 			if (distance > m_Follow[i]->StopDistance)
 			{
-				m_Motion[i]->Velocity = glm::normalize(m_Follow[i]->Target->Position - m_Transform[i]->Position) * m_Motion[i]->Speed;
+				m_Physics[i]->Velocity = glm::normalize(m_Follow[i]->Target->Position - glm::vec3(m_Transform[i]->Position.x, 0.0f, m_Transform[i]->Position.z)) * m_Physics[i]->Speed;
 			}
 			else
 			{
-				m_Motion[i]->Velocity = glm::vec3(0.0f);
+				m_Physics[i]->Velocity = glm::vec3(0.0f);
 			}
 		}
 	}
@@ -36,7 +36,7 @@ void FollowSystem::AddComponent(const std::shared_ptr<Frosty::ECS::Entity>& enti
 		auto& world = Frosty::Application::Get().GetWorld();
 		m_Transform[p_Total] = &world->GetComponent<Frosty::ECS::CTransform>(entity);
 		m_Follow[p_Total] = &world->GetComponent<Frosty::ECS::CFollow>(entity);
-		m_Motion[p_Total] = &world->GetComponent<Frosty::ECS::CMotion>(entity);
+		m_Physics[p_Total] = &world->GetComponent<Frosty::ECS::CPhysics>(entity);
 
 		p_Total++;
 	}
@@ -51,7 +51,7 @@ void FollowSystem::RemoveEntity(const std::shared_ptr<Frosty::ECS::Entity>& enti
 		p_Total--;
 		m_Transform[p_Total] = nullptr;
 		m_Follow[p_Total] = nullptr;
-		m_Motion[p_Total] = nullptr;
+		m_Physics[p_Total] = nullptr;
 
 		if (p_Total > 1)
 		{
