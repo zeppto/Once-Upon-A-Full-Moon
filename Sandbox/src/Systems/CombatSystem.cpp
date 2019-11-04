@@ -228,6 +228,9 @@ void CombatSystem::OnAreaAttackHitEvent(Frosty::AreaAttackEvent& e)
 }
 
 void CombatSystem::OnStrongAttackHitEvent(Frosty::StrongAttackEvent& e)
+
+
+
 {
 	FY_TRACE("new ({0})", e.getPlayer()->Id);
 

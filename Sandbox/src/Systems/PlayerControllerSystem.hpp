@@ -26,6 +26,9 @@ private:
 
 	void CalculateDirection(size_t index);
 
+	bool InputReleased(int keyReleased);
+	bool InputPressed(int keyPressed);
+
 private:
 	std::array<Frosty::ECS::CTransform*, Frosty::ECS::MAX_ENTITIES_PER_COMPONENT> m_Transform;
 	std::array<Frosty::ECS::CController*, Frosty::ECS::MAX_ENTITIES_PER_COMPONENT> m_Controller;

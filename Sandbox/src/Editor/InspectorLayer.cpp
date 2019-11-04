@@ -539,6 +539,31 @@ namespace MCS
 						ImGui::SameLine();
 						ImGui::Text(m_PreviousControllerHotkey == comp.MoveBackKey ? "Move Back (Press a key)" : "Move Back");
 
+						//attack
+						if (ImGui::Button(std::to_string(comp.AttackNormalKey).c_str(), ImVec2(100.0f, 0.0f)))
+						{
+							m_SelectedController = &comp;
+							m_PreviousControllerHotkey = comp.AttackNormalKey;
+						}
+						ImGui::SameLine();
+						ImGui::Text(m_PreviousControllerHotkey == comp.AttackNormalKey ? "Normal Attack (Press a key)" : "Normal Attack");
+
+						if (ImGui::Button(std::to_string(comp.AttackAreaKey).c_str(), ImVec2(100.0f, 0.0f)))
+						{
+							m_SelectedController = &comp;
+							m_PreviousControllerHotkey = comp.AttackAreaKey;
+						}
+						ImGui::SameLine();
+						ImGui::Text(m_PreviousControllerHotkey == comp.AttackAreaKey ? "Area Attack (Press a key)" : "Area Attack");
+
+						if (ImGui::Button(std::to_string(comp.AttackStrongKey).c_str(), ImVec2(100.0f, 0.0f)))
+						{
+							m_SelectedController = &comp;
+							m_PreviousControllerHotkey = comp.AttackStrongKey;
+						}
+						ImGui::SameLine();
+						ImGui::Text(m_PreviousControllerHotkey == comp.AttackStrongKey ? "Strong Attack (Press a key)" : "Strong Attack");
+
 						ImGui::EndChild();
 					}
 				}

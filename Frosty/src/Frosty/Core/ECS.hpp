@@ -424,10 +424,16 @@ namespace Frosty
 		struct CController : public BaseComponent
 		{
 			static std::string NAME;
+			//movment
 			int MoveLeftKey{ FY_KEY_A };
 			int MoveForwardKey{ FY_KEY_W };
 			int MoveRightKey{ FY_KEY_D };
 			int MoveBackKey{ FY_KEY_S };
+
+			//attack
+			int AttackNormalKey{ FY_MOUSE_BUTTON_LEFT };
+			int AttackAreaKey{ FY_MOUSE_BUTTON_RIGHT };
+			int AttackStrongKey{ FY_KEY_SPACE };
 
 			CController() = default;
 			CController(const CController& org) { FY_CORE_ASSERT(false, "Copy constructor in CController called."); }

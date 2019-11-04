@@ -79,36 +79,35 @@ void PlayerControllerSystem::OnInput()
 		}
 
 		//attack controlls
-		//attack
 		//normal attack 
-		if (Frosty::InputManager::IsMouseButtonReleased(FY_MOUSE_BUTTON_LEFT))
+		if (InputReleased(m_Controller[i]->AttackNormalKey))
 		{
 			//to prevent attacks if the player never releses the butten
 			m_CanAttackNormal = true;
 		}
-		if (Frosty::InputManager::IsMouseButtonPressed(FY_MOUSE_BUTTON_LEFT) && m_CanAttackNormal && m_PlayerAttack[i]->Cooldown > 0.0f)
+		if (InputPressed(m_Controller[i]->AttackNormalKey) && m_CanAttackNormal && m_PlayerAttack[i]->Cooldown > 0.0f)
 		{
 			m_CanAttackNormal = false;
 			//sends the player to make the attack
 			Frosty::EventBus::GetEventBus()->Publish<Frosty::NormalAttackEvent>(Frosty::NormalAttackEvent(m_PlayerAttack[i]->EntityPtr));
 		}
 		//area attack
-		if (Frosty::InputManager::IsMouseButtonReleased(FY_MOUSE_BUTTON_RIGHT))
+		if (InputReleased(m_Controller[i]->AttackAreaKey))
 		{
 			m_CanAttackArea = true;
 		}
-		if (Frosty::InputManager::IsMouseButtonPressed(FY_MOUSE_BUTTON_RIGHT) && m_CanAttackArea && m_PlayerAttack[i]->Cooldown > 0.0f)
+		if (InputPressed(m_Controller[i]->AttackAreaKey) && m_CanAttackArea && m_PlayerAttack[i]->Cooldown > 0.0f)
 		{
 			m_CanAttackArea = false;
 			//sends the player to make the attack
 			Frosty::EventBus::GetEventBus()->Publish<Frosty::AreaAttackEvent>(Frosty::AreaAttackEvent(m_PlayerAttack[i]->EntityPtr));
 		}
 		//strong attack
-		if (Frosty::InputManager::IsKeyReleased(FY_KEY_SPACE))
+		if (InputReleased(m_Controller[i]->AttackStrongKey))
 		{
 			m_CanAttackStrong = true;
 		}
-		if (Frosty::InputManager::IsKeyPressed(FY_KEY_SPACE) && m_CanAttackStrong && m_PlayerAttack[i]->Cooldown > 0.0f)
+		if (InputPressed(m_Controller[i]->AttackStrongKey) && m_CanAttackStrong && m_PlayerAttack[i]->Cooldown > 0.0f)
 		{
 			m_CanAttackStrong = false;
 			//sends the player to make the attack
@@ -228,4 +227,20 @@ void PlayerControllerSystem::CalculateDirection(size_t index)
 	mat = glm::rotate(mat, glm::radians(m_Transform[index]->Rotation.z), { 0.0f, 0.0f, 1.0f });
 
 	m_Motion[index]->Direction = glm::normalize(mat * glm::vec4(0.0f, 0.0f, 1.0f, 0.0));
+}
+
+bool PlayerControllerSystem::InputPressed(int keyPressed)
+{
+	if (keyPressed == FY_MOUSE_BUTTON_LEFT || keyPressed == FY_MOUSE_BUTTON_RIGHT)
+		return Frosty::InputManager::IsMouseButtonPressed(keyPressed);
+	else
+		return Frosty::InputManager::IsKeyPressed(keyPressed);
+}
+
+bool PlayerControllerSystem::InputReleased(int keyReleased)
+{
+	if (keyReleased == FY_MOUSE_BUTTON_LEFT || keyReleased == FY_MOUSE_BUTTON_RIGHT)
+		return Frosty::InputManager::IsMouseButtonReleased(keyReleased);
+	else
+		return Frosty::InputManager::IsKeyReleased(keyReleased);
 }
