@@ -147,7 +147,7 @@ void SpawnSystem::SpawnEnemy()
 	auto& enemy = world->CreateEntity();
 	auto& enemyTransform = world->GetComponent<Frosty::ECS::CTransform>(enemy);
 
-	if (m_KillCount < 10)
+	if (m_KillCount < 0)
 	{
 		enemyTransform.Position = GetSpawnPosition();
 		enemyTransform.Scale *= 2.f;
