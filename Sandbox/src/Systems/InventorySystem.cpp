@@ -20,7 +20,7 @@ namespace MCS
 		// Only check the timer for temp speed, reset speed after timer runs out
 		for (size_t i = 1; i < p_Total; i++)
 		{
-			if ((float(std::clock()) - m_Inventory[i]->SpeedTimer) * 0.001 >= m_Inventory[i]->SpeedCooldown)
+			if ((float(std::clock()) - m_Inventory[i]->SpeedTimer) * 0.001f >= m_Inventory[i]->SpeedCooldown)
 			{
 				m_Motion[i]->SpeedMultiplier = 1.f;
 			}
@@ -88,7 +88,7 @@ namespace MCS
 			for (size_t i = 1; i < p_Total; i++)
 			{
 				// If consumer has healing potion AND comsumer has not full health AND healing timer is bigger than cooldown--> drink healing potion
-				if ((m_Inventory[i]->CurrentHealingPotions > 0) && (m_Health[i]->CurrentHealth != m_Health[i]->MaxHealth) && ((float(std::clock()) - m_Inventory[i]->HealingTimer) * 0.001 >= m_Inventory[i]->HealingCooldown))
+				if ((m_Inventory[i]->CurrentHealingPotions > 0) && (m_Health[i]->CurrentHealth != m_Health[i]->MaxHealth) && ((float(std::clock()) - m_Inventory[i]->HealingTimer) * 0.001f >= m_Inventory[i]->HealingCooldown))
 				{
 					if (m_Inventory[i]->Heal <= (m_Health[i]->MaxHealth - m_Health[i]->CurrentHealth))
 					{
@@ -109,7 +109,7 @@ namespace MCS
 			for (size_t i = 1; i < p_Total; i++)
 			{
 				// If consumer has increase HP potion AND comsumer can increse health AND increase HP timer is bigger than cooldown--> drink increase HP potion
-				if ((m_Inventory[i]->CurrentIncreaseHPPotions > 0) && (m_Health[i]->MaxHealth != m_Health[i]->MaxTotalHealth) && ((float(std::clock()) - m_Inventory[i]->IncreaseHPTimer) * 0.001 >= m_Inventory[i]->IncreaseHPCooldown))
+				if ((m_Inventory[i]->CurrentIncreaseHPPotions > 0) && (m_Health[i]->MaxHealth != m_Health[i]->MaxTotalHealth) && ((float(std::clock()) - m_Inventory[i]->IncreaseHPTimer) * 0.001f >= m_Inventory[i]->IncreaseHPCooldown))
 				{
 					if (m_Inventory[i]->IncreaseHP <= (m_Health[i]->MaxTotalHealth - m_Health[i]->MaxHealth))
 					{
@@ -130,7 +130,7 @@ namespace MCS
 			for (size_t i = 1; i < p_Total; i++)
 			{
 				// If consumer has speed potion AND comsumer has not full speed capacity AND speed timer is bigger than cooldown--> drink speed boost potion
-				if ((m_Inventory[i]->CurrentSpeedPotions > 0) && (m_Motion[i]->Speed != m_Motion[i]->maxSpeed) && ((float(std::clock()) - m_Inventory[i]->SpeedTimer) * 0.001 >= m_Inventory[i]->SpeedCooldown))
+				if ((m_Inventory[i]->CurrentSpeedPotions > 0) && (m_Motion[i]->Speed != m_Motion[i]->maxSpeed) && ((float(std::clock()) - m_Inventory[i]->SpeedTimer) * 0.001f >= m_Inventory[i]->SpeedCooldown))
 				{
 					if (((m_Inventory[i]->IncreaseSpeedTemporary + m_Motion[i]->SpeedMultiplier) * m_Motion[i]->Speed) <= m_Motion[i]->maxSpeed)
 					{
