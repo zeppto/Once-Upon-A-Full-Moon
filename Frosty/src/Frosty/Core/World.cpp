@@ -1,13 +1,15 @@
 #include <fypch.hpp>
 #include "World.hpp"
-#include "Frosty/API/AssetManager.hpp"
+//#include "Frosty/API/AssetManager.hpp"
+#include"Frosty/API/AssetManager/AM.hpp"
 #include "Frosty/Core/Application.hpp"
 
 namespace Frosty
 {
 	void World::Init()
 	{
-		AssetManager::Init();
+		//AssetManager::Init();
+		AssetManager::Get()->LoadFiles();
 	}
 
 	void World::Awake()

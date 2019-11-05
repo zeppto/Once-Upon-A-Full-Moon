@@ -1,6 +1,6 @@
 #include <mcspch.hpp>
 #include "BasicAttackSystem.hpp"
-#include "Frosty/API/AssetManager.hpp"
+#include "Frosty/API/AssetManager/AM.hpp"
 #include "Frosty/Events/AbilityEvent.hpp"
 
 namespace MCS

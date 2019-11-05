@@ -2,7 +2,8 @@
 #include "Scene.hpp"
 
 #include "Frosty/RenderEngine/Renderer.hpp"
-#include "Frosty/API/AssetManager.hpp"
+//#include "Frosty/API/AssetManager.hpp"
+#include"Frosty/API/AssetManager/AM.hpp"
 #include "Frosty/Core/Application.hpp"
 
 namespace Frosty

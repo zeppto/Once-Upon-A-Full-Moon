@@ -2,9 +2,9 @@
 #include "Application.hpp"
 #include <glad/glad.h>
 #include "Frosty/RenderEngine/Renderer.hpp"
-#include "Frosty/API/AssetManager.hpp"
+//#include "Frosty/API/AssetManager.hpp"
 #include "Frosty/Core/KeyCodes.h"
-//#include"Frosty/API/AssetManager/AM.hpp"
+#include"Frosty/API/AssetManager/AM.hpp"
 
 //Particle Branch Includes
 #include "Frosty/RenderEngine/VertexArray.hpp"
@@ -16,11 +16,14 @@ namespace Frosty
 	
 	Application::Application()
 	{
+
 		Log::Init();
 		FY_CORE_INFO("Logger initialized..");
 
 		FY_CORE_ASSERT(!s_Instance, "Application already exists!");
 		s_Instance = this;
+
+
 
 		EventBus::GetEventBus()->Subscribe<Application, BaseEvent>(this, &Application::OnEvent);
 
@@ -57,8 +60,40 @@ namespace Frosty
 		//	FY_CORE_ERROR("Could not load shader source.");
 		//}
 		MotherLoader::GetMotherLoader()->LoadFiles();
+		*/
 
-		Assetmanager::GetAssetmanager()->LoadFile(m_particleSystem->GetTexturePath()); //Test*/
+
+
+
+		//Assetmanager::Get()->LoadFiles();
+
+		//std::unordered_map<std::string, LinkedMaterial>::iterator it = Assetmanager::GetMaterialMap()->begin();
+
+		//while (it != Assetmanager::GetMaterialMap()->end())
+		//{
+		//	FY_CORE_INFO("Mat: {0}", it->first);
+
+		//	if (it->second.GetDiffuse() != nullptr)
+		//	{
+		//	FY_CORE_INFO("Has Dif");
+		//	}
+		//	if (it->second.GetNormal() != nullptr)
+		//	{
+		//		FY_CORE_INFO("Has Norm");
+		//	}
+		//	if (it->second.GetGlow() != nullptr)
+		//	{
+		//		FY_CORE_INFO("Has Glow");
+		//	}
+		//	it++;
+		//}
+
+
+
+
+
+
+
 	}
 
 	Application::~Application()
