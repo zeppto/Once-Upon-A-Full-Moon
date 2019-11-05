@@ -409,6 +409,11 @@ namespace Frosty
 			int DashKey{ FY_KEY_LEFT_SHIFT };
 			int BasicAttackKey{ FY_KEY_SPACE };
 
+			int HealingPostion{ FY_KEY_1 };
+			int IncreaseHPPotion{ FY_KEY_2 };
+			int SpeedPotion{ FY_KEY_3 };
+			int SpeedBoots{ FY_KEY_4 };
+
 			CPlayer() = default;
 			CPlayer(const CPlayer& org) { FY_CORE_ASSERT(false, "Copy constructor in CPlayer called."); }
 
@@ -452,8 +457,10 @@ namespace Frosty
 			static std::string NAME;
 			std::shared_ptr<Luna::BoundingBox> BoundingBox;
 			glm::vec3 Direction{ 0.0f, 0.0f, 0.0f };
+			float MaxSpeed{ 100.f };							// Maximun speed an entiry can upgrate its speed to
 			float Speed{ 0.0f };
 			glm::vec3 Velocity{ 0.0f };
+			float SpeedMultiplier{ 1.f };						// Used in combination with Speed Boost Potion
 
 			CPhysics() = default;
 			CPhysics(const std::shared_ptr<Luna::BoundingBox>& bb, float speed = 0.0f) : BoundingBox(bb), Speed(speed) { }
@@ -523,7 +530,8 @@ namespace Frosty
 		struct CHealth : public BaseComponent
 		{
 			static std::string NAME;
-			float MaxHealth{ 5 };
+			float MaxPossibleHealth{ 20 };							// Max health an entity can upgrade to
+			float MaxHealth{ 5 };								// Max health an entity can currently have
 			float CurrentHealth{ 5 };
 
 			CHealth() = default;
@@ -549,26 +557,44 @@ namespace Frosty
 			virtual void Func() override { }
 		};
 
-		struct CConsumables : public BaseComponent
+		struct CInventory : public BaseComponent
 		{
 			static std::string NAME;
 
-			// Healing Potions - heals consumer (temp)
-			int MaxNrOfHealingPotions{ 5 };
-			int CurrentNrOfHealingPotions{ 3 };
-			float Heal{ 5.f };					// Heals 5 hearts
-			float HealingCooldown{ 3.f };		// Consumer can only drink Healing Potion every 3rd second
+
+			// HEALING POTION - heals consumer (temp)
+			int MaxHealingPotions{ 5 };							// Max number of healing potions
+			int CurrentHealingPotions{ 3 };						// Current number of potions in inventory
+			float Heal{ 5.f };									// Heals 5 hearts
+			float HealingCooldown{ 3.f };						// Consumer can only drink Healing Potion every 3rd second
 			float HealingTimer{ float(std::clock()) };			// Timer used to check cooldown
 
-			// Increase Health Potions - inreases max health on consumer (const)
+			// INCREASE HEALTH POTION - inreases max health on consumer (const)
+			int MaxIncreaseHPPotions{ 5 };
+			int CurrentIncreaseHPPotions{ 3 };
+			float IncreaseHP{ 3.f };
+			float IncreaseHPCooldown{ 3.f };
+			float IncreaseHPTimer{ float(std::clock()) };
 
-			// Speed Booster - boosts speed during a time interval (temp)
+			// SPEED BOOSTER POTION - boosts speed during a time interval (temp)
+			int MaxSpeedPotions{ 5 };
+			int CurrentSpeedPotions{ 3 };
+			float IncreaseSpeedTemporary{ 0.3f };
+			float SpeedCooldown{ 5.f };
+			float SpeedTimer{ float(std::clock()) };
 
-			// Speed Boots - boots add speed by a small procentage (const)
+			// SPEED BOOTS - boots add speed by a small procentage (const)
+			int MaxSpeedBoots{ 5 };
+			int CurrentSpeedBoots{ 0 };
+			float IncreaseSpeed{ 3.f };
+
+			// BAIT - chunks of meat used to distract the wolf
+
+			// WOLFSBANE - poisonous flower which can be mixed with bait
 
 
-			CConsumables() = default;
-			CConsumables(const CConsumables& org) { FY_CORE_ASSERT(false, "Copy constructor in CConsumables called."); }
+			CInventory() = default;
+			CInventory(const CInventory& org) { FY_CORE_ASSERT(false, "Copy constructor in CInventory called."); }
 
 			virtual void Func() override { }
 		};

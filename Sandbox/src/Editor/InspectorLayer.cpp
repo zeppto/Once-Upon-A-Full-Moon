@@ -100,7 +100,7 @@ namespace MCS
 					if (world->HasComponent<Frosty::ECS::CPlayerAttack>(m_SelectedEntity)) toggles[8] = true;
 					if (world->HasComponent<Frosty::ECS::CEnemyAttack>(m_SelectedEntity)) toggles[9] = true;
 					if (world->HasComponent<Frosty::ECS::CHealth>(m_SelectedEntity)) toggles[10] = true;
-					if (world->HasComponent<Frosty::ECS::CConsumables>(m_SelectedEntity)) toggles[11] = true;
+					if (world->HasComponent<Frosty::ECS::CInventory>(m_SelectedEntity)) toggles[11] = true;
 					if (world->HasComponent<Frosty::ECS::CHealthBar>(m_SelectedEntity)) toggles[12] = true;
 					if (world->HasComponent<Frosty::ECS::CParticleSystem>(m_SelectedEntity)) toggles[13] = true;
 				}
@@ -184,12 +184,12 @@ namespace MCS
 						else
 							world->RemoveComponent<Frosty::ECS::CHealth>(m_SelectedEntity);
 					}
-					if (ImGui::MenuItem("Consumables", "", &toggles[11]))
+					if (ImGui::MenuItem("Inventory", "", &toggles[11]))
 					{
-						if (!world->HasComponent<Frosty::ECS::CConsumables>(m_SelectedEntity))
-							world->AddComponent<Frosty::ECS::CConsumables>(m_SelectedEntity);
+						if (!world->HasComponent<Frosty::ECS::CInventory>(m_SelectedEntity))
+							world->AddComponent<Frosty::ECS::CInventory>(m_SelectedEntity);
 						else
-							world->RemoveComponent<Frosty::ECS::CConsumables>(m_SelectedEntity);
+							world->RemoveComponent<Frosty::ECS::CInventory>(m_SelectedEntity);
 					}
 					if (ImGui::MenuItem("HealthBar", "", &toggles[12]))
 					{
@@ -586,7 +586,7 @@ namespace MCS
 					if (ImGui::CollapsingHeader("Physics"))
 					{
 						auto& comp = world->GetComponent<Frosty::ECS::CPhysics>(m_SelectedEntity);
-						ImGui::BeginChild("CPhysics", ImVec2(EDITOR_INSPECTOR_WIDTH, 35), true);
+						ImGui::BeginChild("CPhysics", ImVec2(EDITOR_INSPECTOR_WIDTH, 70), true);
 						ImGui::InputFloat("Speed", &comp.Speed, 1.0f, 10.0f, 0);
 						if (ImGui::Button("Select bounding box.."))
 							ImGui::OpenPopup("Bounding box selector");
@@ -647,13 +647,16 @@ namespace MCS
 						ImGui::EndChild();
 					}
 				}
-				if (world->HasComponent<Frosty::ECS::CConsumables>(m_SelectedEntity))
+				if (world->HasComponent<Frosty::ECS::CInventory>(m_SelectedEntity))
 				{
-					if (ImGui::CollapsingHeader("Consumables"))
+					if (ImGui::CollapsingHeader("Inventory"))
 					{
-						auto& comp = world->GetComponent<Frosty::ECS::CConsumables>(m_SelectedEntity);
-						ImGui::BeginChild("CConsumables", ImVec2(EDITOR_INSPECTOR_WIDTH, 45), true);
-						ImGui::InputInt("Healing Potions", &comp.CurrentNrOfHealingPotions, 1.0f, 10.0f, 0);
+						auto& comp = world->GetComponent<Frosty::ECS::CInventory>(m_SelectedEntity);
+						ImGui::BeginChild("CInventory", ImVec2(EDITOR_INSPECTOR_WIDTH, 110), true);
+						ImGui::InputInt("Healing Potions", &comp.CurrentHealingPotions, 1.0f, 10.0f, 0);
+						ImGui::InputInt("Increase Health Potions", &comp.CurrentIncreaseHPPotions, 1.0f, 10.0f, 0);
+						ImGui::InputInt("Speed Potions", &comp.CurrentSpeedPotions, 1.0f, 10.0f, 0);
+						ImGui::InputInt("Speed Boots", &comp.CurrentSpeedBoots, 1.0f, 10.0f, 0);
 						ImGui::EndChild();
 					}
 				}
