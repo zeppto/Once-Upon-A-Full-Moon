@@ -670,11 +670,12 @@ namespace MCS
 					if (ImGui::CollapsingHeader("Inventory"))
 					{
 						auto& comp = world->GetComponent<Frosty::ECS::CInventory>(m_SelectedEntity);
-						ImGui::BeginChild("CInventory", ImVec2(EDITOR_INSPECTOR_WIDTH, 110), true);
+						ImGui::BeginChild("CInventory", ImVec2(EDITOR_INSPECTOR_WIDTH, 120), true);
 						ImGui::InputInt("Healing Potions", &comp.CurrentHealingPotions, 1.0f, 10.0f, 0);
 						ImGui::InputInt("Increase Health Potions", &comp.CurrentIncreaseHPPotions, 1.0f, 10.0f, 0);
 						ImGui::InputInt("Speed Potions", &comp.CurrentSpeedPotions, 1.0f, 10.0f, 0);
 						ImGui::InputInt("Speed Boots", &comp.CurrentSpeedBoots, 1.0f, 10.0f, 0);
+						ImGui::InputInt("Bait", &comp.CurrentBaitAmount, 1.0f, 10.0f, 0);
 						ImGui::EndChild();
 					}
 				}

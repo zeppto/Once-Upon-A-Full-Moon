@@ -604,7 +604,9 @@ namespace Frosty
 			float IncreaseSpeed{ 3.f };
 
 			// BAIT - chunks of meat used to distract the wolf
-
+			int MaxBaitAmount{ 5 };
+			int CurrentBaitAmount{ 3 };
+			float BaitCooldown{ 3.f };
 			// WOLFSBANE - poisonous flower which can be mixed with bait
 
 
