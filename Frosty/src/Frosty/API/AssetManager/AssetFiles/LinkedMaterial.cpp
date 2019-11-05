@@ -3,7 +3,7 @@
 #include"LinkedMaterial.hpp"
 #include "Luna/include/Luna.h"
 #include "TextureFile.hpp"
-#include"..\AM.hpp"
+#include"..\AssetManager.hpp"
 
 namespace Frosty
 {

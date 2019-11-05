@@ -76,7 +76,9 @@ project "Frosty"
 		"%{prj.name}/src/Frosty/RenderEngine/ForwardPlus.cpp",
 		"%{prj.name}/src/Frosty/RenderEngine/ForwardPlus.hpp",
 		"%{prj.name}/src/Frosty/StateMachine/States/*.cpp",
-		"%{prj.name}/src/Frosty/StateMachine/States/*.h"
+		"%{prj.name}/src/Frosty/StateMachine/States/*.h",
+		"%{prj.name}/src/Frosty/API/AssetManager.hpp",
+		"%{prj.name}/src/Frosty/API/AssetManager.cpp"
 	}
 
 	libdirs

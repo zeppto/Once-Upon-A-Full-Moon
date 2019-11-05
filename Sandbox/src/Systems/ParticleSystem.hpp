@@ -1,6 +1,6 @@
 #ifndef PARTICLE_SYSTEM_HPP
 #define PARTICLE_SYSTEM_HPP
-#include"Frosty/API/AssetManager/AM.hpp"
+#include"Frosty/API/AssetManager/AssetManager.hpp"
 
 //For now this is a test particle system, the class might as well be called "fire" or whatever this is supposed to be in the end.
 //For now, the particle system have a particle system

@@ -1,7 +1,7 @@
 //#ifndef HEALTH_BAR_SYSTEM_HPP
 //#define HEALTH_BAR_SYSTEM_HPP
 //#include "Frosty.h"
-//#include "Frosty/API/AssetManager.hpp"
+//#include"Frosty/API/AssetManager/AssetManager.hpp"
 //
 //class HealthBarSystem : public Frosty::ECS::BaseSystem
 //{
@@ -27,4 +27,3 @@
 //};
 //
 //#endif // !HEALTH_BAR_SYSTEM_HPP
-#include"Frosty/API/AssetManager/AM.hpp"

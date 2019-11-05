@@ -1,9 +1,8 @@
 #include "fypch.hpp"
 #include "UIText.h"
 #include "Frosty/DEFINITIONS.hpp"
-#include "Frosty/API/AssetManager/AM.hpp"
-//#include "..//API/AssetManager.hpp"
-//#include "Frosty/API/AssetManager.hpp"
+#include "Frosty/API/AssetManager/AssetManager.hpp"
+
 
 namespace Frosty
 {
