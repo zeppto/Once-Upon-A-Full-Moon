@@ -57,19 +57,21 @@ namespace MCS
 		map.generateMap();
 		Room myRoome = map.getRoom(glm::ivec2(10, 15));
 
-		for (int i = 5; i < 15; i++)
+		for (int i = 0; i < 30; i++)
 		{
-			for (int j = 10; j < 20; j++)
+			for (int j = 0; j < 30; j++)
 			{
 				auto& cube = world->CreateEntity();
 				auto& cubeTranform = world->GetComponent<Frosty::ECS::CTransform>(cube);
 				cubeTranform.Position = glm::vec3(i,2,j);
 				auto& cubeMaterial = world->AddComponent<Frosty::ECS::CMaterial>(cube, Frosty::AssetManager::GetShader("Texture2D"));
 				Room myRoome = map.getRoom(glm::ivec2(i, j));
-				int rotation;
+				int rotation = 0;
 				//cubeMaterial.Albedo = glm::vec4( 0.1f, 0.8f, 0.1f, 1.0f);
 				cubeMaterial.DiffuseTexture = Frosty::AssetManager::GetTexture2D(map.getRoomTextur(glm::ivec2(i,j), &rotation));
 				cubeTranform.Rotation = glm::vec3(0, rotation, 0);
+				if (i == 10 && j == 15)
+					cubeTranform.Scale = glm::vec3(0.5f, 0.5f, 0.5f);
 				//std::string cubeName = "cube" + std::to_string(((rand() % NrOfcubeTypes) + 1));
 				//cubeMaterial.DiffuseTexture = Frosty::AssetManager::GetTexture2D(cubeName);
 

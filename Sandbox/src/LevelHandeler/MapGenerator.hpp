@@ -53,7 +53,7 @@ public:
 	~MapGenerator();
 	void generateMap();
 	void generateRoomHandeler(glm::ivec2 startPos, int startSide, int nrToGenerate);
-	void generateRoom(glm::ivec2 startPos, int startSide);
+	bool generateRoom(glm::ivec2 startPos, int startSide, bool notLastBatc);
 	glm::ivec2 posOffset(int i);
 	Room getRoom(glm::ivec2 pos);
 	std::string getRoomTextur(glm::ivec2 pos, int* rotation);
