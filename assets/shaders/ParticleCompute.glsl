@@ -11,20 +11,20 @@ struct Particle
 {
 	vec4 position;
 	vec4 color;
-//	vec4 direction;
-//	vec4 startPos;
-//	float lifetime;
-//	float speed;
+	vec4 direction;
+	vec4 startPos;
+	float lifetime;
+	float speed;
 };
 layout (std430, binding = 0) buffer particles
 {
 	Particle particleData[];
 };
 
-//void ResetParticle(uint ID)
-//{
-//	particleData[ID].position = particleData[ID].startPos;
-//}
+void ResetParticle(uint ID)
+{
+	particleData[ID].position = particleData[ID].startPos;
+}
 
 void UpdateParticle(uint ID)
 {
@@ -35,12 +35,12 @@ void main()
 {
 	uint index = gl_GlobalInvocationID.x;
 
-//	if(particleData[index].lifetime <= 0.0f)
-//	{
-//		particleData[index].lifetime = maxLifetime;
-//		ResetParticle(index);
-//	}
+	if(particleData[index].lifetime <= 0.0f)
+	{
+		particleData[index].lifetime = maxLifetime;
+		ResetParticle(index);
+	}
 
-//	particleData[index].lifetime -= 1.0f * deltaTime;
+	particleData[index].lifetime -= 1.0f * deltaTime;
 	UpdateParticle(index);
 }

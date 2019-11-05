@@ -615,11 +615,11 @@ namespace Frosty
 			{
 				glm::vec4 position = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
 				glm::vec4 color = glm::vec4(1.0f);
-				//glm::vec4 startPos = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
-				//glm::vec4 direction = glm::vec4(0.0f, 1.0f, 0.0f, 1.0f);
-				//float lifetime = 2.0f;
-				//float speed = 2.0f;
-				//int padding[2]; //In case padding is needed
+				glm::vec4 direction = glm::vec4(0.0f, 1.0f, 0.0f, 1.0f);
+				glm::vec4 startPos = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
+				float lifetime = 2.0f;
+				float speed = 2.0f;
+				int padding[2]; //In case padding is needed
 			};
 
 			static const uint32_t MAX_PARTICLE_COUNT = 1000;
