@@ -184,7 +184,7 @@ namespace MCS
 
 		if (glm::length(m_Physics[index]->Direction) > 0.0f)
 		{
-			m_Physics[index]->Velocity = m_Physics[index]->Direction * m_Physics[index]->Speed;
+			m_Physics[index]->Velocity = glm::normalize(m_Physics[index]->Direction) * m_Physics[index]->Speed;
 
 			if (Frosty::InputManager::IsKeyPressed(m_Player[index]->DashKey))
 			{
@@ -203,7 +203,7 @@ namespace MCS
 	{
 		if (Frosty::InputManager::IsKeyPressed(m_Player[index]->BasicAttackKey))
 		{
-			if (Frosty::Application::Get().GetWorld()->HasComponent<Frosty::ECS::CBasicAttack>(m_Transform[index]->EntityPtr))
+			//if (Frosty::Application::Get().GetWorld()->HasComponent<Frosty::ECS::CBasicAttack>(m_Transform[index]->EntityPtr))
 			{
 				Frosty::EventBus::GetEventBus()->Publish<Frosty::BasicAttackEvent>(Frosty::BasicAttackEvent(m_Transform[index]->EntityPtr));
 			}

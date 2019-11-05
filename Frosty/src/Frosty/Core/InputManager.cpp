@@ -14,6 +14,7 @@ namespace Frosty
 
 	bool InputManager::IsKeyReleased(int key)
 	{
+		int clickType = CheckKeyClickType(key);
 		return CheckKeyClickType(key) == FY_BUTTON_RELEASE;
 	}
 
