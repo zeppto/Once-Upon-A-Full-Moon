@@ -41,7 +41,7 @@ namespace Frosty
 
 
 
-	class AssetManager 
+	class AssetManager
 	{
 	public:		//Variables
 
@@ -76,23 +76,11 @@ namespace Frosty
 		static AssetManager* Get();
 		~AssetManager();
 
-		bool LoadFile(const std::string& FullFilePath, const std::string& TagName = "");
-		void LoadFiles();
+		static bool LoadFile(const std::string& FullFilePath, const std::string& TagName = "");
+		static void LoadFiles();
 
-		void PrintLoadInfo() const;
+		//void PrintLoadInfo();
 
-		//static bool LinkKey(const std::string& AssetName, BaseKey* In_Key);
-
-		static bool AddTexture(TextureFile& Tex);
-		static bool AddTexture(const FileMetaData& MetaData);
-
-		//static bool AddMesh(Mesh& Mesh);
-		static bool AddMesh(const FileMetaData& MetaData, const Luna::Mesh& LunMesh);
-		
-		static bool AddMaterial(LinkedMaterial& LnkMat);
-		static bool AddMaterial(const FileMetaData& MetaData, const Luna::Material& LunMat);
-
-		static bool AddAnimation(Animation& Animation);
 
 		//inline static Mesh* GetMesh(const std::string& MeshName) { return  MeshLoaded(MeshName) ? &s_Meshes[MeshName] : nullptr; }
 		inline static TextureFile* GetTexture(const std::string& FileName) { return  TextureLoaded(FileName) ? &s_Textures[FileName] : nullptr; }
@@ -106,21 +94,22 @@ namespace Frosty
 		inline static std::unordered_map<std::string, LinkedMaterial>* GetMaterialMap() { return &s_LinkedMaterials; }
 
 
-		//From Temp AssetManager
-
-		// Meshes
-		inline static std::shared_ptr<VertexArray>& GetMesh(const std::string& name) { FY_CORE_ASSERT(s_VertexArrays.count(name), "Mesh error!\n{0} doesn't exist!", name); return s_VertexArrays[name]; }
+		//Use Mesh name
+		inline static std::shared_ptr<VertexArray>& GetMesh(const std::string& MeshName) { FY_CORE_ASSERT(s_VertexArrays.count(MeshName), "Mesh error!\n{0} doesn't exist!", MeshName); return s_VertexArrays[MeshName]; }
 		inline static std::map<std::string, std::shared_ptr<VertexArray>>& GetMeshes() { return s_VertexArrays; }
 
-		// Shaders
-		inline static std::shared_ptr<Shader>& GetShader(const std::string& name) { FY_CORE_ASSERT(s_Shaders.count(name), "Shader error!\n{0} doesn't exist!", name); return s_Shaders[name]; }
+		//Use Filename
+		inline static std::shared_ptr<Shader>& GetShader(const std::string& FileName) { FY_CORE_ASSERT(s_Shaders.count(FileName), "Shader error!\n{0} doesn't exist!", FileName); return s_Shaders[FileName]; }
 		inline static std::map<std::string, std::shared_ptr<Shader>>& GetShaders() { return s_Shaders; }
 
 		// Textures
-		inline static std::shared_ptr<Texture2D>& GetTexture2D(const std::string& name) { FY_CORE_ASSERT(s_Textures2D.count(name), "Texture2D error!\n{0} doesn't exist!", name); return s_Textures2D[name]; }
+
+		//Use Filename
+		inline static std::shared_ptr<Texture2D>& GetTexture2D(const std::string& FileName) { FY_CORE_ASSERT(s_Textures2D.count(FileName), "Texture2D error!\n{0} doesn't exist!", FileName); return s_Textures2D[FileName]; }
 		inline static std::map<std::string, std::shared_ptr<Texture2D>>& GetTextures2D() { return s_Textures2D; }
 
-		inline static std::shared_ptr<Luna::BoundingBox>& GetBoundingBox(const std::string& name) { FY_CORE_ASSERT(s_BoundingBoxes.count(name), "Texture2D error!\n{0} doesn't exist!", name); return s_BoundingBoxes[name]; }
+		//Use Mesh name
+		inline static std::shared_ptr<Luna::BoundingBox>& GetBoundingBox(const std::string& MeshName) { FY_CORE_ASSERT(s_BoundingBoxes.count(MeshName), "Texture2D error!\n{0} doesn't exist!", MeshName); return s_BoundingBoxes[MeshName]; }
 		inline static std::map<std::string, std::shared_ptr<Luna::BoundingBox>>& GetBoundingBoxes() { return s_BoundingBoxes; }
 
 	private:	//Functions
@@ -136,26 +125,35 @@ namespace Frosty
 		static bool TextureLoaded(const std::string& FileName);
 		static bool AnimationLoaded(const std::string& AssetName);
 		static bool MeshLoaded(const std::string& AssetName);
+		static bool BoundingboxLoaded(const std::string& MeshName);
 
 		//from ML
-		bool LoadLunaFile(const FileMetaData& FileNameInformation, const bool& Reload = false);
-		bool LoadGraphicFile(const FileMetaData& FileNameInformation, const bool& Reload = false);
-		bool GetFileInformation(FileMetaData& FileNameInformation);
-		int8_t GetFileType(const std::string& fileType) const;
+		static 	bool LoadLunaFile(const FileMetaData& FileNameInformation, const bool& Reload = false);
+		static 	bool LoadGraphicFile(const FileMetaData& FileNameInformation, const bool& Reload = false);
+		static 	bool GetFileInformation(FileMetaData& FileNameInformation);
+		static 	int8_t GetFileType(const std::string& fileType);
 
-		void LoadDir(const std::string& dir);
-		void ConnectWatchList();
-
-
-		const std::string CutFileName(const char* in_char_ptr);
-		const std::string CutFileExtention(const char* in_char_ptr);
+		static void LoadDir(const std::string& dir);
+		static void ConnectWatchList();
 
 
-		//From Temp AssetManager
+		static std::string CutFileName(const char* in_char_ptr);
+		static std::string CutFileExtention(const char* in_char_ptr);
+		static std::string CharToStr(const char* in_char_ptr);
+
+
 		// Meshes
-		static void AddMesh(const std::string& name, const std::string& filepath);
-		// Textures
-		static void LoadTexture2D(const std::string& name, const std::string& filepath);
+		static bool AddMesh(const FileMetaData& MetaData,const std::vector<Luna::Vertex>& vertices, const std::vector<Luna::Index>& indices);
+
+		static bool AddTexture(const FileMetaData& MetaData);
+
+		static bool AddMaterial(LinkedMaterial& LnkMat);
+		static bool AddMaterial(const FileMetaData& MetaData, const Luna::Material& LunMat);
+
+		static bool AddAnimation(Animation& Animation);
+		static bool AddBoundingbox(const FileMetaData& MetaData,const Luna::BoundingBox& Boundinbox);
+
+
 	};
 }
 #endif // !ASSETMANAGER_H

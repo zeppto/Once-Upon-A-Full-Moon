@@ -31,11 +31,11 @@ namespace Frosty
 		const int& GetImageHeight() { return m_Image_Height; }
 
 
-		virtual bool LoadToMem(const bool& Reload = false);
-		virtual bool DeleteFromMem();
+		bool LoadToMem(const bool& Reload = false);
+		bool DeleteFromMem();
 
-		virtual bool LoadToGPU();
-		virtual bool DeleteFromGPU();
+		bool LoadToGPU();
+		bool DeleteFromGPU();
 
 
 	private:	//Functions

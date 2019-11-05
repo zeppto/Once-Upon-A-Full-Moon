@@ -1,8 +1,8 @@
 #include "fypch.hpp"
 #include "UISprite.h"
 #include "Glad/glad.h"
-#include"Frosty/API/AssetManager/AM.hpp"
-//#include "Frosty/API/AssetManager.hpp"
+#include"Frosty/API/AssetManager/AssetManager.hpp"
+
 
 namespace Frosty
 {

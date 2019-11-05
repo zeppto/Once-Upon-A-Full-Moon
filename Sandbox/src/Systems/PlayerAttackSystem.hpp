@@ -1,7 +1,8 @@
 //#ifndef PLAYER_ATTACK_SYSTEM_HPP
 //#define PLAYER_ATTACK_SYSTEM_HPP
 //#include "Frosty.h"
-//#include "Frosty/API/AssetManager.hpp"
+
+//#include"Frosty/API/AssetManager/AssetManager.hpp"
 //
 ////will change later !
 //class PlayerAttackSystem : public Frosty::ECS::BaseSystem
@@ -34,4 +35,3 @@
 //};
 //
 //#endif // !PLAYER_ATTACK_SYSTEM_HPP
-#include"Frosty/API/AssetManager/AM.hpp"
