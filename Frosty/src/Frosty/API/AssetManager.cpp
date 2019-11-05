@@ -105,7 +105,7 @@ namespace Frosty
 
 		// Vertex Buffer
 		std::shared_ptr<VertexBuffer> vertexBuffer;
-		vertexBuffer.reset(VertexBuffer::Create(&vertices.front(), sizeof(Luna::Vertex) * (uint32_t)vertices.size()));
+		vertexBuffer.reset(VertexBuffer::Create(&vertices.front(), sizeof(Luna::Vertex) * (uint32_t)vertices.size(), BufferType::STATIC));
 
 		BufferLayout layout = {
 			{ ShaderDataType::Float3, "a_Position" },

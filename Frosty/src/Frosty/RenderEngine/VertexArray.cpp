@@ -69,12 +69,38 @@ namespace Frosty
 		m_VertexBuffer.push_back(vertexBuffer);
 	}
 
+	void VertexArray::AddVertexBuffer(const std::shared_ptr<VertexBuffer>& vertexBuffer, uint16_t enableAttribCount)
+	{
+		FY_CORE_ASSERT(vertexBuffer->GetLayout().GetElements().size(), "Vertex buffer has no layout!");
+
+		glBindVertexArray(m_RendererID);
+		vertexBuffer->Bind();
+
+		uint32_t index = 0;
+		for (uint16_t i = 0; i < enableAttribCount; i++) {
+			BufferElement element = vertexBuffer->GetLayout().GetElements()[i];
+			glEnableVertexAttribArray(i);
+			glVertexAttribPointer(i, element.GetElementSize(),
+				ShaderDataTypeToOpenGLBaseType(element.Type),
+				vertexBuffer->GetLayout().GetElements()[i].Normalized ? GL_TRUE : GL_FALSE,
+				vertexBuffer->GetLayout().GetStride(),
+				(const void*)element.Offset);
+		}
+
+		m_VertexBuffer.push_back(vertexBuffer);
+	}
+
 	void VertexArray::SetIndexBuffer(const std::shared_ptr<IndexBuffer>& indexBuffer)
 	{
 		glBindVertexArray(m_RendererID);
 		indexBuffer->Bind();
 
 		m_IndexBuffer = indexBuffer;		
+	}
+
+	void VertexArray::BindShaderStorageBuffer()
+	{
+		glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, m_VertexBuffer[0]->GetID());
 	}
 
 	const std::vector<std::shared_ptr<VertexBuffer>>& VertexArray::GetVertexBuffer() 

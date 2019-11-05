@@ -107,9 +107,9 @@ namespace MCS
 		glm::vec3 spawnPos = attackerTransform.Position + (glm::vec3(direction) * 4.0f);
 		glm::vec3 spawnScale = glm::vec3(10.0f, 6.0f, 4.0f);
 		auto& projectile = world->CreateEntity({ spawnPos.x, 3.0f, spawnPos.z }, attackerTransform.Rotation, spawnScale);
-		world->AddComponent<Frosty::ECS::CMesh>(projectile, Frosty::AssetManager::GetMesh("Cube"));
+		world->AddComponent<Frosty::ECS::CMesh>(projectile, Frosty::AssetManager::GetMesh("pCube1"));
 		world->AddComponent<Frosty::ECS::CMaterial>(projectile, Frosty::AssetManager::GetShader("FlatColor"));
-		world->AddComponent<Frosty::ECS::CPhysics>(projectile, Frosty::AssetManager::GetBoundingBox("Cube"));
+		world->AddComponent<Frosty::ECS::CPhysics>(projectile, Frosty::AssetManager::GetBoundingBox("pCube1"));
 		world->AddComponent<Frosty::ECS::CSword>(projectile);
 	}
 
@@ -129,9 +129,9 @@ namespace MCS
 		// Create projectile
 		glm::vec3 spawnPos = attackerTransform.Position + (glm::vec3(direction) * 3.0f);
 		auto& projectile = world->CreateEntity({ spawnPos.x, 1.0f, spawnPos.z }, attackerTransform.Rotation, { 0.3f, 0.3f, 0.3f });
-		world->AddComponent<Frosty::ECS::CMesh>(projectile, Frosty::AssetManager::GetMesh("Sphere"));
+		world->AddComponent<Frosty::ECS::CMesh>(projectile, Frosty::AssetManager::GetMesh("pSphere1"));
 		world->AddComponent<Frosty::ECS::CMaterial>(projectile, Frosty::AssetManager::GetShader("FlatColor"));
-		auto& projectilePhysics = world->AddComponent<Frosty::ECS::CPhysics>(projectile, Frosty::AssetManager::GetBoundingBox("Sphere"), 20.0f);
+		auto& projectilePhysics = world->AddComponent<Frosty::ECS::CPhysics>(projectile, Frosty::AssetManager::GetBoundingBox("pSphere1"), 20.0f);
 		projectilePhysics.Velocity = direction * projectilePhysics.Speed;
 		world->AddComponent<Frosty::ECS::CArrow>(projectile);
 	}
