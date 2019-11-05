@@ -607,6 +607,7 @@ namespace Frosty
 			int MaxBaitAmount{ 5 };
 			int CurrentBaitAmount{ 3 };
 			float BaitCooldown{ 3.f };
+			float BaitTimer{ float(std::clock()) };
 			// WOLFSBANE - poisonous flower which can be mixed with bait
 
 

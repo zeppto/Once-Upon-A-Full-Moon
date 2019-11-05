@@ -1,6 +1,6 @@
 #include <mcspch.hpp>
 #include "InventorySystem.hpp"
-
+#include "Frosty/API/AssetManager.hpp"
 namespace MCS
 {
 
@@ -9,6 +9,7 @@ namespace MCS
 		p_Signature.set(Frosty::ECS::getComponentTypeID<Frosty::ECS::CInventory>(), true);
 		p_Signature.set(Frosty::ECS::getComponentTypeID<Frosty::ECS::CMotion>(), true);
 		p_Signature.set(Frosty::ECS::getComponentTypeID<Frosty::ECS::CHealth>(), true);
+		p_Signature.set(Frosty::ECS::getComponentTypeID<Frosty::ECS::CTransform>(), true);
 
 		// EventBus::GetEventBus()->Subscribe<Application, BaseEvent>(this, &Application::OnEvent);
 		Frosty::EventBus::GetEventBus()->Subscribe<InventorySystem, Frosty::BaseEvent>(this, &InventorySystem::OnEvent);
@@ -37,6 +38,8 @@ namespace MCS
 			m_Inventory[p_Total] = &world->GetComponent<Frosty::ECS::CInventory>(entity);
 			m_Motion[p_Total] = &world->GetComponent<Frosty::ECS::CMotion>(entity);
 			m_Health[p_Total] = &world->GetComponent<Frosty::ECS::CHealth>(entity);
+			m_Transform[p_Total] = &world->GetComponent<Frosty::ECS::CTransform>(entity);
+
 
 			p_Total++;
 		}
@@ -53,6 +56,7 @@ namespace MCS
 			m_Inventory[p_Total] = nullptr;
 			m_Motion[p_Total] = nullptr;
 			m_Health[p_Total] = nullptr;
+			m_Transform[p_Total] = nullptr;
 
 			if (p_Total > 1)
 			{
@@ -163,6 +167,29 @@ namespace MCS
 					}
 
 					m_Inventory[i]->CurrentSpeedBoots++;
+				}
+			}
+		}
+		else if (e.GetKeyCode() == FY_KEY_Q)	// Bait
+		{
+			for (size_t i = 1; i < p_Total; i++)
+			{
+				// If player has bait AND bait timer is bigger than cooldown--> Lay down bait
+				if ((m_Inventory[i]->CurrentBaitAmount > 0)  && ((float(std::clock()) - m_Inventory[i]->BaitTimer) * 0.001f >= m_Inventory[i]->BaitCooldown))
+				{
+					auto& world = Frosty::Application::Get().GetWorld();
+					auto& bait = world->CreateEntity();
+					world->AddComponent<Frosty::ECS::CMesh>(bait, Frosty::AssetManager::GetMesh("Scarlet"));
+					auto& material = world->AddComponent<Frosty::ECS::CMaterial>(bait, Frosty::AssetManager::GetShader("Texture2D"));
+					material.DiffuseTexture = Frosty::AssetManager::GetTexture2D("Scarlet_diffuse");
+					auto& transform = world->GetComponent<Frosty::ECS::CTransform>(bait);
+					transform.Position = m_Transform[i]->Position;
+
+					//Send event with bait pos to boss
+
+
+					m_Inventory[i]->CurrentBaitAmount--;
+					m_Inventory[i]->BaitTimer = float(std::clock());
 				}
 			}
 		}
