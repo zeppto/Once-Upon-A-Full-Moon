@@ -21,11 +21,11 @@ namespace MCS
 		// Optimization: Could send in to Renderer how many point and directional lights we have to reserve that space in vectors.
 		for (size_t i = 1; i < p_Total; i++)
 		{
-			if (m_Light[i]->Type == Frosty::ECS::CLight::Point)
+			if (m_Light[i]->Type == Frosty::ECS::CLight::LightType::Point)
 			{
 				Frosty::Renderer::AddLight(m_Light[i]->Color, m_Transform[i]->Position, m_Light[i]->Strength, m_Light[i]->Radius);
 			}
-			else if (m_Light[i]->Type == Frosty::ECS::CLight::Directional)
+			else if (m_Light[i]->Type == Frosty::ECS::CLight::LightType::Directional)
 			{
 				Frosty::Renderer::AddLight(m_Light[i]->Color, m_Transform[i]->Rotation, m_Light[i]->Strength);
 			}

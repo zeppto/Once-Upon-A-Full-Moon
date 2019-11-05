@@ -19,7 +19,6 @@ namespace Frosty
 		std::string CHealth::NAME = "Health";
 		std::string CTag::NAME = "Tag";
 		std::string CInventory::NAME = "Inventory";
-		std::string CCharacterState::NAME = "CharacterState";
 		std::string CHealthBar::NAME = "HealthBar";
 		std::string CDash::NAME = "Dash";
 		std::string CBasicAttack::NAME = "BasicAttack";

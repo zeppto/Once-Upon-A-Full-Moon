@@ -86,7 +86,7 @@ namespace Frosty
 #pragma region Settings
 
 		// Let's define a maximum number of unique components:
-		constexpr std::size_t MAX_COMPONENTS{ 21 };
+		constexpr std::size_t MAX_COMPONENTS{ 20 };
 
 		// Let's define a maximum number of entities that
 		// can have the same component type:
@@ -435,7 +435,7 @@ namespace Frosty
 
 		struct CLight : public BaseComponent
 		{
-			enum LightType { Point, Directional };
+			enum class LightType { Point, Directional };
 
 			static std::string NAME;
 			LightType Type{ LightType::Point };
@@ -586,7 +586,7 @@ namespace Frosty
 			// SPEED BOOTS - boots add speed by a small procentage (const)
 			int MaxSpeedBoots{ 5 };
 			int CurrentSpeedBoots{ 0 };
-			float IncreaseSpeed{ 3.f };
+			float IncreaseSpeed{ 1.2f };
 
 			// BAIT - chunks of meat used to distract the wolf
 
@@ -595,39 +595,6 @@ namespace Frosty
 
 			CInventory() = default;
 			CInventory(const CInventory& org) { FY_CORE_ASSERT(false, "Copy constructor in CInventory called."); }
-
-			virtual void Func() override { }
-		};
-
-		struct CCharacterState : public BaseComponent
-		{
-			static std::string NAME;
-
-			/*
-			Note: More states can be added but avoid changing first and last location in the enums
-			*/
-
-			// Basic states characters in the game can find themselves in
-			enum CharacterStates {
-				IDLE, // If we want player or enemy standing still
-				WALKING,
-				ATTACKING,
-				DODGING, // Exclusive to player
-				DEAD,
-				C_COUNT
-			} m_CharacterState; // Object reference
-
-			// Possible states related to character attributes
-			enum CharacterAttributeStates {
-				CHARACTER_NOATTRIBUTE,
-				CHARACTER_INVINCIBLE, // When player is invincible, cannot take any damage of any kind while this is active
-				CA_COUNT
-			} m_CharacterAttributeState; // Object reference
-
-			CCharacterState() = default;
-			CCharacterState(CharacterStates m_CharacterState, CharacterAttributeStates m_CharacterAttributeState) :
-				m_CharacterState(m_CharacterState), m_CharacterAttributeState(m_CharacterAttributeState) { }
-			CCharacterState(const CCharacterState& org) { FY_CORE_ASSERT(false, "Copy constructor in CCharacterState called."); }
 
 			virtual void Func() override { }
 		};

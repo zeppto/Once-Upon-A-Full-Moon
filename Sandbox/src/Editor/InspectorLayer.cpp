@@ -561,11 +561,11 @@ namespace MCS
 						if (ImGui::Button("Type")) ImGui::OpenPopup("light_type_popup");
 						if (ImGui::BeginPopup("light_type_popup"))
 						{
-							if (ImGui::MenuItem("Point", "", comp.Type == Frosty::ECS::CLight::Point ? true : false))
+							if (ImGui::MenuItem("Point", "", comp.Type == Frosty::ECS::CLight::LightType::Point ? true : false))
 							{
 								comp.Type = Frosty::ECS::CLight::LightType::Point;
 							}
-							if (ImGui::MenuItem("Directional", "", comp.Type == Frosty::ECS::CLight::Directional ? true : false))
+							if (ImGui::MenuItem("Directional", "", comp.Type == Frosty::ECS::CLight::LightType::Directional ? true : false))
 							{
 								comp.Type = Frosty::ECS::CLight::LightType::Directional;
 							}
@@ -574,7 +574,7 @@ namespace MCS
 
 						ImGui::ColorEdit4("Color", glm::value_ptr(comp.Color));
 						ImGui::SliderFloat("Strength", &comp.Strength, 0.0f, 1.0f, "%.2f");
-						if (comp.Type == Frosty::ECS::CLight::Point)
+						if (comp.Type == Frosty::ECS::CLight::LightType::Point)
 						{
 							ImGui::InputFloat("Radius", &comp.Radius, 1.0f, 5.0f, 0);
 						}
@@ -653,10 +653,10 @@ namespace MCS
 					{
 						auto& comp = world->GetComponent<Frosty::ECS::CInventory>(m_SelectedEntity);
 						ImGui::BeginChild("CInventory", ImVec2(EDITOR_INSPECTOR_WIDTH, 110), true);
-						ImGui::InputInt("Healing Potions", &comp.CurrentHealingPotions, 1.0f, 10.0f, 0);
-						ImGui::InputInt("Increase Health Potions", &comp.CurrentIncreaseHPPotions, 1.0f, 10.0f, 0);
-						ImGui::InputInt("Speed Potions", &comp.CurrentSpeedPotions, 1.0f, 10.0f, 0);
-						ImGui::InputInt("Speed Boots", &comp.CurrentSpeedBoots, 1.0f, 10.0f, 0);
+						ImGui::InputInt("Healing Potions", &comp.CurrentHealingPotions, 1, 10, 0);
+						ImGui::InputInt("Increase Health Potions", &comp.CurrentIncreaseHPPotions, 1, 10, 0);
+						ImGui::InputInt("Speed Potions", &comp.CurrentSpeedPotions, 1, 1, 0);
+						ImGui::InputInt("Speed Boots", &comp.CurrentSpeedBoots, 1, 10, 0);
 						ImGui::EndChild();
 					}
 				}
