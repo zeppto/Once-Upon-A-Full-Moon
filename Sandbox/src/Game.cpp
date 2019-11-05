@@ -16,7 +16,7 @@
 #include "Systems/ArrowSystem.hpp"
 #include "Systems/SwordSystem.hpp"
 //#include "Systems/PlayerAttackSystem.hpp"
-//#include "Systems/ParticleSystem.hpp"
+#include "Systems/ParticleSystem.hpp"
 //#include "Systems/EnemyAttackSystem.hpp"
 //#include "Systems/HealthBarSystem.hpp"
 //#include "Systems/SpawnSystem.hpp"
@@ -48,7 +48,7 @@ namespace MCS
 		//world->AddSystem<EnemyAttackSystem>();
 		//world->AddSystem<SpawnSystem>();
 		//world->AddSystem<HealthBarSystem>();
-		//world->AddSystem<ParticleSystem>();
+		world->AddSystem<ParticleSystem>();
 
 		world->Awake();
 
