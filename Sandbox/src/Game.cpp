@@ -17,10 +17,8 @@
 //#include "Systems/PlayerAttackSystem.hpp"
 //#include "Systems/ParticleSystem.hpp"
 //#include "Systems/EnemyAttackSystem.hpp"
-//#include "Systems/ConsumablesSystem.hpp"
 //#include "Systems/HealthBarSystem.hpp"
 //#include "Systems/SpawnSystem.hpp"
-//#include "Systems/PlayerAttackSystem.hpp"
 
 
 
@@ -48,7 +46,6 @@ namespace MCS
 		//world->AddSystem<PlayerAttackSystem>();
 		//world->AddSystem<EnemyAttackSystem>();
 		//world->AddSystem<SpawnSystem>();
-		//world->AddSystem<ConsumablesSystem>();
 		//world->AddSystem<HealthBarSystem>();
 		//world->AddSystem<ParticleSystem>();
 
@@ -83,6 +80,8 @@ namespace MCS
 		world->AddComponent<Frosty::ECS::CPhysics>(player, Frosty::AssetManager::GetBoundingBox("Scarlet"), 10.0f);
 		world->AddComponent<Frosty::ECS::CDash>(player);
 		world->AddComponent<Frosty::ECS::CBasicAttack>(player, Frosty::ECS::CBasicAttack::AttackType::Range);
+		world->AddComponent<Frosty::ECS::CHealth>(player);
+		world->AddComponent<Frosty::ECS::CInventory>(player);
 		auto& camEntity = world->GetSceneCamera();
 		world->GetComponent<Frosty::ECS::CCamera>(camEntity).Target = &playerTransform;
 
