@@ -55,6 +55,8 @@ public:
 	void generateRoomHandeler(glm::ivec2 startPos, int startSide, int nrToGenerate);
 	void generateRoom(glm::ivec2 startPos, int startSide);
 	glm::ivec2 posOffset(int i);
+	Room getRoom(glm::ivec2 pos);
+	std::string getRoomTextur(glm::ivec2 pos, int* rotation);
 
 private:
 	Room tileMap[30][30];

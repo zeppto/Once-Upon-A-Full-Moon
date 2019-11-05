@@ -78,6 +78,12 @@ namespace Frosty
 		LoadTexture2D("Tree8", "assets/textures/testPineLeves12.tga");						// TEMPORARY
 		LoadTexture2D("Tree9", "assets/textures/testPineLeves13.tga");						// TEMPORARY
 		LoadTexture2D("Tree10", "assets/textures/testPineLeves14.tga");						// TEMPORARY
+
+		LoadTexture2D("RoomTempCross", "assets/textures/RoomTempCross.png");				//TEMPORARY
+		LoadTexture2D("RoomTemp3", "assets/textures/RoomTemp3.png");						//TEMPORARY
+		LoadTexture2D("RoomTempBend", "assets/textures/RoomTempBend.png");					//TEMPORARY
+		LoadTexture2D("RoomTempStraght", "assets/textures/RoomTempStraght.png");			//TEMPORARY
+		LoadTexture2D("RoomTempDeadEnd", "assets/textures/RoomTempDeadEnd.png");			//TEMPORARY
 		
 		s_Shaders["Texture2D"]->Bind();
 

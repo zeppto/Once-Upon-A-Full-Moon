@@ -27,10 +27,12 @@ void MapGenerator::generateMap()
 
 	RoomOnTile start;
 	start.pos = startPos;
-	start.startSide = 3;
+	start.startSide = 2;
 	loosEndsRooms.push_back(start);
 
-	generateRoomHandeler(startPos, 3, 5);
+	generateRoomHandeler(startPos, 2, 10);
+
+	int stop;
 }
 
 void MapGenerator::generateRoomHandeler(glm::ivec2 startPos, int startSide, int nrToGenerate)
@@ -70,10 +72,10 @@ void MapGenerator::generateRoom(glm::ivec2 startPos, int startSide)
 		pos = glm::ivec2(startPos.x, startPos.y + 1);
 	//left
 	if (startSide == 2)
-		pos = glm::ivec2(startPos.x - 1, startPos.y);
+		pos = glm::ivec2(startPos.x + 1, startPos.y);
 	//right
 	if (startSide == 3)
-		pos = glm::ivec2(startPos.x + 1, startPos.y);
+		pos = glm::ivec2(startPos.x - 1, startPos.y);
 
 
 	int nrOfPotentialExits = 0;
@@ -82,8 +84,19 @@ void MapGenerator::generateRoom(glm::ivec2 startPos, int startSide)
 	{
 		if (!tileMap[pos.x + posOffset(i).x][pos.y + posOffset(i).y].Ocupide)
 		{
-			tileMap[pos.x][pos.y].sideExits[i] = true;
-			nrOfPotentialExits++;
+			int isDeadEnd = 0;
+			for (int j = 0; j < 4; j++)
+			{
+				if (tileMap[pos.x + posOffset(i).x + posOffset(j).x][pos.y + posOffset(i).y + posOffset(j).y].Ocupide)
+				{
+					isDeadEnd++;
+				}
+			}
+			if (isDeadEnd < 4)
+			{
+				tileMap[pos.x][pos.y].sideExits[i] = true;
+				nrOfPotentialExits++;
+			}
 		}
 	}
 
@@ -129,11 +142,96 @@ void MapGenerator::generateRoom(glm::ivec2 startPos, int startSide)
 glm::ivec2 MapGenerator::posOffset(int i)
 {
 	if (i == 0)
-		return glm::ivec2( 0,  1);
-	if (i == 1)
 		return glm::ivec2( 0, -1);
+	if (i == 1)
+		return glm::ivec2( 0,  1);
 	if (i == 2)
 		return glm::ivec2( 1,  0);
 	if (i == 3)
 		return glm::ivec2(-1,  0);
+}
+
+Room MapGenerator::getRoom(glm::ivec2 pos)
+{
+	return tileMap[pos.x][pos.y];
+}
+
+std::string MapGenerator::getRoomTextur(glm::ivec2 pos, int* rotation)
+{
+	//enum RoomType
+	//{
+	//	UpDown,				//0
+	//	LeftRight,			//1
+	//	LeftUp,				//2
+	//	RightUp,			//3
+	//	LeftDown,			//4
+	//	RightDown,			//5
+	//	LeftRightUp,		//6
+	//	LeftRightDown,		//7
+	//	LeftUpDown,			//8
+	//	RightUpDown,		//9
+	//	LeftRightUpDown,	//10
+	//	//dead ends
+	//	Up,					//11
+	//	Down,				//12
+	//	Left,				//13
+	//	Right,				//14
+	//};
+
+	if (tileMap[pos.x][pos.y].sideExits[0] && tileMap[pos.x][pos.y].sideExits[1] && !tileMap[pos.x][pos.y].sideExits[2] && !tileMap[pos.x][pos.y].sideExits[3])
+	{
+		*rotation = 90;
+		return "RoomTempStraght";
+	}
+	if (!tileMap[pos.x][pos.y].sideExits[0] && !tileMap[pos.x][pos.y].sideExits[1] && tileMap[pos.x][pos.y].sideExits[2] && tileMap[pos.x][pos.y].sideExits[3])
+	{
+		*rotation = 0;
+		return "RoomTempStraght";
+	}
+	if (tileMap[pos.x][pos.y].sideExits[0] && !tileMap[pos.x][pos.y].sideExits[1] && !tileMap[pos.x][pos.y].sideExits[2] && tileMap[pos.x][pos.y].sideExits[3])
+	{
+		*rotation = 90;
+		return "RoomTempBend";
+	}
+	if (tileMap[pos.x][pos.y].sideExits[0] && !tileMap[pos.x][pos.y].sideExits[1] && tileMap[pos.x][pos.y].sideExits[2] && !tileMap[pos.x][pos.y].sideExits[3])
+	{
+		*rotation = 0;
+		return "RoomTempBend";
+	}
+	if (!tileMap[pos.x][pos.y].sideExits[0] && tileMap[pos.x][pos.y].sideExits[1] && !tileMap[pos.x][pos.y].sideExits[2] && tileMap[pos.x][pos.y].sideExits[3])
+	{
+		*rotation = 180;
+		return "RoomTempBend";
+	}
+	if (!tileMap[pos.x][pos.y].sideExits[0] && tileMap[pos.x][pos.y].sideExits[1] && tileMap[pos.x][pos.y].sideExits[2] && !tileMap[pos.x][pos.y].sideExits[3])
+	{
+		*rotation = 270;
+		return "RoomTempBend";
+	}
+	if (tileMap[pos.x][pos.y].sideExits[0] && !tileMap[pos.x][pos.y].sideExits[1] && tileMap[pos.x][pos.y].sideExits[2] && tileMap[pos.x][pos.y].sideExits[3])
+	{
+		*rotation = 0;
+		return "RoomTemp3";
+	}
+	if (tileMap[pos.x][pos.y].sideExits[0] && tileMap[pos.x][pos.y].sideExits[1] && !tileMap[pos.x][pos.y].sideExits[2] && tileMap[pos.x][pos.y].sideExits[3])
+	{
+		*rotation = 90;
+		return "RoomTemp3";
+	}
+	if (!tileMap[pos.x][pos.y].sideExits[0] && tileMap[pos.x][pos.y].sideExits[1] && tileMap[pos.x][pos.y].sideExits[2] && tileMap[pos.x][pos.y].sideExits[3])
+	{
+		*rotation = 180;
+		return "RoomTemp3";
+	}
+	if (tileMap[pos.x][pos.y].sideExits[0] && tileMap[pos.x][pos.y].sideExits[1] && tileMap[pos.x][pos.y].sideExits[2] && !tileMap[pos.x][pos.y].sideExits[3])
+	{
+		*rotation = 270;
+		return "RoomTemp3";
+	}
+	if (tileMap[pos.x][pos.y].sideExits[0] && tileMap[pos.x][pos.y].sideExits[1] && tileMap[pos.x][pos.y].sideExits[2] && tileMap[pos.x][pos.y].sideExits[3])
+	{
+		*rotation = 0;
+		return "RoomTempCross";
+	}
+	return "red";
 }
