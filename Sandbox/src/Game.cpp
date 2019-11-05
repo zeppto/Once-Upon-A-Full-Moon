@@ -57,8 +57,12 @@ namespace MCS
 
 		auto& plane = world->CreateEntity({ 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 100.0f, 1.0f, 100.0f });
 		world->AddComponent<Frosty::ECS::CMesh>(plane, Frosty::AssetManager::GetMesh("pPlane1"));
-		auto& planeMat = world->AddComponent<Frosty::ECS::CMaterial>(plane, Frosty::AssetManager::GetShader("Texture2D"));
-		planeMat.DiffuseTexture = Frosty::AssetManager::GetTexture2D("brown_mud_diffuse");
+		auto& planeMat = world->AddComponent<Frosty::ECS::CMaterial>(plane, Frosty::AssetManager::GetShader("BlendShader"));
+		planeMat.DiffuseTexture = Frosty::AssetManager::GetTexture2D("StoneGround");
+		planeMat.BlendMapTexture = Frosty::AssetManager::GetTexture2D("blendMap_Test");	// why is this texture a problem
+		planeMat.BlendTexture1 = Frosty::AssetManager::GetTexture2D("Grass");
+		planeMat.BlendTexture2 = Frosty::AssetManager::GetTexture2D("Dirt");
+
 		
 		// Night Light
 		auto& light = world->CreateEntity({ 0.0f, 0.0f, 0.0f }, { 120.0f, 8.0f, -10.0f });

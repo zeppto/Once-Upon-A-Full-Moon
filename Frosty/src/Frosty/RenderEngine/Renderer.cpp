@@ -175,7 +175,7 @@ namespace Frosty
 			mat->UseShader->UploadUniformFloat("u_SpecularStrength", mat->SpecularStrength);
 
 		}
-		else if (mat->UseShader->GetName() == "Texture2D")
+		else if (mat->UseShader->GetName() == "Texture2D"|| mat->UseShader->GetName() == "BlendShader")
 		{
 			mat->UseShader->UploadUniformFloat2("u_TextureCoordScale", mat->TextureScale);
 		}

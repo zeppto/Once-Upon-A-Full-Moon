@@ -41,9 +41,8 @@ namespace Frosty
 
 
 
-	class AssetManager {
-
-
+	class AssetManager 
+	{
 	public:		//Variables
 
 	private:	//Variables
@@ -74,7 +73,6 @@ namespace Frosty
 		using directory_iterator = std::filesystem::directory_iterator;
 
 	public:		//Functions
-
 		static AssetManager* Get();
 		~AssetManager();
 
@@ -125,11 +123,6 @@ namespace Frosty
 		inline static std::shared_ptr<Luna::BoundingBox>& GetBoundingBox(const std::string& name) { FY_CORE_ASSERT(s_BoundingBoxes.count(name), "Texture2D error!\n{0} doesn't exist!", name); return s_BoundingBoxes[name]; }
 		inline static std::map<std::string, std::shared_ptr<Luna::BoundingBox>>& GetBoundingBoxes() { return s_BoundingBoxes; }
 
-
-
-
-
-
 	private:	//Functions
 
 		inline static void Delete() { if (s_Instance != nullptr) { delete s_Instance; } }
@@ -158,30 +151,11 @@ namespace Frosty
 		const std::string CutFileExtention(const char* in_char_ptr);
 
 
-
-
 		//From Temp AssetManager
 		// Meshes
 		static void AddMesh(const std::string& name, const std::string& filepath);
 		// Textures
 		static void LoadTexture2D(const std::string& name, const std::string& filepath);
-
-
 	};
-
-
-
-
-
-
-
 }
-
-
-
-
-
-
-
 #endif // !ASSETMANAGER_H
-
