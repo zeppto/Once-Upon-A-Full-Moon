@@ -138,126 +138,40 @@ namespace Frosty
 		ConnectWatchList();
 	}
 
-	void AssetManager::PrintLoadInfo() const
-	{
-		FY_CORE_INFO("________________________________________________________");
-		FY_CORE_INFO("MotherLoader, Success Loading Attempts: {0}", s_Success_Loading_Attempts);
-		FY_CORE_INFO("MotherLoader, Failed Loading Attempts : {0}", s_Failed_Loading_Attempts);
-		FY_CORE_INFO("-----------------------------------------=--------------");
-		FY_CORE_INFO("MotherLoader, Total Loading Attempts  : {0}", (s_Success_Loading_Attempts + s_Failed_Loading_Attempts));
-		FY_CORE_INFO("¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯");
-	}
-	/*
-
-	bool Assetmanager::LinkKey(const std::string& AssetName, BaseKey* In_Key)
+	bool AssetManager::AddMesh(const FileMetaData& MetaData, const std::vector<Luna::Vertex>& vertices, const std::vector<Luna::Index>& indices)
 	{
 		bool returnValue = false;
-
-		if (MaterialLoaded(AssetName))
+		if (!MeshLoaded(MetaData.TagName))
 		{
+			// Vertex Array
+			s_VertexArrays.emplace(MetaData.TagName, VertexArray::Create());
 
-			KeyLabel<LinkedMaterial>* temp_mt_ptr = static_cast<KeyLabel<LinkedMaterial>*>(In_Key);
-			if (temp_mt_ptr != nullptr)
-			{
-				temp_mt_ptr->SetKeyData(s_LinkedMaterials[AssetName]);
-				returnValue = true;
-			}
-			else
-			{
-				FY_CORE_WARN("Could not link key, Key was Not Correct type,Asset Name: {0}", AssetName);
-			}
-		}
-		else if (TextureLoaded(AssetName))
-		{
+			// Vertex Buffer
+			std::shared_ptr<VertexBuffer> vertexBuffer;
+			vertexBuffer.reset(VertexBuffer::Create(&vertices.front(), sizeof(Luna::Vertex) * (uint32_t)vertices.size(), BufferType::STATIC));
 
-			KeyLabel<TextureFile>* temp_mt_ptr = static_cast<KeyLabel<TextureFile>*>(In_Key);
-			if (temp_mt_ptr != nullptr)
-			{
-				temp_mt_ptr->SetKeyData(s_Textures[AssetName]);
-				returnValue = true;
-			}
-			else
-			{
-				FY_CORE_WARN("Could not link key, Key was Not Correct type,Asset Name: {0}", AssetName);
-			}
-		}
-		else if (AnimationLoaded(AssetName))
-		{
+			BufferLayout layout = {
+				{ ShaderDataType::Float3, "a_Position" },
+				{ ShaderDataType::Float2, "a_TextureCoords" },
+				{ ShaderDataType::Float3, "a_Normal" },
+				{ ShaderDataType::Float3, "a_Tangent" },
+				{ ShaderDataType::Float3, "a_Bitangent" }
+			};
+			vertexBuffer->SetLayout(layout);
 
-			KeyLabel<Animation>* temp_mt_ptr = static_cast<KeyLabel<Animation>*>(In_Key);
-			if (temp_mt_ptr != nullptr)
-			{
-				temp_mt_ptr->SetKeyData(s_Animaions[AssetName]);
-				returnValue = true;
-			}
-			else
-			{
-				FY_CORE_WARN("Could not link key, Key was Not Correct type,Asset Name: {0}", AssetName);
-			}
-		}
-		else if (MeshLoaded(AssetName))
-		{
-			KeyLabel<Mesh>* temp_mt_ptr = static_cast<KeyLabel<Mesh>*>(In_Key);
-			if (temp_mt_ptr != nullptr)
-			{
-				temp_mt_ptr->SetKeyData(s_Meshes[AssetName]);
-				returnValue = true;
-			}
-			else
-			{
-				FY_CORE_WARN("Could not link key, Key was Not Correct type,Asset Name: {0}", AssetName);
-			}
+			s_VertexArrays[MetaData.TagName]->AddVertexBuffer(vertexBuffer);
 
+			// Index Buffer
+			std::shared_ptr<IndexBuffer> indexBuffer;
+			indexBuffer.reset(IndexBuffer::Create(&indices.front(), (uint32_t)indices.size()));
+			s_VertexArrays[MetaData.TagName]->SetIndexBuffer(indexBuffer);
+			returnValue = true;
 		}
 		else
 		{
-			FY_CORE_WARN("Could not link key, The Asset is not loaded, Name: {0}", AssetName);
+			FY_CORE_WARN("Mesh: {0}, Is already loaded", MetaData.TagName);
 		}
 		return returnValue;
-	}
-
-	bool Assetmanager::AddMesh(Mesh& Mesh)
-	{
-		if (MeshLoaded(Mesh.GetLunaMesh().name))
-		{
-			FY_CORE_INFO("Mesh name: {0}, Is already loaded", Mesh.GetLunaMesh().name);
-			return false;
-		}
-		else
-		{
-			s_Meshes[Mesh.GetLunaMesh().name] = Mesh;
-		}
-		return true;
-	}
-
-	*/
-
-	bool AssetManager::AddMesh(const FileMetaData& MetaData, const Luna::Mesh& LunMesh)
-	{
-		if (MeshLoaded(LunMesh.name))
-		{
-			FY_CORE_INFO("Mesh name: {0}, Is already loaded", LunMesh.name);
-			return false;
-		}
-		else
-		{
-			s_Meshes[LunMesh.name] = Mesh(MetaData, LunMesh);
-		}
-		return true;
-	}
-
-	bool AssetManager::AddTexture(TextureFile& Tex)
-	{
-		if (TextureLoaded(Tex.GetfileMetaData().FileName))
-		{
-			FY_CORE_INFO("Texture: {0}, Is already loaded", Tex.GetfileMetaData().FileName);
-			return false;
-		}
-		else
-		{
-			s_Textures[Tex.GetfileMetaData().FileName] = Tex;
-		}
-		return true;
 	}
 
 	bool AssetManager::AddTexture(const FileMetaData& MetaData)
@@ -269,8 +183,7 @@ namespace Frosty
 		}
 		else
 		{
-			//s_Textures[MetaData.FileName] = TextureFile(MetaData);
-			LoadTexture2D(MetaData.FileName, MetaData.FullFilePath);
+			s_Textures2D.emplace(MetaData.FileName, FY_NEW Texture2D(MetaData.FileName, MetaData.FullFilePath));
 		}
 		return true;
 	}
@@ -314,6 +227,20 @@ namespace Frosty
 			s_Animaions[Animation.GetName()] = Animation;
 		}
 		return true;
+	}
+
+	bool AssetManager::AddBoundingbox(const FileMetaData& MetaData, const Luna::BoundingBox& Boundinbox)
+	{
+		bool returnValue = false;
+		if (!BoundingboxLoaded(MetaData.TagName))
+		{
+			s_BoundingBoxes[MetaData.TagName] = std::make_shared<Luna::BoundingBox>(Boundinbox);
+		}
+		else
+		{
+			FY_CORE_WARN("BoundingBox: {0}, Is already loaded", MetaData.TagName);
+		}
+		return returnValue;
 	}
 
 	bool AssetManager::FileLoaded(const std::string& FilePath)
@@ -408,8 +335,8 @@ namespace Frosty
 		bool returnValue = false;
 
 
-		std::unordered_map<std::string, Mesh>::iterator it;
-		for (it = s_Meshes.begin(); it != s_Meshes.end() && returnValue == false; it++)
+		std::map<std::string, std::shared_ptr<VertexArray>>::iterator it;
+		for (it = s_VertexArrays.begin(); it != s_VertexArrays.end() && returnValue == false; it++)
 		{
 			if (it->first == AssetName)
 			{
@@ -420,59 +347,22 @@ namespace Frosty
 		return returnValue;
 	}
 
-	void AssetManager::AddMesh(const std::string& name, const std::string& filepath)
+	bool AssetManager::BoundingboxLoaded(const std::string& MeshName)
 	{
-		// Read file
-		Luna::Reader tempFile;
-		FY_CORE_ASSERT(tempFile.readFile(filepath.c_str()), "Failed to load file {0}!", filepath);
+		bool returnValue = false;
 
-		// Retrieve vertices and calculate indices
-		std::vector<Luna::Vertex> vertices;
-		std::vector<Luna::Index> indices;
-		tempFile.getVertices(0, vertices);
-		tempFile.getIndices(0, indices);
-
-		if (vertices.size() && indices.size())
+		std::map<std::string, std::shared_ptr<Luna::BoundingBox>>::iterator it;
+		for (it = s_BoundingBoxes.begin(); it != s_BoundingBoxes.end() && returnValue == false; it++)
 		{
-			// Bounding Box
-			s_BoundingBoxes.emplace(name, FY_NEW Luna::BoundingBox(tempFile.getBoundingBox(0)));
-
-			// Vertex Array
-			s_VertexArrays.emplace(name, VertexArray::Create());
-
-			// Vertex Buffer
-			std::shared_ptr<VertexBuffer> vertexBuffer;
-			vertexBuffer.reset(VertexBuffer::Create(&vertices.front(), sizeof(Luna::Vertex) * (uint32_t)vertices.size(), BufferType::STATIC));
-
-			BufferLayout layout = {
-				{ ShaderDataType::Float3, "a_Position" },
-				{ ShaderDataType::Float2, "a_TextureCoords" },
-				{ ShaderDataType::Float3, "a_Normal" },
-				{ ShaderDataType::Float3, "a_Tangent" },
-				{ ShaderDataType::Float3, "a_Bitangent" }
-			};
-			vertexBuffer->SetLayout(layout);
-
-			s_VertexArrays[name]->AddVertexBuffer(vertexBuffer);
-
-			// Index Buffer
-			std::shared_ptr<IndexBuffer> indexBuffer;
-			indexBuffer.reset(IndexBuffer::Create(&indices.front(), (uint32_t)indices.size()));
-			s_VertexArrays[name]->SetIndexBuffer(indexBuffer);
-		}
-		else
-		{
-			//FY_CORE_FATAL("Loaded Mesh:{0}, has 0 Vertices or Indices", name);
-			FY_CORE_WARN("Luna Mesh:{0}, has 0 Vertices or Indices", name);
+			if (it->first == MeshName)
+			{
+				returnValue = true;
+			}
 		}
 
-
+		return returnValue;
 	}
 
-	void AssetManager::LoadTexture2D(const std::string& name, const std::string& filepath)
-	{
-		s_Textures2D.emplace(name, FY_NEW Texture2D(name, filepath));
-	}
 
 	bool AssetManager::LoadLunaFile(const FileMetaData& FileNameInformation, const bool& Reload)
 	{
@@ -484,8 +374,6 @@ namespace Frosty
 		if (tempFile.readFile(FileNameInformation.FullFilePath.c_str()))
 		{
 
-			//the get functions can be skipped for optimization
-
 			returnValue = true;
 			bool modelHasSkeleton = false;
 
@@ -493,27 +381,36 @@ namespace Frosty
 			for (uint16_t i = 0; i < tempFile.getMeshCount(); i++)
 			{
 
-				//File name or mash name???
 
-				//AddMesh(FileNameInformation.FileName, FileNameInformation.FullFilePath);
-				AddMesh(tempFile.getMesh(i).name, FileNameInformation.FullFilePath);
+				//Mesh
+				std::vector<Luna::Vertex> vertices;
+				std::vector<Luna::Index> indices;
 
-				//if (AddMesh(FileNameInformation, tempFile.getMesh(i)))
-				//{
-					//if (s_AutoLoad)
-					//{
-					//	//Temp can be optimized
-					//	GetMesh(tempFile.getMesh(i).name)->LoadToMem();
-					//	GetMesh(tempFile.getMesh(i).name)->LoadToGPU();
-					//}
-				//}
+				FileMetaData tempMetaData = FileNameInformation;
+				tempMetaData.TagName = CharToStr(tempFile.getMesh(i).name);
+
+				tempFile.getVertices(i,vertices);
+				tempFile.getIndices(i, indices);
+
+				if (vertices.size() && indices.size())
+				{
+					AddMesh(tempMetaData, vertices, indices);
+				}
+				else
+				{
+					FY_CORE_FATAL("Luna Mesh:{0}, has 0 Vertices or Indices ", tempFile.getMesh(i).name);
+				}
 
 
 
+				//Boundingbox;
+				AddBoundingbox(tempMetaData,tempFile.getBoundingBox(tempFile.getMesh(i).id));
 
+
+
+				//Animation
 				if (tempFile.animationExist())
 				{
-
 					AddAnimation(Animation(FileNameInformation, i, 1));
 					if (s_AutoLoad)
 					{
@@ -521,10 +418,8 @@ namespace Frosty
 						GetAnimation(tempFile.getAnimation().animationName)->LoadToMem();
 						GetAnimation(tempFile.getAnimation().animationName)->LoadToGPU();
 					}
+
 				}
-
-
-
 
 				//Material
 				std::vector<Luna::Material> tempMatVector;
@@ -616,7 +511,8 @@ namespace Frosty
 		}
 		else
 		{
-			FY_CORE_WARN("Luna Failed to load file, FilePath: {0}", FileNameInformation.FileName);
+			FY_CORE_ASSERT("Failed to load file {0}!", FileNameInformation.FileName);
+			//FY_CORE_WARN("Luna Failed to load file, FilePath: {0}", FileNameInformation.FileName);
 		}
 		return returnValue;
 	}
@@ -686,7 +582,7 @@ namespace Frosty
 		return returnValue;
 	}
 
-	int8_t AssetManager::GetFileType(const std::string& fileType) const
+	int8_t AssetManager::GetFileType(const std::string& fileType)
 	{
 		if (fileType == FILE_TYPE_JPG)
 		{
@@ -746,7 +642,7 @@ namespace Frosty
 		s_TextureWatchList.erase(s_TextureWatchList.begin(), s_TextureWatchList.end());
 	}
 
-	const std::string AssetManager::CutFileName(const char* in_char_ptr)
+	std::string AssetManager::CutFileName(const char* in_char_ptr)
 	{
 		std::string returnString = "";
 
@@ -777,7 +673,7 @@ namespace Frosty
 		return returnString;
 	}
 
-	const std::string AssetManager::CutFileExtention(const char* in_char_ptr)
+	std::string AssetManager::CutFileExtention(const char* in_char_ptr)
 	{
 		std::string returnString = "";
 
@@ -802,6 +698,27 @@ namespace Frosty
 		else
 		{
 			FY_CORE_WARN("Trying to cut a file extention from a emtpy char ptr");
+		}
+		return returnString;
+	}
+
+	std::string AssetManager::CharToStr(const char* in_char_ptr)
+	{
+		std::string returnString = "";
+
+		if (*in_char_ptr != '\0')
+		{
+
+			uint8_t count = 0;
+			while (in_char_ptr[count] != '\0')
+			{
+				returnString.push_back(in_char_ptr[count]);
+				count++;
+			}
+		}
+		else
+		{
+			FY_CORE_WARN("Trying to convert a emtpy char ptr");
 		}
 		return returnString;
 	}

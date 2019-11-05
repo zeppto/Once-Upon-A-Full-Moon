@@ -100,7 +100,7 @@ namespace Frosty
 		EventBus::GetEventBus()->Delete();
 		m_Window->Shutdown();
 		Renderer::Shutdown();
-		//Assetmanager::Delete();
+		AssetManager::Delete();
 		//PrefabManager::Delete();
 	}
 
