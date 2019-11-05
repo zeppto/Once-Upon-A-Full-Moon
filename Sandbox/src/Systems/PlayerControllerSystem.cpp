@@ -212,18 +212,7 @@ namespace MCS
 	{
 		if (Frosty::InputManager::IsKeyPressed(m_Player[index]->BasicAttackKey))
 		{
-			//if (Frosty::Application::Get().GetWorld()->HasComponent<Frosty::ECS::CBasicAttack>(m_Transform[index]->EntityPtr))
-			{
-				Frosty::EventBus::GetEventBus()->Publish<Frosty::BasicAttackEvent>(Frosty::BasicAttackEvent(m_Transform[index]->EntityPtr));
-			}
-			//glm::vec3 spawnPos = m_Transform[index]->Position;
-			//spawnPos.y = 1.0f;
-			//auto& world = Frosty::Application::Get().GetWorld();
-			//auto& projectile = world->CreateEntity(spawnPos, { 0.0f, 0.0f, 0.0f }, { 0.5f, 0.5f, 0.5f });
-			//world->AddComponent<Frosty::ECS::CMesh>(projectile, Frosty::AssetManager::GetMesh("Sphere"));
-			//world->AddComponent<Frosty::ECS::CMaterial>(projectile, Frosty::AssetManager::GetShader("FlatColor"));
-			//auto& projectileMotion = world->AddComponent<Frosty::ECS::CMotion>(projectile, 20.0f);
-			//projectileMotion.Velocity = glm::normalize(glm::vec3(point.x, 1.0f, point.z) - spawnPos) * projectileMotion.Speed;
+			Frosty::EventBus::GetEventBus()->Publish<Frosty::BasicAttackEvent>(Frosty::BasicAttackEvent(m_Transform[index]->EntityPtr));
 		}
 	}
 

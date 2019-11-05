@@ -68,10 +68,6 @@ project "Frosty"
 	
 	excludes
 	{
-		"%{prj.name}/src/Frosty/API/AssetManager/*.cpp",
-		"%{prj.name}/src/Frosty/API/AssetManager/*.hpp",
-		"%{prj.name}/src/Frosty/API/AssetManager/AssetFiles/*.cpp",
-		"%{prj.name}/src/Frosty/API/AssetManager/AssetFiles/*.hpp",
 		"%{prj.name}/src/Frosty/API/PrefabManager/*.cpp",
 		"%{prj.name}/src/Frosty/API/PrefabManager/*.hpp",
 		"%{prj.name}/src/Frosty/API/PrefabManager/*.h",
@@ -81,19 +77,6 @@ project "Frosty"
 		"%{prj.name}/src/Frosty/RenderEngine/ForwardPlus.hpp",
 		"%{prj.name}/src/Frosty/StateMachine/States/*.cpp",
 		"%{prj.name}/src/Frosty/StateMachine/States/*.h"
-	}
-
-	excludes
-	{
-		"%{prj.name}/src/Frosty/API/AssetManager/*.cpp",
-		"%{prj.name}/src/Frosty/API/AssetManager/*.hpp",
-		"%{prj.name}/src/Frosty/API/AssetManager/AssetFiles/*.cpp",
-		"%{prj.name}/src/Frosty/API/AssetManager/AssetFiles/*.hpp",
-		"%{prj.name}/src/Frosty/API/PrefabManager/*.cpp",
-		"%{prj.name}/src/Frosty/API/PrefabManager/*.hpp",
-		"%{prj.name}/src/Frosty/API/PrefabManager/*.h",
-		"%{prj.name}/src/Frosty/RenderEngine/ForwardPlus.cpp",
-		"%{prj.name}/src/Frosty/RenderEngine/ForwardPlus.hpp"
 	}
 
 	libdirs
