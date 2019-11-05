@@ -1,4 +1,5 @@
 //#ifndef SPAWN_SYSTEM_HPP
+#include"Frosty/API/AssetManager/AM.hpp"
 //#define SPAWN_SYSTEM_HPP
 //#include "Frosty.h"
 //#include "Frosty/API/AssetManager.hpp"

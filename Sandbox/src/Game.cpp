@@ -1,6 +1,7 @@
 #include <mcspch.hpp>
 #include "Game.hpp"
-#include "Frosty/API/AssetManager.hpp"
+//#include "Frosty/API/AssetManager.hpp"
+#include"Frosty/API/AssetManager/AM.hpp"
 #include "Frosty/Events/CombatEvent.hpp"
 
 #include "Systems/LightSystem.hpp"

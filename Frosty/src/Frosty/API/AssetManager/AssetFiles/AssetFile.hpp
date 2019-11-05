@@ -7,8 +7,8 @@ namespace Frosty
 	struct FileMetaData
 	{
 		int8_t Type = -1;
+		std::string TagName = "";
 		std::string FileName = "";
-		std::string PreFab_Name = "";
 		std::string FullFilePath = "";
 		std::string FileExtentionName = "";
 	};
@@ -35,6 +35,7 @@ namespace Frosty
 		inline AssetFile(const FileMetaData& MetaData) : m_MetaData(MetaData) {}
 		inline  virtual ~AssetFile() {}
 
+		inline void SetTagName(const std::string& PrefabName) { m_MetaData.TagName = PrefabName; }
 
 		inline FileMetaData& GetfileMetaData() { return m_MetaData; };
 		inline void SetFileMetaData(const FileMetaData& MetaData) { m_MetaData = MetaData; }

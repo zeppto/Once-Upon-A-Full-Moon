@@ -1,6 +1,7 @@
 #include <mcspch.hpp>
 #include "InspectorLayer.hpp"
-#include "Frosty/API/AssetManager.hpp"
+//#include "Frosty/API/AssetManager.hpp"
+#include"Frosty/API/AssetManager/AM.hpp"
 
 #include "imgui/imgui.h"
 #include <PugiXML/pugixml.hpp>

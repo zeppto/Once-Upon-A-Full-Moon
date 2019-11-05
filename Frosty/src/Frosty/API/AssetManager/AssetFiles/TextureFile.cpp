@@ -33,7 +33,10 @@ namespace Frosty
 
 		if (!m_OnMem || Reload)
 		{
-			DeleteFromMem();
+			if (m_OnMem)
+			{
+				DeleteFromMem();
+			}
 			m_ImageData = stbi_load((m_MetaData.FullFilePath.c_str()), &m_Image_Width, &m_Image_Height, &m_Components, STBI_rgb_alpha);
 
 			if (m_ImageData != nullptr)
