@@ -1,7 +1,7 @@
 #include "fypch.hpp"
 #include "Application.hpp"
 #include "Frosty/RenderEngine/Renderer.hpp"
-#include "..\\API\CollisionMap\CollisionMap.hpp"
+#include "../API/BoolMapGenerator/BoolMapGenerator.hpp"
 
 
 
@@ -39,7 +39,7 @@ namespace Frosty
 
 
 		Renderer::InitForwardPlus(m_LightManager);
-		CollisionMap::Get()->Initiate();
+		//BoolMapGenerator::Get()->Initiate();
 		
 	}
 
@@ -187,12 +187,12 @@ namespace Frosty
 			RenderCommand::SetClearColor({ 0.0f, 0.0f, 1.0f, 5.0f });
 			RenderCommand::Clear();
 
-		//	Renderer::BeginScene(m_Camera);			
-			Renderer::BeginScene(CollisionMap::Get()->GetCamera());			
+			Renderer::BeginScene(m_Camera);			
+		//	Renderer::BeginScene(CollisionMap::Get()->GetCamera());			
 
 			Renderer::Submit(m_Shader, m_VertexArray, m_LightManager);
 
-			CollisionMap::Get()->RenderTriangle();
+			BoolMapGenerator::Get()->RenderBoolMap();
 
 			Renderer::EndScene();
 

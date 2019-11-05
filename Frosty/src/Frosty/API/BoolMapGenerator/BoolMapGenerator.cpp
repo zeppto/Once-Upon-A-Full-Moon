@@ -1,0 +1,270 @@
+#include<fypch.hpp>
+#include"BoolMapGenerator.hpp"
+#include "Glad/glad.h"
+#define BUFFER_OFFSET(i) ((char *)nullptr + (i))
+
+namespace Frosty
+{
+	
+
+	//temp
+	unsigned int BoolMapGenerator::s_QuadVAO = -1;
+	std::shared_ptr <Camera> BoolMapGenerator::m_Camera = nullptr;
+	unsigned int BoolMapGenerator::m_VertexArray = -1;
+	//
+
+	
+	BoolMapGenerator* BoolMapGenerator::s_Instance = nullptr;
+	std::list<ModelBatch> BoolMapGenerator::s_ModelList = std::list<ModelBatch>();
+	BoolMapGenerator::GeneratorSettings BoolMapGenerator::s_Settings = BoolMapGenerator::GeneratorSettings();
+
+
+	//RenderData
+	glm::mat4 BoolMapGenerator::s_ViewOrtho(1.0f);
+	unsigned int BoolMapGenerator::s_GBuffer = -1;
+	unsigned int BoolMapGenerator::s_Texture = -1;
+	unsigned int BoolMapGenerator::s_RenderProgramID = -1;
+
+	BoolMapGenerator* BoolMapGenerator::Get() 
+	{
+		if (s_Instance == nullptr)
+		{
+			Init();
+		}
+		return s_Instance;
+
+	}
+
+	void BoolMapGenerator::InitiateRenderData()
+	{
+
+		s_Settings.Pos = glm::vec3(((float)s_Settings.Width) / (2 * s_Settings.Pix_Cord_Ratio), 100.0f, ((float)s_Settings.Height) / (2 * s_Settings.Pix_Cord_Ratio));
+
+	
+
+		glm::vec3 tempDir = s_Settings.Pos;
+		tempDir[1] = 0.0f;
+		glm::mat4 tempView = glm::lookAt(s_Settings.Pos, tempDir, m_Camera->GetCameraTranslationData().UpVec);
+		
+		glm::vec4 OrthoVec((float)s_Settings.Width / -(2 * s_Settings.Pix_Cord_Ratio), (float)s_Settings.Width / (2 * s_Settings.Pix_Cord_Ratio), (float)s_Settings.Height / -(2 * s_Settings.Pix_Cord_Ratio), (float)s_Settings.Height / (2 * s_Settings.Pix_Cord_Ratio));
+		glm::mat4 tempOrtho = glm::ortho(OrthoVec[0], OrthoVec[1], OrthoVec[2], OrthoVec[3], 1.0f, 200.0f);
+
+		s_ViewOrtho = tempOrtho * tempView;
+
+
+		m_Camera = std::make_shared<Camera>(Camera());
+		m_Camera->GetCameraTranslationData().Pos = s_Settings.Pos;
+		m_Camera->GetCameraTranslationData().UpVec = glm::vec3(0.0f, 0.0f, -1.0f);
+		m_Camera->GetCameraTranslationData().CamSpeed = 10.0f;
+		m_Camera->GetCameraTranslationData().LookAtVec = tempDir;
+		m_Camera->GetCameraData().FarPlane = 200.0f;
+		m_Camera->GetCameraData().NearPlane = 0.1f;
+		m_Camera->GetCameraData().FoV = glm::radians(70.0f);
+		m_Camera->GetCameraData().OrthoGraphic = tempOrtho;
+		m_Camera->GetCameraData().View = tempView;
+		m_Camera->GetCameraData().Projection = tempOrtho;
+
+		m_Camera->GetCameraData().AspRatio = (float)s_Settings.Width / (float)s_Settings.Height;
+
+
+	}
+
+	std::shared_ptr<Camera>& BoolMapGenerator::GetCamera()
+	{
+		return m_Camera;
+	}
+
+	void BoolMapGenerator::Init()
+	{
+		if (s_Instance != nullptr)
+		{
+			delete s_Instance;
+		}
+		s_Instance = new BoolMapGenerator;
+		InitiateProgram();
+	}
+
+	void BoolMapGenerator::InitCheck()
+	{
+		if (s_Instance == nullptr) {
+			Init();
+		}
+	}
+
+	void BoolMapGenerator::InitiateGBuffer()
+	{
+		glGenFramebuffers(1, &s_GBuffer);
+		glBindFramebuffer(GL_FRAMEBUFFER, s_GBuffer);
+
+		// - bright color buffer
+		glGenTextures(1, &s_Texture);
+		glBindTexture(GL_TEXTURE_2D, s_Texture);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, (s_Settings.Width * s_Settings.Pix_Cord_Ratio), (s_Settings.Height * s_Settings.Pix_Cord_Ratio), 0, GL_RGB, GL_FLOAT, NULL);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, s_Texture, 0);
+
+		unsigned int attachments[1] = { GL_COLOR_ATTACHMENT0};
+		glDrawBuffers(1, attachments);
+
+		char buff[1024];
+		memset(buff, 0, 1024);
+		if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+		{
+			memset(buff, 0, 1024);
+			glGetProgramInfoLog(s_RenderProgramID, 1024, nullptr, buff);
+			OutputDebugStringA(buff);
+			FY_CORE_ASSERT("Collision Map Generator: Failed to Link program, GLFW Error ({0}) \n)", buff);
+
+		}
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	}
+
+	std::shared_ptr<BoolMap>& BoolMapGenerator::RenderMap()
+	{
+		InitiateRenderData();
+
+		if (s_QuadVAO == -1) {
+
+			//float quadVertices[] = {
+			//	// positions       
+			//	MAP_WITDH_PIXELS / (2 * m_Pix_Cord_Ratio),  1.0f, MAP_HEIGHT_PIXELS / (2 * m_Pix_Cord_Ratio),
+			//	0.0f,  1.0f, 0.0f,
+			//	0.0f,  1.0f, MAP_HEIGHT_PIXELS / (2 * m_Pix_Cord_Ratio )
+			//};
+
+			float quadVertices[] = {
+				// positions       
+				128.0f,  0.0f, 72.0f,
+				0.0f,  0.0f, 0.0f,
+				0.0f,  0.0f,  70.0f
+			};
+
+			//	unsigned int VBO;
+
+
+				//glGenVertexArrays(1, &QuadVAO);
+				//glBindVertexArray(QuadVAO);
+
+
+			glGenBuffers(1, &s_QuadVAO);
+			glBindBuffer(GL_ARRAY_BUFFER, s_QuadVAO);
+
+			glEnableVertexAttribArray(0);
+
+			glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), BUFFER_OFFSET(0));
+			glBufferData(GL_ARRAY_BUFFER, sizeof(quadVertices), quadVertices, GL_STATIC_DRAW);
+
+
+			//glGenVertexArrays(1, &m_QuadVbo);    
+			//glBindVertexArray(m_QuadVbo);     
+			//glEnableVertexAttribArray(0);  
+			//glEnableVertexAttribArray(1);     
+			//glGenBuffers(1, &m_QuadVbo);      
+			//glBindBuffer(GL_ARRAY_BUFFER, m_QuadVbo);         
+			//glBufferData(GL_ARRAY_BUFFER, sizeof(myQuad), myQuad, GL_STATIC_DRAW);
+			//glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(Pos2UV), BUFFER_OFFSET(0));    
+			//glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(Pos2UV), BUFFER_OFFSET(sizeof(float) * 2));
+
+
+
+
+			glBindVertexArray(0);
+		}
+
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+		glUseProgram(s_RenderProgramID);
+
+		GLint location = glGetUniformLocation(s_RenderProgramID, "u_ViewOrtho");
+
+		//glm::mat4 temp = m_OrthoGraphic * m_View;
+
+		glUniformMatrix4fv(location, 1, GL_FALSE, &s_ViewOrtho[0][0]);
+
+		// Render the Quad
+		glBindVertexArray(s_QuadVAO);
+		//glBindBuffer(GL_ARRAY_BUFFER, QuadVAO);
+		glDrawArrays(GL_TRIANGLES, 0, 3);
+
+		glBindVertexArray(0);
+
+		//glBindVertexArray(0);
+
+
+
+
+
+
+		s_ModelList.erase(s_ModelList.begin(), s_ModelList.end());
+
+		return std::make_shared<BoolMap>(nullptr);
+	}
+
+
+	void BoolMapGenerator::InitiateProgram()
+	{
+		char buff[1024];
+		memset(buff, 0, 1024);
+		GLint compileResult = 0;
+
+		GLuint vs = glCreateShader(GL_VERTEX_SHADER);
+
+		const char* shaderTextPtr = VERTEXSRC.c_str();
+
+		glShaderSource(vs, 1, &shaderTextPtr, nullptr);
+		glCompileShader(vs);
+		glGetShaderiv(vs, GL_COMPILE_STATUS, &compileResult);
+		if (compileResult == GL_FALSE)
+		{
+			glGetShaderInfoLog(vs, 1024, nullptr, buff);
+			OutputDebugStringA(buff);
+			FY_CORE_ERROR("Collision Map Generator: Failed to compile Vertex Shader, GLFW Error ({0}) \n)", buff);
+		}
+
+		GLuint fs = glCreateShader(GL_FRAGMENT_SHADER);
+
+		shaderTextPtr = FRAGMENTSRC.c_str();
+
+		glShaderSource(fs, 1, &shaderTextPtr, nullptr);
+		glCompileShader(fs);
+		compileResult = GL_FALSE;
+		glGetShaderiv(fs, GL_COMPILE_STATUS, &compileResult);
+		if (compileResult == GL_FALSE)
+		{
+			memset(buff, 0, 1024);
+			glGetShaderInfoLog(fs, 1024, nullptr, buff);
+			OutputDebugStringA(buff);
+			FY_CORE_ERROR("Collision Map Generator: Failed to compile Fragment Shader, GLFW Error ({0}) \n", buff);
+		}
+
+		s_RenderProgramID = glCreateProgram();
+	//	GLuint tempProgram = RenderProgramID;
+		glAttachShader(s_RenderProgramID, vs);
+
+		glAttachShader(s_RenderProgramID, fs);
+		glLinkProgram(s_RenderProgramID);
+
+		compileResult = GL_FALSE;
+		glGetProgramiv(s_RenderProgramID, GL_LINK_STATUS, &compileResult);
+		if (compileResult == GL_FALSE)
+		{
+			memset(buff, 0, 1024);
+			glGetProgramInfoLog(s_RenderProgramID, 1024, nullptr, buff);
+			OutputDebugStringA(buff);
+			FY_CORE_ASSERT("Collision Map Generator: Failed to Link program, GLFW Error ({0}) \n)", buff);
+		}
+		else
+		{
+			FY_CORE_INFO("Success Generation of BoolMap Program)");
+		}
+
+
+		glDetachShader(s_RenderProgramID, vs);
+		glDetachShader(s_RenderProgramID, fs);
+		glDeleteShader(vs);
+		glDeleteShader(fs);
+	}
+
+
+}
