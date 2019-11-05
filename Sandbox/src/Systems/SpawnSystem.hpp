@@ -1,7 +1,8 @@
 #ifndef SPAWN_SYSTEM_HPP
 #define SPAWN_SYSTEM_HPP
 #include "Frosty.h"
-#include "Frosty/API/AssetManager.hpp"
+//#include "Frosty/API/AssetManager.hpp"
+#include"Frosty/API/AssetManager/AM.hpp"
 
 class SpawnSystem : public Frosty::ECS::BaseSystem
 {

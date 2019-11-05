@@ -1,6 +1,7 @@
 #include <mcspch.hpp>
 #include "Game.hpp"
-#include "Frosty/API/AssetManager.hpp"
+//#include "Frosty/API/AssetManager.hpp"
+#include"Frosty/API/AssetManager/AM.hpp"
 #include "Frosty/Events/CombatEvent.hpp"
 
 #include "Systems/CombatSystem.hpp"
@@ -352,7 +353,7 @@ namespace MCS
 		world->AddComponent<Frosty::ECS::CMesh>(PlaneOne, Frosty::AssetManager::GetMesh("Plane"));
 		auto& testMaterial = world->AddComponent<Frosty::ECS::CMaterial>(PlaneOne, Frosty::AssetManager::GetShader("Texture2D"));
 		testMaterial.Albedo = glm::vec4(0.2f, 0.8f, 0.3f, 1.0f);
-		testMaterial.DiffuseTexture = Frosty::AssetManager::GetTexture2D("Brown Mud Diffuse");
+		testMaterial.DiffuseTexture = Frosty::AssetManager::GetTexture2D("brown_mud_diffuse");
 		testMaterial.TextureScale = glm::vec2(mapDepth / 10.0f, mapLength / 10.0f);
 		//testMaterial.TextureScale = glm::vec2(23.0f, 20.0f);
 
@@ -366,9 +367,9 @@ namespace MCS
 		world->AddComponent<Frosty::ECS::CMesh>(PlaneTwo, Frosty::AssetManager::GetMesh("Plane"));
 		auto& testMaterialTwo = world->AddComponent<Frosty::ECS::CMaterial>(PlaneTwo, Frosty::AssetManager::GetShader("Texture2D"));
 		testMaterialTwo.Albedo = glm::vec4(0.2f, 0.8f, 0.3f, 1.0f);
-		testMaterialTwo.DiffuseTexture = Frosty::AssetManager::GetTexture2D("Brown Mud Diffuse");
-		testMaterialTwo.NormalTexture = Frosty::AssetManager::GetTexture2D("Rusty Metal Normal");
-		testMaterialTwo.SpecularTexture = Frosty::AssetManager::GetTexture2D("Rusty Metal Normal");
+		testMaterialTwo.DiffuseTexture = Frosty::AssetManager::GetTexture2D("brown_mud_diffuse");
+		testMaterialTwo.NormalTexture = Frosty::AssetManager::GetTexture2D("rusty_metal_normal");
+		testMaterialTwo.SpecularTexture = Frosty::AssetManager::GetTexture2D("rusty_metal_normal");
 		testMaterialTwo.TextureScale = glm::vec2(mapDepth / 10.0f, mapLength / 10.0f);
 
 
@@ -382,7 +383,7 @@ namespace MCS
 		world->AddComponent<Frosty::ECS::CMesh>(PlaneThree, Frosty::AssetManager::GetMesh("Plane"));
 		auto& testMaterialThree = world->AddComponent<Frosty::ECS::CMaterial>(PlaneThree, Frosty::AssetManager::GetShader("Texture2D"));
 		//testMaterial.Albedo = glm::vec4(0.2f, 0.8f, 0.3f, 1.0f);
-		testMaterialThree.DiffuseTexture = Frosty::AssetManager::GetTexture2D("Brown Mud Diffuse");
+		testMaterialThree.DiffuseTexture = Frosty::AssetManager::GetTexture2D("brown_mud_diffuse");
 
 
 	}

@@ -2,7 +2,7 @@
 #include "Application.hpp"
 #include <glad/glad.h>
 #include "Frosty/RenderEngine/Renderer.hpp"
-#include "Frosty/API/AssetManager.hpp"
+//#include "Frosty/API/AssetManager.hpp"
 #include "Frosty/Core/KeyCodes.h"
 #include"Frosty/API/AssetManager/AM.hpp"
 
@@ -65,7 +65,7 @@ namespace Frosty
 
 
 
-		Assetmanager::Get()->LoadFiles();
+		//Assetmanager::Get()->LoadFiles();
 
 		//std::unordered_map<std::string, LinkedMaterial>::iterator it = Assetmanager::GetMaterialMap()->begin();
 
