@@ -693,7 +693,7 @@ namespace MCS
 				if (world->HasComponent<Frosty::ECS::CParticleSystem>(m_SelectedEntity))
 				{
 					if (ImGui::CollapsingHeader("Particle System")) {
-						Frosty::ECS::CParticleSystem comp = world->GetComponent<Frosty::ECS::CParticleSystem>(m_SelectedEntity); //Please don't use auto. It's not clear what's returned.
+						Frosty::ECS::CParticleSystem& comp = world->GetComponent<Frosty::ECS::CParticleSystem>(m_SelectedEntity); //Please don't use auto. It's not clear what's returned.
 						ImGui::BeginChild("CParticleSystem", ImVec2(EDITOR_INSPECTOR_WIDTH, 45), true);
 						ImGui::Text("Test text"); //TODO: output proper info
 						ImGui::EndChild();

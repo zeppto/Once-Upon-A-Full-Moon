@@ -56,7 +56,8 @@ void ParticleSystem::AddComponent(const std::shared_ptr<Frosty::ECS::Entity>& en
 			//{ Frosty::ShaderDataType::Float4,	"startPos" },
 			//{ Frosty::ShaderDataType::Float4,	"dir" },
 			//{ Frosty::ShaderDataType::Float,	"lifetime" },
-			//{ Frosty::ShaderDataType::Float,	"speed" }
+			//{ Frosty::ShaderDataType::Float,	"speed" },
+			//{ Frosty::ShaderDataType::Int2, "padding"}
 		};
 
 		vertBuffer->SetLayout(layout);
