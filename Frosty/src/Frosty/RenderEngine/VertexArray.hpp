@@ -14,7 +14,10 @@ namespace Frosty
 		void Unbind() const;
 
 		void AddVertexBuffer(const std::shared_ptr<VertexBuffer>& vertexBuffer);
+		void AddVertexBuffer(const std::shared_ptr<VertexBuffer>& vertexBuffer, uint16_t enableAttribCount); //Choose the number of attributes you want to enable
 		void SetIndexBuffer(const std::shared_ptr<IndexBuffer>& indexBuffer);
+
+		void BindShaderStorageBuffer();
 
 		const std::vector<std::shared_ptr<VertexBuffer>>& GetVertexBuffer();
 		const std::shared_ptr<IndexBuffer>& GetIndexBuffer();

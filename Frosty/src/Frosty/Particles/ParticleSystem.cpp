@@ -17,11 +17,11 @@ namespace Frosty
 		BufferLayout layout =
 		{
 			{ ShaderDataType::Float4,	"pos" },
-			{ ShaderDataType::Float4,	"color" },
-			{ ShaderDataType::Float4,	"startPos" },
-			{ ShaderDataType::Float4,	"dir" },
-			{ ShaderDataType::Float,	"lifetime" },
-			{ ShaderDataType::Float,	"speed" }
+			//{ ShaderDataType::Float4,	"color" },
+			//{ ShaderDataType::Float4,	"startPos" },
+			//{ ShaderDataType::Float4,	"dir" },
+			//{ ShaderDataType::Float,	"lifetime" },
+			//{ ShaderDataType::Float,	"speed" }
 		};
 
 		vertBuffer->SetLayout(layout);
