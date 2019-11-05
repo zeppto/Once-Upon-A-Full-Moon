@@ -485,8 +485,8 @@ namespace Frosty
 
 				//File name or mash name???
 
-				AddMesh(FileNameInformation.FileName, FileNameInformation.FullFilePath);
-				//AddMesh(tempFile.getMesh(i).name, FileNameInformation.FullFilePath);
+				//AddMesh(FileNameInformation.FileName, FileNameInformation.FullFilePath);
+				AddMesh(tempFile.getMesh(i).name, FileNameInformation.FullFilePath);
 
 				//if (AddMesh(FileNameInformation, tempFile.getMesh(i)))
 				//{
