@@ -26,6 +26,7 @@ namespace Frosty
 		AddMesh("3D", "assets/primitives/3D/3D.lu");
 		AddMesh("CharTest", "assets/models/character_test/char_test.lu");
 		AddMesh("Scarlet", "assets/models/Scarlet_static/Scarlet_static.lu");
+		AddMesh("Ground", "assets/primitives/ground/ground.lu");
 
 		AddMesh("Tree1", "assets/models/trees/tree1.lu");
 		AddMesh("Tree2", "assets/models/trees/tree2.lu");
@@ -66,6 +67,7 @@ namespace Frosty
 		LoadTexture2D("Scarlet_diffuse", "assets/textures/Scarlet_diffuse.tga");
 		LoadTexture2D("Scarlet_normal", "assets/textures/Scarlet_normal.tga");
 		LoadTexture2D("Scarlet_specular", "assets/textures/Scarlet_specular.tga");
+		LoadTexture2D("GroundTile", "assets/textures/groundTile.tga");
 
 
 		LoadTexture2D("Tree1", "assets/textures/testPineLeves2.tga");						// TEMPORARY

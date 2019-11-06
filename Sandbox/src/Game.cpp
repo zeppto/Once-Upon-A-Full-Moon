@@ -57,28 +57,28 @@ namespace MCS
 		map.generateMap();
 		Room myRoome = map.getRoom(glm::ivec2(10, 15));
 
-		for (int i = 0; i < 30; i++)
-		{
-			for (int j = 0; j < 30; j++)
-			{
-				auto& cube = world->CreateEntity();
-				auto& cubeTranform = world->GetComponent<Frosty::ECS::CTransform>(cube);
-				cubeTranform.Position = glm::vec3(i,2,j);
-				auto& cubeMaterial = world->AddComponent<Frosty::ECS::CMaterial>(cube, Frosty::AssetManager::GetShader("Texture2D"));
-				Room myRoome = map.getRoom(glm::ivec2(i, j));
-				int rotation = 0;
-				//cubeMaterial.Albedo = glm::vec4( 0.1f, 0.8f, 0.1f, 1.0f);
-				cubeMaterial.DiffuseTexture = Frosty::AssetManager::GetTexture2D(map.getRoomTextur(glm::ivec2(i,j), &rotation));
-				cubeTranform.Rotation = glm::vec3(0, rotation, 0);
-				if (i == 10 && j == 15)
-					cubeTranform.Scale = glm::vec3(0.5f, 0.5f, 0.5f);
-				//std::string cubeName = "cube" + std::to_string(((rand() % NrOfcubeTypes) + 1));
-				//cubeMaterial.DiffuseTexture = Frosty::AssetManager::GetTexture2D(cubeName);
+		//for (int i = 0; i < 30; i++)
+		//{
+		//	for (int j = 0; j < 30; j++)
+		//	{
+		//		auto& cube = world->CreateEntity();
+		//		auto& cubeTranform = world->GetComponent<Frosty::ECS::CTransform>(cube);
+		//		cubeTranform.Position = glm::vec3(i,2,j);
+		//		auto& cubeMaterial = world->AddComponent<Frosty::ECS::CMaterial>(cube, Frosty::AssetManager::GetShader("Texture2D"));
+		//		Room myRoome = map.getRoom(glm::ivec2(i, j));
+		//		int rotation = 0;
+		//		//cubeMaterial.Albedo = glm::vec4( 0.1f, 0.8f, 0.1f, 1.0f);
+		//		cubeMaterial.DiffuseTexture = Frosty::AssetManager::GetTexture2D(map.getRoomTextur(glm::ivec2(i,j), &rotation));
+		//		cubeTranform.Rotation = glm::vec3(0, rotation, 0);
+		//		if (i == 10 && j == 15)
+		//			cubeTranform.Scale = glm::vec3(0.5f, 0.5f, 0.5f);
+		//		//std::string cubeName = "cube" + std::to_string(((rand() % NrOfcubeTypes) + 1));
+		//		//cubeMaterial.DiffuseTexture = Frosty::AssetManager::GetTexture2D(cubeName);
 
-				//cubeName = "cube" + std::to_string(((rand() % NrOfcubeTypes) + 1));
-				world->AddComponent<Frosty::ECS::CMesh>(cube, Frosty::AssetManager::GetMesh("Plane"));
-			}
-		}
+		//		//cubeName = "cube" + std::to_string(((rand() % NrOfcubeTypes) + 1));
+		//		world->AddComponent<Frosty::ECS::CMesh>(cube, Frosty::AssetManager::GetMesh("Plane"));
+		//	}
+		//}
 
 
 		//auto& plane = world->CreateEntity();
@@ -109,9 +109,9 @@ namespace MCS
 		lightTransform2.Rotation = glm::vec3(-190.f, 8.f, -10.f);
 		world->AddComponent<Frosty::ECS::CLight>(light2, Frosty::ECS::CLight::LightType::Directional, 0.3f, glm::vec3(0.6f, 0.7f, 1.f));
 
-		generateTrees();
-		generateBorders();
-		generatePlanes();
+		//generateTrees();
+		//generateBorders();
+		//generatePlanes();
 
 		PushLayer(FY_NEW InspectorLayer());
 	}
