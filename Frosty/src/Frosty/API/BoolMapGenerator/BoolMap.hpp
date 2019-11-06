@@ -13,7 +13,7 @@ private:
 
 public:
 	
-	inline BoolMap() = delete;
+	inline BoolMap();
 	BoolMap(const uint16_t& Width, const uint16_t& Height, std::shared_ptr<bool> Boolmap);
 	BoolMap(const BoolMap& other);
 	BoolMap& operator= (const BoolMap& other);

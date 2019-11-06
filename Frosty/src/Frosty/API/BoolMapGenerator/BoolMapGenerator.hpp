@@ -3,8 +3,8 @@
 #include"..\..\Core\Camera\Camera.hpp"
 #include"BoolMap.hpp"
 
-#define DEFAULT_BOOLMAP_WIDTH 192
-#define DEFAULT_BOOLMAP_HEIGHT 108
+#define DEFAULT_BOOLMAP_WIDTH 128
+#define DEFAULT_BOOLMAP_HEIGHT 72
 #define DEFAULT_BOOLMAP_PIXELCOORD_RATIO 10
 
 namespace Frosty
@@ -14,7 +14,8 @@ namespace Frosty
 
 	struct ModelBatch
 	{
-		std::vector<glm::vec3> Verticies;
+		std::vector<float> Verticies;
+		std::vector<float> Indices;
 		std::list<glm::mat4> Transforms;
 	};
 
@@ -36,10 +37,11 @@ namespace Frosty
 			layout(location = 0) in vec3 vsInPos;
 			
 			layout(location = 44) uniform mat4 u_ViewOrtho;
+			layout(location = 33) uniform mat4 u_ModelMat;
 			
 			void main()
 			{				
-				gl_Position = u_ViewOrtho * vec4(vsInPos, 1.0f);
+				gl_Position = u_ViewOrtho * u_ModelMat * vec4(vsInPos, 1.0f);
 			}
 		)";
 		inline static const std::string FRAGMENTSRC = R"(

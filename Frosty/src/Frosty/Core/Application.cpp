@@ -8,8 +8,8 @@
 namespace Frosty
 {
 	Application* Application::s_Instance = nullptr;
-	
-	Application::Application()		
+
+	Application::Application()
 	{
 		Log::Init();
 		FY_CORE_INFO("Logger initialized..");
@@ -26,10 +26,10 @@ namespace Frosty
 		PushOverlay(m_ImGuiLayer);
 
 		ECS::ComponentManager<ECS::CTransform> cManager;
-		
+
 		InitPrefabBuffers();
 		//InitShaders();
-		
+
 		m_Camera.reset(FY_NEW Camera());
 
 		// <<< FORWARD PLUS >>>
@@ -40,19 +40,19 @@ namespace Frosty
 
 		Renderer::InitForwardPlus(m_LightManager);
 		//BoolMapGenerator::Get()->Initiate();
-		
+
 	}
 
 	Application::~Application()
-	{		
+	{
 		EventBus::GetEventBus()->Delete();
 		glfwTerminate();
 		Assetmanager::Delete();
 		Renderer::DeleteSceneData();
 	}
-	
+
 	void Application::InitPrefabBuffers()
-	{		
+	{
 		m_VertexArray.reset(VertexArray::Create());
 
 		//float vertices[3 * 7] =
@@ -84,11 +84,11 @@ namespace Frosty
 			{ ShaderDataType::Float3, "vsInPos" },
 			{ ShaderDataType::Float4, "vsInCol" }
 		};
-		
-		m_VertexBuffer->SetLayout(layout);		
+
+		m_VertexBuffer->SetLayout(layout);
 		m_VertexArray->AddVertexBuffer(m_VertexBuffer);
 
-		uint32_t indices[4] = { 0, 1, 2, 3};
+		uint32_t indices[4] = { 0, 1, 2, 3 };
 		std::shared_ptr<IndexBuffer> m_IndexBuffer;
 		m_IndexBuffer.reset(IndexBuffer::Create(indices, sizeof(indices) / sizeof(uint32_t)));
 		m_VertexArray->SetIndexBuffer(m_IndexBuffer);
@@ -98,13 +98,13 @@ namespace Frosty
 	{
 		/*std::string VertexSrc = R"(
 			#version 440 core
-			
+
 			layout(location = 0) in vec3 vsInPos;
 			layout(location = 1) in vec4 vsInCol;
-			
+
 			out vec3 vsOutPos;
 			out vec4 vsOutCol;
-			
+
 			void main()
 			{
 				gl_Position = vec4(vsInPos, 1.0f);
@@ -119,11 +119,11 @@ namespace Frosty
 			in vec4 vsOutCol;
 
 			layout(location = 0) out vec4 fsOutCol;
-			
+
 			void main()
 			{
 				//fsOutCol = vec4(0.8f, 0.2f, 0.3f, 1.0f);
-				//fsOutCol = vec4(vsOutPos + 0.5f, 1.0f);				
+				//fsOutCol = vec4(vsOutPos + 0.5f, 1.0f);
 				fsOutCol = vsOutCol;
 			}
 		)";*/
@@ -182,17 +182,36 @@ namespace Frosty
 			{
 				layer->OnUpdate();
 			}
-			
+
 			/// Render
 			RenderCommand::SetClearColor({ 0.0f, 0.0f, 1.0f, 5.0f });
 			RenderCommand::Clear();
 
-			Renderer::BeginScene(m_Camera);			
-		//	Renderer::BeginScene(CollisionMap::Get()->GetCamera());			
+			Renderer::BeginScene(m_Camera);
+			//	Renderer::BeginScene(CollisionMap::Get()->GetCamera());			
 
 			Renderer::Submit(m_Shader, m_VertexArray, m_LightManager);
 
-			BoolMapGenerator::Get()->RenderBoolMap();
+			std::vector<float> tempVert;
+			tempVert =
+			{
+				 -0.5f, 0.0f, 0.5f,
+				 0.5f,  0.0f, 0.5f,
+				 0.0f, 0.0f, -0.5f
+			};
+
+
+			glm::mat4 tempMap = glm::translate(glm::mat4(1.0f),glm::vec3(64.0f,0.0f,36.0f));
+			tempMap = glm::scale(tempMap,glm::vec3(30.0f,30.0f,30.0f));
+
+
+			ModelBatch tempBatch;
+			tempBatch.Verticies = tempVert;
+			tempBatch.Transforms.emplace_back(tempMap);
+
+			BoolMapGenerator::AddToRenderList(tempBatch);
+
+			BoolMapGenerator::RenderBoolMap();
 
 			Renderer::EndScene();
 
@@ -206,12 +225,12 @@ namespace Frosty
 					layer->OnImGuiRender();
 				}
 			}
-			m_ImGuiLayer->End();			
+			m_ImGuiLayer->End();
 
 			m_Window->OnUpdate();
 		}
 	}
-
+	 
 	void Application::PushLayer(Layer* layer)
 	{
 		m_LayerHandler.PushLayer(layer);
@@ -224,7 +243,7 @@ namespace Frosty
 		layer->OnAttach();
 	}
 
-	void Application::PopLayer(Layer * layer)
+	void Application::PopLayer(Layer* layer)
 	{
 		if (layer != nullptr)
 		{
@@ -234,7 +253,7 @@ namespace Frosty
 		delete layer;
 	}
 
-	void Application::PopOverlay(Layer * layer)
+	void Application::PopOverlay(Layer* layer)
 	{
 		if (layer != nullptr)
 		{
