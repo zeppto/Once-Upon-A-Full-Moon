@@ -327,5 +327,5 @@ std::string MapGenerator::getRoomTextur(glm::ivec2 pos, int* rotation)
 	}
 	if (tileMap[pos.x][pos.y].Ocupide)
 		return "HeartFull";
-	return "Red";
+	return "red";
 }

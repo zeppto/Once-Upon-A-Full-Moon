@@ -2,7 +2,7 @@
 #include <mcspch.hpp>
 //#include "MapGenerator.hpp"
 #include "LevelsHardCoded.hpp"
-#include "Frosty/API/AssetManager.hpp"
+#include "Frosty/API/AssetManager/AssetManager.hpp"
 
 namespace Level
 {
@@ -14,7 +14,7 @@ namespace Level
 		testTranform.Scale = glm::vec3(300, 1.0f, 300);
 		testTranform.Rotation = glm::vec3(0, rotation, 0);
 		//world->AddComponent<Frosty::ECS::CMesh>(PlaneOne, Frosty::AssetManager::GetMesh("Ground"));
-		world->AddComponent<Frosty::ECS::CMesh>(PlaneOne, Frosty::AssetManager::GetMesh("Plane"));
+		world->AddComponent<Frosty::ECS::CMesh>(PlaneOne, Frosty::AssetManager::GetMesh("pPlane1")); 
 		auto& testMaterial = world->AddComponent<Frosty::ECS::CMaterial>(PlaneOne, Frosty::AssetManager::GetShader("Texture2D"));
 		//testMaterial.Albedo = glm::vec4(0.2f, 0.8f, 0.3f, 1.0f);
 		testMaterial.DiffuseTexture = Frosty::AssetManager::GetTexture2D(texture);
@@ -24,16 +24,17 @@ namespace Level
 		//trees
 		for (int i = 0; i < 39; i++)
 		{
+
 			auto& Tree = world->CreateEntity();
 			auto& TreeTranform = world->GetComponent<Frosty::ECS::CTransform>(Tree);
 			TreeTranform.Position = BorderTrees(i);
 			auto& TreeMaterial = world->AddComponent<Frosty::ECS::CMaterial>(Tree, Frosty::AssetManager::GetShader("Texture2D"));
 			TreeMaterial.Albedo = glm::vec4(0.2f, 0.8f, 0.3f, 1.0f);
 			std::string treeName = "Tree" + std::to_string(((rand() % NrOfTreeTypes) + 1));
-			TreeMaterial.DiffuseTexture = Frosty::AssetManager::GetTexture2D(treeName);
+			TreeMaterial.DiffuseTexture = Frosty::AssetManager::GetTexture2D("Tree1");
 
-			treeName = "Tree" + std::to_string(((rand() % NrOfTreeTypes) + 1));
-			world->AddComponent<Frosty::ECS::CMesh>(Tree, Frosty::AssetManager::GetMesh(treeName));
+			treeName = "tree" + std::to_string(((rand() % NrOfTreeTypes) + 1));
+			world->AddComponent<Frosty::ECS::CMesh>(Tree, Frosty::AssetManager::GetMesh("tree1"));
 		}
 		if (!up)
 		{
@@ -45,10 +46,10 @@ namespace Level
 				auto& TreeMaterial = world->AddComponent<Frosty::ECS::CMaterial>(Tree, Frosty::AssetManager::GetShader("Texture2D"));
 				TreeMaterial.Albedo = glm::vec4(0.2f, 0.8f, 0.3f, 1.0f);
 				std::string treeName = "Tree" + std::to_string(((rand() % NrOfTreeTypes) + 1));
-				TreeMaterial.DiffuseTexture = Frosty::AssetManager::GetTexture2D(treeName);
+				TreeMaterial.DiffuseTexture = Frosty::AssetManager::GetTexture2D("Tree1");
 
 				treeName = "Tree" + std::to_string(((rand() % NrOfTreeTypes) + 1));
-				world->AddComponent<Frosty::ECS::CMesh>(Tree, Frosty::AssetManager::GetMesh(treeName));
+				world->AddComponent<Frosty::ECS::CMesh>(Tree, Frosty::AssetManager::GetMesh("tree1"));
 			}
 		}
 		if (!down)
@@ -61,10 +62,10 @@ namespace Level
 				auto& TreeMaterial = world->AddComponent<Frosty::ECS::CMaterial>(Tree, Frosty::AssetManager::GetShader("Texture2D"));
 				TreeMaterial.Albedo = glm::vec4(0.2f, 0.8f, 0.3f, 1.0f);
 				std::string treeName = "Tree" + std::to_string(((rand() % NrOfTreeTypes) + 1));
-				TreeMaterial.DiffuseTexture = Frosty::AssetManager::GetTexture2D(treeName);
+				TreeMaterial.DiffuseTexture = Frosty::AssetManager::GetTexture2D("Tree1");
 
 				treeName = "Tree" + std::to_string(((rand() % NrOfTreeTypes) + 1));
-				world->AddComponent<Frosty::ECS::CMesh>(Tree, Frosty::AssetManager::GetMesh(treeName));
+				world->AddComponent<Frosty::ECS::CMesh>(Tree, Frosty::AssetManager::GetMesh("tree1"));
 			}
 		}
 		if (!left)
@@ -77,10 +78,10 @@ namespace Level
 				auto& TreeMaterial = world->AddComponent<Frosty::ECS::CMaterial>(Tree, Frosty::AssetManager::GetShader("Texture2D"));
 				TreeMaterial.Albedo = glm::vec4(0.2f, 0.8f, 0.3f, 1.0f);
 				std::string treeName = "Tree" + std::to_string(((rand() % NrOfTreeTypes) + 1));
-				TreeMaterial.DiffuseTexture = Frosty::AssetManager::GetTexture2D(treeName);
+				TreeMaterial.DiffuseTexture = Frosty::AssetManager::GetTexture2D("Tree1");
 
 				treeName = "Tree" + std::to_string(((rand() % NrOfTreeTypes) + 1));
-				world->AddComponent<Frosty::ECS::CMesh>(Tree, Frosty::AssetManager::GetMesh(treeName));
+				world->AddComponent<Frosty::ECS::CMesh>(Tree, Frosty::AssetManager::GetMesh("tree1"));
 			}
 		}
 		if (!right)
@@ -93,10 +94,10 @@ namespace Level
 				auto& TreeMaterial = world->AddComponent<Frosty::ECS::CMaterial>(Tree, Frosty::AssetManager::GetShader("Texture2D"));
 				TreeMaterial.Albedo = glm::vec4(0.2f, 0.8f, 0.3f, 1.0f);
 				std::string treeName = "Tree" + std::to_string(((rand() % NrOfTreeTypes) + 1));
-				TreeMaterial.DiffuseTexture = Frosty::AssetManager::GetTexture2D(treeName);
+				TreeMaterial.DiffuseTexture = Frosty::AssetManager::GetTexture2D("Tree1");
 
 				treeName = "Tree" + std::to_string(((rand() % NrOfTreeTypes) + 1));
-				world->AddComponent<Frosty::ECS::CMesh>(Tree, Frosty::AssetManager::GetMesh(treeName));
+				world->AddComponent<Frosty::ECS::CMesh>(Tree, Frosty::AssetManager::GetMesh("tree1"));
 			}
 		}
 	}
