@@ -86,7 +86,7 @@ namespace Frosty
 #pragma region Settings
 
 		// Let's define a maximum number of unique components:
-		constexpr std::size_t MAX_COMPONENTS{ 20 };
+		constexpr std::size_t MAX_COMPONENTS{ 18 };
 
 		// Let's define a maximum number of entities that
 		// can have the same component type:
@@ -334,10 +334,21 @@ namespace Frosty
 			glm::vec3 Rotation{ 0.0f };
 			glm::vec3 Scale{ 1.0f };
 			glm::mat4 ModelMatrix{ 1.0f };
-			bool UpdateTransform{ false };
+			bool IsStatic{ false };
 
 			CTransform() = default;
-			CTransform(const glm::vec3& position, const glm::vec3& rotation, const glm::vec3& scale) : Position(position), Rotation(rotation), Scale(scale) { }
+			CTransform(const glm::vec3& position, const glm::vec3& rotation, const glm::vec3& scale, bool isStatic = false)
+				: Position(position), Rotation(rotation), Scale(scale), IsStatic(isStatic)
+			{
+				if (isStatic)
+				{
+					ModelMatrix = glm::translate(glm::mat4(1.0f), Position);
+					ModelMatrix = glm::rotate(ModelMatrix, glm::radians(Rotation.x), { 1.0f, 0.0f, 0.0f });
+					ModelMatrix = glm::rotate(ModelMatrix, glm::radians(Rotation.y), { 0.0f, 1.0f, 0.0f });
+					ModelMatrix = glm::rotate(ModelMatrix, glm::radians(Rotation.z), { 0.0f, 0.0f, 1.0f });
+					ModelMatrix = glm::scale(ModelMatrix, Scale);
+				}
+			}
 			CTransform(const CTransform& org) { FY_CORE_ASSERT(false, "Copy constructor in CTransform called."); }
 
 			virtual void Func() override { }
@@ -469,29 +480,12 @@ namespace Frosty
 			virtual void Func() override { }
 		};
 
-		struct CPlayerAttack : public BaseComponent
+		struct CEnemy : public BaseComponent
 		{
 			static std::string NAME;
-			float Reach{ 1.0f };
-			float Cooldown{ 1.0f };
-			float Damage{ 2.0f };
-			//temp
-			bool IsPlayer{ false };
-			//
-			bool IsMelee{ true };
 
-			std::shared_ptr<VertexArray> Mesh;
-			std::shared_ptr<Shader> UseShader;
-			std::shared_ptr<Texture2D> Texture[2];
-			glm::mat4 TextureTransform{ 1.0f };
-
-			uint8_t CurrTexture = 0;
-
-			CPlayerAttack() = default;
-			//CPlayerAttack(float reach, float width, float damage) : Reach(reach), Width(width), Damage(damage) { }
-			//CPlayerAttack(float reach, float cooldown, float damage, bool isPlayer, bool isMelee) : Reach(reach), Cooldown(cooldown), Damage(damage), IsPlayer(isPlayer), IsMelee(isMelee){ }
-			CPlayerAttack(float reach, float cooldown, float damage, bool isPlayer) : Reach(reach), Cooldown(cooldown), Damage(damage), IsPlayer(isPlayer) { }
-			CPlayerAttack(const CPlayerAttack& org) { FY_CORE_ASSERT(false, "Copy constructor in CPlayerAttack called."); }
+			CEnemy() = default;
+			CEnemy(const CEnemy& org) { FY_CORE_ASSERT(false, "Copy constructor in CEnemy called."); }
 
 			virtual void Func() override { }
 		};
@@ -511,22 +505,6 @@ namespace Frosty
 			virtual void Func() override { }
 		};
 		
-		struct CEnemyAttack : public BaseComponent
-		{
-			static std::string NAME;
-
-			float Radius = 3.0f;
-			float Cooldown = 0.3f;
-			float Damage = 2.0f;
-			bool IsPlayer = false;
-
-			CEnemyAttack() = default;			
-			CEnemyAttack(float radius, float cooldown, float damage, bool isPlayer) : Radius(radius), Cooldown(cooldown), Damage(damage), IsPlayer(isPlayer) { }
-			CEnemyAttack(const CEnemyAttack& org) { FY_CORE_ASSERT(false, "Copy constructor in CEnemyAttack called."); }
-
-			virtual void Func() override { }
-		};
-
 		struct CHealth : public BaseComponent
 		{
 			static std::string NAME;
@@ -537,22 +515,6 @@ namespace Frosty
 			CHealth() = default;
 			CHealth(float health) : MaxHealth(health), CurrentHealth(health) {};
 			CHealth(const CHealth& org) { FY_CORE_ASSERT(false, "Copy constructor in CHealth called."); }
-
-			virtual void Func() override { }
-		};
-
-		//Temp
-		struct CTag : public BaseComponent
-		{
-			static std::string NAME;
-
-			std::string TagName;
-
-			CTag() = default;
-			CTag(const std::string& Tagname) : TagName(Tagname) { }
-			CTag(const CTag& org) { FY_CORE_ASSERT(false, "Copy constructor in CTag called."); }
-
-			bool operator==(const CTag& other) { return (TagName == other.TagName); }
 
 			virtual void Func() override { }
 		};
@@ -719,19 +681,16 @@ namespace Frosty
 			case 5:		return "Follow";
 			case 6:		return "Light";
 			case 7:		return "Physics";
-			case 8:		return "PlayerAttack";
+			case 8:		return "Enemy";
 			case 9:		return "Arrow";
-			case 10:	return "EnemyAttack";
 			case 11:	return "Health";
-			case 12:	return "Tag";
-			case 13:	return "Consumables";
-			case 14:	return "CharacterState";
-			case 15:	return "HealthBar";
-			case 16:	return "Dash";
-			case 17:	return "BasicAttack";
-			case 18:	return "Destroy";
-			case 19:	return "Sword";
-			case 20:	return "ParticleSystem";
+			case 12:	return "Consumables";
+			case 13:	return "HealthBar";
+			case 14:	return "Dash";
+			case 15:	return "BasicAttack";
+			case 16:	return "Destroy";
+			case 17:	return "Sword";
+			case 18:	return "ParticleSystem";
 			default:	return "";
 			}
 		}

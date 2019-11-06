@@ -29,12 +29,15 @@ namespace Frosty
 		void Render();
 
 		template<typename SystemType>
-		inline void AddSystem()
+		inline ECS::BaseSystem* AddSystem()
 		{ 
+			//m_Systems[m_TotalSystems].reset(FY_NEW SystemType());
 			SystemType* system(FY_NEW SystemType());
 			std::unique_ptr<SystemType> systemPtr{ system };
 			m_Systems[m_TotalSystems] = std::move(systemPtr);
 			m_TotalSystems++;
+			//m_Systems[m_TotalSystems++].reset(FY_NEW SystemType());
+			return m_Systems[m_TotalSystems - 1].get();
 		}
 
 		// Scene Functions
@@ -44,7 +47,7 @@ namespace Frosty
 		const std::shared_ptr<ECS::Entity>& GetSceneCamera() const { return m_Scene->GetCamera(); }
 
 		// Entity Functions
-		inline std::shared_ptr<ECS::Entity>& CreateEntity(const glm::vec3& position = glm::vec3(0.0f), const glm::vec3& rotation = glm::vec3(0.0f), const glm::vec3& scale = glm::vec3(1.0f)) { return m_Scene->CreateEntity(position, rotation, scale); }
+		inline std::shared_ptr<ECS::Entity>& CreateEntity(const glm::vec3& position = glm::vec3(0.0f), const glm::vec3& rotation = glm::vec3(0.0f), const glm::vec3& scale = glm::vec3(1.0f), bool isStatic = false) { return m_Scene->CreateEntity(position, rotation, scale, isStatic); }
 		void RemoveEntity(std::shared_ptr<ECS::Entity>& entity);
 		inline std::unique_ptr<ECS::EntityManager>& GetEntityManager() { return m_Scene->GetEntityManager(); }
 		template<typename ComponentType>
@@ -106,6 +109,7 @@ namespace Frosty
 		std::unique_ptr<Scene> m_Scene;
 
 		// System Declarations 
+		//std::vector<std::shared_ptr<ECS::BaseSystem>> m_Systems;
 		std::array<std::unique_ptr<ECS::BaseSystem>, ECS::MAX_SYSTEMS> m_Systems;
 		size_t m_TotalSystems{ 1 };
 

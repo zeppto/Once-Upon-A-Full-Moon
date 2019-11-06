@@ -20,7 +20,7 @@ namespace Frosty
 		inline const std::shared_ptr<ECS::Entity>& GetCamera() const { return m_GameCamera; }
 
 		// Entity Functions
-		std::shared_ptr<ECS::Entity>& CreateEntity(const glm::vec3& position, const glm::vec3& rotation, const glm::vec3& scale);
+		std::shared_ptr<ECS::Entity>& CreateEntity(const glm::vec3& position, const glm::vec3& rotation, const glm::vec3& scale, bool isStatic);
 		void RemoveEntity(std::shared_ptr<ECS::Entity>& entity);
 		inline std::unique_ptr<ECS::EntityManager>& GetEntityManager() { return m_EntityManager; }
 		template<typename ComponentType>

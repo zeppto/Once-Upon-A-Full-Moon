@@ -19,11 +19,11 @@ namespace Frosty
 		m_GameCamera = camera;
 	}
 
-	std::shared_ptr<ECS::Entity>& Scene::CreateEntity(const glm::vec3& position, const glm::vec3& rotation, const glm::vec3& scale)
+	std::shared_ptr<ECS::Entity>& Scene::CreateEntity(const glm::vec3& position, const glm::vec3& rotation, const glm::vec3& scale, bool isStatic)
 	{
 		auto& entity = m_EntityManager->Create();
 
-		AddComponent<ECS::CTransform>(entity, position, rotation, scale);
+		AddComponent<ECS::CTransform>(entity, position, rotation, scale, isStatic);
 
 		return entity;
 	}

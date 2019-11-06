@@ -167,6 +167,14 @@ project "Sandbox"
 		"%{IncludeDir.glm}",
 		"%{IncludeDir.FreeType}"
 	}
+	
+	excludes
+	{
+		"%{prj.name}/src/Systems/HealthBarSystem.cpp",
+		"%{prj.name}/src/Systems/HealthBarSystem.hpp",
+		"%{prj.name}/src/Systems/ParticleSystem.cpp",
+		"%{prj.name}/src/Systems/ParticleSystem.hpp"
+	}
 
 	links
 	{

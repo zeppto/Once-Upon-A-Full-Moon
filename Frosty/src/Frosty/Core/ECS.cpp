@@ -13,11 +13,9 @@ namespace Frosty
 		std::string CFollow::NAME = "Follow";
 		std::string CLight::NAME = "Light";
 		std::string CPhysics::NAME = "Physics";
-		std::string CPlayerAttack::NAME = "PlayerAttack";
+		std::string CEnemy::NAME = "Enemy";
 		std::string CArrow::NAME = "Arrow";
-		std::string CEnemyAttack::NAME = "EnemyAttack";
 		std::string CHealth::NAME = "Health";
-		std::string CTag::NAME = "Tag";
 		std::string CInventory::NAME = "Inventory";
 		std::string CHealthBar::NAME = "HealthBar";
 		std::string CDash::NAME = "Dash";
