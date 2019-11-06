@@ -192,7 +192,26 @@ namespace Frosty
 
 			Renderer::Submit(m_Shader, m_VertexArray, m_LightManager);
 
-			BoolMapGenerator::Get()->RenderBoolMap();
+			std::vector<float> tempVert;
+			tempVert =
+			{
+				 -0.5f, 0.0f, 0.5f,
+				 0.5f,  0.0f, 0.5f,
+				 0.0f, 0.0f, -0.5f
+			};
+
+
+			glm::mat4 tempMap = glm::translate(glm::mat4(1.0f), glm::vec3(64.0f, 0.0f, 36.0f));
+			tempMap = glm::scale(tempMap, glm::vec3(30.0f, 30.0f, 30.0f));
+
+
+			ModelBatch tempBatch;
+			tempBatch.Verticies = tempVert;
+			tempBatch.Transforms.emplace_back(tempMap);
+
+			BoolMapGenerator::AddToRenderList(tempBatch);
+
+			BoolMapGenerator::RenderBoolMap();
 
 			Renderer::EndScene();
 

@@ -5,15 +5,14 @@
 
 namespace Frosty
 {
-	
+
 
 	//temp
-	unsigned int BoolMapGenerator::s_QuadVAO = -1;
 	std::shared_ptr <Camera> BoolMapGenerator::m_Camera = nullptr;
 	unsigned int BoolMapGenerator::m_VertexArray = -1;
 	//
 
-	
+
 	BoolMapGenerator* BoolMapGenerator::s_Instance = nullptr;
 	std::list<ModelBatch> BoolMapGenerator::s_ModelList = std::list<ModelBatch>();
 	BoolMapGenerator::GeneratorSettings BoolMapGenerator::s_Settings = BoolMapGenerator::GeneratorSettings();
@@ -25,7 +24,7 @@ namespace Frosty
 	unsigned int BoolMapGenerator::s_Texture = -1;
 	unsigned int BoolMapGenerator::s_RenderProgramID = -1;
 
-	BoolMapGenerator* BoolMapGenerator::Get() 
+	BoolMapGenerator* BoolMapGenerator::Get()
 	{
 		if (s_Instance == nullptr)
 		{
@@ -102,7 +101,7 @@ namespace Frosty
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, s_Texture, 0);
 
-		unsigned int attachments[1] = { GL_COLOR_ATTACHMENT0};
+		unsigned int attachments[1] = { GL_COLOR_ATTACHMENT0 };
 		glDrawBuffers(1, attachments);
 
 		char buff[1024];
@@ -122,77 +121,42 @@ namespace Frosty
 	{
 		InitiateRenderData();
 
+		std::list<ModelBatch>::iterator modelIt = s_ModelList.begin();
+		unsigned int s_RenderModelID;
 
-			//float quadVertices[] = {
-			//	// positions       
-			//	MAP_WITDH_PIXELS / (2 * m_Pix_Cord_Ratio),  1.0f, MAP_HEIGHT_PIXELS / (2 * m_Pix_Cord_Ratio),
-			//	0.0f,  1.0f, 0.0f,
-			//	0.0f,  1.0f, MAP_HEIGHT_PIXELS / (2 * m_Pix_Cord_Ratio )
-			//};
-
-			float quadVertices[] = {
-				// positions       
-				128.0f,  0.0f, 72.0f,
-				2.0f,  0.0f, 0.0f,
-				0.0f,  0.0f,  70.0f
-			};
-
-			//	unsigned int VBO;
-
-
-				//glGenVertexArrays(1, &QuadVAO);
-				//glBindVertexArray(QuadVAO);
-
-			
-			glGenBuffers(1, &s_QuadVAO);
-			glBindBuffer(GL_ARRAY_BUFFER, s_QuadVAO);
-
-			glEnableVertexAttribArray(0);
-
-			glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), BUFFER_OFFSET(0));
-			glBufferData(GL_ARRAY_BUFFER, sizeof(quadVertices), quadVertices, GL_STATIC_DRAW);
-
-
-			//glGenVertexArrays(1, &m_QuadVbo);    
-			//glBindVertexArray(m_QuadVbo);     
-			//glEnableVertexAttribArray(0);  
-			//glEnableVertexAttribArray(1);     
-			//glGenBuffers(1, &m_QuadVbo);      
-			//glBindBuffer(GL_ARRAY_BUFFER, m_QuadVbo);         
-			//glBufferData(GL_ARRAY_BUFFER, sizeof(myQuad), myQuad, GL_STATIC_DRAW);
-			//glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(Pos2UV), BUFFER_OFFSET(0));    
-			//glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(Pos2UV), BUFFER_OFFSET(sizeof(float) * 2));
-
-
-
-
-			//glBindVertexArray(0);
-		
-
+		//temp
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
 		glUseProgram(s_RenderProgramID);
 
-		GLint location = glGetUniformLocation(s_RenderProgramID, "u_ViewOrtho");
+		GLint locationVO = glGetUniformLocation(s_RenderProgramID, "u_ViewOrtho");
+		GLint locationMM = glGetUniformLocation(s_RenderProgramID, "u_ModelMat");
 
 		//glm::mat4 temp = m_OrthoGraphic * m_View;
 
-		glUniformMatrix4fv(location, 1, GL_FALSE, &s_ViewOrtho[0][0]);
+		glUniformMatrix4fv(locationVO, 1, GL_FALSE, &s_ViewOrtho[0][0]);
 
-		// Render the Quad
-		glBindVertexArray(s_QuadVAO);
-		//glBindBuffer(GL_ARRAY_BUFFER, QuadVAO);
+		float quadVertices[] = {
+			// positions       
+			128.0f,  0.0f, 72.0f,
+			2.0f,  0.0f, 0.0f,
+			0.0f,  0.0f,  70.0f
+		};
+
+		glGenBuffers(1, &s_RenderModelID);
+		glBindBuffer(GL_ARRAY_BUFFER, s_RenderModelID);
+
+		glEnableVertexAttribArray(0);
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), BUFFER_OFFSET(0));
+		glBufferData(GL_ARRAY_BUFFER, sizeof(quadVertices), quadVertices, GL_STATIC_DRAW);
+
+		glBindVertexArray(s_RenderModelID);
+		glUniformMatrix4fv(locationMM, 1, GL_FALSE, &glm::mat4(1.0f)[0][0]);
 		glDrawArrays(GL_TRIANGLES, 0, 3);
 
+
+
 		glBindVertexArray(0);
-
-		//glBindVertexArray(0);
-
-
-
-
-
-
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		s_ModelList.erase(s_ModelList.begin(), s_ModelList.end());
 
 		return std::shared_ptr<BoolMap>(nullptr);
@@ -236,7 +200,7 @@ namespace Frosty
 		}
 
 		s_RenderProgramID = glCreateProgram();
-	//	GLuint tempProgram = RenderProgramID;
+		//	GLuint tempProgram = RenderProgramID;
 		glAttachShader(s_RenderProgramID, vs);
 
 		glAttachShader(s_RenderProgramID, fs);
