@@ -3,8 +3,8 @@
 #include"..\..\Core\Camera\Camera.hpp"
 #include"BoolMap.hpp"
 
-#define DEFAULT_BOOLMAP_WIDTH 192
-#define DEFAULT_BOOLMAP_HEIGHT 108
+#define DEFAULT_BOOLMAP_WIDTH 128
+#define DEFAULT_BOOLMAP_HEIGHT 72
 #define DEFAULT_BOOLMAP_PIXELCOORD_RATIO 10
 
 namespace Frosty

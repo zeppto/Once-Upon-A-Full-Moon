@@ -38,15 +38,14 @@ namespace Frosty
 	void BoolMapGenerator::InitiateRenderData()
 	{
 
-		s_Settings.Pos = glm::vec3(((float)s_Settings.Width) / (2 * s_Settings.Pix_Cord_Ratio), 100.0f, ((float)s_Settings.Height) / (2 * s_Settings.Pix_Cord_Ratio));
-
-	
+		s_Settings.Pos = glm::vec3((s_Settings.Width) / 2.0f, 100.0f, ((float)s_Settings.Height) / 2.0f);
 
 		glm::vec3 tempDir = s_Settings.Pos;
 		tempDir[1] = 0.0f;
-		glm::mat4 tempView = glm::lookAt(s_Settings.Pos, tempDir, m_Camera->GetCameraTranslationData().UpVec);
-		
-		glm::vec4 OrthoVec((float)s_Settings.Width / -(2 * s_Settings.Pix_Cord_Ratio), (float)s_Settings.Width / (2 * s_Settings.Pix_Cord_Ratio), (float)s_Settings.Height / -(2 * s_Settings.Pix_Cord_Ratio), (float)s_Settings.Height / (2 * s_Settings.Pix_Cord_Ratio));
+		glm::mat4 tempView = glm::lookAt(s_Settings.Pos, tempDir, s_Settings.UpVec);
+
+
+		glm::vec4 OrthoVec((float)s_Settings.Width / -2.0f, (float)s_Settings.Width / 2.0f, (float)s_Settings.Height / -2.0f, (float)s_Settings.Height / 2.0f);
 		glm::mat4 tempOrtho = glm::ortho(OrthoVec[0], OrthoVec[1], OrthoVec[2], OrthoVec[3], 1.0f, 200.0f);
 
 		s_ViewOrtho = tempOrtho * tempView;
@@ -65,7 +64,6 @@ namespace Frosty
 		m_Camera->GetCameraData().Projection = tempOrtho;
 
 		m_Camera->GetCameraData().AspRatio = (float)s_Settings.Width / (float)s_Settings.Height;
-
 
 	}
 
@@ -124,7 +122,6 @@ namespace Frosty
 	{
 		InitiateRenderData();
 
-		if (s_QuadVAO == -1) {
 
 			//float quadVertices[] = {
 			//	// positions       
@@ -136,7 +133,7 @@ namespace Frosty
 			float quadVertices[] = {
 				// positions       
 				128.0f,  0.0f, 72.0f,
-				0.0f,  0.0f, 0.0f,
+				2.0f,  0.0f, 0.0f,
 				0.0f,  0.0f,  70.0f
 			};
 
@@ -146,7 +143,7 @@ namespace Frosty
 				//glGenVertexArrays(1, &QuadVAO);
 				//glBindVertexArray(QuadVAO);
 
-
+			
 			glGenBuffers(1, &s_QuadVAO);
 			glBindBuffer(GL_ARRAY_BUFFER, s_QuadVAO);
 
@@ -169,8 +166,8 @@ namespace Frosty
 
 
 
-			glBindVertexArray(0);
-		}
+			//glBindVertexArray(0);
+		
 
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
@@ -198,7 +195,7 @@ namespace Frosty
 
 		s_ModelList.erase(s_ModelList.begin(), s_ModelList.end());
 
-		return std::make_shared<BoolMap>(nullptr);
+		return std::shared_ptr<BoolMap>(nullptr);
 	}
 
 
