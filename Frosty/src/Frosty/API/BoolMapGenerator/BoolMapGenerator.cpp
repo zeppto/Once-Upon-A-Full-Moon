@@ -5,16 +5,13 @@
 
 namespace Frosty
 {
-
-
 	//temp
 	std::shared_ptr <Camera> BoolMapGenerator::m_Camera = nullptr;
 	unsigned int BoolMapGenerator::m_VertexArray = -1;
 	//
 
-
 	BoolMapGenerator* BoolMapGenerator::s_Instance = nullptr;
-	std::list<ModelBatch> BoolMapGenerator::s_ModelList = std::list<ModelBatch>();
+	std::list<ModelBatch> BoolMapGenerator::s_RenderBatch = std::list<ModelBatch>();
 	BoolMapGenerator::GeneratorSettings BoolMapGenerator::s_Settings = BoolMapGenerator::GeneratorSettings();
 
 
@@ -31,7 +28,6 @@ namespace Frosty
 			Init();
 		}
 		return s_Instance;
-
 	}
 
 	void BoolMapGenerator::InitiateRenderData()
@@ -43,27 +39,12 @@ namespace Frosty
 		tempDir[1] = 0.0f;
 		glm::mat4 tempView = glm::lookAt(s_Settings.Pos, tempDir, s_Settings.UpVec);
 
-
 		glm::vec4 OrthoVec((float)s_Settings.Width / -2.0f, (float)s_Settings.Width / 2.0f, (float)s_Settings.Height / -2.0f, (float)s_Settings.Height / 2.0f);
 		glm::mat4 tempOrtho = glm::ortho(OrthoVec[0], OrthoVec[1], OrthoVec[2], OrthoVec[3], 1.0f, 200.0f);
 
 		s_ViewOrtho = tempOrtho * tempView;
 
-
-		m_Camera = std::make_shared<Camera>(Camera());
-		m_Camera->GetCameraTranslationData().Pos = s_Settings.Pos;
-		m_Camera->GetCameraTranslationData().UpVec = glm::vec3(0.0f, 0.0f, -1.0f);
-		m_Camera->GetCameraTranslationData().CamSpeed = 10.0f;
-		m_Camera->GetCameraTranslationData().LookAtVec = tempDir;
-		m_Camera->GetCameraData().FarPlane = 200.0f;
-		m_Camera->GetCameraData().NearPlane = 0.1f;
-		m_Camera->GetCameraData().FoV = glm::radians(70.0f);
-		m_Camera->GetCameraData().OrthoGraphic = tempOrtho;
-		m_Camera->GetCameraData().View = tempView;
-		m_Camera->GetCameraData().Projection = tempOrtho;
-
-		m_Camera->GetCameraData().AspRatio = (float)s_Settings.Width / (float)s_Settings.Height;
-
+		InitiateGBuffer();
 	}
 
 	std::shared_ptr<Camera>& BoolMapGenerator::GetCamera()
@@ -121,7 +102,7 @@ namespace Frosty
 	{
 		InitiateRenderData();
 
-		std::list<ModelBatch>::iterator modelIt = s_ModelList.begin();
+
 		unsigned int s_RenderModelID;
 
 		//temp
@@ -130,34 +111,33 @@ namespace Frosty
 
 		GLint locationVO = glGetUniformLocation(s_RenderProgramID, "u_ViewOrtho");
 		GLint locationMM = glGetUniformLocation(s_RenderProgramID, "u_ModelMat");
-
-		//glm::mat4 temp = m_OrthoGraphic * m_View;
-
 		glUniformMatrix4fv(locationVO, 1, GL_FALSE, &s_ViewOrtho[0][0]);
 
-		float quadVertices[] = {
-			// positions       
-			128.0f,  0.0f, 72.0f,
-			2.0f,  0.0f, 0.0f,
-			0.0f,  0.0f,  70.0f
-		};
+		std::list<ModelBatch>::iterator BatchIt = s_RenderBatch.begin();
+		while (BatchIt != s_RenderBatch.end())
+		{
 
-		glGenBuffers(1, &s_RenderModelID);
-		glBindBuffer(GL_ARRAY_BUFFER, s_RenderModelID);
+			glGenBuffers(1, &s_RenderModelID);
+			glBindBuffer(GL_ARRAY_BUFFER, s_RenderModelID);
 
-		glEnableVertexAttribArray(0);
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), BUFFER_OFFSET(0));
-		glBufferData(GL_ARRAY_BUFFER, sizeof(quadVertices), quadVertices, GL_STATIC_DRAW);
+			glEnableVertexAttribArray(0);
+			glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), BUFFER_OFFSET(0));
 
-		glBindVertexArray(s_RenderModelID);
-		glUniformMatrix4fv(locationMM, 1, GL_FALSE, &glm::mat4(1.0f)[0][0]);
-		glDrawArrays(GL_TRIANGLES, 0, 3);
+			glBufferData(GL_ARRAY_BUFFER, sizeof(float)* BatchIt->Verticies.size(), &BatchIt->Verticies[0], GL_STATIC_DRAW);
 
 
-
+			std::list<glm::mat4>::iterator PosIt = BatchIt->Transforms.begin();
+			while (PosIt != BatchIt->Transforms.end())
+			{
+				glUniformMatrix4fv(locationMM, 1, GL_FALSE, &(*PosIt)[0][0]);
+				glDrawArrays(GL_TRIANGLES, 0, BatchIt->Verticies.size());
+				PosIt++;
+			}
+			BatchIt++;
+		}
 		glBindVertexArray(0);
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
-		s_ModelList.erase(s_ModelList.begin(), s_ModelList.end());
+		s_RenderBatch.erase(s_RenderBatch.begin(), s_RenderBatch.end());
 
 		return std::shared_ptr<BoolMap>(nullptr);
 	}

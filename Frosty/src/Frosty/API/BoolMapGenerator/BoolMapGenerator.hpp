@@ -83,7 +83,7 @@ namespace Frosty
 		friend class Application;
 
 		//outside Info
-		static std::list<ModelBatch> s_ModelList;
+		static std::list<ModelBatch> s_RenderBatch;
 		static GeneratorSettings s_Settings;
 
 		//RenderData
@@ -101,7 +101,7 @@ namespace Frosty
 		static BoolMapGenerator* Get();
 		virtual ~BoolMapGenerator() {};
 
-		inline static void AddToRenderList(const ModelBatch& Batch) { InitCheck();  s_ModelList.push_back(Batch); }
+		inline static void AddToRenderList(const ModelBatch& Batch) { InitCheck();  s_RenderBatch.push_back(Batch); }
 
 		inline static std::shared_ptr<BoolMap>& RenderBoolMap() { InitCheck(); return RenderMap(); }
 
