@@ -86,7 +86,7 @@ namespace Frosty
 #pragma region Settings
 
 		// Let's define a maximum number of unique components:
-		constexpr std::size_t MAX_COMPONENTS{ 20 };
+		constexpr std::size_t MAX_COMPONENTS{ 21 };
 
 		// Let's define a maximum number of entities that
 		// can have the same component type:
@@ -562,7 +562,10 @@ namespace Frosty
 			float IncreaseSpeed{ 1.2f };
 
 			// BAIT - chunks of meat used to distract the wolf
-
+			int MaxBaitAmount{ 5 };
+			int CurrentBaitAmount{ 3 };
+			float BaitCooldown{ 3.f };
+			float BaitTimer{ float(std::clock()) };
 			// WOLFSBANE - poisonous flower which can be mixed with bait
 
 
@@ -669,6 +672,21 @@ namespace Frosty
 			CParticleSystem(const CParticleSystem& org) { FY_CORE_ASSERT(false, "Copy constructor in CParticleSystem called."); }
 		};
 
+		struct CBoss : public BaseComponent
+		{
+			static std::string NAME;
+			float DistractionTime{ 5.0f };
+			float DistractionTimer{ float(std::clock()) };
+			bool Distracted{ false };
+			bool Hunting{ false };
+			std::vector<std::shared_ptr<Frosty::ECS::Entity>> TargetList;
+			//std::vector<Frosty::ECS::Entity*> TargetList;
+
+			CBoss() = default;
+			CBoss(float DistractionTime) : DistractionTime(DistractionTime) { }
+			CBoss(const CBoss& org) { FY_CORE_ASSERT(false, "Copy constructor in CBoss called."); }
+		};
+
 		static std::string GetComponentName(size_t i)
 		{
 			switch (i)
@@ -694,6 +712,7 @@ namespace Frosty
 			case 18:	return "Destroy";
 			case 19:	return "Sword";
 			case 20:	return "ParticleSystem";
+			case 21:	return "Boss";
 			default:	return "";
 			}
 		}

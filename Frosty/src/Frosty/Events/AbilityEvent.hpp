@@ -39,6 +39,19 @@ namespace Frosty
 	private:
 		std::shared_ptr<ECS::Entity> m_Entity;
 	};
+
+	class BaitPlacedEvent : public BaseEvent
+	{
+	public:
+		BaitPlacedEvent(const std::shared_ptr<ECS::Entity>& entity) : m_Entity(entity) { }
+
+		const std::shared_ptr<ECS::Entity>& GetEntity() const { return m_Entity; }
+
+		EVENT_TYPE(BaitPlaced)
+
+	private:
+		std::shared_ptr<ECS::Entity> m_Entity;
+	};
 }
 
 #endif // !ABILITY_EVENT_HPP

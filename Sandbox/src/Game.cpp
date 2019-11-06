@@ -19,7 +19,9 @@
 #include "Systems/ParticleSystem.hpp"
 //#include "Systems/EnemyAttackSystem.hpp"
 //#include "Systems/HealthBarSystem.hpp"
-//#include "Systems/SpawnSystem.hpp"
+#include "Systems/ParticleSystem.hpp"
+#include "Systems/BossBehaviorSystem.hpp"
+
 
 
 
@@ -49,6 +51,7 @@ namespace MCS
 		//world->AddSystem<SpawnSystem>();
 		//world->AddSystem<HealthBarSystem>();
 		world->AddSystem<ParticleSystem>();
+		world->AddSystem<BossBehaviorSystem>();
 
 		world->Awake();
 
@@ -102,7 +105,8 @@ namespace MCS
 		world->AddComponent<Frosty::ECS::CMaterial>(enemy, Frosty::AssetManager::GetShader("FlatColor"));
 		world->AddComponent<Frosty::ECS::CPhysics>(enemy, Frosty::AssetManager::GetBoundingBox("pCube1"), 6.0f);
 		world->AddComponent<Frosty::ECS::CFollow>(enemy, &playerTransform);
-		world->AddComponent<Frosty::ECS::CHealth>(enemy);
+		world->AddComponent<Frosty::ECS::CHealth>(enemy);	
+		world->AddComponent<Frosty::ECS::CBoss>(enemy);
 
 		PushLayer(FY_NEW InspectorLayer());
 	}
