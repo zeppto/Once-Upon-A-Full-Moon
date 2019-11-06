@@ -7,8 +7,8 @@ namespace Frosty
 	struct FileMetaData
 	{
 		int8_t Type = -1;
+		std::string TagName = "";
 		std::string FileName = "";
-		std::string PreFab_Name = "";
 		std::string FullFilePath = "";
 		std::string FileExtentionName = "";
 	};
@@ -35,15 +35,16 @@ namespace Frosty
 		inline AssetFile(const FileMetaData& MetaData) : m_MetaData(MetaData) {}
 		inline  virtual ~AssetFile() {}
 
+		inline void SetTagName(const std::string& PrefabName) { m_MetaData.TagName = PrefabName; }
 
 		inline FileMetaData& GetfileMetaData() { return m_MetaData; };
 		inline void SetFileMetaData(const FileMetaData& MetaData) { m_MetaData = MetaData; }
 
-		virtual bool LoadToMem(const bool& Reload = false) = 0;
-		virtual bool DeleteFromMem() = 0;
+		virtual bool LoadToMem(const bool& Reload = false) { return true; }
+		virtual bool DeleteFromMem() { return true; }
 
-		virtual bool LoadToGPU() = 0;
-		virtual bool DeleteFromGPU() = 0;
+		virtual bool LoadToGPU() { return true; }
+		virtual bool DeleteFromGPU() { return true; }
 
 		inline const bool& LoadedOnCPU() const { return m_OnMem; }
 		inline const bool& LoadedOnGPU() const { return m_OnGPU; }

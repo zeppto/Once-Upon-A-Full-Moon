@@ -15,7 +15,7 @@ namespace Frosty
 
 		//static void DrawIndexed(const std::shared_ptr<VertexArray>& vertexArray);
 		static void Draw2D(const std::shared_ptr<VertexArray>& vertexArray);
-		//static void DrawParticles(const std::shared_ptr<VertexArray>& vertexArray, size_t count);
+		static void DrawParticles(const std::shared_ptr<VertexArray>& vertexArray, size_t count);
 		//static void DrawUIText();
 
 	};

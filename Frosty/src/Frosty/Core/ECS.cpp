@@ -1,7 +1,5 @@
 #include <fypch.hpp>
 #include "ECS.hpp"
-#include "Frosty/Core/Application.hpp"
-#include "Frosty/Core/InputManager.hpp"
 
 namespace Frosty
 {
@@ -11,18 +9,19 @@ namespace Frosty
 		std::string CMesh::NAME = "Mesh";
 		std::string CCamera::NAME = "Camera";
 		std::string CMaterial::NAME = "Material";
-		std::string CMotion::NAME = "Motion";
-		std::string CController::NAME = "Controller";
+		std::string CPlayer::NAME = "Player";
 		std::string CFollow::NAME = "Follow";
 		std::string CLight::NAME = "Light";
-		std::string CCollision::NAME = "Collision";
-		std::string CPlayerAttack::NAME = "PlayerAttack";
-		std::string CEnemyAttack::NAME = "EnemyAttack";
-		std::string CHealth::NAME = "Health";
-		std::string CTag::NAME = "Tag";
-		std::string CConsumables::NAME = "Consumables";
-		std::string CCharacterState::NAME = "CharacterState";
+		std::string CPhysics::NAME = "Physics";
+		std::string CEnemy::NAME = "Enemy";
 		std::string CArrow::NAME = "Arrow";
+		std::string CHealth::NAME = "Health";
+		std::string CInventory::NAME = "Inventory";
 		std::string CHealthBar::NAME = "HealthBar";
+		std::string CDash::NAME = "Dash";
+		std::string CBasicAttack::NAME = "BasicAttack";
+		std::string CDestroy::NAME = "Destroy";
+		std::string CSword::NAME = "Sword";
+		std::string CParticleSystem::NAME = "Particle System";
 	}
 }

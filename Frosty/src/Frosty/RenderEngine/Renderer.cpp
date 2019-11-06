@@ -60,18 +60,6 @@ namespace Frosty
 		s_SceneData->DirectionalLights.emplace_back(light);
 	}
 
-	//void Renderer::Submit2D(const std::shared_ptr<Shader>& shader, const std::shared_ptr<VertexArray>& vertexArray, std::string& tex, glm::mat4& modelMatrix)
-	//{
-	//	//shader->Bind();
-	//	//shader->UploadUniforMat4("model", modelMatrix);
-	//	////shader->UploadUniformInt(tex, 0);
-
-	//	//vertexArray->Bind();
-	//	//RenderCommand::Draw2D(vertexArray);
-	//	//shader->UnBind();
-	//	//vertexArray->Unbind();
-	//}
-
 	void Renderer::SubmitText(const std::shared_ptr<Shader>& shader, const std::shared_ptr<VertexArray>& vertexArray, std::string& text)
 	{
 		/*shader->Bind();
@@ -122,19 +110,32 @@ namespace Frosty
 		vertexArray->GetVertexBuffer().front()->Unbind();*/
 	}
 
-	void Renderer::SubmitParticles(const std::shared_ptr<Shader>& shader, const std::shared_ptr<VertexArray>& vertexArray, glm::mat4& modelMat, size_t particleCount)
+	void Renderer::SubmitParticles(const std::shared_ptr<Shader>& shader, const std::shared_ptr<Shader>& computeShader, const std::shared_ptr<VertexArray>& vertexArray, glm::mat4& modelMat, size_t particleCount, float maxLifetime)
 	{
-		/*shader->Bind();
+		computeShader->Bind();
+		vertexArray->BindShaderStorageBuffer();
+
+		computeShader->UploadUniformFloat("deltaTime", Frosty::Time::DeltaTime());
+		computeShader->UploadUniformFloat("maxLifetime", maxLifetime);
+
+		ComputeCommand::Send(particleCount);
+
+		shader->Bind();
 		vertexArray->Bind();
 
-		shader->UploadUniforMat4("viewMat", m_SceneData->ViewMatrix);
-		shader->UploadUniforMat4("projectionMat", m_SceneData->ProjectionMatrix);
-		shader->UploadUniforMat4("modelMat", modelMat);
+		shader->UploadUniformMat4("viewMat", s_SceneData->GameCamera.ViewMatrix);
+		shader->UploadUniformMat4("projectionMat", s_SceneData->GameCamera.ProjectionMatrix);
+		shader->UploadUniformMat4("modelMat", modelMat);
+
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE);
 
 		RenderCommand::DrawParticles(vertexArray, particleCount);
 
+		glDisable(GL_BLEND);
+
 		vertexArray->Unbind();
-		shader->UnBind();*/
+		shader->UnBind();
 	}
 	
 	void Renderer::Submit(ECS::CMaterial* mat, const std::shared_ptr<VertexArray>& vertexArray, const glm::mat4& transform)
@@ -170,7 +171,7 @@ namespace Frosty
 			mat->UseShader->UploadUniformFloat("u_SpecularStrength", mat->SpecularStrength);
 
 		}
-		else if (mat->UseShader->GetName() == "Texture2D")
+		else if (mat->UseShader->GetName() == "Texture2D"|| mat->UseShader->GetName() == "BlendShader")
 		{
 			mat->UseShader->UploadUniformFloat2("u_TextureCoordScale", mat->TextureScale);
 		}
@@ -186,6 +187,12 @@ namespace Frosty
 
 
 		vertexArray->Bind();
+
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+
 		RenderCommand::Draw2D(vertexArray);
+
+		glDisable(GL_BLEND);
 	}
 }

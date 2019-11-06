@@ -30,7 +30,7 @@ namespace Frosty
 	#define FY_CORE_INFO(...)   ::Frosty::Log::GetCoreLogger()->info(__VA_ARGS__)
 	#define FY_CORE_WARN(...)   ::Frosty::Log::GetCoreLogger()->warn(__VA_ARGS__)
 	#define FY_CORE_ERROR(...)  ::Frosty::Log::GetCoreLogger()->error(__VA_ARGS__)
-	#define FY_CORE_FATAL(...)  ::Frosty::Log::GetCoreLogger()->fatal(__VA_ARGS__)
+	#define FY_CORE_FATAL(...)  ::Frosty::Log::GetCoreLogger()->critical(__VA_ARGS__)
 
 	//Example FY_CORE_ERROR("GLFW Error ({0}): {1}", error, description);
 
@@ -39,7 +39,7 @@ namespace Frosty
 	#define FY_INFO(...)        ::Frosty::Log::GetClientLogger()->info(__VA_ARGS__)
 	#define FY_WARN(...)        ::Frosty::Log::GetClientLogger()->warn(__VA_ARGS__)
 	#define FY_ERROR(...)       ::Frosty::Log::GetClientLogger()->error(__VA_ARGS__)
-	#define FY_FATAL(...)       ::Frosty::Log::GetClientLogger()->fatal(__VA_ARGS__)
+	#define FY_FATAL(...)       ::Frosty::Log::GetClientLogger()->critical(__VA_ARGS__)
 
 #else
 	//////////////////////////////////////////////

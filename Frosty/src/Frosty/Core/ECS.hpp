@@ -86,14 +86,14 @@ namespace Frosty
 #pragma region Settings
 
 		// Let's define a maximum number of unique components:
-		constexpr std::size_t MAX_COMPONENTS{ 16 };
+		constexpr std::size_t MAX_COMPONENTS{ 18 };
 
 		// Let's define a maximum number of entities that
 		// can have the same component type:
 		constexpr std::size_t MAX_ENTITIES_PER_COMPONENT{ 1024 };
 
 		// Defining the maximum nr of systems
-		constexpr std::size_t MAX_SYSTEMS{ 18 };
+		constexpr std::size_t MAX_SYSTEMS{ 19 };
 
 #pragma endregion Settings
 
@@ -334,10 +334,22 @@ namespace Frosty
 			glm::vec3 Position{ 0.0f };
 			glm::vec3 Rotation{ 0.0f };
 			glm::vec3 Scale{ 1.0f };
-			bool UpdateTransform{ false };				// Not sure if this is needed outside the editor
+			glm::mat4 ModelMatrix{ 1.0f };
+			bool IsStatic{ false };
 
 			CTransform() = default;
-			CTransform(const glm::vec3& position, const glm::vec3& rotation, const glm::vec3& scale) : Position(position), Rotation(rotation), Scale(scale) { }
+			CTransform(const glm::vec3& position, const glm::vec3& rotation, const glm::vec3& scale, bool isStatic = false)
+				: Position(position), Rotation(rotation), Scale(scale), IsStatic(isStatic)
+			{
+				if (isStatic)
+				{
+					ModelMatrix = glm::translate(glm::mat4(1.0f), Position);
+					ModelMatrix = glm::rotate(ModelMatrix, glm::radians(Rotation.x), { 1.0f, 0.0f, 0.0f });
+					ModelMatrix = glm::rotate(ModelMatrix, glm::radians(Rotation.y), { 0.0f, 1.0f, 0.0f });
+					ModelMatrix = glm::rotate(ModelMatrix, glm::radians(Rotation.z), { 0.0f, 0.0f, 1.0f });
+					ModelMatrix = glm::scale(ModelMatrix, Scale);
+				}
+			}
 			CTransform(const CTransform& org) { FY_CORE_ASSERT(false, "Copy constructor in CTransform called."); }
 
 			virtual void Func() override { }
@@ -377,7 +389,6 @@ namespace Frosty
 			CCamera(const CCamera& org) { FY_CORE_ASSERT(false, "Copy constructor in CCamera called."); }
 
 			virtual void Func() override { }
-
 		};
 
 		struct CMaterial : public BaseComponent
@@ -389,6 +400,11 @@ namespace Frosty
 			std::shared_ptr<Texture2D> DiffuseTexture;
 			std::shared_ptr<Texture2D> SpecularTexture;
 			std::shared_ptr<Texture2D> NormalTexture;
+			std::shared_ptr<Texture2D> BlendMapTexture;
+			std::shared_ptr<Texture2D> BlendTexture1;
+			std::shared_ptr<Texture2D> BlendTexture2;
+
+
 			float SpecularStrength{ 0.5f };
 			int Shininess{ 16 };
 			glm::vec2 TextureScale{ 1.0f };
@@ -398,39 +414,25 @@ namespace Frosty
 			CMaterial(const CMaterial& org) { FY_CORE_ASSERT(false, "Copy constructor in CMaterial called."); }
 
 			virtual void Func() override { }
-
 		};
 
-		struct CMotion : public BaseComponent
-		{
-			static std::string NAME;
-			static const int DASH_COOLDOWN = 3000;
-			static const int DASH_DISTANCE = 10000;
-			glm::vec3 Direction{ 0.0f, 0.0f, 0.0f };
-			float Speed{ 0.0f };
-			glm::vec3 Velocity{ 0.0f };
-			bool DashActive{ false };
-			float DashCurrentCooldown{ 0.0f };
-			float DistanceDashed{ 0.0f };
-			float DashSpeedMultiplier{ 10.0f };
-
-			CMotion() = default;
-			CMotion(float speed) : Speed(speed) { }
-			CMotion(const CMotion& org) { FY_CORE_ASSERT(false, "Copy constructor in CMotion called."); }
-
-			virtual void Func() override { }
-		};
-
-		struct CController : public BaseComponent
+		struct CPlayer : public BaseComponent
 		{
 			static std::string NAME;
 			int MoveLeftKey{ FY_KEY_A };
 			int MoveForwardKey{ FY_KEY_W };
 			int MoveRightKey{ FY_KEY_D };
 			int MoveBackKey{ FY_KEY_S };
+			int DashKey{ FY_KEY_LEFT_SHIFT };
+			int BasicAttackKey{ FY_KEY_SPACE };
 
-			CController() = default;
-			CController(const CController& org) { FY_CORE_ASSERT(false, "Copy constructor in CController called."); }
+			int HealingPostion{ FY_KEY_1 };
+			int IncreaseHPPotion{ FY_KEY_2 };
+			int SpeedPotion{ FY_KEY_3 };
+			int SpeedBoots{ FY_KEY_4 };
+
+			CPlayer() = default;
+			CPlayer(const CPlayer& org) { FY_CORE_ASSERT(false, "Copy constructor in CPlayer called."); }
 
 			virtual void Func() override { }
 		};
@@ -442,6 +444,7 @@ namespace Frosty
 			float StopDistance{ 0.0f };
 
 			CFollow() = default;
+			CFollow(CTransform* target) : Target(target) { }
 			CFollow(const CFollow& org) { FY_CORE_ASSERT(false, "Copy constructor in CFollow called."); }
 
 			virtual void Func() override { }
@@ -449,7 +452,7 @@ namespace Frosty
 
 		struct CLight : public BaseComponent
 		{
-			enum LightType { Point, Directional };
+			enum class LightType { Point, Directional };
 
 			static std::string NAME;
 			LightType Type{ LightType::Point };
@@ -466,42 +469,30 @@ namespace Frosty
 			virtual void Func() override { }
 		};
 
-		struct CCollision : public BaseComponent
+		struct CPhysics : public BaseComponent
 		{
 			static std::string NAME;
 			std::shared_ptr<Luna::BoundingBox> BoundingBox;
+			glm::vec3 Direction{ 0.0f, 0.0f, 0.0f };
+			float MaxSpeed{ 100.f };							// Maximun speed an entiry can upgrate its speed to
+			float Speed{ 0.0f };
+			glm::vec3 Velocity{ 0.0f };
+			float SpeedMultiplier{ 1.f };						// Used in combination with Speed Boost Potion
 
-			CCollision() = default;
-			CCollision(const std::shared_ptr<Luna::BoundingBox>& bb) : BoundingBox(bb) { }
-			CCollision(const CCollision& org) { FY_CORE_ASSERT(false, "Copy constructor in CCollision called."); }
+			CPhysics() = default;
+			CPhysics(const std::shared_ptr<Luna::BoundingBox>& bb, float speed = 0.0f) : BoundingBox(bb), Speed(speed) { }
+			CPhysics(const CPhysics& org) { FY_CORE_ASSERT(false, "Copy constructor in CPhysics called."); }
 
 			virtual void Func() override { }
 		};
 
-		struct CPlayerAttack : public BaseComponent
+		struct CEnemy : public BaseComponent
 		{
 			static std::string NAME;
-			float Reach{ 1.0f };
-			float Cooldown{ 1.0f };
-			float Damage{ 2.0f };
-			//temp
-			bool IsPlayer{ false };
-			//
-			bool IsMelee{ true };
 
-			std::shared_ptr<VertexArray> Mesh;
-			std::shared_ptr<Shader> UseShader;
-			std::shared_ptr<Texture2D> Texture[2];
-			glm::mat4 TextureTransform{ 1.0f };
+			CEnemy() = default;
+			CEnemy(const CEnemy& org) { FY_CORE_ASSERT(false, "Copy constructor in CEnemy called."); }
 
-			uint8_t CurrTexture = 0;
-
-			CPlayerAttack() = default;
-			//CPlayerAttack(float reach, float width, float damage) : Reach(reach), Width(width), Damage(damage) { }
-			//CPlayerAttack(float reach, float cooldown, float damage, bool isPlayer, bool isMelee) : Reach(reach), Cooldown(cooldown), Damage(damage), IsPlayer(isPlayer), IsMelee(isMelee){ }
-			CPlayerAttack(float reach, float cooldown, float damage, bool isPlayer) : Reach(reach), Cooldown(cooldown), Damage(damage), IsPlayer(isPlayer) { }
-			CPlayerAttack(const CPlayerAttack& org) { FY_CORE_ASSERT(false, "Copy constructor in CPlayerAttack called."); }
-			
 			virtual void Func() override { }
 		};
 
@@ -509,31 +500,12 @@ namespace Frosty
 		{
 			static std::string NAME;
 			float Damage{ 1.0f };
-			int Lifetime{ 70 };
+			float Lifetime{ 3.0f };
 			bool IsPiercing{ false };
-			// for piercing arrow
-			int alradyHitt{ 0 };
-
 
 			CArrow() = default;
-			CArrow(float damage, int lifetime, bool isPiercing) : Damage(damage), Lifetime(lifetime), IsPiercing(isPiercing){ }
+			CArrow(float damage, float lifetime = 7.0f, bool isPiercing = false) : Damage(damage), Lifetime(lifetime), IsPiercing(isPiercing){ }
 			CArrow(const CArrow& org) { FY_CORE_ASSERT(false, "Copy constructor in CArrow called."); }
-
-			virtual void Func() override { }
-		};
-		
-		struct CEnemyAttack : public BaseComponent
-		{
-			static std::string NAME;
-
-			float Radius = 3.0f;
-			float Cooldown = 0.3f;
-			float Damage = 2.0f;
-			bool IsPlayer = false;
-
-			CEnemyAttack() = default;			
-			CEnemyAttack(float radius, float cooldown, float damage, bool isPlayer) : Radius(radius), Cooldown(cooldown), Damage(damage), IsPlayer(isPlayer) { }
-			CEnemyAttack(const CEnemyAttack& org) { FY_CORE_ASSERT(false, "Copy constructor in CEnemyAttack called."); }
 
 			virtual void Func() override { }
 		};
@@ -541,7 +513,8 @@ namespace Frosty
 		struct CHealth : public BaseComponent
 		{
 			static std::string NAME;
-			float MaxHealth{ 5 };
+			float MaxPossibleHealth{ 20 };							// Max health an entity can upgrade to
+			float MaxHealth{ 5 };								// Max health an entity can currently have
 			float CurrentHealth{ 5 };
 
 			CHealth() = default;
@@ -551,76 +524,43 @@ namespace Frosty
 			virtual void Func() override { }
 		};
 
-		//Temp
-		struct CTag : public BaseComponent
+		struct CInventory : public BaseComponent
 		{
 			static std::string NAME;
 
-			std::string TagName;
-
-			CTag() = default;
-			CTag(const std::string& Tagname) : TagName(Tagname) { }
-			CTag(const CTag& org) { FY_CORE_ASSERT(false, "Copy constructor in CTag called."); }
-
-			bool operator==(const CTag& other) { return (TagName == other.TagName); }
-
-			virtual void Func() override { }
-		};
-
-		struct CConsumables : public BaseComponent
-		{
-			static std::string NAME;
-
-			// Healing Potions - heals consumer (temp)
-			int MaxNrOfHealingPotions{ 5 };
-			int CurrentNrOfHealingPotions{ 3 };
-			float Heal{ 5.f };					// Heals 5 hearts
-			float HealingCooldown{ 3.f };		// Consumer can only drink Healing Potion every 3rd second
+			// HEALING POTION - heals consumer (temp)
+			int MaxHealingPotions{ 5 };							// Max number of healing potions
+			int CurrentHealingPotions{ 3 };						// Current number of potions in inventory
+			float Heal{ 5.f };									// Heals 5 hearts
+			float HealingCooldown{ 3.f };						// Consumer can only drink Healing Potion every 3rd second
 			float HealingTimer{ float(std::clock()) };			// Timer used to check cooldown
 
-			// Increase Health Potions - inreases max health on consumer (const)
+			// INCREASE HEALTH POTION - inreases max health on consumer (const)
+			int MaxIncreaseHPPotions{ 5 };
+			int CurrentIncreaseHPPotions{ 3 };
+			float IncreaseHP{ 3.f };
+			float IncreaseHPCooldown{ 3.f };
+			float IncreaseHPTimer{ float(std::clock()) };
 
-			// Speed Booster - boosts speed during a time interval (temp)
+			// SPEED BOOSTER POTION - boosts speed during a time interval (temp)
+			int MaxSpeedPotions{ 5 };
+			int CurrentSpeedPotions{ 3 };
+			float IncreaseSpeedTemporary{ 0.3f };
+			float SpeedCooldown{ 5.f };
+			float SpeedTimer{ float(std::clock()) };
 
-			// Speed Boots - boots add speed by a small procentage (const)
+			// SPEED BOOTS - boots add speed by a small procentage (const)
+			int MaxSpeedBoots{ 5 };
+			int CurrentSpeedBoots{ 0 };
+			float IncreaseSpeed{ 1.2f };
+
+			// BAIT - chunks of meat used to distract the wolf
+
+			// WOLFSBANE - poisonous flower which can be mixed with bait
 
 
-			CConsumables() = default;
-			CConsumables(const CConsumables& org) { FY_CORE_ASSERT(false, "Copy constructor in CConsumables called."); }
-
-			virtual void Func() override { }
-		};
-
-
-		struct CCharacterState : public BaseComponent
-		{
-			static std::string NAME;
-
-			/*
-			Note: More states can be added but avoid changing first and last location in the enums
-			*/
-
-			// Basic states characters in the game can find themselves in
-			enum CharacterStates {
-				IDLE, // If we want player or enemy standing still
-				WALKING,
-				ATTACKING,
-				DODGING, // Exclusive to player
-				DEAD,
-				C_COUNT
-			} m_CharacterState; // Object reference
-
-			// Possible states related to character attributes
-			enum CharacterAttributeStates {
-				CHARACTER_NOATTRIBUTE,
-				CHARACTER_INVINCIBLE, // When player is invincible, cannot take any damage of any kind while this is active
-				CA_COUNT
-			} m_CharacterAttributeState; // Object reference
-
-			CCharacterState() = default;
-			CCharacterState(CharacterStates m_CharacterState, CharacterAttributeStates m_CharacterAttributeState) :
-				m_CharacterState(m_CharacterState), m_CharacterAttributeState(m_CharacterAttributeState) { }
-			CCharacterState(const CCharacterState& org) { FY_CORE_ASSERT(false, "Copy constructor in CCharacterState called."); }
+			CInventory() = default;
+			CInventory(const CInventory& org) { FY_CORE_ASSERT(false, "Copy constructor in CInventory called."); }
 
 			virtual void Func() override { }
 		};
@@ -638,11 +578,100 @@ namespace Frosty
 			float pivot;
 
 			CHealthBar() = default;
-			CHealthBar(glm::vec3 barOffset)
-				:BarOffset(barOffset) {}
+			CHealthBar(glm::vec3 barOffset) : BarOffset(barOffset) { }
 			CHealthBar(glm::vec3 barOffset, std::shared_ptr<VertexArray> mesh, std::shared_ptr<Shader> shader, std::shared_ptr<Texture2D> tex)
-				: BarOffset(barOffset), Mesh(mesh), UseShader(shader), Texture(tex) {}
-			CHealthBar(const CHealthBar& org) { FY_CORE_ASSERT(false, "Copy constructor in CCollision called."); }
+				: BarOffset(barOffset), Mesh(mesh), UseShader(shader), Texture(tex) { }
+			CHealthBar(const CHealthBar& org) { FY_CORE_ASSERT(false, "Copy constructor in CHealthBar called."); }
+
+			virtual void Func() override { }
+		};
+
+		struct CDash : public BaseComponent
+		{
+			static std::string NAME;
+			static const int COOLDOWN = 3000;
+			static const int DISTANCE = 16000;
+			bool Active{ false };
+			float CurrentCooldown{ 0.0f };
+			float DistanceDashed{ 0.0f };
+			float SpeedMultiplier{ 7.0f };
+
+			CDash() = default;
+			CDash(const CDash& org) { FY_CORE_ASSERT(false, "Copy constructor in CDash called."); }
+
+			virtual void Func() override { }
+		};
+
+		struct CBasicAttack : public BaseComponent
+		{
+			enum class AttackType
+			{
+				Melee, Range
+			};
+			static std::string NAME;
+			static const int COOLDOWN = 1300;
+			float CurrentCooldown{ 0.0f };
+			AttackType Type{ AttackType::Melee };
+
+			CBasicAttack() = default;
+			CBasicAttack(AttackType attackType) : Type(attackType) { }
+			CBasicAttack(const CBasicAttack& org) { FY_CORE_ASSERT(false, "Copy constructor in CBasicAttack called."); }
+
+			virtual void Func() override { }
+		};
+
+		struct CDestroy : public BaseComponent
+		{
+			static std::string NAME;
+
+			CDestroy() = default;
+			CDestroy(const CDestroy& org) { FY_CORE_ASSERT(false, "Copy constructor in CDestroy called."); }
+
+			virtual void Func() override { }
+		};
+
+		struct CSword : public BaseComponent
+		{
+			static std::string NAME;
+			float Damage{ 1.0f };
+			float Lifetime{ 1.0f };
+
+			CSword() = default;
+			CSword(float damage, float time) : Damage(damage), Lifetime(time) { }
+			CSword(const CSword& org) { FY_CORE_ASSERT(false, "Copy constructor in CSword called."); }
+
+			virtual void Func() override { }
+		};
+
+		struct CParticleSystem : public BaseComponent
+		{
+			struct Particle
+			{
+				glm::vec4 position = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
+				glm::vec4 color = glm::vec4(1.0f);
+				glm::vec4 direction = glm::vec4(0.0f, 1.0f, 0.0f, 1.0f);
+				glm::vec4 startPos = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
+				float lifetime = 2.0f;
+				float speed = 2.0f;
+				int padding[2]; //In case padding is needed
+			};
+
+			static const uint32_t MAX_PARTICLE_COUNT = 1000;
+
+			static std::string NAME;
+			uint32_t particleCount = 10;
+			float emitRate = 5.0f;
+
+			Particle particles[MAX_PARTICLE_COUNT];
+			std::shared_ptr<VertexArray> particleVertArray;
+			std::shared_ptr<Shader> shader;
+			std::shared_ptr<Shader> computeShader;
+			std::shared_ptr<Texture2D> texture;
+
+			CParticleSystem() = default;
+			CParticleSystem(std::shared_ptr<VertexArray> verts, std::shared_ptr<Shader> shader, std::shared_ptr<Texture2D> tex)
+				: particleVertArray(verts), shader(shader), texture(tex) {}
+			CParticleSystem(const CParticleSystem& org) { FY_CORE_ASSERT(false, "Copy constructor in CParticleSystem called."); }
 
 			virtual void Func() override { }
 		};
@@ -655,17 +684,20 @@ namespace Frosty
 			case 1:		return "Mesh";
 			case 2:		return "Camera";
 			case 3:		return "Material";
-			case 4:		return "Motion";
-			case 5:		return "Controller";
-			case 6:		return "Follow";
-			case 7:		return "Light";
-			case 8:		return "Collision";
-			case 9:		return "PlayerAttack";
-			case 10:	return "Health";
-			case 11:	return "Tag";
+			case 4:		return "Controller";
+			case 5:		return "Follow";
+			case 6:		return "Light";
+			case 7:		return "Physics";
+			case 8:		return "Enemy";
+			case 9:		return "Arrow";
+			case 11:	return "Health";
 			case 12:	return "Consumables";
-			case 13:	return "CharacterState";
-			case 14:	return "HealthBar";
+			case 13:	return "HealthBar";
+			case 14:	return "Dash";
+			case 15:	return "BasicAttack";
+			case 16:	return "Destroy";
+			case 17:	return "Sword";
+			case 18:	return "ParticleSystem";
 			default:	return "";
 			}
 		}
@@ -682,8 +714,10 @@ namespace Frosty
 			virtual ~BaseSystem() = default;
 
 			virtual void Init() = 0;
+			virtual void OnStart() { }
 			virtual void OnInput() { }
-			virtual void OnUpdate() = 0;
+			virtual void OnUpdate() { }
+			virtual void OnEvent(BaseEvent& e) { }
 			virtual void BeginScene() { }
 			virtual void Render() { }
 
@@ -706,3 +740,35 @@ namespace Frosty
 }
 
 #endif // !ECS_HPP
+
+
+/*
+struct CItem : public BaseComponent
+{
+
+};
+
+struct CArmor : public CItem
+{
+
+};
+
+struct CConsumables : public CItem
+{
+
+};
+
+struct CFood : public CConsumables
+{
+
+};
+
+struct CGooseOmelette : public CFood
+{
+	// This gives you increase of max hp
+};
+
+struct CPorkOmelette : public CFood
+{
+	// Gives you ms
+};*/

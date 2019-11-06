@@ -9,22 +9,23 @@ namespace Frosty
 {
 	bool InputManager::IsKeyPressed(int key)
 	{
-		return CheckKeyClickType(key) == FY_PRESS;
+		return CheckKeyClickType(key) == FY_BUTTON_PRESS;
 	}
 
 	bool InputManager::IsKeyReleased(int key)
 	{
-		return CheckKeyClickType(key) == FY_RELEASE;
+		int clickType = CheckKeyClickType(key);
+		return CheckKeyClickType(key) == FY_BUTTON_RELEASE;
 	}
 
 	bool InputManager::IsMouseButtonPressed(int button)
 	{
-		return CheckMouseClickType(button) == FY_PRESS;
+		return CheckMouseClickType(button) == FY_BUTTON_PRESS;
 	}
 
 	bool InputManager::IsMouseButtonReleased(int button)
 	{
-		return CheckMouseClickType(button) == FY_RELEASE;
+		return CheckMouseClickType(button) == FY_BUTTON_RELEASE;
 	}
 
 	std::pair<float, float> InputManager::GetMousePosition()

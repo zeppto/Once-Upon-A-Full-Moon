@@ -7,11 +7,17 @@ namespace Frosty
 {
 	// Vertexbuffer --------------------------------------------------------------------
 
-	VertexBuffer::VertexBuffer(const void* vertices, uint32_t size)
+	VertexBuffer::VertexBuffer(const void* vertices, uint32_t size, BufferType type)
 	{
 		glGenBuffers(1, &m_RendererID);
 		glBindBuffer(GL_ARRAY_BUFFER, m_RendererID);
-		glBufferData(GL_ARRAY_BUFFER, size, vertices, GL_STATIC_DRAW);
+
+		if (type == STATIC) {
+			glBufferData(GL_ARRAY_BUFFER, size, vertices, GL_STATIC_DRAW);
+		}
+		else if (type == DYNAMIC) {
+			glBufferData(GL_ARRAY_BUFFER, size, vertices, GL_DYNAMIC_COPY);
+		}
 	}
 
 	VertexBuffer::VertexBuffer()
@@ -34,9 +40,9 @@ namespace Frosty
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 	}
 
-	VertexBuffer * VertexBuffer::Create(const void * vertices, uint32_t size)
+	VertexBuffer * VertexBuffer::Create(const void * vertices, uint32_t size, BufferType type)
 	{
-		return new VertexBuffer(vertices, size);
+		return new VertexBuffer(vertices, size, type);
 	}
 
 	VertexBuffer * VertexBuffer::Create()
@@ -63,7 +69,13 @@ namespace Frosty
 	uint32_t VertexBuffer::GetSize() const
 	{
 		return m_Size;
-	}	
+	}
+
+	uint32_t VertexBuffer::GetID() const
+	{
+		return m_RendererID;
+	}
+
 
 	// Indexbuffer --------------------------------------------------------------------
 	IndexBuffer::IndexBuffer(const void* indices, uint32_t count)

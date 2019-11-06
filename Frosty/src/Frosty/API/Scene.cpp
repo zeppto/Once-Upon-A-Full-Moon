@@ -2,7 +2,7 @@
 #include "Scene.hpp"
 
 #include "Frosty/RenderEngine/Renderer.hpp"
-#include "Frosty/API/AssetManager.hpp"
+#include"Frosty/API/AssetManager/AssetManager.hpp"
 #include "Frosty/Core/Application.hpp"
 
 namespace Frosty
@@ -18,11 +18,11 @@ namespace Frosty
 		m_GameCamera = camera;
 	}
 
-	std::shared_ptr<ECS::Entity>& Scene::CreateEntity()
+	std::shared_ptr<ECS::Entity>& Scene::CreateEntity(const glm::vec3& position, const glm::vec3& rotation, const glm::vec3& scale, bool isStatic)
 	{
 		auto& entity = m_EntityManager->Create();
 
-		AddComponent<ECS::CTransform>(entity);
+		AddComponent<ECS::CTransform>(entity, position, rotation, scale, isStatic);
 
 		return entity;
 	}

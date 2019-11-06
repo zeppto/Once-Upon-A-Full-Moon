@@ -1,16 +1,17 @@
 #include <fypch.hpp>
 #include "World.hpp"
-#include "Frosty/API/AssetManager.hpp"
+#include"Frosty/API/AssetManager/AssetManager.hpp"
 #include "Frosty/Core/Application.hpp"
 
 namespace Frosty
 {
 	void World::Init()
 	{
-		AssetManager::Init();
+		//AssetManager::Init();
+		AssetManager::Get()->LoadFiles();
 	}
 
-	void World::Start()
+	void World::Awake()
 	{
 		for (size_t i = 1; i < m_TotalSystems; i++)
 		{
@@ -18,6 +19,16 @@ namespace Frosty
 		}
 
 		CreateScene();
+	}
+
+	void World::OnStart()
+	{
+		HandleDestroyedEntities();
+
+		for (size_t i = 1; i < m_TotalSystems; i++)
+		{
+			m_Systems[i]->OnStart();
+		}
 	}
 
 	void World::OnInput()
@@ -33,6 +44,14 @@ namespace Frosty
 		for (size_t i = 1; i < m_TotalSystems; i++)
 		{
 			m_Systems[i]->OnUpdate();
+		}
+	}
+
+	void World::OnEvent(BaseEvent& e)
+	{
+		for (size_t i = 1; i < m_TotalSystems; i++)
+		{
+			m_Systems[i]->OnEvent(e);
 		}
 	}
 
@@ -101,6 +120,20 @@ namespace Frosty
 		for (size_t i = 1; i < m_TotalSystems; i++)
 		{
 			m_Systems[i]->RemoveEntity(entity);
+		}
+	}
+
+	void World::AddToDestroyList(const std::shared_ptr<ECS::Entity>& entity)
+	{
+		m_DestroyedEntities.emplace_back(entity);
+	}
+
+	void World::HandleDestroyedEntities()
+	{
+		for (size_t i = 0; i < m_DestroyedEntities.size(); i++)
+		{
+			RemoveEntity(m_DestroyedEntities[i]);
+			m_DestroyedEntities.erase(m_DestroyedEntities.begin() + i);
 		}
 	}
 }

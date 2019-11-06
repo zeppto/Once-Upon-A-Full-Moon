@@ -2,9 +2,8 @@
 #include "Application.hpp"
 #include <glad/glad.h>
 #include "Frosty/RenderEngine/Renderer.hpp"
-#include "Frosty/API/AssetManager.hpp"
 #include "Frosty/Core/KeyCodes.h"
-//#include"Frosty/API/AssetManager/AM.hpp"
+#include"Frosty/API/AssetManager/AssetManager.hpp"
 
 //Particle Branch Includes
 #include "Frosty/RenderEngine/VertexArray.hpp"
@@ -16,6 +15,7 @@ namespace Frosty
 	
 	Application::Application()
 	{
+
 		Log::Init();
 		FY_CORE_INFO("Logger initialized..");
 
@@ -57,8 +57,40 @@ namespace Frosty
 		//	FY_CORE_ERROR("Could not load shader source.");
 		//}
 		MotherLoader::GetMotherLoader()->LoadFiles();
+		*/
 
-		Assetmanager::GetAssetmanager()->LoadFile(m_particleSystem->GetTexturePath()); //Test*/
+
+
+
+		//Assetmanager::Get()->LoadFiles();
+
+		//std::unordered_map<std::string, LinkedMaterial>::iterator it = Assetmanager::GetMaterialMap()->begin();
+
+		//while (it != Assetmanager::GetMaterialMap()->end())
+		//{
+		//	FY_CORE_INFO("Mat: {0}", it->first);
+
+		//	if (it->second.GetDiffuse() != nullptr)
+		//	{
+		//	FY_CORE_INFO("Has Dif");
+		//	}
+		//	if (it->second.GetNormal() != nullptr)
+		//	{
+		//		FY_CORE_INFO("Has Norm");
+		//	}
+		//	if (it->second.GetGlow() != nullptr)
+		//	{
+		//		FY_CORE_INFO("Has Glow");
+		//	}
+		//	it++;
+		//}
+
+
+
+
+
+
+
 	}
 
 	Application::~Application()
@@ -66,11 +98,11 @@ namespace Frosty
 		EventBus::GetEventBus()->Delete();
 		m_Window->Shutdown();
 		Renderer::Shutdown();
-		//Assetmanager::Delete();
+		AssetManager::Delete();
 		//PrefabManager::Delete();
 	}
 
-void Application::InitPrefabBuffers()
+	void Application::InitPrefabBuffers()
 	{
 		//m_VertexArray.reset(VertexArray::Create());
 		//
@@ -162,6 +194,7 @@ void Application::InitPrefabBuffers()
 			/// Frame Start
 			Time::OnUpdate();
 
+
 			//states.GetActiveState()->OnUpdate();
 			//if (mainMenuReturn == true)
 			//{
@@ -169,11 +202,6 @@ void Application::InitPrefabBuffers()
 			//	mainMenuReturn = false;
 			//}
 
-			/// Input
-			if (m_GameRunning)
-			{
-				m_World->OnInput();
-			}
 
 
 			////TEST SPRITE
@@ -201,31 +229,26 @@ void Application::InitPrefabBuffers()
 			//Renderer::SubmitText(m_textShader, m_TextVertexArray, tempText);
 			//glDisable(GL_BLEND);
 
-			/// Update
 			m_EditorCamera.OnUpdate();
-
 			for (Layer* layer : m_LayerHandler)
 			{
 				layer->OnUpdate();
 			}
 
-			if (m_GameRunning)
-			{
-				m_World->OnUpdate();
-			}
-
-			/// Render
 			if (!m_GameRunning)
 			{
 				RenderCommand::SetClearColor({ 0.2f, 0.2f, 0.2f, 1.0f });
 				RenderCommand::Clear();
-
+			
 				Renderer::BeginScene();
 				//Renderer::SetCamera(m_EditorCamera.GetPosition(), m_EditorCamera.GetViewProjectionMatrix());
 				Renderer::SetCamera(m_EditorCamera.GetPosition(), m_EditorCamera.GetViewMatrix(), m_EditorCamera.GetProjectionMatrix());
 			}
 			else
 			{
+				m_World->OnStart();
+				m_World->OnInput();
+				m_World->OnUpdate();
 				m_World->BeginScene();
 			}
 
@@ -299,10 +322,10 @@ void Application::InitPrefabBuffers()
 	{
 		switch (e.GetEventType())
 		{
-		case Frosty::EventType::WindowClose:
+		case EventType::WindowClose:
 			OnWindowCloseEvent(static_cast<WindowCloseEvent&>(e));
 			break;
-		case Frosty::EventType::KeyPressed:
+		case EventType::KeyPressed:
 			OnKeyPressedEvent(static_cast<KeyPressedEvent&>(e));
 			break;
 		default:
@@ -320,6 +343,11 @@ void Application::InitPrefabBuffers()
 			{
 				break;
 			}
+		}
+
+		if (m_GameRunning)
+		{
+			m_World->OnEvent(e);
 		}
 	}
 

@@ -26,11 +26,11 @@ namespace MCS
 		std::shared_ptr<Frosty::ECS::Entity> m_SelectedEntity;
 
 		// Inspector
-		Frosty::ECS::CController* m_SelectedController{ nullptr };
+		Frosty::ECS::CPlayer* m_SelectedController{ nullptr };
 		int m_PreviousControllerHotkey;
 
 		// Main Menu
-		bool m_MaximizeOnPlay{ true };
+		bool m_MaximizeOnPlay{ false };
 
 		// Static stuff (Mostly temporary)
 		static bool s_VSync;

@@ -44,6 +44,7 @@ namespace Frosty
 	}
 
 	Shader::Shader(const std::string& vertexSrc, const std::string& geometrySrc, const std::string& fragmentSrc, const std::string& shaderName)
+		: m_Name(shaderName)
 	{
 		std::string vertexSource = ReadFile(vertexSrc);
 		std::string geometrySource = ReadFile(geometrySrc);
@@ -58,6 +59,7 @@ namespace Frosty
 	}
 
 	Shader::Shader(const std::string& computeSrc, const std::string& shaderName)
+		: m_Name(shaderName)
 	{
 		std::string computeSource = ReadFile(computeSrc);
 
