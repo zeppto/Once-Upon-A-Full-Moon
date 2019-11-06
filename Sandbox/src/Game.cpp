@@ -18,6 +18,9 @@
 #include "Systems/PlayerAttackSystem.hpp"
 #include "LevelHandeler/MapGenerator.hpp"
 
+//temp
+#include "LevelHandeler/LevelsHardCoded.hpp"
+
 namespace MCS
 {
 	void generateTrees();
@@ -55,7 +58,7 @@ namespace MCS
 
 		MapGenerator map;
 		map.generateMap();
-		Room myRoome = map.getRoom(glm::ivec2(10, 15));
+		Room myRoome = map.getRoom(glm::ivec2(11, 15));
 
 		//for (int i = 0; i < 30; i++)
 		//{
@@ -112,6 +115,9 @@ namespace MCS
 		//generateTrees();
 		//generateBorders();
 		//generatePlanes();
+		int rotation = 0;
+		std::string texture = map.getRoomTextur(glm::ivec2(11, 15), &rotation);
+		Level::Room(myRoome.sideExits[0], myRoome.sideExits[1], myRoome.sideExits[2], myRoome.sideExits[3], texture, rotation);
 
 		PushLayer(FY_NEW InspectorLayer());
 	}

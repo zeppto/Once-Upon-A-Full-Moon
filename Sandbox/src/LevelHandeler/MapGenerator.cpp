@@ -37,8 +37,6 @@ void MapGenerator::generateMap()
 	loosEndsRooms.push_back(start);
 
 	generateRoomHandeler(startPos, 3, 300);
-
-	int stop;
 }
 
 void MapGenerator::generateRoomHandeler(glm::ivec2 startPos, int startSide, int nrToGenerate)

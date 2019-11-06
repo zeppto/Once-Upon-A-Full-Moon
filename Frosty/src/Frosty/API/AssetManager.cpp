@@ -26,7 +26,7 @@ namespace Frosty
 		AddMesh("3D", "assets/primitives/3D/3D.lu");
 		AddMesh("CharTest", "assets/models/character_test/char_test.lu");
 		AddMesh("Scarlet", "assets/models/Scarlet_static/Scarlet_static.lu");
-		AddMesh("Ground", "assets/primitives/ground/ground.lu");
+		AddMesh("Ground", "assets/models/ground/ground.lu");
 
 		AddMesh("Tree1", "assets/models/trees/tree1.lu");
 		AddMesh("Tree2", "assets/models/trees/tree2.lu");
