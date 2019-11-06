@@ -25,11 +25,15 @@ namespace MCS
 			// Takes up performance if calculated every frame, but the other way will mean
 			// 4 * 4 floats which is 4 * 4 * 4 = 64 bytes for EVERY entity
 			// For now we calculate it every frame
-			glm::mat4 transform = glm::translate(glm::mat4(1.0f), m_Transform[i]->Position);
-			transform = glm::rotate(transform, glm::radians(m_Transform[i]->Rotation.x), { 1.0f, 0.0f, 0.0f });
-			transform = glm::rotate(transform, glm::radians(m_Transform[i]->Rotation.y), { 0.0f, 1.0f, 0.0f });
-			transform = glm::rotate(transform, glm::radians(m_Transform[i]->Rotation.z), { 0.0f, 0.0f, 1.0f });
-			transform = glm::scale(transform, m_Transform[i]->Scale);
+			if (!m_Transform[i]->IsStatic)
+			{
+				glm::mat4 transform = glm::translate(glm::mat4(1.0f), m_Transform[i]->Position);
+				transform = glm::rotate(transform, glm::radians(m_Transform[i]->Rotation.x), { 1.0f, 0.0f, 0.0f });
+				transform = glm::rotate(transform, glm::radians(m_Transform[i]->Rotation.y), { 0.0f, 1.0f, 0.0f });
+				transform = glm::rotate(transform, glm::radians(m_Transform[i]->Rotation.z), { 0.0f, 0.0f, 1.0f });
+				transform = glm::scale(transform, m_Transform[i]->Scale);
+				m_Transform[i]->ModelMatrix = transform;
+			}
 
 			if (m_Materials[i]->UseShader->GetName() == "Texture2D" && m_Materials[i]->DiffuseTexture)m_Materials[i]->DiffuseTexture->Bind(0);
 			if (m_Materials[i]->UseShader->GetName() == "Texture2D" && m_Materials[i]->NormalTexture) m_Materials[i]->NormalTexture->Bind(1);
@@ -43,7 +47,7 @@ namespace MCS
 			if (m_Materials[i]->UseShader->GetName() == "BlendShader" && m_Materials[i]->BlendTexture1) m_Materials[i]->BlendTexture1->Bind(4);
 			if (m_Materials[i]->UseShader->GetName() == "BlendShader" && m_Materials[i]->BlendTexture2) m_Materials[i]->BlendTexture2->Bind(5);
 
-			Frosty::Renderer::Submit(m_Materials[i], m_Meshes[i]->Mesh, transform);
+			Frosty::Renderer::Submit(m_Materials[i], m_Meshes[i]->Mesh, m_Transform[i]->ModelMatrix);
 
 			if (m_Materials[i]->UseShader->GetName() == "Texture2D" && m_Materials[i]->DiffuseTexture) m_Materials[i]->DiffuseTexture->Unbind();
 			if (m_Materials[i]->UseShader->GetName() == "Texture2D" && m_Materials[i]->NormalTexture) m_Materials[i]->NormalTexture->Unbind();

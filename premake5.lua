@@ -76,9 +76,7 @@ project "Frosty"
 		"%{prj.name}/src/Frosty/RenderEngine/ForwardPlus.cpp",
 		"%{prj.name}/src/Frosty/RenderEngine/ForwardPlus.hpp",
 		"%{prj.name}/src/Frosty/StateMachine/States/*.cpp",
-		"%{prj.name}/src/Frosty/StateMachine/States/*.h",
-		"%{prj.name}/src/Frosty/API/AssetManager.hpp",
-		"%{prj.name}/src/Frosty/API/AssetManager.cpp"
+		"%{prj.name}/src/Frosty/StateMachine/States/*.h"
 	}
 
 	libdirs
@@ -168,6 +166,14 @@ project "Sandbox"
 		"%{IncludeDir.ImGui}",
 		"%{IncludeDir.glm}",
 		"%{IncludeDir.FreeType}"
+	}
+	
+	excludes
+	{
+		"%{prj.name}/src/Systems/HealthBarSystem.cpp",
+		"%{prj.name}/src/Systems/HealthBarSystem.hpp",
+		"%{prj.name}/src/Systems/ParticleSystem.cpp",
+		"%{prj.name}/src/Systems/ParticleSystem.hpp"
 	}
 
 	links

@@ -103,7 +103,6 @@ namespace Frosty
 
 	void AssetManager::LoadFiles()
 	{
-
 		s_Shaders.emplace("FlatColor", FY_NEW Shader("assets/shaders/FlatColorVertex.glsl", "assets/shaders/FlatColorFragment.glsl", "FlatColor"));
 		s_Shaders.emplace("Texture2D", FY_NEW Shader("assets/shaders/Texture2DVertex.glsl", "assets/shaders/Texture2DFragment.glsl", "Texture2D"));
 		s_Shaders.emplace("BlendShader", FY_NEW Shader("assets/shaders/BlendShaderVertex.glsl", "assets/shaders/BlendShaderFragment.glsl", "BlendShader"));
