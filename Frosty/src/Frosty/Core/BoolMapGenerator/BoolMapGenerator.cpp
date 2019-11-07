@@ -44,7 +44,7 @@ namespace Frosty
 
 		s_ViewOrtho = tempOrtho * tempView;
 
-		InitiateGBuffer();
+		//InitiateGBuffer();
 	}
 
 	//std::shared_ptr<Camera>& BoolMapGenerator::GetCamera()
@@ -103,7 +103,7 @@ namespace Frosty
 		InitiateRenderData();
 
 
-		unsigned int s_RenderModelID;
+		unsigned int RenderModelID;
 
 		//temp
 		//glBindFramebuffer(GL_FRAMEBUFFER, s_GBuffer);
@@ -118,25 +118,46 @@ namespace Frosty
 		while (BatchIt != s_RenderBatch.end())
 		{
 
-			glGenBuffers(1, &s_RenderModelID);
-			glBindBuffer(GL_ARRAY_BUFFER, s_RenderModelID);
+			float tempVert []= {
+				-0.5f,  0.0f, 0.5f,
+				0.5f,  0.0f, 0.5f,
+				0.0f,  0.0f,  0.0f
+			};
 
+
+
+			glBindVertexArray(0);
+			glGenVertexArrays(1, &RenderModelID);
+
+			glBindVertexArray(RenderModelID);
+			glBindBuffer(GL_ARRAY_BUFFER, RenderModelID);
+			glBufferData(GL_ARRAY_BUFFER, sizeof(tempVert), tempVert, GL_STATIC_DRAW);
+		//	glDisableVertexAttribArray(0);
+
+			glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
 			glEnableVertexAttribArray(0);
-			glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), BUFFER_OFFSET(0));
 
-			glBufferData(GL_ARRAY_BUFFER, sizeof(float)* BatchIt->Verticies.size(), &BatchIt->Verticies[0], GL_STATIC_DRAW);
 
 
 			std::list<glm::mat4>::iterator PosIt = BatchIt->Transforms.begin();
 			while (PosIt != BatchIt->Transforms.end())
 			{
+				//glBindVertexArray(RenderModelID);
 				glUniformMatrix4fv(locationMM, 1, GL_FALSE, &(*PosIt)[0][0]);
-				glDrawArrays(GL_TRIANGLES, 0, BatchIt->Verticies.size());
+				glDrawArrays(GL_TRIANGLES, 0, 3);
 				PosIt++;
 			}
 			BatchIt++;
+
+			//glBindBuffer(GL_ARRAY_BUFFER, 0);
+			glDisableVertexAttribArray(0);
+		
+			glDeleteVertexArrays(1, &RenderModelID);
+			glBindBuffer(GL_ARRAY_BUFFER, 0);
+			glBindVertexArray(0);
 		}
-		glBindVertexArray(0);
+
+	//	glUseProgram(0);
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		s_RenderBatch.erase(s_RenderBatch.begin(), s_RenderBatch.end());
 

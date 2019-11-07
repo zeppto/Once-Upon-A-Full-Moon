@@ -245,37 +245,37 @@ namespace Frosty
 				//Renderer::SetCamera(m_EditorCamera.GetPosition(), m_EditorCamera.GetViewProjectionMatrix());
 
 
-				//std::vector<float> tempVert;
-				//tempVert = {
-				//	-0.5f,  0.0f, 0.5f,
-				//	0.5f,  0.0f, 0.5f,
-				//	0.0f,  0.0f,  0.0f
-				//};
+				std::vector<float> tempVert;
+				tempVert = {
+					-0.5f,  0.0f, 0.5f,
+					0.5f,  0.0f, 0.5f,
+					0.0f,  0.0f,  0.0f
+				};
 
 
-				//glm::mat4 temp(1.0f);
+				glm::mat4 temp(1.0f);
 
-				//temp[3][0] = 64.0f;
-				//temp[3][1] = 1.0f;
-				//temp[3][2] = 36.0f;
+				temp[3][0] = 64.0f;
+				temp[3][1] = 1.0f;
+				temp[3][2] = 36.0f;
 
-				//temp[0][0] *= 30.0f;
-				//temp[1][1] *= 1.0f;
-				//temp[2][2] *= 30.0f;
-
-
-
-				//glm::mat4 tempMat = glm::translate(glm::mat4(1.0f), glm::vec3(64.0f, 0.0f, 36.0f));
-				//tempMat = glm::scale(tempMat, glm::vec3(30.0f, 1.0f, 300.0f));
+				temp[0][0] *= 30.0f;
+				temp[1][1] *= 1.0f;
+				temp[2][2] *= 30.0f;
 
 
-				//ModelBatch tempBatch;
-				//tempBatch.Verticies = tempVert;
-				//tempBatch.Transforms.emplace_back(tempMat);
 
-				//BoolMapGenerator::AddToRenderList(tempBatch);
+				glm::mat4 tempMat = glm::translate(glm::mat4(1.0f), glm::vec3(64.0f, 0.0f, 36.0f));
+				tempMat = glm::scale(tempMat, glm::vec3(30.0f, 1.0f, 300.0f));
 
-				//BoolMapGenerator::RenderBoolMap();
+
+				ModelBatch tempBatch;
+				tempBatch.Verticies = tempVert;
+				tempBatch.Transforms.emplace_back(tempMat);
+
+				BoolMapGenerator::AddToRenderList(tempBatch);
+
+				BoolMapGenerator::RenderBoolMap();
 
 
 

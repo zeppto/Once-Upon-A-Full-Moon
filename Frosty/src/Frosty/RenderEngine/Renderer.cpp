@@ -177,6 +177,7 @@ namespace Frosty
 		}
 		vertexArray->Bind();
 		RenderCommand::Draw2D(vertexArray);
+		glBindVertexArray(0);
 	}
 
 	//For 2D, might be temp
