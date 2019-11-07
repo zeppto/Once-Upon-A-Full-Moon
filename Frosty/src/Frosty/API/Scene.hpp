@@ -85,7 +85,6 @@ namespace Frosty
 			entity->Bitset[cId] = false;
 		}
 		
-	private:
 		template<typename ComponentType>
 		inline ECS::ComponentManager<ComponentType>* GetComponentManager()
 		{

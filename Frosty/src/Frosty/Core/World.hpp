@@ -94,6 +94,12 @@ namespace Frosty
 		}
 
 		template<typename ComponentType>
+		inline ECS::ComponentManager<ComponentType>* GetComponentManager()
+		{
+			return m_Scene->GetComponentManager<ComponentType>();
+		}
+
+		template<typename ComponentType>
 		inline void InitiateComponent()
 		{
 			ComponentType* component(new ComponentType());

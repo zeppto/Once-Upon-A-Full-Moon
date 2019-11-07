@@ -26,7 +26,6 @@ namespace MCS
 {
 	Game::Game()
 	{
-
 		auto& world = Application::Get().GetWorld();
 		//std::srand((unsigned)std::time(0)); //We already seed in main. We shouldn't seed twice
 		// Add systems
@@ -55,15 +54,14 @@ namespace MCS
 
 
 
-		
-		auto& plane = world->CreateEntity({ 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 100.0f, 1.0f, 100.0f });
+
+		auto& plane = world->CreateEntity({ 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 100.0f, 1.0f, 100.0f }, false);
 		world->AddComponent<Frosty::ECS::CMesh>(plane, Frosty::AssetManager::GetMesh("pPlane1"));
 		auto& planeMat = world->AddComponent<Frosty::ECS::CMaterial>(plane, Frosty::AssetManager::GetShader("BlendShader"));
 		planeMat.DiffuseTexture = Frosty::AssetManager::GetTexture2D("Grass");
 		planeMat.BlendMapTexture = Frosty::AssetManager::GetTexture2D("blendMap_Test");	// why is this texture a problem
 		planeMat.BlendTexture1 = Frosty::AssetManager::GetTexture2D("StoneGround");
 		planeMat.BlendTexture2 = Frosty::AssetManager::GetTexture2D("Dirt");
-		navSystem->InitiateGridMap(world->GetComponent<Frosty::ECS::CTransform>(plane));
 		
 		//auto& testEntity = world->CreateEntity({ -47.5f, 0.01f, 47.5f }, { 0.0f, 0.0f, 0.0f }, { 5.0f, 1.0f, 5.0f });
 		//world->AddComponent<Frosty::ECS::CMesh>(testEntity, Frosty::AssetManager::GetMesh("pPlane1"));
@@ -95,12 +93,12 @@ namespace MCS
 		auto& camEntity = world->GetSceneCamera();
 		world->GetComponent<Frosty::ECS::CCamera>(camEntity).Target = &playerTransform;
 
-		auto& wall = world->CreateEntity({ 0.0f, 5.0f, -3.0f }, { 0.0f, 0.0f, 0.0f }, { 15.0f, 10.0f, 1.0f });
+		auto& wall = world->CreateEntity({ 0.0f, 5.0f, -3.0f }, { 0.0f, 0.0f, 0.0f }, { 15.0f, 10.0f, 1.0f }, true);
 		world->AddComponent<Frosty::ECS::CMesh>(wall, Frosty::AssetManager::GetMesh("pCube1"));
 		world->AddComponent<Frosty::ECS::CMaterial>(wall, Frosty::AssetManager::GetShader("FlatColor"));
 		world->AddComponent<Frosty::ECS::CPhysics>(wall, Frosty::AssetManager::GetBoundingBox("pCube1"));
 		
-		auto& tree = world->CreateEntity({ 17.0f, 0.0f, 5.0f }, { 0.0f, 0.0f, 0.0f }, { 1.0f, 1.0f, 1.0f });
+		auto& tree = world->CreateEntity({ 17.0f, 0.0f, 5.0f }, { 0.0f, 0.0f, 0.0f }, { 1.0f, 1.0f, 1.0f }, true);
 		world->AddComponent<Frosty::ECS::CMesh>(tree, Frosty::AssetManager::GetMesh("tree1"));
 		auto& treeMat = world->AddComponent<Frosty::ECS::CMaterial>(tree, Frosty::AssetManager::GetShader("Texture2D"));
 		treeMat.DiffuseTexture = Frosty::AssetManager::GetTexture2D("Tree1");
@@ -112,7 +110,8 @@ namespace MCS
 		world->AddComponent<Frosty::ECS::CPhysics>(enemy, Frosty::AssetManager::GetBoundingBox("pCube1"), 6.0f);
 		world->AddComponent<Frosty::ECS::CFollow>(enemy, &playerTransform);
 		world->AddComponent<Frosty::ECS::CHealth>(enemy);
-		
+
+		navSystem->InitiateGridMap(world->GetComponent<Frosty::ECS::CTransform>(plane));
 
 		PushLayer(FY_NEW InspectorLayer());
 	}

@@ -176,7 +176,7 @@ namespace Frosty
 		class EntityManager
 		{
 		public:
-			EntityManager() { }
+			EntityManager() { m_Entities.reserve(MAX_ENTITIES_PER_COMPONENT); }
 			EntityManager(const EntityManager& obj) { FY_CORE_ASSERT(false, "Copy constructor in EntityManager called."); }
 			virtual ~EntityManager() { }
 
@@ -244,8 +244,8 @@ namespace Frosty
 		struct BaseComponentManager
 		{
 			ComponentID TypeId;
-
 			std::map<std::shared_ptr<Entity>, ComponentArrayIndex> EntityMap;
+
 			ComponentArrayIndex Total{ 1 };
 
 			BaseComponentManager() { }
@@ -255,6 +255,7 @@ namespace Frosty
 			// Operators
 			BaseComponentManager& operator=(const BaseComponentManager& e) { FY_CORE_ASSERT(false, "Assignment operator in BaseComponentManager called."); return *this; }
 
+			//inline ComponentArrayIndex GetTotal() const { return Total; }
 			virtual BaseComponent* GetTypeComponent(const std::shared_ptr<Entity>& entity) = 0;
 
 			virtual void Remove(std::shared_ptr<Entity>& entity) = 0;
@@ -272,6 +273,7 @@ namespace Frosty
 			// Operators
 			ComponentManager& operator=(const ComponentManager& e) { FY_CORE_ASSERT(false, "Assignment operator in ComponentManager({0}) called.", getComponentTypeID<ComponentType>()); return *this; }
 
+			inline ComponentArrayIndex GetTotal() { return Total; }
 			virtual BaseComponent* GetTypeComponent(const std::shared_ptr<Entity>& entity) override
 			{
 				ComponentArrayIndex tempIndex = EntityMap.at(entity);

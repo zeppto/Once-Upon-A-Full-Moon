@@ -57,7 +57,9 @@ namespace MCS
 	void NavigationSystem::InitiateGridMap(const Frosty::ECS::CTransform& transform)
 	{
 		m_GridMap.reset(FY_NEW GridMap());
+		Frosty::Time::StartTimer("GridMap::Init()");
 		m_GridMap->Init(transform);
+		Frosty::Time::EndTimer("GridMap::Init()");
 	}
 
 }
