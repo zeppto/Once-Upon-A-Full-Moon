@@ -22,6 +22,6 @@ namespace Frosty
 		std::string CBasicAttack::NAME = "BasicAttack";
 		std::string CDestroy::NAME = "Destroy";
 		std::string CSword::NAME = "Sword";
-		std::string CParticleSystem::NAME = "Particle System";
+		std::string CParticleSystem::NAME = "ParticleSystem";
 	}
 }

@@ -653,14 +653,20 @@ namespace Frosty
 				glm::vec4 startPos = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
 				float lifetime = 2.0f;
 				float speed = 2.0f;
-				int padding[2]; //In case padding is needed
+				//int padding[2]; //In case padding is needed
+
+				Particle() = default;
+				Particle(glm::vec4 color)
+					: color(color) {};
 			};
 
 			static const uint32_t MAX_PARTICLE_COUNT = 1000;
 
 			static std::string NAME;
-			uint32_t particleCount = 10;
+			uint32_t particleCount = 100;
 			float emitRate = 5.0f;
+			bool preview = false;
+			glm::vec3 particleSystemColor;
 
 			Particle particles[MAX_PARTICLE_COUNT];
 			std::shared_ptr<VertexArray> particleVertArray;
@@ -671,7 +677,25 @@ namespace Frosty
 			CParticleSystem() = default;
 			CParticleSystem(std::shared_ptr<VertexArray> verts, std::shared_ptr<Shader> shader, std::shared_ptr<Texture2D> tex)
 				: particleVertArray(verts), shader(shader), texture(tex) {}
+			CParticleSystem(std::shared_ptr<VertexArray> verts, std::shared_ptr<Shader> shader, std::shared_ptr<Texture2D> tex, glm::vec4 color)
+				: particleVertArray(verts), shader(shader), texture(tex), particleSystemColor(color)
+			{
+				for (uint32_t i = 0; i < MAX_PARTICLE_COUNT; i++)
+				{
+					particles[i].color = color;
+				}
+			}
+
 			CParticleSystem(const CParticleSystem& org) { FY_CORE_ASSERT(false, "Copy constructor in CParticleSystem called."); }
+
+			void SetParticlesColor(float r, float g, float b, float a)
+			{
+				particleSystemColor = glm::vec4(r, g, b, a);
+				for (uint32_t i = 0; i < MAX_PARTICLE_COUNT; i++)
+				{
+					particles[i].color = glm::vec4(r, g, b, a);
+				}
+			}
 
 			virtual void Func() override { }
 		};

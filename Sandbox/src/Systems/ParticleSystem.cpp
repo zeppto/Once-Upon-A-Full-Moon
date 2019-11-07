@@ -7,17 +7,27 @@ namespace MCS
 	{
 		p_Signature.set(Frosty::ECS::getComponentTypeID<Frosty::ECS::CTransform>(), true);
 		p_Signature.set(Frosty::ECS::getComponentTypeID<Frosty::ECS::CParticleSystem>(), true);
+		m_maxLifetime = 2.0f;
+		m_editMode = false; //Unused for now
 	}
 
-	void ParticleSystem::OnUpdate()
+	void ParticleSystem::OnUpdate() //Only if application is running
 	{
-
+		for (size_t i = 1; i < p_Total; i++)
+		{
+			UpdateParticleSystem(i);
+		}
 	}
 
 	void ParticleSystem::Render()
 	{
 		for (size_t i = 1; i < p_Total; i++)
 		{
+			if (m_ParticleSystem[i]->preview == true && !Frosty::Application::Get().GameIsRunning())
+			{
+				UpdateParticleSystem(i);
+			}
+
 			glm::mat4 transform = glm::translate(glm::mat4(1.0f), m_Transform[i]->Position);
 			transform = glm::rotate(transform, glm::radians(m_Transform[i]->Rotation.x), { 1.0f, 0.0f, 0.0f });
 			transform = glm::rotate(transform, glm::radians(m_Transform[i]->Rotation.y), { 0.0f, 1.0f, 0.0f });
@@ -59,7 +69,7 @@ namespace MCS
 				{ Frosty::ShaderDataType::Float4,	"startPos" },
 				{ Frosty::ShaderDataType::Float,	"lifetime" },
 				{ Frosty::ShaderDataType::Float,	"speed" },
-				{ Frosty::ShaderDataType::Int2, "padding"}
+				//{ Frosty::ShaderDataType::Int2, "padding"}
 			};
 
 			vertBuffer->SetLayout(layout);
@@ -67,7 +77,7 @@ namespace MCS
 			m_ParticleSystem[p_Total]->particleVertArray->AddVertexBuffer(vertBuffer); //Add to array
 
 			m_ParticleSystem[p_Total]->shader = Frosty::AssetManager::GetShader("Particles");
-			m_ParticleSystem[p_Total]->computeShader = Frosty::AssetManager::GetShader("ParticleCompute");
+			//m_ParticleSystem[p_Total]->computeShader = Frosty::AssetManager::GetShader("ParticleCompute");
 			m_ParticleSystem[p_Total]->texture = Frosty::AssetManager::GetTexture2D("particle");
 
 			p_Total++;
@@ -92,5 +102,36 @@ namespace MCS
 
 			p_EntityMap.erase(entity);
 		}
+	}
+
+	void ParticleSystem::UpdateParticleSystem(uint32_t systemIndex)
+	{
+		for (size_t j = 0; j < m_ParticleSystem[systemIndex]->particleCount; j++)
+		{
+			if (m_ParticleSystem[systemIndex]->particles[j].lifetime <= 0.0f)
+			{
+				m_ParticleSystem[systemIndex]->particles[j].lifetime = m_maxLifetime;
+				ResetParticle(systemIndex, j);
+			}
+
+			m_ParticleSystem[systemIndex]->particles[j].lifetime -= 1.0f * Frosty::Time::DeltaTime();
+			UpdateParticle(systemIndex, j);
+			UpdateBuffer(systemIndex);
+		}
+	}
+
+	void MCS::ParticleSystem::UpdateParticle(uint32_t systemIndex, uint32_t index)
+	{
+		m_ParticleSystem[systemIndex]->particles[index].position -= (m_ParticleSystem[systemIndex]->particles[index].direction * m_ParticleSystem[systemIndex]->particles[index].speed) * Frosty::Time::DeltaTime();
+	}
+
+	void ParticleSystem::ResetParticle(uint32_t systemIndex, uint32_t index)
+	{
+		m_ParticleSystem[systemIndex]->particles[index].position = m_ParticleSystem[systemIndex]->particles[index].startPos;
+	}
+
+	void ParticleSystem::UpdateBuffer(uint32_t systemIndex)
+	{
+		m_ParticleSystem[systemIndex]->particleVertArray->GetVertexBuffer()[0]->SetData(m_ParticleSystem[systemIndex]->particles, sizeof(m_ParticleSystem[p_Total]->particles), Frosty::BufferType::DYNAMIC);
 	}
 }

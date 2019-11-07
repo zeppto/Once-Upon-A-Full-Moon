@@ -153,6 +153,11 @@ namespace Frosty
 		//FY_CORE_ASSERT(location > -1, "Error finding uniform location for {0}", name);
 		glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(matrix));
 	}
+
+	uint32_t Shader::GetID() const
+	{
+		return m_RendererID;
+	}
 	
 	std::string Shader::ReadFile(const std::string& filepath)
 	{
