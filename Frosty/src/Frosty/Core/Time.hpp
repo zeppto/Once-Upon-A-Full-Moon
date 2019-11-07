@@ -16,6 +16,9 @@ namespace Frosty
 		static inline int GetFrameCount() {return m_FPSCounter; }
 		static void StartTimer(const std::string& func);
 		static void EndTimer(const std::string& func);
+		
+		// Returns time in second
+		static float CurrentTime() { return float(std::clock()) * 0.001f; }
 
 		static void OnUpdate();
 	public:

@@ -14,14 +14,13 @@ namespace Frosty
 		std::string CLight::NAME = "Light";
 		std::string CPhysics::NAME = "Physics";
 		std::string CEnemy::NAME = "Enemy";
-		std::string CArrow::NAME = "Arrow";
+		std::string CWeapon::NAME = "Weapon";
+		std::string CAttack::NAME = "Attack";
 		std::string CHealth::NAME = "Health";
 		std::string CInventory::NAME = "Inventory";
 		std::string CHealthBar::NAME = "HealthBar";
 		std::string CDash::NAME = "Dash";
-		std::string CBasicAttack::NAME = "BasicAttack";
 		std::string CDestroy::NAME = "Destroy";
-		std::string CSword::NAME = "Sword";
 		std::string CParticleSystem::NAME = "Particle System";
 	}
 }

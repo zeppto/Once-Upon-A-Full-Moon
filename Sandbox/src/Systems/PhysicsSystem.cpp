@@ -72,26 +72,41 @@ namespace MCS
 				glm::vec3 offset = Frosty::CollisionDetection::AABBIntersecPushback(finalLengthA, finalCenterA, finalLengthB, finalCenterB);
 				if (glm::length(offset) > 0.0f)
 				{
-					if (m_World->HasComponent<Frosty::ECS::CArrow>(m_Transform[index]->EntityPtr) || m_World->HasComponent<Frosty::ECS::CSword>(m_Transform[index]->EntityPtr))
+					// If collison is an attack...
+					if (m_World->HasComponent<Frosty::ECS::CAttack>(m_Transform[index]->EntityPtr))
 					{
-						// Attack (Arrow/Sword, change to an Attack component)
-						if (m_World->HasComponent<Frosty::ECS::CHealth>(m_Transform[i]->EntityPtr))
+						auto& comp = m_World->GetComponent<Frosty::ECS::CAttack>(m_Transform[index]->EntityPtr);
+
+						// ... and an enemy has been hit my a player attack --> destroy enemy (should lower HP)
+						if (m_World->HasComponent<Frosty::ECS::CEnemy>(m_Transform[i]->EntityPtr) && comp.Friendly)
 						{
-							// Enemy (In this case as only enemies has CHealth for now. Later have an Enemy component)
 							if (!m_World->HasComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr))
 							{
 								m_World->AddComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr);
 							}
 						}
-
+						// ... and a player has been hit by an enemy attack --> destroy player (should lower HP)
+						else if (m_World->HasComponent<Frosty::ECS::CPlayer>(m_Transform[i]->EntityPtr) && !comp.Friendly)
+						{
+							if (!m_World->HasComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr))
+							{
+								m_World->AddComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr);
+							}
+						}
+						// Destroy attack. The damage has been done
 						if (!m_World->HasComponent<Frosty::ECS::CDestroy>(m_Transform[index]->EntityPtr))
 						{
 							m_World->AddComponent<Frosty::ECS::CDestroy>(m_Transform[index]->EntityPtr);
 						}
 					}
-					else if (m_World->HasComponent<Frosty::ECS::CHealth>(m_Transform[index]->EntityPtr) || m_World->HasComponent<Frosty::ECS::CPlayer>(m_Transform[index]->EntityPtr))
+					// If the one colliding is an enemy or a player...
+					else if (m_World->HasComponent<Frosty::ECS::CEnemy>(m_Transform[index]->EntityPtr) || m_World->HasComponent<Frosty::ECS::CPlayer>(m_Transform[index]->EntityPtr))
 					{
-						m_Transform[index]->Position -= offset;
+						// ... and it's not colliding with an attack --> back off
+						if (!m_World->HasComponent<Frosty::ECS::CAttack>(m_Transform[i]->EntityPtr))
+						{
+							m_Transform[index]->Position -= offset;
+						}
 					}
 				}
 			}

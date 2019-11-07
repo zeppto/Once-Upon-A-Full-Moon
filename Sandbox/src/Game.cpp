@@ -12,8 +12,7 @@
 #include "Systems/BasicAttackSystem.hpp"
 #include "Systems/CombatSystem.hpp"
 #include "Systems/DestroySystem.hpp"
-#include "Systems/ArrowSystem.hpp"
-#include "Systems/SwordSystem.hpp"
+#include "Systems/WeaponSystem.hpp"
 #include "Systems/NavigationSystem.hpp"
 #include "Systems/ParticleSystem.hpp"
 //#include "Systems/PlayerAttackSystem.hpp"
@@ -39,8 +38,7 @@ namespace MCS
 		world->AddSystem<BasicAttackSystem>();
 		world->AddSystem<CombatSystem>();
 		world->AddSystem<DestroySystem>();
-		world->AddSystem<ArrowSystem>();
-		world->AddSystem<SwordSystem>();
+		world->AddSystem<WeaponSystem>();
 		Frosty::ECS::BaseSystem* retSystem = world->AddSystem<NavigationSystem>();
 		NavigationSystem* navSystem = dynamic_cast<NavigationSystem*>(retSystem);
 		//world->AddSystem<CollisionSystem>();		// Have this after MovementSystem
@@ -89,7 +87,7 @@ namespace MCS
 		world->AddComponent<Frosty::ECS::CPlayer>(player);
 		world->AddComponent<Frosty::ECS::CPhysics>(player, Frosty::AssetManager::GetBoundingBox("scarlet"), 10.0f);
 		world->AddComponent<Frosty::ECS::CDash>(player);
-		world->AddComponent<Frosty::ECS::CBasicAttack>(player, Frosty::ECS::CBasicAttack::AttackType::Range);
+		world->AddComponent<Frosty::ECS::CWeapon>(player, Frosty::ECS::CWeapon::WeaponType::Sword, 10.f);
 		world->AddComponent<Frosty::ECS::CHealth>(player);
 		world->AddComponent<Frosty::ECS::CInventory>(player);
 		auto& camEntity = world->GetSceneCamera();
@@ -112,6 +110,8 @@ namespace MCS
 		world->AddComponent<Frosty::ECS::CPhysics>(enemy, Frosty::AssetManager::GetBoundingBox("pCube1"), 6.0f);
 		world->AddComponent<Frosty::ECS::CFollow>(enemy, &playerTransform);
 		world->AddComponent<Frosty::ECS::CHealth>(enemy);
+		world->AddComponent<Frosty::ECS::CEnemy>(enemy);
+
 		
 
 		PushLayer(FY_NEW InspectorLayer());

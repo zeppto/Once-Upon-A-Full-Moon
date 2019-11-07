@@ -71,7 +71,7 @@ namespace MCS
 		//world->RemoveEntity(e.GetEntityA());
 		if (indexA > 0)
 		{
-			if (world->HasComponent<Frosty::ECS::CArrow>(e.GetEntityB()) || world->HasComponent<Frosty::ECS::CSword>(e.GetEntityB()))
+			if (world->HasComponent<Frosty::ECS::CAttack>(e.GetEntityB()))
 			{
 				if (!world->HasComponent<Frosty::ECS::CDestroy>(e.GetEntityA()))
 				{
@@ -81,7 +81,7 @@ namespace MCS
 		}
 		if (indexB > 0)
 		{
-			if (world->HasComponent<Frosty::ECS::CArrow>(e.GetEntityA()) || world->HasComponent<Frosty::ECS::CSword>(e.GetEntityA()))
+			if (world->HasComponent<Frosty::ECS::CAttack>(e.GetEntityA()))
 			{
 				if (!world->HasComponent<Frosty::ECS::CDestroy>(e.GetEntityB()))
 				{

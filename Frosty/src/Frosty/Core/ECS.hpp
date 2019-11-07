@@ -86,7 +86,7 @@ namespace Frosty
 #pragma region Settings
 
 		// Let's define a maximum number of unique components:
-		constexpr std::size_t MAX_COMPONENTS{ 18 };
+		constexpr std::size_t MAX_COMPONENTS{ 17 };
 
 		// Let's define a maximum number of entities that
 		// can have the same component type:
@@ -176,7 +176,7 @@ namespace Frosty
 		class EntityManager
 		{
 		public:
-			EntityManager() { }
+			EntityManager() { m_Entities.reserve(MAX_ENTITIES_PER_COMPONENT); }
 			EntityManager(const EntityManager& obj) { FY_CORE_ASSERT(false, "Copy constructor in EntityManager called."); }
 			virtual ~EntityManager() { }
 
@@ -426,10 +426,10 @@ namespace Frosty
 			int DashKey{ FY_KEY_LEFT_SHIFT };
 			int BasicAttackKey{ FY_KEY_SPACE };
 
-			int HealingPostion{ FY_KEY_1 };
-			int IncreaseHPPotion{ FY_KEY_2 };
-			int SpeedPotion{ FY_KEY_3 };
-			int SpeedBoots{ FY_KEY_4 };
+			int HealingPostionKey{ FY_KEY_1 };
+			int IncreaseHPPotionKey{ FY_KEY_2 };
+			int SpeedPotionKey{ FY_KEY_3 };
+			int SpeedBootsKey{ FY_KEY_4 };
 
 			CPlayer() = default;
 			CPlayer(const CPlayer& org) { FY_CORE_ASSERT(false, "Copy constructor in CPlayer called."); }
@@ -452,10 +452,11 @@ namespace Frosty
 
 		struct CLight : public BaseComponent
 		{
-			enum class LightType { Point, Directional };
-
 			static std::string NAME;
+			
+			enum class LightType { Point, Directional };
 			LightType Type{ LightType::Point };
+
 			glm::vec3 Color{ 1.0f, 0.96f, 0.84f };
 			float Radius{ 20.0f };
 			float Strength{ 1.0f };
@@ -496,16 +497,50 @@ namespace Frosty
 			virtual void Func() override { }
 		};
 
-		struct CArrow : public BaseComponent
+		struct CWeapon : public BaseComponent
 		{
 			static std::string NAME;
-			float Damage{ 1.0f };
-			float Lifetime{ 3.0f };
-			bool IsPiercing{ false };
+			
+			enum class WeaponType { Sword, Arrow };
+			WeaponType Weapon{ WeaponType::Sword };
 
-			CArrow() = default;
-			CArrow(float damage, float lifetime = 7.0f, bool isPiercing = false) : Damage(damage), Lifetime(lifetime), IsPiercing(isPiercing){ }
-			CArrow(const CArrow& org) { FY_CORE_ASSERT(false, "Copy constructor in CArrow called."); }
+			// Damage
+			float Damage{ 1.0f };
+
+			// Critical Hit
+			float CriticalHit{ 0.5f };							// Adds upp with damage for total damage
+			float CriticalHitChanse{ 0.10f };					// 10% chanse of performing a critical hit
+
+			// Speed
+			float Cooldown{ 1.3f };
+			float CooldownTimer{ Frosty::Time::CurrentTime() };
+			
+			float Lifetime{ 2.0f };
+
+			CWeapon() = default;
+			CWeapon(WeaponType type, float damage) : Weapon(type), Damage(damage) { }
+			CWeapon(WeaponType type, float damage, float criticalHit, float criticalHitChanse, float cooldown, float lifetime = 7.0f) : Weapon(type), Damage(damage), CriticalHit(criticalHit), CriticalHitChanse(criticalHitChanse), Cooldown(cooldown), Lifetime(lifetime){ }
+			CWeapon(const CWeapon& org) { FY_CORE_ASSERT(false, "Copy constructor in CWeapon called."); }
+
+			virtual void Func() override { }
+		};
+
+		struct CAttack : public BaseComponent
+		{
+			static std::string NAME;
+
+			enum class AttackType { Melee, Range };
+			AttackType Type{ AttackType::Melee };
+
+			float Damage{ 10.0f };
+			bool Friendly{ 0 };		// A friendly attack effects neither the Player or the attack. 1 = friendly attack, 0 = enemy attack
+			
+			float Lifetime{ 0.5f };
+			float LifetimeTimer{ Frosty::Time::CurrentTime() };
+
+			CAttack() = default;
+			CAttack(AttackType type, float damage, bool friendly = 0, float lifeTime = 0.5f) : Type(type), Damage(damage), Friendly(friendly), Lifetime(lifeTime) { }
+			CAttack(const CAttack& org) { FY_CORE_ASSERT(false, "Copy constructor in CAttack called."); }
 
 			virtual void Func() override { }
 		};
@@ -533,21 +568,21 @@ namespace Frosty
 			int CurrentHealingPotions{ 3 };						// Current number of potions in inventory
 			float Heal{ 5.f };									// Heals 5 hearts
 			float HealingCooldown{ 3.f };						// Consumer can only drink Healing Potion every 3rd second
-			float HealingTimer{ float(std::clock()) };			// Timer used to check cooldown
+			float HealingTimer{ Frosty::Time::CurrentTime() };	// Timer used to check cooldown
 
 			// INCREASE HEALTH POTION - inreases max health on consumer (const)
 			int MaxIncreaseHPPotions{ 5 };
 			int CurrentIncreaseHPPotions{ 3 };
 			float IncreaseHP{ 3.f };
 			float IncreaseHPCooldown{ 3.f };
-			float IncreaseHPTimer{ float(std::clock()) };
+			float IncreaseHPTimer{ Frosty::Time::CurrentTime() };
 
 			// SPEED BOOSTER POTION - boosts speed during a time interval (temp)
 			int MaxSpeedPotions{ 5 };
 			int CurrentSpeedPotions{ 3 };
 			float IncreaseSpeedTemporary{ 0.3f };
 			float SpeedCooldown{ 5.f };
-			float SpeedTimer{ float(std::clock()) };
+			float SpeedTimer{ Frosty::Time::CurrentTime() };
 
 			// SPEED BOOTS - boots add speed by a small procentage (const)
 			int MaxSpeedBoots{ 5 };
@@ -602,43 +637,12 @@ namespace Frosty
 			virtual void Func() override { }
 		};
 
-		struct CBasicAttack : public BaseComponent
-		{
-			enum class AttackType
-			{
-				Melee, Range
-			};
-			static std::string NAME;
-			static const int COOLDOWN = 1300;
-			float CurrentCooldown{ 0.0f };
-			AttackType Type{ AttackType::Melee };
-
-			CBasicAttack() = default;
-			CBasicAttack(AttackType attackType) : Type(attackType) { }
-			CBasicAttack(const CBasicAttack& org) { FY_CORE_ASSERT(false, "Copy constructor in CBasicAttack called."); }
-
-			virtual void Func() override { }
-		};
-
 		struct CDestroy : public BaseComponent
 		{
 			static std::string NAME;
 
 			CDestroy() = default;
 			CDestroy(const CDestroy& org) { FY_CORE_ASSERT(false, "Copy constructor in CDestroy called."); }
-
-			virtual void Func() override { }
-		};
-
-		struct CSword : public BaseComponent
-		{
-			static std::string NAME;
-			float Damage{ 1.0f };
-			float Lifetime{ 1.0f };
-
-			CSword() = default;
-			CSword(float damage, float time) : Damage(damage), Lifetime(time) { }
-			CSword(const CSword& org) { FY_CORE_ASSERT(false, "Copy constructor in CSword called."); }
 
 			virtual void Func() override { }
 		};
@@ -689,15 +693,14 @@ namespace Frosty
 			case 6:		return "Light";
 			case 7:		return "Physics";
 			case 8:		return "Enemy";
-			case 9:		return "Arrow";
+			case 9:		return "Weapon";
+			case 10:	return "Attack";
 			case 11:	return "Health";
 			case 12:	return "Consumables";
 			case 13:	return "HealthBar";
 			case 14:	return "Dash";
-			case 15:	return "BasicAttack";
-			case 16:	return "Destroy";
-			case 17:	return "Sword";
-			case 18:	return "ParticleSystem";
+			case 15:	return "Destroy";
+			case 16:	return "ParticleSystem";
 			default:	return "";
 			}
 		}

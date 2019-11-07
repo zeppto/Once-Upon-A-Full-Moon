@@ -25,8 +25,9 @@ namespace MCS
 		void CreateProjectile(size_t index);
 
 	private:
-		std::array<Frosty::ECS::CBasicAttack*, Frosty::ECS::MAX_ENTITIES_PER_COMPONENT> m_BasicAttack;
+		std::array<Frosty::ECS::CWeapon*, Frosty::ECS::MAX_ENTITIES_PER_COMPONENT> m_Weapon;
 
+		Frosty::World* m_World{ nullptr };
 	};
 }
 
