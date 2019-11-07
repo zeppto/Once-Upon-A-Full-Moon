@@ -21,10 +21,10 @@ namespace MCS
 
 	private:
 		void OnBaitPlacedEvent(Frosty::BaitPlacedEvent& e);
-	
+		int FindClosestBait(glm::vec3 SelfPos, std::vector<std::shared_ptr<Frosty::ECS::Entity>>& Baits);
+		float CalcDistance2D(glm::vec3 pos1, glm::vec3 pos2);
 
 	private:
-		float CalcDistance2D(glm::vec3 pos1, glm::vec3 pos2);
 
 		std::array<Frosty::ECS::CTransform*, Frosty::ECS::MAX_ENTITIES_PER_COMPONENT> m_Transform;
 		std::array<Frosty::ECS::CBoss*, Frosty::ECS::MAX_ENTITIES_PER_COMPONENT> m_Boss;

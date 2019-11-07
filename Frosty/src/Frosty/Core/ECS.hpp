@@ -176,7 +176,7 @@ namespace Frosty
 		class EntityManager
 		{
 		public:
-			EntityManager() { }
+			EntityManager() { m_Entities.reserve(MAX_ENTITIES_PER_COMPONENT); }
 			EntityManager(const EntityManager& obj) { FY_CORE_ASSERT(false, "Copy constructor in EntityManager called."); }
 			virtual ~EntityManager() { }
 
@@ -563,8 +563,8 @@ namespace Frosty
 
 			// BAIT - chunks of meat used to distract the wolf
 			int MaxBaitAmount{ 5 };
-			int CurrentBaitAmount{ 3 };
-			float BaitCooldown{ 3.f };
+			int CurrentBaitAmount{ 100 };
+			float BaitCooldown{ 1.f };
 			float BaitTimer{ float(std::clock()) };
 			// WOLFSBANE - poisonous flower which can be mixed with bait
 

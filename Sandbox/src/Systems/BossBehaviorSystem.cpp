@@ -12,20 +12,12 @@ namespace MCS
 
 	}
 
-	int count = 0;
-
-
 	void BossBehaviorSystem::OnUpdate()
 	{
 		auto& world = Frosty::Application::Get().GetWorld();
 
 		for (size_t i = 1; i < p_Total; i++)
 		{
-
-
-
-
-
 			if (m_Boss[i]->TargetList.size() > 0 && m_Boss[i]->Distracted == false)
 			{
 				//Set new target
@@ -33,54 +25,36 @@ namespace MCS
 				{
 					if (m_Boss[i]->TargetList.size() == 1)
 					{
-						//Follow playerwddw
-						m_Follow[i]->Target = &world->GetComponent<Frosty::ECS::CTransform>(m_Boss[i]->TargetList.at(m_Boss[i]->TargetList.size()-1));
-						
-
+						//Follow player
+						m_Follow[i]->Target = &world->GetComponent<Frosty::ECS::CTransform>(m_Boss[i]->TargetList.at(m_Boss[i]->TargetList.size() - 1));
+						m_Follow[i]->StopDistance = 1;
 					}
 					else
 					{
-						//Follow bait
-						float ShortestDistance = CalcDistance2D(world->GetComponent<Frosty::ECS::CTransform>(m_Boss[i]->TargetList.at(0)).Position, m_Transform[i]->Position);
-						int ShortestID = 0;
+						//Follow the nearest bait
+						int ShortestID = FindClosestBait(m_Transform[i]->Position, m_Boss[i]->TargetList);
 
-						for (uint8_t bait = 1; bait < m_Boss[i]->TargetList.size(); bait++)
-						{
-
-							if (CalcDistance2D(world->GetComponent<Frosty::ECS::CTransform>(m_Boss[i]->TargetList.at(bait)).Position, m_Transform[i]->Position) < ShortestDistance)
-							{
-								//To do, fix find shortest distance and get player pos
-							}
-						}
-
-
+						std::swap(m_Boss[i]->TargetList.at(0), m_Boss[i]->TargetList.at(ShortestID));
 
 						m_Follow[i]->Target = &world->GetComponent<Frosty::ECS::CTransform>(m_Boss[i]->TargetList.at(0));
 						m_Boss[i]->Hunting = true;
+						m_Follow[i]->StopDistance = 0.1;
 					}
-
 				}
-
-
-
-
 
 				float distance = CalcDistance2D(m_Transform[i]->Position, world->GetComponent<Frosty::ECS::CTransform>(m_Boss[i]->TargetList.at(0)).Position);
 
-				if (distance < 0.5)
+				if (distance < 0.5 && m_Boss[i]->TargetList.size() > 1)
 				{
 					m_Boss[i]->Distracted = true;
 					m_Boss[i]->DistractionTimer = float(std::clock());
 				}
 			}
 
-
-
 			float diff = (float(std::clock()) - m_Boss[i]->DistractionTimer) * 0.001f;
 
-
 			//Eat bait
-			if ((m_Boss[i]->Distracted == true) && ((float(std::clock()) - m_Boss[i]->DistractionTimer) * 0.001f >= m_Boss[i]->DistractionTime))
+			if ((m_Boss[i]->Distracted == true) && ((float(std::clock()) - m_Boss[i]->DistractionTimer) * 0.001f >= m_Boss[i]->DistractionTime) && m_Boss[i]->TargetList.size() > 1)
 			{
 				world->AddComponent<Frosty::ECS::CDestroy>(m_Boss[i]->TargetList.at(0));
 				m_Boss[i]->TargetList.erase(m_Boss[i]->TargetList.begin());
@@ -89,7 +63,6 @@ namespace MCS
 
 				//Tried to set new target here but did not work, sets hunting = true instead and the next target is set in next frame
 				m_Boss[i]->Hunting = false;
-				count++;
 			}
 		}
 	}
@@ -166,17 +139,41 @@ namespace MCS
 			}
 			else
 			{
+				//Temp?
 				m_Boss[i]->TargetList.emplace(m_Boss[i]->TargetList.end(), entity);
 
 			}
 
-			//m_Follow[i]->Target = &world->GetComponent<Frosty::ECS::CTransform>(m_Boss[i]->TargetList.at(0));
+			//Follow the nearest bait
+			int ShortestID = FindClosestBait(m_Transform[i]->Position, m_Boss[i]->TargetList);
 
-			//m_Follow[i]->Target = &world->GetComponent<Frosty::ECS::CTransform>(m_Boss[i]->TargetList.front());
+			std::swap(m_Boss[i]->TargetList.at(0), m_Boss[i]->TargetList.at(ShortestID));
+
+			m_Follow[i]->Target = &world->GetComponent<Frosty::ECS::CTransform>(m_Boss[i]->TargetList.at(0));
+			m_Boss[i]->Hunting = true;
 			m_Follow[i]->StopDistance = 0.1;
 
-
 		}
+	}
+
+	int BossBehaviorSystem::FindClosestBait(glm::vec3 SelfPos, std::vector<std::shared_ptr<Frosty::ECS::Entity>>& Baits)
+	{
+		auto& world = Frosty::Application::Get().GetWorld();
+
+		float ShortestDistance = CalcDistance2D(world->GetComponent<Frosty::ECS::CTransform>(Baits.at(0)).Position, SelfPos);
+		int ShortestID = 0;
+		float distance = 0;
+
+		for (uint8_t bait = 1; bait < Baits.size() - 1; bait++)
+		{
+			distance = CalcDistance2D(world->GetComponent<Frosty::ECS::CTransform>(Baits.at(bait)).Position, SelfPos);
+			if (distance < ShortestDistance)
+			{
+				ShortestID = bait;
+				ShortestDistance = distance;
+			}
+		}
+		return ShortestID;
 	}
 
 	float BossBehaviorSystem::CalcDistance2D(glm::vec3 pos1, glm::vec3 pos2)
