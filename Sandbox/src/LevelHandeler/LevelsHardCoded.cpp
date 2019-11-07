@@ -16,11 +16,12 @@ namespace Level
 			auto& testTranform = world->GetComponent<Frosty::ECS::CTransform>(PlaneOne);
 			testTranform.Scale = glm::vec3(300, 1.0f, 300);
 			testTranform.Rotation = glm::vec3(0, rotation, 0);
-			//world->AddComponent<Frosty::ECS::CMesh>(PlaneOne, Frosty::AssetManager::GetMesh("Ground"));
-			world->AddComponent<Frosty::ECS::CMesh>(PlaneOne, Frosty::AssetManager::GetMesh("pPlane1"));
+			world->AddComponent<Frosty::ECS::CMesh>(PlaneOne, Frosty::AssetManager::GetMesh("tiledGround"));
+			//world->AddComponent<Frosty::ECS::CMesh>(PlaneOne, Frosty::AssetManager::GetMesh("pPlane1"));
 			auto& testMaterial = world->AddComponent<Frosty::ECS::CMaterial>(PlaneOne, Frosty::AssetManager::GetShader("Texture2D"));
 			//testMaterial.Albedo = glm::vec4(0.2f, 0.8f, 0.3f, 1.0f);
-			testMaterial.DiffuseTexture = Frosty::AssetManager::GetTexture2D(texture);
+			//testMaterial.DiffuseTexture = Frosty::AssetManager::GetTexture2D(texture);
+			testMaterial.DiffuseTexture = Frosty::AssetManager::GetTexture2D("brown_mud_diffuse");
 			//testMaterial.TextureScale = glm::vec2(mapDepth / 10.0f, mapLength / 10.0f);
 
 			int NrOfTreeTypes = 10;
