@@ -176,7 +176,7 @@ namespace Frosty
 		class EntityManager
 		{
 		public:
-			EntityManager() { }
+			EntityManager() { m_Entities.reserve(MAX_ENTITIES_PER_COMPONENT); }
 			EntityManager(const EntityManager& obj) { FY_CORE_ASSERT(false, "Copy constructor in EntityManager called."); }
 			virtual ~EntityManager() { }
 

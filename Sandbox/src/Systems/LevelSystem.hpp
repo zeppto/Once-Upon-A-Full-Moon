@@ -28,10 +28,16 @@ namespace MCS
 		std::array<Frosty::ECS::CTransform*, Frosty::ECS::MAX_ENTITIES_PER_COMPONENT> m_Transform;
 
 		MapGenerator m_Map;
-		glm::ivec2 m_PlayerPos = { 11, 15 };//{ 10, 15 };
+		glm::ivec2 m_PlayerPos = { 10, 15 };//{ 10, 15 };
 		//map.generateMap();
 		Room m_CurrentRoome;// = map.getRoom(glm::ivec2(11, 15));
-		bool start = true;
+		bool m_Start = true;
+
+		//temp
+		bool m_NextLevel = false;
+		int m_EntrensSide = -1;
+		float m_TempTimer = 0;
+
 
 		//int rotation = 0;
 		//std::string texture = map.getRoomTextur(glm::ivec2(11, 15), &rotation);

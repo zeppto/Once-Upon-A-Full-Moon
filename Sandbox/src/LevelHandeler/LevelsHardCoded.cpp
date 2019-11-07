@@ -6,40 +6,28 @@
 
 namespace Level
 {
-	glm::vec3 Room(bool up, bool down, bool right, bool left, std::string texture, int rotation, int entrensSide)
+	glm::vec3 Room(bool up, bool down, bool right, bool left, std::string texture, int rotation, int entrensSide, bool onlyPos)
 	{
-		auto& world = Frosty::Application::Get().GetWorld();
-		auto& PlaneOne = world->CreateEntity();
-		auto& testTranform = world->GetComponent<Frosty::ECS::CTransform>(PlaneOne);
-		testTranform.Scale = glm::vec3(300, 1.0f, 300);
-		testTranform.Rotation = glm::vec3(0, rotation, 0);
-		//world->AddComponent<Frosty::ECS::CMesh>(PlaneOne, Frosty::AssetManager::GetMesh("Ground"));
-		world->AddComponent<Frosty::ECS::CMesh>(PlaneOne, Frosty::AssetManager::GetMesh("pPlane1"));
-		auto& testMaterial = world->AddComponent<Frosty::ECS::CMaterial>(PlaneOne, Frosty::AssetManager::GetShader("Texture2D"));
-		//testMaterial.Albedo = glm::vec4(0.2f, 0.8f, 0.3f, 1.0f);
-		testMaterial.DiffuseTexture = Frosty::AssetManager::GetTexture2D(texture);
-		//testMaterial.TextureScale = glm::vec2(mapDepth / 10.0f, mapLength / 10.0f);
-
-		int NrOfTreeTypes = 10;
-		//trees
-		for (int i = 0; i < 39; i++)
+		//temp onlyPos to avoid bug
+		if (!onlyPos)
 		{
+			auto& world = Frosty::Application::Get().GetWorld();
+			auto& PlaneOne = world->CreateEntity();
+			auto& testTranform = world->GetComponent<Frosty::ECS::CTransform>(PlaneOne);
+			testTranform.Scale = glm::vec3(300, 1.0f, 300);
+			testTranform.Rotation = glm::vec3(0, rotation, 0);
+			//world->AddComponent<Frosty::ECS::CMesh>(PlaneOne, Frosty::AssetManager::GetMesh("Ground"));
+			world->AddComponent<Frosty::ECS::CMesh>(PlaneOne, Frosty::AssetManager::GetMesh("pPlane1"));
+			auto& testMaterial = world->AddComponent<Frosty::ECS::CMaterial>(PlaneOne, Frosty::AssetManager::GetShader("Texture2D"));
+			//testMaterial.Albedo = glm::vec4(0.2f, 0.8f, 0.3f, 1.0f);
+			testMaterial.DiffuseTexture = Frosty::AssetManager::GetTexture2D(texture);
+			//testMaterial.TextureScale = glm::vec2(mapDepth / 10.0f, mapLength / 10.0f);
 
-			auto& Tree = world->CreateEntity();
-			auto& TreeTranform = world->GetComponent<Frosty::ECS::CTransform>(Tree);
-			TreeTranform.Position = BorderTrees(i);
-			auto& TreeMaterial = world->AddComponent<Frosty::ECS::CMaterial>(Tree, Frosty::AssetManager::GetShader("Texture2D"));
-			TreeMaterial.Albedo = glm::vec4(0.2f, 0.8f, 0.3f, 1.0f);
-			std::string treeName = "Tree" + std::to_string(((rand() % NrOfTreeTypes) + 1));
-			TreeMaterial.DiffuseTexture = Frosty::AssetManager::GetTexture2D("Tree1");
-
-			treeName = "tree" + std::to_string(((rand() % NrOfTreeTypes) + 1));
-			world->AddComponent<Frosty::ECS::CMesh>(Tree, Frosty::AssetManager::GetMesh("tree1"));
-		}
-		if (!up)
-		{
-			for (int i = 39; i < 44; i++)
+			int NrOfTreeTypes = 10;
+			//trees
+			for (int i = 0; i < 39; i++)
 			{
+
 				auto& Tree = world->CreateEntity();
 				auto& TreeTranform = world->GetComponent<Frosty::ECS::CTransform>(Tree);
 				TreeTranform.Position = BorderTrees(i);
@@ -48,107 +36,122 @@ namespace Level
 				std::string treeName = "Tree" + std::to_string(((rand() % NrOfTreeTypes) + 1));
 				TreeMaterial.DiffuseTexture = Frosty::AssetManager::GetTexture2D("Tree1");
 
-				treeName = "Tree" + std::to_string(((rand() % NrOfTreeTypes) + 1));
+				treeName = "tree" + std::to_string(((rand() % NrOfTreeTypes) + 1));
 				world->AddComponent<Frosty::ECS::CMesh>(Tree, Frosty::AssetManager::GetMesh("tree1"));
 			}
-		}
-		else
-		{
-			auto& ExitBBox = world->CreateEntity();
-			auto& ExitBBoxTranform = world->GetComponent<Frosty::ECS::CTransform>(ExitBBox);
-			ExitBBoxTranform.Position = glm::vec3(0.50f, 2.50f, -82.60f);
-			ExitBBoxTranform.Scale = glm::vec3(56.10f, 16.20f, 12.80f);
-			world->AddComponent<Frosty::ECS::CPhysics>(ExitBBox, Frosty::AssetManager::GetBoundingBox("pCube1"), 0.0f);
-			world->AddComponent<Frosty::ECS::CLevelExit>(ExitBBox, 0);
-
-			world->AddComponent<Frosty::ECS::CMesh>(ExitBBox, Frosty::AssetManager::GetMesh("pCube1"));
-			world->AddComponent<Frosty::ECS::CMaterial>(ExitBBox, Frosty::AssetManager::GetShader("FlatColor"));
-		}
-		if (!down)
-		{
-			for (int i = 44; i < 48; i++)
+			if (!up)
 			{
-				auto& Tree = world->CreateEntity();
-				auto& TreeTranform = world->GetComponent<Frosty::ECS::CTransform>(Tree);
-				TreeTranform.Position = BorderTrees(i);
-				auto& TreeMaterial = world->AddComponent<Frosty::ECS::CMaterial>(Tree, Frosty::AssetManager::GetShader("Texture2D"));
-				TreeMaterial.Albedo = glm::vec4(0.2f, 0.8f, 0.3f, 1.0f);
-				std::string treeName = "Tree" + std::to_string(((rand() % NrOfTreeTypes) + 1));
-				TreeMaterial.DiffuseTexture = Frosty::AssetManager::GetTexture2D("Tree1");
+				for (int i = 39; i < 44; i++)
+				{
+					auto& Tree = world->CreateEntity();
+					auto& TreeTranform = world->GetComponent<Frosty::ECS::CTransform>(Tree);
+					TreeTranform.Position = BorderTrees(i);
+					auto& TreeMaterial = world->AddComponent<Frosty::ECS::CMaterial>(Tree, Frosty::AssetManager::GetShader("Texture2D"));
+					TreeMaterial.Albedo = glm::vec4(0.2f, 0.8f, 0.3f, 1.0f);
+					std::string treeName = "Tree" + std::to_string(((rand() % NrOfTreeTypes) + 1));
+					TreeMaterial.DiffuseTexture = Frosty::AssetManager::GetTexture2D("Tree1");
 
-				treeName = "Tree" + std::to_string(((rand() % NrOfTreeTypes) + 1));
-				world->AddComponent<Frosty::ECS::CMesh>(Tree, Frosty::AssetManager::GetMesh("tree1"));
+					treeName = "Tree" + std::to_string(((rand() % NrOfTreeTypes) + 1));
+					world->AddComponent<Frosty::ECS::CMesh>(Tree, Frosty::AssetManager::GetMesh("tree1"));
+				}
 			}
-		}
-		else
-		{
-			auto& ExitBBox = world->CreateEntity();
-			auto& ExitBBoxTranform = world->GetComponent<Frosty::ECS::CTransform>(ExitBBox);
-			ExitBBoxTranform.Position = glm::vec3(-2.90f, 4.00f, 95.80f);
-			ExitBBoxTranform.Scale = glm::vec3(45.70f, 20.80f, 10.50f);
-			world->AddComponent<Frosty::ECS::CPhysics>(ExitBBox, Frosty::AssetManager::GetBoundingBox("pCube1"), 0.0f);
-			world->AddComponent<Frosty::ECS::CLevelExit>(ExitBBox, 1);
-
-			world->AddComponent<Frosty::ECS::CMesh>(ExitBBox, Frosty::AssetManager::GetMesh("pCube1"));
-			world->AddComponent<Frosty::ECS::CMaterial>(ExitBBox, Frosty::AssetManager::GetShader("FlatColor"));
-		}
-		if (!left)
-		{
-			for (int i = 52; i < 55; i++)
+			else
 			{
-				auto& Tree = world->CreateEntity();
-				auto& TreeTranform = world->GetComponent<Frosty::ECS::CTransform>(Tree);
-				TreeTranform.Position = BorderTrees(i);
-				auto& TreeMaterial = world->AddComponent<Frosty::ECS::CMaterial>(Tree, Frosty::AssetManager::GetShader("Texture2D"));
-				TreeMaterial.Albedo = glm::vec4(0.2f, 0.8f, 0.3f, 1.0f);
-				std::string treeName = "Tree" + std::to_string(((rand() % NrOfTreeTypes) + 1));
-				TreeMaterial.DiffuseTexture = Frosty::AssetManager::GetTexture2D("Tree1");
+				auto& ExitBBox = world->CreateEntity();
+				auto& ExitBBoxTranform = world->GetComponent<Frosty::ECS::CTransform>(ExitBBox);
+				ExitBBoxTranform.Position = glm::vec3(0.50f, 2.50f, -82.60f);
+				ExitBBoxTranform.Scale = glm::vec3(56.10f, 16.20f, 12.80f);
+				world->AddComponent<Frosty::ECS::CPhysics>(ExitBBox, Frosty::AssetManager::GetBoundingBox("pCube1"), 0.0f);
+				world->AddComponent<Frosty::ECS::CLevelExit>(ExitBBox, 0);
 
-				treeName = "Tree" + std::to_string(((rand() % NrOfTreeTypes) + 1));
-				world->AddComponent<Frosty::ECS::CMesh>(Tree, Frosty::AssetManager::GetMesh("tree1"));
+				world->AddComponent<Frosty::ECS::CMesh>(ExitBBox, Frosty::AssetManager::GetMesh("pCube1"));
+				world->AddComponent<Frosty::ECS::CMaterial>(ExitBBox, Frosty::AssetManager::GetShader("FlatColor"));
 			}
-		}
-		else
-		{
-			auto& ExitBBox = world->CreateEntity();
-			auto& ExitBBoxTranform = world->GetComponent<Frosty::ECS::CTransform>(ExitBBox);
-			ExitBBoxTranform.Position = glm::vec3(100.00f, 2.00f, 5.70f);
-			ExitBBoxTranform.Scale = glm::vec3(15.00f, 29.30f, 57.90f);
-			world->AddComponent<Frosty::ECS::CPhysics>(ExitBBox, Frosty::AssetManager::GetBoundingBox("pCube1"), 0.0f);
-			world->AddComponent<Frosty::ECS::CLevelExit>(ExitBBox, 3);
-
-			world->AddComponent<Frosty::ECS::CMesh>(ExitBBox, Frosty::AssetManager::GetMesh("pCube1"));
-			world->AddComponent<Frosty::ECS::CMaterial>(ExitBBox, Frosty::AssetManager::GetShader("FlatColor"));
-		}
-		if (!right)
-		{
-			for (int i = 48; i < 52; i++)
+			if (!down)
 			{
-				auto& Tree = world->CreateEntity();
-				auto& TreeTranform = world->GetComponent<Frosty::ECS::CTransform>(Tree);
-				TreeTranform.Position = BorderTrees(i);
-				auto& TreeMaterial = world->AddComponent<Frosty::ECS::CMaterial>(Tree, Frosty::AssetManager::GetShader("Texture2D"));
-				TreeMaterial.Albedo = glm::vec4(0.2f, 0.8f, 0.3f, 1.0f);
-				std::string treeName = "Tree" + std::to_string(((rand() % NrOfTreeTypes) + 1));
-				TreeMaterial.DiffuseTexture = Frosty::AssetManager::GetTexture2D("Tree1");
+				for (int i = 44; i < 48; i++)
+				{
+					auto& Tree = world->CreateEntity();
+					auto& TreeTranform = world->GetComponent<Frosty::ECS::CTransform>(Tree);
+					TreeTranform.Position = BorderTrees(i);
+					auto& TreeMaterial = world->AddComponent<Frosty::ECS::CMaterial>(Tree, Frosty::AssetManager::GetShader("Texture2D"));
+					TreeMaterial.Albedo = glm::vec4(0.2f, 0.8f, 0.3f, 1.0f);
+					std::string treeName = "Tree" + std::to_string(((rand() % NrOfTreeTypes) + 1));
+					TreeMaterial.DiffuseTexture = Frosty::AssetManager::GetTexture2D("Tree1");
 
-				treeName = "Tree" + std::to_string(((rand() % NrOfTreeTypes) + 1));
-				world->AddComponent<Frosty::ECS::CMesh>(Tree, Frosty::AssetManager::GetMesh("tree1"));
+					treeName = "Tree" + std::to_string(((rand() % NrOfTreeTypes) + 1));
+					world->AddComponent<Frosty::ECS::CMesh>(Tree, Frosty::AssetManager::GetMesh("tree1"));
+				}
+			}
+			else
+			{
+				auto& ExitBBox = world->CreateEntity();
+				auto& ExitBBoxTranform = world->GetComponent<Frosty::ECS::CTransform>(ExitBBox);
+				ExitBBoxTranform.Position = glm::vec3(-2.90f, 4.00f, 95.80f);
+				ExitBBoxTranform.Scale = glm::vec3(45.70f, 20.80f, 10.50f);
+				world->AddComponent<Frosty::ECS::CPhysics>(ExitBBox, Frosty::AssetManager::GetBoundingBox("pCube1"), 0.0f);
+				world->AddComponent<Frosty::ECS::CLevelExit>(ExitBBox, 1);
+
+				world->AddComponent<Frosty::ECS::CMesh>(ExitBBox, Frosty::AssetManager::GetMesh("pCube1"));
+				world->AddComponent<Frosty::ECS::CMaterial>(ExitBBox, Frosty::AssetManager::GetShader("FlatColor"));
+			}
+			if (!left)
+			{
+				for (int i = 52; i < 55; i++)
+				{
+					auto& Tree = world->CreateEntity();
+					auto& TreeTranform = world->GetComponent<Frosty::ECS::CTransform>(Tree);
+					TreeTranform.Position = BorderTrees(i);
+					auto& TreeMaterial = world->AddComponent<Frosty::ECS::CMaterial>(Tree, Frosty::AssetManager::GetShader("Texture2D"));
+					TreeMaterial.Albedo = glm::vec4(0.2f, 0.8f, 0.3f, 1.0f);
+					std::string treeName = "Tree" + std::to_string(((rand() % NrOfTreeTypes) + 1));
+					TreeMaterial.DiffuseTexture = Frosty::AssetManager::GetTexture2D("Tree1");
+
+					treeName = "Tree" + std::to_string(((rand() % NrOfTreeTypes) + 1));
+					world->AddComponent<Frosty::ECS::CMesh>(Tree, Frosty::AssetManager::GetMesh("tree1"));
+				}
+			}
+			else
+			{
+				auto& ExitBBox = world->CreateEntity();
+				auto& ExitBBoxTranform = world->GetComponent<Frosty::ECS::CTransform>(ExitBBox);
+				ExitBBoxTranform.Position = glm::vec3(100.00f, 2.00f, 5.70f);
+				ExitBBoxTranform.Scale = glm::vec3(15.00f, 29.30f, 57.90f);
+				world->AddComponent<Frosty::ECS::CPhysics>(ExitBBox, Frosty::AssetManager::GetBoundingBox("pCube1"), 0.0f);
+				world->AddComponent<Frosty::ECS::CLevelExit>(ExitBBox, 3);
+
+				world->AddComponent<Frosty::ECS::CMesh>(ExitBBox, Frosty::AssetManager::GetMesh("pCube1"));
+				world->AddComponent<Frosty::ECS::CMaterial>(ExitBBox, Frosty::AssetManager::GetShader("FlatColor"));
+			}
+			if (!right)
+			{
+				for (int i = 48; i < 52; i++)
+				{
+					auto& Tree = world->CreateEntity();
+					auto& TreeTranform = world->GetComponent<Frosty::ECS::CTransform>(Tree);
+					TreeTranform.Position = BorderTrees(i);
+					auto& TreeMaterial = world->AddComponent<Frosty::ECS::CMaterial>(Tree, Frosty::AssetManager::GetShader("Texture2D"));
+					TreeMaterial.Albedo = glm::vec4(0.2f, 0.8f, 0.3f, 1.0f);
+					std::string treeName = "Tree" + std::to_string(((rand() % NrOfTreeTypes) + 1));
+					TreeMaterial.DiffuseTexture = Frosty::AssetManager::GetTexture2D("Tree1");
+
+					treeName = "Tree" + std::to_string(((rand() % NrOfTreeTypes) + 1));
+					world->AddComponent<Frosty::ECS::CMesh>(Tree, Frosty::AssetManager::GetMesh("tree1"));
+				}
+			}
+			else
+			{
+				auto& ExitBBox = world->CreateEntity();
+				auto& ExitBBoxTranform = world->GetComponent<Frosty::ECS::CTransform>(ExitBBox);
+				ExitBBoxTranform.Position = glm::vec3(-91.90f, 0.00f, 5.00f);
+				ExitBBoxTranform.Scale = glm::vec3(12.40f, 30.90f, 63.30f);
+				world->AddComponent<Frosty::ECS::CPhysics>(ExitBBox, Frosty::AssetManager::GetBoundingBox("pCube1"), 0.0f);
+				world->AddComponent<Frosty::ECS::CLevelExit>(ExitBBox, 2);
+
+				world->AddComponent<Frosty::ECS::CMesh>(ExitBBox, Frosty::AssetManager::GetMesh("pCube1"));
+				world->AddComponent<Frosty::ECS::CMaterial>(ExitBBox, Frosty::AssetManager::GetShader("FlatColor"));
 			}
 		}
-		else
-		{
-			auto& ExitBBox = world->CreateEntity();
-			auto& ExitBBoxTranform = world->GetComponent<Frosty::ECS::CTransform>(ExitBBox);
-			ExitBBoxTranform.Position = glm::vec3(-91.90f, 0.00f, 5.00f);
-			ExitBBoxTranform.Scale = glm::vec3(12.40f, 30.90f, 63.30f);
-			world->AddComponent<Frosty::ECS::CPhysics>(ExitBBox, Frosty::AssetManager::GetBoundingBox("pCube1"), 0.0f);
-			world->AddComponent<Frosty::ECS::CLevelExit>(ExitBBox, 2);
-
-			world->AddComponent<Frosty::ECS::CMesh>(ExitBBox, Frosty::AssetManager::GetMesh("pCube1"));
-			world->AddComponent<Frosty::ECS::CMaterial>(ExitBBox, Frosty::AssetManager::GetShader("FlatColor"));
-		}
-
 		glm::vec3 toReturn;
 		if (up && entrensSide == 1)
 		{

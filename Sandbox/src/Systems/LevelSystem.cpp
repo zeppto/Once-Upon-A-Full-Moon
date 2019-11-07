@@ -26,7 +26,7 @@ namespace MCS
 
 	void LevelSystem::OnUpdate()
 	{
-		if (start)
+		if (m_Start)
 		{
 			m_Map.generateMap();
 			m_CurrentRoome = m_Map.getRoom(m_PlayerPos);
@@ -34,8 +34,16 @@ namespace MCS
 			int rotation = 0;
 			std::string texture = m_Map.getRoomTextur(m_PlayerPos, &rotation);
 			Level::Room(m_CurrentRoome.sideExits[0], m_CurrentRoome.sideExits[1], m_CurrentRoome.sideExits[2], m_CurrentRoome.sideExits[3], texture, rotation);
-			start = false;
+			m_Start = false;
 		}
+		if (m_NextLevel && m_TempTimer > 9)
+		{
+			int rotation = 0;
+			std::string texture = m_Map.getRoomTextur(m_PlayerPos, &rotation);
+			Level::Room(m_CurrentRoome.sideExits[0], m_CurrentRoome.sideExits[1], m_CurrentRoome.sideExits[2], m_CurrentRoome.sideExits[3], texture, rotation, m_EntrensSide);
+			m_NextLevel = false;
+		}
+		m_TempTimer += 1;//Frosty::Time::DeltaTime();
 	}
 
 	void LevelSystem::AddComponent(const std::shared_ptr<Frosty::ECS::Entity>& entity)
@@ -96,7 +104,6 @@ namespace MCS
 					}
 					else if (m_World->HasComponent<Frosty::ECS::CMesh>(m_Transform[i]->EntityPtr))
 					{
-						// Enemy (In this case as only enemies has CHealth for now. Later have an Enemy component)
 						if (!m_World->HasComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr))
 						{
 							m_World->AddComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr);
@@ -110,15 +117,18 @@ namespace MCS
 		if (ExitSide.ExitDirection == 1)
 			m_PlayerPos += glm::ivec2(0, 1);
 		if (ExitSide.ExitDirection == 2)
-			m_PlayerPos += glm::ivec2(1, 0);
-		if (ExitSide.ExitDirection == 3)
 			m_PlayerPos += glm::ivec2(-1, 0);
+		if (ExitSide.ExitDirection == 3)
+			m_PlayerPos += glm::ivec2(1, 0);
 
 		m_CurrentRoome = m_Map.getRoom(m_PlayerPos);
+		m_EntrensSide = ExitSide.ExitDirection;
+		m_NextLevel = true;
+		m_TempTimer = 0;
 
 		int rotation = 0;
 		std::string texture = m_Map.getRoomTextur(m_PlayerPos, &rotation);
-		PlayerTranform.Position = Level::Room(m_CurrentRoome.sideExits[0], m_CurrentRoome.sideExits[1], m_CurrentRoome.sideExits[2], m_CurrentRoome.sideExits[3], texture, rotation, ExitSide.ExitDirection);
+		PlayerTranform.Position = Level::Room(m_CurrentRoome.sideExits[0], m_CurrentRoome.sideExits[1], m_CurrentRoome.sideExits[2], m_CurrentRoome.sideExits[3], texture, rotation, ExitSide.ExitDirection, true);
 
 
 	}
