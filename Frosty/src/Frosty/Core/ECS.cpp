@@ -23,5 +23,6 @@ namespace Frosty
 		std::string CDestroy::NAME = "Destroy";
 		std::string CSword::NAME = "Sword";
 		std::string CParticleSystem::NAME = "Particle System";
+		std::string CLevelExit::NAME = "Level Exit";
 	}
 }

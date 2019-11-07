@@ -1,5 +1,6 @@
 #include <mcspch.hpp>
 #include "PhysicsSystem.hpp"
+#include "Frosty/Events/AbilityEvent.hpp"
 
 namespace MCS
 {
@@ -88,6 +89,11 @@ namespace MCS
 						{
 							m_World->AddComponent<Frosty::ECS::CDestroy>(m_Transform[index]->EntityPtr);
 						}
+					}
+					else if (m_World->HasComponent<Frosty::ECS::CLevelExit>(m_Transform[i]->EntityPtr) && m_World->HasComponent<Frosty::ECS::CPlayer>(m_Transform[index]->EntityPtr))
+					{
+						//to go to next room
+						Frosty::EventBus::GetEventBus()->Publish<Frosty::ExitLevelEvent>(Frosty::ExitLevelEvent(m_Transform[i]->EntityPtr, m_Transform[index]->EntityPtr));
 					}
 					else if (m_World->HasComponent<Frosty::ECS::CHealth>(m_Transform[index]->EntityPtr) || m_World->HasComponent<Frosty::ECS::CPlayer>(m_Transform[index]->EntityPtr))
 					{

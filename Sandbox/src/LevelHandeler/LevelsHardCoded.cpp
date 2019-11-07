@@ -6,7 +6,7 @@
 
 namespace Level
 {
-	void Room(bool up, bool down, bool right, bool left, std::string texture, int rotation)
+	glm::vec3 Room(bool up, bool down, bool right, bool left, std::string texture, int rotation, int entrensSide)
 	{
 		auto& world = Frosty::Application::Get().GetWorld();
 		auto& PlaneOne = world->CreateEntity();
@@ -14,7 +14,7 @@ namespace Level
 		testTranform.Scale = glm::vec3(300, 1.0f, 300);
 		testTranform.Rotation = glm::vec3(0, rotation, 0);
 		//world->AddComponent<Frosty::ECS::CMesh>(PlaneOne, Frosty::AssetManager::GetMesh("Ground"));
-		world->AddComponent<Frosty::ECS::CMesh>(PlaneOne, Frosty::AssetManager::GetMesh("pPlane1")); 
+		world->AddComponent<Frosty::ECS::CMesh>(PlaneOne, Frosty::AssetManager::GetMesh("pPlane1"));
 		auto& testMaterial = world->AddComponent<Frosty::ECS::CMaterial>(PlaneOne, Frosty::AssetManager::GetShader("Texture2D"));
 		//testMaterial.Albedo = glm::vec4(0.2f, 0.8f, 0.3f, 1.0f);
 		testMaterial.DiffuseTexture = Frosty::AssetManager::GetTexture2D(texture);
@@ -52,6 +52,18 @@ namespace Level
 				world->AddComponent<Frosty::ECS::CMesh>(Tree, Frosty::AssetManager::GetMesh("tree1"));
 			}
 		}
+		else
+		{
+			auto& ExitBBox = world->CreateEntity();
+			auto& ExitBBoxTranform = world->GetComponent<Frosty::ECS::CTransform>(ExitBBox);
+			ExitBBoxTranform.Position = glm::vec3(0.50f, 2.50f, -82.60f);
+			ExitBBoxTranform.Scale = glm::vec3(56.10f, 16.20f, 12.80f);
+			world->AddComponent<Frosty::ECS::CPhysics>(ExitBBox, Frosty::AssetManager::GetBoundingBox("pCube1"), 0.0f);
+			world->AddComponent<Frosty::ECS::CLevelExit>(ExitBBox, 0);
+
+			world->AddComponent<Frosty::ECS::CMesh>(ExitBBox, Frosty::AssetManager::GetMesh("pCube1"));
+			world->AddComponent<Frosty::ECS::CMaterial>(ExitBBox, Frosty::AssetManager::GetShader("FlatColor"));
+		}
 		if (!down)
 		{
 			for (int i = 44; i < 48; i++)
@@ -67,6 +79,18 @@ namespace Level
 				treeName = "Tree" + std::to_string(((rand() % NrOfTreeTypes) + 1));
 				world->AddComponent<Frosty::ECS::CMesh>(Tree, Frosty::AssetManager::GetMesh("tree1"));
 			}
+		}
+		else
+		{
+			auto& ExitBBox = world->CreateEntity();
+			auto& ExitBBoxTranform = world->GetComponent<Frosty::ECS::CTransform>(ExitBBox);
+			ExitBBoxTranform.Position = glm::vec3(-2.90f, 4.00f, 95.80f);
+			ExitBBoxTranform.Scale = glm::vec3(45.70f, 20.80f, 10.50f);
+			world->AddComponent<Frosty::ECS::CPhysics>(ExitBBox, Frosty::AssetManager::GetBoundingBox("pCube1"), 0.0f);
+			world->AddComponent<Frosty::ECS::CLevelExit>(ExitBBox, 1);
+
+			world->AddComponent<Frosty::ECS::CMesh>(ExitBBox, Frosty::AssetManager::GetMesh("pCube1"));
+			world->AddComponent<Frosty::ECS::CMaterial>(ExitBBox, Frosty::AssetManager::GetShader("FlatColor"));
 		}
 		if (!left)
 		{
@@ -84,6 +108,18 @@ namespace Level
 				world->AddComponent<Frosty::ECS::CMesh>(Tree, Frosty::AssetManager::GetMesh("tree1"));
 			}
 		}
+		else
+		{
+			auto& ExitBBox = world->CreateEntity();
+			auto& ExitBBoxTranform = world->GetComponent<Frosty::ECS::CTransform>(ExitBBox);
+			ExitBBoxTranform.Position = glm::vec3(100.00f, 2.00f, 5.70f);
+			ExitBBoxTranform.Scale = glm::vec3(15.00f, 29.30f, 57.90f);
+			world->AddComponent<Frosty::ECS::CPhysics>(ExitBBox, Frosty::AssetManager::GetBoundingBox("pCube1"), 0.0f);
+			world->AddComponent<Frosty::ECS::CLevelExit>(ExitBBox, 3);
+
+			world->AddComponent<Frosty::ECS::CMesh>(ExitBBox, Frosty::AssetManager::GetMesh("pCube1"));
+			world->AddComponent<Frosty::ECS::CMaterial>(ExitBBox, Frosty::AssetManager::GetShader("FlatColor"));
+		}
 		if (!right)
 		{
 			for (int i = 48; i < 52; i++)
@@ -100,6 +136,41 @@ namespace Level
 				world->AddComponent<Frosty::ECS::CMesh>(Tree, Frosty::AssetManager::GetMesh("tree1"));
 			}
 		}
+		else
+		{
+			auto& ExitBBox = world->CreateEntity();
+			auto& ExitBBoxTranform = world->GetComponent<Frosty::ECS::CTransform>(ExitBBox);
+			ExitBBoxTranform.Position = glm::vec3(-91.90f, 0.00f, 5.00f);
+			ExitBBoxTranform.Scale = glm::vec3(12.40f, 30.90f, 63.30f);
+			world->AddComponent<Frosty::ECS::CPhysics>(ExitBBox, Frosty::AssetManager::GetBoundingBox("pCube1"), 0.0f);
+			world->AddComponent<Frosty::ECS::CLevelExit>(ExitBBox, 2);
+
+			world->AddComponent<Frosty::ECS::CMesh>(ExitBBox, Frosty::AssetManager::GetMesh("pCube1"));
+			world->AddComponent<Frosty::ECS::CMaterial>(ExitBBox, Frosty::AssetManager::GetShader("FlatColor"));
+		}
+
+		glm::vec3 toReturn;
+		if (up && entrensSide == 1)
+		{
+			toReturn = glm::vec3(0.50f, 0.0f, -82.60f) + glm::vec3(0.00f, 0.00f, 12.80f);
+		}
+		else if (down && entrensSide == 0)
+		{
+			toReturn = glm::vec3(-2.90f, 0.00f, 95.80f) - glm::vec3(0.00f, 0.00f, 10.50f);
+		}
+		else if (right && entrensSide == 3)
+		{
+			toReturn = glm::vec3(-91.90f, 0.00f, 5.00f) + glm::vec3(12.40f, 0.00f, 0.00f);
+		}
+		else if (left && entrensSide == 2)
+		{
+			toReturn = glm::vec3(100.00f, 0.00f, 5.70f) - glm::vec3(15.00f, 0.00f, 0.00f);
+		}
+		else
+		{
+			toReturn = glm::vec3(0, 0, 0);
+		}
+		return toReturn;
 	}
 
 	glm::vec3 BorderTrees(int treeNr)

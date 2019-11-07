@@ -39,6 +39,21 @@ namespace Frosty
 	private:
 		std::shared_ptr<ECS::Entity> m_Entity;
 	};
+
+	class ExitLevelEvent : public BaseEvent
+	{
+	public:
+		ExitLevelEvent(const std::shared_ptr<ECS::Entity>& exit, const std::shared_ptr<ECS::Entity>& player) : m_ExitEntity(exit), m_PlayerEntity(player){ }
+
+		const std::shared_ptr<ECS::Entity>& GetExitEntity() const { return m_ExitEntity; }
+		const std::shared_ptr<ECS::Entity>& GetPlayerEntity() const { return m_PlayerEntity; }
+
+		EVENT_TYPE(ExitCurrentLevel)
+
+	private:
+		std::shared_ptr<ECS::Entity> m_ExitEntity;
+		std::shared_ptr<ECS::Entity> m_PlayerEntity;
+	};
 }
 
 #endif // !ABILITY_EVENT_HPP

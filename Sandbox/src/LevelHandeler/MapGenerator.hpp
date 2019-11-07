@@ -59,8 +59,8 @@ public:
 	std::string getRoomTextur(glm::ivec2 pos, int* rotation);
 
 private:
-	Room tileMap[30][30];
-	std::vector<RoomOnTile> loosEndsRooms;
+	Room m_TileMap[30][30];
+	std::vector<RoomOnTile> m_LoosEndsRooms;
 };
 
 

@@ -8,10 +8,10 @@
 #include "Systems/RenderSystem.hpp"
 #include "Systems/PhysicsSystem.hpp"
 #include "Systems/PlayerControllerSystem.hpp"
-#include "LevelHandeler/MapGenerator.hpp"
+//#include "LevelHandeler/MapGenerator.hpp"
 
 //temp
-#include "LevelHandeler/LevelsHardCoded.hpp"
+//#include "LevelHandeler/LevelsHardCoded.hpp"
 #include "Systems/FollowSystem.hpp"
 #include "Systems/BasicAttackSystem.hpp"
 #include "Systems/CombatSystem.hpp"
@@ -20,6 +20,7 @@
 #include "Systems/SwordSystem.hpp"
 #include "Systems/NavigationSystem.hpp"
 #include "Systems/ParticleSystem.hpp"
+#include "Systems/LevelSystem.hpp"
 //#include "Systems/PlayerAttackSystem.hpp"
 //#include "Systems/EnemyAttackSystem.hpp"
 //#include "Systems/HealthBarSystem.hpp"
@@ -34,6 +35,7 @@ namespace MCS
 		auto& world = Application::Get().GetWorld();
 		//std::srand((unsigned)std::time(0)); //We already seed in main. We shouldn't seed twice
 		// Add systems
+		world->AddSystem<LevelSystem>();
 		world->AddSystem<MCS::CameraSystem>();
 		world->AddSystem<LightSystem>();
 		world->AddSystem<RenderSystem>();
@@ -55,9 +57,9 @@ namespace MCS
 		//world->AddSystem<HealthBarSystem>();
 		world->AddSystem<ParticleSystem>();
 
-		MapGenerator map;
-		map.generateMap();
-		Room myRoome = map.getRoom(glm::ivec2(11, 15));
+		//MapGenerator map;
+		//map.generateMap();
+		//Room myRoome = map.getRoom(glm::ivec2(11, 15));
 
 		//for (int i = 0; i < 30; i++)
 		//{
@@ -110,9 +112,9 @@ namespace MCS
 		//generateBorders();
 		//generatePlanes();
 
-		int rotation = 0;
-		std::string texture = map.getRoomTextur(glm::ivec2(11, 15), &rotation);
-		Level::Room(myRoome.sideExits[0], myRoome.sideExits[1], myRoome.sideExits[2], myRoome.sideExits[3], texture, rotation);
+		//int rotation = 0;
+		//std::string texture = map.getRoomTextur(glm::ivec2(11, 15), &rotation);
+		//Level::Room(myRoome.sideExits[0], myRoome.sideExits[1], myRoome.sideExits[2], myRoome.sideExits[3], texture, rotation);
 
 		
 		auto& player = world->CreateEntity();

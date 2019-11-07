@@ -86,7 +86,7 @@ namespace Frosty
 #pragma region Settings
 
 		// Let's define a maximum number of unique components:
-		constexpr std::size_t MAX_COMPONENTS{ 18 };
+		constexpr std::size_t MAX_COMPONENTS{ 19 };
 
 		// Let's define a maximum number of entities that
 		// can have the same component type:
@@ -672,6 +672,19 @@ namespace Frosty
 			CParticleSystem(std::shared_ptr<VertexArray> verts, std::shared_ptr<Shader> shader, std::shared_ptr<Texture2D> tex)
 				: particleVertArray(verts), shader(shader), texture(tex) {}
 			CParticleSystem(const CParticleSystem& org) { FY_CORE_ASSERT(false, "Copy constructor in CParticleSystem called."); }
+
+			virtual void Func() override { }
+		};
+
+		struct CLevelExit : public BaseComponent
+		{
+			static std::string NAME;
+			//up = 0, down = 1, right = 2, left = 3
+			int ExitDirection{ 0 };
+
+			CLevelExit() = default;
+			CLevelExit(int exitDirection) : ExitDirection(exitDirection) { }
+			CLevelExit(const CLevelExit& org) { FY_CORE_ASSERT(false, "Copy constructor in CLevelExit called."); }
 
 			virtual void Func() override { }
 		};

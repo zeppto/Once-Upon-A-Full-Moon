@@ -116,7 +116,7 @@ namespace MCS
 					if (ImGui::MenuItem("Mesh", "", &toggles[1]))
 					{
 						if (!world->HasComponent<Frosty::ECS::CMesh>(m_SelectedEntity))
-							world->AddComponent<Frosty::ECS::CMesh>(m_SelectedEntity, Frosty::AssetManager::GetMesh("3D"));
+							world->AddComponent<Frosty::ECS::CMesh>(m_SelectedEntity, Frosty::AssetManager::GetMesh("pCube1"));
 						else
 							world->RemoveComponent<Frosty::ECS::CMesh>(m_SelectedEntity);
 					}
@@ -158,7 +158,7 @@ namespace MCS
 					if (ImGui::MenuItem("Physics", "", &toggles[7]))
 					{
 						if (!world->HasComponent<Frosty::ECS::CPhysics>(m_SelectedEntity))
-							world->AddComponent<Frosty::ECS::CPhysics>(m_SelectedEntity, Frosty::AssetManager::GetBoundingBox("Cube"));
+							world->AddComponent<Frosty::ECS::CPhysics>(m_SelectedEntity, Frosty::AssetManager::GetBoundingBox("pCube1"));
 						else
 							world->RemoveComponent<Frosty::ECS::CPhysics>(m_SelectedEntity);
 					}
