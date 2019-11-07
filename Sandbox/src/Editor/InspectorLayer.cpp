@@ -653,6 +653,7 @@ namespace MCS
 						ImGui::BeginChild("CParticleSystem", ImVec2(EDITOR_INSPECTOR_WIDTH, 145), true);
 						ImGui::Checkbox("Preview", &comp.preview);
 						ImGui::ColorEdit4("Color", glm::value_ptr(comp.particleSystemColor));
+						ImGui::IsItemDeactivatedAfterEdit();
 						ImGui::Text("Test text"); //TODO: output proper info
 						ImGui::EndChild();
 					}

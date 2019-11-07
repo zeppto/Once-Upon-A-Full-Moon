@@ -24,6 +24,7 @@ namespace MCS
 
 	private:
 		void UpdateParticleSystem(uint32_t systemIndex);
+		void EditorUpdateParticleSystem(uint32_t systemIndex);
 		void UpdateParticle(uint32_t systemIndex, uint32_t index);
 		void ResetParticle(uint32_t systemIndex, uint32_t index);
 		void UpdateBuffer(uint32_t systemIndex);

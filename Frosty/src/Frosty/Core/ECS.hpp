@@ -688,12 +688,13 @@ namespace Frosty
 
 			CParticleSystem(const CParticleSystem& org) { FY_CORE_ASSERT(false, "Copy constructor in CParticleSystem called."); }
 
-			void SetParticlesColor(float r, float g, float b, float a)
+			void SetParticlesColor(float r, float g, float b)
 			{
-				particleSystemColor = glm::vec4(r, g, b, a);
 				for (uint32_t i = 0; i < MAX_PARTICLE_COUNT; i++)
 				{
-					particles[i].color = glm::vec4(r, g, b, a);
+					particles[i].color.r = r;
+					particles[i].color.g = g;
+					particles[i].color.b = b;
 				}
 			}
 

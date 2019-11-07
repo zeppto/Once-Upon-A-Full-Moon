@@ -23,9 +23,9 @@ namespace MCS
 	{
 		for (size_t i = 1; i < p_Total; i++)
 		{
-			if (m_ParticleSystem[i]->preview == true && !Frosty::Application::Get().GameIsRunning())
+			if (!Frosty::Application::Get().GameIsRunning())
 			{
-				UpdateParticleSystem(i);
+				EditorUpdateParticleSystem(i);
 			}
 
 			glm::mat4 transform = glm::translate(glm::mat4(1.0f), m_Transform[i]->Position);
@@ -117,6 +117,31 @@ namespace MCS
 			m_ParticleSystem[systemIndex]->particles[j].lifetime -= 1.0f * Frosty::Time::DeltaTime();
 			UpdateParticle(systemIndex, j);
 			UpdateBuffer(systemIndex);
+		}
+	}
+
+	void ParticleSystem::EditorUpdateParticleSystem(uint32_t systemIndex)
+	{
+		if (glm::vec3(m_ParticleSystem[systemIndex]->particles[0].color) != m_ParticleSystem[systemIndex]->particleSystemColor) //Workaround
+		{
+			m_ParticleSystem[systemIndex]->SetParticlesColor(m_ParticleSystem[systemIndex]->particleSystemColor.r, m_ParticleSystem[systemIndex]->particleSystemColor.g, m_ParticleSystem[systemIndex]->particleSystemColor.b);
+			UpdateBuffer(systemIndex);
+		}
+
+		if (m_ParticleSystem[systemIndex]->preview)
+		{
+			for (size_t j = 0; j < m_ParticleSystem[systemIndex]->particleCount; j++)
+			{
+				if (m_ParticleSystem[systemIndex]->particles[j].lifetime <= 0.0f)
+				{
+					m_ParticleSystem[systemIndex]->particles[j].lifetime = m_maxLifetime;
+					ResetParticle(systemIndex, j);
+				}
+
+				m_ParticleSystem[systemIndex]->particles[j].lifetime -= 1.0f * Frosty::Time::DeltaTime();
+				UpdateParticle(systemIndex, j);
+				UpdateBuffer(systemIndex);
+			}
 		}
 	}
 
