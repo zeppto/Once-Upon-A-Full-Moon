@@ -666,7 +666,7 @@ namespace Frosty
 			uint32_t particleCount = 100;
 			float emitRate = 5.0f;
 			bool preview = false;
-			glm::vec3 particleSystemColor;
+			glm::vec3 particleSystemColor = glm::vec3(1.0f);
 
 			Particle particles[MAX_PARTICLE_COUNT];
 			std::shared_ptr<VertexArray> particleVertArray;
