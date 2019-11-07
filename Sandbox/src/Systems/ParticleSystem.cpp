@@ -148,6 +148,14 @@ namespace MCS
 	void MCS::ParticleSystem::UpdateParticle(uint32_t systemIndex, uint32_t index)
 	{
 		m_ParticleSystem[systemIndex]->particles[index].position -= (m_ParticleSystem[systemIndex]->particles[index].direction * m_ParticleSystem[systemIndex]->particles[index].speed) * Frosty::Time::DeltaTime();
+		
+		//Fade in and fade out
+		if (m_ParticleSystem[systemIndex]->particles[index].color.a < 1.0 && m_ParticleSystem[systemIndex]->particles[index].lifetime > 1.0) {
+			m_ParticleSystem[systemIndex]->particles[index].color.a += 2.0 * Frosty::Time::DeltaTime();
+		}
+		if (m_ParticleSystem[systemIndex]->particles[index].lifetime < 1.1) {
+			m_ParticleSystem[systemIndex]->particles[index].color.a -= 1.0 * Frosty::Time::DeltaTime();
+		}
 	}
 
 	void ParticleSystem::ResetParticle(uint32_t systemIndex, uint32_t index)
