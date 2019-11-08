@@ -47,19 +47,19 @@ namespace MCS
 				if (distance < 0.5 && m_Boss[i]->TargetList.size() > 1)
 				{
 					m_Boss[i]->Distracted = true;
-					m_Boss[i]->DistractionTimer = float(std::clock());
+					m_Boss[i]->DistractionTimer = Frosty::Time::CurrentTime();
 				}
 			}
 
-			float diff = (float(std::clock()) - m_Boss[i]->DistractionTimer) * 0.001f;
+			float diff = Frosty::Time::CurrentTime() - m_Boss[i]->DistractionTimer;
 
 			//Eat bait
-			if ((m_Boss[i]->Distracted == true) && ((float(std::clock()) - m_Boss[i]->DistractionTimer) * 0.001f >= m_Boss[i]->DistractionTime) && m_Boss[i]->TargetList.size() > 1)
+			if ((m_Boss[i]->Distracted == true) && (Frosty::Time::CurrentTime() - m_Boss[i]->DistractionTimer >= m_Boss[i]->DistractionTime) && m_Boss[i]->TargetList.size() > 1)
 			{
 				world->AddComponent<Frosty::ECS::CDestroy>(m_Boss[i]->TargetList.at(0));
 				m_Boss[i]->TargetList.erase(m_Boss[i]->TargetList.begin());
 				m_Boss[i]->Distracted = false;
-				m_Boss[i]->DistractionTimer = float(std::clock());
+				m_Boss[i]->DistractionTimer = Frosty::Time::CurrentTime();
 
 				//Tried to set new target here but did not work, sets hunting = true instead and the next target is set in next frame
 				m_Boss[i]->Hunting = false;

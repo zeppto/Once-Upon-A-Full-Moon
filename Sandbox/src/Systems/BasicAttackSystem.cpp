@@ -8,15 +8,12 @@ namespace MCS
 
 	void BasicAttackSystem::Init()
 	{
-		p_Signature.set(Frosty::ECS::getComponentTypeID<Frosty::ECS::CBasicAttack>(), true);
+		m_World = Frosty::Application::Get().GetWorld().get();
+		p_Signature.set(Frosty::ECS::getComponentTypeID<Frosty::ECS::CWeapon>(), true);
 	}
 
 	void BasicAttackSystem::OnUpdate()
 	{
-		for (size_t i = 1; i < p_Total; i++)
-		{
-			if (m_BasicAttack[i]->CurrentCooldown > 0.0) m_BasicAttack[i]->CurrentCooldown -= Frosty::Time::DeltaTime();
-		}
 	}
 
 	void BasicAttackSystem::OnEvent(Frosty::BaseEvent& e)
@@ -38,7 +35,7 @@ namespace MCS
 			p_EntityMap.emplace(entity, p_Total);
 
 			auto& world = Frosty::Application::Get().GetWorld();
-			m_BasicAttack[p_Total] = &world->GetComponent<Frosty::ECS::CBasicAttack>(entity);
+			m_Weapon[p_Total] = &world->GetComponent<Frosty::ECS::CWeapon>(entity);
 
 			p_Total++;
 		}
@@ -51,7 +48,7 @@ namespace MCS
 		if (tempIndex > 0)
 		{
 			p_Total--;
-			m_BasicAttack[p_Total] = nullptr;
+			m_Weapon[p_Total] = nullptr;
 
 			if (p_Total > 1)
 			{
@@ -59,7 +56,7 @@ namespace MCS
 
 				if (p_Total > tempIndex)
 				{
-					std::shared_ptr<Frosty::ECS::Entity> entityToUpdate = m_BasicAttack[p_EntityMap[entity]]->EntityPtr;
+					std::shared_ptr<Frosty::ECS::Entity> entityToUpdate = m_Weapon[p_EntityMap[entity]]->EntityPtr;
 					p_EntityMap[entityToUpdate] = tempIndex;
 				}
 			}
@@ -72,29 +69,35 @@ namespace MCS
 	{
 		size_t index = p_EntityMap[e.GetEntity()];
 
-		if (m_BasicAttack[index]->CurrentCooldown <= 0.0f)
+		if (index > 0)
 		{
-			switch (m_BasicAttack[index]->Type)
+			if (Frosty::Time::CurrentTime() - m_Weapon[index]->CooldownTimer >= m_Weapon[index]->Cooldown)
 			{
-			case Frosty::ECS::CBasicAttack::AttackType::Melee:
-				CreateBoundingBox(index);
-				break;
-			case Frosty::ECS::CBasicAttack::AttackType::Range:
-				CreateProjectile(index);
-				break;
-			default:
-				break;
-			}
+				switch (m_Weapon[index]->Weapon)
+				{
+				case Frosty::ECS::CWeapon::WeaponType::Sword:
+					CreateBoundingBox(index);
+					break;
+				case Frosty::ECS::CWeapon::WeaponType::Arrow:
+					CreateProjectile(index);
+					break;
+				default:
+					break;
+				}
 
-			m_BasicAttack[index]->CurrentCooldown = m_BasicAttack[index]->COOLDOWN / 1000.0f;
+				m_Weapon[index]->CooldownTimer = Frosty::Time::CurrentTime();
+			}
+		}
+		else
+		{
+			FY_ASSERT(false, "Invalid entity index.");
 		}
 	}
 
 	void BasicAttackSystem::CreateBoundingBox(size_t index)
 	{
 		// Get necessary info
-		auto& world = Frosty::Application::Get().GetWorld();
-		auto& attackerTransform = world->GetComponent<Frosty::ECS::CTransform>(m_BasicAttack[index]->EntityPtr);
+		auto& attackerTransform = m_World->GetComponent<Frosty::ECS::CTransform>(m_Weapon[index]->EntityPtr);
 
 		// Calculate direction vector
 		glm::mat4 mat = glm::mat4(1.0f);
@@ -106,18 +109,29 @@ namespace MCS
 		// Create BB
 		glm::vec3 spawnPos = attackerTransform.Position + (glm::vec3(direction) * 4.0f);
 		glm::vec3 spawnScale = glm::vec3(10.0f, 6.0f, 4.0f);
-		auto& projectile = world->CreateEntity({ spawnPos.x, 3.0f, spawnPos.z }, attackerTransform.Rotation, spawnScale);
-		world->AddComponent<Frosty::ECS::CMesh>(projectile, Frosty::AssetManager::GetMesh("pCube1"));
-		world->AddComponent<Frosty::ECS::CMaterial>(projectile, Frosty::AssetManager::GetShader("FlatColor"));
-		world->AddComponent<Frosty::ECS::CPhysics>(projectile, Frosty::AssetManager::GetBoundingBox("pCube1"));
-		world->AddComponent<Frosty::ECS::CSword>(projectile);
+		auto& sword = m_World->CreateEntity({ spawnPos.x, 3.0f, spawnPos.z }, attackerTransform.Rotation, spawnScale);
+
+		m_World->AddComponent<Frosty::ECS::CMesh>(sword, Frosty::AssetManager::GetMesh("pCube1"));				// Should be according to weapon level type in CWeapon
+		m_World->AddComponent<Frosty::ECS::CMaterial>(sword, Frosty::AssetManager::GetShader("FlatColor"));
+		m_World->AddComponent<Frosty::ECS::CPhysics>(sword, Frosty::AssetManager::GetBoundingBox("pCube1"));
+
+		// Calculate chances of critical hit here //	~ W-_-W ~
+		// Is it a friendly attack or an enemy attack? Add boolean in parameter accordingly
+		if (m_World->HasComponent<Frosty::ECS::CPlayer>(m_Weapon[index]->EntityPtr))
+		{
+			m_World->AddComponent<Frosty::ECS::CAttack>(sword, Frosty::ECS::CAttack::AttackType::Melee, m_Weapon[index]->Damage + m_Weapon[index]->CriticalHit, true);
+		}
+		else
+		{
+			m_World->AddComponent<Frosty::ECS::CAttack>(sword, Frosty::ECS::CAttack::AttackType::Melee, m_Weapon[index]->Damage + m_Weapon[index]->CriticalHit, false);
+		}
+
 	}
 
 	void BasicAttackSystem::CreateProjectile(size_t index)
 	{
 		// Get necessary info
-		auto& world = Frosty::Application::Get().GetWorld();
-		auto& attackerTransform = world->GetComponent<Frosty::ECS::CTransform>(m_BasicAttack[index]->EntityPtr);
+		auto& attackerTransform = m_World->GetComponent<Frosty::ECS::CTransform>(m_Weapon[index]->EntityPtr);
 
 		// Calculate direction vector
 		glm::mat4 mat = glm::mat4(1.0f);
@@ -128,12 +142,20 @@ namespace MCS
 
 		// Create projectile
 		glm::vec3 spawnPos = attackerTransform.Position + (glm::vec3(direction) * 3.0f);
-		auto& projectile = world->CreateEntity({ spawnPos.x, 1.0f, spawnPos.z }, attackerTransform.Rotation, { 0.3f, 0.3f, 0.3f });
-		world->AddComponent<Frosty::ECS::CMesh>(projectile, Frosty::AssetManager::GetMesh("pSphere1"));
-		world->AddComponent<Frosty::ECS::CMaterial>(projectile, Frosty::AssetManager::GetShader("FlatColor"));
-		auto& projectilePhysics = world->AddComponent<Frosty::ECS::CPhysics>(projectile, Frosty::AssetManager::GetBoundingBox("pSphere1"), 20.0f);
+		auto& projectile = m_World->CreateEntity({ spawnPos.x, 1.0f, spawnPos.z }, attackerTransform.Rotation, { 0.3f, 0.3f, 0.3f });
+		m_World->AddComponent<Frosty::ECS::CMesh>(projectile, Frosty::AssetManager::GetMesh("pSphere1"));
+		m_World->AddComponent<Frosty::ECS::CMaterial>(projectile, Frosty::AssetManager::GetShader("FlatColor"));
+		auto& projectilePhysics = m_World->AddComponent<Frosty::ECS::CPhysics>(projectile, Frosty::AssetManager::GetBoundingBox("pSphere1"), 20.0f);
 		projectilePhysics.Velocity = direction * projectilePhysics.Speed;
-		world->AddComponent<Frosty::ECS::CArrow>(projectile);
-	}
 
+		// Calculate chances of critical hit here //	~ W-_-W ~
+		if (m_World->HasComponent<Frosty::ECS::CPlayer>(m_Weapon[index]->EntityPtr))
+		{
+			m_World->AddComponent<Frosty::ECS::CAttack>(projectile, Frosty::ECS::CAttack::AttackType::Range, m_Weapon[index]->Damage + m_Weapon[index]->CriticalHit, true, m_Weapon[index]->Lifetime);
+		}
+		else
+		{
+			m_World->AddComponent<Frosty::ECS::CAttack>(projectile, Frosty::ECS::CAttack::AttackType::Range, m_Weapon[index]->Damage + m_Weapon[index]->CriticalHit, false, m_Weapon[index]->Lifetime);
+		}
+	}
 }

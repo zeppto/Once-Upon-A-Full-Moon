@@ -1,14 +1,14 @@
-#ifndef SWORD_SYSTEM_HPP
-#define SWORD_SYSTEM_HPP
+#ifndef WEAPON_SYSTEM_HPP
+#define WEAPON_SYSTEM_HPP
 
 
 namespace MCS
 {
-	class SwordSystem : public Frosty::ECS::BaseSystem
+	class WeaponSystem : public Frosty::ECS::BaseSystem
 	{
 	public:
-		SwordSystem() = default;
-		virtual ~SwordSystem() = default;
+		WeaponSystem() = default;
+		virtual ~WeaponSystem() = default;
 
 		virtual void Init() override;
 		virtual void OnUpdate() override;
@@ -19,9 +19,8 @@ namespace MCS
 	private:
 		Frosty::World* m_World;
 
-		std::array<Frosty::ECS::CSword*, Frosty::ECS::MAX_ENTITIES_PER_COMPONENT> m_Sword;
-
+		std::array<Frosty::ECS::CAttack*, Frosty::ECS::MAX_ENTITIES_PER_COMPONENT> m_Attack;
 	};
 }
 
-#endif // !SWORD_SYSTEM_HPP
+#endif // !WEAPON_SYSTEM_HPP
