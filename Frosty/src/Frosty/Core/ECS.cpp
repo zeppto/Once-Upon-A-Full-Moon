@@ -21,7 +21,7 @@ namespace Frosty
 		std::string CHealthBar::NAME = "HealthBar";
 		std::string CDash::NAME = "Dash";
 		std::string CDestroy::NAME = "Destroy";
-		std::string CParticleSystem::NAME = "Particle System";
+		std::string CParticleSystem::NAME = "ParticleSystem";
 		std::string CBoss::NAME = "Boss";
 		std::string CLevelExit::NAME = "Level Exit";
 	}

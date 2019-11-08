@@ -23,8 +23,16 @@ namespace MCS
 		virtual void RemoveEntity(const std::shared_ptr<Frosty::ECS::Entity>& entity) override;
 
 	private:
+		void UpdateParticleSystem(uint32_t systemIndex);
+		void EditorUpdateParticleSystem(uint32_t systemIndex);
+		void UpdateParticle(uint32_t systemIndex, uint32_t index);
+		void ResetParticle(uint32_t systemIndex, uint32_t index);
+		void UpdateBuffer(uint32_t systemIndex);
+
 		std::array<Frosty::ECS::CTransform*, Frosty::ECS::MAX_ENTITIES_PER_COMPONENT> m_Transform;
 		std::array<Frosty::ECS::CParticleSystem*, Frosty::ECS::MAX_ENTITIES_PER_COMPONENT> m_ParticleSystem;
+		float m_maxLifetime; //All particles
+		bool m_editMode;
 	};
 }
 

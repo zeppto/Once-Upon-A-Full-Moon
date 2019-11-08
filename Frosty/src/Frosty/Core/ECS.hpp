@@ -663,14 +663,28 @@ namespace Frosty
 				glm::vec4 startPos = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
 				float lifetime = 2.0f;
 				float speed = 2.0f;
-				int padding[2]; //In case padding is needed
+				float startSize = 1.0f;
+				float endSize = 1.0f;
+				float size = startSize; //The current size
+				//int padding[2]; //In case padding is needed
+
+				Particle() = default;
+				Particle(glm::vec4 color)
+					: color(color) {};
 			};
 
-			static const uint32_t MAX_PARTICLE_COUNT = 1000;
+			static const uint32_t MAX_PARTICLE_COUNT = 100;
+			//uint32_t maxParticles = 0;
+			float startParticleSize = 1.0f;
+			float endParticleSize = 0.0f;
+			float particleSize = 1.0f; //For a constant size
 
 			static std::string NAME;
-			uint32_t particleCount = 10;
-			float emitRate = 5.0f;
+			uint32_t particleCount = 0;
+			glm::vec3 particleSystemColor = glm::vec3(1.0f);
+			float emitRate = 0.1f;
+			bool preview = false;
+			float timer = 0.0f;
 
 			Particle particles[MAX_PARTICLE_COUNT];
 			std::shared_ptr<VertexArray> particleVertArray;
@@ -681,7 +695,35 @@ namespace Frosty
 			CParticleSystem() = default;
 			CParticleSystem(std::shared_ptr<VertexArray> verts, std::shared_ptr<Shader> shader, std::shared_ptr<Texture2D> tex)
 				: particleVertArray(verts), shader(shader), texture(tex) {}
+			CParticleSystem(std::shared_ptr<VertexArray> verts, std::shared_ptr<Shader> shader, std::shared_ptr<Texture2D> tex, glm::vec4 color = glm::vec4(1.0f), float particleSize = 1.0f)
+				: particleVertArray(verts), shader(shader), texture(tex), particleSystemColor(color), particleSize(particleSize)
+			{
+				for (uint32_t i = 0; i < MAX_PARTICLE_COUNT; i++)
+				{
+					particles[i].color = color;
+					particles[i].size = particleSize;
+				}
+			}
+
 			CParticleSystem(const CParticleSystem& org) { FY_CORE_ASSERT(false, "Copy constructor in CParticleSystem called."); }
+
+			void SetParticlesColor(float r, float g, float b)
+			{
+				for (uint32_t i = 0; i < MAX_PARTICLE_COUNT; i++)
+				{
+					particles[i].color.r = r;
+					particles[i].color.g = g;
+					particles[i].color.b = b;
+				}
+			}
+
+			void SetParticlesSize(float size)
+			{
+				for (uint32_t i = 0; i < MAX_PARTICLE_COUNT; i++)
+				{
+					particles[i].startSize = size;
+				}
+			}
 
 			virtual void Func() override { }
 		};

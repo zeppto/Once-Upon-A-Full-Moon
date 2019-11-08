@@ -28,7 +28,7 @@ void ResetParticle(uint ID)
 
 void UpdateParticle(uint ID)
 {
-	particleData[ID].position.y -= 1.0f /*(particleData[ID].direction * particleData[ID].speed)*/ * deltaTime;
+	particleData[ID].position -= (particleData[ID].direction * particleData[ID].speed) * deltaTime;
 }
 
 void main()

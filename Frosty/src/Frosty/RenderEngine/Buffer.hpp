@@ -160,12 +160,33 @@ namespace Frosty
 		static VertexBuffer* Create(const void* vertices, uint32_t size, BufferType type);
 		static VertexBuffer* Create();
 
-		void SetData(float* vertices, uint32_t size, uint32_t type);
+		void SetData(void* vertices, uint32_t size, BufferType type);
 
 	private:
 		uint32_t m_RendererID;
 		BufferLayout m_Layout;
 		uint32_t m_NrOfVertices = 0;
+		uint32_t m_Size = 0;
+	};
+
+	class ShaderStorageBuffer
+	{
+	public:
+		ShaderStorageBuffer(uint32_t size, void* data);
+		virtual ~ShaderStorageBuffer();
+
+		void Bind() const;
+		void Unbind() const;
+
+		uint32_t GetSize()const;
+		uint32_t GetID()const;
+
+		static ShaderStorageBuffer* Create(uint32_t size, void* data);
+
+		void SetData(uint32_t size);
+
+	private:
+		uint32_t m_ssboID;
 		uint32_t m_Size = 0;
 	};
 

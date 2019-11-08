@@ -16,7 +16,7 @@ namespace Frosty
 			glBufferData(GL_ARRAY_BUFFER, size, vertices, GL_STATIC_DRAW);
 		}
 		else if (type == DYNAMIC) {
-			glBufferData(GL_ARRAY_BUFFER, size, vertices, GL_DYNAMIC_COPY);
+			glBufferData(GL_ARRAY_BUFFER, size, vertices, GL_STREAM_DRAW);
 		}
 	}
 
@@ -50,10 +50,20 @@ namespace Frosty
 		return new VertexBuffer();
 	}
 
-	void VertexBuffer::SetData(float * vertices, uint32_t size, uint32_t type)
+	void VertexBuffer::SetData(void * vertices, uint32_t size, BufferType type) //Used for updating data in buffers
 	{
-		glBindBuffer(GL_ARRAY_BUFFER, m_RendererID);
-		glBufferData(GL_ARRAY_BUFFER, size, vertices, type);
+		if (type == BufferType::STATIC)
+		{
+			glBindBuffer(GL_ARRAY_BUFFER, m_RendererID);
+			glBufferData(GL_ARRAY_BUFFER, size, NULL, GL_STATIC_DRAW); //Reset
+			glBufferSubData(GL_ARRAY_BUFFER, 0, size, vertices); //Faster and more efficient than using glBufferData
+		}
+		else if (type == BufferType::DYNAMIC)
+		{
+			glBindBuffer(GL_ARRAY_BUFFER, m_RendererID);
+			glBufferData(GL_ARRAY_BUFFER, size, NULL, GL_STREAM_DRAW); //Reset
+			glBufferSubData(GL_ARRAY_BUFFER, 0, size, vertices); //Faster and more efficient than using glBufferData
+		}
 	}
 
 	void VertexBuffer::SetNrOfVertices(uint32_t count)
@@ -110,5 +120,47 @@ namespace Frosty
 	IndexBuffer* IndexBuffer::Create(const void* indices, uint32_t count)
 	{
 		return new IndexBuffer(indices, count);
+	}
+
+	ShaderStorageBuffer * ShaderStorageBuffer::Create(uint32_t size, void* data)
+	{
+		return new ShaderStorageBuffer(size, data);
+	}
+
+	void ShaderStorageBuffer::SetData(uint32_t size)
+	{
+
+	}
+
+	ShaderStorageBuffer::ShaderStorageBuffer(uint32_t size, void* data)
+	{
+		glGenBuffers(1, &m_ssboID);
+		glBindBuffer(GL_SHADER_STORAGE_BUFFER, m_ssboID);
+		glBufferData(GL_SHADER_STORAGE_BUFFER, size, data, GL_DYNAMIC_COPY);
+	}
+
+	ShaderStorageBuffer::~ShaderStorageBuffer()
+	{
+		glDeleteBuffers(1, &m_ssboID);
+	}
+
+	void ShaderStorageBuffer::Bind() const
+	{
+		glBindBuffer(GL_SHADER_STORAGE_BUFFER, m_ssboID);
+	}
+
+	void ShaderStorageBuffer::Unbind() const
+	{
+		glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
+	}
+
+	uint32_t ShaderStorageBuffer::GetSize() const
+	{
+		return m_Size;
+	}
+
+	uint32_t ShaderStorageBuffer::GetID() const
+	{
+		return m_ssboID;
 	}
 }
