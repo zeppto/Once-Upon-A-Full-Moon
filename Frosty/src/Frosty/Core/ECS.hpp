@@ -504,7 +504,7 @@ namespace Frosty
 			bool IsPiercing{ false };
 
 			CArrow() = default;
-			CArrow(float damage, float lifetime = 7.0f, bool isPiercing = false) : Damage(damage), Lifetime(lifetime), IsPiercing(isPiercing){ }
+			CArrow(float damage, float lifetime = 7.0f, bool isPiercing = false) : Damage(damage), Lifetime(lifetime), IsPiercing(isPiercing) { }
 			CArrow(const CArrow& org) { FY_CORE_ASSERT(false, "Copy constructor in CArrow called."); }
 
 			virtual void Func() override { }
@@ -692,6 +692,9 @@ namespace Frosty
 			CBoss() = default;
 			CBoss(float DistractionTime) : DistractionTime(DistractionTime) { }
 			CBoss(const CBoss& org) { FY_CORE_ASSERT(false, "Copy constructor in CBoss called."); }
+
+			virtual void Func() override { }
+
 		};
 
 		struct CLevelExit : public BaseComponent
@@ -729,7 +732,7 @@ namespace Frosty
 			case 16:	return "Destroy";
 			case 17:	return "Sword";
 			case 18:	return "ParticleSystem";
-			case 21:	return "Boss";
+			case 19:	return "Boss";
 			default:	return "";
 			}
 		}

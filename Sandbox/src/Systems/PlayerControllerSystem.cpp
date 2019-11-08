@@ -1,7 +1,7 @@
 #include <mcspch.hpp>
 #include "PlayerControllerSystem.hpp"
 #include "Frosty/Events/AbilityEvent.hpp"
-#include "Frosty/API/AssetManager/AM.hpp"
+#include "Frosty/API/AssetManager/AssetManager.hpp"
 namespace MCS
 {
 	void PlayerControllerSystem::Init()
