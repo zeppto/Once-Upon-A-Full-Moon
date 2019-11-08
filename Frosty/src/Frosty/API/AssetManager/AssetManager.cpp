@@ -15,8 +15,6 @@ namespace Frosty
 	AssetManager* AssetManager::s_Instance = nullptr;
 	uint16_t AssetManager::s_Total_Nr_Assets = 0;
 
-	std::vector<std::string> AssetManager::testStr;
-
 	std::unordered_map<std::string, Mesh> AssetManager::s_Meshes;
 	std::unordered_map<std::string, Animation> AssetManager::s_Animaions;
 	std::unordered_map<std::string, TextureFile> AssetManager::s_Textures;
@@ -137,15 +135,6 @@ namespace Frosty
 
 		LoadDir("assets/");
 		ConnectWatchList();
-
-
-		for (int i = 0; i < testStr.size(); i++) {
-
-			FY_CORE_INFO("Name:{0}", testStr.at(i));
-
-		}
-			
-
 	}
 
 	bool AssetManager::AddMesh(const FileMetaData& MetaData, const std::vector<Luna::Vertex>& vertices, const std::vector<Luna::Index>& indices)
@@ -175,6 +164,10 @@ namespace Frosty
 			std::shared_ptr<IndexBuffer> indexBuffer;
 			indexBuffer.reset(IndexBuffer::Create(&indices.front(), (uint32_t)indices.size()));
 			s_VertexArrays[MetaData.TagName]->SetIndexBuffer(indexBuffer);
+
+			//temp
+			s_VertexArrays[MetaData.TagName]->SetName(MetaData.TagName);
+
 			returnValue = true;
 		}
 		else
@@ -251,6 +244,65 @@ namespace Frosty
 			FY_CORE_WARN("BoundingBox: {0}, Is already loaded", MetaData.TagName);
 		}
 		return returnValue;
+	}
+
+	std::vector<std::string> AssetManager::GetMeshNames()
+	{
+		std::vector<std::string> returnVector;
+
+		std::map<std::string, std::shared_ptr<VertexArray>>::iterator it;
+
+		for (it = s_VertexArrays.begin(); it != s_VertexArrays.end(); it++)
+		{
+			returnVector.emplace_back(it->first);
+		}
+
+		return returnVector;
+	}
+
+	std::vector<std::string> AssetManager::GetShaderNames()
+	{
+		std::vector<std::string> returnVector;
+
+
+		std::map<std::string, std::shared_ptr<Shader>>::iterator it;
+
+		for (it = s_Shaders.begin(); it != s_Shaders.end(); it++)
+		{
+			returnVector.emplace_back(it->first);
+		}
+
+		return returnVector;
+	}
+
+	std::vector<std::string> AssetManager::GetTexturesNames()
+	{
+		std::vector<std::string> returnVector;
+
+
+		std::map<std::string, std::shared_ptr<Texture2D>>::iterator it;
+
+		for (it = s_Textures2D.begin(); it != s_Textures2D.end(); it++)
+		{
+			returnVector.emplace_back(it->first);
+		}
+
+		return returnVector;
+	}
+
+	std::vector<std::string> AssetManager::GetBoundingBoxNames()
+	{
+		std::vector<std::string> returnVector;
+
+
+		std::map<std::string, std::shared_ptr<Luna::BoundingBox>>::iterator it;
+
+		for (it = s_BoundingBoxes.begin(); it != s_BoundingBoxes.end(); it++)
+		{
+			returnVector.emplace_back(it->first);
+		}
+
+		return returnVector;
 	}
 
 	bool AssetManager::FileLoaded(const std::string& FilePath)
@@ -535,9 +587,6 @@ namespace Frosty
 
 		if (AddTexture(FileNameInformation))
 		{
-
-			testStr.emplace_back(FileNameInformation.FileName);
-
 			//if (s_AutoLoad)
 			//{
 			//	//Temp
