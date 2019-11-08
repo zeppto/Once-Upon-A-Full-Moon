@@ -42,7 +42,7 @@ namespace Frosty
 		return m_KeyframeMap.at(jointId);
 	}
 
-	void Animation::GetSkinData(void*& data, int nrOfJoints)
+	void Animation::GetSkinData(void*& data, int& nrOfJoints)
 	{
 		data = &m_SkinData;
 		nrOfJoints = MAX_BONES;
@@ -199,7 +199,9 @@ namespace Frosty
 
 				for (uint16_t i = 0; i < m_Joints.size(); i++)
 				{
-					tempFile.getKeyframes(m_Joints.at(i).jointID, m_KeyframeMap.at(m_Joints.at(i).jointID));
+					/*tempFile.getKeyframes();*/
+
+					tempFile.getKeyframes(m_Joints.at(i).jointID, m_KeyframeMap[m_Joints[i].jointID]);
 				}
 
 				m_OnMem = true;

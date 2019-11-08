@@ -157,7 +157,8 @@ namespace Frosty
 
 		// Meshes
 		static bool AddMesh(const FileMetaData& MetaData,const std::vector<Luna::Vertex>& vertices, const std::vector<Luna::Index>& indices);
-		static bool AddAnimatedMesh(const FileMetaData& MetaData, const std::vector<AnimVert>& vertices, const std::vector<Luna::Index>& indices);
+		//Animation is TEMPORARY!
+		static bool AddAnimatedMesh(const FileMetaData& MetaData, const std::vector<AnimVert>& vertices, const std::vector<Luna::Index>& indices, Luna::Animation& temp);
 
 		static bool AddTexture(const FileMetaData& MetaData);
 

@@ -6,7 +6,7 @@
 #include <cstring>
 #include <io.h>
 #include <stdio.h>
-#include<direct.h>
+#include <direct.h>
 
 namespace Frosty
 {
@@ -192,7 +192,7 @@ namespace Frosty
 		return returnValue;
 	}
 
-	bool AssetManager::AddAnimatedMesh(const FileMetaData& MetaData, const std::vector<AnimVert>& vertices, const std::vector<Luna::Index>& indices)
+	bool AssetManager::AddAnimatedMesh(const FileMetaData& MetaData, const std::vector<AnimVert>& vertices, const std::vector<Luna::Index>& indices, Luna::Animation& temp)
 	{
 		bool returnValue = false;
 		if (!MeshLoaded(MetaData.TagName))
@@ -217,6 +217,15 @@ namespace Frosty
 			vertexBuffer->SetLayout(layout);
 
 			s_VertexArrays[MetaData.TagName]->AddVertexBuffer(vertexBuffer);
+
+			//UniformBuffer
+			std::shared_ptr<UniformBuffer> uniformBuffer;
+
+			uniformBuffer.reset(UniformBuffer::Create(MAX_BONES));
+			s_VertexArrays[MetaData.TagName]->SetUniformBuffer(uniformBuffer);
+
+			// THIS IS A TEMPORARY MESURE TO GET ANIM NAME TO THE
+			s_VertexArrays[MetaData.TagName]->SetCurrentAnim(temp);
 
 			// Index Buffer
 			std::shared_ptr<IndexBuffer> indexBuffer;
@@ -477,6 +486,9 @@ namespace Frosty
 
 		bool returnValue = false;
 
+		//temp
+		bool aniLoaded = false;
+
 		Luna::Reader tempFile;
 
 		if (tempFile.readFile(FileNameInformation.FullFilePath.c_str()))
@@ -508,7 +520,9 @@ namespace Frosty
 					else
 					{
 						std::vector<AnimVert> aVertices = MakeAnimVerts(tempFile);
-						AddAnimatedMesh(tempMetaData, aVertices, indices);
+
+						//GET ANIMATION IS TEMP
+						AddAnimatedMesh(tempMetaData, aVertices, indices, tempFile.getAnimation());
 					}
 
 				}
@@ -525,16 +539,24 @@ namespace Frosty
 
 
 				//Animation
-				if (tempFile.animationExist())
-				{
-					AddAnimation(Animation(FileNameInformation, i, 1));
-					if (s_AutoLoad)
-					{
-						//Temp can be optimized
-						GetAnimation(tempFile.getAnimation().animationName)->LoadToMem();
-						GetAnimation(tempFile.getAnimation().animationName)->LoadToGPU();
-					}
 
+
+				//temp
+				if (!aniLoaded)
+				{
+
+					if (tempFile.animationExist())
+					{
+						AddAnimation(Animation(FileNameInformation, i, tempFile.getAnimation(), 1));
+						if (s_AutoLoad)
+						{
+							//Temp can be optimized
+							GetAnimation(tempFile.getAnimation().animationName)->LoadToMem();
+							GetAnimation(tempFile.getAnimation().animationName)->LoadToGPU();
+							aniLoaded = true;
+						}
+
+					}
 				}
 
 				//Material

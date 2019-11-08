@@ -36,8 +36,8 @@ namespace Frosty
 
 	public:
 		inline Animation() : AssetFile(FileMetaData()) {}
-		inline Animation(const FileMetaData& MetaData, const uint16_t& MeshId, const bool& HasSkeleton = false)
-			:m_Mesh_Id(MeshId), m_Has_Skeleton(HasSkeleton), AssetFile(MetaData) {}
+		inline Animation(const FileMetaData& MetaData, const uint16_t& MeshId, Luna::Animation LuAni, const bool& HasSkeleton = false)
+			:m_Mesh_Id(MeshId), m_Has_Skeleton(HasSkeleton), AssetFile(MetaData), m_Animation(LuAni){}
 		virtual ~Animation();
 
 
@@ -48,7 +48,7 @@ namespace Frosty
 		const std::map<uint16_t, std::vector<Luna::Keyframe>>& GetKeyFrameMap()const;
 		const std::vector<Luna::Keyframe>& GetKeyFrameVec(const uint16_t& jointId)const;
 
-		void GetSkinData(void*& data, int nrOfJoints);
+		void GetSkinData(void*& data, int &nrOfJoints);
 		void CalculateAnimMatrix(float* currentAnimTime);
 
 		inline const std::string GetName()const { return m_Animation.animationName;}

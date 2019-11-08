@@ -23,21 +23,19 @@ namespace Frosty
 
 		const std::vector<std::shared_ptr<VertexBuffer>>& GetVertexBuffer();
 		const std::shared_ptr<IndexBuffer>& GetIndexBuffer();
-		//TEMP FUNCS SHOULD BE MOVED TO MESH CLASS
-		void setMeshAnims(Luna::Animation* aPtr, std::vector<Luna::Joint> jVec, 
-			std::map<uint16_t, std::vector<Luna::Keyframe>>* kMap);
-		AnimationHandler* getAnimationHandlerPtr() { return &meshAnims; }
+		//TEMP FUNCS SHOULD BE MOVED AFTER ECS INTEGRATION
 		void SetUniformBuffer(std::shared_ptr<UniformBuffer>& uniformBuffer);
-		const std::shared_ptr<UniformBuffer>& getUniformBuffer();
-		void addHardcodedVertexBuffer(const std::shared_ptr<VertexBuffer>& vertexBuffer, size_t size);
+		const std::shared_ptr<UniformBuffer>& GetUniformBuffer();
+		void AddHardcodedVertexBuffer(const std::shared_ptr<VertexBuffer>& vertexBuffer, size_t size);
+		void SetCurrentAnim(Luna::Animation &anim);
+		Luna::Animation GetCurrentAnim();
 		//TEMP FUNCS END
 		static VertexArray* Create();
 	private:
 		uint32_t m_RendererID;
 		std::vector<std::shared_ptr<VertexBuffer>> m_VertexBuffer;
 		std::shared_ptr<IndexBuffer> m_IndexBuffer;
-		//TEMP VARIABLES SHOULD BE MOVED TO MESH CLASS
-		AnimationHandler meshAnims;
+		//TEMP VARIABLES SHOULD BE MOVED AFTER ECS INTEGRATION
 		Luna::Animation currentAnim;
 		std::shared_ptr<UniformBuffer> m_UniformBuffer;
 	};

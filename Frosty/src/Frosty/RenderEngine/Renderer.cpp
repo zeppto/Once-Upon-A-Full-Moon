@@ -1,6 +1,7 @@
 #include "fypch.hpp"
 #include "Renderer.hpp"
 #include "Frosty/Core/ECS.hpp"
+#include "Frosty/API/AssetManager/AssetManager.hpp"
 
 #include <glad/glad.h>
 
@@ -198,27 +199,19 @@ namespace Frosty
 
 	float dt = 0;
 
-	void Renderer::animSubmit(ECS::CMaterial* mat, const std::shared_ptr<VertexArray>& vertexArray, const glm::mat4& transform)
+	void Renderer::AnimSubmit(ECS::CMaterial* mat, const std::shared_ptr<VertexArray>& vertexArray, const glm::mat4& transform)
 	{
 		mat->UseShader->Bind();
 		mat->UseShader->UploadUniformMat4("u_ViewProjection", s_SceneData->GameCamera.ViewProjectionMatrix);
 		mat->UseShader->UploadUniformMat4("u_Transform", transform);
 		mat->UseShader->AssignUniformBlock("a_jointDataBlock");
 
-		vertexArray->getAnimationHandlerPtr()->CalculateAnimMatrix(&dt);
 		void* skinDataPtr = nullptr;
-		vertexArray->getAnimationHandlerPtr()->getSkinData(skinDataPtr);
-		int MaxBones = 64;
+		int nrOfBones = 0;
+		AssetManager::GetAnimation(vertexArray->GetCurrentAnim().animationName)->CalculateAnimMatrix(&dt);
+		AssetManager::GetAnimation(vertexArray->GetCurrentAnim().animationName)->GetSkinData(skinDataPtr, nrOfBones);
 
-		//glm::mat4 * stuff; 
-		//stuff = vertexArray->getAnimationHandlerPtr()->getSkinData();
-
-		//for (int i = 0; i < 64; i++)
-		//{
-		//	glm::mat4 current = stuff[i];
-		//}
-
-		vertexArray->getUniformBuffer()->BindUpdate(skinDataPtr, MaxBones);
+		vertexArray->GetUniformBuffer()->BindUpdate(skinDataPtr, nrOfBones);
 
 		vertexArray->Bind();
 		RenderCommand::Draw2D(vertexArray);

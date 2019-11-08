@@ -113,8 +113,7 @@ namespace Frosty
 	}
 
 	// UniformBuffer --------------------------------------------------------------------
-	UniformBuffer::UniformBuffer(uint32_t count, int MaxBones)
-		:m_Count(count)
+	UniformBuffer::UniformBuffer(int MaxBones)
 	{
 		glGenBuffers(1, &m_RendererID);
 		glBindBuffer(GL_UNIFORM_BUFFER, m_RendererID);
@@ -140,14 +139,10 @@ namespace Frosty
 	{
 		glBindBuffer(GL_UNIFORM_BUFFER, 0);
 	}
-	uint32_t UniformBuffer::GetCount() const
-	{
-		return m_Count;
-	}
 
-	UniformBuffer* UniformBuffer::Create(uint32_t count, int MaxBones)
+	UniformBuffer* UniformBuffer::Create(int MaxBones)
 	{
-		return new UniformBuffer(count, MaxBones);
+		return new UniformBuffer(MaxBones);
 	}
 
 

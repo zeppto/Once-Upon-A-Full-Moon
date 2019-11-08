@@ -122,14 +122,6 @@ namespace Frosty
 		return m_IndexBuffer;
 	}
 
-	void VertexArray::setMeshAnims(Luna::Animation* aPtr, std::vector<Luna::Joint> jVec, std::map<uint16_t, std::vector<Luna::Keyframe>>* kMap)
-	{
-		currentAnim = *aPtr;
-		meshAnims.setAnimPtr(&currentAnim);
-		meshAnims.setJointVec(jVec);
-		meshAnims.setKeyframeMap(kMap);
-	}
-
 	void VertexArray::SetUniformBuffer(std::shared_ptr<UniformBuffer>& uniformBuffer)
 	{
 		glBindVertexArray(m_RendererID);
@@ -138,13 +130,13 @@ namespace Frosty
 		m_UniformBuffer = uniformBuffer;
 	}
 
-	const std::shared_ptr<UniformBuffer>& VertexArray::getUniformBuffer()
+	const std::shared_ptr<UniformBuffer>& VertexArray::GetUniformBuffer()
 	{
 		return m_UniformBuffer;
 	}
 
 #define BUFFER_OFFSET(i) ((char *)nullptr + (i))
-	void VertexArray::addHardcodedVertexBuffer(const std::shared_ptr<VertexBuffer>& vertexBuffer, size_t size)
+	void VertexArray::AddHardcodedVertexBuffer(const std::shared_ptr<VertexBuffer>& vertexBuffer, size_t size)
 	{
 		glBindVertexArray(m_RendererID);
 		vertexBuffer->Bind();
@@ -222,6 +214,17 @@ namespace Frosty
 
 		m_VertexBuffer.push_back(vertexBuffer);
 	}
+
+	void VertexArray::SetCurrentAnim(Luna::Animation& anim)
+	{
+		currentAnim = anim;
+	}
+
+	Luna::Animation VertexArray::GetCurrentAnim()
+	{
+		return currentAnim;
+	}
+
 
 	VertexArray * VertexArray::Create()
 	{
