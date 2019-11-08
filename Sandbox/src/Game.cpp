@@ -24,6 +24,8 @@
 //#include "Systems/PlayerAttackSystem.hpp"
 //#include "Systems/EnemyAttackSystem.hpp"
 //#include "Systems/HealthBarSystem.hpp"
+#include "Systems/BossBehaviorSystem.hpp"
+
 
 
 
@@ -56,6 +58,7 @@ namespace MCS
 		//world->AddSystem<SpawnSystem>();
 		//world->AddSystem<HealthBarSystem>();
 		world->AddSystem<ParticleSystem>();
+		world->AddSystem<BossBehaviorSystem>();
 
 		//MapGenerator map;
 		//map.generateMap();
@@ -140,12 +143,16 @@ namespace MCS
 		world->AddComponent<Frosty::ECS::CPhysics>(wall, Frosty::AssetManager::GetBoundingBox("pCube1"));
 		
 
+
 		auto& enemy = world->CreateEntity({ 27.0f, 1.0f, 25.0f }, { 0.0f, 0.0f, 0.0f }, { 2.0f, 2.0f, 2.0f });
 		world->AddComponent<Frosty::ECS::CMesh>(enemy, Frosty::AssetManager::GetMesh("pCube1"));
 		world->AddComponent<Frosty::ECS::CMaterial>(enemy, Frosty::AssetManager::GetShader("FlatColor"));
 		world->AddComponent<Frosty::ECS::CPhysics>(enemy, Frosty::AssetManager::GetBoundingBox("pCube1"), 6.0f);
 		world->AddComponent<Frosty::ECS::CFollow>(enemy, &playerTransform);
 		world->AddComponent<Frosty::ECS::CHealth>(enemy);
+		auto& bossComponent = world->AddComponent<Frosty::ECS::CBoss>(enemy);
+		bossComponent.TargetList.emplace_back(player);
+		
 
 		//auto& enemy2 = world->CreateEntity({ -27.0f, 1.0f, 25.0f }, { 0.0f, 0.0f, 0.0f }, { 2.0f, 2.0f, 2.0f });
 		//world->AddComponent<Frosty::ECS::CMesh>(enemy2, Frosty::AssetManager::GetMesh("pCube1"));

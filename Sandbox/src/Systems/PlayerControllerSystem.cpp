@@ -1,7 +1,7 @@
 #include <mcspch.hpp>
 #include "PlayerControllerSystem.hpp"
 #include "Frosty/Events/AbilityEvent.hpp"
-
+#include "Frosty/API/AssetManager/AM.hpp"
 namespace MCS
 {
 	void PlayerControllerSystem::Init()
@@ -207,7 +207,7 @@ namespace MCS
 			}
 		}
 	}
-	
+
 	void PlayerControllerSystem::HandleAttack(const glm::vec3& point, size_t index)
 	{
 		if (Frosty::InputManager::IsKeyPressed(m_Player[index]->BasicAttackKey))
@@ -221,24 +221,24 @@ namespace MCS
 #pragma region Healing Potion
 		if (Frosty::InputManager::IsKeyPressed(FY_KEY_1))
 		{
-				// If consumer has healing potion AND comsumer has not full health AND healing timer is bigger than cooldown--> drink healing potion
-				if ((m_Inventory[index]->CurrentHealingPotions > 0) && (m_Health[index]->CurrentHealth < m_Health[index]->MaxHealth) && ((float(std::clock()) - m_Inventory[index]->HealingTimer) * 0.001f >= m_Inventory[index]->HealingCooldown))
+			// If consumer has healing potion AND comsumer has not full health AND healing timer is bigger than cooldown--> drink healing potion
+			if ((m_Inventory[index]->CurrentHealingPotions > 0) && (m_Health[index]->CurrentHealth < m_Health[index]->MaxHealth) && ((float(std::clock()) - m_Inventory[index]->HealingTimer) * 0.001f >= m_Inventory[index]->HealingCooldown))
+			{
+				// If healing won't exceed health capacity --> directly add heal value to health
+				if (m_Inventory[index]->Heal <= (m_Health[index]->MaxHealth - m_Health[index]->CurrentHealth))
 				{
-					// If healing won't exceed health capacity --> directly add heal value to health
-					if (m_Inventory[index]->Heal <= (m_Health[index]->MaxHealth - m_Health[index]->CurrentHealth))
-					{
-						m_Health[index]->CurrentHealth += m_Inventory[index]->Heal;
-					}
-					// But if healing exceeds health capacity --> max health achieved
-					else
-					{
-						m_Health[index]->CurrentHealth = m_Health[index]->MaxHealth;
-					}
-
-					// Decrease number of potions in inventory and activate the timer for cooldown
-					m_Inventory[index]->CurrentHealingPotions--;
-					m_Inventory[index]->HealingTimer = float(std::clock());
+					m_Health[index]->CurrentHealth += m_Inventory[index]->Heal;
 				}
+				// But if healing exceeds health capacity --> max health achieved
+				else
+				{
+					m_Health[index]->CurrentHealth = m_Health[index]->MaxHealth;
+				}
+
+				// Decrease number of potions in inventory and activate the timer for cooldown
+				m_Inventory[index]->CurrentHealingPotions--;
+				m_Inventory[index]->HealingTimer = float(std::clock());
+			}
 		}
 #pragma endregion Healing Potion
 
@@ -309,6 +309,29 @@ namespace MCS
 
 				// Add number of boots in inventory since boots are something the entity is wearing
 				m_Inventory[index]->CurrentSpeedBoots++;
+			}
+		}
+#pragma endregion Speed Boots
+
+#pragma region Bait
+		else if (Frosty::InputManager::IsKeyPressed(FY_KEY_Q))		
+		{
+			// If player has bait AND bait timer is bigger than cooldown--> Lay down bait
+			if ((m_Inventory[index]->CurrentBaitAmount > 0) && ((float(std::clock()) - m_Inventory[index]->BaitTimer) * 0.001f >= m_Inventory[index]->BaitCooldown))
+			{
+				auto& world = Frosty::Application::Get().GetWorld();
+				auto& bait = world->CreateEntity();
+				world->AddComponent<Frosty::ECS::CMesh>(bait, Frosty::AssetManager::GetMesh("scarlet"));
+				auto& material = world->AddComponent<Frosty::ECS::CMaterial>(bait, Frosty::AssetManager::GetShader("Texture2D"));
+				material.DiffuseTexture = Frosty::AssetManager::GetTexture2D("Scarlet_diffuse");
+				auto& transform = world->GetComponent<Frosty::ECS::CTransform>(bait);
+				transform.Position = m_Transform[index]->Position;
+
+				//Send event with bait pos to boss
+				Frosty::EventBus::GetEventBus()->Publish<Frosty::BaitPlacedEvent>(Frosty::BaitPlacedEvent(bait));
+
+				m_Inventory[index]->CurrentBaitAmount--;
+				m_Inventory[index]->BaitTimer = float(std::clock());
 			}
 		}
 #pragma endregion Speed Boots
