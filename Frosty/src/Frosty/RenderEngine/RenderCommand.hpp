@@ -12,6 +12,8 @@ namespace Frosty
 
 		static void SetClearColor(const glm::vec4& color);
 		static void Clear();
+		static void EnableBackfaceCulling();
+		static void DisableBackfaceCulling();
 
 		//static void DrawIndexed(const std::shared_ptr<VertexArray>& vertexArray);
 		static void Draw2D(const std::shared_ptr<VertexArray>& vertexArray);

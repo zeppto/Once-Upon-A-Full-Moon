@@ -660,14 +660,14 @@ namespace MCS
 					if (ImGui::CollapsingHeader("Particle System")) {
 						Frosty::ECS::CParticleSystem& comp = world->GetComponent<Frosty::ECS::CParticleSystem>(m_SelectedEntity); //Please don't use auto. It's not clear what's returned.
 						ImGui::BeginChild("CParticleSystem", ImVec2(EDITOR_INSPECTOR_WIDTH, 245), true);
-						ImGui::Text("Active Particles: %i", comp.particleCount);
+						ImGui::Text("Active particles: %i", comp.particleCount);
 						ImGui::Checkbox("Preview", &comp.preview);
 						ImGui::ColorEdit4("Color", glm::value_ptr(comp.particleSystemColor));
-						ImGui::SliderInt("Particle Count", (int*)&comp.particleCount, 1, comp.MAX_PARTICLE_COUNT);
+						ImGui::SliderInt("Particle count", (int*)&comp.particleCount, 1, comp.MAX_PARTICLE_COUNT);
 						ImGui::InputFloat("Size", &comp.particleSize);
-						ImGui::InputFloat("Maximum Size", &comp.startParticleSize);
-						ImGui::InputFloat("Minimum Size", &comp.endParticleSize);
-						ImGui::InputFloat("Emit Rate", &comp.emitRate, 0.0f);
+						ImGui::InputFloat("Start size", &comp.startParticleSize);
+						ImGui::InputFloat("End size", &comp.endParticleSize);
+						ImGui::InputFloat("Emit rate", &comp.emitRate, 0.0f);
 						ImGui::EndChild();
 					}
 				}
