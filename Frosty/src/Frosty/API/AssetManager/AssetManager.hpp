@@ -80,8 +80,6 @@ namespace Frosty
 
 		static bool s_AutoLoad;
 
-		static std::vector<std::string> testStr;
-
 		friend class Application;
 		using directory_iterator = std::filesystem::directory_iterator;
 
@@ -124,6 +122,11 @@ namespace Frosty
 		//Use Mesh name
 		inline static std::shared_ptr<Luna::BoundingBox>& GetBoundingBox(const std::string& MeshName) { FY_CORE_ASSERT(s_BoundingBoxes.count(MeshName), "Texture2D error!\n{0} doesn't exist!", MeshName); return s_BoundingBoxes[MeshName]; }
 		inline static std::map<std::string, std::shared_ptr<Luna::BoundingBox>>& GetBoundingBoxes() { return s_BoundingBoxes; }
+
+		static std::vector<std::string> GetMeshNames();
+		static std::vector<std::string> GetShaderNames();
+		static std::vector<std::string> GetTexturesNames();
+		static std::vector<std::string> GetBoundingBoxNames();
 
 	private:	//Functions
 

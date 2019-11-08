@@ -190,7 +190,6 @@ namespace Frosty
 
 		while (m_Running)
 		{
-
 			/// Frame Start
 			Time::OnUpdate();
 

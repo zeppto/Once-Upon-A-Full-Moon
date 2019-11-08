@@ -16,13 +16,10 @@
 #include "Systems/BasicAttackSystem.hpp"
 #include "Systems/CombatSystem.hpp"
 #include "Systems/DestroySystem.hpp"
-#include "Systems/ArrowSystem.hpp"
-#include "Systems/SwordSystem.hpp"
+#include "Systems/WeaponSystem.hpp"
 #include "Systems/NavigationSystem.hpp"
 #include "Systems/ParticleSystem.hpp"
 #include "Systems/LevelSystem.hpp"
-//#include "Systems/PlayerAttackSystem.hpp"
-//#include "Systems/EnemyAttackSystem.hpp"
 //#include "Systems/HealthBarSystem.hpp"
 #include "Systems/BossBehaviorSystem.hpp"
 
@@ -47,15 +44,9 @@ namespace MCS
 		world->AddSystem<BasicAttackSystem>();
 		world->AddSystem<CombatSystem>();
 		world->AddSystem<DestroySystem>();
-		world->AddSystem<ArrowSystem>();
-		world->AddSystem<SwordSystem>();
+		world->AddSystem<WeaponSystem>();
 		Frosty::ECS::BaseSystem* retSystem = world->AddSystem<NavigationSystem>();
 		NavigationSystem* navSystem = dynamic_cast<NavigationSystem*>(retSystem);
-		//world->AddSystem<CollisionSystem>();		// Have this after MovementSystem
-		//world->AddSystem<DashSystem>();
-		//world->AddSystem<PlayerAttackSystem>();
-		//world->AddSystem<EnemyAttackSystem>();
-		//world->AddSystem<SpawnSystem>();
 		//world->AddSystem<HealthBarSystem>();
 		world->AddSystem<ParticleSystem>();
 		world->AddSystem<BossBehaviorSystem>();
@@ -129,9 +120,9 @@ namespace MCS
 		playerMat.NormalTexture = Frosty::AssetManager::GetTexture2D("Scarlet_normal");
 		playerMat.SpecularTexture = Frosty::AssetManager::GetTexture2D("Scarlet_specular");
 		world->AddComponent<Frosty::ECS::CPlayer>(player);
-		world->AddComponent<Frosty::ECS::CPhysics>(player, Frosty::AssetManager::GetBoundingBox("scarlet"), 20.0f);
+		world->AddComponent<Frosty::ECS::CPhysics>(player, Frosty::AssetManager::GetBoundingBox("scarlet"), 10.0f);
 		world->AddComponent<Frosty::ECS::CDash>(player);
-		world->AddComponent<Frosty::ECS::CBasicAttack>(player, Frosty::ECS::CBasicAttack::AttackType::Range);
+		world->AddComponent<Frosty::ECS::CWeapon>(player, Frosty::ECS::CWeapon::WeaponType::Sword, 10.f);
 		world->AddComponent<Frosty::ECS::CHealth>(player);
 		world->AddComponent<Frosty::ECS::CInventory>(player);
 		auto& camEntity = world->GetSceneCamera();
@@ -148,6 +139,7 @@ namespace MCS
 		world->AddComponent<Frosty::ECS::CMesh>(enemy, Frosty::AssetManager::GetMesh("pCube1"));
 		world->AddComponent<Frosty::ECS::CMaterial>(enemy, Frosty::AssetManager::GetShader("FlatColor"));
 		world->AddComponent<Frosty::ECS::CPhysics>(enemy, Frosty::AssetManager::GetBoundingBox("pCube1"), 6.0f);
+		world->AddComponent<Frosty::ECS::CEnemy>(enemy);
 		world->AddComponent<Frosty::ECS::CFollow>(enemy, &playerTransform);
 		world->AddComponent<Frosty::ECS::CHealth>(enemy);
 		auto& bossComponent = world->AddComponent<Frosty::ECS::CBoss>(enemy);
@@ -158,6 +150,7 @@ namespace MCS
 		//world->AddComponent<Frosty::ECS::CMesh>(enemy2, Frosty::AssetManager::GetMesh("pCube1"));
 		//world->AddComponent<Frosty::ECS::CMaterial>(enemy2, Frosty::AssetManager::GetShader("FlatColor"));
 		//world->AddComponent<Frosty::ECS::CPhysics>(enemy2, Frosty::AssetManager::GetBoundingBox("pCube1"), 6.0f);
+		//world->AddComponent<Frosty::ECS::CEnemy>(enemy);
 		//world->AddComponent<Frosty::ECS::CFollow>(enemy2, &playerTransform);
 		//world->AddComponent<Frosty::ECS::CHealth>(enemy2);
 

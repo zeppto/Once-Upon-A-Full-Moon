@@ -47,6 +47,11 @@ namespace Frosty
 		glBindVertexArray(0);
 	}
 
+	//void VertexArray::AddShaderStorageBuffer()
+	//{
+
+	//}
+
 	void VertexArray::AddVertexBuffer(const std::shared_ptr<VertexBuffer>& vertexBuffer)
 	{
 		FY_CORE_ASSERT(vertexBuffer->GetLayout().GetElements().size(), "Vertex buffer has no layout!");

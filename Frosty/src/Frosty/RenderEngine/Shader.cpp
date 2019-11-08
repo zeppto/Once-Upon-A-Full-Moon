@@ -161,6 +161,11 @@ namespace Frosty
 		glUniformBlockBinding(m_RendererID, jointDataIndex, 1);
 	}
 	
+	uint32_t Shader::GetID() const
+	{
+		return m_RendererID;
+	}
+	
 	std::string Shader::ReadFile(const std::string& filepath)
 	{
 		std::string result = "";
