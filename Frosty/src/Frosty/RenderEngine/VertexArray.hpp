@@ -26,13 +26,14 @@ namespace Frosty
 		AnimationHandler* getAnimationHandlerPtr() { return &meshAnims; }
 		void SetUniformBuffer(std::shared_ptr<UniformBuffer>& uniformBuffer);
 		const std::shared_ptr<UniformBuffer>& getUniformBuffer();
+		void addHardcodedVertexBuffer(const std::shared_ptr<VertexBuffer>& vertexBuffer, size_t size);
 		//TEMP FUNCS END
 		static VertexArray* Create();
 	private:
 		uint32_t m_RendererID;
 		std::vector<std::shared_ptr<VertexBuffer>> m_VertexBuffer;
 		std::shared_ptr<IndexBuffer> m_IndexBuffer;
-		//TEMP VARIABLE SHOULD BE MOVED TO MESH CLASS
+		//TEMP VARIABLES SHOULD BE MOVED TO MESH CLASS
 		AnimationHandler meshAnims;
 		Luna::Animation currentAnim;
 		std::shared_ptr<UniformBuffer> m_UniformBuffer;

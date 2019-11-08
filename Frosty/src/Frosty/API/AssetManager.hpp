@@ -20,7 +20,6 @@ namespace Frosty
 
 		float weights[4] = { 0.0f };
 		int joints[4] = { 0 };
-
 	};
 
 	class AssetManager

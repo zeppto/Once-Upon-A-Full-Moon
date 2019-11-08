@@ -5,12 +5,20 @@
 #include <map>
 #include <Windows.h>
 #include "glm/glm.hpp"
-#include "glm/gtc/quaternion.hpp"
+#include "glm/gtx/quaternion.hpp"
 #include "glm/ext.hpp"
 #include <glm/gtc/matrix_transform.hpp>
 
+#define MAX_BONES 64
+
 namespace Frosty
 {
+
+	struct JointTransforms
+	{
+		glm::mat4 jTrans[MAX_BONES];
+	};
+
 	class AnimationHandler
 	{
 	private:
@@ -18,8 +26,8 @@ namespace Frosty
 		std::vector<Luna::Joint> jointVec;
 		std::map<uint16_t, std::vector<Luna::Keyframe>> keyFrameMap;
 
+		JointTransforms skinData;
 		//Temp. This should either be an input or a dynamically allocated array.
-		glm::mat4 skinData[64];
 
 	public:
 		AnimationHandler();
@@ -30,12 +38,14 @@ namespace Frosty
 		void setJointVec(std::vector<Luna::Joint> jVec );
 		void setKeyframeMap(std::map<uint16_t, std::vector<Luna::Keyframe>>* kMap);
 
-		glm::mat4 * getSkinData();
+		void getSkinData(void * &data);
+
 		int getNrOfJoints();
 
 		void CalculateAnimMatrix(float * currentAnimTime);
 
 	private:
+		void prepRotation(float arr[4]);
 	};
 }
 

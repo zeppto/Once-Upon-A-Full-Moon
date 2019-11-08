@@ -178,12 +178,23 @@ namespace Frosty
 		mat->UseShader->AssignUniformBlock("a_jointDataBlock");
 
 		vertexArray->getAnimationHandlerPtr()->CalculateAnimMatrix(&dt);
+		void* skinDataPtr = nullptr;
+		vertexArray->getAnimationHandlerPtr()->getSkinData(skinDataPtr);
 		int MaxBones = 64;
-		vertexArray->getUniformBuffer()->BindUpdate(vertexArray->getAnimationHandlerPtr()->getSkinData(), MaxBones);
+
+		//glm::mat4 * stuff; 
+		//stuff = vertexArray->getAnimationHandlerPtr()->getSkinData();
+
+		//for (int i = 0; i < 64; i++)
+		//{
+		//	glm::mat4 current = stuff[i];
+		//}
+
+		vertexArray->getUniformBuffer()->BindUpdate(skinDataPtr, MaxBones);
 
 		vertexArray->Bind();
 		RenderCommand::Draw2D(vertexArray);
-		dt += 0.003;
+		dt += Frosty::Time::DeltaTime();
 	}
 
 }

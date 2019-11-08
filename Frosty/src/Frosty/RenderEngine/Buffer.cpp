@@ -118,7 +118,7 @@ namespace Frosty
 	{
 		glBindBuffer(GL_UNIFORM_BUFFER, m_RendererID);
 	}
-	void UniformBuffer::BindUpdate(glm::mat4* boneData, int len)
+	void UniformBuffer::BindUpdate(void * boneData, int len)
 	{
 		glBindBufferBase(GL_UNIFORM_BUFFER, 1, m_RendererID);
 		glBufferData(GL_UNIFORM_BUFFER, len * sizeof(glm::mat4), boneData, GL_STATIC_DRAW);

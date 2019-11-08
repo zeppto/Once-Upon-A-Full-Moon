@@ -108,6 +108,86 @@ namespace Frosty
 		return m_UniformBuffer;
 	}
 
+#define BUFFER_OFFSET(i) ((char *)nullptr + (i))
+	void VertexArray::addHardcodedVertexBuffer(const std::shared_ptr<VertexBuffer>& vertexBuffer, size_t size)
+	{
+		glBindVertexArray(m_RendererID);
+		vertexBuffer->Bind();
+
+		// this activates the first and second attributes of this VAO
+		// think of "attributes" as inputs to the Vertex Shader
+		glEnableVertexAttribArray(0);
+		glEnableVertexAttribArray(1);
+		glEnableVertexAttribArray(2);
+		glEnableVertexAttribArray(3);
+		glEnableVertexAttribArray(4);
+		glEnableVertexAttribArray(5);
+		glEnableVertexAttribArray(6);
+
+		glVertexAttribPointer(
+			0,							// location in shader
+			3,							// how many elements of type (see next argument)
+			GL_FLOAT,					// type of each element
+			GL_FALSE,					// integers will be normalized to [-1,1] or [0,1] when read...
+			size,		// distance between two vertices in memory (stride)
+			BUFFER_OFFSET(0)			// offset of FIRST vertex in the list.
+		);
+
+		glVertexAttribPointer(
+			1,
+			2,
+			GL_FLOAT,
+			GL_FALSE,
+			size,
+			BUFFER_OFFSET(sizeof(float) * 3)
+		);
+
+		glVertexAttribPointer(
+			2,
+			3,
+			GL_FLOAT,
+			GL_FALSE,
+			size,
+			BUFFER_OFFSET(sizeof(float) * 5)
+		);
+
+		glVertexAttribPointer(
+			3,
+			3,
+			GL_FLOAT,
+			GL_FALSE,
+			size,
+			BUFFER_OFFSET(sizeof(float) * 8)
+		);
+
+		glVertexAttribPointer(
+			4,
+			3,
+			GL_FLOAT,
+			GL_FALSE,
+			size,
+			BUFFER_OFFSET(sizeof(float) * 11)
+		);
+
+		glVertexAttribPointer(
+			5,
+			4,
+			GL_FLOAT,
+			GL_FALSE,
+			size,
+			BUFFER_OFFSET(sizeof(float) * 14)
+		);
+		glVertexAttribIPointer(
+			6,
+			4,
+			GL_INT,
+			size,
+			BUFFER_OFFSET(sizeof(float) * 14 + 4 * sizeof(int))
+		);
+
+		m_VertexBuffer.push_back(vertexBuffer);
+	}
+
 	VertexArray * VertexArray::Create()
 	{
 		return FY_NEW VertexArray();

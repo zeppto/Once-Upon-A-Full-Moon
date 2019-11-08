@@ -237,7 +237,7 @@ public:
 			if (m_Materials[i]->UseShader->GetName() == "AnimShader" && m_Materials[i]->DiffuseTexture) m_Materials[i]->DiffuseTexture->Bind();
 			if (m_Materials[i]->UseShader->GetName() == "AnimShader" && m_Materials[i]->NormalTexture) m_Materials[i]->NormalTexture->Bind(1);
 			if (m_Materials[i]->UseShader->GetName() == "AnimShader" && m_Materials[i]->SpecularTexture) m_Materials[i]->SpecularTexture->Bind(2);
-
+			
 			if (m_Materials[i]->UseShader->GetName() == "AnimShader")
 			{
 				Frosty::Renderer::animSubmit(m_Materials[i], m_Meshes[i]->Mesh, transform);
