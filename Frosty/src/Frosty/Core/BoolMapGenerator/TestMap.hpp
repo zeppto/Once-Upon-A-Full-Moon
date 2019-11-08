@@ -8,6 +8,8 @@ namespace Frosty
 
 #define MAXEXITS (uint8_t)4
 #define DEADENDLENGTH (uint16_t)2;
+const Direction STARTDIR = North;
+	
 
 	enum Direction{
 		North = (int8_t)3,
@@ -347,19 +349,52 @@ namespace Frosty
 
 
 
-	//class Head : public BasePlacer //start here
-	//{
+	class Head : public BasePlacer //start here
+	{
 
-	//private:
+	private:
 	 
 
-	//public:
-	//	inline Head() : BasePlacer(s_GroupId++) {}
+	public:
+		inline Head(const Direction& CurrentDir) : BasePlacer(CurrentDir,s_GroupId++,1) {}
+		inline bool Walk(std::shared_ptr<Node>& in_ptr)
+		{
+			bool returnValue = false;
+			if (!stopWalk)
+			{
+				if (in_ptr == nullptr)
+				{
+					in_ptr = std::make_shared<Node>(FY_NEW Node(CreateNode()));
+					m_CurrentNode = in_ptr;
+					returnValue = true;
+					for (uint8_t i = 0; i < (MAXEXITS - 1); i++)
+					{
+						m_SwappedDir[i] = 0;
+					}
+					m_Steps++;
+				}
+				else
+				{
+					//if (in_ptr->IsConnectAble() && in_ptr->GetGroupID() != m_GroupID) // TODO
+					if (in_ptr->IsConnectAble())
+					{
+						in_ptr->AddExit(m_CurrentDir);
+						m_CurrentNode = in_ptr;
+						stopWalk = true;
+					}
+					else
+					{
+						returnValue = false;
+					}
+				}
+			}
+			return returnValue;
+
+		}
 
 
 
-
-	//};
+	};
 
 
 
@@ -373,11 +408,13 @@ namespace Frosty
 
 
 		std::vector<std::vector<std::shared_ptr<Node>>> m_Grid;
-
+		uint16_t m_Width;
+		uint16_t m_Height;
+		std::string m_Seed;
 
 
 	public:
-		inline NodeMap(const uint16_t& width, const uint16_t& heigth, std::string Seed = "BaseSeed")
+		inline NodeMap(const uint16_t& width, const uint16_t& heigth, std::string Seed = "BaseSeed") : m_Seed(Seed), m_Width(width), m_Height(heigth)
 		{
 			std::string::size_type ty;
 			srand(std::stoi(Seed, &ty));
@@ -393,6 +430,22 @@ namespace Frosty
 
 		}
 		inline ~NodeMap() {}
+
+		inline std::vector<std::vector<std::shared_ptr<Node>>> GetMap() {return m_Grid;}
+		inline void GenereateMap()
+		{
+			int cenX = m_Width / 2;
+			int cenY = m_Height / 2;
+			
+
+			Head StarHead(STARTDIR);
+			m_Grid[cenX][cenY] = std::make_shared<Node>(Node(North,0,0));
+			
+
+
+		
+		
+		}
 
 
 
