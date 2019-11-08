@@ -63,12 +63,15 @@ namespace MCS
 
 			Frosty::BufferLayout layout =
 			{
-				{ Frosty::ShaderDataType::Float4,	"pos" },
-				{ Frosty::ShaderDataType::Float4,	"color" },
-				{ Frosty::ShaderDataType::Float4,	"dir" },
-				{ Frosty::ShaderDataType::Float4,	"startPos" },
-				{ Frosty::ShaderDataType::Float,	"lifetime" },
-				{ Frosty::ShaderDataType::Float,	"speed" },
+				{ Frosty::ShaderDataType::Float4,	"pos"		},
+				{ Frosty::ShaderDataType::Float4,	"color"		},
+				{ Frosty::ShaderDataType::Float4,	"dir"		},
+				{ Frosty::ShaderDataType::Float4,	"startPos"	},
+				{ Frosty::ShaderDataType::Float,	"lifetime"	},
+				{ Frosty::ShaderDataType::Float,	"speed"		},
+				{ Frosty::ShaderDataType::Float,	"startSize" },
+				{ Frosty::ShaderDataType::Float,	"endSize"	},
+				{ Frosty::ShaderDataType::Float,	"size"		}
 				//{ Frosty::ShaderDataType::Int2, "padding"}
 			};
 
@@ -106,6 +109,13 @@ namespace MCS
 
 	void ParticleSystem::UpdateParticleSystem(uint32_t systemIndex)
 	{
+		m_ParticleSystem[systemIndex]->timer -= 1.0f * Frosty::Time::DeltaTime(); //Update internal timer
+		if (m_ParticleSystem[systemIndex]->particleCount < m_ParticleSystem[systemIndex]->MAX_PARTICLE_COUNT && m_ParticleSystem[systemIndex]->timer <= 0)
+		{
+			m_ParticleSystem[systemIndex]->particleCount += 1;
+			m_ParticleSystem[systemIndex]->timer = m_ParticleSystem[systemIndex]->emitRate;
+		}
+
 		for (size_t j = 0; j < m_ParticleSystem[systemIndex]->particleCount; j++)
 		{
 			if (m_ParticleSystem[systemIndex]->particles[j].lifetime <= 0.0f)
@@ -127,9 +137,20 @@ namespace MCS
 			m_ParticleSystem[systemIndex]->SetParticlesColor(m_ParticleSystem[systemIndex]->particleSystemColor.r, m_ParticleSystem[systemIndex]->particleSystemColor.g, m_ParticleSystem[systemIndex]->particleSystemColor.b);
 			UpdateBuffer(systemIndex);
 		}
+		if (m_ParticleSystem[systemIndex]->particles[0].startSize != m_ParticleSystem[systemIndex]->particleSize) { //This is pretty temporary. Right now the particle size is the start size
+			m_ParticleSystem[systemIndex]->SetParticlesSize(m_ParticleSystem[systemIndex]->particleSize);
+			UpdateBuffer(systemIndex);
+		}
 
 		if (m_ParticleSystem[systemIndex]->preview)
 		{
+			m_ParticleSystem[systemIndex]->timer -= 1.0f * Frosty::Time::DeltaTime(); //Update internal timer
+			if (m_ParticleSystem[systemIndex]->particleCount < m_ParticleSystem[systemIndex]->MAX_PARTICLE_COUNT && m_ParticleSystem[systemIndex]->timer <= 0)
+			{
+				m_ParticleSystem[systemIndex]->particleCount += 1;
+				m_ParticleSystem[systemIndex]->timer = m_ParticleSystem[systemIndex]->emitRate;
+			}
+
 			for (size_t j = 0; j < m_ParticleSystem[systemIndex]->particleCount; j++)
 			{
 				if (m_ParticleSystem[systemIndex]->particles[j].lifetime <= 0.0f)
@@ -145,7 +166,7 @@ namespace MCS
 		}
 	}
 
-	void MCS::ParticleSystem::UpdateParticle(uint32_t systemIndex, uint32_t index)
+	void ParticleSystem::UpdateParticle(uint32_t systemIndex, uint32_t index)
 	{
 		m_ParticleSystem[systemIndex]->particles[index].position -= (m_ParticleSystem[systemIndex]->particles[index].direction * m_ParticleSystem[systemIndex]->particles[index].speed) * Frosty::Time::DeltaTime();
 		
@@ -155,12 +176,23 @@ namespace MCS
 		}
 		if (m_ParticleSystem[systemIndex]->particles[index].lifetime < 1.1) {
 			m_ParticleSystem[systemIndex]->particles[index].color.a -= 1.0 * Frosty::Time::DeltaTime();
+
+			//Update particle size
+			if (m_ParticleSystem[systemIndex]->particles[index].size > m_ParticleSystem[systemIndex]->endParticleSize)
+			{
+				m_ParticleSystem[systemIndex]->particles[index].size -= 1.0f * Frosty::Time::DeltaTime();
+			}
+			else if (m_ParticleSystem[systemIndex]->particles[index].size < m_ParticleSystem[systemIndex]->endParticleSize)
+			{
+				m_ParticleSystem[systemIndex]->particles[index].size += 1.0f * Frosty::Time::DeltaTime();
+			}
 		}
 	}
 
 	void ParticleSystem::ResetParticle(uint32_t systemIndex, uint32_t index)
 	{
 		m_ParticleSystem[systemIndex]->particles[index].position = m_ParticleSystem[systemIndex]->particles[index].startPos;
+		m_ParticleSystem[systemIndex]->particles[index].size = m_ParticleSystem[systemIndex]->particles[index].startSize;
 	}
 
 	void ParticleSystem::UpdateBuffer(uint32_t systemIndex)
