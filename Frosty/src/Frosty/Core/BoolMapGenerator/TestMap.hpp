@@ -7,6 +7,7 @@ namespace Frosty
 {
 
 #define MAXEXITS (uint8_t)4
+#define DEADENDLENGTH (uint16_t)2;
 
 	enum Direction{
 		North = (int8_t)3,
@@ -53,6 +54,9 @@ namespace Frosty
 		bool m_ConnectAble;
 		Direction m_CurrentDir;
 
+		//temp
+		bool stopWalk = false;
+
 		bool m_SwappedDir[MAXEXITS-1];
 
 		std::shared_ptr<Node> m_CurrentNode;
@@ -61,15 +65,22 @@ namespace Frosty
 
 
 	public:
-		inline BasePlacer(const Direction& CurrentDir,const uint16_t& Id, const bool& ConnectAble) : m_CurrentDir(CurrentDir),m_GroupID(Id), m_Steps(0), m_ConnectAble(ConnectAble), m_CurrentNode(nullptr), m_NrSwappedDir(0){}
+		inline BasePlacer(const Direction& CurrentDir,const uint16_t& Id, const bool& ConnectAble) : 
+			m_CurrentDir(CurrentDir),
+			m_GroupID(Id), 
+			m_Steps(0), 
+			m_ConnectAble(ConnectAble), 
+			m_CurrentNode(nullptr)
+			{}
 		virtual bool Walk(std::shared_ptr<Node>& in_ptr) = 0;
 
 		inline bool operator ==(const BasePlacer& other) { return (other.m_GroupID == m_GroupID); }
 		inline Node& CreateNode() { return Node((Direction)~m_CurrentDir, m_GroupID, m_ConnectAble); }
-		inline void ChangeDir(const uint8_t& modLeft, const uint8_t& modForward, const uint8_t& modRight)
+		inline bool ChangeDir(const uint8_t& modLeft, const uint8_t& modForward, const uint8_t& modRight)
 		{
 			LocalDirection locDir;
-
+			bool returnValue = false;
+			bool canChangeDir = true;
 			//0 check
 			if (modRight == modForward == modLeft)
 			{
@@ -81,6 +92,8 @@ namespace Frosty
 				uint8_t Right = rand() % modRight;
 				uint8_t Forward = rand() % modForward;
 
+				//Fix this later /optimize
+
 				while (Left == Right == Forward)
 				{
 					Left = rand() % modLeft;
@@ -88,16 +101,151 @@ namespace Frosty
 					Forward = rand() % modLeft;
 				}
 
+				if (Left < Right)
+				{
+					locDir = LocalDirection::Right;
+				}
+				else
+				{
+					locDir = LocalDirection::Left;
+				}
+
+				if (locDir == LocalDirection::Right)
+				{
+					if (Right < Forward)
+					{
+						locDir = LocalDirection::Forward;
+					}
+				}
+				else
+				{
+					if (Left < Forward)
+					{
+						locDir = LocalDirection::Forward;
+					}
+				}
+
+				if (locDir == LocalDirection::Right && m_SwappedDir[LocalDirection::Right])
+				{
+					if (m_SwappedDir[LocalDirection::Left] && m_SwappedDir[LocalDirection::Forward])
+					{
+						canChangeDir = false;
+					}
+					else if (m_SwappedDir[LocalDirection::Left])
+					{
+						locDir = LocalDirection::Forward;
+					}
+					else
+					{
+						locDir = LocalDirection::Left;
+					}
+				}
+				else if (locDir == LocalDirection::Left && m_SwappedDir[LocalDirection::Left])
+				{
+					if (m_SwappedDir[LocalDirection::Right] && m_SwappedDir[LocalDirection::Forward])
+					{
+						canChangeDir = false;
+					}
+					else if (m_SwappedDir[LocalDirection::Right])
+					{
+						locDir = LocalDirection::Forward;
+					}
+					else
+					{
+						locDir = LocalDirection::Right;
+					}
+				}
+				else if (locDir == LocalDirection::Forward && m_SwappedDir[LocalDirection::Forward])
+				{
+					if (m_SwappedDir[LocalDirection::Right] && m_SwappedDir[LocalDirection::Left])
+					{
+						canChangeDir = false;
+					}
+					else if (m_SwappedDir[LocalDirection::Right])
+					{
+						locDir = LocalDirection::Left;
+					}
+					else
+					{
+						locDir = LocalDirection::Right;
+					}
+				}
+
+
+
+				if (locDir == LocalDirection::Right && !m_SwappedDir[LocalDirection::Right])
+				{
+					m_SwappedDir[LocalDirection::Right] = true;
+				}
+
+				else if (locDir == LocalDirection::Forward && !m_SwappedDir[LocalDirection::Forward])
+				{
+					m_SwappedDir[LocalDirection::Forward] = true;
+				}
+
+				else if (locDir == LocalDirection::Left && !m_SwappedDir[LocalDirection::Left])
+				{
+					m_SwappedDir[LocalDirection::Left] = true;
+				}
+
+
+
 
 			}
+			if(canChangeDir)
+			{
+			//Fix this later /optimize
+			if (m_CurrentDir == North)
+			{
+				if (locDir == LocalDirection::Right)
+				{
+					m_CurrentDir = East;
+				}
+				else if (locDir == LocalDirection::Left)
+				{
+					m_CurrentDir = West;
+				}
+			}
 
-			//start here Translate Local Dir
-				m_CurrentDir
-			
-		
-		
+			else if (m_CurrentDir == South)
+			{
+				if (locDir == LocalDirection::Right)
+				{
+					m_CurrentDir = West;
+				}
+				else if (locDir == LocalDirection::Left)
+				{
+					m_CurrentDir = East;
+				}
+			}
+
+			else if (m_CurrentDir == East)
+			{
+				if (locDir == LocalDirection::Right)
+				{
+					m_CurrentDir = South;
+				}
+				else if (locDir == LocalDirection::Left)
+				{
+					m_CurrentDir = North;
+				}
+			}
+
+			else if (m_CurrentDir == West)
+			{
+				if (locDir == LocalDirection::Right)
+				{
+					m_CurrentDir = North;
+				}
+				else if (locDir == LocalDirection::Left)
+				{
+					m_CurrentDir = South;
+				}
+			}
+			returnValue = true;
 		}
-
+			return returnValue;
+		}
 	};
 
 	uint16_t BasePlacer::s_GroupId = 0;
@@ -115,14 +263,36 @@ namespace Frosty
 
 		inline bool Walk(std::shared_ptr<Node>& in_ptr)
 		{
-			if (in_ptr == nullptr)
+			bool returnValue = false;
+			if (!stopWalk)
 			{
-				in_ptr = std::make_shared<Node>(FY_NEW Node(CreateNode()));
+				if (in_ptr == nullptr)
+				{
+					in_ptr = std::make_shared<Node>(FY_NEW Node(CreateNode()));
+					m_CurrentNode = in_ptr;
+					returnValue = true;
+					for (uint8_t i = 0; i < (MAXEXITS - 1); i++)
+					{
+						m_SwappedDir[i] = 0;
+					}
+					m_Steps++;
+				}
+				else
+				{
+					//if (in_ptr->IsConnectAble() && in_ptr->GetGroupID() != m_GroupID) // TODO
+					if (in_ptr->IsConnectAble())
+					{
+						in_ptr->AddExit(m_CurrentDir);
+						m_CurrentNode = in_ptr;
+						stopWalk = true;
+					}
+					else
+					{
+						returnValue = false;
+					}
+				}
 			}
-			else
-			{
-
-			}
+			return returnValue;
 		}
 
 
@@ -131,33 +301,65 @@ namespace Frosty
 
 	class Loner : public BasePlacer
 	{
+		inline Loner(const Direction& direction, const uint8_t& GroupID, const bool& connectAble = 0) : BasePlacer(direction, GroupID, connectAble) {}
 
+		inline bool Walk(std::shared_ptr<Node>& in_ptr)
+		{
+			bool returnValue = false;
+			if (!stopWalk)
+			{
+				if (in_ptr == nullptr)
+				{
+					uint16_t k = DEADENDLENGTH; //??
+					if (m_Steps < k)
+					{
+						in_ptr = std::make_shared<Node>(FY_NEW Node(CreateNode()));
+						m_CurrentNode = in_ptr;
+						returnValue = true;
+						for (uint8_t i = 0; i < (MAXEXITS - 1); i++)
+						{
+							m_SwappedDir[i] = 0;
+						}
+						m_Steps++;
+					}
+					else
+					{
+						stopWalk = true;
+					}
+				}
+				else
+				{
+					stopWalk = true;
+				}
+			}
+			return returnValue;
+		}
 
 
 	};
 
-	class HomeSeeker : public BasePlacer
-	{
+	//class HomeSeeker : public BasePlacer //TODO
+	//{
 
 
 
-	};
+	//};
 
 
 
-	class Head : public BasePlacer
-	{
+	//class Head : public BasePlacer //start here
+	//{
 
-	private:
+	//private:
+	 
 
-
-	public:
-		inline Head() : BasePlacer(s_GroupId++) {}
-
-
+	//public:
+	//	inline Head() : BasePlacer(s_GroupId++) {}
 
 
-	};
+
+
+	//};
 
 
 
@@ -170,7 +372,7 @@ namespace Frosty
 	private:
 
 
-		std::vector<std::vector<int>> m_Grid;
+		std::vector<std::vector<std::shared_ptr<Node>>> m_Grid;
 
 
 
@@ -183,10 +385,14 @@ namespace Frosty
 			for (int i = 0; i < width; i++)
 			{
 				m_Grid[i].resize(heigth);
+				for (int j = 0; j < m_Grid[i].size(); j++)
+				{
+					m_Grid[i][j] = nullptr;
+				}
 			}
 
 		}
-		~NodeMap();
+		inline ~NodeMap() {}
 
 
 

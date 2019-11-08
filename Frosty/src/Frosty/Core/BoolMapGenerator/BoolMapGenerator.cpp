@@ -103,7 +103,8 @@ namespace Frosty
 		InitiateRenderData();
 
 
-		unsigned int RenderModelID;
+		unsigned int VertID;
+		unsigned int IndID;
 
 		//temp
 		//glBindFramebuffer(GL_FRAMEBUFFER, s_GBuffer);
@@ -124,15 +125,19 @@ namespace Frosty
 				0.0f,  0.0f,  0.0f
 			};
 
-
+			//TODO: Bind Id instead
 
 			glBindVertexArray(0);
-			glGenVertexArrays(1, &RenderModelID);
+			glGenVertexArrays(1, &VertID);
 
-			glBindVertexArray(RenderModelID);
-			glBindBuffer(GL_ARRAY_BUFFER, RenderModelID);
-			glBufferData(GL_ARRAY_BUFFER, sizeof(tempVert), tempVert, GL_STATIC_DRAW);
+			glBindVertexArray(VertID);
+			glBindBuffer(GL_ARRAY_BUFFER, VertID);
+			glBufferData(GL_ARRAY_BUFFER, sizeof(float)* BatchIt->Verticies.size(), &BatchIt->Verticies[0], GL_STATIC_DRAW);
 		//	glDisableVertexAttribArray(0);
+
+			glGenBuffers(1, &IndID);
+			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IndID);
+			glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * BatchIt->Indices.size(), &BatchIt->Indices[0], GL_STATIC_DRAW);
 
 			glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
 			glEnableVertexAttribArray(0);
@@ -144,15 +149,17 @@ namespace Frosty
 			{
 				//glBindVertexArray(RenderModelID);
 				glUniformMatrix4fv(locationMM, 1, GL_FALSE, &(*PosIt)[0][0]);
-				glDrawArrays(GL_TRIANGLES, 0, 3);
+				//glDrawArrays(GL_TRIANGLES, 0, 3);
+				glDrawElements(GL_TRIANGLES, BatchIt->Indices.size(), GL_UNSIGNED_INT, 0);
 				PosIt++;
 			}
 			BatchIt++;
 
 			//glBindBuffer(GL_ARRAY_BUFFER, 0);
 			glDisableVertexAttribArray(0);
+			glDeleteBuffers(1, &IndID);
 		
-			glDeleteVertexArrays(1, &RenderModelID);
+			glDeleteVertexArrays(1, &VertID);
 			glBindBuffer(GL_ARRAY_BUFFER, 0);
 			glBindVertexArray(0);
 		}

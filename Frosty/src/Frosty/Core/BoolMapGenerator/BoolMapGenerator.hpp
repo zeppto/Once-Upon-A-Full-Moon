@@ -15,7 +15,7 @@ namespace Frosty
 	struct ModelBatch
 	{
 		std::vector<float> Verticies;
-		std::vector<float> Indices;
+		std::vector<unsigned int> Indices;
 		std::list<glm::mat4> Transforms;
 	};
 
