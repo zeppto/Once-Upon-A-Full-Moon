@@ -15,6 +15,13 @@ namespace Frosty
 		South = (int8_t)0
 	};
 
+	enum LocalDirection
+	{
+		Left = (int8_t)2,
+		Right = (int8_t)1,
+		Forward = (int8_t)0
+	};
+
 
 
 	class Node
@@ -59,25 +66,33 @@ namespace Frosty
 
 		inline bool operator ==(const BasePlacer& other) { return (other.m_GroupID == m_GroupID); }
 		inline Node& CreateNode() { return Node((Direction)~m_CurrentDir, m_GroupID, m_ConnectAble); }
-		inline void ChangeDir(const uint8_t& modRight, const uint8_t& modForward, const uint8_t& modLeft)
+		inline void ChangeDir(const uint8_t& modLeft, const uint8_t& modForward, const uint8_t& modRight)
 		{
+			LocalDirection locDir;
 
 			//0 check
-
-			uint8_t Left = rand() % modLeft;
-			uint8_t Right = rand() % modRight;
-			uint8_t Forward = rand() % modForward;
-
-			while (Left == Right == Forward)
+			if (modRight == modForward == modLeft)
 			{
-				Left = rand() % modLeft;
-				Right = rand() % modLeft;
-				Forward = rand() % modLeft;
+				locDir = (LocalDirection)(rand() % MAXEXITS - 1);
+			}
+			else
+			{
+				uint8_t Left = rand() % modLeft;
+				uint8_t Right = rand() % modRight;
+				uint8_t Forward = rand() % modForward;
+
+				while (Left == Right == Forward)
+				{
+					Left = rand() % modLeft;
+					Right = rand() % modLeft;
+					Forward = rand() % modLeft;
+				}
+
+
 			}
 
-
-
-			m_CurrentDir
+			//start here Translate Local Dir
+				m_CurrentDir
 			
 		
 		
