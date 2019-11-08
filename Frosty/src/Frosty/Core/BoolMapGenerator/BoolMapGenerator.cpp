@@ -44,7 +44,7 @@ namespace Frosty
 
 		s_ViewOrtho = tempOrtho * tempView;
 
-		//InitiateGBuffer();
+		InitiateGBuffer();
 	}
 
 	//std::shared_ptr<Camera>& BoolMapGenerator::GetCamera()
@@ -77,13 +77,15 @@ namespace Frosty
 		// - bright color buffer
 		glGenTextures(1, &s_Texture);
 		glBindTexture(GL_TEXTURE_2D, s_Texture);
+		//glGenerateMipmap(GL_TEXTURE_2D);
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, (s_Settings.Width * s_Settings.Pix_Cord_Ratio), (s_Settings.Height * s_Settings.Pix_Cord_Ratio), 0, GL_RGB, GL_FLOAT, NULL);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
 		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, s_Texture, 0);
 
-		unsigned int attachments[1] = { GL_COLOR_ATTACHMENT0 };
-		glDrawBuffers(1, attachments);
+		unsigned int attachments =  (unsigned int)GL_COLOR_ATTACHMENT0;
+		glDrawBuffers(1, &attachments);
 
 		char buff[1024];
 		memset(buff, 0, 1024);
@@ -108,8 +110,9 @@ namespace Frosty
 
 		//temp
 		//glBindFramebuffer(GL_FRAMEBUFFER, s_GBuffer);
-		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		//glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		glUseProgram(s_RenderProgramID);
+		glActiveTexture(GL_TEXTURE0);
 
 		GLint locationVO = glGetUniformLocation(s_RenderProgramID, "u_ViewOrtho");
 		GLint locationMM = glGetUniformLocation(s_RenderProgramID, "u_ModelMat");
@@ -119,11 +122,11 @@ namespace Frosty
 		while (BatchIt != s_RenderBatch.end())
 		{
 
-			float tempVert []= {
-				-0.5f,  0.0f, 0.5f,
-				0.5f,  0.0f, 0.5f,
-				0.0f,  0.0f,  0.0f
-			};
+			//float tempVert []= {
+			//	-0.5f,  0.0f, 0.5f,
+			//	0.5f,  0.0f, 0.5f,
+			//	0.0f,  0.0f,  0.0f
+			//};
 
 			//TODO: Bind Id instead
 
@@ -165,7 +168,16 @@ namespace Frosty
 		}
 
 	//	glUseProgram(0);
+
+
+
+
+
+
+
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		glDeleteFramebuffers(1, &s_GBuffer);
+	//	glDeleteTextures(1, &s_Texture);
 		s_RenderBatch.erase(s_RenderBatch.begin(), s_RenderBatch.end());
 
 		return std::shared_ptr<BoolMap>(nullptr);

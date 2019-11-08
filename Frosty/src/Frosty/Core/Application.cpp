@@ -269,7 +269,7 @@ namespace Frosty
 
 
 				glm::mat4 tempMat = glm::translate(glm::mat4(1.0f), glm::vec3(5.0f, 0.0f, 5.0f));
-				tempMat = glm::scale(tempMat, glm::vec3(10.0f, 1.0f, 10.0f));
+				tempMat = glm::scale(tempMat, glm::vec3(100.0f, 1.0f, 100.0f));
 
 
 				ModelBatch tempBatch;

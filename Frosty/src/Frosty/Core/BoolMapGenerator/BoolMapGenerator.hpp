@@ -105,6 +105,8 @@ namespace Frosty
 
 		inline static std::shared_ptr<BoolMap>& RenderBoolMap() { InitCheck(); return RenderMap(); }
 
+		inline static  const unsigned int& GetTextureID() { return s_Texture; }
+
 		//temp
 		//static std::shared_ptr<Camera>& GetCamera();
 

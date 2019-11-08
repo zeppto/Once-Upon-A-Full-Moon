@@ -2,6 +2,7 @@
 #include "RenderSystem.hpp"
 
 
+
 namespace MCS
 {
 	void RenderSystem::Init()
