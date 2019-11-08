@@ -623,7 +623,7 @@ namespace Frosty
 			CCharacterState(const CCharacterState& org) { FY_CORE_ASSERT(false, "Copy constructor in CCharacterState called."); }
 
 			virtual void Func() override { }
-		}
+		};
 
 		struct CHealthBar : public BaseComponent
 		{
