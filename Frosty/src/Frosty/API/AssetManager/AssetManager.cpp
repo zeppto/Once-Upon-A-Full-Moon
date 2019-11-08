@@ -18,7 +18,7 @@ namespace Frosty
 	std::vector<std::string> AssetManager::testStr;
 
 	std::unordered_map<std::string, Mesh> AssetManager::s_Meshes;
-	std::unordered_map<std::string, Animation> AssetManager::s_Animaions;
+	std::unordered_map<std::string, Animation> AssetManager::s_Animations;
 	std::unordered_map<std::string, TextureFile> AssetManager::s_Textures;
 	std::unordered_map<std::string, LinkedMaterial> AssetManager::s_LinkedMaterials;
 	std::unordered_map <std::string, std::list<TextureFile**>> AssetManager::s_TextureWatchList;
@@ -110,6 +110,7 @@ namespace Frosty
 		s_Shaders.emplace("BlendShader", FY_NEW Shader("assets/shaders/BlendShaderVertex.glsl", "assets/shaders/BlendShaderFragment.glsl", "BlendShader"));
 		s_Shaders.emplace("UI", FY_NEW Shader("assets/shaders/UIVertex.glsl", "assets/shaders/UIFragment.glsl", "UI"));
 		s_Shaders.emplace("Particles", FY_NEW Shader("assets/shaders/ParticleVertex.glsl", "assets/shaders/ParticleGeometry.glsl", "assets/shaders/ParticleFragment.glsl", "Particles"));
+		s_Shaders.emplace("Animation", FY_NEW Shader("assets/shaders/AnimationVS.glsl", "assets/shaders/AnimationFS.glsl", "Animation"));
 
 		//Don't try to apply a compute shader as a material! This might have to be separate from normal shaders just to avoid confusion.
 		s_Shaders.emplace("ParticleCompute", FY_NEW Shader("assets/shaders/ParticleCompute.glsl", "ParticleCompute"));
@@ -120,6 +121,13 @@ namespace Frosty
 		s_Shaders["Texture2D"]->UploadUniformInt("u_DiffuseTexture", 0);
 		s_Shaders["Texture2D"]->UploadUniformInt("u_NormalTexture", 1);
 		s_Shaders["Texture2D"]->UploadUniformInt("u_SpecularTexture", 2);
+
+		//Animation Shader
+		s_Shaders["Animation"]->Bind();
+
+		s_Shaders["Animation"]->UploadUniformInt("u_DiffuseTexture", 0);
+		s_Shaders["Animation"]->UploadUniformInt("u_GlossTexture", 1);
+		s_Shaders["Animation"]->UploadUniformInt("u_NormalTexture", 2);
 
 		s_Shaders["BlendShader"]->Bind();
 		s_Shaders["BlendShader"]->UploadUniformInt("u_DiffuseTexture", 0);
@@ -184,6 +192,45 @@ namespace Frosty
 		return returnValue;
 	}
 
+	bool AssetManager::AddAnimatedMesh(const FileMetaData& MetaData, const std::vector<AnimVert>& vertices, const std::vector<Luna::Index>& indices)
+	{
+		bool returnValue = false;
+		if (!MeshLoaded(MetaData.TagName))
+		{
+
+			// Vertex Array
+			s_VertexArrays.emplace(MetaData.TagName, VertexArray::Create());
+
+			// Vertex Buffer
+			std::shared_ptr<VertexBuffer> vertexBuffer;
+			vertexBuffer.reset(VertexBuffer::Create(&vertices.front(), sizeof(AnimVert) * (uint32_t)vertices.size(), BufferType::STATIC));
+
+			BufferLayout layout = {
+				{ ShaderDataType::Float3, "a_Position" },
+				{ ShaderDataType::Float2, "a_TextureCoords" },
+				{ ShaderDataType::Float3, "a_Normal" },
+				{ ShaderDataType::Float3, "a_Tangent" },
+				{ ShaderDataType::Float3, "a_Bitangent" },
+				{ ShaderDataType::Float4, "a_Weights" },
+				{ ShaderDataType::Int4, "a_Joints" },
+			};
+			vertexBuffer->SetLayout(layout);
+
+			s_VertexArrays[MetaData.TagName]->AddVertexBuffer(vertexBuffer);
+
+			// Index Buffer
+			std::shared_ptr<IndexBuffer> indexBuffer;
+			indexBuffer.reset(IndexBuffer::Create(&indices.front(), (uint32_t)indices.size()));
+			s_VertexArrays[MetaData.TagName]->SetIndexBuffer(indexBuffer);
+			returnValue = true;
+		}
+		else
+		{
+			FY_CORE_WARN("Mesh: {0}, Is already loaded", MetaData.TagName);
+		}
+		return returnValue;
+	}
+
 	bool AssetManager::AddTexture(const FileMetaData& MetaData)
 	{
 		if (TextureLoaded(MetaData.FileName))
@@ -226,6 +273,57 @@ namespace Frosty
 		return true;
 	}
 
+	std::vector<AnimVert> AssetManager::MakeAnimVerts(Luna::Reader& tmpFile)
+	{
+		std::vector<Luna::Vertex> initVertices;
+		tmpFile.getVertices(0, initVertices);
+
+		std::vector<Luna::Weights> weights;
+		std::vector<Luna::Joint> joints;
+
+		tmpFile.getWeights(0, weights);
+
+		std::vector<AnimVert> vertices;
+
+		vertices.resize(initVertices.size());
+
+		// Collect all relevant data for the VBO in one place.
+		for (int i = 0; i < initVertices.size(); i++)
+		{
+			vertices[i].position[0] = initVertices[i].position[0];
+			vertices[i].position[1] = initVertices[i].position[1];
+			vertices[i].position[2] = initVertices[i].position[2];
+
+			vertices[i].uv[0] = initVertices[i].uv[0];
+			vertices[i].uv[1] = initVertices[i].uv[1];
+
+			vertices[i].normal[0] = initVertices[i].normal[0];
+			vertices[i].normal[1] = initVertices[i].normal[1];
+			vertices[i].normal[2] = initVertices[i].normal[2];
+
+			vertices[i].tangent[0] = initVertices[i].tangent[0];
+			vertices[i].tangent[1] = initVertices[i].tangent[1];
+			vertices[i].tangent[2] = initVertices[i].tangent[2];
+
+			vertices[i].bitangent[0] = initVertices[i].bitangent[0];
+			vertices[i].bitangent[1] = initVertices[i].bitangent[1];
+			vertices[i].bitangent[2] = initVertices[i].bitangent[2];
+
+			//The relevant weights know which four joints are most relevant for the verts.
+			vertices[i].weights[0] = weights[i].weights[0];
+			vertices[i].weights[1] = weights[i].weights[1];
+			vertices[i].weights[2] = weights[i].weights[2];
+			vertices[i].weights[3] = weights[i].weights[3];
+
+			vertices[i].joints[0] = weights[i].jointIDs[0];
+			vertices[i].joints[1] = weights[i].jointIDs[1];
+			vertices[i].joints[2] = weights[i].jointIDs[2];
+			vertices[i].joints[3] = weights[i].jointIDs[3];
+		}
+
+		return vertices;
+	}
+
 	bool AssetManager::AddAnimation(Animation& Animation)
 	{
 		if (AnimationLoaded(Animation.GetName()))
@@ -234,7 +332,7 @@ namespace Frosty
 		}
 		else
 		{
-			s_Animaions[Animation.GetName()] = Animation;
+			s_Animations[Animation.GetName()] = Animation;
 		}
 		return true;
 	}
@@ -329,7 +427,7 @@ namespace Frosty
 		bool returnValue = false;
 
 		std::unordered_map<std::string, Animation>::iterator it;
-		for (it = s_Animaions.begin(); it != s_Animaions.end() && returnValue == false; it++)
+		for (it = s_Animations.begin(); it != s_Animations.end() && returnValue == false; it++)
 		{
 			if (it->first == AssetName)
 			{
@@ -385,7 +483,6 @@ namespace Frosty
 		{
 
 			returnValue = true;
-			bool modelHasSkeleton = false;
 
 			// for nr of meshes
 			for (uint16_t i = 0; i < tempFile.getMeshCount(); i++)
@@ -404,7 +501,16 @@ namespace Frosty
 
 				if (vertices.size() && indices.size())
 				{
-					AddMesh(tempMetaData, vertices, indices);
+					if (!tempFile.animationExist())
+					{
+						AddMesh(tempMetaData, vertices, indices);
+					}
+					else
+					{
+						std::vector<AnimVert> aVertices = MakeAnimVerts(tempFile);
+						AddAnimatedMesh(tempMetaData, aVertices, indices);
+					}
+
 				}
 				else
 				{

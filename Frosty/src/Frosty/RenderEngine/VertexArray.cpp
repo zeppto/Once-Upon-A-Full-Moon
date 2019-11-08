@@ -58,11 +58,20 @@ namespace Frosty
 		for (const auto& element : vertexBuffer->GetLayout())
 		{
 			glEnableVertexAttribArray(index);
-			glVertexAttribPointer(index, element.GetElementSize(),
-				ShaderDataTypeToOpenGLBaseType(element.Type),
-				element.Normalized ? GL_TRUE : GL_FALSE,
-				vertexBuffer->GetLayout().GetStride(),
-				(const void*)element.Offset);
+			if (ShaderDataTypeToOpenGLBaseType(element.Type) == GL_FLOAT || ShaderDataTypeToOpenGLBaseType(element.Type) == GL_BOOL)
+			{
+				glVertexAttribPointer(index, element.GetElementSize(),
+					ShaderDataTypeToOpenGLBaseType(element.Type),
+					element.Normalized ? GL_TRUE : GL_FALSE,
+					vertexBuffer->GetLayout().GetStride(),
+					(const void*)element.Offset);
+			}
+			else if (ShaderDataTypeToOpenGLBaseType(element.Type) == GL_INT)
+			{
+				glVertexAttribIPointer(index, element.GetElementSize(),
+					GL_INT, vertexBuffer->GetLayout().GetStride(),
+					(const void*)element.Offset);
+			}
 			index++;
 		}
 

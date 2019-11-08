@@ -39,7 +39,18 @@ namespace Frosty
 		GLSL
 	};
 
+	// For storing animation data per vertex!
+	struct AnimVert
+	{
+		float position[3] = { 0.0f };
+		float uv[2] = { 0.0f };
+		float normal[3] = { 0.0f };
+		float tangent[3] = { 0.0f };
+		float bitangent[3] = { 0.0f };
 
+		float weights[4] = { 0.0f };
+		int joints[4] = { 0 };
+	};
 
 	class AssetManager
 	{
@@ -53,7 +64,7 @@ namespace Frosty
 		static uint16_t s_Success_Loading_Attempts;
 
 		static std::unordered_map<std::string, Mesh> s_Meshes;
-		static std::unordered_map<std::string, Animation> s_Animaions;
+		static std::unordered_map<std::string, Animation> s_Animations;
 		static std::unordered_map<std::string, TextureFile> s_Textures;
 		static std::unordered_map<std::string, LinkedMaterial> s_LinkedMaterials;
 
@@ -86,12 +97,12 @@ namespace Frosty
 
 		//inline static Mesh* GetMesh(const std::string& MeshName) { return  MeshLoaded(MeshName) ? &s_Meshes[MeshName] : nullptr; }
 		inline static TextureFile* GetTexture(const std::string& FileName) { return  TextureLoaded(FileName) ? &s_Textures[FileName] : nullptr; }
-		inline static Animation* GetAnimation(const std::string& AnimationName) { return  AnimationLoaded(AnimationName) ? &s_Animaions[AnimationName] : nullptr; }
+		inline static Animation* GetAnimation(const std::string& AnimationName) { return  AnimationLoaded(AnimationName) ? &s_Animations[AnimationName] : nullptr; }
 		inline static LinkedMaterial* GetMaterial(const std::string& MaterialName) { return  MaterialLoaded(MaterialName) ? &s_LinkedMaterials[MaterialName] : nullptr; }
 
 
 		inline static std::unordered_map<std::string, Mesh>* GetMeshMap() { return  &s_Meshes; }
-		inline static std::unordered_map<std::string, Animation>* GetAnimationMap() { return &s_Animaions; }
+		inline static std::unordered_map<std::string, Animation>* GetAnimationMap() { return &s_Animations; }
 		inline static std::unordered_map<std::string, TextureFile>* GetTextureMap() { return &s_Textures; }
 		inline static std::unordered_map<std::string, LinkedMaterial>* GetMaterialMap() { return &s_LinkedMaterials; }
 
@@ -146,12 +157,14 @@ namespace Frosty
 
 		// Meshes
 		static bool AddMesh(const FileMetaData& MetaData,const std::vector<Luna::Vertex>& vertices, const std::vector<Luna::Index>& indices);
+		static bool AddAnimatedMesh(const FileMetaData& MetaData, const std::vector<AnimVert>& vertices, const std::vector<Luna::Index>& indices);
 
 		static bool AddTexture(const FileMetaData& MetaData);
 
 		static bool AddMaterial(LinkedMaterial& LnkMat);
 		static bool AddMaterial(const FileMetaData& MetaData, const Luna::Material& LunMat);
 
+		static std::vector<AnimVert> MakeAnimVerts(Luna::Reader& tmpFile);
 		static bool AddAnimation(Animation& Animation);
 		static bool AddBoundingbox(const FileMetaData& MetaData,const Luna::BoundingBox& Boundinbox);
 
