@@ -185,5 +185,23 @@ namespace Frosty
 		uint32_t m_RendererID;
 		uint32_t m_Count;
 	};
+
+	class UniformBuffer
+	{
+	public:
+		UniformBuffer(uint32_t count, int MaxBones);
+		virtual ~UniformBuffer();
+
+		void Bind()const;
+		void BindUpdate(void* boneData, int len);
+		void Unbind()const;
+
+		uint32_t GetCount()const;
+
+		static UniformBuffer* Create(uint32_t count, int maxBones);
+	private:
+		uint32_t m_RendererID;
+		uint32_t m_Count;
+	};
 }
 #endif

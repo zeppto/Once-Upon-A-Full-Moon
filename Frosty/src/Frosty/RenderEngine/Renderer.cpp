@@ -195,4 +195,34 @@ namespace Frosty
 
 		glDisable(GL_BLEND);
 	}
+
+	float dt = 0;
+
+	void Renderer::animSubmit(ECS::CMaterial* mat, const std::shared_ptr<VertexArray>& vertexArray, const glm::mat4& transform)
+	{
+		mat->UseShader->Bind();
+		mat->UseShader->UploadUniformMat4("u_ViewProjection", s_SceneData->GameCamera.ViewProjectionMatrix);
+		mat->UseShader->UploadUniformMat4("u_Transform", transform);
+		mat->UseShader->AssignUniformBlock("a_jointDataBlock");
+
+		vertexArray->getAnimationHandlerPtr()->CalculateAnimMatrix(&dt);
+		void* skinDataPtr = nullptr;
+		vertexArray->getAnimationHandlerPtr()->getSkinData(skinDataPtr);
+		int MaxBones = 64;
+
+		//glm::mat4 * stuff; 
+		//stuff = vertexArray->getAnimationHandlerPtr()->getSkinData();
+
+		//for (int i = 0; i < 64; i++)
+		//{
+		//	glm::mat4 current = stuff[i];
+		//}
+
+		vertexArray->getUniformBuffer()->BindUpdate(skinDataPtr, MaxBones);
+
+		vertexArray->Bind();
+		RenderCommand::Draw2D(vertexArray);
+		dt += Frosty::Time::DeltaTime();
+	}
+
 }
