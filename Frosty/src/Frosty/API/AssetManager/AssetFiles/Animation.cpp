@@ -47,7 +47,7 @@ namespace Frosty
 		data = &m_SkinData;
 		nrOfJoints = MAX_BONES;
 	}
-
+	
 	void Animation::CalculateAnimMatrix(float* currentAnimTime)
 	{
 		float duration = m_Animation.duration;
