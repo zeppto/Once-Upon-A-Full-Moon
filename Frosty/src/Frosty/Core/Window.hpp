@@ -3,6 +3,9 @@
 #include <fypch.hpp>		// This is already included in the cpp file so we shouldn't need it here but doesn't work otherwise
 #include "Frosty/Core/BaseWindow.hpp"
 
+// Temp
+#include "Frosty/Events/ApplicationEvent.hpp"
+
 #include <GLFW/glfw3.h>
 
 namespace Frosty

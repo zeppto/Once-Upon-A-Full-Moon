@@ -140,8 +140,8 @@ namespace Frosty
 		VertexBuffer();
 		virtual ~VertexBuffer();
 
-		void Bind()const;
-		void Unbind()const;
+		void Bind() const;
+		void Unbind() const;
 
 		void SetNrOfVertices(uint32_t count);
 		uint32_t GetNrOfVertices()const;

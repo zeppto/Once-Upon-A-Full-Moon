@@ -2,6 +2,8 @@
 #include "Window.hpp"
 #include "Frosty/DEFINITIONS.hpp"
 #include "Frosty/Core/Application.hpp"
+#include "Frosty/Events/KeyEvent.hpp"
+#include "Frosty/Events/MouseEvent.hpp"
 
 #include <glad/glad.h>
 

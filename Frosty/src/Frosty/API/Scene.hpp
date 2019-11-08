@@ -38,7 +38,7 @@ namespace Frosty
 
 			ECS::ComponentID cId = ECS::getComponentTypeID<ComponentType>();
 
-			FY_CORE_ASSERT(entity->Bitset[cId], "Entity({0}) doesn't have this component.", entity->Id);
+ 			FY_CORE_ASSERT(entity->Bitset[cId], "Entity({0}) doesn't have this component.", entity->Id);
 
 			return GetComponentManager<ComponentType>()->Get(entity);
 		}

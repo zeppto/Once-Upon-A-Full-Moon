@@ -30,7 +30,7 @@ namespace Frosty
 
 			// Movement
 			float velocity = m_TranslationSpeed * Time::DeltaTime();
-			if (InputManager::IsKeyPressed(FY_KEY_LEFT_CONTROL))
+			if (InputManager::IsKeyPressed(FY_KEY_LEFT_SHIFT))
 			{
 				velocity *= 10.0f;
 			}

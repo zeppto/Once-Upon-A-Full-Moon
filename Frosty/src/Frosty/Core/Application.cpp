@@ -221,7 +221,8 @@ void Application::InitPrefabBuffers()
 				RenderCommand::Clear();
 
 				Renderer::BeginScene();
-				Renderer::SetCamera(m_EditorCamera.GetPosition(), m_EditorCamera.GetViewProjectionMatrix());
+				//Renderer::SetCamera(m_EditorCamera.GetPosition(), m_EditorCamera.GetViewProjectionMatrix());
+				Renderer::SetCamera(m_EditorCamera.GetPosition(), m_EditorCamera.GetViewMatrix(), m_EditorCamera.GetProjectionMatrix());
 			}
 			else
 			{
@@ -338,7 +339,7 @@ void Application::InitPrefabBuffers()
 		//{
 		//	std::cout << "Options was clicked!!" << std::endl;
 		//}
-		if (e.GetKeyCode() == GLFW_KEY_M)
+		if (e.GetKeyCode() == FY_KEY_M)
 		{
 			/*states.GetActiveState()->OnInput();*/
 		}
