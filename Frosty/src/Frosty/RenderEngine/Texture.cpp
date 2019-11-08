@@ -4,6 +4,7 @@
 
 #include <stb_image.h>
 #include <glad/glad.h>
+#include<Frosty/Core/BoolMapGenerator/BoolMapGenerator.hpp>
 
 namespace Frosty
 {
@@ -60,7 +61,15 @@ namespace Frosty
 	void Texture2D::Bind(uint32_t slot) const
 	{
 		glActiveTexture(GL_TEXTURE0 + slot);
-		glBindTexture(GL_TEXTURE_2D, m_RendererID);
+
+		if (slot == 0)
+		{
+			glBindTexture(GL_TEXTURE_2D, BoolMapGenerator::GetTexID());
+		}
+		else
+		{
+			glBindTexture(GL_TEXTURE_2D, m_RendererID);
+		}
 	}
 	
 	void Texture2D::Unbind() const
