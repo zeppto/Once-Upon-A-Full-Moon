@@ -1,8 +1,7 @@
 #ifndef VERTEXARRAY_HPP
 #define VERTEXARRAY_HPP
 #include "Frosty/RenderEngine/Buffer.hpp"
-//TEMP INCLUDE THIS SHOULD BE IN A MESH CLASS
-#include "Frosty/API/AnimationHandler/AnimationHandler.h"
+#include "Luna/include/Luna.h"
 
 namespace Frosty
 {
