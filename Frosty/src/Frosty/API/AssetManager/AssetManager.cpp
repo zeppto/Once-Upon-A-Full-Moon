@@ -15,6 +15,8 @@ namespace Frosty
 	AssetManager* AssetManager::s_Instance = nullptr;
 	uint16_t AssetManager::s_Total_Nr_Assets = 0;
 
+	std::vector<std::string> AssetManager::testStr;
+
 	std::unordered_map<std::string, Mesh> AssetManager::s_Meshes;
 	std::unordered_map<std::string, Animation> AssetManager::s_Animaions;
 	std::unordered_map<std::string, TextureFile> AssetManager::s_Textures;
@@ -135,6 +137,15 @@ namespace Frosty
 
 		LoadDir("assets/");
 		ConnectWatchList();
+
+
+		for (int i = 0; i < testStr.size(); i++) {
+
+			FY_CORE_INFO("Name:{0}", testStr.at(i));
+
+		}
+			
+
 	}
 
 	bool AssetManager::AddMesh(const FileMetaData& MetaData, const std::vector<Luna::Vertex>& vertices, const std::vector<Luna::Index>& indices)
@@ -301,8 +312,8 @@ namespace Frosty
 	{
 		bool returnValue = false;
 
-		std::unordered_map<std::string, TextureFile>::iterator it;
-		for (it = s_Textures.begin(); it != s_Textures.end() && returnValue == false; it++)
+		std::map<std::string, std::shared_ptr<Texture2D>>::iterator it;
+		for (it = s_Textures2D.begin(); it != s_Textures2D.end() && returnValue == false; it++)
 		{
 			if (it->first == FileName)
 			{
@@ -520,8 +531,13 @@ namespace Frosty
 	{
 		bool returnValue = false;
 
+		
+
 		if (AddTexture(FileNameInformation))
 		{
+
+			testStr.emplace_back(FileNameInformation.FileName);
+
 			//if (s_AutoLoad)
 			//{
 			//	//Temp

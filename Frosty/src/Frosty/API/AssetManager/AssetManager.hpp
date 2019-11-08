@@ -69,6 +69,8 @@ namespace Frosty
 
 		static bool s_AutoLoad;
 
+		static std::vector<std::string> testStr;
+
 		friend class Application;
 		using directory_iterator = std::filesystem::directory_iterator;
 
