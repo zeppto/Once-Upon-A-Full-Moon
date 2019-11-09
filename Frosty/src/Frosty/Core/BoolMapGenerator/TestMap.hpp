@@ -7,8 +7,12 @@ namespace Frosty
 {
 
 #define MAXEXITS (uint8_t)4
-#define DEADENDLENGTH (uint16_t)2;
-const Direction STARTDIR = North;
+#define DEADENDLENGTH (uint16_t)2
+#define LocRw (uint16_t)100
+#define LocLw (uint16_t)101
+#define LocFw (uint16_t)102
+#define CngDirw (uint16_t)3
+
 	
 
 	enum Direction{
@@ -25,7 +29,7 @@ const Direction STARTDIR = North;
 		Forward = (int8_t)0
 	};
 
-
+	const Direction STARTDIR = North;
 
 	class Node
 	{
@@ -33,15 +37,56 @@ const Direction STARTDIR = North;
 		
 		bool m_ConnectAble;
 		uint16_t m_GroupID;
+
+		uint16_t m_CoordX;
+		uint16_t m_CoordY;
+
 		bool m_Exits [MAXEXITS];
 
 	public:
-		inline Node(const Direction& Entrance,const uint16_t& GrpID,const bool& ConnectAble) : m_GroupID(GrpID), m_ConnectAble(ConnectAble){ m_Exits[Entrance] = 1; };
-		inline const bool& AddExit(const Direction& exit) { return m_Exits[exit] = !m_Exits[exit] ? 1 : 0; }
+		inline Node(const Direction& Entrance,const uint16_t& GrpID,const uint16_t& CoordX, const uint16_t& CoordY, const bool& ConnectAble)
+			: m_GroupID(GrpID), 
+			m_ConnectAble(ConnectAble),
+			m_CoordX(CoordX),
+			m_CoordY(CoordY)
+		{ m_Exits[Entrance] = 1; };
+
+		inline Node(const Node& other) {
+			if (&other != this)
+			{
+				for (int i = 0; i < MAXEXITS; i++)
+				{
+					m_Exits[i] = other.m_Exits[i];
+				}
+				m_GroupID = other.m_GroupID;
+				m_ConnectAble = other.m_ConnectAble;
+				m_CoordX = -1;
+				m_CoordY = -1;
+
+			}
+		}
+		inline const void AddExit(const Direction& exit) {  m_Exits[exit] = 1; }
 		inline const bool* GetExits() { return m_Exits; }
 		inline const bool& IsConnectAble() { return m_ConnectAble; }
 		inline const uint16_t& GetGroupID() {return m_GroupID;}
 		inline const uint8_t& MaxNrOfExits() { return MAXEXITS; }
+		inline Node& operator= (const Node& other)
+		{
+			if (&other != this)
+			{
+				for (int i = 0; i < MAXEXITS; i++)
+				{
+					m_Exits[i] = other.m_Exits[i];
+				}
+				m_GroupID = other.m_GroupID;
+				m_ConnectAble = other.m_ConnectAble;
+			}
+
+
+			return *this;
+		}
+		inline bool operator== (const Node& other) { return (other.m_GroupID == m_GroupID); }
+		inline bool operator!= (const Node& other) { return (other.m_GroupID != m_GroupID); }
 	};
 
 	class BasePlacer
@@ -53,6 +98,9 @@ const Direction STARTDIR = North;
 		uint16_t m_Steps;
 		uint16_t m_GroupID;
 
+		uint16_t m_Xcoord;
+		uint16_t m_Ycoord;
+
 		bool m_ConnectAble;
 		Direction m_CurrentDir;
 
@@ -61,23 +109,33 @@ const Direction STARTDIR = North;
 
 		bool m_SwappedDir[MAXEXITS-1];
 
-		std::shared_ptr<Node> m_CurrentNode;
+		Node* m_CurrentNode;
 
 		//Track list?
 
-
+		inline Node& CreateNode() { return Node((Direction)~m_CurrentDir, m_GroupID, m_Xcoord,m_Ycoord, m_ConnectAble); }
 	public:
-		inline BasePlacer(const Direction& CurrentDir,const uint16_t& Id, const bool& ConnectAble) : 
+		inline BasePlacer(const Direction& CurrentDir, const uint16_t& Id, const uint16_t& CoordX, const uint16_t& CoordY, const bool& ConnectAble) :
 			m_CurrentDir(CurrentDir),
-			m_GroupID(Id), 
-			m_Steps(0), 
-			m_ConnectAble(ConnectAble), 
-			m_CurrentNode(nullptr)
+			m_GroupID(Id),
+			m_Steps(0),
+			m_ConnectAble(ConnectAble),
+			m_CurrentNode(nullptr),
+			m_Xcoord(CoordX),
+			m_Ycoord(CoordY)
 			{}
-		virtual bool Walk(std::shared_ptr<Node>& in_ptr) = 0;
+		virtual bool Walk(Node* in_ptr) = 0;
+
+		inline const Direction& GetCurrentDir() { return m_CurrentDir; }
+
+		inline const uint16_t& GetXcoord() {return m_Xcoord;}
+		inline const uint16_t& GetYcoord() {return m_Ycoord;}
+
+		inline void SetXcoord(const uint16_t& xCoord) {  m_Xcoord = xCoord; }
+		inline void SetYcoord(const uint16_t& yCoord) {	m_Ycoord = yCoord;}
+		inline void SetXYcoord(const uint16_t& xCoord, const uint16_t& yCoord) { SetXcoord(xCoord); SetYcoord(yCoord); }
 
 		inline bool operator ==(const BasePlacer& other) { return (other.m_GroupID == m_GroupID); }
-		inline Node& CreateNode() { return Node((Direction)~m_CurrentDir, m_GroupID, m_ConnectAble); }
 		inline bool ChangeDir(const uint8_t& modLeft, const uint8_t& modForward, const uint8_t& modRight)
 		{
 			LocalDirection locDir;
@@ -261,16 +319,16 @@ const Direction STARTDIR = North;
 		
 
 	public:
-		inline Seeker(const Direction& direction, const uint8_t& GroupID,const bool& connectAble = 1) : BasePlacer(direction,GroupID, connectAble) {}
+		inline Seeker(const Direction& direction, const uint8_t& GroupID, const uint16_t& CoordX, const uint16_t& CoordY, const bool& connectAble = 1) : BasePlacer(direction,GroupID, CoordX,CoordY,connectAble) {}
 
-		inline bool Walk(std::shared_ptr<Node>& in_ptr)
+		inline bool Walk(Node* in_ptr)
 		{
 			bool returnValue = false;
 			if (!stopWalk)
 			{
 				if (in_ptr == nullptr)
 				{
-					in_ptr = std::make_shared<Node>(FY_NEW Node(CreateNode()));
+					in_ptr = FY_NEW Node(CreateNode());
 					m_CurrentNode = in_ptr;
 					returnValue = true;
 					for (uint8_t i = 0; i < (MAXEXITS - 1); i++)
@@ -303,9 +361,9 @@ const Direction STARTDIR = North;
 
 	class Loner : public BasePlacer
 	{
-		inline Loner(const Direction& direction, const uint8_t& GroupID, const bool& connectAble = 0) : BasePlacer(direction, GroupID, connectAble) {}
+		inline Loner(const Direction& direction, const uint8_t& GroupID, const uint16_t& CoordX, const uint16_t& CoordY,const bool& connectAble = 0) : BasePlacer(direction, GroupID, CoordX,CoordY,connectAble) {}
 
-		inline bool Walk(std::shared_ptr<Node>& in_ptr)
+		inline bool Walk(Node* in_ptr)
 		{
 			bool returnValue = false;
 			if (!stopWalk)
@@ -315,7 +373,7 @@ const Direction STARTDIR = North;
 					uint16_t k = DEADENDLENGTH; //??
 					if (m_Steps < k)
 					{
-						in_ptr = std::make_shared<Node>(FY_NEW Node(CreateNode()));
+						in_ptr = FY_NEW Node(CreateNode());
 						m_CurrentNode = in_ptr;
 						returnValue = true;
 						for (uint8_t i = 0; i < (MAXEXITS - 1); i++)
@@ -356,15 +414,15 @@ const Direction STARTDIR = North;
 	 
 
 	public:
-		inline Head(const Direction& CurrentDir) : BasePlacer(CurrentDir,s_GroupId++,1) {}
-		inline bool Walk(std::shared_ptr<Node>& in_ptr)
+		inline Head(const Direction& CurrentDir, const uint16_t& StartX, const uint16_t& StartY) : BasePlacer(CurrentDir,  s_GroupId++,StartX, StartY,1) {}
+		inline bool Walk(Node* in_ptr)
 		{
 			bool returnValue = false;
 			if (!stopWalk)
 			{
 				if (in_ptr == nullptr)
 				{
-					in_ptr = std::make_shared<Node>(FY_NEW Node(CreateNode()));
+					in_ptr = FY_NEW Node(CreateNode());
 					m_CurrentNode = in_ptr;
 					returnValue = true;
 					for (uint8_t i = 0; i < (MAXEXITS - 1); i++)
@@ -407,39 +465,136 @@ const Direction STARTDIR = North;
 	private:
 
 
-		std::vector<std::vector<std::shared_ptr<Node>>> m_Grid;
+		std::list<BasePlacer*> m_WalkerList;
+		Node*** m_Grid;
 		uint16_t m_Width;
 		uint16_t m_Height;
 		std::string m_Seed;
 
+		std::vector<Node> m_Nodes;
+
 
 	public:
-		inline NodeMap(const uint16_t& width, const uint16_t& heigth, std::string Seed = "BaseSeed") : m_Seed(Seed), m_Width(width), m_Height(heigth)
+		inline NodeMap(const uint16_t& width, const uint16_t& heigth, std::string Seed = "BaseSeed") : m_Seed(Seed), m_Width(width), m_Height(heigth), m_Grid(nullptr)
 		{
 			std::string::size_type ty;
 			srand(std::stoi(Seed, &ty));
-			m_Grid.resize(width);
+
+			m_Grid = FY_NEW Node**[width];
+
 			for (int i = 0; i < width; i++)
 			{
-				m_Grid[i].resize(heigth);
-				for (int j = 0; j < m_Grid[i].size(); j++)
+				m_Grid[i] = FY_NEW Node* [heigth];
+				for (int j = 0; j < heigth; j++)
 				{
 					m_Grid[i][j] = nullptr;
 				}
 			}
 
 		}
-		inline ~NodeMap() {}
+		inline ~NodeMap() 
+		{
+		
+			for (int i = 0; i < m_Width; i++)
+			{
+				
+				for (int j = 0; j < m_Height; j++)
+				{
+					if (m_Grid[i][j] != nullptr)
+					{
+						delete m_Grid[i][j];
+						m_Grid[i][j] = nullptr;
+					}
+				}
+				delete[] m_Grid[i];
+			}
+			delete[] m_Grid;
+		}
 
-		inline std::vector<std::vector<std::shared_ptr<Node>>> GetMap() {return m_Grid;}
+		inline Node*** GetMap() {return m_Grid;}
+		inline const std::vector<Node>& GetNodes() { return m_Nodes; }
 		inline void GenereateMap()
 		{
 			int cenX = m_Width / 2;
 			int cenY = m_Height / 2;
 			
 
-			Head StarHead(STARTDIR);
-			m_Grid[cenX][cenY] = std::make_shared<Node>(Node(North,0,0));
+			m_WalkerList.push_back(FY_NEW Head(STARTDIR, cenX, cenY));
+			m_Grid[cenX][cenY] = FY_NEW Node(North,0,0, cenX,cenY);
+
+			bool endWalk = false;
+			while (!endWalk)
+			{
+
+				std::list<BasePlacer*>::iterator it = m_WalkerList.begin();
+
+				while (it != m_WalkerList.end())
+				{
+					
+					for (uint8_t i = 0; i < MAXEXITS; i++)
+					{
+
+						uint16_t xPos = (*it)->GetXcoord();
+						uint16_t yPos = (*it)->GetYcoord();
+
+						if ((*it)->GetCurrentDir() == North || South)
+						{
+							if ((*it)->GetCurrentDir() == North)
+							{
+								yPos++;
+							}
+							else
+							{
+								yPos--;
+							}
+						}
+						else
+						{
+							if ((*it)->GetCurrentDir() == East)
+							{
+								xPos++;
+							}
+							else
+							{
+								xPos--;
+							}
+						}
+
+						bool CangedDir = false;
+						if (xPos < m_Width && yPos < m_Height)
+						{
+							if ((*it)->Walk(m_Grid[xPos][yPos]))
+							{
+								(*it)->SetXYcoord(xPos, yPos);
+							}
+							else
+							{
+								CangedDir = (*it)->ChangeDir(LocRw, LocLw, LocFw);
+							}
+						}
+						else
+						{
+							//change dir
+							endWalk = true;
+						}
+
+						if (!endWalk && !CangedDir)
+						{
+							if ((rand() % CngDirw) == 0)
+							{
+								CangedDir = (*it)->ChangeDir(LocRw, LocLw, LocFw);
+							}
+						}
+
+					}
+
+					it++;
+				}
+
+
+
+
+			}
 			
 
 

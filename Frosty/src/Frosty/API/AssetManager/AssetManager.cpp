@@ -2,6 +2,7 @@
 #include "AssetManager.hpp"
 #include"Luna/include/Reader.h"
 #include"..\..\DEFINITIONS.hpp"
+#include"Frosty/Core/BoolMapGenerator/TestMap.hpp"
 
 #include <cstring>
 #include <io.h>
