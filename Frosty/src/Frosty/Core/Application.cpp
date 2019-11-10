@@ -353,9 +353,10 @@ namespace Frosty
 		{
 			/*states.GetActiveState()->OnInput();*/
 		}
-		if ((e.GetKeyCode() == FY_KEY_LEFT_CONTROL || e.GetKeyCode() == FY_KEY_RIGHT_CONTROL) && e.GetKeyCode() == FY_KEY_P && m_CanPrintInfo)
+		if ((InputManager::IsKeyPressed(FY_KEY_LEFT_CONTROL) || InputManager::IsKeyPressed(FY_KEY_RIGHT_CONTROL)) && e.GetKeyCode() == FY_KEY_P && m_CanPrintInfo)
 		{
 			m_World->PrintWorld();
+			m_CanPrintInfo = false;
 		}
 	}
 

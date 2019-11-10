@@ -135,7 +135,5 @@ namespace Frosty
 			RemoveEntity(m_DestroyedEntities[i]);
 			m_DestroyedEntities.erase(m_DestroyedEntities.begin() + i);
 		}
-
-		PrintWorld();
 	}
 }
