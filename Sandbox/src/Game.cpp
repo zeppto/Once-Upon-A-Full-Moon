@@ -122,7 +122,7 @@ namespace MCS
 		world->AddComponent<Frosty::ECS::CPlayer>(player);
 		world->AddComponent<Frosty::ECS::CPhysics>(player, Frosty::AssetManager::GetBoundingBox("scarlet"), 10.0f);
 		world->AddComponent<Frosty::ECS::CDash>(player);
-		world->AddComponent<Frosty::ECS::CWeapon>(player, Frosty::ECS::CWeapon::WeaponType::Sword, 10.f);
+		world->AddComponent<Frosty::ECS::CWeapon>(player, Frosty::ECS::CWeapon::WeaponType::Arrow, 10.f);
 		world->AddComponent<Frosty::ECS::CHealth>(player);
 		world->AddComponent<Frosty::ECS::CInventory>(player);
 		auto& camEntity = world->GetSceneCamera();
@@ -146,13 +146,13 @@ namespace MCS
 		bossComponent.TargetList.emplace_back(player);
 		
 
-		//auto& enemy2 = world->CreateEntity({ -27.0f, 1.0f, 25.0f }, { 0.0f, 0.0f, 0.0f }, { 2.0f, 2.0f, 2.0f });
-		//world->AddComponent<Frosty::ECS::CMesh>(enemy2, Frosty::AssetManager::GetMesh("pCube1"));
-		//world->AddComponent<Frosty::ECS::CMaterial>(enemy2, Frosty::AssetManager::GetShader("FlatColor"));
-		//world->AddComponent<Frosty::ECS::CPhysics>(enemy2, Frosty::AssetManager::GetBoundingBox("pCube1"), 6.0f);
-		//world->AddComponent<Frosty::ECS::CEnemy>(enemy);
-		//world->AddComponent<Frosty::ECS::CFollow>(enemy2, &playerTransform);
-		//world->AddComponent<Frosty::ECS::CHealth>(enemy2);
+		auto& enemy2 = world->CreateEntity({ -27.0f, 1.0f, 25.0f }, { 0.0f, 0.0f, 0.0f }, { 2.0f, 2.0f, 2.0f });
+		world->AddComponent<Frosty::ECS::CMesh>(enemy2, Frosty::AssetManager::GetMesh("pCube1"));
+		world->AddComponent<Frosty::ECS::CMaterial>(enemy2, Frosty::AssetManager::GetShader("FlatColor"));
+		world->AddComponent<Frosty::ECS::CPhysics>(enemy2, Frosty::AssetManager::GetBoundingBox("pCube1"), 6.0f);
+		world->AddComponent<Frosty::ECS::CEnemy>(enemy2);
+		world->AddComponent<Frosty::ECS::CFollow>(enemy2, &playerTransform);
+		world->AddComponent<Frosty::ECS::CHealth>(enemy2);
 
 
 		auto& tree = world->CreateEntity({ 17.0f, 0.0f, 5.0f }, { 0.0f, 0.0f, 0.0f }, { 1.0f, 1.0f, 1.0f });
