@@ -27,6 +27,7 @@ namespace MCS
 		void EditorUpdateParticleSystem(uint32_t systemIndex);
 		void UpdateParticle(uint32_t systemIndex, uint32_t index);
 		void ResetParticle(uint32_t systemIndex, uint32_t index);
+		void UpdateGpuData(uint32_t systemIndex, uint32_t index);
 		void UpdateBuffer(uint32_t systemIndex);
 
 		std::array<Frosty::ECS::CTransform*, Frosty::ECS::MAX_ENTITIES_PER_COMPONENT> m_Transform;

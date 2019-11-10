@@ -659,18 +659,26 @@ namespace Frosty
 			{
 				glm::vec4 position = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
 				glm::vec4 color = glm::vec4(1.0f);
+				float size = 1.0f; //The current size
+
 				glm::vec4 direction = glm::vec4(0.0f, 1.0f, 0.0f, 1.0f);
 				glm::vec4 startPos = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
 				float lifetime = 2.0f;
 				float speed = 2.0f;
 				float startSize = 1.0f;
 				float endSize = 1.0f;
-				float size = startSize; //The current size
 				//int padding[2]; //In case padding is needed
 
 				Particle() = default;
 				Particle(glm::vec4 color)
 					: color(color) {};
+			};
+
+			struct GPUParticle
+			{
+				glm::vec4 position = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
+				glm::vec4 color = glm::vec4(1.0f);
+				float size = 1.0f; //The current size
 			};
 
 			static const uint32_t MAX_PARTICLE_COUNT = 100;
@@ -686,7 +694,9 @@ namespace Frosty
 			bool preview = false;
 			float timer = 0.0f;
 
-			Particle particles[MAX_PARTICLE_COUNT];
+			Particle particles[MAX_PARTICLE_COUNT]; //The complete data
+			GPUParticle gpuParticles[MAX_PARTICLE_COUNT]; //The data we send to the gpu
+
 			std::shared_ptr<VertexArray> particleVertArray;
 			std::shared_ptr<Shader> shader;
 			std::shared_ptr<Shader> computeShader;

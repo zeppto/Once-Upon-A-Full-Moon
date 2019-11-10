@@ -1,7 +1,7 @@
 #version 440
 layout(location = 0) in vec4 position;
 layout(location = 1) in vec4 color;
-layout(location = 8) in float size;
+layout(location = 2) in float size;
 
 uniform mat4 viewMat;
 uniform mat4 modelMat;
