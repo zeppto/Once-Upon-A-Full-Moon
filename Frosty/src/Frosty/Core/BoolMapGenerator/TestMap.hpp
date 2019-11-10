@@ -1,7 +1,7 @@
 #ifndef  NODEMAP_HPP
 #define NODEMAP_HPP
 
-
+#include <sstream> 
 
 namespace Frosty
 {
@@ -49,7 +49,8 @@ namespace Frosty
 			m_ConnectAble(ConnectAble),
 			m_CoordX(CoordX),
 			m_CoordY(CoordY)
-		{ m_Exits[Entrance] = 1; };
+		{ 	for (int i = 0; i < MAXEXITS; i++)
+		{m_Exits[i] = false;} m_Exits[Entrance] = 1; };
 
 		inline Node(const Node& other) {
 			if (&other != this)
@@ -60,12 +61,27 @@ namespace Frosty
 				}
 				m_GroupID = other.m_GroupID;
 				m_ConnectAble = other.m_ConnectAble;
-				m_CoordX = -1;
-				m_CoordY = -1;
+				m_CoordX = other.m_CoordX;
+				m_CoordY = other.m_CoordY;
+;
 
 			}
 		}
-		inline const void AddExit(const Direction& exit) {  m_Exits[exit] = 1; }
+	//	inline const void AddExit(const Direction& exit) {  m_Exits[exit] = 1; }
+		inline const void AddExit(const Direction& exit, const bool& reverted = 0) { 
+			
+			Direction tempDir = exit;
+			if (reverted)
+			{
+				tempDir = (Direction)((~tempDir) & 0x3);
+			}
+			
+			m_Exits[tempDir] = 1;
+		
+		
+		}
+		inline const uint16_t& GetX() const { return m_CoordX; }
+		inline const uint16_t& GetY() const { return m_CoordY; }
 		inline const bool* GetExits() { return m_Exits; }
 		inline const bool& IsConnectAble() { return m_ConnectAble; }
 		inline const uint16_t& GetGroupID() {return m_GroupID;}
@@ -113,18 +129,21 @@ namespace Frosty
 
 		//Track list?
 
-		inline Node& CreateNode() { return Node((Direction)~m_CurrentDir, m_GroupID, m_Xcoord,m_Ycoord, m_ConnectAble); }
+
+		//create pointer here?
+		inline Node CreateNode() { return Node((Direction)((~m_CurrentDir) & 0x3), m_GroupID, m_Xcoord, m_Ycoord, m_ConnectAble); }
+		inline void ChangeStep() { if (m_CurrentDir == North) { m_Ycoord++; } else if (m_CurrentDir == South) { m_Ycoord--; }	else if (m_CurrentDir == East) { m_Xcoord++; }	else { m_Xcoord--; }}
 	public:
-		inline BasePlacer(const Direction& CurrentDir, const uint16_t& Id, const uint16_t& CoordX, const uint16_t& CoordY, const bool& ConnectAble) :
+		inline BasePlacer(const Direction& CurrentDir, const uint16_t& Id,  Node* currentNode, const bool& ConnectAble) :
 			m_CurrentDir(CurrentDir),
 			m_GroupID(Id),
 			m_Steps(0),
 			m_ConnectAble(ConnectAble),
-			m_CurrentNode(nullptr),
-			m_Xcoord(CoordX),
-			m_Ycoord(CoordY)
+			m_CurrentNode(currentNode),
+			m_Xcoord(currentNode->GetX()),
+			m_Ycoord(currentNode->GetY())
 			{}
-		virtual bool Walk(Node* in_ptr) = 0;
+		virtual bool Walk(Node*& in_ptr) = 0;
 
 		inline const Direction& GetCurrentDir() { return m_CurrentDir; }
 
@@ -312,100 +331,97 @@ namespace Frosty
 	float BasePlacer::s_AvgDist = 0.0f;
 
 
-	class Seeker : public BasePlacer
-	{
-	private:
-
-		
-
-	public:
-		inline Seeker(const Direction& direction, const uint8_t& GroupID, const uint16_t& CoordX, const uint16_t& CoordY, const bool& connectAble = 1) : BasePlacer(direction,GroupID, CoordX,CoordY,connectAble) {}
-
-		inline bool Walk(Node* in_ptr)
-		{
-			bool returnValue = false;
-			if (!stopWalk)
-			{
-				if (in_ptr == nullptr)
-				{
-					in_ptr = FY_NEW Node(CreateNode());
-					m_CurrentNode = in_ptr;
-					returnValue = true;
-					for (uint8_t i = 0; i < (MAXEXITS - 1); i++)
-					{
-						m_SwappedDir[i] = 0;
-					}
-					m_Steps++;
-				}
-				else
-				{
-					//if (in_ptr->IsConnectAble() && in_ptr->GetGroupID() != m_GroupID) // TODO
-					if (in_ptr->IsConnectAble())
-					{
-						in_ptr->AddExit(m_CurrentDir);
-						m_CurrentNode = in_ptr;
-						stopWalk = true;
-					}
-					else
-					{
-						returnValue = false;
-					}
-				}
-			}
-			return returnValue;
-		}
-
-
-	};
-
-
-	class Loner : public BasePlacer
-	{
-		inline Loner(const Direction& direction, const uint8_t& GroupID, const uint16_t& CoordX, const uint16_t& CoordY,const bool& connectAble = 0) : BasePlacer(direction, GroupID, CoordX,CoordY,connectAble) {}
-
-		inline bool Walk(Node* in_ptr)
-		{
-			bool returnValue = false;
-			if (!stopWalk)
-			{
-				if (in_ptr == nullptr)
-				{
-					uint16_t k = DEADENDLENGTH; //??
-					if (m_Steps < k)
-					{
-						in_ptr = FY_NEW Node(CreateNode());
-						m_CurrentNode = in_ptr;
-						returnValue = true;
-						for (uint8_t i = 0; i < (MAXEXITS - 1); i++)
-						{
-							m_SwappedDir[i] = 0;
-						}
-						m_Steps++;
-					}
-					else
-					{
-						stopWalk = true;
-					}
-				}
-				else
-				{
-					stopWalk = true;
-				}
-			}
-			return returnValue;
-		}
-
-
-	};
-
-	//class HomeSeeker : public BasePlacer //TODO
+	//class Seeker : public BasePlacer
 	//{
+	//private:
 
+	//	
+
+	//public:
+	//	inline Seeker(const Direction& direction, const uint8_t& GroupID, const uint16_t& CoordX, const uint16_t& CoordY, const bool& connectAble = 1) : BasePlacer(direction,GroupID, CoordX,CoordY,connectAble) {}
+
+	//	inline bool Walk(Node*& in_ptr)
+	//	{
+	//		bool returnValue = false;
+	//		if (!stopWalk)
+	//		{
+	//			if (in_ptr == nullptr)
+	//			{
+	//				in_ptr = FY_NEW Node(CreateNode());
+	//				m_CurrentNode = in_ptr;
+	//				returnValue = true;
+	//				for (uint8_t i = 0; i < (MAXEXITS - 1); i++)
+	//				{
+	//					m_SwappedDir[i] = 0;
+	//				}
+	//				m_Steps++;
+	//			}
+	//			else
+	//			{
+	//				//if (in_ptr->IsConnectAble() && in_ptr->GetGroupID() != m_GroupID) // TODO
+	//				if (in_ptr->IsConnectAble())
+	//				{
+	//					in_ptr->AddExit(m_CurrentDir);
+	//					m_CurrentNode = in_ptr;
+	//					stopWalk = true;
+	//				}
+	//				else
+	//				{
+	//					returnValue = false;
+	//				}
+	//			}
+	//		}
+	//		return returnValue;
+	//	}
 
 
 	//};
 
 
+	//class Loner : public BasePlacer
+	//{
+	//	inline Loner(const Direction& direction, const uint8_t& GroupID, const uint16_t& CoordX, const uint16_t& CoordY,const bool& connectAble = 0) : BasePlacer(direction, GroupID, CoordX,CoordY,connectAble) {}
+
+	//	inline bool Walk(Node*& in_ptr)
+	//	{
+	//		bool returnValue = false;
+	//		if (!stopWalk)
+	//		{
+	//			if (in_ptr == nullptr)
+	//			{
+	//				uint16_t k = DEADENDLENGTH; //??
+	//				if (m_Steps < k)
+	//				{
+	//					in_ptr = FY_NEW Node(CreateNode());
+	//					m_CurrentNode = in_ptr;
+	//					returnValue = true;
+	//					for (uint8_t i = 0; i < (MAXEXITS - 1); i++)
+	//					{
+	//						m_SwappedDir[i] = 0;
+	//					}
+	//					m_Steps++;
+	//				}
+	//				else
+	//				{
+	//					stopWalk = true;
+	//				}
+	//			}
+	//			else
+	//			{
+	//				stopWalk = true;
+	//			}
+	//		}
+	//		return returnValue;
+	//	}
+
+
+	//};
+	/*
+	//class HomeSeeker : public BasePlacer //TODO
+	//{
+
+	//};
+	*/
 
 	class Head : public BasePlacer //start here
 	{
@@ -414,14 +430,19 @@ namespace Frosty
 	 
 
 	public:
-		inline Head(const Direction& CurrentDir, const uint16_t& StartX, const uint16_t& StartY) : BasePlacer(CurrentDir,  s_GroupId++,StartX, StartY,1) {}
-		inline bool Walk(Node* in_ptr)
+		inline Head(const Direction& CurrentDir,  Node* StartNode) : BasePlacer(CurrentDir,  s_GroupId++, StartNode, 1) {}
+		inline bool Walk(Node*& in_ptr)
 		{
 			bool returnValue = false;
 			if (!stopWalk)
 			{
 				if (in_ptr == nullptr)
 				{
+
+					m_CurrentNode->AddExit(m_CurrentDir);
+		
+					ChangeStep();
+
 					in_ptr = FY_NEW Node(CreateNode());
 					m_CurrentNode = in_ptr;
 					returnValue = true;
@@ -456,8 +477,6 @@ namespace Frosty
 
 
 
-
-	//Nodemap
 	class NodeMap
 	{
 
@@ -473,13 +492,46 @@ namespace Frosty
 
 		std::vector<Node> m_Nodes;
 
+		//temp
+		inline void TranslateMap()
+		{
+			m_Nodes.erase(m_Nodes.begin(), m_Nodes.end());
+			for (int i = 0; i < m_Width; i++)
+			{
+				for (int j = 0; j < m_Height; j++)
+				{
+					if (m_Grid[i][j] != nullptr)
+					{
+						//Todo move this inside generator
+						m_Nodes.emplace_back(*m_Grid[i][j]);
+					}
+				}
+			}
+		}
+		inline void DeleteWalkerList()
+		{
+			std::list<BasePlacer*>::iterator it = m_WalkerList.begin();
+			while (it != m_WalkerList.end())
+			{
+				if ((*it) != nullptr)
+				{
+					delete (*it);
+				}
+				it++;
+			}
+			m_WalkerList.erase(m_WalkerList.begin(), m_WalkerList.end());
+		}
 
 	public:
-		inline NodeMap(const uint16_t& width, const uint16_t& heigth, std::string Seed = "BaseSeed") : m_Seed(Seed), m_Width(width), m_Height(heigth), m_Grid(nullptr)
+		inline NodeMap() {};
+		inline NodeMap(const uint16_t& width, const uint16_t& heigth, std::string Seed = "baseSeed") : m_Seed(Seed), m_Width(width), m_Height(heigth), m_Grid(nullptr)
 		{
 			std::string::size_type ty;
-			srand(std::stoi(Seed, &ty));
+			std::stringstream sStrm(Seed);
 
+			int x;
+			sscanf(Seed.c_str(), "%x", &x);
+			srand(x);
 			m_Grid = FY_NEW Node**[width];
 
 			for (int i = 0; i < width; i++)
@@ -519,8 +571,10 @@ namespace Frosty
 			int cenY = m_Height / 2;
 			
 
-			m_WalkerList.push_back(FY_NEW Head(STARTDIR, cenX, cenY));
-			m_Grid[cenX][cenY] = FY_NEW Node(North,0,0, cenX,cenY);
+			m_Grid[cenX][cenY] = FY_NEW Node(North,0,cenX,cenY,0);
+			m_WalkerList.push_back(FY_NEW Head(STARTDIR, m_Grid[cenX][cenY]));
+
+
 
 			bool endWalk = false;
 			while (!endWalk)
@@ -531,13 +585,12 @@ namespace Frosty
 				while (it != m_WalkerList.end())
 				{
 					
-					for (uint8_t i = 0; i < MAXEXITS; i++)
-					{
+
 
 						uint16_t xPos = (*it)->GetXcoord();
 						uint16_t yPos = (*it)->GetYcoord();
 
-						if ((*it)->GetCurrentDir() == North || South)
+						if ((*it)->GetCurrentDir() == North || (*it)->GetCurrentDir() == South)
 						{
 							if ((*it)->GetCurrentDir() == North)
 							{
@@ -560,16 +613,14 @@ namespace Frosty
 							}
 						}
 
+
 						bool CangedDir = false;
 						if (xPos < m_Width && yPos < m_Height)
 						{
-							if ((*it)->Walk(m_Grid[xPos][yPos]))
+							if (!(*it)->Walk(m_Grid[xPos][yPos]))
 							{
-								(*it)->SetXYcoord(xPos, yPos);
-							}
-							else
-							{
-								CangedDir = (*it)->ChangeDir(LocRw, LocLw, LocFw);
+								endWalk = true;
+								//CangedDir = (*it)->ChangeDir(LocRw, LocLw, LocFw);
 							}
 						}
 						else
@@ -585,27 +636,17 @@ namespace Frosty
 								CangedDir = (*it)->ChangeDir(LocRw, LocLw, LocFw);
 							}
 						}
-
-					}
-
+					
 					it++;
 				}
-
-
-
-
 			}
 			
 
-
+			TranslateMap();
+			DeleteWalkerList();
 		
 		
 		}
-
-
-
-
-
 
 
 	};

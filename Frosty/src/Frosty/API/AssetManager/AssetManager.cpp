@@ -2,7 +2,6 @@
 #include "AssetManager.hpp"
 #include"Luna/include/Reader.h"
 #include"..\..\DEFINITIONS.hpp"
-#include"Frosty/Core/BoolMapGenerator/TestMap.hpp"
 
 #include <cstring>
 #include <io.h>
@@ -136,6 +135,10 @@ namespace Frosty
 
 		LoadDir("assets/");
 		ConnectWatchList();
+
+
+
+
 	}
 
 	bool AssetManager::AddMesh(const FileMetaData& MetaData, const std::vector<Luna::Vertex>& vertices, const std::vector<Luna::Index>& indices)
