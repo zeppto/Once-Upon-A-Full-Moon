@@ -129,11 +129,13 @@ namespace Frosty
 		shader->UploadUniformMat4("modelMat", modelMat);
 
 		glEnable(GL_BLEND);
+		glDepthMask(GL_FALSE);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE);
 
 		RenderCommand::DisableBackfaceCulling();
 		RenderCommand::DrawParticles(vertexArray, particleCount);
 
+		glDepthMask(GL_TRUE);
 		glDisable(GL_BLEND);
 
 		vertexArray->Unbind();
