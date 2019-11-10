@@ -2,7 +2,6 @@
 #define PARTICLE_SYSTEM_HPP
 
 //For now this is a test particle system, the class might as well be called "fire" or whatever this is supposed to be in the end.
-//For now, the particle system have a particle system
 namespace MCS
 {
 	class ParticleSystem : public Frosty::ECS::BaseSystem

@@ -238,7 +238,7 @@ namespace MCS
 
 	void ParticleSystem::UpdateParticle(uint32_t systemIndex, uint32_t index)
 	{
-		m_ParticleSystem[systemIndex]->particles[index].camDistance = 1.0f; //Debug
+		m_ParticleSystem[systemIndex]->particles[index].camDistance = glm::length2(glm::vec3(m_ParticleSystem[systemIndex]->particles[index].position) - Frosty::Renderer::GetCamera().CameraPosition); //If there's a better way to get the camera, get the camera that way
 		m_ParticleSystem[systemIndex]->particles[index].position -= (m_ParticleSystem[systemIndex]->particles[index].direction * m_ParticleSystem[systemIndex]->particles[index].speed) * Frosty::Time::DeltaTime();
 		
 		//Fade in and fade out
