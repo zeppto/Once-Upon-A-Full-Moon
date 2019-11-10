@@ -7,17 +7,20 @@ namespace Frosty { class ExitLevelEvent; }
 
 namespace MCS
 {
-
 	class LevelSystem : public Frosty::ECS::BaseSystem
 	{
 	public:
+		const static std::string NAME;
 
+	public:
 		virtual void Init() override;
 		virtual void OnUpdate() override;
 		virtual void OnEvent(Frosty::BaseEvent& e) override;
 
 		virtual void AddComponent(const std::shared_ptr<Frosty::ECS::Entity>& entity) override;
 		virtual void RemoveEntity(const std::shared_ptr<Frosty::ECS::Entity>& entity) override;
+		virtual void UpdateEntityComponent(const std::shared_ptr<Frosty::ECS::Entity>& entity) override;
+		virtual std::string GetInfo() const override;
 
 	private:
 		void OnExitLevelEvent(Frosty::ExitLevelEvent& e);

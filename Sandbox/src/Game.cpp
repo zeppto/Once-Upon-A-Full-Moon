@@ -30,12 +30,11 @@ namespace MCS
 {
 	Game::Game()
 	{
-
 		auto& world = Application::Get().GetWorld();
 		//std::srand((unsigned)std::time(0)); //We already seed in main. We shouldn't seed twice
 		// Add systems
 		world->AddSystem<LevelSystem>();
-		world->AddSystem<MCS::CameraSystem>();
+		world->AddSystem<CameraSystem>();
 		world->AddSystem<LightSystem>();
 		world->AddSystem<RenderSystem>();
 		world->AddSystem<PlayerControllerSystem>();
@@ -87,33 +86,22 @@ namespace MCS
 		//planeMat.BlendMapTexture = Frosty::AssetManager::GetTexture2D("blendMap_Test");	// why is this texture a problem
 		//planeMat.BlendTexture1 = Frosty::AssetManager::GetTexture2D("StoneGround");
 		//planeMat.BlendTexture2 = Frosty::AssetManager::GetTexture2D("Dirt");
-		//navSystem->InitiateGridMap(world->GetComponent<Frosty::ECS::CTransform>(plane));
 		
 		//auto& testEntity = world->CreateEntity({ -47.5f, 0.01f, 47.5f }, { 0.0f, 0.0f, 0.0f }, { 5.0f, 1.0f, 5.0f });
 		//world->AddComponent<Frosty::ECS::CMesh>(testEntity, Frosty::AssetManager::GetMesh("pPlane1"));
 		//world->AddComponent<Frosty::ECS::CMaterial>(testEntity, Frosty::AssetManager::GetShader("FlatColor"));
-
+		
 		// Night Light
 		auto& light = world->CreateEntity({ 0.0f, 0.0f, 0.0f }, { 120.0f, 8.0f, -10.0f });
 		world->AddComponent<Frosty::ECS::CLight>(light, Frosty::ECS::CLight::LightType::Directional, 0.9f, glm::vec3(0.6f, 0.7f, 1.f));
-
+		
 		// Night Light (makeshift reflection)
 		auto& light2 = world->CreateEntity({ 0.0f, 0.0f, 0.0f }, { -190.0f, 8.0f, -10.0f });
 		auto& lightTransform2 = world->GetComponent<Frosty::ECS::CTransform>(light2);
 		world->AddComponent<Frosty::ECS::CLight>(light2, Frosty::ECS::CLight::LightType::Directional, 0.3f, glm::vec3(0.6f, 0.7f, 1.f));
 
-		//generateTrees();
-		//generateBorders();
-		//generatePlanes();
-
-		//int rotation = 0;
-		//std::string texture = map.getRoomTextur(glm::ivec2(11, 15), &rotation);
-		//Level::Room(myRoome.sideExits[0], myRoome.sideExits[1], myRoome.sideExits[2], myRoome.sideExits[3], texture, rotation);
-
-		
-		auto& player = world->CreateEntity();
+		auto& player = world->CreateEntity({ 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 2.0f, 2.0f, 2.0f } );
 		auto& playerTransform = world->GetComponent<Frosty::ECS::CTransform>(player);
-		playerTransform.Scale = glm::vec3(2.0f, 2.0f, 2.0f);
 		world->AddComponent<Frosty::ECS::CMesh>(player, Frosty::AssetManager::GetMesh("scarlet"));
 		auto& playerMat = world->AddComponent<Frosty::ECS::CMaterial>(player, Frosty::AssetManager::GetShader("Texture2D"));
 		playerMat.DiffuseTexture = Frosty::AssetManager::GetTexture2D("Scarlet_diffuse");
@@ -128,12 +116,10 @@ namespace MCS
 		auto& camEntity = world->GetSceneCamera();
 		world->GetComponent<Frosty::ECS::CCamera>(camEntity).Target = &playerTransform;
 
-		auto& wall = world->CreateEntity({ 0.0f, 5.0f, -3.0f }, { 0.0f, 0.0f, 0.0f }, { 15.0f, 10.0f, 1.0f });
+		auto& wall = world->CreateEntity({ 0.0f, 5.0f, -3.0f }, { 0.0f, 0.0f, 0.0f }, { 15.0f, 10.0f, 1.0f }, true);
 		world->AddComponent<Frosty::ECS::CMesh>(wall, Frosty::AssetManager::GetMesh("pCube1"));
 		world->AddComponent<Frosty::ECS::CMaterial>(wall, Frosty::AssetManager::GetShader("FlatColor"));
 		world->AddComponent<Frosty::ECS::CPhysics>(wall, Frosty::AssetManager::GetBoundingBox("pCube1"));
-		
-
 
 		auto& enemy = world->CreateEntity({ 27.0f, 1.0f, 25.0f }, { 0.0f, 0.0f, 0.0f }, { 2.0f, 2.0f, 2.0f });
 		world->AddComponent<Frosty::ECS::CMesh>(enemy, Frosty::AssetManager::GetMesh("pCube1"));
@@ -155,14 +141,21 @@ namespace MCS
 		world->AddComponent<Frosty::ECS::CHealth>(enemy2);
 
 
-		auto& tree = world->CreateEntity({ 17.0f, 0.0f, 5.0f }, { 0.0f, 0.0f, 0.0f }, { 1.0f, 1.0f, 1.0f });
+		auto& tree = world->CreateEntity({ 17.0f, 0.0f, 5.0f }, { 0.0f, 0.0f, 0.0f }, { 1.0f, 1.0f, 1.0f }, true);
 		world->AddComponent<Frosty::ECS::CMesh>(tree, Frosty::AssetManager::GetMesh("tree1"));
 		auto& treeMat = world->AddComponent<Frosty::ECS::CMaterial>(tree, Frosty::AssetManager::GetShader("Texture2D"));
 		treeMat.DiffuseTexture = Frosty::AssetManager::GetTexture2D("Tree1");
 		world->AddComponent<Frosty::ECS::CPhysics>(tree, Frosty::AssetManager::GetBoundingBox("tree1"));
 		
-
+		//navSystem->InitiateGridMap(world->GetComponent<Frosty::ECS::CTransform>(plane));
+		
 		PushLayer(FY_NEW InspectorLayer());
+		world->PrintWorld();
+
+		//world->AddToDestroyList(plane);
+		
+
+
 	}
 
 	Game::~Game()
@@ -170,3 +163,173 @@ namespace MCS
 
 	}
 }
+
+
+/*
+[22:33:06] FROSTY:
+		-----------Entity Info-----------
+		Index   Id      Address                 Refs
+		0       1       000002900F698CB0        7
+		1       3       000002900F6976F0        6
+		2       4       000002900F697750        6
+		3       5       000002900F698D70        20
+		4       6       000002900F698A70        10
+		5       7       000002900F697990        12
+		----------------Done----------------
+
+
+[22:33:06] FROSTY:
+		-----------Transform Component Manager-----------
+		Index   Component Address       Entity Id       Entity Address          Entity Refs
+		1       000002900F97A330        1               000002900F698CB0                7
+		2       000002900F97A3B0        7               000002900F697990                12
+		3       000002900F97A430        3               000002900F6976F0                6
+		4       000002900F97A4B0        4               000002900F697750                6
+		5       000002900F97A530        5               000002900F698D70                20
+		6       000002900F97A5B0        6               000002900F698A70                10
+		----------------Done----------------
+
+
+[22:33:06] FROSTY:
+		-----------Camera Component Manager-----------
+		Index   Component Address       Entity Id       Entity Address          Entity Refs
+		1       000002900F99A428        1               000002900F698CB0                7
+		----------------Done----------------
+
+
+[22:33:06] FROSTY:
+		-----------Light Component Manager-----------
+		Index   Component Address       Entity Id       Entity Address          Entity Refs
+		1       000002900FA104A0        3               000002900F6976F0                6
+		2       000002900FA104D0        4               000002900F697750                6
+		----------------Done----------------
+
+
+[22:33:06] FROSTY:
+		-----------Mesh Component Manager-----------
+		Index   Component Address       Entity Id       Entity Address          Entity Refs
+		1       000002900F9DC3B8        7               000002900F697990                12
+		2       000002900F9DC3E0        5               000002900F698D70                20
+		3       000002900F9DC408        6               000002900F698A70                10
+		----------------Done----------------
+
+
+[22:33:06] FROSTY:
+		-----------Material Component Manager-----------
+		Index   Component Address       Entity Id       Entity Address          Entity Refs
+		1       000002900F9E64A8        7               000002900F697990                12
+		2       000002900F9E6550        5               000002900F698D70                20
+		3       000002900F9E65F8        6               000002900F698A70                10
+		----------------Done----------------
+
+
+[22:33:06] FROSTY:
+		-----------Player Component Manager-----------
+		Index   Component Address       Entity Id       Entity Address          Entity Refs
+		1       000002900F69DFC0        5               000002900F698D70                20
+		----------------Done----------------
+
+
+[22:33:06] FROSTY:
+		-----------Physics Component Manager-----------
+		Index   Component Address       Entity Id       Entity Address          Entity Refs
+		1       000002900F6AE040        5               000002900F698D70                20
+		2       000002900F6AE090        6               000002900F698A70                10
+		3       000002900F6AE0E0        7               000002900F697990                12
+		----------------Done----------------
+
+
+[22:33:06] FROSTY:
+		-----------Dash Component Manager-----------
+		Index   Component Address       Entity Id       Entity Address          Entity Refs
+		1       000002900F6C2088        5               000002900F698D70                20
+		----------------Done----------------
+
+
+[22:33:06] FROSTY:
+		-----------BasicAttack Component Manager-----------
+		Index   Component Address       Entity Id       Entity Address          Entity Refs
+		1       000002900F6CC0F0        5               000002900F698D70                20
+		----------------Done----------------
+
+
+[22:33:06] FROSTY:
+		-----------Health Component Manager-----------
+		Index   Component Address       Entity Id       Entity Address          Entity Refs
+		1       000002900F6D4168        5               000002900F698D70                20
+		----------------Done----------------
+
+
+[22:33:06] FROSTY:
+		-----------Inventory Component Manager-----------
+		Index   Component Address       Entity Id       Entity Address          Entity Refs
+		1       000002900F6DE210        5               000002900F698D70                20
+		----------------Done----------------
+
+
+[22:33:06] FROSTY:
+		-----------Camera System Info-----------
+				---------Entity Map---------
+				Entity Id       Entity Address          Entity Refs     Array Index
+				2               000002900F697690                2       0
+				7               000002900F697990                12      0
+				1               000002900F698CB0                7       1
+				-----------Done-----------
+				------Component Array(s)------
+
+				Index   Component Address       Entity Id       Entity Address          Entity Refs
+				1       000002900F97A330        1               000002900F698CB0                7
+				1       000002900F99A428        1               000002900F698CB0                7
+
+				-----------Done-----------
+		----------------Done----------------
+
+
+[22:33:06] FROSTY:
+		-----------Light System Info-----------
+				---------Entity Map---------
+				Entity Id       Entity Address          Entity Refs     Array Index
+				2               000002900F697690                2       0
+				3               000002900F6976F0                6       1
+				4               000002900F697750                6       2
+				7               000002900F697990                12      0
+				-----------Done-----------
+				------Component Array(s)------
+
+				Index   Component Address       Entity Id       Entity Address          Entity Refs
+				1       000002900F97A430        3               000002900F6976F0                6
+				1       000002900FA104A0        3               000002900F6976F0                6
+
+				2       000002900F97A4B0        4               000002900F697750                6
+				2       000002900FA104D0        4               000002900F697750                6
+
+				-----------Done-----------
+		----------------Done----------------
+
+
+[22:33:06] FROSTY:
+		-----------Render System Info-----------
+				---------Entity Map---------
+				Entity Id       Entity Address          Entity Refs     Array Index
+				7               000002900F697990                12      4
+				6               000002900F698A70                10      3
+				5               000002900F698D70                20      2
+				-----------Done-----------
+				------Component Array(s)------
+
+				Index   Component Address       Entity Id       Entity Address          Entity Refs
+				1       000002900F97A3B0        7               000002900F697990                12
+				1       000002900F9DC3B8        7               000002900F697990                12
+				1       000002900F9E64A8        7               000002900F697990                12
+
+				2       000002900F97A530        5               000002900F698D70                20
+				2       000002900F9DC3E0        5               000002900F698D70                20
+				2       000002900F9E6550        5               000002900F698D70                20
+
+				3       000002900F97A5B0        6               000002900F698A70                10
+				3       000002900F9DC408        6               000002900F698A70                10
+				3       000002900F9E65F8        6               000002900F698A70                10
+
+				-----------Done-----------
+		----------------Done----------------
+*/

@@ -4,6 +4,8 @@
 
 namespace MCS
 {
+	const std::string RenderSystem::NAME = "Render";
+
 	void RenderSystem::Init()
 	{
 		p_Signature.set(Frosty::ECS::getComponentTypeID<Frosty::ECS::CTransform>(), true);
@@ -97,27 +99,65 @@ namespace MCS
 
 	void RenderSystem::RemoveEntity(const std::shared_ptr<Frosty::ECS::Entity>& entity)
 	{
-		Frosty::ECS::ComponentArrayIndex tempIndex = p_EntityMap[entity];
+		auto& it = p_EntityMap.find(entity);
 
-		if (tempIndex > 0)
+		if (it != p_EntityMap.end())
 		{
 			p_Total--;
+			auto& entityToUpdate = m_Transform[p_Total]->EntityPtr;
 			m_Transform[p_Total] = nullptr;
 			m_Meshes[p_Total] = nullptr;
 			m_Materials[p_Total] = nullptr;
 
-			if (p_Total > 1)
+			if (p_Total > it->second)
 			{
-				//std::shared_ptr<Entity> entityToUpdate = removeEntityFromData(mEntity);
-
-				if (p_Total > tempIndex)
-				{
-					std::shared_ptr<Frosty::ECS::Entity> entityToUpdate = m_Transform[p_EntityMap[entity]]->EntityPtr;
-					p_EntityMap[entityToUpdate] = tempIndex;
-				}
+				p_EntityMap[entityToUpdate] = it->second;
 			}
 
 			p_EntityMap.erase(entity);
 		}
+	}
+
+	void RenderSystem::UpdateEntityComponent(const std::shared_ptr<Frosty::ECS::Entity>& entity)
+	{
+		auto& it = p_EntityMap.find(entity);
+
+		if (it != p_EntityMap.end())
+		{
+			auto& world = Frosty::Application::Get().GetWorld();
+			Frosty::ECS::CTransform* transformPtr = world->GetComponentAddress<Frosty::ECS::CTransform>(entity);
+			Frosty::ECS::CMesh* meshPtr = world->GetComponentAddress<Frosty::ECS::CMesh>(entity);
+			Frosty::ECS::CMaterial* materialPtr = world->GetComponentAddress<Frosty::ECS::CMaterial>(entity);
+
+			m_Transform[it->second] = transformPtr;
+			m_Meshes[it->second] = meshPtr;
+			m_Materials[it->second] = materialPtr;
+		}
+	}
+	
+	std::string RenderSystem::GetInfo() const
+	{
+		std::stringstream retInfo;
+		retInfo << "\t-----------" << NAME << " System Info-----------\n";
+		retInfo << "\t\t---------Entity Map---------\n";
+		retInfo << "\t\tEntity Id\tEntity Address\t\tEntity Refs\tArray Index\n";
+		for (auto& em : p_EntityMap)
+		{
+			retInfo << "\t\t" << em.first->Id << "\t\t" << em.first << "\t\t" << em.first.use_count() << "\t" << em.second << "\n";
+		}
+		retInfo << "\t\t-----------Done-----------\n";
+		retInfo << "\t\t------Component Array(s)------\n";
+		retInfo << "\n\t\tIndex\tComponent Address\tEntity Id\tEntity Address\t\tEntity Refs\n";
+		for (size_t i = 1; i < p_Total; i++)
+		{
+			retInfo << "\t\t" << i << "\t" << m_Transform[i] << "\t" << m_Transform[i]->EntityPtr->Id << "\t\t" << m_Transform[i]->EntityPtr << "\t\t" << m_Transform[i]->EntityPtr.use_count() << "\n";
+			retInfo << "\t\t" << i << "\t" << m_Meshes[i] << "\t" << m_Meshes[i]->EntityPtr->Id << "\t\t" << m_Meshes[i]->EntityPtr << "\t\t" << m_Meshes[i]->EntityPtr.use_count() << "\n";
+			retInfo << "\t\t" << i << "\t" << m_Materials[i] << "\t" << m_Materials[i]->EntityPtr->Id << "\t\t" << m_Materials[i]->EntityPtr << "\t\t" << m_Materials[i]->EntityPtr.use_count() << "\n";
+			retInfo << "\n"; // Have this last
+		}
+		retInfo << "\t\t-----------Done-----------\n";
+		retInfo << "\t----------------Done----------------\n\n";
+
+		return retInfo.str();
 	}
 }

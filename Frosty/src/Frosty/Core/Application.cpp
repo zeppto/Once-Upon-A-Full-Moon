@@ -162,26 +162,6 @@ namespace Frosty
 		//m_TextVertexArray->SetIndexBuffer(textIndexBuffer);
 	}
 
-	//void Application::InitShaders()
-	//{
-	//	m_Shader.reset(new Shader((std::string(FY_SHADERS_FOLDER_ROOT) + "SpriteVertexShader.glsl"), ((std::string(FY_SHADERS_FOLDER_ROOT) + "SpriteFragmentShader.glsl"))));
-	//	m_textShader.reset(new Shader((std::string(FY_SHADERS_FOLDER_ROOT) + "TextVertexShader.glsl"), ((std::string(FY_SHADERS_FOLDER_ROOT) + "TextFragmentShader.glsl"))));
-	//	m_particleShader.reset(new Shader((std::string(FY_SHADERS_FOLDER_ROOT) + "ParticleVertexShader.glsl"), (std::string(FY_SHADERS_FOLDER_ROOT) + "ParticleGeometryShader.glsl"), std::string(FY_SHADERS_FOLDER_ROOT) + "ParticleFragmentShader.glsl"));
-	//	m_computeParticleShader.reset(new Shader(std::string(FY_SHADERS_FOLDER_ROOT) + "ParticleComputeShader.glsl"));
-	//}
-
-	//void Application::Run()
-	//{
-	//	states.AddState(Frosty::StateRef(new MainMenuState(s_Instance)), false);
-	//	states.ProcessStateChanges();
-
-	//	//m_Canvas.reset(new Canvas);
-	//	//m_Sprite.reset(new Sprite);
-
-	//	//ECS::ComponentManager<ECS::CTransform> cManager;
-	//	Renderer::DeleteSceneData();
-	//}
-
 	void Application::Run()
 	{
 		/*Renderer::InitScene(m_Shader2);*/
@@ -327,6 +307,9 @@ namespace Frosty
 		case EventType::KeyPressed:
 			OnKeyPressedEvent(static_cast<KeyPressedEvent&>(e));
 			break;
+		case EventType::KeyReleased:
+			OnKeyReleasedEvent(static_cast<KeyReleasedEvent&>(e));
+			break;
 		default:
 			break;
 		}
@@ -369,6 +352,18 @@ namespace Frosty
 		if (e.GetKeyCode() == FY_KEY_M)
 		{
 			/*states.GetActiveState()->OnInput();*/
+		}
+		if ((e.GetKeyCode() == FY_KEY_LEFT_CONTROL || e.GetKeyCode() == FY_KEY_RIGHT_CONTROL) && e.GetKeyCode() == FY_KEY_P && m_CanPrintInfo)
+		{
+			m_World->PrintWorld();
+		}
+	}
+
+	void Application::OnKeyReleasedEvent(KeyReleasedEvent& e)
+	{
+		if (e.GetKeyCode() == FY_KEY_P)
+		{
+			m_CanPrintInfo = true;
 		}
 	}
 
