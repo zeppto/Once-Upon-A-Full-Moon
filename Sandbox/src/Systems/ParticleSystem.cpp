@@ -36,9 +36,6 @@ namespace MCS
 
 			m_ParticleSystem[i]->texture->Bind();
 
-			//unsigned int test = sizeof(m_ParticleSystem[i]->particles); //Debug
-			//unsigned int test2 = sizeof(Frosty::ECS::CParticleSystem::Particle); //Debug
-
 			Frosty::Renderer::SubmitParticles(m_ParticleSystem[i]->shader, m_ParticleSystem[i]->computeShader, m_ParticleSystem[i]->particleVertArray, transform, m_ParticleSystem[i]->particleCount, 2.0f);
 
 			m_ParticleSystem[i]->texture->Unbind();
