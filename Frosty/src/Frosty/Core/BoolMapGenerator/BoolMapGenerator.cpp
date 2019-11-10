@@ -1,7 +1,6 @@
 #include<fypch.hpp>
 #include"BoolMapGenerator.hpp"
 #include "Glad/glad.h"
-#include"TestMap.hpp"
 
 #define BUFFER_OFFSET(i) ((char *)nullptr + (i))
 
@@ -108,24 +107,6 @@ namespace Frosty
 	std::shared_ptr<BoolMap>& BoolMapGenerator::RenderMap()
 	{
 		InitiateRenderData();
-
-
-
-
-
-
-
-		NodeMap testMap(100, 100);
-
-		testMap.GenereateMap();
-
-		std::vector<Node> getMap = testMap.GetNodes();
-
-
-
-
-
-
 
 
 		unsigned int VertID;
