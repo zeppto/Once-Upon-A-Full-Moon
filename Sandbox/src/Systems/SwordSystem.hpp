@@ -7,6 +7,9 @@ namespace MCS
 	class SwordSystem : public Frosty::ECS::BaseSystem
 	{
 	public:
+		const static std::string NAME;
+
+	public:
 		SwordSystem() = default;
 		virtual ~SwordSystem() = default;
 
@@ -15,6 +18,8 @@ namespace MCS
 
 		virtual void AddComponent(const std::shared_ptr<Frosty::ECS::Entity>& entity) override;
 		virtual void RemoveEntity(const std::shared_ptr<Frosty::ECS::Entity>& entity) override;
+		virtual void UpdateEntityComponent(const std::shared_ptr<Frosty::ECS::Entity>& entity) override;
+		virtual std::string GetInfo() const override;
 
 	private:
 		Frosty::World* m_World;

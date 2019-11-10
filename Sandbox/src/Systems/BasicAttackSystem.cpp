@@ -5,6 +5,7 @@
 
 namespace MCS
 {
+	const std::string BasicAttackSystem::NAME = "Basic Attack";
 
 	void BasicAttackSystem::Init()
 	{
@@ -46,47 +47,82 @@ namespace MCS
 
 	void BasicAttackSystem::RemoveEntity(const std::shared_ptr<Frosty::ECS::Entity>& entity)
 	{
-		Frosty::ECS::ComponentArrayIndex tempIndex = p_EntityMap[entity];
+		auto& it = p_EntityMap.find(entity);
 
-		if (tempIndex > 0)
+		if (it != p_EntityMap.end())
 		{
 			p_Total--;
+			auto& entityToUpdate = m_BasicAttack[p_Total]->EntityPtr;
 			m_BasicAttack[p_Total] = nullptr;
 
-			if (p_Total > 1)
+			if (p_Total > it->second)
 			{
-				//std::shared_ptr<Entity> entityToUpdate = removeEntityFromData(mEntity);
-
-				if (p_Total > tempIndex)
-				{
-					std::shared_ptr<Frosty::ECS::Entity> entityToUpdate = m_BasicAttack[p_EntityMap[entity]]->EntityPtr;
-					p_EntityMap[entityToUpdate] = tempIndex;
-				}
+				p_EntityMap[entityToUpdate] = it->second;
 			}
 
 			p_EntityMap.erase(entity);
 		}
 	}
 
+	void BasicAttackSystem::UpdateEntityComponent(const std::shared_ptr<Frosty::ECS::Entity>& entity)
+	{
+		auto& it = p_EntityMap.find(entity);
+
+		if (it != p_EntityMap.end())
+		{
+			auto& world = Frosty::Application::Get().GetWorld();
+			Frosty::ECS::CBasicAttack* basicAttackPtr = world->GetComponentAddress<Frosty::ECS::CBasicAttack>(entity);
+
+			m_BasicAttack[it->second] = basicAttackPtr;
+		}
+	}
+
+	std::string BasicAttackSystem::GetInfo() const
+	{
+		std::stringstream retInfo;
+		retInfo << "\t-----------" << NAME << " System Info-----------\n";
+		retInfo << "\t\t---------Entity Map---------\n";
+		retInfo << "\t\tEntity Id\tEntity Address\t\tEntity Refs\tArray Index\n";
+		for (auto& em : p_EntityMap)
+		{
+			retInfo << "\t\t" << em.first->Id << "\t\t" << em.first << "\t\t" << em.first.use_count() << "\t" << em.second << "\n";
+		}
+		retInfo << "\t\t-----------Done-----------\n";
+		retInfo << "\t\t------Component Array(s)------\n";
+		retInfo << "\n\t\tIndex\tComponent Address\tEntity Id\tEntity Address\t\tEntity Refs\n";
+		for (size_t i = 1; i < p_Total; i++)
+		{
+			retInfo << "\t\t" << i << "\t" << m_BasicAttack[i] << "\t" << m_BasicAttack[i]->EntityPtr->Id << "\t\t" << m_BasicAttack[i]->EntityPtr << "\t\t" << m_BasicAttack[i]->EntityPtr.use_count() << "\n";
+			retInfo << "\n"; // Have this last
+		}
+		retInfo << "\t\t-----------Done-----------\n";
+		retInfo << "\t----------------Done----------------\n\n";
+
+		return retInfo.str();
+	}
+
 	void BasicAttackSystem::OnBasicAttackEvent(Frosty::BasicAttackEvent& e)
 	{
-		size_t index = p_EntityMap[e.GetEntity()];
+		auto& it = p_EntityMap.find(e.GetEntity());
 
-		if (m_BasicAttack[index]->CurrentCooldown <= 0.0f)
+		if (it != p_EntityMap.end())
 		{
-			switch (m_BasicAttack[index]->Type)
+			if (m_BasicAttack[it->second]->CurrentCooldown <= 0.0f)
 			{
-			case Frosty::ECS::CBasicAttack::AttackType::Melee:
-				CreateBoundingBox(index);
-				break;
-			case Frosty::ECS::CBasicAttack::AttackType::Range:
-				CreateProjectile(index);
-				break;
-			default:
-				break;
-			}
+				switch (m_BasicAttack[it->second]->Type)
+				{
+				case Frosty::ECS::CBasicAttack::AttackType::Melee:
+					CreateBoundingBox(it->second);
+					break;
+				case Frosty::ECS::CBasicAttack::AttackType::Range:
+					CreateProjectile(it->second);
+					break;
+				default:
+					break;
+				}
 
-			m_BasicAttack[index]->CurrentCooldown = m_BasicAttack[index]->COOLDOWN / 1000.0f;
+				m_BasicAttack[it->second]->CurrentCooldown = m_BasicAttack[it->second]->COOLDOWN / 1000.0f;
+			}
 		}
 	}
 

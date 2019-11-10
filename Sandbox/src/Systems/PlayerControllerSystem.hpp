@@ -6,6 +6,9 @@ namespace MCS
 	class PlayerControllerSystem : public Frosty::ECS::BaseSystem
 	{
 	public:
+		const static std::string NAME;
+
+	public:
 		PlayerControllerSystem() = default;
 		virtual ~PlayerControllerSystem() = default;
 
@@ -15,6 +18,8 @@ namespace MCS
 
 		virtual void AddComponent(const std::shared_ptr<Frosty::ECS::Entity>& entity) override;
 		virtual void RemoveEntity(const std::shared_ptr<Frosty::ECS::Entity>& entity) override;
+		virtual void UpdateEntityComponent(const std::shared_ptr<Frosty::ECS::Entity>& entity) override;
+		virtual std::string GetInfo() const override;
 
 	private:
 		glm::vec3 ScreenToTerrainPoint();

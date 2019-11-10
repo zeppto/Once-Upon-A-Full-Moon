@@ -3,6 +3,7 @@
 
 namespace MCS
 {
+	const std::string DestroySystem::NAME = "Destroy";
 
 	void DestroySystem::Init()
 	{
@@ -25,23 +26,57 @@ namespace MCS
 
 	void DestroySystem::RemoveEntity(const std::shared_ptr<Frosty::ECS::Entity>& entity)
 	{
-		Frosty::ECS::ComponentArrayIndex tempIndex = p_EntityMap[entity];
+		auto& it = p_EntityMap.find(entity);
 
-		if (tempIndex > 0)
+		if (it != p_EntityMap.end())
 		{
 			p_Total--;
+			auto& entityToUpdate = m_Destroy[p_Total]->EntityPtr;
 			m_Destroy[p_Total] = nullptr;
 
-			//std::shared_ptr<Entity> entityToUpdate = removeEntityFromData(mEntity);
-
-			if (p_Total > tempIndex)
+			if (p_Total > it->second)
 			{
-				std::shared_ptr<Frosty::ECS::Entity> entityToUpdate = m_Destroy[p_EntityMap[entity]]->EntityPtr;
-				p_EntityMap[entityToUpdate] = tempIndex;
+				p_EntityMap[entityToUpdate] = it->second;
 			}
 
 			p_EntityMap.erase(entity);
 		}
 	}
 
+	void DestroySystem::UpdateEntityComponent(const std::shared_ptr<Frosty::ECS::Entity>& entity)
+	{
+		auto& it = p_EntityMap.find(entity);
+
+		if (it != p_EntityMap.end())
+		{
+			auto& world = Frosty::Application::Get().GetWorld();
+			Frosty::ECS::CDestroy* destroyPtr = world->GetComponentAddress<Frosty::ECS::CDestroy>(entity);
+
+			m_Destroy[it->second] = destroyPtr;
+		}
+	}
+
+	std::string DestroySystem::GetInfo() const
+	{
+		std::stringstream retInfo;
+		retInfo << "\t-----------" << NAME << " System Info-----------\n";
+		retInfo << "\t\t---------Entity Map---------\n";
+		retInfo << "\t\tEntity Id\tEntity Address\t\tEntity Refs\tArray Index\n";
+		for (auto& em : p_EntityMap)
+		{
+			retInfo << "\t\t" << em.first->Id << "\t\t" << em.first << "\t\t" << em.first.use_count() << "\t" << em.second << "\n";
+		}
+		retInfo << "\t\t-----------Done-----------\n";
+		retInfo << "\t\t------Component Array(s)------\n";
+		retInfo << "\n\t\tIndex\tComponent Address\tEntity Id\tEntity Address\t\tEntity Refs\n";
+		for (size_t i = 1; i < p_Total; i++)
+		{
+			retInfo << "\t\t" << i << "\t" << m_Destroy[i] << "\t" << m_Destroy[i]->EntityPtr->Id << "\t\t" << m_Destroy[i]->EntityPtr << "\t\t" << m_Destroy[i]->EntityPtr.use_count() << "\n";
+			retInfo << "\n"; // Have this last
+		}
+		retInfo << "\t\t-----------Done-----------\n";
+		retInfo << "\t----------------Done----------------\n\n";
+
+		return retInfo.str();
+	}
 }

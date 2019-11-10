@@ -4,6 +4,8 @@
 
 namespace MCS
 {
+	const std::string CombatSystem::NAME = "Combat";
+
 	void CombatSystem::Init()
 	{
 		p_Signature.set(Frosty::ECS::getComponentTypeID<Frosty::ECS::CTransform>(), true);
@@ -42,34 +44,71 @@ namespace MCS
 
 	void CombatSystem::RemoveEntity(const std::shared_ptr<Frosty::ECS::Entity>& entity)
 	{
-		Frosty::ECS::ComponentArrayIndex tempIndex = p_EntityMap[entity];
+		auto& it = p_EntityMap.find(entity);
 
-		if (tempIndex > 0)
+		if (it != p_EntityMap.end())
 		{
 			p_Total--;
+			auto& entityToUpdate = m_Transform[p_Total]->EntityPtr;
 			m_Transform[p_Total] = nullptr;
 			m_Health[p_Total] = nullptr;
 
-			//std::shared_ptr<Entity> entityToUpdate = removeEntityFromData(mEntity);
-
-			if (p_Total > tempIndex)
+			if (p_Total > it->second)
 			{
-				std::shared_ptr<Frosty::ECS::Entity> entityToUpdate = m_Transform[p_EntityMap[entity]]->EntityPtr;
-				p_EntityMap[entityToUpdate] = tempIndex;
+				p_EntityMap[entityToUpdate] = it->second;
 			}
 
 			p_EntityMap.erase(entity);
 		}
 	}
-	
+
+	void CombatSystem::UpdateEntityComponent(const std::shared_ptr<Frosty::ECS::Entity>& entity)
+	{
+		auto& it = p_EntityMap.find(entity);
+
+		if (it != p_EntityMap.end())
+		{
+			auto& world = Frosty::Application::Get().GetWorld();
+			Frosty::ECS::CTransform* transformPtr = world->GetComponentAddress<Frosty::ECS::CTransform>(entity);
+			Frosty::ECS::CHealth* healthPtr = world->GetComponentAddress<Frosty::ECS::CHealth>(entity);
+
+			m_Transform[it->second] = transformPtr;
+			m_Health[it->second] = healthPtr;
+		}
+	}
+
+	std::string CombatSystem::GetInfo() const
+	{
+		std::stringstream retInfo;
+		retInfo << "\t-----------" << NAME << " System Info-----------\n";
+		retInfo << "\t\t---------Entity Map---------\n";
+		retInfo << "\t\tEntity Id\tEntity Address\t\tEntity Refs\tArray Index\n";
+		for (auto& em : p_EntityMap)
+		{
+			retInfo << "\t\t" << em.first->Id << "\t\t" << em.first << "\t\t" << em.first.use_count() << "\t" << em.second << "\n";
+		}
+		retInfo << "\t\t-----------Done-----------\n";
+		retInfo << "\t\t------Component Array(s)------\n";
+		retInfo << "\n\t\tIndex\tComponent Address\tEntity Id\tEntity Address\t\tEntity Refs\n";
+		for (size_t i = 1; i < p_Total; i++)
+		{
+			retInfo << "\t\t" << i << "\t" << m_Transform[i] << "\t" << m_Transform[i]->EntityPtr->Id << "\t\t" << m_Transform[i]->EntityPtr << "\t\t" << m_Transform[i]->EntityPtr.use_count() << "\n";
+			retInfo << "\t\t" << i << "\t" << m_Health[i] << "\t" << m_Health[i]->EntityPtr->Id << "\t\t" << m_Health[i]->EntityPtr << "\t\t" << m_Health[i]->EntityPtr.use_count() << "\n";
+			retInfo << "\n"; // Have this last
+		}
+		retInfo << "\t\t-----------Done-----------\n";
+		retInfo << "\t----------------Done----------------\n\n";
+
+		return retInfo.str();
+	}
+
 	void CombatSystem::OnCollisionEvent(Frosty::CollisionEvent& e)
 	{
-		size_t indexA = p_EntityMap[e.GetEntityA()];
-		size_t indexB = p_EntityMap[e.GetEntityB()];
+		bool entityA = p_EntityMap.count(e.GetEntityA());
+		bool entityB = p_EntityMap.count(e.GetEntityB());
 		auto& world = Frosty::Application::Get().GetWorld();
 
-		//world->RemoveEntity(e.GetEntityA());
-		if (indexA > 0)
+		if (entityA)
 		{
 			if (world->HasComponent<Frosty::ECS::CArrow>(e.GetEntityB()) || world->HasComponent<Frosty::ECS::CSword>(e.GetEntityB()))
 			{
@@ -79,7 +118,7 @@ namespace MCS
 				}
 			}
 		}
-		if (indexB > 0)
+		if (entityB)
 		{
 			if (world->HasComponent<Frosty::ECS::CArrow>(e.GetEntityA()) || world->HasComponent<Frosty::ECS::CSword>(e.GetEntityA()))
 			{

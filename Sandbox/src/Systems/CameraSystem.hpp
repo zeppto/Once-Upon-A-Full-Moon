@@ -6,6 +6,9 @@ namespace MCS
 	class CameraSystem : public Frosty::ECS::BaseSystem
 	{
 	public:
+		const static std::string NAME;
+
+	public:
 		CameraSystem() = default;
 		virtual ~CameraSystem() = default;
 
@@ -15,6 +18,8 @@ namespace MCS
 
 		virtual void AddComponent(const std::shared_ptr<Frosty::ECS::Entity>& entity) override;
 		virtual void RemoveEntity(const std::shared_ptr<Frosty::ECS::Entity>& entity) override;
+		virtual void UpdateEntityComponent(const std::shared_ptr<Frosty::ECS::Entity>& entity) override;
+		virtual std::string GetInfo() const override;
 
 		inline void PrintHello() { FY_FATAL("Hello Camera System!"); }
 

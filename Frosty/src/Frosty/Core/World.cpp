@@ -23,7 +23,7 @@ namespace Frosty
 
 	void World::OnStart()
 	{
-		HandleDestroyedEntities();
+		if (!m_DestroyedEntities.empty()) HandleDestroyedEntities();
 
 		for (size_t i = 1; i < m_TotalSystems; i++)
 		{
@@ -71,6 +71,14 @@ namespace Frosty
 		}
 	}
 
+	void World::UpdateSystems(const std::shared_ptr<ECS::Entity>& entity)
+	{
+		for (size_t i = 1; i < m_TotalSystems; i++)
+		{
+			m_Systems[i]->UpdateEntityComponent(entity);
+		}
+	}
+
 	std::unique_ptr<Scene>& World::CreateScene()
 	{
 		m_Scene.reset(FY_NEW Scene());
@@ -80,30 +88,9 @@ namespace Frosty
 		auto& win = app.GetWindow();
 
 		// Creates a camera every time a scene is initiated
-		auto& camEntity = CreateEntity();
-		auto& camTransform = GetComponent<ECS::CTransform>(camEntity);
-		camTransform.Position = glm::vec3(0.0f, 40.0f, 25.0f);
-		camTransform.Rotation = glm::vec3(-90.0f, -65.0f, 0.0f);
+		auto& camEntity = CreateEntity({ 0.0f, 40.0f, 25.0f }, { -90.0f, -65.0f, 0.0f });
 		AddComponent<ECS::CCamera>(camEntity, 60.0f, (float)(win.GetViewport().z / win.GetViewport().w), 0.01f, 1000.0f);
 		m_Scene->AddCamera(camEntity);
-		//AddComponent<ECS::CLight>(camEntity);
-
-		// Temporary
-		//auto& obj = CreateEntity();
-		//auto& objTransform = GetComponent<ECS::CTransform>(obj);
-		//objTransform.Position.x = -10.0f;
-		//AddComponent<ECS::CMesh>(obj, AssetManager::GetMesh("3D"));
-		//AddComponent<ECS::CMaterial>(obj, AssetManager::GetShader("FlatColor"));
-		//AddComponent<ECS::CMotion>(obj, 3.0f);
-		//AddComponent<ECS::CController>(obj);
-		//
-		//auto& light = CreateEntity();
-		//auto& lightTransform = GetComponent<ECS::CTransform>(light);
-		//lightTransform.Position.z = 10.0f;
-		//lightTransform.Rotation.x = 180.0;
-		//AddComponent<ECS::CMesh>(light, AssetManager::GetMesh("Cube"));
-		//AddComponent<ECS::CMaterial>(light, AssetManager::GetShader("FlatColor"));
-		//AddComponent<ECS::CLight>(light);
 
 		return m_Scene;
 	}
@@ -113,19 +100,32 @@ namespace Frosty
 		m_Scene.reset();
 	}
 
-	void World::RemoveEntity(std::shared_ptr<ECS::Entity>& entity)
+	void World::RemoveEntity(const std::shared_ptr<ECS::Entity>& entity)
 	{
-		m_Scene->RemoveEntity(entity);
-
 		for (size_t i = 1; i < m_TotalSystems; i++)
 		{
 			m_Systems[i]->RemoveEntity(entity);
 		}
+
+		m_Scene->RemoveEntity(entity);
 	}
 
 	void World::AddToDestroyList(const std::shared_ptr<ECS::Entity>& entity)
 	{
 		m_DestroyedEntities.emplace_back(entity);
+	}
+
+	void World::PrintWorld()
+	{
+		// Scene (Entities & Components)
+		m_Scene->PrintScene();
+
+		// Systems
+		for (size_t i = 1; i < m_TotalSystems; i++)
+		{
+			if (i == m_TotalSystems - 1) FY_CORE_INFO("\n{0}\t\t==============DONE PRINT WORLD INFO==============\n\n\n", *m_Systems[i]);
+			else FY_CORE_INFO("\n{0}", *m_Systems[i]);
+		}
 	}
 
 	void World::HandleDestroyedEntities()
@@ -135,5 +135,7 @@ namespace Frosty
 			RemoveEntity(m_DestroyedEntities[i]);
 			m_DestroyedEntities.erase(m_DestroyedEntities.begin() + i);
 		}
+
+		PrintWorld();
 	}
 }
