@@ -18,7 +18,7 @@ namespace ECS { struct Entity; }
 struct Level_Header
 {
 	int NrOfEntitys;
-	int NrOfComponents = 10;
+	int NrOfComponents = 11;
 };
 
 //Do this per nrOfEntitys and as meny times as nrOfComponents (to make older files have a higer shans of combadebilety) 
@@ -70,7 +70,7 @@ struct Level_Follow
 	float StopDistance;
 };
 
-//4 = light
+//4 = Light
 enum class LightType { Point, Directional };
 struct Level_Light
 {
@@ -80,7 +80,7 @@ struct Level_Light
 	float Strength;
 };
 
-//4 = Physics
+//5 = Physics
 struct Level_Physics
 {
 	Luna::BoundingBox BoundingBox;
@@ -91,13 +91,13 @@ struct Level_Physics
 	float SpeedMultiplier;
 };
 
-//5 = Enemy
+//6 = Enemy
 struct Level_Enemy
 {
 	//nothing to send ( it is emty)
 };
 
-//6 = Health
+//7 = Health
 struct Level_Health
 {
 	float MaxPossibleHealth;						
@@ -105,7 +105,7 @@ struct Level_Health
 	float CurrentHealth;
 };
 
-//7 = HealthBar
+//8 = HealthBar
 struct Level_HealthBar
 {
 	glm::vec3 BarOffset;
@@ -116,13 +116,13 @@ struct Level_HealthBar
 	glm::mat4 HpTransform;
 };
 
-//8 = ParticleSystem
+//9 = ParticleSystem
 struct Level_ParticleSystem
 {
 	//under construction
 };
 
-//9 = LevelExit
+//10 = LevelExit
 struct Level_LevelExit
 {
 	int ExitDirection;
