@@ -78,12 +78,12 @@ namespace Frosty
 	{
 		glGenFramebuffers(1, &s_GBuffer);
 		glBindFramebuffer(GL_FRAMEBUFFER, s_GBuffer);
-
+		glViewport(0, 0, (s_Settings.Width * s_Settings.Pix_Cord_Ratio), (s_Settings.Height * s_Settings.Pix_Cord_Ratio));
 		// - bright color buffer
 		glGenTextures(1, &s_Texture);
 		glBindTexture(GL_TEXTURE_2D, s_Texture);
 		//glGenerateMipmap(GL_TEXTURE_2D);
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, (s_Settings.Width * s_Settings.Pix_Cord_Ratio), (s_Settings.Height * s_Settings.Pix_Cord_Ratio), 0, GL_RGB, GL_FLOAT, NULL);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_R8, (s_Settings.Width * s_Settings.Pix_Cord_Ratio), (s_Settings.Height * s_Settings.Pix_Cord_Ratio), 0, GL_RED, GL_FLOAT, NULL);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
@@ -105,11 +105,20 @@ namespace Frosty
 		//glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	}
 
-	std::shared_ptr<BoolMap>& BoolMapGenerator::RenderMap()
+
+
+
+	std::shared_ptr<BoolMap> BoolMapGenerator::RenderMap()
 	{
+		//temp
 		glDeleteTextures(1, &s_Texture);
+
+
+
 		InitiateRenderData();
 
+		uint16_t TmpHeight = s_Settings.Height * s_Settings.Pix_Cord_Ratio;
+		uint16_t TmpWidth = s_Settings.Width * s_Settings.Pix_Cord_Ratio;
 
 
 		unsigned int VertID;
@@ -117,7 +126,7 @@ namespace Frosty
 
 		//temp
 		//glBindFramebuffer(GL_FRAMEBUFFER, s_GBuffer);
-		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		//glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		glUseProgram(s_RenderProgramID);
 		//glActiveTexture(GL_TEXTURE0);
 
@@ -175,14 +184,36 @@ namespace Frosty
 		}
 
 	//	glUseProgram(0);
+		
+		//can be optimized (+ bitmap)
+		float* tempFloatPtr = FY_NEW float[((int)TmpWidth * (int)TmpHeight)];
 
+		glReadPixels(0, 0, TmpWidth, TmpHeight, GL_RED, GL_FLOAT, &tempFloatPtr[0]);
+
+		std::shared_ptr<bool[]> tmpMap(FY_NEW bool[((int)TmpWidth * (int)TmpHeight)]);
+
+		for (int i = 0; i < (TmpWidth * TmpHeight); i++)
+		{
+			float xx = tempFloatPtr[i];
+
+			if (tempFloatPtr[i] > 0.001)
+			{
+				tmpMap[i] = true;
+			}
+			else
+			{
+				tmpMap[i] = false;
+			}
+		}
+		delete[]tempFloatPtr;
 
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		glBindTexture(GL_TEXTURE_2D, 0);
 		glDeleteFramebuffers(1, &s_GBuffer);
 	//	glDeleteTextures(1, &s_Texture);
 		s_RenderBatch.erase(s_RenderBatch.begin(), s_RenderBatch.end());
 
-		return std::shared_ptr<BoolMap>(nullptr);
+		return std::shared_ptr<BoolMap>(FY_NEW BoolMap(TmpWidth, TmpHeight, s_Settings.Pix_Cord_Ratio, tmpMap));
 	}
 
 

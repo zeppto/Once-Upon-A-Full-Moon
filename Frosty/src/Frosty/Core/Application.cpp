@@ -259,13 +259,13 @@ namespace Frosty
 
 				glm::mat4 temp(1.0f);
 
-				temp[3][0] = 1.0f;
-				temp[3][1] = 1.0f;
-				temp[3][2] = 1.0f;
+				temp[3][0] = 0.0f;
+				temp[3][1] = 0.0f;
+				temp[3][2] = 70.0f;
 
-				temp[0][0] = 2.0f;
-				temp[1][1] = 2.0f;
-				temp[2][2] = 2.0f;
+				temp[0][0] = 4.0f;
+				temp[1][1] = 4.0f;
+				temp[2][2] = 4.0f;
 
 
 
@@ -280,19 +280,26 @@ namespace Frosty
 
 				BoolMapGenerator::AddToRenderList(tempBatch);
 
-				BoolMapGenerator::RenderBoolMap();
+				std::shared_ptr<BoolMap> ptr = BoolMapGenerator::RenderBoolMap();
 
-
+				bool b = ptr->CheckCollition(glm::vec3(1.99f,1.0f,1.99f));
 
 				Renderer::SetCamera(m_EditorCamera.GetPosition(), m_EditorCamera.GetViewMatrix(), m_EditorCamera.GetProjectionMatrix());
 			}
 			else
 			{
+	
+				
 				m_World->OnStart();
 				m_World->OnInput();
 				m_World->OnUpdate();
 				m_World->BeginScene();
 			}
+
+			//Temp (Change if needed)
+			glm::vec4 temp = m_Window->GetViewport();
+			glViewport(temp.x,temp.y,temp.z,temp.w);
+
 
 			m_World->Render();
 

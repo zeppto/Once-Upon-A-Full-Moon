@@ -51,7 +51,7 @@ namespace Frosty
 			
 			void main()
 			{
-				fsOutCol = vec4( 1.0f, 0.0f, 0.0f, 1.0f ); 
+				fsOutCol = vec4( 0.5f, 0.0f, 0.0f, 1.0f ); 
 			}
 		)";
 
@@ -103,7 +103,7 @@ namespace Frosty
 
 		inline static void AddToRenderList(const ModelBatch& Batch) { InitCheck();  s_RenderBatch.push_back(Batch); }
 
-		inline static std::shared_ptr<BoolMap>& RenderBoolMap() { InitCheck(); return RenderMap(); }
+		inline static std::shared_ptr<BoolMap> RenderBoolMap() { InitCheck(); return RenderMap(); }
 
 		inline static  const unsigned int& GetTextureID() { return s_Texture; }
 
@@ -125,7 +125,7 @@ namespace Frosty
 		
 		static void InitiateRenderData();
 		static void InitiateGBuffer();
-		static std::shared_ptr<BoolMap>& RenderMap(); // start here
+		static std::shared_ptr<BoolMap> RenderMap();
 	};
 
 
