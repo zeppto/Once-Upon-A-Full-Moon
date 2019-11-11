@@ -137,6 +137,12 @@ namespace MCS
 							m_World->AddComponent<Frosty::ECS::CDestroy>(m_Transform[index]->EntityPtr);
 						}
 					}
+					// If player collides with exit Bounding box
+					else if (m_World->HasComponent<Frosty::ECS::CPlayer>(m_Transform[index]->EntityPtr) && m_World->HasComponent<Frosty::ECS::CLevelExit>(m_Transform[i]->EntityPtr))
+					{
+						//to go to next room
+						Frosty::EventBus::GetEventBus()->Publish<Frosty::ExitLevelEvent>(Frosty::ExitLevelEvent(m_Transform[i]->EntityPtr, m_Transform[index]->EntityPtr));
+					}
 					// If the one colliding is an enemy or a player...
 					else if (m_World->HasComponent<Frosty::ECS::CEnemy>(m_Transform[index]->EntityPtr) || m_World->HasComponent<Frosty::ECS::CPlayer>(m_Transform[index]->EntityPtr))
 					{

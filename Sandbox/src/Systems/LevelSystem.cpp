@@ -37,14 +37,14 @@ namespace MCS
 			Level::Room(m_CurrentRoome.sideExits[0], m_CurrentRoome.sideExits[1], m_CurrentRoome.sideExits[2], m_CurrentRoome.sideExits[3], texture, rotation);
 			m_Start = false;
 		}
-		if (m_NextLevel && m_TempTimer > 9)
-		{
-			int rotation = 0;
-			std::string texture = m_Map.getRoomTextur(m_PlayerPos, &rotation);
-			Level::Room(m_CurrentRoome.sideExits[0], m_CurrentRoome.sideExits[1], m_CurrentRoome.sideExits[2], m_CurrentRoome.sideExits[3], texture, rotation, m_EntrensSide);
-			m_NextLevel = false;
-		}
-		m_TempTimer += 1;//Frosty::Time::DeltaTime();
+		//if (m_NextLevel && m_TempTimer > 9)
+		//{
+		//	int rotation = 0;
+		//	std::string texture = m_Map.getRoomTextur(m_PlayerPos, &rotation);
+		//	Level::Room(m_CurrentRoome.sideExits[0], m_CurrentRoome.sideExits[1], m_CurrentRoome.sideExits[2], m_CurrentRoome.sideExits[3], texture, rotation, m_EntrensSide);
+		//	m_NextLevel = false;
+		//}
+		//m_TempTimer += 1;//Frosty::Time::DeltaTime();
 	}
 
 	void LevelSystem::AddComponent(const std::shared_ptr<Frosty::ECS::Entity>& entity)
@@ -158,13 +158,13 @@ namespace MCS
 			m_PlayerPos += glm::ivec2(1, 0);
 
 		m_CurrentRoome = m_Map.getRoom(m_PlayerPos);
-		m_EntrensSide = ExitSide.ExitDirection;
-		m_NextLevel = true;
-		m_TempTimer = 0;
+		//m_EntrensSide = ExitSide.ExitDirection;
+		//m_NextLevel = true;
+		//m_TempTimer = 0;
 
 		int rotation = 0;
 		std::string texture = m_Map.getRoomTextur(m_PlayerPos, &rotation);
-		PlayerTranform.Position = Level::Room(m_CurrentRoome.sideExits[0], m_CurrentRoome.sideExits[1], m_CurrentRoome.sideExits[2], m_CurrentRoome.sideExits[3], texture, rotation, ExitSide.ExitDirection, true);
+		PlayerTranform.Position = Level::Room(m_CurrentRoome.sideExits[0], m_CurrentRoome.sideExits[1], m_CurrentRoome.sideExits[2], m_CurrentRoome.sideExits[3], texture, rotation, ExitSide.ExitDirection);
 
 
 	}
