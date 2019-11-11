@@ -1,6 +1,7 @@
 #include "fypch.hpp"
 #include "Renderer.hpp"
 #include "Frosty/Core/ECS.hpp"
+#include "Frosty/API/AssetManager/AssetManager.hpp"
 
 #include <glad/glad.h>
 
@@ -112,13 +113,13 @@ namespace Frosty
 
 	void Renderer::SubmitParticles(const std::shared_ptr<Shader>& shader, const std::shared_ptr<Shader>& computeShader, const std::shared_ptr<VertexArray>& vertexArray, glm::mat4& modelMat, size_t particleCount, float maxLifetime)
 	{
-		computeShader->Bind();
-		vertexArray->BindShaderStorageBuffer();
+		//computeShader->Bind();
+		//vertexArray->BindShaderStorageBuffer();
 
-		computeShader->UploadUniformFloat("deltaTime", Frosty::Time::DeltaTime());
-		computeShader->UploadUniformFloat("maxLifetime", maxLifetime);
+		//computeShader->UploadUniformFloat("deltaTime", Frosty::Time::DeltaTime());
+		//computeShader->UploadUniformFloat("maxLifetime", maxLifetime);
 
-		ComputeCommand::Send(particleCount);
+		//ComputeCommand::Send(particleCount);
 
 		shader->Bind();
 		vertexArray->Bind();
@@ -128,10 +129,13 @@ namespace Frosty
 		shader->UploadUniformMat4("modelMat", modelMat);
 
 		glEnable(GL_BLEND);
+		glDepthMask(GL_FALSE);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE);
 
+		RenderCommand::DisableBackfaceCulling();
 		RenderCommand::DrawParticles(vertexArray, particleCount);
 
+		glDepthMask(GL_TRUE);
 		glDisable(GL_BLEND);
 
 		vertexArray->Unbind();
@@ -176,6 +180,7 @@ namespace Frosty
 			mat->UseShader->UploadUniformFloat2("u_TextureCoordScale", mat->TextureScale);
 		}
 		vertexArray->Bind();
+		RenderCommand::EnableBackfaceCulling();
 		RenderCommand::Draw2D(vertexArray);
 	}
 
@@ -191,8 +196,32 @@ namespace Frosty
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
 
+		// Might wanna do this, not sure if needed: RenderCommand::DisableBackfaceCulling();
 		RenderCommand::Draw2D(vertexArray);
 
 		glDisable(GL_BLEND);
 	}
+
+	float dt = 0;
+
+	void Renderer::AnimSubmit(ECS::CMaterial* mat, const std::shared_ptr<VertexArray>& vertexArray, const glm::mat4& transform)
+	{
+		mat->UseShader->Bind();
+		mat->UseShader->UploadUniformMat4("u_ViewProjection", s_SceneData->GameCamera.ViewProjectionMatrix);
+		mat->UseShader->UploadUniformMat4("u_Transform", transform);
+		mat->UseShader->AssignUniformBlock("a_jointDataBlock");
+
+		void* skinDataPtr = nullptr;
+		int nrOfBones = 0;
+		AssetManager::GetAnimation(vertexArray->GetCurrentAnim().animationName)->CalculateAnimMatrix(&dt);
+		AssetManager::GetAnimation(vertexArray->GetCurrentAnim().animationName)->GetSkinData(skinDataPtr, nrOfBones);
+
+		vertexArray->GetUniformBuffer()->BindUpdate(skinDataPtr, nrOfBones);
+
+		vertexArray->Bind();
+		RenderCommand::EnableBackfaceCulling();
+		RenderCommand::Draw2D(vertexArray);
+		dt += Frosty::Time::DeltaTime();
+	}
+
 }

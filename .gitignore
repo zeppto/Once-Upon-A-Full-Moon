@@ -8,3 +8,6 @@ bin-int/
 *.vcxproj
 *.filters
 *.user
+/Frosty/vendor/cu3e/lib/qu3e.pdb
+/Frosty/vendor/cu3e/lib/qu3e.lib
+/Frosty/vendor/cu3e/lib

@@ -27,16 +27,31 @@ namespace Frosty
 		return entity;
 	}
 
-	void Scene::RemoveEntity(std::shared_ptr<ECS::Entity>& entity)
+	void Scene::RemoveEntity(const std::shared_ptr<ECS::Entity>& entity)
 	{
 		for (size_t i = 0; i < entity->Bitset.size(); i++)
 		{
 			if (entity->Bitset[i])
 			{
-				m_ComponentManagers[i]->Remove(entity);
+				auto& entityToUpdate = m_ComponentManagers[i]->Remove(entity);
+				auto& world = Application::Get().GetWorld();
+				world->UpdateSystems(entityToUpdate);
 			}
 		}
 
 		m_EntityManager->Remove(entity);
+	}
+	
+	void Scene::PrintScene()
+	{
+		FY_CORE_INFO("\t\t=======STARTING TO PRINT WORLD INFO=======\n{0}", *m_EntityManager);
+
+		for (size_t i = 0; i < ECS::MAX_COMPONENTS; i++)
+		{
+			if (m_ComponentManagers[i])
+			{
+				FY_CORE_INFO("\n{0}", *m_ComponentManagers[i]);
+			}
+		}
 	}
 }

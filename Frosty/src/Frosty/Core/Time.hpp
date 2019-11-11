@@ -17,6 +17,9 @@ namespace Frosty
 		static void StartTimer(const std::string& func);
 		static void EndTimer(const std::string& func);
 
+		// Returns time in second
+		static float CurrentTime() { return float(std::clock()) * 0.001f; }
+
 		static void OnUpdate();
 	public:
 		static const int MAX_FPS_COUNTER = 10000;

@@ -196,16 +196,17 @@ namespace Frosty
 				return m_Entities.back();
 			}
 
-			inline bool Remove(std::shared_ptr<Entity>& entity)
+			inline bool Remove(const std::shared_ptr<Entity>& entity)
 			{
 				FY_CORE_INFO("Removing an entity..");
 
 				int index = utils::BinarySearch(m_Entities, entity->Id);
 
-				if (index == -1)
-				{
-					return false;
-				}
+				FY_CORE_ASSERT(index >= 0, "Entity doesn't exist in the manager.");
+				//if (index == -1)
+				//{
+				//	return false;
+				//}
 
 				m_Entities.erase(m_Entities.begin() + index);
 
@@ -217,10 +218,14 @@ namespace Frosty
 
 			friend std::ostream& operator<<(std::ostream& out, const EntityManager& em)
 			{
+				out << "\t-----------Entity Info-----------\n";
+				out << "\tIndex\tId\tAddress\t\t\tRefs\n";
 				for (unsigned int i = 0; i < em.m_Entities.size(); i++)
 				{
-					out << *em.m_Entities[i] << std::endl;
+					out << "\t" << i << "\t" << em.m_Entities.at(i)->Id << "\t" << em.m_Entities.at(i) << "\t" << em.m_Entities.at(i).use_count() << std::endl;
 				}
+				out << "\t----------------Done----------------\n\n";
+
 				return out;
 			}
 
@@ -238,14 +243,14 @@ namespace Frosty
 		{
 			std::shared_ptr<Entity> EntityPtr{ nullptr };
 
-			virtual void Func() = 0;
+			virtual std::string GetName() const = 0;
 		};
 
 		struct BaseComponentManager
 		{
 			ComponentID TypeId;
-
 			std::map<std::shared_ptr<Entity>, ComponentArrayIndex> EntityMap;
+
 			ComponentArrayIndex Total{ 1 };
 
 			BaseComponentManager() { }
@@ -255,9 +260,15 @@ namespace Frosty
 			// Operators
 			BaseComponentManager& operator=(const BaseComponentManager& e) { FY_CORE_ASSERT(false, "Assignment operator in BaseComponentManager called."); return *this; }
 
+			//inline ComponentArrayIndex GetTotal() const { return Total; }
 			virtual BaseComponent* GetTypeComponent(const std::shared_ptr<Entity>& entity) = 0;
+			virtual const std::shared_ptr<Entity>& Remove(const std::shared_ptr<Entity>& entity) = 0;
+			virtual std::string GetInfo() const = 0;
 
-			virtual void Remove(std::shared_ptr<Entity>& entity) = 0;
+			friend std::ostream& operator<<(std::ostream& out, const BaseComponentManager& bcm)
+			{
+				return out << bcm.GetInfo();
+			}
 
 		};
 
@@ -272,6 +283,7 @@ namespace Frosty
 			// Operators
 			ComponentManager& operator=(const ComponentManager& e) { FY_CORE_ASSERT(false, "Assignment operator in ComponentManager({0}) called.", getComponentTypeID<ComponentType>()); return *this; }
 
+			inline ComponentArrayIndex GetTotal() { return Total; }
 			virtual BaseComponent* GetTypeComponent(const std::shared_ptr<Entity>& entity) override
 			{
 				ComponentArrayIndex tempIndex = EntityMap.at(entity);
@@ -303,22 +315,50 @@ namespace Frosty
 				return m_Data[Total++];
 			}
 
-			inline void Remove(std::shared_ptr<Entity>& entity)
+			inline const std::shared_ptr<Entity>& Remove(const std::shared_ptr<Entity>& entity)
 			{
-				ComponentArrayIndex index = EntityMap.at(entity);
+				auto& it = EntityMap.find(entity);
+
+				FY_CORE_ASSERT(it != EntityMap.end(), "Entity doesn't exist in this component manager but we are still trying to access it.");
+
+				ComponentArrayIndex index = it->second;
 
 				m_Data.at(index).EntityPtr.reset();
 				m_Data.at(index) = m_Data.at(Total - 1);
+				m_Data.at(Total - 1).EntityPtr.reset();
 				m_Data.at(Total - 1) = ComponentType();
 
 				Total--;
 				if (Total > index)
 				{
-					EntityMap[m_Data.at(index).EntityPtr] = index;
+					auto& itUpdate = EntityMap.find(m_Data.at(index).EntityPtr);
+					FY_CORE_ASSERT(itUpdate != EntityMap.end(), "This should not happen!");
+					EntityMap[itUpdate->first] = index;
+					//EntityMap[m_Data.at(it->second).EntityPtr] = it->second;
 				}
 
 				EntityMap.erase(entity);
 				entity->Bitset.flip(getComponentTypeID<ComponentType>());
+				return m_Data.at(index).EntityPtr;
+			}
+
+			inline ComponentType* GetComponentAddress(const std::shared_ptr<Entity>& entity)
+			{
+				return &m_Data.at(EntityMap[entity]);
+			}
+
+			virtual std::string GetInfo() const override
+			{
+				std::stringstream retInfo;
+				retInfo << "\t-----------" << m_Data[0].GetName() << " Component Manager-----------\n";
+				retInfo << "\tIndex\tComponent Address\tEntity Id\tEntity Address\t\tEntity Refs\n";
+				for (size_t i = 1; i < Total; i++)
+				{
+					retInfo << "\t" << i << "\t" << &m_Data[i] << "\t" << m_Data[i].EntityPtr->Id << "\t\t" << m_Data[i].EntityPtr << "\t\t" << m_Data[i].EntityPtr.use_count() << std::endl;
+				}
+				retInfo << "\t----------------Done----------------\n\n";
+
+				return retInfo.str();
 			}
 
 		private:
@@ -352,7 +392,7 @@ namespace Frosty
 			}
 			CTransform(const CTransform& org) { FY_CORE_ASSERT(false, "Copy constructor in CTransform called."); }
 
-			virtual void Func() override { }
+			virtual std::string GetName() const { return NAME; }
 		};
 
 		struct CMesh : public BaseComponent
@@ -364,7 +404,7 @@ namespace Frosty
 			CMesh(std::shared_ptr<VertexArray> mesh) : Mesh(mesh) { }
 			CMesh(const CMesh& org) { FY_CORE_ASSERT(false, "Copy constructor in CMesh called."); }
 
-			virtual void Func() override { }
+			virtual std::string GetName() const { return NAME; }
 		};
 
 		struct CCamera : public BaseComponent
@@ -388,7 +428,7 @@ namespace Frosty
 			}
 			CCamera(const CCamera& org) { FY_CORE_ASSERT(false, "Copy constructor in CCamera called."); }
 
-			virtual void Func() override { }
+			virtual std::string GetName() const { return NAME; }
 		};
 
 		struct CMaterial : public BaseComponent
@@ -413,7 +453,7 @@ namespace Frosty
 			CMaterial(const std::shared_ptr<Shader>& shader) : UseShader(shader) { }
 			CMaterial(const CMaterial& org) { FY_CORE_ASSERT(false, "Copy constructor in CMaterial called."); }
 
-			virtual void Func() override { }
+			virtual std::string GetName() const { return NAME; }
 		};
 
 		struct CPlayer : public BaseComponent
@@ -426,15 +466,16 @@ namespace Frosty
 			int DashKey{ FY_KEY_LEFT_SHIFT };
 			int BasicAttackKey{ FY_KEY_SPACE };
 
-			int HealingPostion{ FY_KEY_1 };
-			int IncreaseHPPotion{ FY_KEY_2 };
-			int SpeedPotion{ FY_KEY_3 };
-			int SpeedBoots{ FY_KEY_4 };
+			int HealingPostionKey{ FY_KEY_1 };
+			int IncreaseHPPotionKey{ FY_KEY_2 };
+			int SpeedPotionKey{ FY_KEY_3 };
+			int SpeedBootsKey{ FY_KEY_4 };
+			int DropBaitKey{ FY_KEY_Q };
 
 			CPlayer() = default;
 			CPlayer(const CPlayer& org) { FY_CORE_ASSERT(false, "Copy constructor in CPlayer called."); }
 
-			virtual void Func() override { }
+			virtual std::string GetName() const { return NAME; }
 		};
 
 		struct CFollow : public BaseComponent
@@ -447,7 +488,7 @@ namespace Frosty
 			CFollow(CTransform* target) : Target(target) { }
 			CFollow(const CFollow& org) { FY_CORE_ASSERT(false, "Copy constructor in CFollow called."); }
 
-			virtual void Func() override { }
+			virtual std::string GetName() const { return NAME; }
 		};
 
 		struct CLight : public BaseComponent
@@ -466,7 +507,7 @@ namespace Frosty
 			CLight(LightType lightType, float strength, glm::vec3 color) : Type(lightType), Strength(strength), Color(color) { }
 			CLight(const CLight& org) { FY_CORE_ASSERT(false, "Copy constructor in CLight called."); }
 
-			virtual void Func() override { }
+			virtual std::string GetName() const { return NAME; }
 		};
 
 		struct CPhysics : public BaseComponent
@@ -483,7 +524,7 @@ namespace Frosty
 			CPhysics(const std::shared_ptr<Luna::BoundingBox>& bb, float speed = 0.0f) : BoundingBox(bb), Speed(speed) { }
 			CPhysics(const CPhysics& org) { FY_CORE_ASSERT(false, "Copy constructor in CPhysics called."); }
 
-			virtual void Func() override { }
+			virtual std::string GetName() const { return NAME; }
 		};
 
 		struct CEnemy : public BaseComponent
@@ -493,21 +534,55 @@ namespace Frosty
 			CEnemy() = default;
 			CEnemy(const CEnemy& org) { FY_CORE_ASSERT(false, "Copy constructor in CEnemy called."); }
 
-			virtual void Func() override { }
+			virtual std::string GetName() const { return NAME; }
 		};
 
-		struct CArrow : public BaseComponent
+		struct CWeapon : public BaseComponent
 		{
 			static std::string NAME;
+
+			enum class WeaponType { Sword, Arrow };
+			WeaponType Weapon{ WeaponType::Sword };
+
+			// Damage
 			float Damage{ 1.0f };
-			float Lifetime{ 3.0f };
-			bool IsPiercing{ false };
 
-			CArrow() = default;
-			CArrow(float damage, float lifetime = 7.0f, bool isPiercing = false) : Damage(damage), Lifetime(lifetime), IsPiercing(isPiercing){ }
-			CArrow(const CArrow& org) { FY_CORE_ASSERT(false, "Copy constructor in CArrow called."); }
+			// Critical Hit
+			float CriticalHit{ 0.5f };							// Adds upp with damage for total damage
+			float CriticalHitChanse{ 0.10f };					// 10% chanse of performing a critical hit
 
-			virtual void Func() override { }
+			// Speed
+			float Cooldown{ 1.3f };
+			float CooldownTimer{ Frosty::Time::CurrentTime() };
+
+			float Lifetime{ 2.0f };
+
+			CWeapon() = default;
+			CWeapon(WeaponType type, float damage) : Weapon(type), Damage(damage) { }
+			CWeapon(WeaponType type, float damage, float criticalHit, float criticalHitChanse, float cooldown, float lifetime = 7.0f) : Weapon(type), Damage(damage), CriticalHit(criticalHit), CriticalHitChanse(criticalHitChanse), Cooldown(cooldown), Lifetime(lifetime) { }
+			CWeapon(const CWeapon& org) { FY_CORE_ASSERT(false, "Copy constructor in CWeapon called."); }
+
+			virtual std::string GetName() const { return NAME; }
+		};
+
+		struct CAttack : public BaseComponent
+		{
+			static std::string NAME;
+
+			enum class AttackType { Melee, Range };
+			AttackType Type{ AttackType::Melee };
+
+			float Damage{ 10.0f };
+			bool Friendly{ 0 };		// A friendly attack effects neither the Player or the attack. 1 = friendly attack, 0 = enemy attack
+
+			float Lifetime{ 0.5f };
+			float LifetimeTimer{ Frosty::Time::CurrentTime() };
+
+			CAttack() = default;
+			CAttack(AttackType type, float damage, bool friendly = 0, float lifeTime = 0.5f) : Type(type), Damage(damage), Friendly(friendly), Lifetime(lifeTime) { }
+			CAttack(const CAttack& org) { FY_CORE_ASSERT(false, "Copy constructor in CAttack called."); }
+
+			virtual std::string GetName() const { return NAME; }
 		};
 
 		struct CHealth : public BaseComponent
@@ -521,7 +596,7 @@ namespace Frosty
 			CHealth(float health) : MaxHealth(health), CurrentHealth(health) {};
 			CHealth(const CHealth& org) { FY_CORE_ASSERT(false, "Copy constructor in CHealth called."); }
 
-			virtual void Func() override { }
+			virtual std::string GetName() const { return NAME; }
 		};
 
 		struct CInventory : public BaseComponent
@@ -533,21 +608,21 @@ namespace Frosty
 			int CurrentHealingPotions{ 3 };						// Current number of potions in inventory
 			float Heal{ 5.f };									// Heals 5 hearts
 			float HealingCooldown{ 3.f };						// Consumer can only drink Healing Potion every 3rd second
-			float HealingTimer{ float(std::clock()) };			// Timer used to check cooldown
+			float HealingTimer{ Frosty::Time::CurrentTime() };			// Timer used to check cooldown
 
 			// INCREASE HEALTH POTION - inreases max health on consumer (const)
 			int MaxIncreaseHPPotions{ 5 };
 			int CurrentIncreaseHPPotions{ 3 };
 			float IncreaseHP{ 3.f };
 			float IncreaseHPCooldown{ 3.f };
-			float IncreaseHPTimer{ float(std::clock()) };
+			float IncreaseHPTimer{ Frosty::Time::CurrentTime() };
 
 			// SPEED BOOSTER POTION - boosts speed during a time interval (temp)
 			int MaxSpeedPotions{ 5 };
 			int CurrentSpeedPotions{ 3 };
 			float IncreaseSpeedTemporary{ 0.3f };
 			float SpeedCooldown{ 5.f };
-			float SpeedTimer{ float(std::clock()) };
+			float SpeedTimer{ Frosty::Time::CurrentTime() };
 
 			// SPEED BOOTS - boots add speed by a small procentage (const)
 			int MaxSpeedBoots{ 5 };
@@ -555,14 +630,20 @@ namespace Frosty
 			float IncreaseSpeed{ 1.2f };
 
 			// BAIT - chunks of meat used to distract the wolf
+			int MaxBaitAmount{ 5 };
+			int CurrentBaitAmount{ 100 };
+			float BaitCooldown{ 1.f };
+			float BaitTimer{ Frosty::Time::CurrentTime() };
 
-			// WOLFSBANE - poisonous flower which can be mixed with bait
+			// WOLFSBANE - poisonous flower, used as currency
+			int CurrentWolfsbane{ 0 };
+
 
 
 			CInventory() = default;
 			CInventory(const CInventory& org) { FY_CORE_ASSERT(false, "Copy constructor in CInventory called."); }
 
-			virtual void Func() override { }
+			virtual std::string GetName() const { return NAME; }
 		};
 
 		struct CHealthBar : public BaseComponent
@@ -583,7 +664,7 @@ namespace Frosty
 				: BarOffset(barOffset), Mesh(mesh), UseShader(shader), Texture(tex) { }
 			CHealthBar(const CHealthBar& org) { FY_CORE_ASSERT(false, "Copy constructor in CHealthBar called."); }
 
-			virtual void Func() override { }
+			virtual std::string GetName() const { return NAME; }
 		};
 
 		struct CDash : public BaseComponent
@@ -599,25 +680,7 @@ namespace Frosty
 			CDash() = default;
 			CDash(const CDash& org) { FY_CORE_ASSERT(false, "Copy constructor in CDash called."); }
 
-			virtual void Func() override { }
-		};
-
-		struct CBasicAttack : public BaseComponent
-		{
-			enum class AttackType
-			{
-				Melee, Range
-			};
-			static std::string NAME;
-			static const int COOLDOWN = 1300;
-			float CurrentCooldown{ 0.0f };
-			AttackType Type{ AttackType::Melee };
-
-			CBasicAttack() = default;
-			CBasicAttack(AttackType attackType) : Type(attackType) { }
-			CBasicAttack(const CBasicAttack& org) { FY_CORE_ASSERT(false, "Copy constructor in CBasicAttack called."); }
-
-			virtual void Func() override { }
+			virtual std::string GetName() const { return NAME; }
 		};
 
 		struct CDestroy : public BaseComponent
@@ -627,20 +690,7 @@ namespace Frosty
 			CDestroy() = default;
 			CDestroy(const CDestroy& org) { FY_CORE_ASSERT(false, "Copy constructor in CDestroy called."); }
 
-			virtual void Func() override { }
-		};
-
-		struct CSword : public BaseComponent
-		{
-			static std::string NAME;
-			float Damage{ 1.0f };
-			float Lifetime{ 1.0f };
-
-			CSword() = default;
-			CSword(float damage, float time) : Damage(damage), Lifetime(time) { }
-			CSword(const CSword& org) { FY_CORE_ASSERT(false, "Copy constructor in CSword called."); }
-
-			virtual void Func() override { }
+			virtual std::string GetName() const { return NAME; }
 		};
 
 		struct CParticleSystem : public BaseComponent
@@ -649,20 +699,51 @@ namespace Frosty
 			{
 				glm::vec4 position = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
 				glm::vec4 color = glm::vec4(1.0f);
+				float size = 1.0f; //The current size
+
 				glm::vec4 direction = glm::vec4(0.0f, 1.0f, 0.0f, 1.0f);
 				glm::vec4 startPos = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
-				float lifetime = 2.0f;
+				float lifetime = -1.0f;
 				float speed = 2.0f;
-				int padding[2]; //In case padding is needed
+				float startSize = 1.0f;
+				float endSize = 1.0f;
+
+				float camDistance = -1.0f; //For sorting
+
+				Particle() = default;
+				Particle(glm::vec4 color)
+					: color(color) {};
+				bool operator<(Particle& that) { // Sort in reverse order, far particles drawn first
+					return this->camDistance > that.camDistance;
+				}
 			};
 
-			static const uint32_t MAX_PARTICLE_COUNT = 1000;
+			struct GPUParticle
+			{
+				glm::vec4 position = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
+				glm::vec4 color = glm::vec4(1.0f);
+				float size = 1.0f;
+			};
+
+			static const uint32_t MAX_PARTICLE_COUNT = 100;
+			//uint32_t maxParticles = 0;
+			float startParticleSize = 1.0f;
+			float endParticleSize = 0.0f;
+			float particleSize = 1.0f; //For a constant size
 
 			static std::string NAME;
-			uint32_t particleCount = 10;
-			float emitRate = 5.0f;
+			uint32_t particleCount = 0;
+			glm::vec3 particleSystemColor = glm::vec3(1.0f);
+			float emitRate = 0.1f;
+			uint32_t emitCount = 1;
+			bool preview = false;
+			float timer = 0.0f;
 
-			Particle particles[MAX_PARTICLE_COUNT];
+			uint32_t lastUsedParticle = 0;
+
+			Particle particles[MAX_PARTICLE_COUNT]; //The complete data
+			GPUParticle gpuParticles[MAX_PARTICLE_COUNT]; //The data we send to the gpu
+
 			std::shared_ptr<VertexArray> particleVertArray;
 			std::shared_ptr<Shader> shader;
 			std::shared_ptr<Shader> computeShader;
@@ -671,9 +752,54 @@ namespace Frosty
 			CParticleSystem() = default;
 			CParticleSystem(std::shared_ptr<VertexArray> verts, std::shared_ptr<Shader> shader, std::shared_ptr<Texture2D> tex)
 				: particleVertArray(verts), shader(shader), texture(tex) {}
+			CParticleSystem(std::shared_ptr<VertexArray> verts, std::shared_ptr<Shader> shader, std::shared_ptr<Texture2D> tex, glm::vec4 color = glm::vec4(1.0f), float particleSize = 1.0f)
+				: particleVertArray(verts), shader(shader), texture(tex), particleSystemColor(color), particleSize(particleSize)
+			{
+				for (uint32_t i = 0; i < MAX_PARTICLE_COUNT; i++)
+				{
+					particles[i].color = color;
+					particles[i].size = particleSize;
+				}
+			}
+
 			CParticleSystem(const CParticleSystem& org) { FY_CORE_ASSERT(false, "Copy constructor in CParticleSystem called."); }
 
-			virtual void Func() override { }
+			void SetParticlesColor(float r, float g, float b)
+			{
+				for (uint32_t i = 0; i < MAX_PARTICLE_COUNT; i++)
+				{
+					particles[i].color.r = r;
+					particles[i].color.g = g;
+					particles[i].color.b = b;
+				}
+			}
+
+			void SetParticlesSize(float size)
+			{
+				for (uint32_t i = 0; i < MAX_PARTICLE_COUNT; i++)
+				{
+					particles[i].startSize = size;
+				}
+			}
+
+			virtual std::string GetName() const { return NAME; }
+		};
+
+		struct CBoss : public BaseComponent
+		{
+			static std::string NAME;
+			float DistractionTime{ 5.0f };
+			float DistractionTimer{ Frosty::Time::CurrentTime() };
+			bool Distracted{ false };
+			bool Hunting{ false };
+			std::vector<std::shared_ptr<Frosty::ECS::Entity>> TargetList;
+
+			CBoss() = default;
+			CBoss(float DistractionTime) : DistractionTime(DistractionTime) { }
+			CBoss(const CBoss& org) { FY_CORE_ASSERT(false, "Copy constructor in CBoss called."); }
+
+			virtual std::string GetName() const { return NAME; }
+
 		};
 
 		struct CLevelExit : public BaseComponent
@@ -686,7 +812,7 @@ namespace Frosty
 			CLevelExit(int exitDirection) : ExitDirection(exitDirection) { }
 			CLevelExit(const CLevelExit& org) { FY_CORE_ASSERT(false, "Copy constructor in CLevelExit called."); }
 
-			virtual void Func() override { }
+			virtual std::string GetName() const { return NAME; }
 		};
 
 		static std::string GetComponentName(size_t i)
@@ -697,20 +823,21 @@ namespace Frosty
 			case 1:		return "Mesh";
 			case 2:		return "Camera";
 			case 3:		return "Material";
-			case 4:		return "Controller";
+			case 4:		return "Player";
 			case 5:		return "Follow";
 			case 6:		return "Light";
 			case 7:		return "Physics";
 			case 8:		return "Enemy";
-			case 9:		return "Arrow";
+			case 9:		return "Weapon";
+			case 10:	return "Attack";
 			case 11:	return "Health";
-			case 12:	return "Consumables";
+			case 12:	return "Inventory";
 			case 13:	return "HealthBar";
 			case 14:	return "Dash";
-			case 15:	return "BasicAttack";
-			case 16:	return "Destroy";
-			case 17:	return "Sword";
-			case 18:	return "ParticleSystem";
+			case 15:	return "Destroy";
+			case 16:	return "ParticleSystem";
+			case 17:	return "Boss";
+			case 18:	return "LevelExit";
 			default:	return "";
 			}
 		}
@@ -736,8 +863,18 @@ namespace Frosty
 
 			virtual void AddComponent(const std::shared_ptr<Entity>& entity) = 0;
 			virtual void RemoveEntity(const std::shared_ptr<Entity>& entity) = 0;
+			virtual void UpdateEntityComponent(const std::shared_ptr<Entity>& entity) = 0;
+			virtual std::string GetInfo() const = 0;
 
 			ComponentBitset& GetSignature() { return p_Signature; }
+
+			std::map<std::shared_ptr<Entity>, ComponentArrayIndex>::iterator begin() { return p_EntityMap.begin(); }
+			std::map<std::shared_ptr<Entity>, ComponentArrayIndex>::iterator end() { return p_EntityMap.end(); }
+
+			friend std::ostream& operator<<(std::ostream& out, const BaseSystem& bs)
+			{
+				return out << bs.GetInfo();
+			}
 
 		protected:
 			ComponentBitset p_Signature;
@@ -754,34 +891,3 @@ namespace Frosty
 
 #endif // !ECS_HPP
 
-
-/*
-struct CItem : public BaseComponent
-{
-
-};
-
-struct CArmor : public CItem
-{
-
-};
-
-struct CConsumables : public CItem
-{
-
-};
-
-struct CFood : public CConsumables
-{
-
-};
-
-struct CGooseOmelette : public CFood
-{
-	// This gives you increase of max hp
-};
-
-struct CPorkOmelette : public CFood
-{
-	// Gives you ms
-};*/

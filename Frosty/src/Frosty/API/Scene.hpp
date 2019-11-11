@@ -21,7 +21,7 @@ namespace Frosty
 
 		// Entity Functions
 		std::shared_ptr<ECS::Entity>& CreateEntity(const glm::vec3& position, const glm::vec3& rotation, const glm::vec3& scale, bool isStatic);
-		void RemoveEntity(std::shared_ptr<ECS::Entity>& entity);
+		void RemoveEntity(const std::shared_ptr<ECS::Entity>& entity);
 		inline std::unique_ptr<ECS::EntityManager>& GetEntityManager() { return m_EntityManager; }
 		template<typename ComponentType>
 		inline bool HasComponent(const std::shared_ptr<ECS::Entity>& entity)
@@ -85,12 +85,20 @@ namespace Frosty
 			entity->Bitset[cId] = false;
 		}
 		
-	private:
+		template<typename ComponentType>
+		inline ComponentType* GetComponentAddress(const std::shared_ptr<ECS::Entity>& entity)
+		{
+			ECS::ComponentManager<ComponentType>* compManager = GetComponentManager<ComponentType>();
+			return compManager->GetComponentAddress(entity);
+		}
+
 		template<typename ComponentType>
 		inline ECS::ComponentManager<ComponentType>* GetComponentManager()
 		{
 			return dynamic_cast<ECS::ComponentManager<ComponentType>*>(m_ComponentManagers[ECS::getComponentTypeID<ComponentType>()].get());
 		}
+
+		void PrintScene();
 
 	private:
 		// Entity Declarations

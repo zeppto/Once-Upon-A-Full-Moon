@@ -8,6 +8,9 @@ namespace MCS
 	class BasicAttackSystem : public Frosty::ECS::BaseSystem
 	{
 	public:
+		const static std::string NAME;
+
+	public:
 		BasicAttackSystem() = default;
 		virtual ~BasicAttackSystem() = default;
 
@@ -16,8 +19,9 @@ namespace MCS
 		virtual void OnEvent(Frosty::BaseEvent& e) override;
 
 		virtual void AddComponent(const std::shared_ptr<Frosty::ECS::Entity>& entity) override;
-
 		virtual void RemoveEntity(const std::shared_ptr<Frosty::ECS::Entity>& entity) override;
+		virtual void UpdateEntityComponent(const std::shared_ptr<Frosty::ECS::Entity>& entity) override;
+		virtual std::string GetInfo() const override;
 
 	private:
 		void OnBasicAttackEvent(Frosty::BasicAttackEvent& e);
@@ -25,8 +29,9 @@ namespace MCS
 		void CreateProjectile(size_t index);
 
 	private:
-		std::array<Frosty::ECS::CBasicAttack*, Frosty::ECS::MAX_ENTITIES_PER_COMPONENT> m_BasicAttack;
+		std::array<Frosty::ECS::CWeapon*, Frosty::ECS::MAX_ENTITIES_PER_COMPONENT> m_Weapon;
 
+		Frosty::World* m_World{ nullptr };
 	};
 }
 

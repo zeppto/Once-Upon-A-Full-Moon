@@ -16,11 +16,12 @@ namespace Level
 			auto& testTranform = world->GetComponent<Frosty::ECS::CTransform>(PlaneOne);
 			testTranform.Scale = glm::vec3(300, 1.0f, 300);
 			testTranform.Rotation = glm::vec3(0, rotation, 0);
-			//world->AddComponent<Frosty::ECS::CMesh>(PlaneOne, Frosty::AssetManager::GetMesh("Ground"));
-			world->AddComponent<Frosty::ECS::CMesh>(PlaneOne, Frosty::AssetManager::GetMesh("pPlane1"));
+			world->AddComponent<Frosty::ECS::CMesh>(PlaneOne, Frosty::AssetManager::GetMesh("tiledGround"));
+			//world->AddComponent<Frosty::ECS::CMesh>(PlaneOne, Frosty::AssetManager::GetMesh("pPlane1"));
 			auto& testMaterial = world->AddComponent<Frosty::ECS::CMaterial>(PlaneOne, Frosty::AssetManager::GetShader("Texture2D"));
 			//testMaterial.Albedo = glm::vec4(0.2f, 0.8f, 0.3f, 1.0f);
-			testMaterial.DiffuseTexture = Frosty::AssetManager::GetTexture2D(texture);
+			//testMaterial.DiffuseTexture = Frosty::AssetManager::GetTexture2D(texture);
+			testMaterial.DiffuseTexture = Frosty::AssetManager::GetTexture2D("brown_mud_diffuse");
 			//testMaterial.TextureScale = glm::vec2(mapDepth / 10.0f, mapLength / 10.0f);
 
 			int NrOfTreeTypes = 10;
@@ -64,8 +65,8 @@ namespace Level
 				world->AddComponent<Frosty::ECS::CPhysics>(ExitBBox, Frosty::AssetManager::GetBoundingBox("pCube1"), 0.0f);
 				world->AddComponent<Frosty::ECS::CLevelExit>(ExitBBox, 0);
 
-				world->AddComponent<Frosty::ECS::CMesh>(ExitBBox, Frosty::AssetManager::GetMesh("pCube1"));
-				world->AddComponent<Frosty::ECS::CMaterial>(ExitBBox, Frosty::AssetManager::GetShader("FlatColor"));
+				//world->AddComponent<Frosty::ECS::CMesh>(ExitBBox, Frosty::AssetManager::GetMesh("pCube1"));
+				//world->AddComponent<Frosty::ECS::CMaterial>(ExitBBox, Frosty::AssetManager::GetShader("FlatColor"));
 			}
 			if (!down)
 			{
@@ -92,8 +93,8 @@ namespace Level
 				world->AddComponent<Frosty::ECS::CPhysics>(ExitBBox, Frosty::AssetManager::GetBoundingBox("pCube1"), 0.0f);
 				world->AddComponent<Frosty::ECS::CLevelExit>(ExitBBox, 1);
 
-				world->AddComponent<Frosty::ECS::CMesh>(ExitBBox, Frosty::AssetManager::GetMesh("pCube1"));
-				world->AddComponent<Frosty::ECS::CMaterial>(ExitBBox, Frosty::AssetManager::GetShader("FlatColor"));
+				//world->AddComponent<Frosty::ECS::CMesh>(ExitBBox, Frosty::AssetManager::GetMesh("pCube1"));
+				//world->AddComponent<Frosty::ECS::CMaterial>(ExitBBox, Frosty::AssetManager::GetShader("FlatColor"));
 			}
 			if (!left)
 			{
@@ -120,8 +121,8 @@ namespace Level
 				world->AddComponent<Frosty::ECS::CPhysics>(ExitBBox, Frosty::AssetManager::GetBoundingBox("pCube1"), 0.0f);
 				world->AddComponent<Frosty::ECS::CLevelExit>(ExitBBox, 3);
 
-				world->AddComponent<Frosty::ECS::CMesh>(ExitBBox, Frosty::AssetManager::GetMesh("pCube1"));
-				world->AddComponent<Frosty::ECS::CMaterial>(ExitBBox, Frosty::AssetManager::GetShader("FlatColor"));
+				//world->AddComponent<Frosty::ECS::CMesh>(ExitBBox, Frosty::AssetManager::GetMesh("pCube1"));
+				//world->AddComponent<Frosty::ECS::CMaterial>(ExitBBox, Frosty::AssetManager::GetShader("FlatColor"));
 			}
 			if (!right)
 			{
@@ -148,8 +149,8 @@ namespace Level
 				world->AddComponent<Frosty::ECS::CPhysics>(ExitBBox, Frosty::AssetManager::GetBoundingBox("pCube1"), 0.0f);
 				world->AddComponent<Frosty::ECS::CLevelExit>(ExitBBox, 2);
 
-				world->AddComponent<Frosty::ECS::CMesh>(ExitBBox, Frosty::AssetManager::GetMesh("pCube1"));
-				world->AddComponent<Frosty::ECS::CMaterial>(ExitBBox, Frosty::AssetManager::GetShader("FlatColor"));
+				//world->AddComponent<Frosty::ECS::CMesh>(ExitBBox, Frosty::AssetManager::GetMesh("pCube1"));
+				//world->AddComponent<Frosty::ECS::CMaterial>(ExitBBox, Frosty::AssetManager::GetShader("FlatColor"));
 			}
 		}
 		glm::vec3 toReturn;

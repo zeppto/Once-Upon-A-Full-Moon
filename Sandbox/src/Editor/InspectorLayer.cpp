@@ -102,6 +102,7 @@ namespace MCS
 					if (world->HasComponent<Frosty::ECS::CInventory>(m_SelectedEntity)) toggles[10] = true;
 					if (world->HasComponent<Frosty::ECS::CHealthBar>(m_SelectedEntity)) toggles[11] = true;
 					if (world->HasComponent<Frosty::ECS::CParticleSystem>(m_SelectedEntity)) toggles[12] = true;
+					if (world->HasComponent<Frosty::ECS::CBoss>(m_SelectedEntity)) toggles[13] = true;
 				}
 
 				// Information
@@ -195,6 +196,12 @@ namespace MCS
 							world->AddComponent<Frosty::ECS::CParticleSystem>(m_SelectedEntity);
 						else
 							world->RemoveComponent<Frosty::ECS::CParticleSystem>(m_SelectedEntity);
+					}
+					if (ImGui::MenuItem("Boss", "", &toggles[15])) {
+						if (!world->HasComponent<Frosty::ECS::CBoss>(m_SelectedEntity))
+							world->AddComponent<Frosty::ECS::CBoss>(m_SelectedEntity);
+						else
+							world->RemoveComponent<Frosty::ECS::CBoss>(m_SelectedEntity);
 					}
 					ImGui::EndPopup();
 				}
@@ -628,11 +635,13 @@ namespace MCS
 					if (ImGui::CollapsingHeader("Inventory"))
 					{
 						auto& comp = world->GetComponent<Frosty::ECS::CInventory>(m_SelectedEntity);
-						ImGui::BeginChild("CInventory", ImVec2(EDITOR_INSPECTOR_WIDTH, 110), true);
+						ImGui::BeginChild("CInventory", ImVec2(EDITOR_INSPECTOR_WIDTH, 150), true);
 						ImGui::InputInt("Healing Potions", &comp.CurrentHealingPotions, 1, 10, 0);
 						ImGui::InputInt("Increase Health Potions", &comp.CurrentIncreaseHPPotions, 1, 10, 0);
 						ImGui::InputInt("Speed Potions", &comp.CurrentSpeedPotions, 1, 1, 0);
 						ImGui::InputInt("Speed Boots", &comp.CurrentSpeedBoots, 1, 10, 0);
+						ImGui::InputInt("Bait", &comp.CurrentBaitAmount, 1.0f, 10.0f, 0);
+						ImGui::InputInt("Wolfsbane", &comp.CurrentWolfsbane, 1.0f, 10.0f, 0);
 						ImGui::EndChild();
 					}
 				}
@@ -650,8 +659,24 @@ namespace MCS
 				{
 					if (ImGui::CollapsingHeader("Particle System")) {
 						Frosty::ECS::CParticleSystem& comp = world->GetComponent<Frosty::ECS::CParticleSystem>(m_SelectedEntity); //Please don't use auto. It's not clear what's returned.
-						ImGui::BeginChild("CParticleSystem", ImVec2(EDITOR_INSPECTOR_WIDTH, 45), true);
-						ImGui::Text("Test text"); //TODO: output proper info
+						ImGui::BeginChild("CParticleSystem", ImVec2(EDITOR_INSPECTOR_WIDTH, 245), true);
+						ImGui::Text("Active particles: %i", comp.particleCount);
+						ImGui::Checkbox("Preview", &comp.preview);
+						ImGui::ColorEdit4("Color", glm::value_ptr(comp.particleSystemColor));
+						ImGui::SliderInt("Particle count", (int*)&comp.particleCount, 1, comp.MAX_PARTICLE_COUNT);
+						ImGui::InputFloat("Size", &comp.particleSize);
+						ImGui::InputFloat("Start size", &comp.startParticleSize);
+						ImGui::InputFloat("End size", &comp.endParticleSize);
+						ImGui::InputFloat("Emit rate", &comp.emitRate, 0.0f);
+						ImGui::EndChild();
+					}
+				}
+				if (world->HasComponent<Frosty::ECS::CBoss>(m_SelectedEntity))
+				{
+					if (ImGui::CollapsingHeader("Boss")) {
+						auto& comp = world->GetComponent<Frosty::ECS::CBoss>(m_SelectedEntity);
+						ImGui::BeginChild("Boss", ImVec2(EDITOR_INSPECTOR_WIDTH, 45), true);
+						ImGui::InputFloat("Distraction Time", &comp.DistractionTime, 1, 10, 0);
 						ImGui::EndChild();
 					}
 				}

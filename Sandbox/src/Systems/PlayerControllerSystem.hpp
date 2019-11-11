@@ -6,6 +6,9 @@ namespace MCS
 	class PlayerControllerSystem : public Frosty::ECS::BaseSystem
 	{
 	public:
+		const static std::string NAME;
+
+	public:
 		PlayerControllerSystem() = default;
 		virtual ~PlayerControllerSystem() = default;
 
@@ -15,6 +18,8 @@ namespace MCS
 
 		virtual void AddComponent(const std::shared_ptr<Frosty::ECS::Entity>& entity) override;
 		virtual void RemoveEntity(const std::shared_ptr<Frosty::ECS::Entity>& entity) override;
+		virtual void UpdateEntityComponent(const std::shared_ptr<Frosty::ECS::Entity>& entity) override;
+		virtual std::string GetInfo() const override;
 
 	private:
 		glm::vec3 ScreenToTerrainPoint();
@@ -27,7 +32,7 @@ namespace MCS
 		std::array<Frosty::ECS::CTransform*, Frosty::ECS::MAX_ENTITIES_PER_COMPONENT> m_Transform;
 		std::array<Frosty::ECS::CPlayer*, Frosty::ECS::MAX_ENTITIES_PER_COMPONENT> m_Player;
 		std::array<Frosty::ECS::CDash*, Frosty::ECS::MAX_ENTITIES_PER_COMPONENT> m_Dash;
-		std::array<Frosty::ECS::CBasicAttack*, Frosty::ECS::MAX_ENTITIES_PER_COMPONENT> m_BasicAttack;
+		std::array<Frosty::ECS::CWeapon*, Frosty::ECS::MAX_ENTITIES_PER_COMPONENT> m_Weapon;
 		std::array<Frosty::ECS::CPhysics*, Frosty::ECS::MAX_ENTITIES_PER_COMPONENT> m_Physics;
 		std::array<Frosty::ECS::CHealth*, Frosty::ECS::MAX_ENTITIES_PER_COMPONENT> m_Health;
 		std::array<Frosty::ECS::CInventory*, Frosty::ECS::MAX_ENTITIES_PER_COMPONENT> m_Inventory;

@@ -3,6 +3,10 @@
 
 #include"AssetFile.hpp"
 #include<Luna/include/Luna.h>
+#include "glm/gtx/quaternion.hpp"
+
+//CAREFUL: If changed. Change in animationVS too!
+#define MAX_BONES 64
 
 namespace Frosty
 {
@@ -11,6 +15,10 @@ namespace Frosty
 	{
 
 	public:
+		struct JointTransforms
+		{
+			glm::mat4 jTrans[MAX_BONES];
+		};
 
 	private:
 
@@ -18,16 +26,18 @@ namespace Frosty
 		bool m_Has_Skeleton;
 
 		Luna::Skeleton m_Skeleton;
-		Luna::Animation m_Animation;;
+		Luna::Animation m_Animation;
 		std::vector<Luna::Joint> m_Joints;
 		std::vector<Luna::Weights> m_Weights;
 		std::map<uint16_t, std::vector<Luna::Keyframe>> m_KeyframeMap;
 
+		JointTransforms m_SkinData;
+
 
 	public:
 		inline Animation() : AssetFile(FileMetaData()) {}
-		inline Animation(const FileMetaData& MetaData, const uint16_t& MeshId, const bool& HasSkeleton = false)
-			:m_Mesh_Id(MeshId), m_Has_Skeleton(HasSkeleton), AssetFile(MetaData) {}
+		inline Animation(const FileMetaData& MetaData, const uint16_t& MeshId, Luna::Animation LuAni, const bool& HasSkeleton = false)
+			:m_Mesh_Id(MeshId), m_Has_Skeleton(HasSkeleton), AssetFile(MetaData), m_Animation(LuAni){}
 		virtual ~Animation();
 
 
@@ -37,6 +47,9 @@ namespace Frosty
 		const std::vector<Luna::Weights>& GetWeights()const;
 		const std::map<uint16_t, std::vector<Luna::Keyframe>>& GetKeyFrameMap()const;
 		const std::vector<Luna::Keyframe>& GetKeyFrameVec(const uint16_t& jointId)const;
+
+		void GetSkinData(void*& data, int &nrOfJoints);
+		void CalculateAnimMatrix(float* currentAnimTime);
 
 		inline const std::string GetName()const { return m_Animation.animationName;}
 
@@ -48,7 +61,7 @@ namespace Frosty
 
 
 	private:
-
+		void prepRotation(float arr[4]);
 
 
 	};

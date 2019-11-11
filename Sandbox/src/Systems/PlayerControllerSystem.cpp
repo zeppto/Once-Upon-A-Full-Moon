@@ -1,15 +1,18 @@
 #include <mcspch.hpp>
 #include "PlayerControllerSystem.hpp"
 #include "Frosty/Events/AbilityEvent.hpp"
+#include "Frosty/API/AssetManager/AssetManager.hpp"
 
 namespace MCS
 {
+	const std::string PlayerControllerSystem::NAME = "Player Controller";
+
 	void PlayerControllerSystem::Init()
 	{
 		p_Signature.set(Frosty::ECS::getComponentTypeID<Frosty::ECS::CTransform>(), true);
 		p_Signature.set(Frosty::ECS::getComponentTypeID<Frosty::ECS::CPlayer>(), true);
 		p_Signature.set(Frosty::ECS::getComponentTypeID<Frosty::ECS::CDash>(), true);
-		p_Signature.set(Frosty::ECS::getComponentTypeID<Frosty::ECS::CBasicAttack>(), true);
+		p_Signature.set(Frosty::ECS::getComponentTypeID<Frosty::ECS::CWeapon>(), true);
 		p_Signature.set(Frosty::ECS::getComponentTypeID<Frosty::ECS::CPhysics>(), true);
 		p_Signature.set(Frosty::ECS::getComponentTypeID<Frosty::ECS::CHealth>(), true);
 		p_Signature.set(Frosty::ECS::getComponentTypeID<Frosty::ECS::CInventory>(), true);
@@ -67,7 +70,7 @@ namespace MCS
 			m_Transform[p_Total] = &world->GetComponent<Frosty::ECS::CTransform>(entity);
 			m_Player[p_Total] = &world->GetComponent<Frosty::ECS::CPlayer>(entity);
 			m_Dash[p_Total] = &world->GetComponent<Frosty::ECS::CDash>(entity);
-			m_BasicAttack[p_Total] = &world->GetComponent<Frosty::ECS::CBasicAttack>(entity);
+			m_Weapon[p_Total] = &world->GetComponent<Frosty::ECS::CWeapon>(entity);
 			m_Physics[p_Total] = &world->GetComponent<Frosty::ECS::CPhysics>(entity);
 			m_Health[p_Total] = &world->GetComponent<Frosty::ECS::CHealth>(entity);
 			m_Inventory[p_Total] = &world->GetComponent<Frosty::ECS::CInventory>(entity);
@@ -78,33 +81,82 @@ namespace MCS
 
 	void PlayerControllerSystem::RemoveEntity(const std::shared_ptr<Frosty::ECS::Entity>& entity)
 	{
-		Frosty::ECS::ComponentArrayIndex tempIndex = p_EntityMap[entity];
+		auto& it = p_EntityMap.find(entity);
 
-		if (tempIndex > 0)
+		if (it != p_EntityMap.end())
 		{
 			p_Total--;
+			auto& entityToUpdate = m_Transform[p_Total]->EntityPtr;
 			m_Transform[p_Total] = nullptr;
 			m_Player[p_Total] = nullptr;
 			m_Dash[p_Total] = nullptr;
-			m_BasicAttack[p_Total] = nullptr;
+			m_Weapon[p_Total] = nullptr;
 			m_Physics[p_Total] = nullptr;
 			m_Health[p_Total] = nullptr;
 			m_Inventory[p_Total] = nullptr;
 
-
-			if (p_Total > 1)
+			if (p_Total > it->second)
 			{
-				//std::shared_ptr<Entity> entityToUpdate = removeEntityFromData(mEntity);
-
-				if (p_Total > tempIndex)
-				{
-					std::shared_ptr<Frosty::ECS::Entity> entityToUpdate = m_Transform[p_EntityMap[entity]]->EntityPtr;
-					p_EntityMap[entityToUpdate] = tempIndex;
-				}
+				p_EntityMap[entityToUpdate] = it->second;
 			}
 
 			p_EntityMap.erase(entity);
 		}
+	}
+
+	void PlayerControllerSystem::UpdateEntityComponent(const std::shared_ptr<Frosty::ECS::Entity>& entity)
+	{
+		auto& it = p_EntityMap.find(entity);
+
+		if (it != p_EntityMap.end())
+		{
+			auto& world = Frosty::Application::Get().GetWorld();
+			Frosty::ECS::CTransform* transformPtr = world->GetComponentAddress<Frosty::ECS::CTransform>(entity);
+			Frosty::ECS::CPlayer* playerPtr = world->GetComponentAddress<Frosty::ECS::CPlayer>(entity);
+			Frosty::ECS::CDash* dashPtr = world->GetComponentAddress<Frosty::ECS::CDash>(entity);
+			Frosty::ECS::CWeapon* basicAttackPtr = world->GetComponentAddress<Frosty::ECS::CWeapon>(entity);
+			Frosty::ECS::CPhysics* physicsPtr = world->GetComponentAddress<Frosty::ECS::CPhysics>(entity);
+			Frosty::ECS::CHealth* healthPtr = world->GetComponentAddress<Frosty::ECS::CHealth>(entity);
+			Frosty::ECS::CInventory* inventoryPtr = world->GetComponentAddress<Frosty::ECS::CInventory>(entity);
+
+			m_Transform[it->second] = transformPtr;
+			m_Player[it->second] = playerPtr;
+			m_Dash[it->second] = dashPtr;
+			m_Weapon[it->second] = basicAttackPtr;
+			m_Physics[it->second] = physicsPtr;
+			m_Health[it->second] = healthPtr;
+			m_Inventory[it->second] = inventoryPtr;
+		}
+	}
+
+	std::string PlayerControllerSystem::GetInfo() const
+	{
+		std::stringstream retInfo;
+		retInfo << "\t-----------" << NAME << " System Info-----------\n";
+		retInfo << "\t\t---------Entity Map---------\n";
+		retInfo << "\t\tEntity Id\tEntity Address\t\tEntity Refs\tArray Index\n";
+		for (auto& em : p_EntityMap)
+		{
+			retInfo << "\t\t" << em.first->Id << "\t\t" << em.first << "\t\t" << em.first.use_count() << "\t" << em.second << "\n";
+		}
+		retInfo << "\t\t-----------Done-----------\n";
+		retInfo << "\t\t------Component Array(s)------\n";
+		retInfo << "\n\t\tIndex\tComponent Address\tEntity Id\tEntity Address\t\tEntity Refs\n";
+		for (size_t i = 1; i < p_Total; i++)
+		{
+			retInfo << "\t\t" << i << "\t" << m_Transform[i] << "\t" << m_Transform[i]->EntityPtr->Id << "\t\t" << m_Transform[i]->EntityPtr << "\t\t" << m_Transform[i]->EntityPtr.use_count() << "\n";
+			retInfo << "\t\t" << i << "\t" << m_Player[i] << "\t" << m_Player[i]->EntityPtr->Id << "\t\t" << m_Player[i]->EntityPtr << "\t\t" << m_Player[i]->EntityPtr.use_count() << "\n";
+			retInfo << "\t\t" << i << "\t" << m_Dash[i] << "\t" << m_Dash[i]->EntityPtr->Id << "\t\t" << m_Dash[i]->EntityPtr << "\t\t" << m_Dash[i]->EntityPtr.use_count() << "\n";
+			retInfo << "\t\t" << i << "\t" << m_Weapon[i] << "\t" << m_Weapon[i]->EntityPtr->Id << "\t\t" << m_Weapon[i]->EntityPtr << "\t\t" << m_Weapon[i]->EntityPtr.use_count() << "\n";
+			retInfo << "\t\t" << i << "\t" << m_Physics[i] << "\t" << m_Physics[i]->EntityPtr->Id << "\t\t" << m_Physics[i]->EntityPtr << "\t\t" << m_Physics[i]->EntityPtr.use_count() << "\n";
+			retInfo << "\t\t" << i << "\t" << m_Health[i] << "\t" << m_Health[i]->EntityPtr->Id << "\t\t" << m_Health[i]->EntityPtr << "\t\t" << m_Health[i]->EntityPtr.use_count() << "\n";
+			retInfo << "\t\t" << i << "\t" << m_Inventory[i] << "\t" << m_Inventory[i]->EntityPtr->Id << "\t\t" << m_Inventory[i]->EntityPtr << "\t\t" << m_Inventory[i]->EntityPtr.use_count() << "\n";
+			retInfo << "\n"; // Have this last
+		}
+		retInfo << "\t\t-----------Done-----------\n";
+		retInfo << "\t----------------Done----------------\n\n";
+
+		return retInfo.str();
 	}
 
 	glm::vec3 PlayerControllerSystem::ScreenToTerrainPoint()
@@ -207,7 +259,7 @@ namespace MCS
 			}
 		}
 	}
-	
+
 	void PlayerControllerSystem::HandleAttack(const glm::vec3& point, size_t index)
 	{
 		if (Frosty::InputManager::IsKeyPressed(m_Player[index]->BasicAttackKey))
@@ -219,34 +271,34 @@ namespace MCS
 	void PlayerControllerSystem::HandleInventory(size_t index)
 	{
 #pragma region Healing Potion
-		if (Frosty::InputManager::IsKeyPressed(FY_KEY_1))
+		if (Frosty::InputManager::IsKeyPressed(m_Player[index]->HealingPostionKey))
 		{
-				// If consumer has healing potion AND comsumer has not full health AND healing timer is bigger than cooldown--> drink healing potion
-				if ((m_Inventory[index]->CurrentHealingPotions > 0) && (m_Health[index]->CurrentHealth < m_Health[index]->MaxHealth) && ((float(std::clock()) - m_Inventory[index]->HealingTimer) * 0.001f >= m_Inventory[index]->HealingCooldown))
+			// If consumer has healing potion AND comsumer has not full health AND healing timer is bigger than cooldown--> drink healing potion
+			if ((m_Inventory[index]->CurrentHealingPotions > 0) && (m_Health[index]->CurrentHealth < m_Health[index]->MaxHealth) && (Frosty::Time::CurrentTime() - m_Inventory[index]->HealingTimer >= m_Inventory[index]->HealingCooldown))
+			{
+				// If healing won't exceed health capacity --> directly add heal value to health
+				if (m_Inventory[index]->Heal <= (m_Health[index]->MaxHealth - m_Health[index]->CurrentHealth))
 				{
-					// If healing won't exceed health capacity --> directly add heal value to health
-					if (m_Inventory[index]->Heal <= (m_Health[index]->MaxHealth - m_Health[index]->CurrentHealth))
-					{
-						m_Health[index]->CurrentHealth += m_Inventory[index]->Heal;
-					}
-					// But if healing exceeds health capacity --> max health achieved
-					else
-					{
-						m_Health[index]->CurrentHealth = m_Health[index]->MaxHealth;
-					}
-
-					// Decrease number of potions in inventory and activate the timer for cooldown
-					m_Inventory[index]->CurrentHealingPotions--;
-					m_Inventory[index]->HealingTimer = float(std::clock());
+					m_Health[index]->CurrentHealth += m_Inventory[index]->Heal;
 				}
+				// But if healing exceeds health capacity --> max health achieved
+				else
+				{
+					m_Health[index]->CurrentHealth = m_Health[index]->MaxHealth;
+				}
+
+				// Decrease number of potions in inventory and activate the timer for cooldown
+				m_Inventory[index]->CurrentHealingPotions--;
+				m_Inventory[index]->HealingTimer = Frosty::Time::CurrentTime();
+			}
 		}
 #pragma endregion Healing Potion
 
 #pragma region Increase Health Potion
-		else if (Frosty::InputManager::IsKeyPressed(FY_KEY_2))
+		else if (Frosty::InputManager::IsKeyPressed(m_Player[index]->IncreaseHPPotionKey))
 		{
 			// If consumer has increase HP potion AND comsumer can increse health AND increase HP timer is bigger than cooldown--> drink increase HP potion
-			if ((m_Inventory[index]->CurrentIncreaseHPPotions > 0) && (m_Health[index]->MaxHealth < m_Health[index]->MaxPossibleHealth) && ((float(std::clock()) - m_Inventory[index]->IncreaseHPTimer) * 0.001f >= m_Inventory[index]->IncreaseHPCooldown))
+			if ((m_Inventory[index]->CurrentIncreaseHPPotions > 0) && (m_Health[index]->MaxHealth < m_Health[index]->MaxPossibleHealth) && (Frosty::Time::CurrentTime() - m_Inventory[index]->IncreaseHPTimer >= m_Inventory[index]->IncreaseHPCooldown))
 			{
 				// If increse HP won't exceed maximum health capacity --> directly increase health capacity 
 				if (m_Inventory[index]->IncreaseHP <= (m_Health[index]->MaxPossibleHealth - m_Health[index]->MaxHealth))
@@ -261,16 +313,16 @@ namespace MCS
 
 				// Decrease number of potions in inventory and activate the timer for cooldown
 				m_Inventory[index]->CurrentIncreaseHPPotions--;
-				m_Inventory[index]->IncreaseHPTimer = float(std::clock());
+				m_Inventory[index]->IncreaseHPTimer = Frosty::Time::CurrentTime();
 			}
 		}
 #pragma endregion Increase Health Potion
 
 #pragma region Speed Potion
-		else if (Frosty::InputManager::IsKeyPressed(FY_KEY_3))
+		else if (Frosty::InputManager::IsKeyPressed(m_Player[index]->SpeedPotionKey))
 		{
 			// If consumer has speed potion AND comsumer has not full speed capacity AND speed timer is bigger than cooldown--> drink speed boost potion
-			if ((m_Inventory[index]->CurrentSpeedPotions > 0) && (m_Physics[index]->Speed < m_Physics[index]->MaxSpeed) && ((float(std::clock()) - m_Inventory[index]->SpeedTimer) * 0.001f >= m_Inventory[index]->SpeedCooldown))
+			if ((m_Inventory[index]->CurrentSpeedPotions > 0) && (m_Physics[index]->Speed < m_Physics[index]->MaxSpeed) && (Frosty::Time::CurrentTime() - m_Inventory[index]->SpeedTimer >= m_Inventory[index]->SpeedCooldown))
 			{
 				// If temp speed won't exceed maximum possible speed capacity --> directly add speed value to multiplier
 				if (((m_Inventory[index]->IncreaseSpeedTemporary + m_Physics[index]->SpeedMultiplier) * m_Physics[index]->Speed) <= m_Physics[index]->MaxSpeed)
@@ -285,13 +337,13 @@ namespace MCS
 
 				// Decrease number of potions in inventory and activate the timer for cooldown
 				m_Inventory[index]->CurrentSpeedPotions--;
-				m_Inventory[index]->SpeedTimer = float(std::clock());
+				m_Inventory[index]->SpeedTimer = Frosty::Time::CurrentTime();
 			}
 		}
 #pragma endregion Speed Potion
 
 #pragma region Speed Boots
-		else if (Frosty::InputManager::IsKeyPressed(FY_KEY_4))		// Appearently a temporary thing. Player picks this up automatically so onimput is unnecessary	~ W-_-W ~
+		else if (Frosty::InputManager::IsKeyPressed(m_Player[index]->SpeedBootsKey))		// Appearently a temporary thing. Player picks this up automatically so onimput is unnecessary	~ W-_-W ~
 		{
 			// If consumer has speed potion AND comsumer has not full speed capacity
 			if ((m_Inventory[index]->CurrentSpeedBoots < m_Inventory[index]->MaxSpeedBoots) && (m_Physics[index]->Speed < m_Physics[index]->MaxSpeed))
@@ -309,6 +361,29 @@ namespace MCS
 
 				// Add number of boots in inventory since boots are something the entity is wearing
 				m_Inventory[index]->CurrentSpeedBoots++;
+			}
+		}
+#pragma endregion Speed Boots
+
+#pragma region Bait
+		else if (Frosty::InputManager::IsKeyPressed(m_Player[index]->DropBaitKey))
+		{
+			// If player has bait AND bait timer is bigger than cooldown--> Lay down bait
+			if ((m_Inventory[index]->CurrentBaitAmount > 0) && (Frosty::Time::CurrentTime() - m_Inventory[index]->BaitTimer >= m_Inventory[index]->BaitCooldown))
+			{
+				auto& world = Frosty::Application::Get().GetWorld();
+				auto& bait = world->CreateEntity();
+				world->AddComponent<Frosty::ECS::CMesh>(bait, Frosty::AssetManager::GetMesh("scarlet"));
+				auto& material = world->AddComponent<Frosty::ECS::CMaterial>(bait, Frosty::AssetManager::GetShader("Texture2D"));
+				material.DiffuseTexture = Frosty::AssetManager::GetTexture2D("Scarlet_diffuse");
+				auto& transform = world->GetComponent<Frosty::ECS::CTransform>(bait);
+				transform.Position = m_Transform[index]->Position;
+
+				//Send event with bait pos to boss
+				Frosty::EventBus::GetEventBus()->Publish<Frosty::BaitPlacedEvent>(Frosty::BaitPlacedEvent(bait));
+
+				m_Inventory[index]->CurrentBaitAmount--;
+				m_Inventory[index]->BaitTimer = Frosty::Time::CurrentTime();
 			}
 		}
 #pragma endregion Speed Boots

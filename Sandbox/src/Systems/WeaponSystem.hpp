@@ -1,19 +1,19 @@
-#ifndef FOLLOW_SYSTEM_HPP
-#define FOLLOW_SYSTEM_HPP
+#ifndef WEAPON_SYSTEM_HPP
+#define WEAPON_SYSTEM_HPP
+
 
 namespace MCS
 {
-	class FollowSystem : public Frosty::ECS::BaseSystem
+	class WeaponSystem : public Frosty::ECS::BaseSystem
 	{
 	public:
 		const static std::string NAME;
 
 	public:
-		FollowSystem() = default;
-		virtual ~FollowSystem() = default;
+		WeaponSystem() = default;
+		virtual ~WeaponSystem() = default;
 
 		virtual void Init() override;
-
 		virtual void OnUpdate() override;
 
 		virtual void AddComponent(const std::shared_ptr<Frosty::ECS::Entity>& entity) override;
@@ -22,10 +22,10 @@ namespace MCS
 		virtual std::string GetInfo() const override;
 
 	private:
-		std::array<Frosty::ECS::CTransform*, Frosty::ECS::MAX_ENTITIES_PER_COMPONENT> m_Transform;
-		std::array<Frosty::ECS::CFollow*, Frosty::ECS::MAX_ENTITIES_PER_COMPONENT> m_Follow;
-		std::array<Frosty::ECS::CPhysics*, Frosty::ECS::MAX_ENTITIES_PER_COMPONENT> m_Physics;
+		Frosty::World* m_World;
+
+		std::array<Frosty::ECS::CAttack*, Frosty::ECS::MAX_ENTITIES_PER_COMPONENT> m_Attack;
 	};
 }
 
-#endif // !FOLLOW_SYSTEM_HPP
+#endif // !WEAPON_SYSTEM_HPP

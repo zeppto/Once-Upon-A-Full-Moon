@@ -61,6 +61,7 @@ namespace Frosty
 	private:
 		void OnWindowCloseEvent(WindowCloseEvent& e);
 		void OnKeyPressedEvent(KeyPressedEvent& e);	
+		void OnKeyReleasedEvent(KeyReleasedEvent& e);
 		void InitPrefabBuffers();
 		void SubmitPrefab(std::string prefabName);//Temp
 
@@ -78,6 +79,9 @@ namespace Frosty
 		static Application* s_Instance;
 
 		EditorCamera m_EditorCamera;
+
+		// Only for Debug
+		bool m_CanPrintInfo = true;
 
 		// Particle Shader Stuff
 		//~~ States stuff (temp)
