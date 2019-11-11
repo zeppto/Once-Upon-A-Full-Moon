@@ -17,7 +17,7 @@ namespace ECS { struct Entity; }
 
 struct Level_Header
 {
-	int NrOfEntitys;
+	int NrOfEntitys = 0;
 	int NrOfComponents = 11;
 };
 
@@ -71,10 +71,9 @@ struct Level_Follow
 };
 
 //4 = Light
-enum class LightType { Point, Directional };
 struct Level_Light
 {
-	LightType Type{ LightType::Point };
+	int Type;
 	glm::vec3 Color;
 	float Radius;
 	float Strength;
@@ -166,6 +165,7 @@ public:
 	~LevelFileFormat();
 
 	void AddEntity(const std::shared_ptr<Frosty::ECS::Entity>& entity);
+	void SaveToFile();
 
 private:
 	//std::shared_ptr<ECS::Entity> m_ExitEntity;

@@ -1,6 +1,7 @@
 #include <mcspch.hpp>
 #include "InspectorLayer.hpp"
 #include"Frosty/API/AssetManager/AssetManager.hpp"
+#include "Frosty/Events/AbilityEvent.hpp"
 
 #include "imgui/imgui.h"
 #include <PugiXML/pugixml.hpp>
@@ -715,7 +716,7 @@ namespace MCS
 				if (ImGui::MenuItem("Save All", "CTRL+SHIFT+S")) {}
 				if (ImGui::MenuItem("Save Room", ""))
 				{
-
+					Frosty::EventBus::GetEventBus()->Publish<Frosty::SaveLevelEvent>(Frosty::SaveLevelEvent());
 				}
 				ImGui::EndMenu();
 			}

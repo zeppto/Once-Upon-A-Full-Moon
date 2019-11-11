@@ -24,7 +24,7 @@
 #include "Systems/BossBehaviorSystem.hpp"
 
 
-#include "LevelHandeler/LevelFileFormat.hpp"
+//#include "LevelHandeler/LevelFileFormat.hpp"
 
 
 
@@ -103,8 +103,6 @@ namespace MCS
 		world->AddComponent<Frosty::ECS::CLight>(light2, Frosty::ECS::CLight::LightType::Directional, 0.3f, glm::vec3(0.6f, 0.7f, 1.f));
 
 
-		LevelFileFormat myLevelFileFormat;
-
 		auto& player = world->CreateEntity({ 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 2.0f, 2.0f, 2.0f } );
 		auto& playerTransform = world->GetComponent<Frosty::ECS::CTransform>(player);
 		world->AddComponent<Frosty::ECS::CMesh>(player, Frosty::AssetManager::GetMesh("scarlet"));
@@ -125,9 +123,6 @@ namespace MCS
 		world->AddComponent<Frosty::ECS::CMesh>(wall, Frosty::AssetManager::GetMesh("pCube1"));
 		world->AddComponent<Frosty::ECS::CMaterial>(wall, Frosty::AssetManager::GetShader("FlatColor"));
 		world->AddComponent<Frosty::ECS::CPhysics>(wall, Frosty::AssetManager::GetBoundingBox("pCube1"));
-
-		myLevelFileFormat.AddEntity(player);
-		myLevelFileFormat.AddEntity(wall);
 
 		auto& enemy = world->CreateEntity({ 27.0f, 1.0f, 25.0f }, { 0.0f, 0.0f, 0.0f }, { 2.0f, 2.0f, 2.0f });
 		world->AddComponent<Frosty::ECS::CMesh>(enemy, Frosty::AssetManager::GetMesh("pCube1"));

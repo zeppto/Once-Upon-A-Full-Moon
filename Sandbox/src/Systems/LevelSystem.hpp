@@ -4,6 +4,7 @@
 #include "LevelHandeler/LevelsHardCoded.hpp"
 
 namespace Frosty { class ExitLevelEvent; }
+namespace Frosty { class SaveLevelEvent; }
 
 namespace MCS
 {
@@ -24,6 +25,7 @@ namespace MCS
 
 	private:
 		void OnExitLevelEvent(Frosty::ExitLevelEvent& e);
+		void OnSaveLevelEvent(Frosty::SaveLevelEvent& e);
 
 	private:
 		Frosty::World* m_World;

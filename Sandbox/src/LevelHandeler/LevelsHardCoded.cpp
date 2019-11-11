@@ -377,6 +377,6 @@ namespace Level
 		default:
 			break;
 		}
-
+		return glm::vec3(0);
 	}
 }

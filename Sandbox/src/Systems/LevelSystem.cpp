@@ -2,6 +2,7 @@
 #include "LevelSystem.hpp"
 #include "Frosty/API/AssetManager/AssetManager.hpp"
 #include "Frosty/Events/AbilityEvent.hpp"
+#include "LevelHandeler/LevelFileFormat.hpp"
 
 namespace MCS
 {
@@ -19,6 +20,9 @@ namespace MCS
 		{
 		case Frosty::EventType::ExitCurrentLevel:
 			OnExitLevelEvent(static_cast<Frosty::ExitLevelEvent&>(e));
+			break;
+		case Frosty::EventType::SaveLevel:
+			OnSaveLevelEvent(static_cast<Frosty::SaveLevelEvent&>(e));
 			break;
 		default:
 			break;
@@ -165,9 +169,24 @@ namespace MCS
 
 		int rotation = 0;
 		std::string texture = m_Map.getRoomTextur(m_PlayerPos, &rotation);
-		PlayerTranform.Position = Level::Room(m_CurrentRoome.sideExits[0], m_CurrentRoome.sideExits[1], m_CurrentRoome.sideExits[2], m_CurrentRoome.sideExits[3], texture, rotation, ExitSide.ExitDirection);
+		PlayerTranform.Position = Level::Room(m_CurrentRoome.sideExits[0], m_CurrentRoome.sideExits[1], 
+			m_CurrentRoome.sideExits[2], m_CurrentRoome.sideExits[3], texture, rotation, ExitSide.ExitDirection);
 
-
+	}
+	void LevelSystem::OnSaveLevelEvent(Frosty::SaveLevelEvent& e)
+	{
+		LevelFileFormat myLevelFileFormat;
+		for (size_t i = 1; i < p_Total; i++)
+		{
+			if (!m_World->HasComponent<Frosty::ECS::CCamera>(m_Transform[i]->EntityPtr))
+			{
+				if (!m_World->HasComponent<Frosty::ECS::CPlayer>(m_Transform[i]->EntityPtr))
+				{
+					myLevelFileFormat.AddEntity(m_Transform[i]->EntityPtr);
+				}
+			}
+		}
+		myLevelFileFormat.SaveToFile();
 	}
 }
 

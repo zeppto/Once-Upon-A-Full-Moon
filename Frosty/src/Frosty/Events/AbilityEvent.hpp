@@ -67,6 +67,16 @@ namespace Frosty
 		std::shared_ptr<ECS::Entity> m_ExitEntity;
 		std::shared_ptr<ECS::Entity> m_PlayerEntity;
 	};
+
+	class SaveLevelEvent : public BaseEvent
+	{
+	public:
+		SaveLevelEvent() {}
+
+		EVENT_TYPE(SaveLevel)
+
+	private:
+	};
 }
 
 #endif // !ABILITY_EVENT_HPP

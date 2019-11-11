@@ -15,7 +15,8 @@ namespace Frosty
 		WindowClose, WindowMaximized, WindowResize, WindowFocus, WindowLostFocus, WindowMoved,
 		KeyPressed, KeyReleased,
 		MouseButtonPressed, MouseButtonReleased, MouseMoved, MouseScrolled,
-		ArrowHit, Dash, CheckCollision, Collision, BasicAttack, BaitPlaced, ExitCurrentLevel
+		ArrowHit, Dash, CheckCollision, Collision, BasicAttack, BaitPlaced, ExitCurrentLevel,
+		SaveLevel
 	};
 
 #define EVENT_TYPE(type) static EventType GetStaticType() { return EventType::##type; }\
