@@ -8,6 +8,7 @@
 namespace Frosty
 {
 	Renderer::SceneData* Renderer::s_SceneData = FY_NEW Renderer::SceneData;
+	std::unordered_map<std::string, std::shared_ptr<Renderer::ShaderData>> Renderer::m_ShaderMap;
 
 	void Renderer::Init()
 	{
@@ -53,7 +54,7 @@ namespace Frosty
 		mat = glm::rotate(mat, glm::radians(direction.x), { 1.0f, 0.0f, 0.0f });
 		mat = glm::rotate(mat, glm::radians(direction.y), { 0.0f, 1.0f, 0.0f });
 		mat = glm::rotate(mat, glm::radians(direction.z), { 0.0f, 0.0f, 1.0f });
-		
+
 		DirectionalLight light;
 		light.Color = color;
 		light.Direction = mat * glm::vec4(0.0f, 0.0f, 1.0f, 0.0);
@@ -141,7 +142,7 @@ namespace Frosty
 		vertexArray->Unbind();
 		shader->UnBind();
 	}
-	
+
 	void Renderer::Submit(ECS::CMaterial* mat, const std::shared_ptr<VertexArray>& vertexArray, const glm::mat4& transform)
 	{
 		mat->UseShader->Bind();
@@ -175,7 +176,7 @@ namespace Frosty
 			mat->UseShader->UploadUniformFloat("u_SpecularStrength", mat->SpecularStrength);
 
 		}
-		else if (mat->UseShader->GetName() == "Texture2D"|| mat->UseShader->GetName() == "BlendShader")
+		else if (mat->UseShader->GetName() == "Texture2D" || mat->UseShader->GetName() == "BlendShader")
 		{
 			mat->UseShader->UploadUniformFloat2("u_TextureCoordScale", mat->TextureScale);
 		}
@@ -185,8 +186,12 @@ namespace Frosty
 	}
 
 	//For 2D, might be temp
-	void Renderer::Submit2d(Texture2D* tex,Shader* shader, const std::shared_ptr<VertexArray>& vertexArray, const glm::mat4& transform)
+	void Renderer::Submit2d(Texture2D* tex, Shader* shader, const std::shared_ptr<VertexArray>& vertexArray, const glm::mat4& transform)
 	{
+
+
+
+
 		shader->Bind();
 		shader->UploadUniformMat4("u_Transform", transform);
 
@@ -200,6 +205,40 @@ namespace Frosty
 		RenderCommand::Draw2D(vertexArray);
 
 		glDisable(GL_BLEND);
+	}
+
+	int counter = 0;
+
+	void Renderer::TestSubmit(ECS::CMaterial* mat, std::shared_ptr<VertexArray>& vertexArray, ECS::CTransform*& transform)
+	{
+		if (counter == 0)
+		{
+			transform->ModelMatrix[1][0] = 0.2f;
+		}
+		
+
+		MeshData meshTest;
+		meshTest.VertexArray = vertexArray;
+		meshTest.TransformMap.emplace(0, &transform->ModelMatrix);
+
+		MaterialData matTest;
+		matTest.DiffuseTexture = mat->DiffuseTexture;
+		//////matTest.MeshMap.emplace(0, &meshTest);
+		matTest.MeshMap.emplace(0, FY_NEW MeshData(meshTest));
+
+		ShaderData shaderTest;
+		shaderTest.Shader = mat->UseShader;
+		shaderTest.MaterialMap.emplace(0, FY_NEW MaterialData(matTest));
+
+		ShaderData* test = &shaderTest;
+		ShaderData* test2 = FY_NEW ShaderData(shaderTest);
+
+		m_ShaderMap.emplace("Shader", test2);
+	
+		//int temp = 0;
+
+		counter++;
+
 	}
 
 	float dt = 0;

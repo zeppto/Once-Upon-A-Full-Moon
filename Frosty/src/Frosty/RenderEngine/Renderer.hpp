@@ -10,6 +10,7 @@ namespace Frosty
 	namespace ECS
 	{
 		struct CMaterial;
+		struct CTransform;
 	}
 
 	class Renderer
@@ -43,12 +44,39 @@ namespace Frosty
 		static void SubmitText(const std::shared_ptr<Shader>& shader, const std::shared_ptr<VertexArray>& vertexArray, std::string& text);
 		static void SubmitParticles(const std::shared_ptr<Shader>& shader, const std::shared_ptr<Shader>& computeShader, const std::shared_ptr<VertexArray>& vertexArray, glm::mat4& modelMat, size_t particleCount, float maxLifetime);
 		static void Submit2d(Texture2D* tex, Shader* shader, const std::shared_ptr<VertexArray>& vertexArray, const glm::mat4& transform);
-
+	
+		static void TestSubmit(ECS::CMaterial* mat, std::shared_ptr<VertexArray>& vertexArray, ECS::CTransform*&transform);
 
 		inline static void Shutdown() { delete s_SceneData; }
 
 	private:
 	
+
+
+		struct MeshData
+		{
+			std::shared_ptr<VertexArray> VertexArray;
+			std::unordered_map<int, glm::mat4*> TransformMap;
+		};
+
+		struct MaterialData
+		{
+			std::shared_ptr<Texture2D> DiffuseTexture;
+		/*	std::shared_ptr<Texture2D> SpecularTexture;
+			std::shared_ptr<Texture2D> NormalTexture;
+			std::shared_ptr<Texture2D> BlendMapTexture;
+			std::shared_ptr<Texture2D> BlendTexture1;
+			std::shared_ptr<Texture2D> BlendTexture2;*/
+			std::unordered_map<int, std::shared_ptr<MeshData>> MeshMap;
+		};
+
+		struct ShaderData
+		{
+			std::shared_ptr < Shader> Shader;
+			std::unordered_map<int, std::shared_ptr<MaterialData>> MaterialMap;
+		};
+
+		static std::unordered_map<std::string, std::shared_ptr<ShaderData>> m_ShaderMap;
 
 		struct PointLight
 		{

@@ -61,6 +61,7 @@ namespace MCS
 			else
 			{
 				Frosty::Renderer::Submit(m_Materials[i], m_Meshes[i]->Mesh, m_Transform[i]->ModelMatrix);
+				Frosty::Renderer::TestSubmit(m_Materials[i],  m_Meshes[i]->Mesh, m_Transform[i]);
 			}
 
 			if (m_Materials[i]->UseShader->GetName() == "Animation" && m_Materials[i]->DiffuseTexture) m_Materials[i]->DiffuseTexture->Unbind();
