@@ -713,7 +713,8 @@ namespace Frosty
 				Particle() = default;
 				Particle(glm::vec4 color)
 					: color(color) {};
-				bool operator<(Particle& that) { // Sort in reverse order, far particles drawn first
+				bool operator<(Particle& that) // Sort in reverse order, far particles drawn first
+				{
 					return this->camDistance > that.camDistance;
 				}
 			};
@@ -736,6 +737,8 @@ namespace Frosty
 			glm::vec3 particleSystemColor = glm::vec3(1.0f);
 			float emitRate = 0.1f;
 			uint32_t emitCount = 1;
+			float maxLifetime = 3.0f; //All particles
+			float fadeTreshold = 0.0f; //No fade
 			bool preview = false;
 			float timer = 0.0f;
 
@@ -763,24 +766,6 @@ namespace Frosty
 			}
 
 			CParticleSystem(const CParticleSystem& org) { FY_CORE_ASSERT(false, "Copy constructor in CParticleSystem called."); }
-
-			void SetParticlesColor(float r, float g, float b)
-			{
-				for (uint32_t i = 0; i < MAX_PARTICLE_COUNT; i++)
-				{
-					particles[i].color.r = r;
-					particles[i].color.g = g;
-					particles[i].color.b = b;
-				}
-			}
-
-			void SetParticlesSize(float size)
-			{
-				for (uint32_t i = 0; i < MAX_PARTICLE_COUNT; i++)
-				{
-					particles[i].startSize = size;
-				}
-			}
 
 			virtual std::string GetName() const { return NAME; }
 		};
