@@ -259,13 +259,13 @@ namespace Frosty
 
 				glm::mat4 temp(1.0f);
 
-				temp[3][0] = 64.0f;
+				temp[3][0] = 1.0f;
 				temp[3][1] = 1.0f;
-				temp[3][2] = 36.0f;
+				temp[3][2] = 1.0f;
 
-				temp[0][0] *= 2.0f;
-				temp[1][1] *= 1.0f;
-				temp[2][2] *= 1.0f;
+				temp[0][0] = 2.0f;
+				temp[1][1] = 2.0f;
+				temp[2][2] = 2.0f;
 
 
 
@@ -276,7 +276,7 @@ namespace Frosty
 				ModelBatch tempBatch;
 				tempBatch.Verticies = tempVert;
 				tempBatch.Indices = tempIndices;
-				tempBatch.Transforms.emplace_back(tempMat);
+				tempBatch.Transforms.emplace_back(temp);
 
 				BoolMapGenerator::AddToRenderList(tempBatch);
 

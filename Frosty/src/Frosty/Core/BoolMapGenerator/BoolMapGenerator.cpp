@@ -83,7 +83,7 @@ namespace Frosty
 		glGenTextures(1, &s_Texture);
 		glBindTexture(GL_TEXTURE_2D, s_Texture);
 		//glGenerateMipmap(GL_TEXTURE_2D);
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, (s_Settings.Width * s_Settings.Pix_Cord_Ratio), (s_Settings.Height * s_Settings.Pix_Cord_Ratio), 0, GL_RGB, GL_FLOAT, NULL);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, (s_Settings.Width * s_Settings.Pix_Cord_Ratio), (s_Settings.Height * s_Settings.Pix_Cord_Ratio), 0, GL_RGB, GL_FLOAT, NULL);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
@@ -107,24 +107,8 @@ namespace Frosty
 
 	std::shared_ptr<BoolMap>& BoolMapGenerator::RenderMap()
 	{
+		glDeleteTextures(1, &s_Texture);
 		InitiateRenderData();
-
-
-
-
-
-
-
-		NodeMap testMap(100, 100);
-
-		testMap.GenereateMap();
-
-		std::vector<Node> getMap = testMap.GetNodes();
-
-
-
-
-
 
 
 
@@ -133,9 +117,9 @@ namespace Frosty
 
 		//temp
 		//glBindFramebuffer(GL_FRAMEBUFFER, s_GBuffer);
-		//glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		glUseProgram(s_RenderProgramID);
-		glActiveTexture(GL_TEXTURE0);
+		//glActiveTexture(GL_TEXTURE0);
 
 		GLint locationVO = glGetUniformLocation(s_RenderProgramID, "u_ViewOrtho");
 		GLint locationMM = glGetUniformLocation(s_RenderProgramID, "u_ModelMat");
@@ -191,11 +175,6 @@ namespace Frosty
 		}
 
 	//	glUseProgram(0);
-
-
-
-
-
 
 
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);

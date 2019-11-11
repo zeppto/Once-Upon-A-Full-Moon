@@ -58,11 +58,11 @@ namespace MCS
 		
 		auto& plane = world->CreateEntity({ 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 100.0f, 1.0f, 100.0f });
 		world->AddComponent<Frosty::ECS::CMesh>(plane, Frosty::AssetManager::GetMesh("pPlane1"));
-		auto& planeMat = world->AddComponent<Frosty::ECS::CMaterial>(plane, Frosty::AssetManager::GetShader("BlendShader"));
-		planeMat.DiffuseTexture = Frosty::AssetManager::GetTexture2D("Grass");
-		planeMat.BlendMapTexture = Frosty::AssetManager::GetTexture2D("blendMap_Test");	// why is this texture a problem
-		planeMat.BlendTexture1 = Frosty::AssetManager::GetTexture2D("StoneGround");
-		planeMat.BlendTexture2 = Frosty::AssetManager::GetTexture2D("Dirt");
+		auto& planeMat = world->AddComponent<Frosty::ECS::CMaterial>(plane, Frosty::AssetManager::GetShader("Texture2D"));
+		planeMat.DiffuseTexture = Frosty::AssetManager::GetTexture2D("heartFull");
+		//planeMat.BlendMapTexture = Frosty::AssetManager::GetTexture2D("blendMap_Test");	// why is this texture a problem
+		//planeMat.BlendTexture1 = Frosty::AssetManager::GetTexture2D("StoneGround");
+		//planeMat.BlendTexture2 = Frosty::AssetManager::GetTexture2D("Dirt");
 		navSystem->InitiateGridMap(world->GetComponent<Frosty::ECS::CTransform>(plane));
 		
 		//auto& testEntity = world->CreateEntity({ -47.5f, 0.01f, 47.5f }, { 0.0f, 0.0f, 0.0f }, { 5.0f, 1.0f, 5.0f });
