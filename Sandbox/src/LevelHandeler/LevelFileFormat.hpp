@@ -25,41 +25,41 @@ struct Level_Header
 //if nrOfComponents = 10 go from 0 - 9 for entetys
 struct Level_Component
 {
-	bool HaveComponent;
+	bool HaveComponent = false;
 };
 //if haveComponent is true do the coresponding struct
 
 //0 = Transform
 struct Level_Transform
 {
-	glm::vec3 Position;
-	glm::vec3 Rotation;
-	glm::vec3 Scale;
-	glm::mat4 ModelMatrix;
+	glm::vec3 Position{ 0.0f };
+	glm::vec3 Rotation{ 0.0f };
+	glm::vec3 Scale{ 1.0f };
+	glm::mat4 ModelMatrix{ 1.0f };
 };
 
 //1 = Mesh
 struct Level_Mesh
 {
 	//name for mesh to give to assetManager
-	std::string MeshName;
+	char MeshName[50] = "";
 };
 
 //2 = Material
 struct Level_Material
 {
-	std::string UseShaderName;
-	glm::vec4 Albedo;
-	std::string DiffuseTextureName;
-	std::string SpecularTextureName;
-	std::string NormalTextureName;
-	std::string BlendMapTextureName;
-	std::string BlendTexture1Name;
-	std::string BlendTexture2Name;
+	char UseShaderName[50] = "";
+	glm::vec4 Albedo{ 1.0f, 0.0f, 1.0f, 1.0f };
+	char DiffuseTextureName[50] = "";
+	char SpecularTextureName[50] = "";
+	char NormalTextureName[50] = "";
+	char BlendMapTextureName[50] = "";
+	char BlendTexture1Name[50] = "";
+	char BlendTexture2Name[50] = "";
 
-	float SpecularStrength;
-	int Shininess;
-	glm::vec2 TextureScale;
+	float SpecularStrength{ 0.5f };
+	int Shininess{ 16 };
+	glm::vec2 TextureScale{ 1.0f };
 };
 
 //3 = Follow
@@ -67,27 +67,27 @@ struct Level_Follow
 {
 	//target player if no tarket
 	//!!! have not chosen how to do this yet
-	float StopDistance;
+	float StopDistance{ 0.0f };
 };
 
 //4 = Light
 struct Level_Light
 {
-	int Type;
-	glm::vec3 Color;
-	float Radius;
-	float Strength;
+	int Type = 0;
+	glm::vec3 Color{ 1.0f, 0.96f, 0.84f };
+	float Radius{ 20.0f };
+	float Strength{ 1.0f };
 };
 
 //5 = Physics
 struct Level_Physics
 {
 	Luna::BoundingBox BoundingBox;
-	glm::vec3 Direction;
-	float MaxSpeed;							
-	float Speed;
-	glm::vec3 Velocity;
-	float SpeedMultiplier;
+	glm::vec3 Direction{ 0.0f, 0.0f, 0.0f };
+	float MaxSpeed{ 100.f };
+	float Speed{ 0.0f };
+	glm::vec3 Velocity{ 0.0f };
+	float SpeedMultiplier{ 1.0f };
 };
 
 //6 = Enemy
@@ -99,18 +99,18 @@ struct Level_Enemy
 //7 = Health
 struct Level_Health
 {
-	float MaxPossibleHealth;						
-	float MaxHealth;								
-	float CurrentHealth;
+	float MaxPossibleHealth = 20;						
+	float MaxHealth = 5;								
+	float CurrentHealth = 5;
 };
 
 //8 = HealthBar
 struct Level_HealthBar
 {
-	glm::vec3 BarOffset;
-	std::string MeshName;
-	std::string UseShaderName;
-	std::string TextureName;
+	glm::vec3 BarOffset{ 0.0f, 5.0f, 0.0f };
+	char MeshName[50] = "";
+	char UseShaderName[50] = "";
+	char TextureName[50] = "";
 
 	glm::mat4 HpTransform;
 };
@@ -124,7 +124,7 @@ struct Level_ParticleSystem
 //10 = LevelExit
 struct Level_LevelExit
 {
-	int ExitDirection;
+	int ExitDirection = 0;
 };
 
 //n = name
@@ -165,7 +165,7 @@ public:
 	~LevelFileFormat();
 
 	void AddEntity(const std::shared_ptr<Frosty::ECS::Entity>& entity);
-	void SaveToFile();
+	void SaveToFile(std::string fileName);
 
 private:
 	//std::shared_ptr<ECS::Entity> m_ExitEntity;

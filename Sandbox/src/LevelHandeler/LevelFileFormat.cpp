@@ -39,7 +39,7 @@ void LevelFileFormat::AddEntity(const std::shared_ptr<Frosty::ECS::Entity>& enti
 		{
 			myComponents.MyComponents.at(1).HaveComponent = true;
 			auto& mesh = m_World->GetComponent<Frosty::ECS::CMesh>(entity);
-			myComponents.myMesh.MeshName = mesh.Mesh->GetName();
+			strcpy_s(myComponents.myMesh.MeshName, mesh.Mesh->GetName().c_str());
 		}
 		else
 			myComponents.MyComponents.at(1).HaveComponent = false;
@@ -48,20 +48,20 @@ void LevelFileFormat::AddEntity(const std::shared_ptr<Frosty::ECS::Entity>& enti
 		{
 			myComponents.MyComponents.at(2).HaveComponent = true;
 			auto& material = m_World->GetComponent<Frosty::ECS::CMaterial>(entity);
-			myComponents.myMaterial.UseShaderName = material.UseShader->GetName();
+			strcpy_s(myComponents.myMaterial.UseShaderName, material.UseShader->GetName().c_str());
 			myComponents.myMaterial.Albedo = material.Albedo;
 			if(material.DiffuseTexture != nullptr)
-				myComponents.myMaterial.DiffuseTextureName = material.DiffuseTexture->GetName();
+				strcpy_s(myComponents.myMaterial.DiffuseTextureName, material.DiffuseTexture->GetName().c_str());
 			if (material.SpecularTexture != nullptr)
-				myComponents.myMaterial.SpecularTextureName = material.SpecularTexture->GetName();
+				strcpy_s(myComponents.myMaterial.SpecularTextureName, material.SpecularTexture->GetName().c_str());
 			if (material.NormalTexture != nullptr)
-				myComponents.myMaterial.NormalTextureName = material.NormalTexture->GetName();
+				strcpy_s(myComponents.myMaterial.NormalTextureName, material.NormalTexture->GetName().c_str());
 			if (material.BlendMapTexture != nullptr)
-				myComponents.myMaterial.BlendMapTextureName = material.BlendMapTexture->GetName();
+				strcpy_s(myComponents.myMaterial.BlendMapTextureName, material.BlendMapTexture->GetName().c_str());
 			if (material.BlendTexture1 != nullptr)
-				myComponents.myMaterial.BlendTexture1Name = material.BlendTexture1->GetName();
+				strcpy_s(myComponents.myMaterial.BlendTexture1Name, material.BlendTexture1->GetName().c_str());
 			if (material.BlendTexture2 != nullptr)
-				myComponents.myMaterial.BlendTexture2Name = material.BlendTexture2->GetName();
+				strcpy_s(myComponents.myMaterial.BlendTexture2Name, material.BlendTexture2->GetName().c_str());
 			myComponents.myMaterial.SpecularStrength = material.SpecularStrength;
 			myComponents.myMaterial.Shininess = material.Shininess;
 			myComponents.myMaterial.TextureScale = material.TextureScale;
@@ -134,9 +134,9 @@ void LevelFileFormat::AddEntity(const std::shared_ptr<Frosty::ECS::Entity>& enti
 			auto& healthBar = m_World->GetComponent<Frosty::ECS::CHealthBar>(entity);
 			myComponents.myHealthBar.BarOffset = healthBar.BarOffset;
 			myComponents.myHealthBar.HpTransform = healthBar.hpTransform;
-			myComponents.myHealthBar.MeshName = healthBar.Mesh->GetName();
-			myComponents.myHealthBar.TextureName = healthBar.Texture->GetName();
-			myComponents.myHealthBar.UseShaderName = healthBar.UseShader->GetName();
+			strcpy_s(myComponents.myHealthBar.MeshName, healthBar.Mesh->GetName().c_str());
+			strcpy_s(myComponents.myHealthBar.TextureName, healthBar.Texture->GetName().c_str());
+			strcpy_s(myComponents.myHealthBar.UseShaderName, healthBar.UseShader->GetName().c_str());
 		}
 		else
 			myComponents.MyComponents.at(8).HaveComponent = false;
@@ -160,15 +160,155 @@ void LevelFileFormat::AddEntity(const std::shared_ptr<Frosty::ECS::Entity>& enti
 	}
 }
 
-void LevelFileFormat::SaveToFile()
+void LevelFileFormat::SaveToFile(std::string fileName)
 {
 	m_Entitys;
 	m_Header;
-
+	int i = 0;
+	std::string filePath;
+	std::ifstream existingFile;
+	do 
+	{
+		i++;
+		filePath = "../../../assets/levels/" + fileName + std::to_string(i) + ".lvl";
+		existingFile.open(filePath);
+		existingFile.close();
+	} while (existingFile.good());
+	//write to file
 	std::ofstream myFile;
-	myFile.open("../../../assets/levels/lovol.lvl", std::ios::binary);
-	myFile << "Writing this to a file.\n";
+	myFile.open(filePath, std::ios::binary);
+	myFile.write((const char*)&m_Header, sizeof(Level_Header));
+	for (int i = 0; i < m_Entitys.myEntitys.size(); i++)
+	{
+		for(int j = 0; j < m_Header.NrOfComponents; j++)
+			myFile.write((const char*)& m_Entitys.myEntitys.at(i).MyComponents.at(j).HaveComponent, sizeof(bool));
+		for (int j = 0; j < m_Header.NrOfComponents; j++)
+			if (m_Entitys.myEntitys.at(i).MyComponents.at(j).HaveComponent)
+			{
+				switch (j)
+				{
+					//0 = Transform
+				case 0:
+					myFile.write((const char*)& m_Entitys.myEntitys.at(i).myTransform, sizeof(Level_Transform));
+					break;
+					//1 = Mesh
+				case 1:
+					myFile.write((const char*)& m_Entitys.myEntitys.at(i).myMesh, sizeof(Level_Mesh));
+					break;
+					//2 = Material
+				case 2:
+					myFile.write((const char*)& m_Entitys.myEntitys.at(i).myMaterial, sizeof(Level_Material));
+					break;
+					//3 = Follow
+				case 3:
+					myFile.write((const char*)& m_Entitys.myEntitys.at(i).myFollow, sizeof(Level_Follow));
+					break;
+					//4 = Light
+				case 4:
+					myFile.write((const char*)& m_Entitys.myEntitys.at(i).myLight, sizeof(Level_Light));
+					break;
+					//5 = Physics
+				case 5:
+					myFile.write((const char*)& m_Entitys.myEntitys.at(i).myPhysics, sizeof(Level_Physics));
+					break;
+					//6 = Enemy
+				case 6:
+					myFile.write((const char*)& m_Entitys.myEntitys.at(i).myEnemy, sizeof(Level_Enemy));
+					break;
+					//7 = Health
+				case 7:
+					myFile.write((const char*)& m_Entitys.myEntitys.at(i).myHealth, sizeof(Level_Health));
+					break;
+					//8 = HealthBar
+				case 8:
+					myFile.write((const char*)& m_Entitys.myEntitys.at(i).myHealthBar, sizeof(Level_HealthBar));
+					break;
+					//9 = ParticleSystem
+				case 9:
+					myFile.write((const char*)& m_Entitys.myEntitys.at(i).myParticleSystem, sizeof(Level_ParticleSystem));
+					break;
+					//10 = LevelExit
+				case 10:
+					myFile.write((const char*)& m_Entitys.myEntitys.at(i).myLevelExit, sizeof(Level_LevelExit));
+					break;
+				default:
+					break;
+				}
+			}
+	}
 	myFile.close();
+
+	existingFile.open(filePath);
+	Level_Header testHeder;
+	Level_Entitys testEntetys;
+
+	bool* entitysComponents;
+	//	infile.read((char*)&inMesh[i], sizeof(n_mesh));
+	existingFile.read((char*)& testHeder, sizeof(Level_Header));
+	entitysComponents = new bool[testHeder.NrOfComponents];
+	testEntetys.myEntitys.resize(testHeder.NrOfEntitys);
+	for (int i = 0; i < testHeder.NrOfEntitys; i++)
+	{
+		existingFile.read((char*) entitysComponents, sizeof(bool) * testHeder.NrOfComponents);
+		for (int j = 0; j < testHeder.NrOfComponents; j++)
+		{
+
+			if (m_Entitys.myEntitys.at(i).MyComponents.at(j).HaveComponent)
+			{
+				switch (j)
+				{
+					//0 = Transform
+				case 0:
+					existingFile.read((char*)& testEntetys.myEntitys.at(i).myTransform, sizeof(Level_Transform));
+					break;
+					//1 = Mesh
+				case 1:
+					existingFile.read((char*)& testEntetys.myEntitys.at(i).myMesh, sizeof(Level_Mesh));
+					break;
+					//2 = Material
+				case 2:
+					existingFile.read((char*)& testEntetys.myEntitys.at(i).myMaterial, sizeof(Level_Material));
+					break;
+					//3 = Follow
+				case 3:
+					existingFile.read((char*)& testEntetys.myEntitys.at(i).myFollow, sizeof(Level_Follow));
+					break;
+					//4 = Light
+				case 4:
+					existingFile.read((char*)& testEntetys.myEntitys.at(i).myLight, sizeof(Level_Light));
+					break;
+					//5 = Physics
+				case 5:
+					existingFile.read((char*)& testEntetys.myEntitys.at(i).myPhysics, sizeof(Level_Physics));
+					break;
+					//6 = Enemy
+				case 6:
+					existingFile.read((char*)& testEntetys.myEntitys.at(i).myEnemy, sizeof(Level_Enemy));
+					break;
+					//7 = Health
+				case 7:
+					existingFile.read((char*)& testEntetys.myEntitys.at(i).myHealth, sizeof(Level_Health));
+					break;
+					//8 = HealthBar
+				case 8:
+					existingFile.read((char*)& testEntetys.myEntitys.at(i).myHealthBar, sizeof(Level_HealthBar));
+					break;
+					//9 = ParticleSystem
+				case 9:
+					existingFile.read((char*)& testEntetys.myEntitys.at(i).myParticleSystem, sizeof(Level_ParticleSystem));
+					break;
+					//10 = LevelExit
+				case 10:
+					existingFile.read((char*)& testEntetys.myEntitys.at(i).myLevelExit, sizeof(Level_LevelExit));
+					break;
+				default:
+					break;
+				}
+			}
+		}
+	}
+	delete[] entitysComponents;
+	existingFile.close();
 
 
 }

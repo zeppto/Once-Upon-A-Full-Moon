@@ -5,6 +5,7 @@
 
 namespace Frosty { class ExitLevelEvent; }
 namespace Frosty { class SaveLevelEvent; }
+namespace Frosty { class CreateLevelEvent; }
 
 namespace MCS
 {
@@ -26,6 +27,7 @@ namespace MCS
 	private:
 		void OnExitLevelEvent(Frosty::ExitLevelEvent& e);
 		void OnSaveLevelEvent(Frosty::SaveLevelEvent& e);
+		void OnCreateLevelEvent(Frosty::CreateLevelEvent& e);
 
 	private:
 		Frosty::World* m_World;
@@ -37,6 +39,9 @@ namespace MCS
 		//map.generateMap();
 		Room m_CurrentRoome;// = map.getRoom(glm::ivec2(11, 15));
 		bool m_Start = true;
+
+		//type of room (needed for creation of file)
+		std::string m_RoomType = "unknown";
 
 		//temp
 		bool m_NextLevel = false;

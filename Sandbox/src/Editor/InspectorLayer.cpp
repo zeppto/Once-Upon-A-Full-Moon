@@ -730,6 +730,30 @@ namespace MCS
 				if (ImGui::MenuItem("Paste", "CTRL+V")) {}
 				ImGui::EndMenu();
 			}
+			if (ImGui::BeginMenu("Level"))
+			{
+				if (ImGui::MenuItem("Create Deadend"))
+				{
+					Frosty::EventBus::GetEventBus()->Publish<Frosty::CreateLevelEvent>(Frosty::CreateLevelEvent(true, false, false, false));
+				}
+				if (ImGui::MenuItem("Create turning road"))
+				{
+					Frosty::EventBus::GetEventBus()->Publish<Frosty::CreateLevelEvent>(Frosty::CreateLevelEvent(true, false, true, false));
+				}
+				if (ImGui::MenuItem("Create straight road"))
+				{
+					Frosty::EventBus::GetEventBus()->Publish<Frosty::CreateLevelEvent>(Frosty::CreateLevelEvent(false, false, true, true));
+				}
+				if (ImGui::MenuItem("Create three way road"))
+				{
+					Frosty::EventBus::GetEventBus()->Publish<Frosty::CreateLevelEvent>(Frosty::CreateLevelEvent(true, false, true, true));
+				}
+				if (ImGui::MenuItem("Create crossroad"))
+				{
+					Frosty::EventBus::GetEventBus()->Publish<Frosty::CreateLevelEvent>(Frosty::CreateLevelEvent(true, true, true, true));
+				}
+				ImGui::EndMenu();
+			}
 			ImGui::SetCursorPosX(m_App->GetWindow().GetWidth() - 250.0f);
 			if (!m_App->GameIsRunning()) ImGui::Checkbox("Maximize on play", &m_MaximizeOnPlay);
 			ImGui::SetCursorPosX(m_App->GetWindow().GetWidth() - 80.0f);

@@ -24,6 +24,9 @@ namespace MCS
 		case Frosty::EventType::SaveLevel:
 			OnSaveLevelEvent(static_cast<Frosty::SaveLevelEvent&>(e));
 			break;
+		case Frosty::EventType::CreateLevel:
+			OnCreateLevelEvent(static_cast<Frosty::CreateLevelEvent&>(e));
+			break;
 		default:
 			break;
 		}
@@ -186,7 +189,46 @@ namespace MCS
 				}
 			}
 		}
-		myLevelFileFormat.SaveToFile();
+		myLevelFileFormat.SaveToFile(m_RoomType);
+	}
+	void LevelSystem::OnCreateLevelEvent(Frosty::CreateLevelEvent& e)
+	{
+		for (size_t i = 1; i < p_Total; i++)
+		{
+			if (!m_World->HasComponent<Frosty::ECS::CCamera>(m_Transform[i]->EntityPtr))
+			{
+				if (!m_World->HasComponent<Frosty::ECS::CPlayer>(m_Transform[i]->EntityPtr))
+				{
+					if (m_World->HasComponent<Frosty::ECS::CPhysics>(m_Transform[i]->EntityPtr))
+					{
+						if (!m_World->HasComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr))
+						{
+							m_World->AddComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr);
+						}
+					}
+					else if (m_World->HasComponent<Frosty::ECS::CMesh>(m_Transform[i]->EntityPtr))
+					{
+						if (!m_World->HasComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr))
+						{
+							m_World->AddComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr);
+						}
+					}
+				}
+			}
+		}
+		Level::Room(e.GetDirections(0), e.GetDirections(1), e.GetDirections(3), e.GetDirections(2));
+		if (e.GetDirections(0) && !e.GetDirections(1) && !e.GetDirections(3) && !e.GetDirections(2))
+			m_RoomType = "deadend";
+		else if (e.GetDirections(0) && !e.GetDirections(1) && !e.GetDirections(3) && e.GetDirections(2))
+			m_RoomType = "turningRoad";
+		else if (!e.GetDirections(0) && !e.GetDirections(1) && e.GetDirections(3) && e.GetDirections(2))
+			m_RoomType = "straightRoad";
+		else if (e.GetDirections(0) && !e.GetDirections(1) && e.GetDirections(3) && e.GetDirections(2))
+			m_RoomType = "threeWayRoad";
+		else if (e.GetDirections(0) && e.GetDirections(1) && e.GetDirections(3) && e.GetDirections(2))
+			m_RoomType = "crossroad";
+		else
+			m_RoomType = "unknown";
 	}
 }
 
