@@ -63,64 +63,56 @@ namespace Frosty
 
 	void Renderer::SubmitText(const std::shared_ptr<Shader>& shader, const std::shared_ptr<VertexArray>& vertexArray, std::string& text)
 	{
-		/*shader->Bind();
-		vertexArray->Bind();
+		shader->Bind();
+		//vertexArray->Bind();
 
-		glm::mat4 projection = glm::ortho(0.0f, 800.0f, 0.0f, 600.0f);
-		glm::vec3 color = glm::vec3(1.0f, 0.0f, 1.0f);
+		//glm::mat4 projection = glm::ortho(0.0f, 800.0f, 0.0f, 600.0f);
+		//glm::vec3 color = glm::vec3(1.0f, 0.0f, 1.0f);
 
-		shader->UploadUniforMat4("projection", projection);
-		shader->UploadUniformInt("text", 1);
-		shader->UploadUniformFloat3("textColor", color);
+		//shader->UploadUniforMat4("projection", projection);
+		//shader->UploadUniformInt("text", 1);
+		//shader->UploadUniformFloat3("textColor", color);
 
-		std::string::const_iterator c;
-		float x = 25.0f;
-		float y = 24.0f;
-		float scale = 1.0f;
-		glm::vec3 vec = glm::vec3(0.5f, 0.8f, 0.2f);
-		for (c = text.begin(); c != text.end(); c++) {
-			Character ch = Assetmanager::GetAssetmanager()->GetFontMetaData("Gabriola")->GetData()->m_characters.at(*c);
-			float xpos = x + ch.bearing.x * scale;
-			float ypos = y - (ch.size.y - ch.bearing.y) * scale;
-			float width = ch.size.x * scale;
-			float height = ch.size.y * scale;
+		//std::string::const_iterator c;
+		//float x = 25.0f;
+		//float y = 24.0f;
+		//float scale = 1.0f;
+		//glm::vec3 vec = glm::vec3(0.5f, 0.8f, 0.2f);
+		//for (c = text.begin(); c != text.end(); c++) {
+		//	Character ch = Assetmanager::GetAssetmanager()->GetFontMetaData("Gabriola")->GetData()->m_characters.at(*c);
+		//	float xpos = x + ch.bearing.x * scale;
+		//	float ypos = y - (ch.size.y - ch.bearing.y) * scale;
+		//	float width = ch.size.x * scale;
+		//	float height = ch.size.y * scale;
 
-			float verts[6][4]
-			{
-				{ xpos,			ypos + height,	0.0f, 0.0f },
-				{ xpos,			ypos,			0.0f, 1.0f },
-				{ xpos + width,	ypos,			1.0f, 1.0f },
+		//	float verts[6][4]
+		//	{
+		//		{ xpos,			ypos + height,	0.0f, 0.0f },
+		//		{ xpos,			ypos,			0.0f, 1.0f },
+		//		{ xpos + width,	ypos,			1.0f, 1.0f },
 
-				{ xpos,			ypos + height,	0.0f, 0.0f },
-				{ xpos + width, ypos,			1.0f, 1.0f },
-				{ xpos + width, ypos + height,	1.0f, 0.0f }
-			};
+		//		{ xpos,			ypos + height,	0.0f, 0.0f },
+		//		{ xpos + width, ypos,			1.0f, 1.0f },
+		//		{ xpos + width, ypos + height,	1.0f, 0.0f }
+		//	};
 
-			vertexArray->GetVertexBuffer().front()->Bind();
-			vertexArray->GetVertexBuffer().front()->SetData(*verts, sizeof(verts), GL_DYNAMIC_DRAW);
+		//	vertexArray->GetVertexBuffer().front()->Bind();
+		//	vertexArray->GetVertexBuffer().front()->SetData(*verts, sizeof(verts), GL_DYNAMIC_DRAW);
 
-			glActiveTexture(GL_TEXTURE1);
-			glBindTexture(GL_TEXTURE_2D, ch.textureID);
+		//	glActiveTexture(GL_TEXTURE1);
+		//	glBindTexture(GL_TEXTURE_2D, ch.textureID);
 
-			RenderCommand::Draw2D(vertexArray);
+			//RenderCommand::Draw2D(vertexArray);
 
-			x += (ch.advance >> 6) * scale;
-		}
-		glBindTexture(GL_TEXTURE_2D, 0);
-		vertexArray->Unbind();
-		vertexArray->GetVertexBuffer().front()->Unbind();*/
+		//	x += (ch.advance >> 6) * scale;
+		//}
+		//glBindTexture(GL_TEXTURE_2D, 0);
+		//vertexArray->Unbind();
+		//vertexArray->GetVertexBuffer().front()->Unbind();
 	}
 
 	void Renderer::SubmitParticles(const std::shared_ptr<Shader>& shader, const std::shared_ptr<Shader>& computeShader, const std::shared_ptr<VertexArray>& vertexArray, glm::mat4& modelMat, size_t particleCount, float maxLifetime)
 	{
-		//computeShader->Bind();
-		//vertexArray->BindShaderStorageBuffer();
-
-		//computeShader->UploadUniformFloat("deltaTime", Frosty::Time::DeltaTime());
-		//computeShader->UploadUniformFloat("maxLifetime", maxLifetime);
-
-		//ComputeCommand::Send(particleCount);
-
 		shader->Bind();
 		vertexArray->Bind();
 

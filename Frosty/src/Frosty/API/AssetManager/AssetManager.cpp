@@ -110,9 +110,7 @@ namespace Frosty
 		s_Shaders.emplace("UI", FY_NEW Shader("assets/shaders/UIVertex.glsl", "assets/shaders/UIFragment.glsl", "UI"));
 		s_Shaders.emplace("Particles", FY_NEW Shader("assets/shaders/ParticleVertex.glsl", "assets/shaders/ParticleGeometry.glsl", "assets/shaders/ParticleFragment.glsl", "Particles"));
 		s_Shaders.emplace("Animation", FY_NEW Shader("assets/shaders/AnimationVS.glsl", "assets/shaders/AnimationFS.glsl", "Animation"));
-
-		//Don't try to apply a compute shader as a material! This might have to be separate from normal shaders just to avoid confusion.
-		s_Shaders.emplace("ParticleCompute", FY_NEW Shader("assets/shaders/ParticleCompute.glsl", "ParticleCompute"));
+		s_Shaders.emplace("Text", FY_NEW Shader("assets/shaders/TextVertex.glsl", "assets/shaders/TextFragment.glsl", "Text"));
 
 		s_Shaders["Texture2D"]->Bind();
 

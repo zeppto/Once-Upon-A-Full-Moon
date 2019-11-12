@@ -1,5 +1,6 @@
 #include "mcspch.hpp"
 #include "GUISystem.hpp"
+#include "Frosty/API/AssetManager/AssetManager.hpp"
 
 namespace MCS
 {
@@ -21,7 +22,15 @@ namespace MCS
 
 	void GUISystem::Render()
 	{
-
+		for (size_t i = 1; i < p_Total; i++)
+		{
+			//Render all text
+			for (int j = 0; j < m_GUI[i]->texts.size(); j++)
+			{
+				Frosty::UIText& currText = m_GUI[i]->texts[j];
+				Frosty::Renderer::SubmitText(m_GUI[i]->textShader, currText.GetVertexArray(), currText.GetText());
+			}
+		}
 	}
 
 	void GUISystem::AddComponent(const std::shared_ptr<Frosty::ECS::Entity>& entity)
@@ -32,6 +41,13 @@ namespace MCS
 			auto& world = Frosty::Application::Get().GetWorld();
 			m_Transform[p_Total] = &world->GetComponent<Frosty::ECS::CTransform>(entity);
 			m_GUI[p_Total] = &world->GetComponent<Frosty::ECS::CGUI>(entity);
+
+			m_GUI[p_Total]->textShader = Frosty::AssetManager::GetShader("Text");
+
+			//Debug test
+			Frosty::UIText text;
+			m_GUI[p_Total]->texts.push_back(text);
+			////////////
 
 			p_Total++;
 		}

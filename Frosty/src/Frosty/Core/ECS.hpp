@@ -808,15 +808,14 @@ namespace Frosty
 			static std::string NAME;
 
 			CGUI() = default;
-			CGUI(const CGUI& org) { FY_CORE_ASSERT(false, "Copy constructor in CGUI called."); }
 
 			std::vector<UIText> texts;
 			std::vector<UISprite> sprites;
-			std::vector<std::shared_ptr<Texture2D>> spriteTextures;
 
 			std::shared_ptr<Shader> textShader;
 			std::shared_ptr<Shader> spriteShader;
 
+			CGUI(const CGUI& org) { FY_CORE_ASSERT(false, "Copy constructor in CGUI called."); }
 			virtual std::string GetName() const { return NAME; }
 		};
 
