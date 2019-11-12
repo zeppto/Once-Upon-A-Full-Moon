@@ -166,7 +166,6 @@ namespace MCS
 		{
 			auto& entity = e.GetEntity();
 
-
 			auto& world = Frosty::Application::Get().GetWorld();
 			
 			m_Boss[i]->TargetList.emplace(m_Boss[i]->TargetList.end() - 1, entity);
