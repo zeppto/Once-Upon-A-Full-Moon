@@ -263,7 +263,7 @@ namespace Frosty
 
 				temp[3][0] = 0.0f;
 				temp[3][1] = 0.0f;
-				temp[3][2] = 70.0f;
+				temp[3][2] = 72.0f;
 
 				temp[0][0] = 4.0f;
 				temp[1][1] = 4.0f;
@@ -275,22 +275,36 @@ namespace Frosty
 				tempBatch.Indices = tempIndices;
 				tempBatch.Transforms.emplace_back(temp);
 
-				BoolMapGenerator::AddToModelRenderList(tempBatch);
+				//BoolMapGenerator::AddToModelRenderList(tempBatch);
 
 
 				//BoundBatch
 
 				BoundBatch testBound;
 
-				testBound.VertexArrayID = AssetManager::GetMesh("pDisc1")->GetRenderID();
-				testBound.NrOfIndices = AssetManager::GetMesh("pDisc1")->GetIndexBuffer()->GetCount();
+				testBound.VertexArrayID = AssetManager::GetMesh("tree1")->GetRenderID();
+				testBound.NrOfIndices = AssetManager::GetMesh("tree1")->GetIndexBuffer()->GetCount();
 
-				glm::mat4 tempMat = glm::translate(glm::mat4(1.0f), glm::vec3(25.0f, 0.0f, 40.0f));
+
+				//Botleft
+				glm::mat4 tempMat = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f));
+				tempMat = glm::scale(tempMat, glm::vec3(1.0f, 1.0f, 1.0f));
+				testBound.Transforms.emplace_back(tempMat);
+
+				//topRight
+				tempMat = glm::translate(glm::mat4(1.0f), glm::vec3(128.0f, 0.0f, 72.0f));
 				tempMat = glm::scale(tempMat, glm::vec3(1.0f, 1.0f, 1.0f));
 				testBound.Transforms.emplace_back(tempMat);
 
 
-				BoolMapGenerator::AddToBoundRenderList(testBound);
+				//RandomSpot
+				tempMat = glm::translate(glm::mat4(1.0f), glm::vec3(33.0f, 0.0f, 36.0f));
+				tempMat = glm::scale(tempMat, glm::vec3(1.0f, 1.0f, 1.0f));
+				testBound.Transforms.emplace_back(tempMat);
+
+
+
+				BoolMapGenerator::AddBatch(testBound);
 
 				//Render
 				std::shared_ptr<BoolMap> ptr = BoolMapGenerator::RenderBoolMap();
@@ -298,10 +312,14 @@ namespace Frosty
 
 
 				//Check
-				bool b = ptr->CheckCollition(glm::vec3(25.0f,1.0f,40.0f));
-				bool j = ptr->CheckCollition(glm::vec3(23.0f,1.0f,42.0f));
-				bool l = ptr->CheckCollition(glm::vec3(1.999f,1.0f,4.001f));
-				bool h = ptr->CheckCollition(glm::vec3(1.999f,1.0f,4.0f));
+
+
+				bool botLeft = ptr->CheckCollition(glm::vec3(0.0f,1.0f, 0.0f));
+				bool botRight = ptr->CheckCollition(glm::vec3(128.0f,1.0f,0.0f));
+				bool topLeft = ptr->CheckCollition(glm::vec3(0.0f,1.0f,72.0f));
+				bool topRight = ptr->CheckCollition(glm::vec3(128.0f,1.0f,72.0f));
+				bool randomSpot = ptr->CheckCollition(glm::vec3(33.0f,1.0f,38.0f));
+				bool randomSpot2 = ptr->CheckCollition(glm::vec3(34.0f,1.0f,40.0f));
 
 				Renderer::SetCamera(m_EditorCamera.GetPosition(), m_EditorCamera.GetViewMatrix(), m_EditorCamera.GetProjectionMatrix());
 			}

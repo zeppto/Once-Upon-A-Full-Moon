@@ -1,6 +1,5 @@
 #ifndef BOOLMAPGENERATOR_HPP
 #define BOOLMAPGENERATOR_HPP
-//#include"..\..\Core\Camera\Camera.hpp"
 #include"BoolMap.hpp"
 
 #define DEFAULT_BOOLMAP_WIDTH 128
@@ -11,7 +10,7 @@ namespace Frosty
 {
 
 
-
+	//If needed memory convert list mat4 to pointers 
 	struct ModelBatch
 	{
 		std::vector<float> Verticies;
@@ -26,6 +25,12 @@ namespace Frosty
 		std::list<glm::mat4> Transforms;
 	};
 
+	struct VABatch
+	{	
+		VertexArray VertexArrayObj;
+		std::list<glm::mat4> Transforms;
+	};
+
 
 
 	class BoolMapGenerator
@@ -36,7 +41,6 @@ namespace Frosty
 	public:
 
 
-		//var
 	private:
 		inline static const std::string VERTEXSRC = R"(
 			#version 440 core
@@ -62,7 +66,7 @@ namespace Frosty
 			}
 		)";
 
-
+		//public?
 		struct GeneratorSettings
 		{
 
@@ -80,46 +84,36 @@ namespace Frosty
 		};
 
 
-		//temp
-	//	static std::shared_ptr <Camera> m_Camera;
-		static unsigned int m_VertexArray;
-		//
-
 
 		static BoolMapGenerator* s_Instance;
 		friend class Application;
 
-		//outside Info
+		//BatchLists
 		static std::list<ModelBatch> s_ModelBatch;
 		static std::list<BoundBatch> s_BoundBatch;
+		static std::list<VABatch> s_VABatch;
 
 		static GeneratorSettings s_Settings;
 
 		//RenderData
-
 		static glm::mat4 s_ViewOrtho;
-		//static glm::mat4 s_Ortho;
 
 		static unsigned int s_GBuffer;
 		static unsigned int s_Texture;
 		static unsigned int s_RenderProgramID;
-
-
+		
 		//Func
 	public:
 		static BoolMapGenerator* Get();
 		virtual ~BoolMapGenerator() {};
 
-		inline static void AddToModelRenderList(const ModelBatch& Batch) { InitCheck();  s_ModelBatch.push_back(Batch); }
-		inline static void AddToBoundRenderList(const BoundBatch& Batch) { InitCheck();  s_BoundBatch.push_back(Batch); }
+		inline static void AddBatch(const ModelBatch& Batch) { InitCheck();  s_ModelBatch.push_back(Batch); }
+		inline static void AddBatch(const BoundBatch& Batch) { InitCheck();  s_BoundBatch.push_back(Batch); }
+		inline static void AddBatch(const VABatch& Batch) { InitCheck();  s_VABatch.push_back(Batch); }
 
 		inline static std::shared_ptr<BoolMap> RenderBoolMap() { InitCheck(); return RenderMap(); }
 
 		inline static  const unsigned int& GetTextureID() { return s_Texture; }
-
-		//temp
-		//static std::shared_ptr<Camera>& GetCamera();
-
 
 
 		//Func

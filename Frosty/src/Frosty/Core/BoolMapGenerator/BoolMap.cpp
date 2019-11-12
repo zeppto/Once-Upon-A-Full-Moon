@@ -30,7 +30,22 @@ const bool& BoolMap::CheckCollition(const glm::vec3& LocalPos) const
 	bool returnValue = false;
 	if (m_CoordWidth >= LocalPos.x && 0 <= LocalPos.x && LocalPos.z >= 0 && LocalPos.z <= m_CoordHeight)
 	{
-		returnValue =  m_BoolMap[static_cast<unsigned int>((LocalPos.x * (float)m_PixCoordRatio + (LocalPos.z * (unsigned int)m_PixWidth)))];
+
+		int xx = static_cast<int>((LocalPos.x * m_PixCoordRatio) -1);
+		int zz = static_cast<int>(((LocalPos.z * m_PixCoordRatio)-1) * m_PixWidth);
+
+		if (xx < 0)
+		{
+			xx = 0;
+		}
+		if (zz < 0)
+		{
+			zz = 0;
+		}
+
+		int pos = xx + zz;
+
+		returnValue =  m_BoolMap[pos];
 	}
 	else
 	{

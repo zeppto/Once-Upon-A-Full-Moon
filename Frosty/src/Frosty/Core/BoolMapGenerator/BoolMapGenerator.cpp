@@ -2,20 +2,17 @@
 #include"BoolMapGenerator.hpp"
 #include "Glad/glad.h"
 #include"TestMap.hpp"
+#include<Frosty/RenderEngine/VertexArray.hpp>
 
 #define BUFFER_OFFSET(i) ((char *)nullptr + (i))
 
 namespace Frosty
 {
-	//temp
-	//std::shared_ptr <Camera> BoolMapGenerator::m_Camera = nullptr;
-	unsigned int BoolMapGenerator::m_VertexArray = -1;
-	//
-
+	//Lists
 	BoolMapGenerator* BoolMapGenerator::s_Instance = nullptr;
 	std::list<ModelBatch> BoolMapGenerator::s_ModelBatch = std::list<ModelBatch>();
 	std::list<BoundBatch> BoolMapGenerator::s_BoundBatch = std::list<BoundBatch>();
-	BoolMapGenerator::GeneratorSettings BoolMapGenerator::s_Settings = BoolMapGenerator::GeneratorSettings();
+	std::list<VABatch> BoolMapGenerator::s_VABatch = std::list<VABatch>();
 
 
 	//RenderData
@@ -24,6 +21,10 @@ namespace Frosty
 	unsigned int BoolMapGenerator::s_Texture = -1;
 	unsigned int BoolMapGenerator::s_RenderProgramID = -1;
 
+	BoolMapGenerator::GeneratorSettings BoolMapGenerator::s_Settings = BoolMapGenerator::GeneratorSettings();
+	
+	
+	
 	BoolMapGenerator* BoolMapGenerator::Get()
 	{
 		if (s_Instance == nullptr)
@@ -42,18 +43,14 @@ namespace Frosty
 		tempDir[1] = 0.0f;
 		glm::mat4 tempView = glm::lookAt(s_Settings.Pos, tempDir, s_Settings.UpVec);
 
-		glm::vec4 OrthoVec((float)s_Settings.Width / -2.0f, (float)s_Settings.Width / 2.0f, (float)s_Settings.Height / -2.0f, (float)s_Settings.Height / 2.0f);
+		//flipped
+		glm::vec4 OrthoVec((float)s_Settings.Width / -2.0f, (float)s_Settings.Width / 2.0f, (float)s_Settings.Height / 2.0f, (float)s_Settings.Height / -2.0f);
 		glm::mat4 tempOrtho = glm::ortho(OrthoVec[0], OrthoVec[1], OrthoVec[2], OrthoVec[3], 1.0f, 200.0f);
 
 		s_ViewOrtho = tempOrtho * tempView;
 
 		InitiateGBuffer();
 	}
-
-	//std::shared_ptr<Camera>& BoolMapGenerator::GetCamera()
-	//{
-	//	return m_Camera;
-	//}
 
 	void BoolMapGenerator::Init()
 	{
@@ -191,6 +188,13 @@ namespace Frosty
 
 		//Translate
 		//can be optimized (+ bitmap)
+
+		//int* kk = new int[100];
+		//kk[99] = 1;
+		//kk[101] = 1;
+
+		int size = (unsigned int)TmpWidth * (unsigned int)TmpHeight;
+
 		float* tempFloatPtr = FY_NEW float[((unsigned int)TmpWidth * (unsigned int)TmpHeight)];
 
 		glReadPixels(0, 0, TmpWidth, TmpHeight, GL_RED, GL_FLOAT, &tempFloatPtr[0]);
@@ -201,6 +205,11 @@ namespace Frosty
 		{
 			//temp
 			float xx = tempFloatPtr[i];
+
+			if (i == 512000)
+			{
+				int o = 0;
+			}
 
 			if (tempFloatPtr[i] > 0.001)
 			{

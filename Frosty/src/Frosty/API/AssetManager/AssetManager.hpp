@@ -34,7 +34,7 @@ namespace Frosty
 		JPG,
 		PNG,
 		LUNA,
-		TTFF,
+		TTF,
 		TGA,
 		GLSL
 	};
