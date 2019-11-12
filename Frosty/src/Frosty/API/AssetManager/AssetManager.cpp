@@ -26,6 +26,7 @@ namespace Frosty
 	std::map<std::string, std::shared_ptr<Shader>> AssetManager::s_Shaders;
 	std::map<std::string, std::shared_ptr<Texture2D>> AssetManager::s_Textures2D;
 	std::map<std::string, std::shared_ptr<Luna::BoundingBox>> AssetManager::s_BoundingBoxes;
+	std::map<std::string, std::shared_ptr<TrueTypeFile>> AssetManager::s_TruefontTypes;
 
 	std::vector<std::string> AssetManager::s_FilePath_Vector;
 
@@ -72,13 +73,13 @@ namespace Frosty
 				break;
 
 			case LUNA:
-				if (TempFileInfo.FileName == "Tree1")
-				{
-					int f = 0;
-				}
 
 				returnValue = LoadLunaFile(TempFileInfo);
 
+				break;
+
+			case TTF:
+				returnValue = LoadTTF_File(TempFileInfo);
 				break;
 
 
@@ -246,6 +247,22 @@ namespace Frosty
 		}
 		return true;
 	}
+
+	bool AssetManager::AddTTF(const FileMetaData & MetaData)
+	{
+		if (TTFLoaded(MetaData.FileName))
+		{
+			FY_CORE_INFO("TTF: {0}, Is already loaded", MetaData.FileName);
+			return false;
+		}
+		else
+		{
+			//Change later
+			s_TruefontTypes.emplace(MetaData.FileName, FY_NEW TrueTypeFile(MetaData.FullFilePath));
+		}
+		return true;
+	}
+	
 
 	bool AssetManager::AddMaterial(LinkedMaterial& LnkMat)
 	{
@@ -457,6 +474,23 @@ namespace Frosty
 
 		std::unordered_map<std::string, LinkedMaterial>::iterator it;
 		for (it = s_LinkedMaterials.begin(); it != s_LinkedMaterials.end() && returnValue == false; it++)
+		{
+			if (it->first == FileName)
+			{
+				returnValue = true;
+			}
+		}
+
+		return returnValue;
+	}
+
+	bool Frosty::AssetManager::TTFLoaded(const std::string & FileName)
+	{
+		bool returnValue = false;
+
+
+		std::map<std::string, std::shared_ptr<TrueTypeFile>>::iterator it;
+		for (it = s_TruefontTypes.begin(); it != s_TruefontTypes.end() && returnValue == false; it++)
 		{
 			if (it->first == FileName)
 			{
@@ -707,6 +741,25 @@ namespace Frosty
 		return returnValue;
 	}
 
+	bool AssetManager::LoadTTF_File(const FileMetaData & FileNameInformation, const bool & Reload)
+	{
+		bool returnValue = false;
+		if (AddTTF(FileNameInformation))
+		{
+
+			std::shared_ptr<TrueTypeFile> ptr = GetTTF(FileNameInformation.FileName);
+
+			if (ptr->LoadFont())
+			{
+
+				returnValue = true;
+			}
+
+
+		}
+		return returnValue;
+	}
+
 	bool AssetManager::LoadGraphicFile(const FileMetaData& FileNameInformation, const bool& Reload)
 	{
 		bool returnValue = false;
@@ -795,6 +848,10 @@ namespace Frosty
 		else if (fileType == FILE_TYPE_GLSL)
 		{
 			return GLSL;
+		}
+		else if (fileType == FILE_TYPE_TTF)
+		{
+			return TTF;
 		}
 
 

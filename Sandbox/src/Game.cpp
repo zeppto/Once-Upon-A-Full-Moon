@@ -49,7 +49,8 @@ namespace MCS
 		Frosty::ECS::BaseSystem* retSystem = world->AddSystem<NavigationSystem>();
 		NavigationSystem* navSystem = dynamic_cast<NavigationSystem*>(retSystem);
 		//world->AddSystem<HealthBarSystem>();
-		world->AddSystem<ParticleSystem>();
+		retSystem = world->AddSystem<ParticleSystem>();
+		ParticleSystem* particleSystem = dynamic_cast<ParticleSystem*>(retSystem);
 		world->AddSystem<BossBehaviorSystem>();
 
 		//MapGenerator map;
@@ -80,6 +81,7 @@ namespace MCS
 		//}
 
 		world->Awake();
+		particleSystem->AttachGameCamera(&world->GetComponent<Frosty::ECS::CTransform>(world->GetSceneCamera()));
 		
 		//auto& plane = world->CreateEntity({ 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 100.0f, 1.0f, 100.0f });
 		//world->AddComponent<Frosty::ECS::CMesh>(plane, Frosty::AssetManager::GetMesh("pPlane1"));
