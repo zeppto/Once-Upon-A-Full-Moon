@@ -211,31 +211,67 @@ namespace Frosty
 
 	void Renderer::TestSubmit(ECS::CMaterial* mat, std::shared_ptr<VertexArray>& vertexArray, ECS::CTransform*& transform)
 	{
-		if (counter == 0)
+		/*if (counter == 0)
 		{
 			transform->ModelMatrix[1][0] = 0.2f;
-		}
+		}*/
 		
+		int matID = 0;
+		int meshID = 0;
+		int transformID = counter;
 
-		MeshData meshTest;
+
+
+
+		/*MeshData meshTest;
 		meshTest.VertexArray = vertexArray;
 		meshTest.TransformMap.emplace(0, &transform->ModelMatrix);
 
 		MaterialData matTest;
 		matTest.DiffuseTexture = mat->DiffuseTexture;
-		//////matTest.MeshMap.emplace(0, &meshTest);
 		matTest.MeshMap.emplace(0, FY_NEW MeshData(meshTest));
 
 		ShaderData shaderTest;
 		shaderTest.Shader = mat->UseShader;
-		shaderTest.MaterialMap.emplace(0, FY_NEW MaterialData(matTest));
+		shaderTest.MaterialMap.emplace(0, FY_NEW MaterialData(matTest));*/
 
-		ShaderData* test = &shaderTest;
-		ShaderData* test2 = FY_NEW ShaderData(shaderTest);
+		//ShaderData* test = &shaderTest;
+		//ShaderData* test2 = FY_NEW ShaderData(shaderTest);
 
-		m_ShaderMap.emplace("Shader", test2);
-	
-		//int temp = 0;
+
+		//ADD
+		m_ShaderMap.emplace("Shader", FY_NEW ShaderData);
+		auto& shaderMap = m_ShaderMap.at("Shader");
+		shaderMap->Shader = mat->UseShader;
+		m_ShaderMap.at("Shader")->MaterialMap.emplace(matID, FY_NEW MaterialData);
+
+		auto& materialMap = shaderMap->MaterialMap.at(matID);
+		materialMap->DiffuseTexture = mat->DiffuseTexture;
+		materialMap->MeshMap.emplace(meshID, FY_NEW  MeshData);
+
+		auto& meshMap = materialMap->MeshMap.at(meshID);
+		meshMap->VertexArray = vertexArray;
+		meshMap->TransformMap.emplace(transformID, &transform->ModelMatrix);
+
+		auto & test3 = m_ShaderMap.at("Shader")->MaterialMap.at(matID)->MeshMap.at(meshID)->TransformMap.at(transformID);
+
+		//CHANGE
+		transform->Position = glm::vec3(counter, 2, 3);
+		//transform->Rotation = glm::vec3(2, 3, 1);
+		//transform->Scale = glm::vec3(3, 1, 2);
+
+		glm::mat4 testMat = glm::translate(glm::mat4(1.0f), transform->Position);
+		testMat = glm::rotate(testMat, glm::radians(transform->Rotation.x), { 1.0f, 0.0f, 0.0f });
+		testMat = glm::rotate(testMat, glm::radians(transform->Rotation.y), { 0.0f, 1.0f, 0.0f });
+		testMat = glm::rotate(testMat, glm::radians(transform->Rotation.z), { 0.0f, 0.0f, 1.0f });
+		testMat = glm::scale(testMat, transform->Scale);
+		transform->ModelMatrix = testMat;
+
+
+		//COMPARE
+		auto& testMat2 = transform->ModelMatrix;
+
+		auto& test4 = m_ShaderMap.at("Shader")->MaterialMap.at(matID)->MeshMap.at(meshID)->TransformMap.at(transformID);
 
 		counter++;
 
