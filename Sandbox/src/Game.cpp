@@ -24,6 +24,8 @@
 #include "Systems/BossBehaviorSystem.hpp"
 
 
+//#include "LevelHandeler/LevelFileFormat.hpp"
+
 
 
 namespace MCS
@@ -101,6 +103,7 @@ namespace MCS
 		auto& light2 = world->CreateEntity({ 0.0f, 0.0f, 0.0f }, { -190.0f, 8.0f, -10.0f });
 		auto& lightTransform2 = world->GetComponent<Frosty::ECS::CTransform>(light2);
 		world->AddComponent<Frosty::ECS::CLight>(light2, Frosty::ECS::CLight::LightType::Directional, 0.3f, glm::vec3(0.6f, 0.7f, 1.f));
+
 
 		auto& player = world->CreateEntity({ 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 2.0f, 2.0f, 2.0f } );
 		auto& playerTransform = world->GetComponent<Frosty::ECS::CTransform>(player);
