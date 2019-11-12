@@ -45,7 +45,8 @@ namespace Frosty
 		static void SubmitParticles(const std::shared_ptr<Shader>& shader, const std::shared_ptr<Shader>& computeShader, const std::shared_ptr<VertexArray>& vertexArray, glm::mat4& modelMat, size_t particleCount, float maxLifetime);
 		static void Submit2d(Texture2D* tex, Shader* shader, const std::shared_ptr<VertexArray>& vertexArray, const glm::mat4& transform);
 	
-		static void TestSubmit(ECS::CMaterial* mat, std::shared_ptr<VertexArray>& vertexArray, ECS::CTransform*&transform);
+		static void AddToRenderer(ECS::CMaterial* mat, std::shared_ptr<VertexArray>& vertexArray, ECS::CTransform*&transform);
+		static void RemoveFromRenderer(const int& transformID);
 
 		inline static void Shutdown() { delete s_SceneData; }
 
@@ -77,6 +78,7 @@ namespace Frosty
 		};
 
 		static std::unordered_map<std::string, std::shared_ptr<ShaderData>> m_ShaderMap;
+		static std::unordered_map<int, std::unordered_map<int, glm::mat4*>*> m_TransformLookUpMap;
 
 		struct PointLight
 		{

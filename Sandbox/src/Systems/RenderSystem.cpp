@@ -61,7 +61,7 @@ namespace MCS
 			else
 			{
 				Frosty::Renderer::Submit(m_Materials[i], m_Meshes[i]->Mesh, m_Transform[i]->ModelMatrix);
-				Frosty::Renderer::TestSubmit(m_Materials[i],  m_Meshes[i]->Mesh, m_Transform[i]);
+
 			}
 
 			if (m_Materials[i]->UseShader->GetName() == "Animation" && m_Materials[i]->DiffuseTexture) m_Materials[i]->DiffuseTexture->Unbind();
@@ -94,7 +94,10 @@ namespace MCS
 			m_Meshes[p_Total] = &world->GetComponent<Frosty::ECS::CMesh>(entity);
 			m_Materials[p_Total] = &world->GetComponent<Frosty::ECS::CMaterial>(entity);
 
+			Frosty::Renderer::AddToRenderer(m_Materials[p_Total], m_Meshes[p_Total]->Mesh, m_Transform[p_Total]);
+
 			p_Total++;
+
 		}
 	}
 
@@ -105,6 +108,9 @@ namespace MCS
 		if (it != p_EntityMap.end())
 		{
 			p_Total--;
+
+			Frosty::Renderer::RemoveFromRenderer(m_Transform[p_Total]->EntityPtr->Id);
+
 			auto& entityToUpdate = m_Transform[p_Total]->EntityPtr;
 			m_Transform[p_Total] = nullptr;
 			m_Meshes[p_Total] = nullptr;
@@ -114,6 +120,7 @@ namespace MCS
 			{
 				p_EntityMap[entityToUpdate] = it->second;
 			}
+
 
 			p_EntityMap.erase(entity);
 		}
@@ -135,7 +142,7 @@ namespace MCS
 			m_Materials[it->second] = materialPtr;
 		}
 	}
-	
+
 	std::string RenderSystem::GetInfo() const
 	{
 		std::stringstream retInfo;

@@ -9,6 +9,7 @@ namespace Frosty
 {
 	Renderer::SceneData* Renderer::s_SceneData = FY_NEW Renderer::SceneData;
 	std::unordered_map<std::string, std::shared_ptr<Renderer::ShaderData>> Renderer::m_ShaderMap;
+	std::unordered_map<int, std::unordered_map<int, glm::mat4*>*> Renderer::m_TransformLookUpMap;
 
 	void Renderer::Init()
 	{
@@ -209,17 +210,16 @@ namespace Frosty
 
 	int counter = 0;
 
-	void Renderer::TestSubmit(ECS::CMaterial* mat, std::shared_ptr<VertexArray>& vertexArray, ECS::CTransform*& transform)
+	void Renderer::AddToRenderer(ECS::CMaterial* mat, std::shared_ptr<VertexArray>& vertexArray, ECS::CTransform*& transform)
 	{
 		/*if (counter == 0)
 		{
 			transform->ModelMatrix[1][0] = 0.2f;
 		}*/
-		
+
 		int matID = 0;
 		int meshID = 0;
-		int transformID = counter;
-
+		int transformID = transform->EntityPtr->Id;
 
 
 
@@ -240,10 +240,12 @@ namespace Frosty
 
 
 		//ADD
-		m_ShaderMap.emplace("Shader", FY_NEW ShaderData);
-		auto& shaderMap = m_ShaderMap.at("Shader");
+
+		std::string ShaderName = mat->UseShader->GetName();
+		m_ShaderMap.emplace(mat->UseShader->GetName(), FY_NEW ShaderData);
+		auto& shaderMap = m_ShaderMap.at(ShaderName);
 		shaderMap->Shader = mat->UseShader;
-		m_ShaderMap.at("Shader")->MaterialMap.emplace(matID, FY_NEW MaterialData);
+		m_ShaderMap.at(ShaderName)->MaterialMap.emplace(matID, FY_NEW MaterialData);
 
 		auto& materialMap = shaderMap->MaterialMap.at(matID);
 		materialMap->DiffuseTexture = mat->DiffuseTexture;
@@ -253,27 +255,47 @@ namespace Frosty
 		meshMap->VertexArray = vertexArray;
 		meshMap->TransformMap.emplace(transformID, &transform->ModelMatrix);
 
-		auto & test3 = m_ShaderMap.at("Shader")->MaterialMap.at(matID)->MeshMap.at(meshID)->TransformMap.at(transformID);
+		auto& transformMap = meshMap->TransformMap;
+		m_TransformLookUpMap.emplace(transformID, &transformMap);
+
+
+		auto& test3 = m_ShaderMap.at(ShaderName)->MaterialMap.at(matID)->MeshMap.at(meshID)->TransformMap.at(transformID);
 
 		//CHANGE
-		transform->Position = glm::vec3(counter, 2, 3);
-		//transform->Rotation = glm::vec3(2, 3, 1);
-		//transform->Scale = glm::vec3(3, 1, 2);
+		//transform->Position = glm::vec3(counter, 2, 3);
+		////transform->Rotation = glm::vec3(2, 3, 1);
+		////transform->Scale = glm::vec3(3, 1, 2);
 
-		glm::mat4 testMat = glm::translate(glm::mat4(1.0f), transform->Position);
-		testMat = glm::rotate(testMat, glm::radians(transform->Rotation.x), { 1.0f, 0.0f, 0.0f });
-		testMat = glm::rotate(testMat, glm::radians(transform->Rotation.y), { 0.0f, 1.0f, 0.0f });
-		testMat = glm::rotate(testMat, glm::radians(transform->Rotation.z), { 0.0f, 0.0f, 1.0f });
-		testMat = glm::scale(testMat, transform->Scale);
-		transform->ModelMatrix = testMat;
+		//glm::mat4 testMat = glm::translate(glm::mat4(1.0f), transform->Position);
+		//testMat = glm::rotate(testMat, glm::radians(transform->Rotation.x), { 1.0f, 0.0f, 0.0f });
+		//testMat = glm::rotate(testMat, glm::radians(transform->Rotation.y), { 0.0f, 1.0f, 0.0f });
+		//testMat = glm::rotate(testMat, glm::radians(transform->Rotation.z), { 0.0f, 0.0f, 1.0f });
+		//testMat = glm::scale(testMat, transform->Scale);
+		//transform->ModelMatrix = testMat;
 
 
 		//COMPARE
 		auto& testMat2 = transform->ModelMatrix;
 
-		auto& test4 = m_ShaderMap.at("Shader")->MaterialMap.at(matID)->MeshMap.at(meshID)->TransformMap.at(transformID);
+		auto& test4 = m_ShaderMap.at(ShaderName)->MaterialMap.at(matID)->MeshMap.at(meshID)->TransformMap.at(transformID);
+
+		auto& test5 = m_TransformLookUpMap.at(transformID)->at(transformID);
+
+
 
 		counter++;
+	}
+
+	void Renderer::RemoveFromRenderer(const int& transformID)
+	{
+		m_ShaderMap;
+
+
+		m_TransformLookUpMap.at(transformID)->erase(transformID);
+		m_TransformLookUpMap.erase(transformID);
+
+		m_ShaderMap;
+
 
 	}
 
