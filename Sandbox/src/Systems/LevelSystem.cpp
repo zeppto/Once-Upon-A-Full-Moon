@@ -2,7 +2,6 @@
 #include "LevelSystem.hpp"
 #include "Frosty/API/AssetManager/AssetManager.hpp"
 #include "Frosty/Events/AbilityEvent.hpp"
-#include "LevelHandeler/LevelFileFormat.hpp"
 
 namespace MCS
 {
@@ -26,6 +25,9 @@ namespace MCS
 			break;
 		case Frosty::EventType::CreateLevel:
 			OnCreateLevelEvent(static_cast<Frosty::CreateLevelEvent&>(e));
+			break;
+		case Frosty::EventType::OpenLevel:
+			OnOpenLevelEvent(static_cast<Frosty::OpenLevelEvent&>(e));
 			break;
 		default:
 			break;
@@ -153,6 +155,15 @@ namespace MCS
 							m_World->AddComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr);
 						}
 					}
+					else if (m_World->HasComponent<Frosty::ECS::CLight>(m_Transform[i]->EntityPtr))
+					{
+						auto& light = m_World->GetComponent<Frosty::ECS::CLight>(m_Transform[i]->EntityPtr);
+						if (light.Type == Frosty::ECS::CLight::LightType::Point)
+							if (!m_World->HasComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr))
+							{
+								m_World->AddComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr);
+							}
+					}
 				}
 			}
 		}
@@ -178,18 +189,26 @@ namespace MCS
 	}
 	void LevelSystem::OnSaveLevelEvent(Frosty::SaveLevelEvent& e)
 	{
-		LevelFileFormat myLevelFileFormat;
 		for (size_t i = 1; i < p_Total; i++)
 		{
 			if (!m_World->HasComponent<Frosty::ECS::CCamera>(m_Transform[i]->EntityPtr))
 			{
 				if (!m_World->HasComponent<Frosty::ECS::CPlayer>(m_Transform[i]->EntityPtr))
 				{
-					myLevelFileFormat.AddEntity(m_Transform[i]->EntityPtr);
+					if (m_World->HasComponent<Frosty::ECS::CLight>(m_Transform[i]->EntityPtr))
+					{
+						auto& light = m_World->GetComponent<Frosty::ECS::CLight>(m_Transform[i]->EntityPtr);
+						if (light.Type == Frosty::ECS::CLight::LightType::Point)
+							m_LevelFileFormat.AddEntity(m_Transform[i]->EntityPtr);
+					}
+					else
+					{
+						m_LevelFileFormat.AddEntity(m_Transform[i]->EntityPtr);
+					}
 				}
 			}
 		}
-		myLevelFileFormat.SaveToFile(m_RoomType);
+		m_LevelFileFormat.SaveToFile(m_RoomType);
 	}
 	void LevelSystem::OnCreateLevelEvent(Frosty::CreateLevelEvent& e)
 	{
@@ -213,6 +232,16 @@ namespace MCS
 							m_World->AddComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr);
 						}
 					}
+					else if (m_World->HasComponent<Frosty::ECS::CLight>(m_Transform[i]->EntityPtr))
+					{
+						auto& light = m_World->GetComponent<Frosty::ECS::CLight>(m_Transform[i]->EntityPtr);
+						if (light.Type == Frosty::ECS::CLight::LightType::Point)
+							if (!m_World->HasComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr))
+							{
+								m_World->AddComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr);
+							}
+					}
+
 				}
 			}
 		}
@@ -229,6 +258,48 @@ namespace MCS
 			m_RoomType = "crossroad";
 		else
 			m_RoomType = "unknown";
+	}
+	void LevelSystem::OnOpenLevelEvent(Frosty::OpenLevelEvent& e)
+	{
+		Frosty::ECS::CTransform* playerTransform;
+		for (size_t i = 1; i < p_Total; i++)
+		{
+			if (!m_World->HasComponent<Frosty::ECS::CCamera>(m_Transform[i]->EntityPtr))
+			{
+				if (!m_World->HasComponent<Frosty::ECS::CPlayer>(m_Transform[i]->EntityPtr))
+				{
+					if (m_World->HasComponent<Frosty::ECS::CPhysics>(m_Transform[i]->EntityPtr))
+					{
+						if (!m_World->HasComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr))
+						{
+							m_World->AddComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr);
+						}
+					}
+					else if (m_World->HasComponent<Frosty::ECS::CMesh>(m_Transform[i]->EntityPtr))
+					{
+						if (!m_World->HasComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr))
+						{
+							m_World->AddComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr);
+						}
+					}
+					else if (m_World->HasComponent<Frosty::ECS::CLight>(m_Transform[i]->EntityPtr))
+					{
+						auto& light = m_World->GetComponent<Frosty::ECS::CLight>(m_Transform[i]->EntityPtr);
+						if(light.Type == Frosty::ECS::CLight::LightType::Point)
+							if (!m_World->HasComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr))
+							{
+								m_World->AddComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr);
+							}
+					}
+				}
+				else
+				{
+					playerTransform = m_Transform[i];
+				}
+			}
+		}
+		m_RoomType = e.GetFilename();
+		m_LevelFileFormat.OpenFromFile(m_RoomType, playerTransform);
 	}
 }
 

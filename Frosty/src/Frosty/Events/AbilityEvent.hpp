@@ -98,6 +98,19 @@ namespace Frosty
 		bool m_Left;
 		bool m_Right;
 	};
+
+	class OpenLevelEvent : public BaseEvent
+	{
+	public:
+		OpenLevelEvent(std::string filename) : m_Filename(filename){}
+
+		const std::string GetFilename() { return m_Filename; }
+
+		EVENT_TYPE(OpenLevel)
+
+	private:
+		std::string m_Filename;
+	};
 }
 
 #endif // !ABILITY_EVENT_HPP

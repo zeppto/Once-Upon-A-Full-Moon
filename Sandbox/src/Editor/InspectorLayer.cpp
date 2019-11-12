@@ -752,6 +752,11 @@ namespace MCS
 				{
 					Frosty::EventBus::GetEventBus()->Publish<Frosty::CreateLevelEvent>(Frosty::CreateLevelEvent(true, true, true, true));
 				}
+				ImGui::InputText("level name", m_LevelName, IM_ARRAYSIZE(m_LevelName));
+				if (ImGui::MenuItem("open existing level"))
+				{
+					Frosty::EventBus::GetEventBus()->Publish<Frosty::OpenLevelEvent>(Frosty::OpenLevelEvent(m_LevelName));
+				}
 				ImGui::EndMenu();
 			}
 			ImGui::SetCursorPosX(m_App->GetWindow().GetWidth() - 250.0f);

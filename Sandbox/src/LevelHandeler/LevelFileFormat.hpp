@@ -35,7 +35,7 @@ struct Level_Transform
 	glm::vec3 Position{ 0.0f };
 	glm::vec3 Rotation{ 0.0f };
 	glm::vec3 Scale{ 1.0f };
-	glm::mat4 ModelMatrix{ 1.0f };
+
 };
 
 //1 = Mesh
@@ -82,7 +82,6 @@ struct Level_Light
 //5 = Physics
 struct Level_Physics
 {
-	Luna::BoundingBox BoundingBox;
 	glm::vec3 Direction{ 0.0f, 0.0f, 0.0f };
 	float MaxSpeed{ 100.f };
 	float Speed{ 0.0f };
@@ -166,6 +165,7 @@ public:
 
 	void AddEntity(const std::shared_ptr<Frosty::ECS::Entity>& entity);
 	void SaveToFile(std::string fileName);
+	void OpenFromFile(std::string fileName, Frosty::ECS::CTransform* playerTransform);
 
 private:
 	//std::shared_ptr<ECS::Entity> m_ExitEntity;
