@@ -242,24 +242,34 @@ namespace MCS
 		p.camDistance = glm::length2(glm::vec3(p.position) - m_CameraTransform->Position);
 		p.position -= (p.direction * p.speed) * Frosty::Time::DeltaTime();
 		
-		//Fade in and fade out
-		if (p.color.a < 1.0 && p.lifetime > 1.0) { //TODO: Fix this temporary code
-			p.color.a += 2.0 * Frosty::Time::DeltaTime();
-		}
-		if (p.lifetime < m_ParticleSystem[systemIndex]->fadeTreshold) {
-			p.color.a -= Frosty::Time::DeltaTime();
+		//Fade in
+		//if (p.color.a < 1.0 && p.lifetime > 1.0) { //TODO: Fix this temporary code
+		//	p.color.a += 2.0 * Frosty::Time::DeltaTime();
+		//}
+
+		//Fade out
+		if (m_ParticleSystem[systemIndex]->fadeTreshold > 0.0f)
+		{
+			if (p.lifetime < m_ParticleSystem[systemIndex]->fadeTreshold)
+			{
+				float t = p.lifetime / m_ParticleSystem[systemIndex]->fadeTreshold;
+				p.color.a = lerp(0.0f, 1.0f, t); //TODO: use endAlpha and startAlpha perhaps
+			}
 		}
 
-		//Update particle size
-		float t = p.lifetime / m_ParticleSystem[systemIndex]->maxLifetime;
+		if (m_ParticleSystem[systemIndex]->startParticleSize != m_ParticleSystem[systemIndex]->endParticleSize)
+		{
+			//Update particle size
+			float t = p.lifetime / m_ParticleSystem[systemIndex]->maxLifetime;
 
-		if (p.size > m_ParticleSystem[systemIndex]->endParticleSize)
-		{
-			p.size = lerp(m_ParticleSystem[systemIndex]->endParticleSize, m_ParticleSystem[systemIndex]->startParticleSize, t);
-		}
-		else if (p.size < m_ParticleSystem[systemIndex]->endParticleSize)
-		{
-			p.size = lerp(m_ParticleSystem[systemIndex]->endParticleSize, m_ParticleSystem[systemIndex]->startParticleSize, t);
+			if (p.size > m_ParticleSystem[systemIndex]->endParticleSize)
+			{
+				p.size = lerp(m_ParticleSystem[systemIndex]->endParticleSize, m_ParticleSystem[systemIndex]->startParticleSize, t);
+			}
+			else if (p.size < m_ParticleSystem[systemIndex]->endParticleSize)
+			{
+				p.size = lerp(m_ParticleSystem[systemIndex]->endParticleSize, m_ParticleSystem[systemIndex]->startParticleSize, t);
+			}
 		}
 	}
 
@@ -269,6 +279,7 @@ namespace MCS
 		p.lifetime = m_ParticleSystem[systemIndex]->maxLifetime;
 		p.position = m_ParticleSystem[systemIndex]->particles[index].startPos;
 		p.size = p.startSize;
+		p.color.a = 1.0f; //TODO: set to startColor/startAlpha
 	}
 
 	void ParticleSystem::UpdateGpuData(size_t systemIndex, size_t index, uint32_t particleCount)
