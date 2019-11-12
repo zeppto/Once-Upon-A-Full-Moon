@@ -800,6 +800,16 @@ namespace Frosty
 			virtual std::string GetName() const { return NAME; }
 		};
 
+		struct CGUI : public BaseComponent
+		{
+			static std::string NAME;
+
+			CGUI() = default;
+			CGUI(const CGUI& org) { FY_CORE_ASSERT(false, "Copy constructor in CGUI called."); }
+
+			virtual std::string GetName() const { return NAME; }
+		};
+
 		static std::string GetComponentName(size_t i)
 		{
 			switch (i)
@@ -823,6 +833,7 @@ namespace Frosty
 			case 16:	return "ParticleSystem";
 			case 17:	return "Boss";
 			case 18:	return "LevelExit";
+			case 19:	return "GUI";
 			default:	return "";
 			}
 		}

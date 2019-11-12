@@ -3,7 +3,7 @@
 
 namespace MCS
 {
-	const std::string GUISystem::NAME = "Follow";
+	const std::string GUISystem::NAME = "GUI";
 
 	void GUISystem::Init()
 	{
@@ -19,11 +19,18 @@ namespace MCS
 		}
 	}
 
+	void GUISystem::Render()
+	{
+
+	}
+
 	void GUISystem::AddComponent(const std::shared_ptr<Frosty::ECS::Entity>& entity)
 	{
 		if (Frosty::utils::BitsetFits<Frosty::ECS::MAX_COMPONENTS>(p_Signature, entity->Bitset) && !p_EntityMap.count(entity))
 		{
 			p_EntityMap.emplace(entity, p_Total);
+			auto& world = Frosty::Application::Get().GetWorld();
+			m_Transform[p_Total] = &world->GetComponent<Frosty::ECS::CTransform>(entity);
 
 			p_Total++;
 		}
