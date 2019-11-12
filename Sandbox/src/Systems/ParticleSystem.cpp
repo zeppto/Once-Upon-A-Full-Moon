@@ -10,7 +10,6 @@ namespace MCS
 	{
 		p_Signature.set(Frosty::ECS::getComponentTypeID<Frosty::ECS::CTransform>(), true);
 		p_Signature.set(Frosty::ECS::getComponentTypeID<Frosty::ECS::CParticleSystem>(), true);
-		m_maxLifetime = 2.0f;
 		m_editMode = false; //Unused for now
 	}
 
@@ -140,7 +139,7 @@ namespace MCS
 		return retInfo.str();
 	}
 
-	void ParticleSystem::UpdateParticleSystem(uint32_t systemIndex)
+	void ParticleSystem::UpdateParticleSystem(size_t systemIndex)
 	{
 		m_ParticleSystem[systemIndex]->timer -= Frosty::Time::DeltaTime(); //Update internal timer
 		if (m_ParticleSystem[systemIndex]->timer <= 0)
@@ -167,7 +166,7 @@ namespace MCS
 				else
 				{
 					//Particle is dead
-					m_ParticleSystem[systemIndex]->particles[j].camDistance = -1.0f; //TODO: use actual distance data here
+					m_ParticleSystem[systemIndex]->particles[j].camDistance = -1.0f;
 				}
 				m_ParticleSystem[systemIndex]->particleCount += 1;
 			}
@@ -177,7 +176,7 @@ namespace MCS
 		UpdateBuffer(systemIndex);
 	}
 
-	void ParticleSystem::EditorUpdateParticleSystem(uint32_t systemIndex)
+	void ParticleSystem::EditorUpdateParticleSystem(size_t systemIndex)
 	{
 		if (glm::vec3(m_ParticleSystem[systemIndex]->particles[0].color) != m_ParticleSystem[systemIndex]->particleSystemColor) //Workaround
 		{
@@ -191,10 +190,10 @@ namespace MCS
 
 			UpdateBuffer(systemIndex);
 		}
-		if (m_ParticleSystem[systemIndex]->particles[0].startSize != m_ParticleSystem[systemIndex]->particleSize) { //This is pretty temporary. Right now the particle size is the start size
+		if (m_ParticleSystem[systemIndex]->particles[0].startSize != m_ParticleSystem[systemIndex]->startParticleSize) {
 			for (uint32_t i = 0; i < Frosty::ECS::CParticleSystem::MAX_PARTICLE_COUNT; i++)
 			{
-				m_ParticleSystem[systemIndex]->particles[i].startSize = m_ParticleSystem[systemIndex]->particleSize;
+				m_ParticleSystem[systemIndex]->particles[i].startSize = m_ParticleSystem[systemIndex]->startParticleSize;
 			}
 		}
 
@@ -225,7 +224,7 @@ namespace MCS
 					else
 					{
 						//Particle is dead
-						m_ParticleSystem[systemIndex]->particles[j].camDistance = -1.0f; //TODO: use actual distance data here
+						m_ParticleSystem[systemIndex]->particles[j].camDistance = -1.0f;
 					}
 					m_ParticleSystem[systemIndex]->particleCount += 1;
 				}
@@ -236,68 +235,75 @@ namespace MCS
 		}
 	}
 
-	void ParticleSystem::UpdateParticle(uint32_t systemIndex, uint32_t index)
+	void ParticleSystem::UpdateParticle(size_t systemIndex, size_t index)
 	{
-		m_ParticleSystem[systemIndex]->particles[index].camDistance = glm::length2(glm::vec3(m_ParticleSystem[systemIndex]->particles[index].position) - Frosty::Renderer::GetCamera().CameraPosition); //If there's a better way to get the camera, get the camera that way
-		m_ParticleSystem[systemIndex]->particles[index].position -= (m_ParticleSystem[systemIndex]->particles[index].direction * m_ParticleSystem[systemIndex]->particles[index].speed) * Frosty::Time::DeltaTime();
+		Frosty::ECS::CParticleSystem::Particle& p = m_ParticleSystem[systemIndex]->particles[index];
+
+		p.camDistance = glm::length2(glm::vec3(p.position) - m_CameraTransform->Position);
+		p.position -= (p.direction * p.speed) * Frosty::Time::DeltaTime();
 		
 		//Fade in and fade out
-		if (m_ParticleSystem[systemIndex]->particles[index].color.a < 1.0 && m_ParticleSystem[systemIndex]->particles[index].lifetime > 1.0) {
-			m_ParticleSystem[systemIndex]->particles[index].color.a += 2.0 * Frosty::Time::DeltaTime();
+		if (p.color.a < 1.0 && p.lifetime > 1.0) { //TODO: Fix this temporary code
+			p.color.a += 2.0 * Frosty::Time::DeltaTime();
 		}
-		if (m_ParticleSystem[systemIndex]->particles[index].lifetime < 1.1) {
-			m_ParticleSystem[systemIndex]->particles[index].color.a -= 1.0 * Frosty::Time::DeltaTime();
+		if (p.lifetime < m_ParticleSystem[systemIndex]->fadeTreshold) {
+			p.color.a -= Frosty::Time::DeltaTime();
+		}
 
-			//Update particle size
-			if (m_ParticleSystem[systemIndex]->particles[index].size > m_ParticleSystem[systemIndex]->endParticleSize)
-			{
-				m_ParticleSystem[systemIndex]->particles[index].size -= 1.0f * Frosty::Time::DeltaTime();
-			}
-			else if (m_ParticleSystem[systemIndex]->particles[index].size < m_ParticleSystem[systemIndex]->endParticleSize)
-			{
-				m_ParticleSystem[systemIndex]->particles[index].size += 1.0f * Frosty::Time::DeltaTime();
-			}
+		//Update particle size
+		float t = p.lifetime / m_ParticleSystem[systemIndex]->maxLifetime;
+
+		if (p.size > m_ParticleSystem[systemIndex]->endParticleSize)
+		{
+			p.size = lerp(m_ParticleSystem[systemIndex]->endParticleSize, m_ParticleSystem[systemIndex]->startParticleSize, t);
+		}
+		else if (p.size < m_ParticleSystem[systemIndex]->endParticleSize)
+		{
+			p.size = lerp(m_ParticleSystem[systemIndex]->endParticleSize, m_ParticleSystem[systemIndex]->startParticleSize, t);
 		}
 	}
 
-	void ParticleSystem::ResetParticle(uint32_t systemIndex, uint32_t index)
+	void ParticleSystem::ResetParticle(size_t systemIndex, size_t index)
 	{
-		m_ParticleSystem[systemIndex]->particles[index].lifetime = 2.0f; //TODO: change constant for variable
-		m_ParticleSystem[systemIndex]->particles[index].position = m_ParticleSystem[systemIndex]->particles[index].startPos;
-		m_ParticleSystem[systemIndex]->particles[index].size = m_ParticleSystem[systemIndex]->particles[index].startSize;
+		Frosty::ECS::CParticleSystem::Particle& p = m_ParticleSystem[systemIndex]->particles[index];
+		p.lifetime = m_ParticleSystem[systemIndex]->maxLifetime;
+		p.position = m_ParticleSystem[systemIndex]->particles[index].startPos;
+		p.size = p.startSize;
 	}
 
-	void ParticleSystem::UpdateGpuData(uint32_t systemIndex, uint32_t index, uint32_t particleCount)
+	void ParticleSystem::UpdateGpuData(size_t systemIndex, size_t index, uint32_t particleCount)
 	{
-		m_ParticleSystem[systemIndex]->gpuParticles[particleCount].position = m_ParticleSystem[systemIndex]->particles[index].position;
-		m_ParticleSystem[systemIndex]->gpuParticles[particleCount].color = m_ParticleSystem[systemIndex]->particles[index].color;
-		m_ParticleSystem[systemIndex]->gpuParticles[particleCount].size = m_ParticleSystem[systemIndex]->particles[index].size;
+		Frosty::ECS::CParticleSystem::Particle& p = m_ParticleSystem[systemIndex]->particles[index];
+		m_ParticleSystem[systemIndex]->gpuParticles[particleCount].position = p.position;
+		m_ParticleSystem[systemIndex]->gpuParticles[particleCount].color = p.color;
+		m_ParticleSystem[systemIndex]->gpuParticles[particleCount].size = p.size;
 	}
 
-	void ParticleSystem::UpdateGpuData(uint32_t systemIndex, uint32_t index)
+	void ParticleSystem::UpdateGpuData(size_t systemIndex, size_t index)
 	{
-		m_ParticleSystem[systemIndex]->gpuParticles[index].position = m_ParticleSystem[systemIndex]->particles[index].position;
-		m_ParticleSystem[systemIndex]->gpuParticles[index].color = m_ParticleSystem[systemIndex]->particles[index].color;
-		m_ParticleSystem[systemIndex]->gpuParticles[index].size = m_ParticleSystem[systemIndex]->particles[index].size;
+		Frosty::ECS::CParticleSystem::Particle& p = m_ParticleSystem[systemIndex]->particles[index];
+		m_ParticleSystem[systemIndex]->gpuParticles[index].position = p.position;
+		m_ParticleSystem[systemIndex]->gpuParticles[index].color = p.color;
+		m_ParticleSystem[systemIndex]->gpuParticles[index].size = p.size;
 	}
 
-	void ParticleSystem::UpdateBuffer(uint32_t systemIndex)
+	void ParticleSystem::UpdateBuffer(size_t systemIndex)
 	{
 		m_ParticleSystem[systemIndex]->particleVertArray->GetVertexBuffer()[0]->SetData(m_ParticleSystem[systemIndex]->gpuParticles, (sizeof(Frosty::ECS::CParticleSystem::GPUParticle) * m_ParticleSystem[systemIndex]->particleCount), Frosty::BufferType::DYNAMIC);
 	}
 
-	uint32_t ParticleSystem::FindUnusedParticle(uint32_t systemIndex)
+	uint32_t ParticleSystem::FindUnusedParticle(size_t systemIndex)
 	{
 		//Linear search, but since we start at the last used index it will usually return immediately
 
-		for (int i = m_ParticleSystem[systemIndex]->lastUsedParticle; i < Frosty::ECS::CParticleSystem::MAX_PARTICLE_COUNT; i++) {
+		for (unsigned int i = m_ParticleSystem[systemIndex]->lastUsedParticle; i < Frosty::ECS::CParticleSystem::MAX_PARTICLE_COUNT; i++) {
 			if (m_ParticleSystem[systemIndex]->particles[i].lifetime < 0.0f) {
 				m_ParticleSystem[systemIndex]->lastUsedParticle = i;
 				return i;
 			}
 		}
 
-		for (int i = 0; i < m_ParticleSystem[systemIndex]->lastUsedParticle; i++) {
+		for (unsigned int i = 0; i < m_ParticleSystem[systemIndex]->lastUsedParticle; i++) {
 			if (m_ParticleSystem[systemIndex]->particles[i].lifetime < 0) {
 				m_ParticleSystem[systemIndex]->lastUsedParticle = i;
 				return i;
@@ -307,8 +313,13 @@ namespace MCS
 		return 0; // All particles taken, override the first one
 	}
 
-	void ParticleSystem::SortParticles(uint32_t systemIndex)
+	void ParticleSystem::SortParticles(size_t systemIndex)
 	{
 		std::sort(&m_ParticleSystem[systemIndex]->particles[0], &m_ParticleSystem[systemIndex]->particles[Frosty::ECS::CParticleSystem::MAX_PARTICLE_COUNT]);
+	}
+
+	float ParticleSystem::lerp(float a, float b, float f)
+	{
+		return (a * (1.0 - f)) + (b * f);
 	}
 }
