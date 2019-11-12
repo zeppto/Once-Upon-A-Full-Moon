@@ -10,6 +10,9 @@ namespace MCS
 	class NavigationSystem : public Frosty::ECS::BaseSystem
 	{
 	public:
+		const static std::string NAME;
+
+	public:
 		NavigationSystem() = default;
 		virtual ~NavigationSystem() = default;
 
@@ -18,6 +21,8 @@ namespace MCS
 
 		virtual void AddComponent(const std::shared_ptr<Frosty::ECS::Entity>& entity) override;
 		virtual void RemoveEntity(const std::shared_ptr<Frosty::ECS::Entity>& entity) override;
+		virtual void UpdateEntityComponent(const std::shared_ptr<Frosty::ECS::Entity>& entity) override;
+		virtual std::string GetInfo() const override;
 
 		void InitiateGridMap(const Frosty::ECS::CTransform& transform);
 

@@ -129,10 +129,13 @@ namespace Frosty
 		shader->UploadUniformMat4("modelMat", modelMat);
 
 		glEnable(GL_BLEND);
+		glDepthMask(GL_FALSE);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE);
 
+		RenderCommand::DisableBackfaceCulling();
 		RenderCommand::DrawParticles(vertexArray, particleCount);
 
+		glDepthMask(GL_TRUE);
 		glDisable(GL_BLEND);
 
 		vertexArray->Unbind();
@@ -177,6 +180,7 @@ namespace Frosty
 			mat->UseShader->UploadUniformFloat2("u_TextureCoordScale", mat->TextureScale);
 		}
 		vertexArray->Bind();
+		RenderCommand::EnableBackfaceCulling();
 		RenderCommand::Draw2D(vertexArray);
 	}
 
@@ -192,6 +196,7 @@ namespace Frosty
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
 
+		// Might wanna do this, not sure if needed: RenderCommand::DisableBackfaceCulling();
 		RenderCommand::Draw2D(vertexArray);
 
 		glDisable(GL_BLEND);
@@ -214,6 +219,7 @@ namespace Frosty
 		vertexArray->GetUniformBuffer()->BindUpdate(skinDataPtr, nrOfBones);
 
 		vertexArray->Bind();
+		RenderCommand::EnableBackfaceCulling();
 		RenderCommand::Draw2D(vertexArray);
 		dt += Frosty::Time::DeltaTime();
 	}

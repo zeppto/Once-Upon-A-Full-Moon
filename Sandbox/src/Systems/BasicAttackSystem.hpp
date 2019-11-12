@@ -8,6 +8,9 @@ namespace MCS
 	class BasicAttackSystem : public Frosty::ECS::BaseSystem
 	{
 	public:
+		const static std::string NAME;
+
+	public:
 		BasicAttackSystem() = default;
 		virtual ~BasicAttackSystem() = default;
 
@@ -16,8 +19,9 @@ namespace MCS
 		virtual void OnEvent(Frosty::BaseEvent& e) override;
 
 		virtual void AddComponent(const std::shared_ptr<Frosty::ECS::Entity>& entity) override;
-
 		virtual void RemoveEntity(const std::shared_ptr<Frosty::ECS::Entity>& entity) override;
+		virtual void UpdateEntityComponent(const std::shared_ptr<Frosty::ECS::Entity>& entity) override;
+		virtual std::string GetInfo() const override;
 
 	private:
 		void OnBasicAttackEvent(Frosty::BasicAttackEvent& e);

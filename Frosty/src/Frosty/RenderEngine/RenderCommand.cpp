@@ -9,6 +9,9 @@ namespace Frosty
 	{
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+		glCullFace(GL_BACK);
+		glEnable(GL_CULL_FACE);
 	}
 
 	void RenderCommand::SetClearColor(const glm::vec4& color)
@@ -21,6 +24,17 @@ namespace Frosty
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	}
 
+	void RenderCommand::EnableBackfaceCulling()
+	{
+		glCullFace(GL_BACK);
+		glEnable(GL_CULL_FACE);
+	}
+
+	void RenderCommand::DisableBackfaceCulling()
+	{
+		glDisable(GL_CULL_FACE);
+	}
+
 	void RenderCommand::Draw2D(const std::shared_ptr<VertexArray>& vertexArray)
 	{
 		glDrawElements(GL_TRIANGLES, vertexArray->GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, nullptr);
@@ -28,6 +42,6 @@ namespace Frosty
 
 	void RenderCommand::DrawParticles(const std::shared_ptr<VertexArray>& vertexArray, size_t count)
 	{
-		glDrawArrays(GL_POINTS, 0, count);
+		glDrawArrays(GL_POINTS, 0, (GLsizei)count);
 	}
 }

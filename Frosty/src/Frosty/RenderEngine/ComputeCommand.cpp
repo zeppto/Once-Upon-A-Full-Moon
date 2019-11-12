@@ -13,7 +13,7 @@ namespace Frosty
 	void ComputeCommand::Send(size_t particleCount)
 	{
 		//glMemoryBarrier(GL_VERTEX_ATTRIB_ARRAY_BARRIER_BIT | GL_SHADER_STORAGE_BARRIER_BIT);
-		glDispatchCompute(particleCount, 1, 1); //Particle count acts as number of work groups
+		glDispatchCompute((GLuint)particleCount, 1, 1); //Particle count acts as number of work groups
 		glMemoryBarrier(GL_VERTEX_ATTRIB_ARRAY_BARRIER_BIT | GL_SHADER_STORAGE_BARRIER_BIT);
 	}
 }

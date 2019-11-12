@@ -8,6 +8,9 @@ namespace MCS
 	class BossBehaviorSystem : public Frosty::ECS::BaseSystem
 	{
 	public:
+		const static std::string NAME;
+
+	public:
 		BossBehaviorSystem() = default;
 		virtual ~BossBehaviorSystem() = default;
 
@@ -16,13 +19,14 @@ namespace MCS
 		virtual void OnEvent(Frosty::BaseEvent& e) override;
 
 		virtual void AddComponent(const std::shared_ptr<Frosty::ECS::Entity>& entity) override;
-
 		virtual void RemoveEntity(const std::shared_ptr<Frosty::ECS::Entity>& entity) override;
+		virtual void UpdateEntityComponent(const std::shared_ptr<Frosty::ECS::Entity>& entity) override;
+		virtual std::string GetInfo() const override;
 
 	private:
 		void OnBaitPlacedEvent(Frosty::BaitPlacedEvent& e);
-		int FindClosestBait(glm::vec3 SelfPos, std::vector<std::shared_ptr<Frosty::ECS::Entity>>& Baits);
-		float CalcDistance2D(glm::vec3 pos1, glm::vec3 pos2);
+		int FindClosestBait(const glm::vec3& SelfPos, const std::vector<std::shared_ptr<Frosty::ECS::Entity>>& Baits);
+		float CalcDistance2D(const glm::vec3& pos1, const glm::vec3& pos2);
 
 	private:
 

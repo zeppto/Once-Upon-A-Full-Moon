@@ -5,6 +5,7 @@
 
 namespace MCS
 {
+	const std::string BasicAttackSystem::NAME = "Basic Attack";
 
 	void BasicAttackSystem::Init()
 	{
@@ -43,49 +44,81 @@ namespace MCS
 
 	void BasicAttackSystem::RemoveEntity(const std::shared_ptr<Frosty::ECS::Entity>& entity)
 	{
-		Frosty::ECS::ComponentArrayIndex tempIndex = p_EntityMap[entity];
+		auto& it = p_EntityMap.find(entity);
 
-		if (tempIndex > 0)
+		if (it != p_EntityMap.end())
 		{
 			p_Total--;
+			auto& entityToUpdate = m_Weapon[p_Total]->EntityPtr;
 			m_Weapon[p_Total] = nullptr;
 
-			if (p_Total > 1)
+			if (p_Total > it->second)
 			{
-				//std::shared_ptr<Entity> entityToUpdate = removeEntityFromData(mEntity);
-
-				if (p_Total > tempIndex)
-				{
-					std::shared_ptr<Frosty::ECS::Entity> entityToUpdate = m_Weapon[p_EntityMap[entity]]->EntityPtr;
-					p_EntityMap[entityToUpdate] = tempIndex;
-				}
+				p_EntityMap[entityToUpdate] = it->second;
 			}
 
 			p_EntityMap.erase(entity);
 		}
 	}
 
+	void BasicAttackSystem::UpdateEntityComponent(const std::shared_ptr<Frosty::ECS::Entity>& entity)
+	{
+		auto& it = p_EntityMap.find(entity);
+
+		if (it != p_EntityMap.end())
+		{
+			auto& world = Frosty::Application::Get().GetWorld();
+			Frosty::ECS::CWeapon* weaponPtr = world->GetComponentAddress<Frosty::ECS::CWeapon>(entity);
+
+			m_Weapon[it->second] = weaponPtr;
+		}
+	}
+
+	std::string BasicAttackSystem::GetInfo() const
+	{
+		std::stringstream retInfo;
+		retInfo << "\t-----------" << NAME << " System Info-----------\n";
+		retInfo << "\t\t---------Entity Map---------\n";
+		retInfo << "\t\tEntity Id\tEntity Address\t\tEntity Refs\tArray Index\n";
+		for (auto& em : p_EntityMap)
+		{
+			retInfo << "\t\t" << em.first->Id << "\t\t" << em.first << "\t\t" << em.first.use_count() << "\t" << em.second << "\n";
+		}
+		retInfo << "\t\t-----------Done-----------\n";
+		retInfo << "\t\t------Component Array(s)------\n";
+		retInfo << "\n\t\tIndex\tComponent Address\tEntity Id\tEntity Address\t\tEntity Refs\n";
+		for (size_t i = 1; i < p_Total; i++)
+		{
+			retInfo << "\t\t" << i << "\t" << m_Weapon[i] << "\t" << m_Weapon[i]->EntityPtr->Id << "\t\t" << m_Weapon[i]->EntityPtr << "\t\t" << m_Weapon[i]->EntityPtr.use_count() << "\n";
+			retInfo << "\n"; // Have this last
+		}
+		retInfo << "\t\t-----------Done-----------\n";
+		retInfo << "\t----------------Done----------------\n\n";
+
+		return retInfo.str();
+	}
+
 	void BasicAttackSystem::OnBasicAttackEvent(Frosty::BasicAttackEvent& e)
 	{
-		size_t index = p_EntityMap[e.GetEntity()];
+		auto& it = p_EntityMap.find(e.GetEntity());
 
-		if (index > 0)
+		if (it->second > 0)
 		{
-			if (Frosty::Time::CurrentTime() - m_Weapon[index]->CooldownTimer >= m_Weapon[index]->Cooldown)
+			if (Frosty::Time::CurrentTime() - m_Weapon[it->second]->CooldownTimer >= m_Weapon[it->second]->Cooldown)
 			{
-				switch (m_Weapon[index]->Weapon)
+				switch (m_Weapon[it->second]->Weapon)
 				{
 				case Frosty::ECS::CWeapon::WeaponType::Sword:
-					CreateBoundingBox(index);
+					CreateBoundingBox(it->second);
 					break;
 				case Frosty::ECS::CWeapon::WeaponType::Arrow:
-					CreateProjectile(index);
+					CreateProjectile(it->second);
 					break;
 				default:
 					break;
 				}
 
-				m_Weapon[index]->CooldownTimer = Frosty::Time::CurrentTime();
+				m_Weapon[it->second]->CooldownTimer = Frosty::Time::CurrentTime();
 			}
 		}
 		else

@@ -8,6 +8,7 @@
 #include "Frosty/RenderEngine/VertexArray.hpp"
 #include "Frosty/RenderEngine/Shader.hpp"
 #include "Frosty/RenderEngine/Texture.hpp"
+#include "AssetFiles/TrueTypeFile.hpp"
 
 #include <Luna/include/Reader.h>
 
@@ -34,7 +35,7 @@ namespace Frosty
 		JPG,
 		PNG,
 		LUNA,
-		TTFF,
+		TTF,
 		TGA,
 		GLSL
 	};
@@ -73,6 +74,7 @@ namespace Frosty
 		static std::map<std::string, std::shared_ptr<Shader>> s_Shaders;
 		static std::map<std::string, std::shared_ptr<Texture2D>> s_Textures2D;
 		static std::map<std::string, std::shared_ptr<Luna::BoundingBox>> s_BoundingBoxes;
+		static std::map<std::string, std::shared_ptr<TrueTypeFile>> s_TruefontTypes;
 
 		static std::unordered_map <std::string, std::list<TextureFile**>> s_TextureWatchList;
 
@@ -111,6 +113,7 @@ namespace Frosty
 
 		//Use Filename
 		inline static std::shared_ptr<Shader>& GetShader(const std::string& FileName) { FY_CORE_ASSERT(s_Shaders.count(FileName), "Shader error!\n{0} doesn't exist!", FileName); return s_Shaders[FileName]; }
+		inline static std::shared_ptr<TrueTypeFile>& GetTTF(const std::string& FileName) { FY_CORE_ASSERT(s_TruefontTypes.count(FileName), "TTF error!\n{0} doesn't exist!", FileName); return s_TruefontTypes[FileName]; }
 		inline static std::map<std::string, std::shared_ptr<Shader>>& GetShaders() { return s_Shaders; }
 
 		// Textures
@@ -138,6 +141,7 @@ namespace Frosty
 		static bool AssetLoaded(const std::string& AssetName);
 
 		static bool MaterialLoaded(const std::string& FileName);
+		static bool TTFLoaded(const std::string& FileName);
 		static bool TextureLoaded(const std::string& FileName);
 		static bool AnimationLoaded(const std::string& AssetName);
 		static bool MeshLoaded(const std::string& AssetName);
@@ -145,6 +149,7 @@ namespace Frosty
 
 		//from ML
 		static 	bool LoadLunaFile(const FileMetaData& FileNameInformation, const bool& Reload = false);
+		static 	bool LoadTTF_File(const FileMetaData& FileNameInformation, const bool& Reload = false);
 		static 	bool LoadGraphicFile(const FileMetaData& FileNameInformation, const bool& Reload = false);
 		static 	bool GetFileInformation(FileMetaData& FileNameInformation);
 		static 	int8_t GetFileType(const std::string& fileType);
@@ -164,6 +169,7 @@ namespace Frosty
 		static bool AddAnimatedMesh(const FileMetaData& MetaData, const std::vector<AnimVert>& vertices, const std::vector<Luna::Index>& indices, Luna::Animation& temp);
 
 		static bool AddTexture(const FileMetaData& MetaData);
+		static bool AddTTF(const FileMetaData& MetaData);
 
 		static bool AddMaterial(LinkedMaterial& LnkMat);
 		static bool AddMaterial(const FileMetaData& MetaData, const Luna::Material& LunMat);
