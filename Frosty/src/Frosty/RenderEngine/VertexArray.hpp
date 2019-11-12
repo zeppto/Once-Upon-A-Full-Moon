@@ -22,6 +22,9 @@ namespace Frosty
 		const std::vector<std::shared_ptr<VertexBuffer>>& GetVertexBuffer();
 		const std::shared_ptr<IndexBuffer>& GetIndexBuffer();
 
+		//Temp
+		inline const uint32_t& GetRenderID() const { return m_RendererID; }
+
 		static VertexArray* Create();
 	private:
 		uint32_t m_RendererID;

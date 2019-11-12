@@ -13,7 +13,8 @@ namespace Frosty
 	//
 
 	BoolMapGenerator* BoolMapGenerator::s_Instance = nullptr;
-	std::list<ModelBatch> BoolMapGenerator::s_RenderBatch = std::list<ModelBatch>();
+	std::list<ModelBatch> BoolMapGenerator::s_ModelBatch = std::list<ModelBatch>();
+	std::list<BoundBatch> BoolMapGenerator::s_BoundBatch = std::list<BoundBatch>();
 	BoolMapGenerator::GeneratorSettings BoolMapGenerator::s_Settings = BoolMapGenerator::GeneratorSettings();
 
 
@@ -106,73 +107,59 @@ namespace Frosty
 	}
 
 
-
-
 	std::shared_ptr<BoolMap> BoolMapGenerator::RenderMap()
 	{
 		//temp
 		glDeleteTextures(1, &s_Texture);
-
-
 
 		InitiateRenderData();
 
 		uint16_t TmpHeight = s_Settings.Height * s_Settings.Pix_Cord_Ratio;
 		uint16_t TmpWidth = s_Settings.Width * s_Settings.Pix_Cord_Ratio;
 
-
 		unsigned int VertID;
 		unsigned int IndID;
 
-		//temp
-		//glBindFramebuffer(GL_FRAMEBUFFER, s_GBuffer);
 		//glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		glUseProgram(s_RenderProgramID);
-		//glActiveTexture(GL_TEXTURE0);
 
 		GLint locationVO = glGetUniformLocation(s_RenderProgramID, "u_ViewOrtho");
 		GLint locationMM = glGetUniformLocation(s_RenderProgramID, "u_ModelMat");
 		glUniformMatrix4fv(locationVO, 1, GL_FALSE, &s_ViewOrtho[0][0]);
 
-		std::list<ModelBatch>::iterator BatchIt = s_RenderBatch.begin();
-		while (BatchIt != s_RenderBatch.end())
+		//Render
+
+		//ModelBatch
+		std::list<ModelBatch>::iterator ModelBatchIt = s_ModelBatch.begin();
+		while (ModelBatchIt != s_ModelBatch.end())
 		{
-
-			//float tempVert []= {
-			//	-0.5f,  0.0f, 0.5f,
-			//	0.5f,  0.0f, 0.5f,
-			//	0.0f,  0.0f,  0.0f
-			//};
-
-			//TODO: Bind Id instead
-
 			glBindVertexArray(0);
 			glGenVertexArrays(1, &VertID);
 
 			glBindVertexArray(VertID);
 			glBindBuffer(GL_ARRAY_BUFFER, VertID);
-			glBufferData(GL_ARRAY_BUFFER, sizeof(float)* BatchIt->Verticies.size(), &BatchIt->Verticies[0], GL_STATIC_DRAW);
+			glBufferData(GL_ARRAY_BUFFER, sizeof(float)* ModelBatchIt->Verticies.size(), &ModelBatchIt->Verticies[0], GL_STATIC_DRAW);
 		//	glDisableVertexAttribArray(0);
 
 			glGenBuffers(1, &IndID);
 			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IndID);
-			glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * BatchIt->Indices.size(), &BatchIt->Indices[0], GL_STATIC_DRAW);
+			glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * ModelBatchIt->Indices.size(), &ModelBatchIt->Indices[0], GL_STATIC_DRAW);
 
 			glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
 			glEnableVertexAttribArray(0);
 
 
 
-			std::list<glm::mat4>::iterator PosIt = BatchIt->Transforms.begin();
-			while (PosIt != BatchIt->Transforms.end())
+			std::list<glm::mat4>::iterator PosIt = ModelBatchIt->Transforms.begin();
+			while (PosIt != ModelBatchIt->Transforms.end())
 			{
 				//glBindVertexArray(RenderModelID);
 				glUniformMatrix4fv(locationMM, 1, GL_FALSE, &(*PosIt)[0][0]);
 				//glDrawArrays(GL_TRIANGLES, 0, 3);
-				glDrawElements(GL_TRIANGLES, BatchIt->Indices.size(), GL_UNSIGNED_INT, 0);
+				glDrawElements(GL_TRIANGLES, ModelBatchIt->Indices.size(), GL_UNSIGNED_INT, 0);
 				PosIt++;
 			}
-			BatchIt++;
+			ModelBatchIt++;
 
 			//glBindBuffer(GL_ARRAY_BUFFER, 0);
 			glDisableVertexAttribArray(0);
@@ -183,17 +170,36 @@ namespace Frosty
 			glBindVertexArray(0);
 		}
 
-	//	glUseProgram(0);
-		
+		//BoundBatch
+		std::list<BoundBatch>::iterator BoundBatchIt = s_BoundBatch.begin();
+		while (BoundBatchIt != s_BoundBatch.end())
+		{
+			glBindVertexArray(BoundBatchIt->VertexArrayID);
+			std::list<glm::mat4>::iterator PosIt = BoundBatchIt->Transforms.begin();
+			while (PosIt != BoundBatchIt->Transforms.end())
+			{
+			
+				glUniformMatrix4fv(locationMM, 1, GL_FALSE, &(*PosIt)[0][0]);
+				//glDrawArrays(GL_TRIANGLES, 0, 3);
+				glDrawElements(GL_TRIANGLES, BoundBatchIt->NrOfIndices, GL_UNSIGNED_INT, 0);
+				PosIt++;
+			}
+			BoundBatchIt++;
+		}
+
+
+
+		//Translate
 		//can be optimized (+ bitmap)
-		float* tempFloatPtr = FY_NEW float[((int)TmpWidth * (int)TmpHeight)];
+		float* tempFloatPtr = FY_NEW float[((unsigned int)TmpWidth * (unsigned int)TmpHeight)];
 
 		glReadPixels(0, 0, TmpWidth, TmpHeight, GL_RED, GL_FLOAT, &tempFloatPtr[0]);
 
-		std::shared_ptr<bool[]> tmpMap(FY_NEW bool[((int)TmpWidth * (int)TmpHeight)]);
+		std::shared_ptr<bool[]> tmpMap(FY_NEW bool[((unsigned int)TmpWidth * (unsigned int)TmpHeight)]);
 
-		for (int i = 0; i < (TmpWidth * TmpHeight); i++)
+		for (unsigned int i = 0; i < (TmpWidth * TmpHeight); i++)
 		{
+			//temp
 			float xx = tempFloatPtr[i];
 
 			if (tempFloatPtr[i] > 0.001)
@@ -211,7 +217,8 @@ namespace Frosty
 		glBindTexture(GL_TEXTURE_2D, 0);
 		glDeleteFramebuffers(1, &s_GBuffer);
 	//	glDeleteTextures(1, &s_Texture);
-		s_RenderBatch.erase(s_RenderBatch.begin(), s_RenderBatch.end());
+		s_ModelBatch.erase(s_ModelBatch.begin(), s_ModelBatch.end());
+		s_BoundBatch.erase(s_BoundBatch.begin(), s_BoundBatch.end());
 
 		return std::shared_ptr<BoolMap>(FY_NEW BoolMap(TmpWidth, TmpHeight, s_Settings.Pix_Cord_Ratio, tmpMap));
 	}

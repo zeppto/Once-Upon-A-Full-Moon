@@ -2,11 +2,11 @@
 #include"BoolMap.hpp"
 
 
-BoolMap::BoolMap(const uint16_t& Width, const uint16_t& Height, const uint8_t PixRatio, std::shared_ptr<bool[]>& Boolmap) : m_Width(Width), m_Height(Height),m_PixCoordRatio(PixRatio), m_BoolMap(Boolmap)
+BoolMap::BoolMap(const uint16_t& Width, const uint16_t& Height, const uint8_t PixRatio, std::shared_ptr<bool[]>& Boolmap) : m_PixWidth(Width), m_PixHeight(Height),m_PixCoordRatio(PixRatio), m_BoolMap(Boolmap), m_CoordHeight(Height/ PixRatio), m_CoordWidth(Width / PixRatio)
 {
 }
 
-BoolMap::BoolMap(const BoolMap& other) : m_Width(other.m_Width), m_Height(other.m_Height), m_BoolMap(other.m_BoolMap), m_PixCoordRatio(other.m_PixCoordRatio)
+BoolMap::BoolMap(const BoolMap& other) : m_PixWidth(other.m_PixWidth), m_PixHeight(other.m_PixHeight), m_BoolMap(other.m_BoolMap), m_PixCoordRatio(other.m_PixCoordRatio), m_CoordWidth(other.m_CoordWidth),m_CoordHeight(other.m_CoordHeight)
 {
 
 
@@ -16,35 +16,25 @@ BoolMap& BoolMap::operator=(const BoolMap& other)
 {
 	if (&other != this)
 	{
-		m_Width = other.m_Width;
-		m_Height = other.m_Height;
+		m_PixWidth = other.m_PixWidth;
+		m_PixHeight = other.m_PixHeight;
 		m_BoolMap = other.m_BoolMap;
+		m_CoordHeight = other.m_CoordHeight;
+		m_CoordWidth = other.m_CoordWidth;
 	}
 	return *this;
 }
 
 const bool& BoolMap::CheckCollition(const glm::vec3& LocalPos) const
 {
-	glm::vec3 temp = LocalPos * (float)m_PixCoordRatio;
-
-	float xx = LocalPos.x * (float)m_PixCoordRatio;
-	float zz = LocalPos.z * (float)m_PixCoordRatio * m_Width;
-
-	int pp = static_cast<int>(xx + zz);
-	bool val = m_BoolMap[pp];
-
-	//int tempSize = m_Height * (float)m_PixCoordRatio * m_Width * (float)m_PixCoordRatio;
-
-	//int tempX = static_cast<int>( temp.x);
-	//int tempZ = static_cast<int>( temp.z);
-
-	//for (int i = 0; i < tempSize; i++)
-	//{
-	//	if (m_BoolMap[i])
-	//	{
-	//		int o = 0;
-	//	}
-	//}
-
-	return m_BoolMap[pp];
+	bool returnValue = false;
+	if (m_CoordWidth >= LocalPos.x && 0 <= LocalPos.x && LocalPos.z >= 0 && LocalPos.z <= m_CoordHeight)
+	{
+		returnValue =  m_BoolMap[static_cast<unsigned int>((LocalPos.x * (float)m_PixCoordRatio + (LocalPos.z * (unsigned int)m_PixWidth)))];
+	}
+	else
+	{
+		FY_CORE_FATAL("Checking outside Boolmap grid!");
+	}
+	return returnValue;
 }

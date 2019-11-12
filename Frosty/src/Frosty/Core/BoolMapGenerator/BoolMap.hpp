@@ -6,8 +6,12 @@ class BoolMap
 {
 private:
 
-	uint16_t m_Width;
-	uint16_t m_Height;
+	uint16_t m_PixWidth;
+	uint16_t m_PixHeight;
+
+	uint16_t m_CoordHeight;
+	uint16_t m_CoordWidth;
+
 	uint8_t m_PixCoordRatio;
 
 	std::shared_ptr<bool[]> m_BoolMap;
@@ -22,8 +26,10 @@ public:
 
 	const bool& CheckCollition(const glm::vec3& LocalPos) const;
 
-	inline const uint16_t& GetWidth() { return m_Width; }
-	inline const uint16_t& GetHeight() { return m_Height; }
+	inline const uint16_t& GetPixWidth() { return m_PixWidth; }
+	inline const uint16_t& GetPixHeight() { return m_PixHeight; }
+	inline const uint16_t& GetCoordWidth() { return m_CoordWidth; }
+	inline const uint16_t& GetCoordHeight() { return m_CoordHeight; }
 	inline const uint16_t& GetPixCoordRatio() { return m_PixCoordRatio; }
 	inline const std::shared_ptr<bool[]>& GetBoolMap() { return m_BoolMap; }
 

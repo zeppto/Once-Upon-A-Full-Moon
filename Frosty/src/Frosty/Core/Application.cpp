@@ -246,6 +246,8 @@ namespace Frosty
 				//Renderer::SetCamera(m_EditorCamera.GetPosition(), m_EditorCamera.GetViewProjectionMatrix());
 
 
+				//ModelBatch
+
 				std::vector<float> tempVert = {
 					-0.5f,  0.0f, -0.5f,
 					-0.5f,  0.0f,  0.5f,
@@ -268,21 +270,38 @@ namespace Frosty
 				temp[2][2] = 4.0f;
 
 
-
-				glm::mat4 tempMat = glm::translate(glm::mat4(1.0f), glm::vec3(5.0f, 0.0f, 5.0f));
-				tempMat = glm::scale(tempMat, glm::vec3(100.0f, 1.0f, 100.0f));
-
-
 				ModelBatch tempBatch;
 				tempBatch.Verticies = tempVert;
 				tempBatch.Indices = tempIndices;
 				tempBatch.Transforms.emplace_back(temp);
 
-				BoolMapGenerator::AddToRenderList(tempBatch);
+				BoolMapGenerator::AddToModelRenderList(tempBatch);
 
+
+				//BoundBatch
+
+				BoundBatch testBound;
+
+				testBound.VertexArrayID = AssetManager::GetMesh("pDisc1")->GetRenderID();
+				testBound.NrOfIndices = AssetManager::GetMesh("pDisc1")->GetIndexBuffer()->GetCount();
+
+				glm::mat4 tempMat = glm::translate(glm::mat4(1.0f), glm::vec3(25.0f, 0.0f, 40.0f));
+				tempMat = glm::scale(tempMat, glm::vec3(1.0f, 1.0f, 1.0f));
+				testBound.Transforms.emplace_back(tempMat);
+
+
+				BoolMapGenerator::AddToBoundRenderList(testBound);
+
+				//Render
 				std::shared_ptr<BoolMap> ptr = BoolMapGenerator::RenderBoolMap();
 
-				bool b = ptr->CheckCollition(glm::vec3(1.99f,1.0f,1.99f));
+
+
+				//Check
+				bool b = ptr->CheckCollition(glm::vec3(25.0f,1.0f,40.0f));
+				bool j = ptr->CheckCollition(glm::vec3(23.0f,1.0f,42.0f));
+				bool l = ptr->CheckCollition(glm::vec3(1.999f,1.0f,4.001f));
+				bool h = ptr->CheckCollition(glm::vec3(1.999f,1.0f,4.0f));
 
 				Renderer::SetCamera(m_EditorCamera.GetPosition(), m_EditorCamera.GetViewMatrix(), m_EditorCamera.GetProjectionMatrix());
 			}
@@ -298,7 +317,8 @@ namespace Frosty
 
 			//Temp (Change if needed)
 			glm::vec4 temp = m_Window->GetViewport();
-			glViewport(temp.x,temp.y,temp.z,temp.w);
+			
+			glViewport((int)temp.x, (int)temp.y, (int)temp.z, (int)temp.w);
 
 
 			m_World->Render();

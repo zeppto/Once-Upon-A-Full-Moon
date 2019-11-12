@@ -19,6 +19,13 @@ namespace Frosty
 		std::list<glm::mat4> Transforms;
 	};
 
+	struct BoundBatch
+	{
+		unsigned int VertexArrayID;
+		unsigned int NrOfIndices;
+		std::list<glm::mat4> Transforms;
+	};
+
 
 
 	class BoolMapGenerator
@@ -83,7 +90,9 @@ namespace Frosty
 		friend class Application;
 
 		//outside Info
-		static std::list<ModelBatch> s_RenderBatch;
+		static std::list<ModelBatch> s_ModelBatch;
+		static std::list<BoundBatch> s_BoundBatch;
+
 		static GeneratorSettings s_Settings;
 
 		//RenderData
@@ -101,7 +110,8 @@ namespace Frosty
 		static BoolMapGenerator* Get();
 		virtual ~BoolMapGenerator() {};
 
-		inline static void AddToRenderList(const ModelBatch& Batch) { InitCheck();  s_RenderBatch.push_back(Batch); }
+		inline static void AddToModelRenderList(const ModelBatch& Batch) { InitCheck();  s_ModelBatch.push_back(Batch); }
+		inline static void AddToBoundRenderList(const BoundBatch& Batch) { InitCheck();  s_BoundBatch.push_back(Batch); }
 
 		inline static std::shared_ptr<BoolMap> RenderBoolMap() { InitCheck(); return RenderMap(); }
 
