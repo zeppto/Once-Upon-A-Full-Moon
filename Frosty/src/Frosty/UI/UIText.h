@@ -30,8 +30,8 @@ namespace Frosty
 
 		const std::shared_ptr<VertexArray>& GetVertexArray() { return m_VertArray; };
 		std::string GetText() const { return m_Text; };
+		const std::shared_ptr<Texture2D>& GetTexture() { return m_Texture; };
 
-		bool Init();
 		void SetText(std::string text) { m_Text = text; };
 		void SetFont(std::string font) { m_Font = font; };
 

@@ -63,52 +63,57 @@ namespace Frosty
 
 	void Renderer::SubmitText(const std::shared_ptr<Shader>& shader, const std::shared_ptr<VertexArray>& vertexArray, std::string& text)
 	{
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		shader->Bind();
-		//vertexArray->Bind();
+		vertexArray->Bind();
 
-		//glm::mat4 projection = glm::ortho(0.0f, 800.0f, 0.0f, 600.0f);
-		//glm::vec3 color = glm::vec3(1.0f, 0.0f, 1.0f);
+		glm::mat4 projection = glm::ortho(0.0f, 800.0f, 0.0f, 600.0f);
+		glm::vec3 color = glm::vec3(0.0f, 0.0f, 1.0f);
 
-		//shader->UploadUniforMat4("projection", projection);
-		//shader->UploadUniformInt("text", 1);
-		//shader->UploadUniformFloat3("textColor", color);
+		shader->UploadUniformMat4("projection", projection);
+		shader->UploadUniformInt("text", 0); //Make sure this number matches the active and sampled texture
+		shader->UploadUniformFloat3("textColor", color);
 
-		//std::string::const_iterator c;
-		//float x = 25.0f;
-		//float y = 24.0f;
-		//float scale = 1.0f;
-		//glm::vec3 vec = glm::vec3(0.5f, 0.8f, 0.2f);
-		//for (c = text.begin(); c != text.end(); c++) {
-		//	Character ch = Assetmanager::GetAssetmanager()->GetFontMetaData("Gabriola")->GetData()->m_characters.at(*c);
-		//	float xpos = x + ch.bearing.x * scale;
-		//	float ypos = y - (ch.size.y - ch.bearing.y) * scale;
-		//	float width = ch.size.x * scale;
-		//	float height = ch.size.y * scale;
+		std::string::const_iterator c;
+		float x = 25.0f;
+		float y = 24.0f;
+		float scale = 1.0f;
+		glm::vec3 vec = glm::vec3(0.5f, 0.8f, 0.2f);
+		for (c = text.begin(); c != text.end(); c++) {
+			Character ch = Frosty::AssetManager::GetTTF("Gabriola")->m_characters.at(*c); //TODO: Switch out for actual font provided by system
+			float xpos = x + ch.bearing.x * scale;
+			float ypos = y - (ch.size.y - ch.bearing.y) * scale;
+			float width = ch.size.x * scale;
+			float height = ch.size.y * scale;
 
-		//	float verts[6][4]
-		//	{
-		//		{ xpos,			ypos + height,	0.0f, 0.0f },
-		//		{ xpos,			ypos,			0.0f, 1.0f },
-		//		{ xpos + width,	ypos,			1.0f, 1.0f },
+			float verts[6][4]
+			{
+				{ xpos,			ypos + height,	0.0f, 0.0f },
+				{ xpos,			ypos,			0.0f, 1.0f },
+				{ xpos + width,	ypos,			1.0f, 1.0f },
 
-		//		{ xpos,			ypos + height,	0.0f, 0.0f },
-		//		{ xpos + width, ypos,			1.0f, 1.0f },
-		//		{ xpos + width, ypos + height,	1.0f, 0.0f }
-		//	};
+				{ xpos,			ypos + height,	0.0f, 0.0f },
+				{ xpos + width, ypos,			1.0f, 1.0f },
+				{ xpos + width, ypos + height,	1.0f, 0.0f }
+			};
 
-		//	vertexArray->GetVertexBuffer().front()->Bind();
-		//	vertexArray->GetVertexBuffer().front()->SetData(*verts, sizeof(verts), GL_DYNAMIC_DRAW);
+			vertexArray->GetVertexBuffer().front()->Bind();
+			vertexArray->GetVertexBuffer().front()->SetData(*verts, sizeof(verts), Frosty::BufferType::DYNAMIC);
 
-		//	glActiveTexture(GL_TEXTURE1);
-		//	glBindTexture(GL_TEXTURE_2D, ch.textureID);
 
-			//RenderCommand::Draw2D(vertexArray);
+			glActiveTexture(GL_TEXTURE0);
+			glBindTexture(GL_TEXTURE_2D, ch.textureID);
 
-		//	x += (ch.advance >> 6) * scale;
-		//}
-		//glBindTexture(GL_TEXTURE_2D, 0);
-		//vertexArray->Unbind();
-		//vertexArray->GetVertexBuffer().front()->Unbind();
+			RenderCommand::DrawUIText(vertexArray); //Will probably change later
+
+			x += (ch.advance >> 6) * scale;
+		}
+		glBindTexture(GL_TEXTURE_2D, 0);
+
+		shader->UnBind();
+		vertexArray->Unbind();
+		glDisable(GL_BLEND);
 	}
 
 	void Renderer::SubmitParticles(const std::shared_ptr<Shader>& shader, const std::shared_ptr<Shader>& computeShader, const std::shared_ptr<VertexArray>& vertexArray, glm::mat4& modelMat, size_t particleCount, float maxLifetime)

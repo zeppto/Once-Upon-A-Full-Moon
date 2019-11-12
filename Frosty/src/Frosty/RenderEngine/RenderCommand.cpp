@@ -44,4 +44,9 @@ namespace Frosty
 	{
 		glDrawArrays(GL_POINTS, 0, (GLsizei)count);
 	}
+
+	void RenderCommand::DrawUIText(const std::shared_ptr<VertexArray>& vertexArray)
+	{
+		glDrawArrays(GL_TRIANGLES, 0, 6);
+	}
 }
