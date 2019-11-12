@@ -1,8 +1,3 @@
-#pragma once
-class GUISystem
-{
-};
-
 #ifndef GUI_SYSTEM_HPP
 #define GUI_SYSTEM_HPP
 
@@ -18,8 +13,8 @@ namespace MCS
 		virtual ~GUISystem() = default;
 
 		virtual void Init() override;
-
 		virtual void OnUpdate() override;
+		virtual void Render() override;
 
 		virtual void AddComponent(const std::shared_ptr<Frosty::ECS::Entity>& entity) override;
 		virtual void RemoveEntity(const std::shared_ptr<Frosty::ECS::Entity>& entity) override;

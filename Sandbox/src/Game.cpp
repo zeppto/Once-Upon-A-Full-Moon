@@ -22,6 +22,7 @@
 #include "Systems/LevelSystem.hpp"
 //#include "Systems/HealthBarSystem.hpp"
 #include "Systems/BossBehaviorSystem.hpp"
+#include "Systems/GUISystem.hpp"
 
 
 
@@ -50,6 +51,7 @@ namespace MCS
 		retSystem = world->AddSystem<ParticleSystem>();
 		ParticleSystem* particleSystem = dynamic_cast<ParticleSystem*>(retSystem);
 		world->AddSystem<BossBehaviorSystem>();
+		world->AddSystem<GUISystem>();
 
 		//MapGenerator map;
 		//map.generateMap();
