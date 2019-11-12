@@ -30,6 +30,7 @@ namespace Frosty
 		static void Init();
 
 		static void BeginScene();
+		static void RenderScene();
 		static void EndScene();
 
 		static 	void Renderer::SetCamera(const glm::vec3& pos, const glm::mat4& view, const glm::mat4& projection);
@@ -45,7 +46,7 @@ namespace Frosty
 		static void SubmitParticles(const std::shared_ptr<Shader>& shader, const std::shared_ptr<Shader>& computeShader, const std::shared_ptr<VertexArray>& vertexArray, glm::mat4& modelMat, size_t particleCount, float maxLifetime);
 		static void Submit2d(Texture2D* tex, Shader* shader, const std::shared_ptr<VertexArray>& vertexArray, const glm::mat4& transform);
 	
-		static void AddToRenderer(ECS::CMaterial* mat, std::shared_ptr<VertexArray>& vertexArray, ECS::CTransform*&transform);
+		static void AddToRenderer(ECS::CMaterial* mat, std::shared_ptr<VertexArray> vertexArray, ECS::CTransform* transform);
 		static void RemoveFromRenderer(const int& transformID);
 
 		inline static void Shutdown() { delete s_SceneData; }
@@ -62,6 +63,7 @@ namespace Frosty
 
 		struct MaterialData
 		{
+			glm::vec4* Albedo;
 			std::shared_ptr<Texture2D> DiffuseTexture;
 		/*	std::shared_ptr<Texture2D> SpecularTexture;
 			std::shared_ptr<Texture2D> NormalTexture;

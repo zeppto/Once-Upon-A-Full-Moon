@@ -20,6 +20,68 @@ namespace Frosty
 	{
 	}
 
+
+	
+	
+
+	void Renderer::RenderScene()
+	{
+		//For debugging
+		int nrOfShaders = 0;
+		int nrOfMaterials = 0;
+		int nrOfMeshes = 0;
+		int nrOfTransforms = 0;
+
+		//For all shaders
+		for (auto& ShaderIt:m_ShaderMap)
+		{
+			nrOfShaders++;
+
+			auto& shaderData = m_ShaderMap.at(ShaderIt.first);
+			shaderData->Shader->Bind();
+			//Set most uniforms here
+			shaderData->Shader->UploadUniformMat4("u_ViewProjection", s_SceneData->GameCamera.ViewProjectionMatrix);
+			shaderData->Shader->UploadUniformFloat3("u_CameraPosition", s_SceneData->GameCamera.CameraPosition);
+
+			//For all Materials
+			for (auto& MaterialIt : shaderData->MaterialMap)
+			{
+				nrOfMaterials++;
+
+				auto& materialData = shaderData->MaterialMap.at(MaterialIt.first);
+
+				shaderData->Shader->UploadUniformFloat4("u_ObjectColor", *materialData->Albedo);
+
+
+				//Bind all Textures
+				if (materialData->DiffuseTexture != nullptr)
+				{
+					materialData->DiffuseTexture->Bind();
+
+				}
+				
+				//For all Meshes
+				for (auto& MeshIt : materialData->MeshMap)
+				{
+					nrOfMeshes++;
+
+					auto& meshData = materialData->MeshMap.at(MeshIt.first);
+					meshData->VertexArray->Bind();
+
+					//For all Transforms
+					for (auto& TransformIt : meshData->TransformMap)
+					{
+						nrOfTransforms++;
+						shaderData->Shader->UploadUniformMat4("u_Transform", *meshData->TransformMap.at(TransformIt.first));
+						RenderCommand::Draw2D(meshData->VertexArray);
+					}
+				}
+			}
+		}
+
+		int test;
+	}
+
 	void Renderer::EndScene()
 	{
 		s_SceneData->PointLights.clear();
@@ -210,7 +272,7 @@ namespace Frosty
 
 	int counter = 0;
 
-	void Renderer::AddToRenderer(ECS::CMaterial* mat, std::shared_ptr<VertexArray>& vertexArray, ECS::CTransform*& transform)
+	void Renderer::AddToRenderer(ECS::CMaterial* mat, std::shared_ptr<VertexArray> vertexArray,ECS::CTransform*  transform)
 	{
 		/*if (counter == 0)
 		{
@@ -249,6 +311,7 @@ namespace Frosty
 
 		auto& materialMap = shaderMap->MaterialMap.at(matID);
 		materialMap->DiffuseTexture = mat->DiffuseTexture;
+		materialMap->Albedo =  &mat->Albedo;
 		materialMap->MeshMap.emplace(meshID, FY_NEW  MeshData);
 
 		auto& meshMap = materialMap->MeshMap.at(meshID);
