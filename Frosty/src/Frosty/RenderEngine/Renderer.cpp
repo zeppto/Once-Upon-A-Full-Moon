@@ -219,7 +219,7 @@ namespace Frosty
 		vertexArray->GetUniformBuffer()->BindUpdate(skinDataPtr, nrOfBones);
 
 		vertexArray->Bind();
-		RenderCommand::EnableBackfaceCulling();
+		/*RenderCommand::EnableBackfaceCulling();*/
 		RenderCommand::Draw2D(vertexArray);
 		dt += Frosty::Time::DeltaTime();
 	}
