@@ -15,7 +15,6 @@ namespace MCS
 
 	void HealthBarSystem::OnUpdate()
 	{
-
 	}
 
 	void HealthBarSystem::Render()
