@@ -196,7 +196,7 @@ namespace Frosty
 
 			// Vertex Buffer
 			std::shared_ptr<VertexBuffer> vertexBuffer;
-			vertexBuffer.reset(VertexBuffer::Create(&vertices.front(), sizeof(AnimVert) * (uint32_t)vertices.size(), BufferType::STATIC));
+			vertexBuffer.reset(VertexBuffer::Create(&vertices.front(), sizeof(AnimVert) * (uint32_t)vertices.size(), BufferType::DYNAMIC));
 
 			BufferLayout layout = {
 				{ ShaderDataType::Float3, "a_Position" },
