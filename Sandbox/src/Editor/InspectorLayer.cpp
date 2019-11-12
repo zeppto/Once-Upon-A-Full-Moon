@@ -365,6 +365,7 @@ namespace MCS
 							ImGui::Image(comp.SpecularTexture ? comp.SpecularTexture->GetRenderID() : Frosty::AssetManager::GetTexture2D("Checkerboard")->GetRenderID(), ImVec2(64, 64));
 							ImGui::PopStyleVar();
 							if (ImGui::IsItemClicked()) ImGui::OpenPopup("specular_texture_selector");
+							ImGui::SetNextWindowSize(ImVec2(160, 370));
 							if (ImGui::BeginPopupModal("specular_texture_selector", NULL))
 							{
 								size_t index = 0;
@@ -405,6 +406,7 @@ namespace MCS
 							ImGui::Image(comp.NormalTexture ? comp.NormalTexture->GetRenderID() : Frosty::AssetManager::GetTexture2D("Checkerboard")->GetRenderID(), ImVec2(64, 64));
 							ImGui::PopStyleVar();
 							if (ImGui::IsItemClicked()) ImGui::OpenPopup("normal_texture_selector");
+							ImGui::SetNextWindowSize(ImVec2(160, 370));
 							if (ImGui::BeginPopupModal("normal_texture_selector", NULL))
 							{
 								size_t index = 0;

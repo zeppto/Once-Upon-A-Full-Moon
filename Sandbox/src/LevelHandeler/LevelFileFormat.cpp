@@ -246,9 +246,7 @@ void LevelFileFormat::OpenFromFile(std::string fileName, Frosty::ECS::CTransform
 
 	if (existingFile.good())
 	{
-		bool* entitysComponents;
 		existingFile.read((char*)& testHeder, sizeof(Level_Header));
-		entitysComponents = new bool[testHeder.NrOfComponents];
 		fileEntitys.myEntitys.resize(testHeder.NrOfEntitys);
 		for (int i = 0; i < testHeder.NrOfEntitys; i++)
 		{
