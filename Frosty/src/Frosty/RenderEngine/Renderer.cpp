@@ -185,21 +185,25 @@ namespace Frosty
 	}
 
 	//For 2D, might be temp
-	void Renderer::Submit2d(Texture2D* tex,Shader* shader, const std::shared_ptr<VertexArray>& vertexArray, const glm::mat4& transform)
+	void Renderer::Submit2d(Texture2D* tex, const std::shared_ptr<Shader>& shader, const std::shared_ptr<VertexArray>& vertexArray, const glm::mat4& transform)
 	{
+
 		shader->Bind();
-		shader->UploadUniformMat4("u_Transform", transform);
-
-
 		vertexArray->Bind();
+
+		shader->UploadUniformMat4("u_Transform", transform);
 
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
 
-		// Might wanna do this, not sure if needed: RenderCommand::DisableBackfaceCulling();
+		RenderCommand::DisableBackfaceCulling();
 		RenderCommand::Draw2D(vertexArray);
 
 		glDisable(GL_BLEND);
+
+		vertexArray->Unbind();
+		shader->UnBind();
+
 	}
 
 	float dt = 0;

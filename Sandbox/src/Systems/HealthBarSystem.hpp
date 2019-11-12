@@ -25,8 +25,8 @@ namespace MCS
 
 	private:
 		std::array<Frosty::ECS::CTransform*, Frosty::ECS::MAX_ENTITIES_PER_COMPONENT> m_Transform;
-		std::array<Frosty::ECS::CHealthBar*, Frosty::ECS::MAX_ENTITIES_PER_COMPONENT> m_HealthBar;
 		std::array<Frosty::ECS::CHealth*, Frosty::ECS::MAX_ENTITIES_PER_COMPONENT> m_Health;
+		std::array<Frosty::ECS::CHealthBar*, Frosty::ECS::MAX_ENTITIES_PER_COMPONENT> m_HealthBar;
 
 	};
 }
