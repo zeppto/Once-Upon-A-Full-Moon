@@ -8,7 +8,7 @@ namespace MCS
 	void GUISystem::Init()
 	{
 		p_Signature.set(Frosty::ECS::getComponentTypeID<Frosty::ECS::CTransform>(), true);
-	
+		p_Signature.set(Frosty::ECS::getComponentTypeID<Frosty::ECS::CGUI>(), true);
 	}
 
 	void GUISystem::OnUpdate()
@@ -31,6 +31,7 @@ namespace MCS
 			p_EntityMap.emplace(entity, p_Total);
 			auto& world = Frosty::Application::Get().GetWorld();
 			m_Transform[p_Total] = &world->GetComponent<Frosty::ECS::CTransform>(entity);
+			m_GUI[p_Total] = &world->GetComponent<Frosty::ECS::CGUI>(entity);
 
 			p_Total++;
 		}
@@ -45,7 +46,7 @@ namespace MCS
 			p_Total--;
 			auto& entityToUpdate = m_Transform[p_Total]->EntityPtr;
 			m_Transform[p_Total] = nullptr;
-
+			m_GUI[p_Total] = nullptr;
 
 			if (p_Total > it->second)
 			{
@@ -64,8 +65,10 @@ namespace MCS
 		{
 			auto& world = Frosty::Application::Get().GetWorld();
 			Frosty::ECS::CTransform* transformPtr = world->GetComponentAddress<Frosty::ECS::CTransform>(entity);
+			Frosty::ECS::CGUI* guiPtr = world->GetComponentAddress<Frosty::ECS::CGUI>(entity);
 
 			m_Transform[it->second] = transformPtr;
+			m_GUI[it->second] = guiPtr;
 		}
 	}
 
@@ -85,6 +88,7 @@ namespace MCS
 		for (size_t i = 1; i < p_Total; i++)
 		{
 			retInfo << "\t\t" << i << "\t" << m_Transform[i] << "\t" << m_Transform[i]->EntityPtr->Id << "\t\t" << m_Transform[i]->EntityPtr << "\t\t" << m_Transform[i]->EntityPtr.use_count() << "\n";
+			retInfo << "\t\t" << i << "\t" << m_GUI[i] << "\t" << m_Transform[i]->EntityPtr->Id << "\t\t" << m_GUI[i]->EntityPtr << "\t\t" << m_GUI[i]->EntityPtr.use_count() << "\n";
 			retInfo << "\n"; // Have this last
 		}
 		retInfo << "\t\t-----------Done-----------\n";

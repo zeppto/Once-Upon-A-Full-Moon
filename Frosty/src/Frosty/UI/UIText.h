@@ -25,6 +25,8 @@ namespace Frosty
 	public:
 
 	private:
+		TYPE type = TEXT;
+
 		std::string m_text;
 		std::string m_font;
 		uint16_t m_fontSize;
