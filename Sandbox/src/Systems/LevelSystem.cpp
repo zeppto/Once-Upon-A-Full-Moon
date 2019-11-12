@@ -29,6 +29,9 @@ namespace MCS
 		case Frosty::EventType::OpenLevel:
 			OnOpenLevelEvent(static_cast<Frosty::OpenLevelEvent&>(e));
 			break;
+		case Frosty::EventType::CreatEntity:
+			OnCreatEntityEvent(static_cast<Frosty::CreatEntityEvent&>(e));
+			break;
 		default:
 			break;
 		}
@@ -46,14 +49,6 @@ namespace MCS
 			Level::Room(m_CurrentRoome.sideExits[0], m_CurrentRoome.sideExits[1], m_CurrentRoome.sideExits[2], m_CurrentRoome.sideExits[3], texture, rotation);
 			m_Start = false;
 		}
-		//if (m_NextLevel && m_TempTimer > 9)
-		//{
-		//	int rotation = 0;
-		//	std::string texture = m_Map.getRoomTextur(m_PlayerPos, &rotation);
-		//	Level::Room(m_CurrentRoome.sideExits[0], m_CurrentRoome.sideExits[1], m_CurrentRoome.sideExits[2], m_CurrentRoome.sideExits[3], texture, rotation, m_EntrensSide);
-		//	m_NextLevel = false;
-		//}
-		//m_TempTimer += 1;//Frosty::Time::DeltaTime();
 	}
 
 	void LevelSystem::AddComponent(const std::shared_ptr<Frosty::ECS::Entity>& entity)
@@ -300,6 +295,56 @@ namespace MCS
 		}
 		m_RoomType = e.GetFilename();
 		m_LevelFileFormat.OpenFromFile(m_RoomType, playerTransform);
+	}
+	void LevelSystem::OnCreatEntityEvent(Frosty::CreatEntityEvent& e)
+	{
+		//Enemy
+		if (e.GetEntityType() == 0)
+		{
+			auto& enemy = m_World->CreateEntity({ 0.0f, 1.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 2.0f, 2.0f, 2.0f });
+			m_World->AddComponent<Frosty::ECS::CMesh>(enemy, Frosty::AssetManager::GetMesh("pCube1"));
+			m_World->AddComponent<Frosty::ECS::CMaterial>(enemy, Frosty::AssetManager::GetShader("FlatColor"));
+			m_World->AddComponent<Frosty::ECS::CPhysics>(enemy, Frosty::AssetManager::GetBoundingBox("pCube1"), 6.0f);
+			m_World->AddComponent<Frosty::ECS::CEnemy>(enemy);
+			m_World->AddComponent<Frosty::ECS::CFollow>(enemy);
+			m_World->AddComponent<Frosty::ECS::CHealth>(enemy);
+		}
+		//Stone
+		if (e.GetEntityType() == 1)
+		{
+			auto& stone = m_World->CreateEntity({ 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 90.0f }, { 3.0f, 3.0f, 3.0f });
+			m_World->AddComponent<Frosty::ECS::CMesh>(stone, Frosty::AssetManager::GetMesh("stone1"));
+			auto& material = m_World->AddComponent<Frosty::ECS::CMaterial>(stone, Frosty::AssetManager::GetShader("Texture2D"));
+			material.DiffuseTexture = Frosty::AssetManager::GetTexture2D("stoneTexture2");
+			m_World->AddComponent<Frosty::ECS::CPhysics>(stone, Frosty::AssetManager::GetBoundingBox("stone1"), 0.0f);
+		}
+		//Tree 
+		if (e.GetEntityType() == 2)
+		{
+			auto& mushroom = m_World->CreateEntity({ 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 1.0f, 1.0f, 1.0f });
+			m_World->AddComponent<Frosty::ECS::CMesh>(mushroom, Frosty::AssetManager::GetMesh("tree1"));
+			auto& material = m_World->AddComponent<Frosty::ECS::CMaterial>(mushroom, Frosty::AssetManager::GetShader("Texture2D"));
+			material.DiffuseTexture = Frosty::AssetManager::GetTexture2D("Tree7");
+			m_World->AddComponent<Frosty::ECS::CPhysics>(mushroom, Frosty::AssetManager::GetBoundingBox("tree1"), 0.0f);
+		}
+		//Mushroom 
+		if (e.GetEntityType() == 3)
+		{
+			auto& mushroom = m_World->CreateEntity({ 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 1.0f, 1.0f, 1.0f });
+			m_World->AddComponent<Frosty::ECS::CMesh>(mushroom, Frosty::AssetManager::GetMesh("mashrom1"));
+			auto& material = m_World->AddComponent<Frosty::ECS::CMaterial>(mushroom, Frosty::AssetManager::GetShader("Texture2D"));
+			material.DiffuseTexture = Frosty::AssetManager::GetTexture2D("mashRoomCirkel");
+			m_World->AddComponent<Frosty::ECS::CPhysics>(mushroom, Frosty::AssetManager::GetBoundingBox("mashrom1"), 0.0f);
+		}
+		//Mushroom cirkel
+		if (e.GetEntityType() == 4)
+		{
+			auto& mushroom = m_World->CreateEntity({ 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 2.0f, 2.0f, 2.0f });
+			m_World->AddComponent<Frosty::ECS::CMesh>(mushroom, Frosty::AssetManager::GetMesh("hexCircle"));
+			auto& material = m_World->AddComponent<Frosty::ECS::CMaterial>(mushroom, Frosty::AssetManager::GetShader("Texture2D"));
+			material.DiffuseTexture = Frosty::AssetManager::GetTexture2D("mashRoomCirkel");
+			m_World->AddComponent<Frosty::ECS::CPhysics>(mushroom, Frosty::AssetManager::GetBoundingBox("hexCircle"), 0.0f);
+		}
 	}
 }
 

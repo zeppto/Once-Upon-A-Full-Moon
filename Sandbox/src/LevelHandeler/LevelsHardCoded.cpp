@@ -35,7 +35,7 @@ namespace Level
 				auto& TreeMaterial = world->AddComponent<Frosty::ECS::CMaterial>(Tree, Frosty::AssetManager::GetShader("Texture2D"));
 				TreeMaterial.Albedo = glm::vec4(0.2f, 0.8f, 0.3f, 1.0f);
 				std::string treeName = "Tree" + std::to_string(((rand() % NrOfTreeTypes) + 1));
-				TreeMaterial.DiffuseTexture = Frosty::AssetManager::GetTexture2D("Tree1");
+				TreeMaterial.DiffuseTexture = Frosty::AssetManager::GetTexture2D(treeName);
 
 				treeName = "tree" + std::to_string(((rand() % NrOfTreeTypes) + 1));
 				world->AddComponent<Frosty::ECS::CMesh>(Tree, Frosty::AssetManager::GetMesh("tree1"));

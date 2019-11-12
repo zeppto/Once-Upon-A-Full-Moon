@@ -16,7 +16,7 @@ namespace Frosty
 		KeyPressed, KeyReleased,
 		MouseButtonPressed, MouseButtonReleased, MouseMoved, MouseScrolled,
 		ArrowHit, Dash, CheckCollision, Collision, BasicAttack, BaitPlaced, ExitCurrentLevel,
-		SaveLevel, CreateLevel, OpenLevel
+		SaveLevel, CreateLevel, OpenLevel, CreatEntity
 	};
 
 #define EVENT_TYPE(type) static EventType GetStaticType() { return EventType::##type; }\

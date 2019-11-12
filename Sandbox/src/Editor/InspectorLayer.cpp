@@ -698,7 +698,31 @@ namespace MCS
 
 		ImGui::Begin("Assets", NULL, window_flags);
 		{
-
+			//for fast creation of entitys
+			if (ImGui::Button("Enemy", ImVec2(80.0f, EDITOR_MAIN_MENU_BAR_HEIGHT)))
+			{
+				Frosty::EventBus::GetEventBus()->Publish<Frosty::CreatEntityEvent>(Frosty::CreatEntityEvent(0));
+			}
+			ImGui::SameLine();
+			if (ImGui::Button("Stone", ImVec2(80.0f, EDITOR_MAIN_MENU_BAR_HEIGHT)))
+			{
+				Frosty::EventBus::GetEventBus()->Publish<Frosty::CreatEntityEvent>(Frosty::CreatEntityEvent(1));
+			}
+			ImGui::SameLine();
+			if (ImGui::Button("Tree", ImVec2(80.0f, EDITOR_MAIN_MENU_BAR_HEIGHT)))
+			{
+				Frosty::EventBus::GetEventBus()->Publish<Frosty::CreatEntityEvent>(Frosty::CreatEntityEvent(2));
+			}
+			ImGui::SameLine();
+			if (ImGui::Button("Mushroom", ImVec2(80.0f, EDITOR_MAIN_MENU_BAR_HEIGHT)))
+			{
+				Frosty::EventBus::GetEventBus()->Publish<Frosty::CreatEntityEvent>(Frosty::CreatEntityEvent(3));
+			}
+			ImGui::SameLine();
+			if (ImGui::Button("MushroomCirkel", ImVec2(100.0f, EDITOR_MAIN_MENU_BAR_HEIGHT)))
+			{
+				Frosty::EventBus::GetEventBus()->Publish<Frosty::CreatEntityEvent>(Frosty::CreatEntityEvent(4));
+			}
 		}
 		ImGui::End();
 
