@@ -6,6 +6,9 @@
 #include "Frosty/Core/KeyCodes.h"
 #include "Frosty/Core/MouseButtonCodes.h"
 
+#include "Frosty/UI/UIText.h"
+#include "Frosty/UI/UISprite.h"
+
 #include <Luna/include/Luna.h>
 
 namespace Frosty
@@ -805,8 +808,14 @@ namespace Frosty
 			static std::string NAME;
 
 			CGUI() = default;
-			CGUI(const CGUI& org) { FY_CORE_ASSERT(false, "Copy constructor in CGUI called."); }
 
+			std::vector<UIText> texts;
+			std::vector<UISprite> sprites;
+
+			std::shared_ptr<Shader> textShader;
+			std::shared_ptr<Shader> spriteShader;
+
+			CGUI(const CGUI& org) { FY_CORE_ASSERT(false, "Copy constructor in CGUI called."); }
 			virtual std::string GetName() const { return NAME; }
 		};
 
