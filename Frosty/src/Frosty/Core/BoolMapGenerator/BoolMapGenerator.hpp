@@ -1,14 +1,14 @@
 #ifndef BOOLMAPGENERATOR_HPP
 #define BOOLMAPGENERATOR_HPP
 #include"BoolMap.hpp"
-
+#include<Frosty/RenderEngine/VertexArray.hpp>
 #define DEFAULT_BOOLMAP_WIDTH 128
 #define DEFAULT_BOOLMAP_HEIGHT 72
 #define DEFAULT_BOOLMAP_PIXELCOORD_RATIO 10
 
 namespace Frosty
 {
-
+	
 
 	//If needed memory convert list mat4 to pointers 
 	struct ModelBatch
@@ -31,12 +31,12 @@ namespace Frosty
 		std::list<glm::mat4> Transforms;
 	};
 
-
+	//class VertexArray;
 
 	class BoolMapGenerator
 	{
 
-
+		
 		//var
 	public:
 

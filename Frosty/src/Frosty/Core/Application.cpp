@@ -282,14 +282,16 @@ namespace Frosty
 
 				BoundBatch testBound;
 
-				testBound.VertexArrayID = AssetManager::GetMesh("tree1")->GetRenderID();
-				testBound.NrOfIndices = AssetManager::GetMesh("tree1")->GetIndexBuffer()->GetCount();
-
+				testBound.VertexArrayID = AssetManager::GetMesh("pSphere1")->GetRenderID();
+				testBound.NrOfIndices = AssetManager::GetMesh("pSphere1")->GetIndexBuffer()->GetCount();
+				glm::mat4 tempMat;
 
 				//Botleft
-				glm::mat4 tempMat = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f));
+				tempMat = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f));
 				tempMat = glm::scale(tempMat, glm::vec3(1.0f, 1.0f, 1.0f));
 				testBound.Transforms.emplace_back(tempMat);
+
+
 
 				//topRight
 				tempMat = glm::translate(glm::mat4(1.0f), glm::vec3(128.0f, 0.0f, 72.0f));
@@ -304,6 +306,23 @@ namespace Frosty
 
 
 
+				//Rand1 
+				tempMat = glm::translate(glm::mat4(1.0f), glm::vec3(50.0f, 0.0f, 50.0f));
+				tempMat = glm::scale(tempMat, glm::vec3(1.0f, 1.0f, 1.0f));
+				testBound.Transforms.emplace_back(tempMat);
+
+				//Rand2
+				tempMat = glm::translate(glm::mat4(1.0f), glm::vec3(30.0f, 0.0f, 20.0f));
+				tempMat = glm::scale(tempMat, glm::vec3(1.0f, 1.0f, 1.0f));
+				testBound.Transforms.emplace_back(tempMat);
+
+
+				//Rand5
+				tempMat = glm::translate(glm::mat4(1.0f), glm::vec3(35.0f, 0.0f, 20.0f));
+				tempMat = glm::scale(tempMat, glm::vec3(1.0f, 1.0f, 1.0f));
+				testBound.Transforms.emplace_back(tempMat);
+
+
 				BoolMapGenerator::AddBatch(testBound);
 
 				//Render
@@ -314,12 +333,29 @@ namespace Frosty
 				//Check
 
 
+				bool topRight = ptr->CheckCollition(glm::vec3(127.9f,1.0f,71.9f));
+
 				bool botLeft = ptr->CheckCollition(glm::vec3(0.0f,1.0f, 0.0f));
+
+				bool botLeft1 = ptr->CheckCollition(glm::vec3(1.0f,1.0f, 0.0f));
+
+				bool botLeft2 = ptr->CheckCollition(glm::vec3(0.99f,1.0f, 0.0f));
+
+				bool botLeft3 = ptr->CheckCollition(glm::vec3(0.999f,1.0f, 0.0f));
+
+				bool botLeft4 = ptr->CheckCollition(glm::vec3(1.01f,1.0f, 0.0f));
+
+				bool botLeft5 = ptr->CheckCollition(glm::vec3(1.1f,1.0f, 0.0f));
+
+
 				bool botRight = ptr->CheckCollition(glm::vec3(128.0f,1.0f,0.0f));
 				bool topLeft = ptr->CheckCollition(glm::vec3(0.0f,1.0f,72.0f));
-				bool topRight = ptr->CheckCollition(glm::vec3(128.0f,1.0f,72.0f));
 				bool randomSpot = ptr->CheckCollition(glm::vec3(33.0f,1.0f,38.0f));
 				bool randomSpot2 = ptr->CheckCollition(glm::vec3(34.0f,1.0f,40.0f));
+
+				bool random1 = ptr->CheckCollition(glm::vec3(51.0f, 1.0f, 50.0f));
+				bool random2= ptr->CheckCollition(glm::vec3(31.5f, 1.0f, 20.0f));
+				bool random3= ptr->CheckCollition(glm::vec3(34.0f, 1.0f, 19.0f));
 
 				Renderer::SetCamera(m_EditorCamera.GetPosition(), m_EditorCamera.GetViewMatrix(), m_EditorCamera.GetProjectionMatrix());
 			}

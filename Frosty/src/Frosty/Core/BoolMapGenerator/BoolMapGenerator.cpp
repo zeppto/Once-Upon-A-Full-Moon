@@ -2,7 +2,7 @@
 #include"BoolMapGenerator.hpp"
 #include "Glad/glad.h"
 #include"TestMap.hpp"
-#include<Frosty/RenderEngine/VertexArray.hpp>
+
 
 #define BUFFER_OFFSET(i) ((char *)nullptr + (i))
 
@@ -193,23 +193,21 @@ namespace Frosty
 		//kk[99] = 1;
 		//kk[101] = 1;
 
-		int size = (unsigned int)TmpWidth * (unsigned int)TmpHeight;
+		int texSize = (unsigned int)TmpWidth * (unsigned int)TmpHeight;
 
-		float* tempFloatPtr = FY_NEW float[((unsigned int)TmpWidth * (unsigned int)TmpHeight)];
-
+		float* tempFloatPtr = FY_NEW float[texSize];
 		glReadPixels(0, 0, TmpWidth, TmpHeight, GL_RED, GL_FLOAT, &tempFloatPtr[0]);
 
-		std::shared_ptr<bool[]> tmpMap(FY_NEW bool[((unsigned int)TmpWidth * (unsigned int)TmpHeight)]);
+		int bitSize = std::ceil((texSize / 64.0f));
+		std::shared_ptr<uint64_t[]> bitMap(FY_NEW uint64_t[bitSize]);
 
-		for (unsigned int i = 0; i < (TmpWidth * TmpHeight); i++)
+		//temp
+		std::shared_ptr<bool[]> tmpMap(FY_NEW bool[texSize]);
+
+		for (unsigned int i = 0; i < texSize; i++)
 		{
 			//temp
 			float xx = tempFloatPtr[i];
-
-			if (i == 512000)
-			{
-				int o = 0;
-			}
 
 			if (tempFloatPtr[i] > 0.001)
 			{
@@ -219,7 +217,45 @@ namespace Frosty
 			{
 				tmpMap[i] = false;
 			}
+
+
+
 		}
+
+
+		int32_t bitmapCount = -1;
+		//bitmap
+		uint64_t currentInt = 0;
+
+		for (unsigned int i = 0; i < texSize; i++)
+		{
+			if (i > 1000)
+			{
+				int o = 0;
+			}
+
+
+			if (i % 64 == 0 || bitmapCount == -1 || i == texSize-1)
+			{
+				if (bitmapCount != -1)
+				{
+					bitMap[bitmapCount] = currentInt;
+					currentInt = 0;
+				}
+				bitmapCount++;
+			}
+
+			if (tempFloatPtr[i] > 0.001)
+			{
+				currentInt = (currentInt << 1)+1;
+			}
+			else
+			{
+				currentInt = currentInt << 1;
+			}
+		}
+
+
 		delete[]tempFloatPtr;
 
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -229,7 +265,7 @@ namespace Frosty
 		s_ModelBatch.erase(s_ModelBatch.begin(), s_ModelBatch.end());
 		s_BoundBatch.erase(s_BoundBatch.begin(), s_BoundBatch.end());
 
-		return std::shared_ptr<BoolMap>(FY_NEW BoolMap(TmpWidth, TmpHeight, s_Settings.Pix_Cord_Ratio, tmpMap));
+		return std::shared_ptr<BoolMap>(FY_NEW BoolMap(TmpWidth, TmpHeight, s_Settings.Pix_Cord_Ratio, tmpMap, bitMap));
 	}
 
 
