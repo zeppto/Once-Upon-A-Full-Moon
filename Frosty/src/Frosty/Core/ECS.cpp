@@ -23,6 +23,7 @@ namespace Frosty
 		std::string CDestroy::NAME = "Destroy";
 		std::string CParticleSystem::NAME = "ParticleSystem";
 		std::string CBoss::NAME = "Boss";
+		std::string CAnimController::NAME = "AnimController";
 		std::string CLevelExit::NAME = "Level Exit";
 	}
 }

@@ -86,7 +86,7 @@ namespace Frosty
 #pragma region Settings
 
 		// Let's define a maximum number of unique components:
-		constexpr std::size_t MAX_COMPONENTS{ 19 };
+		constexpr std::size_t MAX_COMPONENTS{ 20 };
 
 		// Let's define a maximum number of entities that
 		// can have the same component type:
@@ -787,6 +787,16 @@ namespace Frosty
 
 		};
 
+		struct CAnimController :public BaseComponent
+		{
+			static std::string NAME;
+
+			bool isSliderControlled = false;
+			float animSpeed = 1;
+
+			virtual std::string GetName() const { return NAME; }
+		};
+
 		struct CLevelExit : public BaseComponent
 		{
 			static std::string NAME;
@@ -822,7 +832,8 @@ namespace Frosty
 			case 15:	return "Destroy";
 			case 16:	return "ParticleSystem";
 			case 17:	return "Boss";
-			case 18:	return "LevelExit";
+			case 18:	return "AnimController";
+			case 19:	return "LevelExit";
 			default:	return "";
 			}
 		}

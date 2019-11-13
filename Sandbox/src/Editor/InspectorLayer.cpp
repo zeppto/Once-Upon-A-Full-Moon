@@ -104,6 +104,7 @@ namespace MCS
 					if (world->HasComponent<Frosty::ECS::CHealthBar>(m_SelectedEntity)) toggles[11] = true;
 					if (world->HasComponent<Frosty::ECS::CParticleSystem>(m_SelectedEntity)) toggles[12] = true;
 					if (world->HasComponent<Frosty::ECS::CBoss>(m_SelectedEntity)) toggles[13] = true;
+					if (world->HasComponent<Frosty::ECS::CAnimController>(m_SelectedEntity)) toggles[14] = true;
 				}
 
 				// Information
@@ -482,6 +483,8 @@ namespace MCS
 						{
 							// Diffuse // 
 							ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(10, 10));
+
+							if (ImGui::Checkbox("Anim Speed: ", &s_VSync))
 							//uint32_t selDiffuseID = 0;
 							//comp.DiffuseTexture ? selDiffuseID = comp.DiffuseTexture->GetRenderID() : selDiffuseID = Frosty::AssetManager::GetTexture2D("Checkerboard")->GetRenderID();
 							ImGui::Image(comp.DiffuseTexture ? comp.DiffuseTexture->GetRenderID() : Frosty::AssetManager::GetTexture2D("Checkerboard")->GetRenderID(), ImVec2(64, 64));
@@ -806,6 +809,7 @@ namespace MCS
 						ImGui::EndChild();
 					}
 				}
+
 			}
 		}
 		ImGui::End();
