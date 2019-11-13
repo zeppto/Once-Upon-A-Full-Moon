@@ -36,7 +36,7 @@ namespace MCS
 		//world->AddSystem<LevelSystem>();
 		world->AddSystem<CameraSystem>();
 		world->AddSystem<LightSystem>();
-		world->AddSystem<RenderSystem>();
+		//world->AddSystem<RenderSystem>();
 		world->AddSystem<PlayerControllerSystem>();
 		world->AddSystem<PhysicsSystem>();
 		world->AddSystem<FollowSystem>();
@@ -44,11 +44,11 @@ namespace MCS
 		world->AddSystem<CombatSystem>();
 		world->AddSystem<DestroySystem>();
 		world->AddSystem<WeaponSystem>();
-		Frosty::ECS::BaseSystem* retSystem = world->AddSystem<NavigationSystem>();
-		NavigationSystem* navSystem = dynamic_cast<NavigationSystem*>(retSystem);
-		//world->AddSystem<HealthBarSystem>();
-		world->AddSystem<ParticleSystem>();
-		world->AddSystem<BossBehaviorSystem>();
+		//Frosty::ECS::BaseSystem* retSystem = world->AddSystem<NavigationSystem>();
+		//NavigationSystem* navSystem = dynamic_cast<NavigationSystem*>(retSystem);
+		////world->AddSystem<HealthBarSystem>();
+		//world->AddSystem<ParticleSystem>();
+		//world->AddSystem<BossBehaviorSystem>();
 
 		//MapGenerator map;
 		//map.generateMap();
@@ -100,7 +100,7 @@ namespace MCS
 		auto& lightTransform2 = world->GetComponent<Frosty::ECS::CTransform>(light2);
 		world->AddComponent<Frosty::ECS::CLight>(light2, Frosty::ECS::CLight::LightType::Directional, 0.3f, glm::vec3(0.6f, 0.7f, 1.f));
 
-	/*	auto& player = world->CreateEntity({ 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 2.0f, 2.0f, 2.0f } );
+		auto& player = world->CreateEntity({ 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 2.0f, 2.0f, 2.0f } );
 		auto& playerTransform = world->GetComponent<Frosty::ECS::CTransform>(player);
 		auto& PlayerMesh = world->AddComponent<Frosty::ECS::CMesh>(player, Frosty::AssetManager::GetMesh("scarlet"));
 		auto& playerMat = world->AddComponent<Frosty::ECS::CMaterial>(player, Frosty::AssetManager::GetShader("Texture2D"));
@@ -116,7 +116,7 @@ namespace MCS
 		auto& camEntity = world->GetSceneCamera();
 		world->GetComponent<Frosty::ECS::CCamera>(camEntity).Target = &playerTransform;
 
-		Frosty::Renderer::AddToRenderer(&playerMat, PlayerMesh.Mesh, &playerTransform);*/
+		Frosty::Renderer::AddToRenderer(&playerMat, PlayerMesh.Mesh, &playerTransform);
 
 		auto& wall = world->CreateEntity({ 0.0f, 20.0f, -3.0f }, { 0.0f, 0.0f, 0.0f }, { 15.0f, 10.0f, 1.0f }, true);
 		auto& wallMesh = world->AddComponent<Frosty::ECS::CMesh>(wall, Frosty::AssetManager::GetMesh("pCube1"));
@@ -147,21 +147,24 @@ namespace MCS
 		world->AddComponent<Frosty::ECS::CFollow>(enemy2, &playerTransform);
 		world->AddComponent<Frosty::ECS::CHealth>(enemy2);
 */
-		for (int x = 0; x < 1; x++)
+/*
+		for (int x = 0; x < 10; x++)
 		{
-			for (int z = 0; z < 1; z++)
+			for (int z = 0; z < 10; z++)
 			{
 				auto& tree = world->CreateEntity({ 10.0f * x, 0.0f, 10.0f*z }, { 0.0f, 0.0f, 0.0f }, { 1.0f, 1.0f, 1.0f }, true);
 				auto& treeMesh = world->AddComponent<Frosty::ECS::CMesh>(tree, Frosty::AssetManager::GetMesh("tree1"));
 				auto& treeMat = world->AddComponent<Frosty::ECS::CMaterial>(tree, Frosty::AssetManager::GetShader("Texture2D"));
 				treeMat.DiffuseTexture = Frosty::AssetManager::GetTexture2D("Tree1");
-				world->AddComponent<Frosty::ECS::CPhysics>(tree, Frosty::AssetManager::GetBoundingBox("tree1"));
+			
 
 				auto& treeTransform = world->GetComponent<Frosty::ECS::CTransform>(tree);
 
 				Frosty::Renderer::AddToRenderer(&treeMat, treeMesh.Mesh, &treeTransform);
 			}
-		}
+		}*/
+		
+		
 
 		
 

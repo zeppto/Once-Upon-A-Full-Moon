@@ -9,7 +9,7 @@ namespace Frosty
 {
 	Renderer::SceneData* Renderer::s_SceneData = FY_NEW Renderer::SceneData;
 	std::unordered_map<std::string, std::shared_ptr<Renderer::ShaderData>> Renderer::m_ShaderMap;
-	std::unordered_map<int, std::unordered_map<int, glm::mat4*>*> Renderer::m_TransformLookUpMap;
+	std::unordered_map<int, std::unordered_map<int, Frosty::ECS::CTransform*>*> Renderer::m_TransformLookUpMap;
 
 	void Renderer::Init()
 	{
@@ -21,8 +21,8 @@ namespace Frosty
 	}
 
 
-	
-	
+
+
 
 	void Renderer::RenderScene()
 	{
@@ -33,7 +33,7 @@ namespace Frosty
 		int nrOfTransforms = 0;
 
 		//For all shaders
-		for (auto& ShaderIt:m_ShaderMap)
+		for (auto& ShaderIt : m_ShaderMap)
 		{
 			nrOfShaders++;
 
@@ -43,7 +43,7 @@ namespace Frosty
 			shaderData->Shader->UploadUniformMat4("u_ViewProjection", s_SceneData->GameCamera.ViewProjectionMatrix);
 			shaderData->Shader->UploadUniformFloat3("u_CameraPosition", s_SceneData->GameCamera.CameraPosition);
 
-			
+
 
 			// Point Lights
 			shaderData->Shader->UploadUniformInt("u_TotalPointLights", (int)s_SceneData->PointLights.size());
@@ -77,12 +77,12 @@ namespace Frosty
 				if (shaderData->Shader->GetName() == "FlatColor")
 				{
 					shaderData->Shader->UploadUniformFloat4("u_ObjectColor", *materialData->Albedo);
-					//shaderData->Shader->UploadUniformFloat("u_SpecularStrength", *materialData->SpecularStrength);
+					shaderData->Shader->UploadUniformFloat("u_SpecularStrength", *materialData->SpecularStrength);
 
 				}
 				else if (shaderData->Shader->GetName() == "Texture2D" || shaderData->Shader->GetName() == "BlendShader")
 				{
-					//shaderData->Shader->UploadUniformFloat2("u_TextureCoordScale", *materialData->TextureScale);
+					shaderData->Shader->UploadUniformFloat2("u_TextureCoordScale", *materialData->TextureScale);
 				}
 
 				//Bind all Textures
@@ -94,7 +94,7 @@ namespace Frosty
 				{
 					materialData->NormalTexture->Bind(1);
 				}
-				
+
 				//For all Meshes
 				for (auto& MeshIt : materialData->MeshMap)
 				{
@@ -107,7 +107,9 @@ namespace Frosty
 					for (auto& TransformIt : meshData->TransformMap)
 					{
 						nrOfTransforms++;
-						shaderData->Shader->UploadUniformMat4("u_Transform", *meshData->TransformMap.at(TransformIt.first));
+
+
+						shaderData->Shader->UploadUniformMat4("u_Transform", *meshData->TransformMap.at(TransformIt.first)->GetModelMatrix());
 						RenderCommand::Draw2D(meshData->VertexArray);
 					}
 				}
@@ -307,7 +309,7 @@ namespace Frosty
 
 	int counter = 0;
 
-	void Renderer::AddToRenderer(ECS::CMaterial* mat, std::shared_ptr<VertexArray> vertexArray,ECS::CTransform*  transform)
+	void Renderer::AddToRenderer(ECS::CMaterial* mat, std::shared_ptr<VertexArray> vertexArray, ECS::CTransform* transform)
 	{
 		/*if (counter == 0)
 		{
@@ -335,7 +337,7 @@ namespace Frosty
 		//ShaderData* test = &shaderTest;
 		//ShaderData* test2 = FY_NEW ShaderData(shaderTest);
 
-		
+
 		//ADD
 
 		std::string ShaderName = mat->UseShader->GetName();
@@ -351,20 +353,19 @@ namespace Frosty
 		{
 			shaderMap->MaterialMap.emplace(matID, FY_NEW MaterialData);
 		}
-		
+
 
 		auto& materialMap = shaderMap->MaterialMap.at(matID);
-		materialMap->Albedo =  &mat->Albedo;
+		materialMap->Albedo = &mat->Albedo;
+		materialMap->SpecularStrength = &mat->SpecularStrength;
+		materialMap->TextureScale = &mat->TextureScale;
+
 		materialMap->DiffuseTexture = mat->DiffuseTexture;
-		materialMap->NormalTexture =  mat->NormalTexture;
-
-
-		//if (mat->UseShader->GetName() == "FlatColor")
-		//{
-		//	//shaderData->Shader->UploadUniformFloat4("u_ObjectColor", *materialData->Albedo);
-		//	//shaderData->Shader->UploadUniformFloat("u_SpecularStrength", *materialData->SpecularStrength);
-
-		//}
+		materialMap->NormalTexture = mat->NormalTexture;
+		materialMap->SpecularTexture = mat->SpecularTexture;
+		materialMap->BlendMapTexture = mat->BlendMapTexture;
+		materialMap->BlendTexture1 = mat->BlendTexture1;
+		materialMap->BlendTexture2 = mat->BlendTexture2;
 
 
 		if (materialMap->MeshMap.find(meshID) == materialMap->MeshMap.end())
@@ -375,7 +376,7 @@ namespace Frosty
 
 		auto& meshMap = materialMap->MeshMap.at(meshID);
 		meshMap->VertexArray = vertexArray;
-		meshMap->TransformMap.emplace(transformID, &transform->ModelMatrix);
+		meshMap->TransformMap.emplace(transformID, transform);
 
 
 

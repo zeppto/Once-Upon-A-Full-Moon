@@ -23,12 +23,12 @@ namespace MCS
 	{
 		for (size_t i = 1; i < p_Total; i++)
 		{
-			// Render
-			// So the question is, calculate it every frame or save the result in the component
-			// and update it only when Position/Rotation/Scale changes
-			// Takes up performance if calculated every frame, but the other way will mean
-			// 4 * 4 floats which is 4 * 4 * 4 = 64 bytes for EVERY entity
-			// For now we calculate it every frame
+			/* Render
+			 So the question is, calculate it every frame or save the result in the component
+			 and update it only when Position/Rotation/Scale changes
+			 Takes up performance if calculated every frame, but the other way will mean
+			 4 * 4 floats which is 4 * 4 * 4 = 64 bytes for EVERY entity
+			 For now we calculate it every frame*/
 			if (!m_Transform[i]->IsStatic)
 			{
 				glm::mat4 transform = glm::translate(glm::mat4(1.0f), m_Transform[i]->Position);
@@ -62,7 +62,7 @@ namespace MCS
 			}
 			else
 			{
-				//Frosty::Renderer::Submit(m_Materials[i], m_Meshes[i]->Mesh, m_Transform[i]->ModelMatrix);
+				Frosty::Renderer::Submit(m_Materials[i], m_Meshes[i]->Mesh, m_Transform[i]->ModelMatrix);
 
 			}
 

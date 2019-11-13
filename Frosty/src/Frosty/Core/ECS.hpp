@@ -395,6 +395,17 @@ namespace Frosty
 			}
 			CTransform(const CTransform& org) { FY_CORE_ASSERT(false, "Copy constructor in CTransform called."); }
 
+			glm::mat4* GetModelMatrix()
+			{
+				ModelMatrix = glm::translate(glm::mat4(1.0f), Position);
+				ModelMatrix = glm::rotate(ModelMatrix, glm::radians(Rotation.x), { 1.0f, 0.0f, 0.0f });
+				ModelMatrix = glm::rotate(ModelMatrix, glm::radians(Rotation.y), { 0.0f, 1.0f, 0.0f });
+				ModelMatrix = glm::rotate(ModelMatrix, glm::radians(Rotation.z), { 0.0f, 0.0f, 1.0f });
+				ModelMatrix = glm::scale(ModelMatrix, Scale);
+
+				return &ModelMatrix;
+
+			}
 			virtual std::string GetName() const { return NAME; }
 		};
 

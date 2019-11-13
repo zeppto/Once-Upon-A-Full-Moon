@@ -60,18 +60,22 @@ namespace Frosty
 		struct MeshData
 		{
 			std::shared_ptr<VertexArray> VertexArray;
-			std::unordered_map<int, glm::mat4*> TransformMap;
+			std::unordered_map<int, Frosty::ECS::CTransform*> TransformMap;
 		};
 
 		struct MaterialData
 		{
 			glm::vec4* Albedo;
+			float* SpecularStrength;
+			int* Shininess;
+			glm::vec2* TextureScale;
+
 			std::shared_ptr<Texture2D> DiffuseTexture;
 			std::shared_ptr<Texture2D> SpecularTexture;
 			std::shared_ptr<Texture2D> NormalTexture;
-		/*	std::shared_ptr<Texture2D> BlendMapTexture;
+			std::shared_ptr<Texture2D> BlendMapTexture;
 			std::shared_ptr<Texture2D> BlendTexture1;
-			std::shared_ptr<Texture2D> BlendTexture2;*/
+			std::shared_ptr<Texture2D> BlendTexture2;
 			std::unordered_map<std::string, std::shared_ptr<MeshData>> MeshMap;
 		};
 
@@ -82,7 +86,7 @@ namespace Frosty
 		};
 
 		static std::unordered_map<std::string, std::shared_ptr<ShaderData>> m_ShaderMap;
-		static std::unordered_map<int, std::unordered_map<int, glm::mat4*>*> m_TransformLookUpMap;
+		static std::unordered_map<int, std::unordered_map<int, Frosty::ECS::CTransform*>*> m_TransformLookUpMap;
 
 		struct PointLight
 		{
