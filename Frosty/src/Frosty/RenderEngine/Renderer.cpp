@@ -63,14 +63,16 @@ namespace Frosty
 
 	void Renderer::SubmitText(const std::shared_ptr<Shader>& shader, const std::shared_ptr<VertexArray>& vertexArray, std::string& text)
 	{
-		/*shader->Bind();
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		shader->Bind();
 		vertexArray->Bind();
 
 		glm::mat4 projection = glm::ortho(0.0f, 800.0f, 0.0f, 600.0f);
-		glm::vec3 color = glm::vec3(1.0f, 0.0f, 1.0f);
+		glm::vec3 color = glm::vec3(0.0f, 0.0f, 1.0f);
 
-		shader->UploadUniforMat4("projection", projection);
-		shader->UploadUniformInt("text", 1);
+		shader->UploadUniformMat4("projection", projection);
+		shader->UploadUniformInt("text", 0); //Make sure this number matches the active and sampled texture
 		shader->UploadUniformFloat3("textColor", color);
 
 		std::string::const_iterator c;
@@ -79,7 +81,7 @@ namespace Frosty
 		float scale = 1.0f;
 		glm::vec3 vec = glm::vec3(0.5f, 0.8f, 0.2f);
 		for (c = text.begin(); c != text.end(); c++) {
-			Character ch = Assetmanager::GetAssetmanager()->GetFontMetaData("Gabriola")->GetData()->m_characters.at(*c);
+			Character ch = Frosty::AssetManager::GetTTF("Gabriola")->m_characters.at(*c); //TODO: Switch out for actual font provided by system
 			float xpos = x + ch.bearing.x * scale;
 			float ypos = y - (ch.size.y - ch.bearing.y) * scale;
 			float width = ch.size.x * scale;
@@ -97,30 +99,25 @@ namespace Frosty
 			};
 
 			vertexArray->GetVertexBuffer().front()->Bind();
-			vertexArray->GetVertexBuffer().front()->SetData(*verts, sizeof(verts), GL_DYNAMIC_DRAW);
+			vertexArray->GetVertexBuffer().front()->SetData(*verts, sizeof(verts), Frosty::BufferType::DYNAMIC);
 
-			glActiveTexture(GL_TEXTURE1);
+
+			glActiveTexture(GL_TEXTURE0);
 			glBindTexture(GL_TEXTURE_2D, ch.textureID);
 
-			RenderCommand::Draw2D(vertexArray);
+			RenderCommand::DrawUIText(vertexArray); //Will probably change later
 
 			x += (ch.advance >> 6) * scale;
 		}
 		glBindTexture(GL_TEXTURE_2D, 0);
+
+		shader->UnBind();
 		vertexArray->Unbind();
-		vertexArray->GetVertexBuffer().front()->Unbind();*/
+		glDisable(GL_BLEND);
 	}
 
-	void Renderer::SubmitParticles(const std::shared_ptr<Shader>& shader, const std::shared_ptr<Shader>& computeShader, const std::shared_ptr<VertexArray>& vertexArray, glm::mat4& modelMat, size_t particleCount, float maxLifetime)
+	void Renderer::SubmitParticles(const std::shared_ptr<Shader>& shader, const std::shared_ptr<VertexArray>& vertexArray, glm::mat4& modelMat, size_t particleCount, float maxLifetime)
 	{
-		//computeShader->Bind();
-		//vertexArray->BindShaderStorageBuffer();
-
-		//computeShader->UploadUniformFloat("deltaTime", Frosty::Time::DeltaTime());
-		//computeShader->UploadUniformFloat("maxLifetime", maxLifetime);
-
-		//ComputeCommand::Send(particleCount);
-
 		shader->Bind();
 		vertexArray->Bind();
 
@@ -185,21 +182,25 @@ namespace Frosty
 	}
 
 	//For 2D, might be temp
-	void Renderer::Submit2d(Texture2D* tex,Shader* shader, const std::shared_ptr<VertexArray>& vertexArray, const glm::mat4& transform)
+	void Renderer::Submit2d(Texture2D* tex, const std::shared_ptr<Shader>& shader, const std::shared_ptr<VertexArray>& vertexArray, const glm::mat4& transform)
 	{
+
 		shader->Bind();
-		shader->UploadUniformMat4("u_Transform", transform);
-
-
 		vertexArray->Bind();
+
+		shader->UploadUniformMat4("u_Transform", transform);
 
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
 
-		// Might wanna do this, not sure if needed: RenderCommand::DisableBackfaceCulling();
+		RenderCommand::DisableBackfaceCulling();
 		RenderCommand::Draw2D(vertexArray);
 
 		glDisable(GL_BLEND);
+
+		vertexArray->Unbind();
+		shader->UnBind();
+
 	}
 
 	float dt = 0;

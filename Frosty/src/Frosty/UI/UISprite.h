@@ -2,6 +2,8 @@
 #define UISPRITE_H
 
 #include "Frosty/UI/UIElement.h"
+#include "Frosty/RenderEngine/Renderer.hpp"
+#include "Frosty/RenderEngine/Texture.hpp"
 
 namespace Frosty
 {
@@ -15,6 +17,9 @@ namespace Frosty
 
 		float* m_vertices;
 		uint32_t m_TextureID;
+
+		std::shared_ptr<Texture2D> m_Texture;
+		std::shared_ptr<VertexArray> m_VertArray;
 
 	public:
 		UISprite();

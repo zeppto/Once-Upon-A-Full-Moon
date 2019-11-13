@@ -38,7 +38,7 @@ namespace MCS
 
 			m_ParticleSystem[i]->texture->Bind();
 
-			Frosty::Renderer::SubmitParticles(m_ParticleSystem[i]->shader, m_ParticleSystem[i]->computeShader, m_ParticleSystem[i]->particleVertArray, transform, m_ParticleSystem[i]->particleCount, 2.0f);
+			Frosty::Renderer::SubmitParticles(m_ParticleSystem[i]->shader, m_ParticleSystem[i]->particleVertArray, transform, m_ParticleSystem[i]->particleCount, 2.0f);
 
 			m_ParticleSystem[i]->texture->Unbind();
 		}
@@ -72,7 +72,6 @@ namespace MCS
 			m_ParticleSystem[p_Total]->particleVertArray->AddVertexBuffer(vertBuffer); //Add to array
 
 			m_ParticleSystem[p_Total]->shader = Frosty::AssetManager::GetShader("Particles");
-			//m_ParticleSystem[p_Total]->computeShader = Frosty::AssetManager::GetShader("ParticleCompute");
 			m_ParticleSystem[p_Total]->texture = Frosty::AssetManager::GetTexture2D("particle");
 
 			p_Total++;

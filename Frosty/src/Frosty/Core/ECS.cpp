@@ -24,5 +24,6 @@ namespace Frosty
 		std::string CParticleSystem::NAME = "ParticleSystem";
 		std::string CBoss::NAME = "Boss";
 		std::string CLevelExit::NAME = "Level Exit";
+		std::string CGUI::NAME = "GUI";
 	}
 }
