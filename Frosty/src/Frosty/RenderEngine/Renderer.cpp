@@ -204,7 +204,7 @@ namespace Frosty
 
 	float dt = 0;
 
-	void Renderer::AnimSubmit(ECS::CMaterial* mat, const std::shared_ptr<VertexArray>& vertexArray, const glm::mat4& transform)
+	void Renderer::AnimSubmit(ECS::CMaterial* mat, const std::shared_ptr<VertexArray>& vertexArray, const glm::mat4& transform, ECS::CAnimController * controller)
 	{
 		mat->UseShader->Bind();
 		mat->UseShader->UploadUniformMat4("u_ViewProjection", s_SceneData->GameCamera.ViewProjectionMatrix);
@@ -243,7 +243,7 @@ namespace Frosty
 		vertexArray->Bind();
 		RenderCommand::EnableBackfaceCulling();
 		RenderCommand::Draw2D(vertexArray);
-		dt += Frosty::Time::DeltaTime();
+		dt += Frosty::Time::DeltaTime() * controller->animSpeed;
 	}
 
 }

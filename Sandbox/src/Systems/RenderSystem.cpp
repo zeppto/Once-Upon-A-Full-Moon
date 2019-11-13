@@ -59,7 +59,7 @@ namespace MCS
 
 			if (m_Materials[i]->UseShader->GetName() == "Animation")
 			{
-				Frosty::Renderer::AnimSubmit(m_Materials[i], m_Meshes[i]->Mesh, m_Transform[i]->ModelMatrix);
+				Frosty::Renderer::AnimSubmit(m_Materials[i], m_Meshes[i]->Mesh, m_Transform[i]->ModelMatrix, m_Anims[i]);
 			}
 			else
 			{
@@ -95,6 +95,11 @@ namespace MCS
 			m_Transform[p_Total] = &world->GetComponent<Frosty::ECS::CTransform>(entity);
 			m_Meshes[p_Total] = &world->GetComponent<Frosty::ECS::CMesh>(entity);
 			m_Materials[p_Total] = &world->GetComponent<Frosty::ECS::CMaterial>(entity);
+
+			if (world->HasComponent<Frosty::ECS::CAnimController>(entity))
+			{
+				m_Anims[p_Total] = &world->GetComponent<Frosty::ECS::CAnimController>(entity);
+			}
 
 			p_Total++;
 		}

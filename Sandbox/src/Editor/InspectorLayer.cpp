@@ -104,7 +104,7 @@ namespace MCS
 					if (world->HasComponent<Frosty::ECS::CHealthBar>(m_SelectedEntity)) toggles[11] = true;
 					if (world->HasComponent<Frosty::ECS::CParticleSystem>(m_SelectedEntity)) toggles[12] = true;
 					if (world->HasComponent<Frosty::ECS::CBoss>(m_SelectedEntity)) toggles[13] = true;
-					if (world->HasComponent<Frosty::ECS::CAnimController>(m_SelectedEntity)) toggles[14] = true;
+					if (world->HasComponent<Frosty::ECS::CAnimController>(m_SelectedEntity)) toggles[16] = true;
 				}
 
 				// Information
@@ -204,6 +204,12 @@ namespace MCS
 							world->AddComponent<Frosty::ECS::CBoss>(m_SelectedEntity);
 						else
 							world->RemoveComponent<Frosty::ECS::CBoss>(m_SelectedEntity);
+					}
+					if (ImGui::MenuItem("Anim Controller", "", &toggles[16])) {
+						if (!world->HasComponent<Frosty::ECS::CAnimController>(m_SelectedEntity))
+							world->AddComponent<Frosty::ECS::CAnimController>(m_SelectedEntity);
+						else
+							world->RemoveComponent<Frosty::ECS::CAnimController>(m_SelectedEntity);
 					}
 					ImGui::EndPopup();
 				}
@@ -807,6 +813,15 @@ namespace MCS
 						ImGui::BeginChild("Boss", ImVec2(EDITOR_INSPECTOR_WIDTH, 45), true);
 						ImGui::InputFloat("Distraction Time", &comp.DistractionTime, 1, 10, 0);
 						ImGui::EndChild();
+					}
+				}
+
+				if (world->HasComponent<Frosty::ECS::CAnimController>(m_SelectedEntity))
+				{
+					Frosty::ECS::CAnimController& comp = world->GetComponent<Frosty::ECS::CAnimController>(m_SelectedEntity);
+					if (ImGui::CollapsingHeader("Animation Controller"))
+					{
+						ImGui::SliderFloat("AnimSpeed", &comp.animSpeed, -100.f, 100.f);
 					}
 				}
 
