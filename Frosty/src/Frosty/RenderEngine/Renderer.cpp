@@ -68,7 +68,9 @@ namespace Frosty
 		shader->Bind();
 		vertexArray->Bind();
 
-		glm::mat4 projection = glm::ortho(0.0f, 800.0f, 0.0f, 600.0f);
+		float width = 1280.0f;
+		float height = 720.0f;
+		glm::mat4 projection = glm::ortho(0.0f, width, 0.0f, height);
 
 		shader->UploadUniformMat4("projection", projection);
 		shader->UploadUniformInt("text", 0); //Make sure this number matches the active and sampled texture

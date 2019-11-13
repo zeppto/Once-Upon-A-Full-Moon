@@ -159,7 +159,7 @@ namespace MCS
 		auto& GUI = world->CreateEntity();
 		Frosty::UILayout uiLayout(3, 1);
 		uiLayout.AddText(glm::vec2(25.0f, 20.0f), "Hello team");
-		uiLayout.AddText(glm::vec2(20.0f, 550.0f), "uwu", glm::vec3(1.0f, 0.0f, 1.0f), 0.25f);
+		uiLayout.AddText(glm::vec2(20.0f, 700.0f), "uwu", glm::vec3(1.0f, 0.0f, 1.0f), 0.25f);
 		uiLayout.AddText(glm::vec2(25.0f, 220.0f), "1234!", glm::vec3(0.5f, 0.1f, 0.9f), 1.5f);
 		world->AddComponent<Frosty::ECS::CGUI>(GUI, uiLayout);
 		
