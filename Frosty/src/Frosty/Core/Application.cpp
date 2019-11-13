@@ -333,7 +333,7 @@ namespace Frosty
 				//Check
 
 
-				bool topRight = ptr->CheckCollition(glm::vec3(127.9f,1.0f,71.9f));
+				bool topRight = ptr->CheckCollition(glm::vec3(128.0f,1.0f,72.0f));
 
 				bool botLeft = ptr->CheckCollition(glm::vec3(0.0f,1.0f, 0.0f));
 
@@ -343,9 +343,15 @@ namespace Frosty
 
 				bool botLeft3 = ptr->CheckCollition(glm::vec3(0.999f,1.0f, 0.0f));
 
-				bool botLeft4 = ptr->CheckCollition(glm::vec3(1.01f,1.0f, 0.0f));
+				bool botLeft4 = ptr->CheckCollition(glm::vec3(1.001f,1.0f, 0.0f));
 
-				bool botLeft5 = ptr->CheckCollition(glm::vec3(1.1f,1.0f, 0.0f));
+				bool botLeft5 = ptr->CheckCollition(glm::vec3(1.0f,1.0f, 0.0f));
+
+				bool botLeft6 = ptr->CheckCollition(glm::vec3(0.999f,1.0f, 0.0f));
+
+				bool botLeft7 = ptr->CheckCollition(glm::vec3(1.1f,1.0f, 0.0f));
+
+				bool botLeft8 = ptr->CheckCollition(glm::vec3(1.099f,1.0f, 0.0f));
 
 
 				bool botRight = ptr->CheckCollition(glm::vec3(128.0f,1.0f,0.0f));
