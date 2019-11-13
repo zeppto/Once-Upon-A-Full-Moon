@@ -1,18 +1,16 @@
-#ifndef HEALTH_BAR_SYSTEM_HPP
-#define HEALTH_BAR_SYSTEM_HPP
-#include "Frosty.h"
-#include"Frosty/API/AssetManager/AssetManager.hpp"
+#ifndef GUI_SYSTEM_HPP
+#define GUI_SYSTEM_HPP
 
 namespace MCS
 {
-	class HealthBarSystem : public Frosty::ECS::BaseSystem
+	class GUISystem : public Frosty::ECS::BaseSystem
 	{
 	public:
 		const static std::string NAME;
 
 	public:
-		HealthBarSystem() = default;
-		virtual ~HealthBarSystem() = default;
+		GUISystem() = default;
+		virtual ~GUISystem() = default;
 
 		virtual void Init() override;
 		virtual void OnUpdate() override;
@@ -25,9 +23,8 @@ namespace MCS
 
 	private:
 		std::array<Frosty::ECS::CTransform*, Frosty::ECS::MAX_ENTITIES_PER_COMPONENT> m_Transform;
-		std::array<Frosty::ECS::CHealth*, Frosty::ECS::MAX_ENTITIES_PER_COMPONENT> m_Health;
-		std::array<Frosty::ECS::CHealthBar*, Frosty::ECS::MAX_ENTITIES_PER_COMPONENT> m_HealthBar;
-
+		std::array<Frosty::ECS::CGUI*, Frosty::ECS::MAX_ENTITIES_PER_COMPONENT> m_GUI;
 	};
 }
-#endif // !HEALTH_BAR_SYSTEM_HPP
+
+#endif // !GUI_SYSTEM_HPP

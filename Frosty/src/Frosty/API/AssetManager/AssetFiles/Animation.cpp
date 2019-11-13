@@ -48,6 +48,8 @@ namespace Frosty
 		nrOfJoints = MAX_BONES;
 	}
 	
+#define Fbx2Hmm(from,to) { for (int ce=0; ce < 16; ce++) to[ce/4][ce%4] = from[ce/4][ce%4]; }
+
 	void Animation::CalculateAnimMatrix(float* currentAnimTime)
 	{
 		float duration = m_Animation.duration;
@@ -72,8 +74,6 @@ namespace Frosty
 
 		glm::mat4 bone_global_pose[MAX_BONES] = { glm::mat4(1.0) };
 
-		///*glm::vec4 k2Trans = { keyVec[k2].translation[0] ,keyVec[k2].translation[1] ,keyVec[k2].translation[2] ,keyVec[k2].translation[3] };*/
-
 		//TODO: All the make_ calls should be done before this function.
 		//Ideally keyVec[k1].translation and the others would already be parsed correctly.
 		glm::vec4 k1Trans_r = glm::make_vec4(keyVec[k1].translation);
@@ -97,30 +97,30 @@ namespace Frosty
 		glm::mat4 idMat_r = glm::mat4(1.0f);
 		glm::mat4 transMat_r = glm::translate(idMat_r, translation_r);
 		glm::mat4 scaleMat_r = glm::scale(idMat_r, scaling_r);
-		glm::quat wat = glm::vec3(0, 0, 0);
-		glm::mat4 rotMat_r = glm::mat4_cast(wat);
+		glm::mat4 rotMat_r = glm::mat4_cast(quaternion_r);
 		// Put it in the list.
 
-		/////
-		float bindPose[16] = { 0 };
+		glm::mat4 local_r = transMat_r * rotMat_r * scaleMat_r;
 
 		for (int i = 0; i < 4; i++)
 		{
-			for (int j = 0; j < 4; j++)
-			{
-				bindPose[i * 4 + j] = m_Joints[0].invBindposeMatrix[i][j];
-			}
+			float arr[4];
+			arr[0] = local_r[i][0];
+			arr[1] = local_r[i][1];
+			arr[2] = local_r[i][2];
+			arr[3] = local_r[i][3];
+
+			arr[0] = 0;
 		}
 
-		bone_global_pose[0] = transMat_r * rotMat_r * scaleMat_r;
+	/*	glm::mat4 local_r;
+		Fbx2Hmm(temp,local_r);*/
 
-		//glm::mat4 invBindPose_r = glm::make_mat4(&jointVec[0].invBindposeMatrix[0][0]);
-		glm::mat4 invBindPose_r = glm::make_mat4(bindPose);
+		glm::mat4 invBindPose_r = glm::make_mat4(&m_Joints[0].invBindposeMatrix[0][0]);
 
-		m_SkinData.jTrans[0] = bone_global_pose[0] * invBindPose_r;
-		//skinData.jTrans[1] = bone_global_pose[0] * invBindPose_r;
-		//skinData.jTrans[2] = bone_global_pose[0] * invBindPose_r;
-		//skinData.jTrans[3] = bone_global_pose[0] * invBindPose_r;
+		m_SkinData.jTrans[0] = local_r * invBindPose_r;
+
+		bone_global_pose[0] = local_r;
 
 		for (int i = 1; i < m_Joints.size(); i++)
 		{
@@ -150,23 +150,12 @@ namespace Frosty
 			glm::mat4 scaleMat = glm::scale(idMat, scaling);
 			glm::mat4 rotMat = glm::mat4_cast(quaternion);
 			//Put it in the list.
-			bone_global_pose[i] = transMat * rotMat * scaleMat;
+			glm::mat4 local = transMat * rotMat * scaleMat;
 
-			float bindPose2[16] = { 0 };
+			glm::mat4 invBindPose = glm::make_mat4(&m_Joints[i].invBindposeMatrix[0][0]);
 
-			for (int i = 0; i < 4; i++)
-			{
-				for (int j = 0; j < 4; j++)
-				{
-					bindPose2[i * 4 + j] = m_Joints[i].invBindposeMatrix[i][j];
-				}
-			}
-
-			//glm::mat4 invBindPose = glm::make_mat4(&jointVec[i].invBindposeMatrix[0][0]);
-			glm::mat4 invBindPose = glm::make_mat4(bindPose2);
-
-			bone_global_pose[i] = bone_global_pose[m_Joints[i].parentID] * bone_global_pose[i];
-			m_SkinData.jTrans[i] = bone_global_pose[i] * invBindPose;
+			bone_global_pose[i] = bone_global_pose[m_Joints[i].parentID] * local;
+			m_SkinData.jTrans[i] =  bone_global_pose[i] * invBindPose;
 		}
 	}
 
@@ -254,9 +243,19 @@ bool Animation::DeleteFromGPU()
 
 void Animation::prepRotation(float arr[4])
 {
-	float temp = arr[3];
-	arr[3] = arr[0];
-	arr[0] = temp;
+	//float temp = arr[3];
+	//arr[3] = arr[0];
+	//arr[0] = temp;
+	float corr[4] = { 0 };
+	corr[0] = arr[3];
+	corr[1] = arr[0];
+	corr[2] = arr[1];
+	corr[3] = arr[2];
+
+	for (int i = 0; i < 4; i++)
+	{
+		arr[i] = corr[i];
+	}
 }
 
 }

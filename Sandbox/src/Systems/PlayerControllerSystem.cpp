@@ -386,6 +386,6 @@ namespace MCS
 				m_Inventory[index]->BaitTimer = Frosty::Time::CurrentTime();
 			}
 		}
-#pragma endregion Speed Boots
+#pragma endregion Bait
 	}
 }

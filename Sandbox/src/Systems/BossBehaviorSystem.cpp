@@ -29,7 +29,7 @@ namespace MCS
 					{
 						//Follow player
 						m_Follow[i]->Target = &world->GetComponent<Frosty::ECS::CTransform>(m_Boss[i]->TargetList.at(m_Boss[i]->TargetList.size() - 1));
-						m_Follow[i]->StopDistance = 1;
+						m_Follow[i]->StopDistance = 1.0f;
 					}
 					else
 					{
@@ -40,7 +40,7 @@ namespace MCS
 
 						m_Follow[i]->Target = &world->GetComponent<Frosty::ECS::CTransform>(m_Boss[i]->TargetList.at(0));
 						m_Boss[i]->Hunting = true;
-						m_Follow[i]->StopDistance = 0.1;
+						m_Follow[i]->StopDistance = 0.1f;
 					}
 				}
 
@@ -164,24 +164,11 @@ namespace MCS
 	{
 		for (size_t i = 1; i < p_Total; i++)
 		{
-			size_t index = p_EntityMap[e.GetEntity()];			// Why is this needed? If needed talk to Leona
 			auto& entity = e.GetEntity();
 
-
 			auto& world = Frosty::Application::Get().GetWorld();
-
-
-			if (m_Boss[i]->TargetList.size() > 0)
-			{
-				//Last pos is for player
-				m_Boss[i]->TargetList.emplace(m_Boss[i]->TargetList.end() - 1, entity);
-			}
-			else
-			{
-				//Temp?
-				m_Boss[i]->TargetList.emplace(m_Boss[i]->TargetList.end(), entity);
-
-			}
+			
+			m_Boss[i]->TargetList.emplace(m_Boss[i]->TargetList.end() - 1, entity);
 
 			//Follow the nearest bait
 			int ShortestID = FindClosestBait(m_Transform[i]->Position, m_Boss[i]->TargetList);
@@ -190,7 +177,7 @@ namespace MCS
 
 			m_Follow[i]->Target = &world->GetComponent<Frosty::ECS::CTransform>(m_Boss[i]->TargetList.at(0));
 			m_Boss[i]->Hunting = true;
-			m_Follow[i]->StopDistance = 0.1;
+			m_Follow[i]->StopDistance = 0.1f;
 
 		}
 	}

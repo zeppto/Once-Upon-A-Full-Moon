@@ -20,8 +20,9 @@
 #include "Systems/NavigationSystem.hpp"
 #include "Systems/ParticleSystem.hpp"
 #include "Systems/LevelSystem.hpp"
-//#include "Systems/HealthBarSystem.hpp"
+#include "Systems/HealthBarSystem.hpp"
 #include "Systems/BossBehaviorSystem.hpp"
+#include "Systems/GUISystem.hpp"
 
 
 //#include "LevelHandeler/LevelFileFormat.hpp"
@@ -46,11 +47,14 @@ namespace MCS
 		world->AddSystem<CombatSystem>();
 		world->AddSystem<DestroySystem>();
 		world->AddSystem<WeaponSystem>();
+		world->AddSystem<HealthBarSystem>();
 		Frosty::ECS::BaseSystem* retSystem = world->AddSystem<NavigationSystem>();
 		NavigationSystem* navSystem = dynamic_cast<NavigationSystem*>(retSystem);
-		//world->AddSystem<HealthBarSystem>();
-		world->AddSystem<ParticleSystem>();
+		world->AddSystem<HealthBarSystem>();
+		retSystem = world->AddSystem<ParticleSystem>();
+		ParticleSystem* particleSystem = dynamic_cast<ParticleSystem*>(retSystem);
 		world->AddSystem<BossBehaviorSystem>();
+		world->AddSystem<GUISystem>();
 
 		//MapGenerator map;
 		//map.generateMap();
@@ -80,6 +84,7 @@ namespace MCS
 		//}
 
 		world->Awake();
+		particleSystem->AttachGameCamera(&world->GetComponent<Frosty::ECS::CTransform>(world->GetSceneCamera()));
 		
 		//auto& plane = world->CreateEntity({ 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 100.0f, 1.0f, 100.0f });
 		//world->AddComponent<Frosty::ECS::CMesh>(plane, Frosty::AssetManager::GetMesh("pPlane1"));
@@ -116,6 +121,7 @@ namespace MCS
 		world->AddComponent<Frosty::ECS::CWeapon>(player, Frosty::ECS::CWeapon::WeaponType::Arrow, 10.f);
 		world->AddComponent<Frosty::ECS::CHealth>(player);
 		world->AddComponent<Frosty::ECS::CInventory>(player);
+		world->AddComponent<Frosty::ECS::CHealthBar>(player, glm::vec3(0.0f, 10.0f, 0.0f));
 		auto& camEntity = world->GetSceneCamera();
 		world->GetComponent<Frosty::ECS::CCamera>(camEntity).Target = &playerTransform;
 

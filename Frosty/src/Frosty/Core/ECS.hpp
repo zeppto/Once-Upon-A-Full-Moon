@@ -6,6 +6,9 @@
 #include "Frosty/Core/KeyCodes.h"
 #include "Frosty/Core/MouseButtonCodes.h"
 
+#include "Frosty/UI/UIText.h"
+#include "Frosty/UI/UISprite.h"
+
 #include <Luna/include/Luna.h>
 
 namespace Frosty
@@ -86,14 +89,14 @@ namespace Frosty
 #pragma region Settings
 
 		// Let's define a maximum number of unique components:
-		constexpr std::size_t MAX_COMPONENTS{ 19 };
+		constexpr std::size_t MAX_COMPONENTS{ 20 };
 
 		// Let's define a maximum number of entities that
 		// can have the same component type:
 		constexpr std::size_t MAX_ENTITIES_PER_COMPONENT{ 1024 };
 
 		// Defining the maximum nr of systems
-		constexpr std::size_t MAX_SYSTEMS{ 19 };
+		constexpr std::size_t MAX_SYSTEMS{ 20 };
 
 #pragma endregion Settings
 
@@ -713,7 +716,8 @@ namespace Frosty
 				Particle() = default;
 				Particle(glm::vec4 color)
 					: color(color) {};
-				bool operator<(Particle& that) { // Sort in reverse order, far particles drawn first
+				bool operator<(Particle& that) // Sort in reverse order, far particles drawn first
+				{
 					return this->camDistance > that.camDistance;
 				}
 			};
@@ -736,6 +740,8 @@ namespace Frosty
 			glm::vec3 particleSystemColor = glm::vec3(1.0f);
 			float emitRate = 0.1f;
 			uint32_t emitCount = 1;
+			float maxLifetime = 3.0f; //All particles
+			float fadeTreshold = 0.0f; //No fade
 			bool preview = false;
 			float timer = 0.0f;
 
@@ -746,7 +752,6 @@ namespace Frosty
 
 			std::shared_ptr<VertexArray> particleVertArray;
 			std::shared_ptr<Shader> shader;
-			std::shared_ptr<Shader> computeShader;
 			std::shared_ptr<Texture2D> texture;
 
 			CParticleSystem() = default;
@@ -763,24 +768,6 @@ namespace Frosty
 			}
 
 			CParticleSystem(const CParticleSystem& org) { FY_CORE_ASSERT(false, "Copy constructor in CParticleSystem called."); }
-
-			void SetParticlesColor(float r, float g, float b)
-			{
-				for (uint32_t i = 0; i < MAX_PARTICLE_COUNT; i++)
-				{
-					particles[i].color.r = r;
-					particles[i].color.g = g;
-					particles[i].color.b = b;
-				}
-			}
-
-			void SetParticlesSize(float size)
-			{
-				for (uint32_t i = 0; i < MAX_PARTICLE_COUNT; i++)
-				{
-					particles[i].startSize = size;
-				}
-			}
 
 			virtual std::string GetName() const { return NAME; }
 		};
@@ -815,6 +802,22 @@ namespace Frosty
 			virtual std::string GetName() const { return NAME; }
 		};
 
+		struct CGUI : public BaseComponent
+		{
+			static std::string NAME;
+
+			CGUI() = default;
+
+			std::vector<UIText> texts;
+			std::vector<UISprite> sprites;
+
+			std::shared_ptr<Shader> textShader;
+			std::shared_ptr<Shader> spriteShader;
+
+			CGUI(const CGUI& org) { FY_CORE_ASSERT(false, "Copy constructor in CGUI called."); }
+			virtual std::string GetName() const { return NAME; }
+		};
+
 		static std::string GetComponentName(size_t i)
 		{
 			switch (i)
@@ -838,6 +841,7 @@ namespace Frosty
 			case 16:	return "ParticleSystem";
 			case 17:	return "Boss";
 			case 18:	return "LevelExit";
+			case 19:	return "GUI";
 			default:	return "";
 			}
 		}

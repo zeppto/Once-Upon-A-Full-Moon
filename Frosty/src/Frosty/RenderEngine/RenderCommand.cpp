@@ -42,6 +42,11 @@ namespace Frosty
 
 	void RenderCommand::DrawParticles(const std::shared_ptr<VertexArray>& vertexArray, size_t count)
 	{
-		glDrawArrays(GL_POINTS, 0, count);
+		glDrawArrays(GL_POINTS, 0, (GLsizei)count);
+	}
+
+	void RenderCommand::DrawUIText(const std::shared_ptr<VertexArray>& vertexArray)
+	{
+		glDrawArrays(GL_TRIANGLES, 0, 6);
 	}
 }
