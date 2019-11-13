@@ -38,7 +38,7 @@ namespace MCS
 
 			m_ParticleSystem[i]->texture->Bind();
 
-			Frosty::Renderer::SubmitParticles(m_ParticleSystem[i]->shader, m_ParticleSystem[i]->computeShader, m_ParticleSystem[i]->particleVertArray, transform, m_ParticleSystem[i]->particleCount, 2.0f);
+			Frosty::Renderer::SubmitParticles(m_ParticleSystem[i]->shader, m_ParticleSystem[i]->particleVertArray, transform, m_ParticleSystem[i]->particleCount, 2.0f);
 
 			m_ParticleSystem[i]->texture->Unbind();
 		}

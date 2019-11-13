@@ -752,7 +752,6 @@ namespace Frosty
 
 			std::shared_ptr<VertexArray> particleVertArray;
 			std::shared_ptr<Shader> shader;
-			std::shared_ptr<Shader> computeShader;
 			std::shared_ptr<Texture2D> texture;
 
 			CParticleSystem() = default;
