@@ -42,7 +42,10 @@ namespace MCS
 			if (m_Materials[i]->UseShader->GetName() == "Texture2D" && m_Materials[i]->SpecularTexture) m_Materials[i]->SpecularTexture->Bind(2);
 
 			if (m_Materials[i]->UseShader->GetName() == "Animation" && m_Materials[i]->DiffuseTexture)m_Materials[i]->DiffuseTexture->Bind(0);
-			if (m_Materials[i]->UseShader->GetName() == "Animation" && m_Materials[i]->NormalTexture) m_Materials[i]->NormalTexture->Bind(1);
+			if (m_Materials[i]->UseShader->GetName() == "Animation" && m_Materials[i]->NormalTexture)
+			{
+				m_Materials[i]->NormalTexture->Bind(1);
+			}
 			if (m_Materials[i]->UseShader->GetName() == "Animation" && m_Materials[i]->SpecularTexture) m_Materials[i]->SpecularTexture->Bind(2);
 
 			if (m_Materials[i]->UseShader->GetName() == "UI" && m_Materials[i]->DiffuseTexture) m_Materials[i]->DiffuseTexture->Bind(0);

@@ -478,6 +478,129 @@ namespace MCS
 							ImGui::Text("Texture");
 						}
 
+						if (comp.UseShader->GetName() == "Animation")
+						{
+							// Diffuse // 
+							ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(10, 10));
+							//uint32_t selDiffuseID = 0;
+							//comp.DiffuseTexture ? selDiffuseID = comp.DiffuseTexture->GetRenderID() : selDiffuseID = Frosty::AssetManager::GetTexture2D("Checkerboard")->GetRenderID();
+							ImGui::Image(comp.DiffuseTexture ? comp.DiffuseTexture->GetRenderID() : Frosty::AssetManager::GetTexture2D("Checkerboard")->GetRenderID(), ImVec2(64, 64));
+							ImGui::PopStyleVar();
+							if (ImGui::IsItemClicked()) ImGui::OpenPopup("diffuse_texture_selector");
+							ImGui::SetNextWindowSize(ImVec2(160, 370));
+							if (ImGui::BeginPopupModal("diffuse_texture_selector", NULL))
+							{
+								size_t index = 0;
+								ImGuiTreeNodeFlags node_flags = ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen; // ImGuiTreeNodeFlags_Bullet
+								uint32_t diffuseID = 0;
+								int nrOfCols = 2;
+								int col = 0;
+
+								for (auto& texture : Frosty::AssetManager::GetTextures2D())
+								{
+									ImGui::SetCursorPos(ImVec2((col % nrOfCols) * 66.0f, ImGui::GetCursorPosY() - (col % nrOfCols) * 68.0f));
+									col++;
+									ImGui::Image(texture.second->GetRenderID(), ImVec2(64, 64));
+									if (ImGui::IsItemClicked())
+									{
+										if (texture.first == "Checkerboard")
+										{
+											comp.DiffuseTexture->Unbind();
+											comp.DiffuseTexture.reset();
+										}
+										else
+										{
+											comp.DiffuseTexture = texture.second;
+										}
+									}
+								}
+
+								if (ImGui::Button("Close")) ImGui::CloseCurrentPopup();
+								ImGui::EndPopup();
+							}
+							ImGui::SameLine();
+							ImGui::Text("Diffuse");
+
+							// Specular // 
+							ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 10.f);
+							ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(10, 10));
+							ImGui::Image(comp.SpecularTexture ? comp.SpecularTexture->GetRenderID() : Frosty::AssetManager::GetTexture2D("Checkerboard")->GetRenderID(), ImVec2(64, 64));
+							ImGui::PopStyleVar();
+							if (ImGui::IsItemClicked()) ImGui::OpenPopup("specular_texture_selector");
+							if (ImGui::BeginPopupModal("specular_texture_selector", NULL))
+							{
+								size_t index = 0;
+								ImGuiTreeNodeFlags node_flags = ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen; // ImGuiTreeNodeFlags_Bullet
+								uint32_t glossID = 0;
+								int nrOfCols = 2;
+								int col = 0;
+
+								for (auto& texture : Frosty::AssetManager::GetTextures2D())
+								{
+									ImGui::SetCursorPos(ImVec2((col % nrOfCols) * 66.0f, ImGui::GetCursorPosY() - (col % nrOfCols) * 68.0f));
+									col++;
+									ImGui::Image(texture.second->GetRenderID(), ImVec2(64, 64));
+									if (ImGui::IsItemClicked())
+									{
+										if (texture.first == "Checkerboard")
+										{
+											comp.SpecularTexture->Unbind();
+											comp.SpecularTexture.reset();
+										}
+										else
+										{
+											comp.SpecularTexture = texture.second;
+										}
+									}
+								}
+
+								if (ImGui::Button("Close")) ImGui::CloseCurrentPopup();
+								ImGui::EndPopup();
+							}
+							ImGui::SameLine();
+							ImGui::Text("Specular");
+							ImGui::SliderInt("Shininess", &comp.Shininess, 2, 256);
+
+							// Normal // 
+							ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 10.f);
+							ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(10, 10));
+							ImGui::Image(comp.NormalTexture ? comp.NormalTexture->GetRenderID() : Frosty::AssetManager::GetTexture2D("Checkerboard")->GetRenderID(), ImVec2(64, 64));
+							ImGui::PopStyleVar();
+							if (ImGui::IsItemClicked()) ImGui::OpenPopup("normal_texture_selector");
+							if (ImGui::BeginPopupModal("normal_texture_selector", NULL))
+							{
+								size_t index = 0;
+								ImGuiTreeNodeFlags node_flags = ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen; // ImGuiTreeNodeFlags_Bullet
+								uint32_t normalID = 0;
+								int nrOfCols = 2;
+								int col = 0;
+
+								for (auto& texture : Frosty::AssetManager::GetTextures2D())
+								{
+									ImGui::SetCursorPos(ImVec2((col % nrOfCols) * 66.0f, ImGui::GetCursorPosY() - (col % nrOfCols) * 68.0f));
+									col++;
+									ImGui::Image(texture.second->GetRenderID(), ImVec2(64, 64));
+									if (ImGui::IsItemClicked())
+									{
+										if (texture.first == "Checkerboard")
+										{
+											comp.NormalTexture->Unbind();
+											comp.NormalTexture.reset();
+										}
+										else
+										{
+											comp.NormalTexture = texture.second;
+										}
+									}
+								}
+
+								if (ImGui::Button("Close")) ImGui::CloseCurrentPopup();
+								ImGui::EndPopup();
+							}
+							ImGui::SameLine();
+							ImGui::Text("Normal");
+						}
+
 						// Add more parameters like texture etc
 						ImGui::EndChild();
 					}

@@ -109,7 +109,7 @@ namespace Frosty
 		s_Shaders.emplace("BlendShader", FY_NEW Shader("assets/shaders/BlendShaderVertex.glsl", "assets/shaders/BlendShaderFragment.glsl", "BlendShader"));
 		s_Shaders.emplace("UI", FY_NEW Shader("assets/shaders/UIVertex.glsl", "assets/shaders/UIFragment.glsl", "UI"));
 		s_Shaders.emplace("Particles", FY_NEW Shader("assets/shaders/ParticleVertex.glsl", "assets/shaders/ParticleGeometry.glsl", "assets/shaders/ParticleFragment.glsl", "Particles"));
-		s_Shaders.emplace("Animation", FY_NEW Shader("assets/shaders/AnimationVS.glsl", "assets/shaders/AnimationFS.glsl", "Animation"));
+		s_Shaders.emplace("Animation", FY_NEW Shader("assets/shaders/AnimationVS.glsl", "assets/shaders/Texture2DFragment.glsl", "Animation"));
 
 		//Don't try to apply a compute shader as a material! This might have to be separate from normal shaders just to avoid confusion.
 		s_Shaders.emplace("ParticleCompute", FY_NEW Shader("assets/shaders/ParticleCompute.glsl", "ParticleCompute"));
@@ -125,8 +125,8 @@ namespace Frosty
 		s_Shaders["Animation"]->Bind();
 
 		s_Shaders["Animation"]->UploadUniformInt("u_DiffuseTexture", 0);
-		s_Shaders["Animation"]->UploadUniformInt("u_GlossTexture", 1);
-		s_Shaders["Animation"]->UploadUniformInt("u_NormalTexture", 2);
+		s_Shaders["Animation"]->UploadUniformInt("u_NormalTexture", 1);
+		s_Shaders["Animation"]->UploadUniformInt("u_SpecularTexture", 2);
 
 		s_Shaders["BlendShader"]->Bind();
 		s_Shaders["BlendShader"]->UploadUniformInt("u_DiffuseTexture", 0);

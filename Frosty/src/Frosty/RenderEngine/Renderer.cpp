@@ -211,6 +211,28 @@ namespace Frosty
 		mat->UseShader->UploadUniformMat4("u_Transform", transform);
 		mat->UseShader->AssignUniformBlock("a_jointDataBlock");
 
+		mat->UseShader->UploadUniformFloat3("u_CameraPosition", s_SceneData->GameCamera.CameraPosition);
+		mat->UseShader->UploadUniformInt("u_Shininess", mat->Shininess);
+
+		// Point Lights
+		mat->UseShader->UploadUniformInt("u_TotalPointLights", (int)s_SceneData->PointLights.size());
+		for (size_t i = 0; i < s_SceneData->PointLights.size(); i++)
+		{
+			mat->UseShader->UploadUniformFloat3Array("u_PointLights[" + std::to_string(i) + "].Color", s_SceneData->PointLights[i].Color);
+			mat->UseShader->UploadUniformFloat3Array("u_PointLights[" + std::to_string(i) + "].Position", s_SceneData->PointLights[i].Position);
+			mat->UseShader->UploadUniformFloatArray("u_PointLights[" + std::to_string(i) + "].Radius", s_SceneData->PointLights[i].Radius);
+			mat->UseShader->UploadUniformFloatArray("u_PointLights[" + std::to_string(i) + "].Strength", s_SceneData->PointLights[i].Strength);
+		}
+
+		// Directional Lights
+		mat->UseShader->UploadUniformInt("u_TotalDirectionalLights", (int)s_SceneData->DirectionalLights.size());
+		for (size_t i = 0; i < s_SceneData->DirectionalLights.size(); i++)
+		{
+			mat->UseShader->UploadUniformFloat3Array("u_DirectionalLights[" + std::to_string(i) + "].Color", s_SceneData->DirectionalLights[i].Color);
+			mat->UseShader->UploadUniformFloat3Array("u_DirectionalLights[" + std::to_string(i) + "].Direction", s_SceneData->DirectionalLights[i].Direction);
+			mat->UseShader->UploadUniformFloatArray("u_DirectionalLights[" + std::to_string(i) + "].Strength", s_SceneData->DirectionalLights[i].Strength);
+		}
+
 		void* skinDataPtr = nullptr;
 		int nrOfBones = 0;
 		AssetManager::GetAnimation(vertexArray->GetCurrentAnim().animationName)->CalculateAnimMatrix(&dt);
@@ -219,7 +241,7 @@ namespace Frosty
 		vertexArray->GetUniformBuffer()->BindUpdate(skinDataPtr, nrOfBones);
 
 		vertexArray->Bind();
-		/*RenderCommand::EnableBackfaceCulling();*/
+		RenderCommand::EnableBackfaceCulling();
 		RenderCommand::Draw2D(vertexArray);
 		dt += Frosty::Time::DeltaTime();
 	}
