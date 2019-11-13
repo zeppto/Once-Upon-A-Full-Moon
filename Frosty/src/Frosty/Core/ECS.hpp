@@ -659,8 +659,6 @@ namespace Frosty
 
 			glm::mat4 hpTransform{ 1.0f };
 
-			float pivot;
-
 			CHealthBar() = default;
 			CHealthBar(glm::vec3 barOffset) : BarOffset(barOffset) { }
 			CHealthBar(glm::vec3 barOffset, std::shared_ptr<VertexArray> mesh, std::shared_ptr<Shader> shader, std::shared_ptr<Texture2D> tex)

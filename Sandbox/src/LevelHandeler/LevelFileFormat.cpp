@@ -31,6 +31,7 @@ void LevelFileFormat::AddEntity(const std::shared_ptr<Frosty::ECS::Entity>& enti
 			myComponents.myTransform.Position = tranform.Position;
 			myComponents.myTransform.Rotation = tranform.Rotation;
 			myComponents.myTransform.Scale = tranform.Scale;
+			myComponents.myTransform.IsStatic = tranform.IsStatic;
 		}
 		else
 			myComponents.MyComponents.at(0).HaveComponent = false;
@@ -360,7 +361,12 @@ void LevelFileFormat::OpenFromFile(std::string fileName, Frosty::ECS::CTransform
 					if (j == 8)
 					{
 						existingFile.read((char*)& fileEntitys.myEntitys.at(i).myHealthBar, sizeof(Level_HealthBar));
-						//not in use for now
+						auto& healthBar = m_World->AddComponent<Frosty::ECS::CHealthBar>(entity);
+						healthBar.BarOffset = fileEntitys.myEntitys.at(i).myHealthBar.BarOffset;
+						healthBar.hpTransform = fileEntitys.myEntitys.at(i).myHealthBar.HpTransform;
+						healthBar.Mesh = Frosty::AssetManager::GetMesh(fileEntitys.myEntitys.at(i).myHealthBar.MeshName);
+						healthBar.Texture = Frosty::AssetManager::GetTexture2D(fileEntitys.myEntitys.at(i).myHealthBar.TextureName);
+						healthBar.UseShader = Frosty::AssetManager::GetShader(fileEntitys.myEntitys.at(i).myHealthBar.UseShaderName);
 					}
 						//9 = ParticleSystem
 					if (j == 9)
