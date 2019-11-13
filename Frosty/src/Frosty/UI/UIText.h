@@ -20,20 +20,22 @@ namespace Frosty
 		std::string m_Text;
 		std::string m_Font;
 		uint16_t m_FontSize;
+		glm::vec2 m_Position;
 
-		std::shared_ptr<Texture2D> m_Texture;
 		std::shared_ptr<VertexArray> m_VertArray;
 
 	public:
-		UIText(std::string text = "test", std::string font = "Gabriola", uint16_t fontSize = 32);
+		UIText(glm::vec2 position = glm::vec2(0.0f), std::string text = "test", std::string font = "Gabriola", uint16_t fontSize = 32);
 		~UIText();
+		UIText(const UIText& that);
 
-		const std::shared_ptr<VertexArray>& GetVertexArray() { return m_VertArray; };
-		std::string GetText() const { return m_Text; };
-		const std::shared_ptr<Texture2D>& GetTexture() { return m_Texture; };
+		const std::shared_ptr<VertexArray>& GetVertexArray() { return m_VertArray; }
+		std::string GetText() const { return m_Text; }
+		const glm::vec2& GetPosition() { return m_Position; }
 
-		void SetText(std::string text) { m_Text = text; };
-		void SetFont(std::string font) { m_Font = font; };
+		void SetText(std::string text) { m_Text = text; }
+		void SetFont(std::string font) { m_Font = font; }
+		void SetPosition(glm::vec2 position) { m_Position = position; }
 
 	private:
 

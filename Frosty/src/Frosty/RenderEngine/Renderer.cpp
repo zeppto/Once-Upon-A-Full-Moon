@@ -61,7 +61,7 @@ namespace Frosty
 		s_SceneData->DirectionalLights.emplace_back(light);
 	}
 
-	void Renderer::SubmitText(const std::shared_ptr<Shader>& shader, const std::shared_ptr<VertexArray>& vertexArray, std::string& text)
+	void Renderer::SubmitText(const std::shared_ptr<Shader>& shader, const std::shared_ptr<VertexArray>& vertexArray, std::string& text, glm::vec2 pos)
 	{
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -76,8 +76,8 @@ namespace Frosty
 		shader->UploadUniformFloat3("textColor", color);
 
 		std::string::const_iterator c;
-		float x = 25.0f;
-		float y = 24.0f;
+		float x = pos.x;
+		float y = pos.y;
 		float scale = 1.0f;
 		glm::vec3 vec = glm::vec3(0.5f, 0.8f, 0.2f);
 		for (c = text.begin(); c != text.end(); c++) {

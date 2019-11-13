@@ -6,12 +6,13 @@
 
 namespace Frosty
 {
-	UIText::UIText(std::string text, std::string font, uint16_t fontSize)
+	UIText::UIText(glm::vec2 position, std::string text, std::string font, uint16_t fontSize)
 	{
 		m_type = TEXT;
 		m_Text = text;
 		m_Font = font;
 		m_FontSize = fontSize;
+		m_Position = position;
 
 		m_VertArray.reset(VertexArray::Create());
 
@@ -30,5 +31,16 @@ namespace Frosty
 	UIText::~UIText()
 	{
 
+	}
+
+	UIText::UIText(const UIText& that)
+	{
+		m_Font = that.m_Font;
+		m_FontSize = that.m_FontSize;
+		m_Position = that.m_Position;
+		m_Text = that.m_Text;
+		m_type = that.m_type;
+
+		m_VertArray = that.m_VertArray; //This could possibly be problematic
 	}
 }

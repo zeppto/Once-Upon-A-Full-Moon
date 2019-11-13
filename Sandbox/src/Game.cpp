@@ -155,6 +155,12 @@ namespace MCS
 		auto& treeMat = world->AddComponent<Frosty::ECS::CMaterial>(tree, Frosty::AssetManager::GetShader("Texture2D"));
 		treeMat.DiffuseTexture = Frosty::AssetManager::GetTexture2D("Tree1");
 		world->AddComponent<Frosty::ECS::CPhysics>(tree, Frosty::AssetManager::GetBoundingBox("tree1"));
+
+		auto& GUI = world->CreateEntity();
+		Frosty::UILayout uiLayout(2, 1);
+		uiLayout.AddText(glm::vec2(25.0f, 20.0f), "Hello team");
+		uiLayout.AddText(glm::vec2(125.0f, 220.0f), "uwu");
+		world->AddComponent<Frosty::ECS::CGUI>(GUI, uiLayout);
 		
 		//navSystem->InitiateGridMap(world->GetComponent<Frosty::ECS::CTransform>(plane));
 		

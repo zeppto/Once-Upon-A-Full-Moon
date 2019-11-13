@@ -8,6 +8,7 @@
 
 #include "Frosty/UI/UIText.h"
 #include "Frosty/UI/UISprite.h"
+#include "Frosty/UI/UILayout.hpp"
 
 #include <Luna/include/Luna.h>
 
@@ -806,15 +807,15 @@ namespace Frosty
 		{
 			static std::string NAME;
 
-			CGUI() = default;
-
-			std::vector<UIText> texts;
-			std::vector<UISprite> sprites;
-
 			std::shared_ptr<Shader> textShader;
 			std::shared_ptr<Shader> spriteShader;
 
+			UILayout layout;
+
+			CGUI() = default;
+			CGUI(UILayout& layout) : layout(layout) {  }
 			CGUI(const CGUI& org) { FY_CORE_ASSERT(false, "Copy constructor in CGUI called."); }
+
 			virtual std::string GetName() const { return NAME; }
 		};
 
