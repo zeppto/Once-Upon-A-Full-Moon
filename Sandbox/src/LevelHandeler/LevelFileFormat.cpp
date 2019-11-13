@@ -166,7 +166,7 @@ void LevelFileFormat::SaveToFile(std::string fileName)
 	do 
 	{
 		x++;
-		filePath = "../../../assets/levels/" + fileName + std::to_string(x) + ".lvl";
+		filePath = "../../../assets/levels/" + fileName + "_" + std::to_string(x) + ".lvl";
 		existingFile.open(filePath);
 		existingFile.close();
 	} while (existingFile.good());
@@ -259,7 +259,11 @@ void LevelFileFormat::OpenFromFile(std::string fileName, Frosty::ECS::CTransform
 			
 			for (int j = 0; j < testHeder.NrOfComponents; j++)
 			{
-
+				if (j == 5 && (std::string)fileEntitys.myEntitys.at(i).myMesh.MeshName == "tree1" && !fileEntitys.myEntitys.at(i).MyComponents.at(j).HaveComponent)
+				{
+					auto& physics = m_World->AddComponent<Frosty::ECS::CPhysics>(entity);
+					physics.BoundingBox = Frosty::AssetManager::GetBoundingBox(fileEntitys.myEntitys.at(i).myMesh.MeshName);
+				}
 				if (fileEntitys.myEntitys.at(i).MyComponents.at(j).HaveComponent)
 				{
 
@@ -306,7 +310,7 @@ void LevelFileFormat::OpenFromFile(std::string fileName, Frosty::ECS::CTransform
 					if (j == 3)
 					{
 						existingFile.read((char*)& fileEntitys.myEntitys.at(i).myFollow, sizeof(Level_Follow));
-						auto& follow = m_World->AddComponent<Frosty::ECS::CFollow>(entity, playerTransform);
+						auto& follow = m_World->AddComponent<Frosty::ECS::CFollow>(entity);// , playerTransform);
 						follow.StopDistance = fileEntitys.myEntitys.at(i).myFollow.StopDistance;
 						//under construction
 					}
