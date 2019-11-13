@@ -310,7 +310,9 @@ void LevelFileFormat::OpenFromFile(std::string fileName, Frosty::ECS::CTransform
 					if (j == 3)
 					{
 						existingFile.read((char*)& fileEntitys.myEntitys.at(i).myFollow, sizeof(Level_Follow));
-						auto& follow = m_World->AddComponent<Frosty::ECS::CFollow>(entity);// , playerTransform);
+						auto& follow = m_World->AddComponent<Frosty::ECS::CFollow>(entity, playerTransform);
+						//For edeting old level
+						//auto& follow = m_World->AddComponent<Frosty::ECS::CFollow>(entity);// , playerTransform);
 						follow.StopDistance = fileEntitys.myEntitys.at(i).myFollow.StopDistance;
 						//under construction
 					}
