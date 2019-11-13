@@ -1,4 +1,5 @@
 #include <mcspch.hpp>
+#include <algorithm>
 #include "HealthBarSystem.hpp"
 
 namespace MCS
@@ -27,12 +28,8 @@ namespace MCS
 			{
 				float pivot = 0.5f;
 
-				glm::vec3 offset = glm::vec3((m_Health[i]->CurrentHealth / m_Health[i]->MaxHealth) / 2, 0, 0);
-
 				glm::vec3 TmaxHP = glm::vec3(m_Health[i]->MaxHealth, 1, 1);
 				glm::vec3 TcurrHP = glm::vec3(m_Health[i]->CurrentHealth, 1, 1);
-
-				float scale = 1.5;
 
 				//translate
 				//world position to screen position
@@ -45,7 +42,6 @@ namespace MCS
 				//scale
 				//scale calc
 				float camDistance = glm::distance(Frosty::Renderer::GetCamera().CameraPosition, m_Transform[i]->Position + m_HealthBar[i]->BarOffset);
-				glm::vec3 currHP = glm::vec3(m_Health[i]->CurrentHealth, 1, 1);
 
 				m_HealthBar[i]->hpTransform = glm::scale(m_HealthBar[i]->hpTransform, (glm::vec3(((TcurrHP.x / TmaxHP.x) * 2), 1.0f, 1.0f) * (1 / camDistance)));
 
@@ -57,27 +53,31 @@ namespace MCS
 
 			if (false)
 			{
-				float pivot = 0.5f;
+				int TmaxHP = m_Health[i]->MaxHealth;
+				int TcurrHP = m_Health[i]->CurrentHealth;
 
-				//translate
-				//world position to screen position
-				float HP = 1.0f;
-				glm::vec3 TmaxHP = glm::vec3(m_Health[i]->MaxHealth, 1, 1);
-				glm::vec3 TcurrHP = glm::vec3(m_Health[i]->CurrentHealth, 1, 1);
+				float scaleFact = 1.0f;
 
-				m_HealthBar[i]->hpTransform = glm::translate(glm::mat4{ 1.0f }, glm::vec3(TcurrHP.x / TmaxHP.x - 1.0f, 0.0f, 0.0f));
+				float temp = std::max((TcurrHP / TmaxHP) - 1, 0) * scaleFact;
 
+				glm::vec4 clipSpace = cam.ProjectionMatrix * (cam.ViewMatrix * glm::vec4(m_Transform[i]->Position + m_HealthBar[i]->BarOffset + glm::vec3(temp, 0.0f, 0.0f), 1.0f));
+				
+				ndcSpacePos = glm::vec3(clipSpace.x / clipSpace.w, clipSpace.y / clipSpace.w, clipSpace.z / clipSpace.w);
 
-				m_HealthBar[i]->hpTransform = glm::scale(m_HealthBar[i]->hpTransform, glm::vec3((TcurrHP.x / TmaxHP.x) * 2, 1.0f, 1.0f));
+				m_HealthBar[i]->hpTransform = glm::translate(glm::mat4{ 1.0f }, ndcSpacePos);
+
+				//scale
+				//scale calc
+				float camDistance = glm::distance(Frosty::Renderer::GetCamera().CameraPosition,		m_Transform[i]->Position + m_HealthBar[i]->BarOffset);
+				m_HealthBar[i]->hpTransform = glm::scale(m_HealthBar[i]->hpTransform, glm::vec3(std::max((TcurrHP / TmaxHP), 0), 1.0f, 1.0f) * (1 / camDistance));
 
 
 				//rotate
 				m_HealthBar[i]->hpTransform = glm::rotate(m_HealthBar[i]->hpTransform, glm::radians(90.0f), { 1.0f, 0.0f, 0.0f });
+
 			}
-			if (m_HealthBar[i]->Texture && m_HealthBar[i]->UseShader->GetName() == "UI")
-			{
-				m_HealthBar[i]->Texture->Bind(0);
-			}
+
+			if (m_HealthBar[i]->Texture && m_HealthBar[i]->UseShader->GetName() == "UI") m_HealthBar[i]->Texture->Bind(0);			
 
 			Frosty::Renderer::Submit2d(m_HealthBar[i]->Texture.get(), m_HealthBar[i]->UseShader, m_HealthBar[i]->Mesh, m_HealthBar[i]->hpTransform);
 
@@ -98,11 +98,12 @@ namespace MCS
 
 			if (!m_HealthBar[p_Total]->Mesh)
 			{
-				m_HealthBar[p_Total]->Mesh = Frosty::AssetManager::GetMesh("pPlane1");
+				m_HealthBar[p_Total]->Mesh = Frosty::AssetManager::GetMesh("UIPlane");
 				m_HealthBar[p_Total]->UseShader = Frosty::AssetManager::GetShader("UI");
 				m_HealthBar[p_Total]->Texture = Frosty::AssetManager::GetTexture2D("red");
 			}
 
+			
 			p_Total++;
 		}
 	}
