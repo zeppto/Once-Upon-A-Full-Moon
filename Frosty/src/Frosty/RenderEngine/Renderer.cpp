@@ -43,6 +43,29 @@ namespace Frosty
 			shaderData->Shader->UploadUniformMat4("u_ViewProjection", s_SceneData->GameCamera.ViewProjectionMatrix);
 			shaderData->Shader->UploadUniformFloat3("u_CameraPosition", s_SceneData->GameCamera.CameraPosition);
 
+			
+
+			// Point Lights
+			shaderData->Shader->UploadUniformInt("u_TotalPointLights", (int)s_SceneData->PointLights.size());
+			for (size_t i = 0; i < s_SceneData->PointLights.size(); i++)
+			{
+				shaderData->Shader->UploadUniformFloat3Array("u_PointLights[" + std::to_string(i) + "].Color", s_SceneData->PointLights[i].Color);
+				shaderData->Shader->UploadUniformFloat3Array("u_PointLights[" + std::to_string(i) + "].Position", s_SceneData->PointLights[i].Position);
+				shaderData->Shader->UploadUniformFloatArray("u_PointLights[" + std::to_string(i) + "].Radius", s_SceneData->PointLights[i].Radius);
+				shaderData->Shader->UploadUniformFloatArray("u_PointLights[" + std::to_string(i) + "].Strength", s_SceneData->PointLights[i].Strength);
+			}
+
+			// Directional Lights
+			shaderData->Shader->UploadUniformInt("u_TotalDirectionalLights", (int)s_SceneData->DirectionalLights.size());
+			for (size_t i = 0; i < s_SceneData->DirectionalLights.size(); i++)
+			{
+				shaderData->Shader->UploadUniformFloat3Array("u_DirectionalLights[" + std::to_string(i) + "].Color", s_SceneData->DirectionalLights[i].Color);
+				shaderData->Shader->UploadUniformFloat3Array("u_DirectionalLights[" + std::to_string(i) + "].Direction", s_SceneData->DirectionalLights[i].Direction);
+				shaderData->Shader->UploadUniformFloatArray("u_DirectionalLights[" + std::to_string(i) + "].Strength", s_SceneData->DirectionalLights[i].Strength);
+			}
+
+
+
 			//For all Materials
 			for (auto& MaterialIt : shaderData->MaterialMap)
 			{
@@ -50,14 +73,26 @@ namespace Frosty
 
 				auto& materialData = shaderData->MaterialMap.at(MaterialIt.first);
 
-				shaderData->Shader->UploadUniformFloat4("u_ObjectColor", *materialData->Albedo);
 
+				if (shaderData->Shader->GetName() == "FlatColor")
+				{
+					shaderData->Shader->UploadUniformFloat4("u_ObjectColor", *materialData->Albedo);
+					//shaderData->Shader->UploadUniformFloat("u_SpecularStrength", *materialData->SpecularStrength);
+
+				}
+				else if (shaderData->Shader->GetName() == "Texture2D" || shaderData->Shader->GetName() == "BlendShader")
+				{
+					//shaderData->Shader->UploadUniformFloat2("u_TextureCoordScale", *materialData->TextureScale);
+				}
 
 				//Bind all Textures
 				if (materialData->DiffuseTexture != nullptr)
 				{
-					materialData->DiffuseTexture->Bind();
-
+					materialData->DiffuseTexture->Bind(0);
+				}
+				if (materialData->NormalTexture != nullptr)
+				{
+					materialData->NormalTexture->Bind(1);
 				}
 				
 				//For all Meshes
@@ -84,8 +119,8 @@ namespace Frosty
 
 	void Renderer::EndScene()
 	{
-		s_SceneData->PointLights.clear();
-		s_SceneData->DirectionalLights.clear();
+		/*s_SceneData->PointLights.clear();
+		s_SceneData->DirectionalLights.clear();*/
 	}
 
 	void Renderer::SetCamera(const glm::vec3& pos, const glm::mat4& view, const glm::mat4& projection)
@@ -279,8 +314,8 @@ namespace Frosty
 			transform->ModelMatrix[1][0] = 0.2f;
 		}*/
 
-		int matID = 0;
-		int meshID = 0;
+		int matID = counter;
+		std::string meshID = vertexArray->GetName();
 		int transformID = transform->EntityPtr->Id;
 
 
@@ -300,23 +335,50 @@ namespace Frosty
 		//ShaderData* test = &shaderTest;
 		//ShaderData* test2 = FY_NEW ShaderData(shaderTest);
 
-
+		
 		//ADD
 
 		std::string ShaderName = mat->UseShader->GetName();
-		m_ShaderMap.emplace(mat->UseShader->GetName(), FY_NEW ShaderData);
+		if (m_ShaderMap.find(mat->UseShader->GetName()) == m_ShaderMap.end())
+		{
+			m_ShaderMap.emplace(mat->UseShader->GetName(), FY_NEW ShaderData);
+
+		}
 		auto& shaderMap = m_ShaderMap.at(ShaderName);
 		shaderMap->Shader = mat->UseShader;
-		m_ShaderMap.at(ShaderName)->MaterialMap.emplace(matID, FY_NEW MaterialData);
+
+		if (shaderMap->MaterialMap.find(matID) == shaderMap->MaterialMap.end())
+		{
+			shaderMap->MaterialMap.emplace(matID, FY_NEW MaterialData);
+		}
+		
 
 		auto& materialMap = shaderMap->MaterialMap.at(matID);
-		materialMap->DiffuseTexture = mat->DiffuseTexture;
 		materialMap->Albedo =  &mat->Albedo;
-		materialMap->MeshMap.emplace(meshID, FY_NEW  MeshData);
+		materialMap->DiffuseTexture = mat->DiffuseTexture;
+		materialMap->NormalTexture =  mat->NormalTexture;
+
+
+		//if (mat->UseShader->GetName() == "FlatColor")
+		//{
+		//	//shaderData->Shader->UploadUniformFloat4("u_ObjectColor", *materialData->Albedo);
+		//	//shaderData->Shader->UploadUniformFloat("u_SpecularStrength", *materialData->SpecularStrength);
+
+		//}
+
+
+		if (materialMap->MeshMap.find(meshID) == materialMap->MeshMap.end())
+		{
+			materialMap->MeshMap.emplace(meshID, FY_NEW  MeshData);
+		}
+
 
 		auto& meshMap = materialMap->MeshMap.at(meshID);
 		meshMap->VertexArray = vertexArray;
 		meshMap->TransformMap.emplace(transformID, &transform->ModelMatrix);
+
+
+
 
 		auto& transformMap = meshMap->TransformMap;
 		m_TransformLookUpMap.emplace(transformID, &transformMap);

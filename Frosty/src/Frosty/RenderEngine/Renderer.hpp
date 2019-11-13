@@ -39,6 +39,8 @@ namespace Frosty
 		static void AddLight(const glm::vec3& color, const glm::vec3& pos, float strength, float radius);
 		static void AddLight(const glm::vec3& color, glm::vec3& direction, float strength);
 
+		//////Add a way to remove light////////
+
 		static void Submit(ECS::CMaterial* mat, const std::shared_ptr<VertexArray>& vertexArray, const glm::mat4& transform);
 		static void AnimSubmit(ECS::CMaterial* mat, const std::shared_ptr<VertexArray>& vertexArray, const glm::mat4& transform);
 		//static void Submit2D(const std::shared_ptr<Shader>& shader, const std::shared_ptr<VertexArray>& vertexArray, std::string& tex, glm::mat4& modelMatrix);
@@ -65,12 +67,12 @@ namespace Frosty
 		{
 			glm::vec4* Albedo;
 			std::shared_ptr<Texture2D> DiffuseTexture;
-		/*	std::shared_ptr<Texture2D> SpecularTexture;
+			std::shared_ptr<Texture2D> SpecularTexture;
 			std::shared_ptr<Texture2D> NormalTexture;
-			std::shared_ptr<Texture2D> BlendMapTexture;
+		/*	std::shared_ptr<Texture2D> BlendMapTexture;
 			std::shared_ptr<Texture2D> BlendTexture1;
 			std::shared_ptr<Texture2D> BlendTexture2;*/
-			std::unordered_map<int, std::shared_ptr<MeshData>> MeshMap;
+			std::unordered_map<std::string, std::shared_ptr<MeshData>> MeshMap;
 		};
 
 		struct ShaderData

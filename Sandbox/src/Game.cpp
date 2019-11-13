@@ -100,7 +100,7 @@ namespace MCS
 		auto& lightTransform2 = world->GetComponent<Frosty::ECS::CTransform>(light2);
 		world->AddComponent<Frosty::ECS::CLight>(light2, Frosty::ECS::CLight::LightType::Directional, 0.3f, glm::vec3(0.6f, 0.7f, 1.f));
 
-		auto& player = world->CreateEntity({ 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 2.0f, 2.0f, 2.0f } );
+	/*	auto& player = world->CreateEntity({ 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 2.0f, 2.0f, 2.0f } );
 		auto& playerTransform = world->GetComponent<Frosty::ECS::CTransform>(player);
 		auto& PlayerMesh = world->AddComponent<Frosty::ECS::CMesh>(player, Frosty::AssetManager::GetMesh("scarlet"));
 		auto& playerMat = world->AddComponent<Frosty::ECS::CMaterial>(player, Frosty::AssetManager::GetShader("Texture2D"));
@@ -116,14 +116,19 @@ namespace MCS
 		auto& camEntity = world->GetSceneCamera();
 		world->GetComponent<Frosty::ECS::CCamera>(camEntity).Target = &playerTransform;
 
-		Frosty::Renderer::AddToRenderer(&playerMat, PlayerMesh.Mesh, &playerTransform);
+		Frosty::Renderer::AddToRenderer(&playerMat, PlayerMesh.Mesh, &playerTransform);*/
 
-	/*	auto& wall = world->CreateEntity({ 0.0f, 5.0f, -3.0f }, { 0.0f, 0.0f, 0.0f }, { 15.0f, 10.0f, 1.0f }, true);
-		world->AddComponent<Frosty::ECS::CMesh>(wall, Frosty::AssetManager::GetMesh("pCube1"));
-		world->AddComponent<Frosty::ECS::CMaterial>(wall, Frosty::AssetManager::GetShader("FlatColor"));
+		auto& wall = world->CreateEntity({ 0.0f, 20.0f, -3.0f }, { 0.0f, 0.0f, 0.0f }, { 15.0f, 10.0f, 1.0f }, true);
+		auto& wallMesh = world->AddComponent<Frosty::ECS::CMesh>(wall, Frosty::AssetManager::GetMesh("pCube1"));
+		auto& wallMat = world->AddComponent<Frosty::ECS::CMaterial>(wall, Frosty::AssetManager::GetShader("FlatColor"));
 		world->AddComponent<Frosty::ECS::CPhysics>(wall, Frosty::AssetManager::GetBoundingBox("pCube1"));
 
-		auto& enemy = world->CreateEntity({ 27.0f, 1.0f, 25.0f }, { 0.0f, 0.0f, 0.0f }, { 2.0f, 2.0f, 2.0f });
+		auto& wallTransform = world->GetComponent<Frosty::ECS::CTransform>(wall);
+
+		Frosty::Renderer::AddToRenderer(&wallMat, wallMesh.Mesh, &wallTransform);
+
+
+		/*auto& enemy = world->CreateEntity({ 27.0f, 1.0f, 25.0f }, { 0.0f, 0.0f, 0.0f }, { 2.0f, 2.0f, 2.0f });
 		world->AddComponent<Frosty::ECS::CMesh>(enemy, Frosty::AssetManager::GetMesh("pCube1"));
 		world->AddComponent<Frosty::ECS::CMaterial>(enemy, Frosty::AssetManager::GetShader("FlatColor"));
 		world->AddComponent<Frosty::ECS::CPhysics>(enemy, Frosty::AssetManager::GetBoundingBox("pCube1"), 6.0f);
@@ -141,14 +146,25 @@ namespace MCS
 		world->AddComponent<Frosty::ECS::CEnemy>(enemy2);
 		world->AddComponent<Frosty::ECS::CFollow>(enemy2, &playerTransform);
 		world->AddComponent<Frosty::ECS::CHealth>(enemy2);
+*/
+		for (int x = 0; x < 1; x++)
+		{
+			for (int z = 0; z < 1; z++)
+			{
+				auto& tree = world->CreateEntity({ 10.0f * x, 0.0f, 10.0f*z }, { 0.0f, 0.0f, 0.0f }, { 1.0f, 1.0f, 1.0f }, true);
+				auto& treeMesh = world->AddComponent<Frosty::ECS::CMesh>(tree, Frosty::AssetManager::GetMesh("tree1"));
+				auto& treeMat = world->AddComponent<Frosty::ECS::CMaterial>(tree, Frosty::AssetManager::GetShader("Texture2D"));
+				treeMat.DiffuseTexture = Frosty::AssetManager::GetTexture2D("Tree1");
+				world->AddComponent<Frosty::ECS::CPhysics>(tree, Frosty::AssetManager::GetBoundingBox("tree1"));
 
+				auto& treeTransform = world->GetComponent<Frosty::ECS::CTransform>(tree);
 
-		auto& tree = world->CreateEntity({ 17.0f, 0.0f, 5.0f }, { 0.0f, 0.0f, 0.0f }, { 1.0f, 1.0f, 1.0f }, true);
-		world->AddComponent<Frosty::ECS::CMesh>(tree, Frosty::AssetManager::GetMesh("tree1"));
-		auto& treeMat = world->AddComponent<Frosty::ECS::CMaterial>(tree, Frosty::AssetManager::GetShader("Texture2D"));
-		treeMat.DiffuseTexture = Frosty::AssetManager::GetTexture2D("Tree1");
-		world->AddComponent<Frosty::ECS::CPhysics>(tree, Frosty::AssetManager::GetBoundingBox("tree1"));*/
+				Frosty::Renderer::AddToRenderer(&treeMat, treeMesh.Mesh, &treeTransform);
+			}
+		}
+
 		
+
 		//navSystem->InitiateGridMap(world->GetComponent<Frosty::ECS::CTransform>(plane));
 		
 		PushLayer(FY_NEW InspectorLayer());

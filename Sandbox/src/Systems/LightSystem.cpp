@@ -23,14 +23,14 @@ namespace MCS
 		// Optimization: Could send in to Renderer how many point and directional lights we have to reserve that space in vectors.
 		for (size_t i = 1; i < p_Total; i++)
 		{
-			if (m_Light[i]->Type == Frosty::ECS::CLight::LightType::Point)
+			/*if (m_Light[i]->Type == Frosty::ECS::CLight::LightType::Point)
 			{
 				Frosty::Renderer::AddLight(m_Light[i]->Color, m_Transform[i]->Position, m_Light[i]->Strength, m_Light[i]->Radius);
 			}
 			else if (m_Light[i]->Type == Frosty::ECS::CLight::LightType::Directional)
 			{
 				Frosty::Renderer::AddLight(m_Light[i]->Color, m_Transform[i]->Rotation, m_Light[i]->Strength);
-			}
+			}*/
 		}
 	}
 
@@ -43,6 +43,16 @@ namespace MCS
 			auto& world = Frosty::Application::Get().GetWorld();
 			m_Transform[p_Total] = &world->GetComponent<Frosty::ECS::CTransform>(entity);
 			m_Light[p_Total] = &world->GetComponent<Frosty::ECS::CLight>(entity);
+
+
+			if (m_Light[p_Total]->Type == Frosty::ECS::CLight::LightType::Point)
+			{
+				Frosty::Renderer::AddLight(m_Light[p_Total]->Color, m_Transform[p_Total]->Position, m_Light[p_Total]->Strength, m_Light[p_Total]->Radius);
+			}
+			else if (m_Light[p_Total]->Type == Frosty::ECS::CLight::LightType::Directional)
+			{
+				Frosty::Renderer::AddLight(m_Light[p_Total]->Color, m_Transform[p_Total]->Rotation, m_Light[p_Total]->Strength);
+			}
 
 			p_Total++;
 		}
