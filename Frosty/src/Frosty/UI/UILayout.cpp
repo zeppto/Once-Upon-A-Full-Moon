@@ -31,12 +31,15 @@ namespace Frosty
 	//	m_SpritesCount = count;
 	//}
 
-	bool UILayout::AddText(glm::vec2 pos, std::string text, std::string font)
+	bool UILayout::AddText(glm::vec2 pos, std::string text, glm::vec3 color, float fontScale, std::string font)
 	{
 		if (m_SetTexts < m_TextsCount)
 		{
 			texts[m_SetTexts].SetPosition(pos);
 			texts[m_SetTexts].SetText(text);
+			texts[m_SetTexts].SetColor(color);
+			texts[m_SetTexts].SetFont(font);
+			texts[m_SetTexts].SetFontScale(fontScale);
 			m_SetTexts++;
 			return true;
 		}

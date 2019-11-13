@@ -28,7 +28,7 @@ namespace MCS
 			for (int j = 0; j < m_GUI[i]->layout.texts.size(); j++)
 			{
 				Frosty::UIText& currText = m_GUI[i]->layout.texts[j];
-				Frosty::Renderer::SubmitText(m_GUI[i]->textShader, currText.GetVertexArray(), currText.GetText(), currText.GetPosition());
+				Frosty::Renderer::SubmitText(m_GUI[i]->textShader, currText.GetVertexArray(), currText.GetText(), currText.GetPosition(), currText.GetColor(), currText.GetFontScale());
 			}
 		}
 	}

@@ -14,7 +14,7 @@ namespace Frosty
 		void SetTextsCount(uint16_t count);
 		//void SetSpritesCount(uint16_t count);
 
-		bool AddText(glm::vec2 pos, std::string text, std::string font = "Gabriola");
+		bool AddText(glm::vec2 pos, std::string text, glm::vec3 color = glm::vec3(0.0f), float fontScale = 1.0f, std::string font = "Gabriola");
 
 		std::vector<UIText> texts;
 		//std::vector<UISprite> sprites;

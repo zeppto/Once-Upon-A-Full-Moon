@@ -61,7 +61,7 @@ namespace Frosty
 		s_SceneData->DirectionalLights.emplace_back(light);
 	}
 
-	void Renderer::SubmitText(const std::shared_ptr<Shader>& shader, const std::shared_ptr<VertexArray>& vertexArray, std::string& text, glm::vec2 pos)
+	void Renderer::SubmitText(const std::shared_ptr<Shader>& shader, const std::shared_ptr<VertexArray>& vertexArray, std::string& text, glm::vec2 pos, glm::vec3 color, float scale)
 	{
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -69,7 +69,6 @@ namespace Frosty
 		vertexArray->Bind();
 
 		glm::mat4 projection = glm::ortho(0.0f, 800.0f, 0.0f, 600.0f);
-		glm::vec3 color = glm::vec3(0.0f, 0.0f, 1.0f);
 
 		shader->UploadUniformMat4("projection", projection);
 		shader->UploadUniformInt("text", 0); //Make sure this number matches the active and sampled texture
@@ -78,8 +77,6 @@ namespace Frosty
 		std::string::const_iterator c;
 		float x = pos.x;
 		float y = pos.y;
-		float scale = 1.0f;
-		glm::vec3 vec = glm::vec3(0.5f, 0.8f, 0.2f);
 		for (c = text.begin(); c != text.end(); c++) {
 			Character ch = Frosty::AssetManager::GetTTF("Gabriola")->m_characters.at(*c); //TODO: Switch out for actual font provided by system
 			float xpos = x + ch.bearing.x * scale;
