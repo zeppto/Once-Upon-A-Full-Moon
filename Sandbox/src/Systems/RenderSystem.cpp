@@ -62,7 +62,7 @@ namespace MCS
 			}
 			else
 			{
-				Frosty::Renderer::Submit(m_Materials[i], m_Meshes[i]->Mesh, m_Transform[i]->ModelMatrix);
+				//Frosty::Renderer::Submit(m_Materials[i], m_Meshes[i]->Mesh, m_Transform[i]->ModelMatrix);
 
 			}
 
@@ -96,7 +96,7 @@ namespace MCS
 			m_Meshes[p_Total] = &world->GetComponent<Frosty::ECS::CMesh>(entity);
 			m_Materials[p_Total] = &world->GetComponent<Frosty::ECS::CMaterial>(entity);
 
-			//Frosty::Renderer::AddToRenderer(m_Materials[p_Total], m_Meshes[p_Total]->Mesh, m_Transform[p_Total]);
+			Frosty::Renderer::AddToRenderer(m_Materials[p_Total], m_Meshes[p_Total]->Mesh, m_Transform[p_Total]);
 
 			p_Total++;
 

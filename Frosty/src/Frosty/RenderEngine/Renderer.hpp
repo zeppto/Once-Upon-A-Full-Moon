@@ -65,7 +65,7 @@ namespace Frosty
 
 		struct MaterialData
 		{
-			glm::vec4* Albedo;
+			/*glm::vec4* Albedo;
 			float* SpecularStrength;
 			int* Shininess;
 			glm::vec2* TextureScale;
@@ -75,8 +75,10 @@ namespace Frosty
 			std::shared_ptr<Texture2D> NormalTexture;
 			std::shared_ptr<Texture2D> BlendMapTexture;
 			std::shared_ptr<Texture2D> BlendTexture1;
-			std::shared_ptr<Texture2D> BlendTexture2;
+			std::shared_ptr<Texture2D> BlendTexture2;*/
 			std::unordered_map<std::string, std::shared_ptr<MeshData>> MeshMap;
+
+			Frosty::ECS::CMaterial* Material;
 		};
 
 		struct ShaderData

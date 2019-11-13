@@ -76,23 +76,23 @@ namespace Frosty
 
 				if (shaderData->Shader->GetName() == "FlatColor")
 				{
-					shaderData->Shader->UploadUniformFloat4("u_ObjectColor", *materialData->Albedo);
-					shaderData->Shader->UploadUniformFloat("u_SpecularStrength", *materialData->SpecularStrength);
+					shaderData->Shader->UploadUniformFloat4("u_ObjectColor", materialData->Material->Albedo);
+					shaderData->Shader->UploadUniformFloat("u_SpecularStrength", materialData->Material->SpecularStrength);
 
 				}
 				else if (shaderData->Shader->GetName() == "Texture2D" || shaderData->Shader->GetName() == "BlendShader")
 				{
-					shaderData->Shader->UploadUniformFloat2("u_TextureCoordScale", *materialData->TextureScale);
+					shaderData->Shader->UploadUniformFloat2("u_TextureCoordScale", materialData->Material->TextureScale);
 				}
 
 				//Bind all Textures
-				if (materialData->DiffuseTexture != nullptr)
+				if (materialData->Material->DiffuseTexture != nullptr)
 				{
-					materialData->DiffuseTexture->Bind(0);
+					materialData->Material->DiffuseTexture->Bind(0);
 				}
-				if (materialData->NormalTexture != nullptr)
+				if (materialData->Material->NormalTexture != nullptr)
 				{
-					materialData->NormalTexture->Bind(1);
+					materialData->Material->NormalTexture->Bind(1);
 				}
 
 				//For all Meshes
@@ -356,7 +356,8 @@ namespace Frosty
 
 
 		auto& materialMap = shaderMap->MaterialMap.at(matID);
-		materialMap->Albedo = &mat->Albedo;
+		materialMap->Material = mat;
+		/*materialMap->Albedo = &mat->Albedo;
 		materialMap->SpecularStrength = &mat->SpecularStrength;
 		materialMap->TextureScale = &mat->TextureScale;
 
@@ -365,7 +366,7 @@ namespace Frosty
 		materialMap->SpecularTexture = mat->SpecularTexture;
 		materialMap->BlendMapTexture = mat->BlendMapTexture;
 		materialMap->BlendTexture1 = mat->BlendTexture1;
-		materialMap->BlendTexture2 = mat->BlendTexture2;
+		materialMap->BlendTexture2 = mat->BlendTexture2;*/
 
 
 		if (materialMap->MeshMap.find(meshID) == materialMap->MeshMap.end())
@@ -414,15 +415,11 @@ namespace Frosty
 
 	void Renderer::RemoveFromRenderer(const int& transformID)
 	{
-		m_ShaderMap;
-
-
-		m_TransformLookUpMap.at(transformID)->erase(transformID);
-		m_TransformLookUpMap.erase(transformID);
-
-		m_ShaderMap;
-
-
+		if (m_TransformLookUpMap.find(transformID) == m_TransformLookUpMap.end())
+		{
+			m_TransformLookUpMap.at(transformID)->erase(transformID);
+			m_TransformLookUpMap.erase(transformID);
+		}
 	}
 
 	float dt = 0;

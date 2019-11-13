@@ -36,7 +36,7 @@ namespace MCS
 		//world->AddSystem<LevelSystem>();
 		world->AddSystem<CameraSystem>();
 		world->AddSystem<LightSystem>();
-		//world->AddSystem<RenderSystem>();
+		world->AddSystem<RenderSystem>();
 		world->AddSystem<PlayerControllerSystem>();
 		world->AddSystem<PhysicsSystem>();
 		world->AddSystem<FollowSystem>();
@@ -116,7 +116,7 @@ namespace MCS
 		auto& camEntity = world->GetSceneCamera();
 		world->GetComponent<Frosty::ECS::CCamera>(camEntity).Target = &playerTransform;
 
-		Frosty::Renderer::AddToRenderer(&playerMat, PlayerMesh.Mesh, &playerTransform);
+		//Frosty::Renderer::AddToRenderer(&playerMat, PlayerMesh.Mesh, &playerTransform);
 
 		auto& wall = world->CreateEntity({ 0.0f, 20.0f, -3.0f }, { 0.0f, 0.0f, 0.0f }, { 15.0f, 10.0f, 1.0f }, true);
 		auto& wallMesh = world->AddComponent<Frosty::ECS::CMesh>(wall, Frosty::AssetManager::GetMesh("pCube1"));
@@ -125,7 +125,7 @@ namespace MCS
 
 		auto& wallTransform = world->GetComponent<Frosty::ECS::CTransform>(wall);
 
-		Frosty::Renderer::AddToRenderer(&wallMat, wallMesh.Mesh, &wallTransform);
+		//Frosty::Renderer::AddToRenderer(&wallMat, wallMesh.Mesh, &wallTransform);
 
 
 		/*auto& enemy = world->CreateEntity({ 27.0f, 1.0f, 25.0f }, { 0.0f, 0.0f, 0.0f }, { 2.0f, 2.0f, 2.0f });
