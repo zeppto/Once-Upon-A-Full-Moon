@@ -49,7 +49,7 @@ namespace Frosty
 		static void Submit2d(Texture2D* tex, Shader* shader, const std::shared_ptr<VertexArray>& vertexArray, const glm::mat4& transform);
 	
 		static void AddToRenderer(ECS::CMaterial* mat, std::shared_ptr<VertexArray> vertexArray, ECS::CTransform* transform);
-		static void RemoveFromRenderer(const int& transformID);
+		static void RemoveFromRenderer( const int& matID ,const std::string& meshName,const int& transformID);
 
 		inline static void Shutdown() { delete s_SceneData; }
 
@@ -65,17 +65,6 @@ namespace Frosty
 
 		struct MaterialData
 		{
-			/*glm::vec4* Albedo;
-			float* SpecularStrength;
-			int* Shininess;
-			glm::vec2* TextureScale;
-
-			std::shared_ptr<Texture2D> DiffuseTexture;
-			std::shared_ptr<Texture2D> SpecularTexture;
-			std::shared_ptr<Texture2D> NormalTexture;
-			std::shared_ptr<Texture2D> BlendMapTexture;
-			std::shared_ptr<Texture2D> BlendTexture1;
-			std::shared_ptr<Texture2D> BlendTexture2;*/
 			std::unordered_map<std::string, std::shared_ptr<MeshData>> MeshMap;
 
 			Frosty::ECS::CMaterial* Material;
@@ -89,6 +78,8 @@ namespace Frosty
 
 		static std::unordered_map<std::string, std::shared_ptr<ShaderData>> m_ShaderMap;
 		static std::unordered_map<int, std::unordered_map<int, Frosty::ECS::CTransform*>*> m_TransformLookUpMap;
+		static std::unordered_map<int, std::unordered_map<std::string, std::shared_ptr<MeshData>>*> m_MeshLookUpMap;
+		static std::unordered_map<int, std::unordered_map<int, std::shared_ptr<MaterialData>>*> m_MaterialLookUpMap;
 
 		struct PointLight
 		{

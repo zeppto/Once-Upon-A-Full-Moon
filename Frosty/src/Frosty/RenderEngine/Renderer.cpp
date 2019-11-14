@@ -10,6 +10,8 @@ namespace Frosty
 	Renderer::SceneData* Renderer::s_SceneData = FY_NEW Renderer::SceneData;
 	std::unordered_map<std::string, std::shared_ptr<Renderer::ShaderData>> Renderer::m_ShaderMap;
 	std::unordered_map<int, std::unordered_map<int, Frosty::ECS::CTransform*>*> Renderer::m_TransformLookUpMap;
+	std::unordered_map<int, std::unordered_map<std::string, std::shared_ptr<Renderer::MeshData>>*> Renderer::m_MeshLookUpMap;
+	std::unordered_map<int, std::unordered_map<int, std::shared_ptr<Renderer::MaterialData>>*> Renderer::m_MaterialLookUpMap;
 
 	void Renderer::Init()
 	{
@@ -19,8 +21,6 @@ namespace Frosty
 	void Renderer::BeginScene()
 	{
 	}
-
-
 
 
 
@@ -112,10 +112,15 @@ namespace Frosty
 						shaderData->Shader->UploadUniformMat4("u_Transform", *meshData->TransformMap.at(TransformIt.first)->GetModelMatrix());
 						RenderCommand::Draw2D(meshData->VertexArray);
 					}
-				}
-			}
-		}
 
+					glBindVertexArray(0);
+				}
+
+				glBindTexture(GL_TEXTURE_2D, 0);
+			}
+			glUseProgram(0);
+		}
+		int test = 0;
 	}
 
 	void Renderer::EndScene()
@@ -302,10 +307,11 @@ namespace Frosty
 		glDisable(GL_BLEND);
 	}
 
+	int counter = 0;
 
 	void Renderer::AddToRenderer(ECS::CMaterial* mat, std::shared_ptr<VertexArray> vertexArray, ECS::CTransform* transform)
 	{
-		
+		counter++;
 		//Set up IDs
 		int matID = transform->EntityPtr->Id; //Works but can be improved whith a real material ID
 		std::string meshID = vertexArray->GetName();
@@ -319,40 +325,83 @@ namespace Frosty
 			m_ShaderMap.emplace(mat->UseShader->GetName(), FY_NEW ShaderData);
 
 		}
-		auto& shaderMap = m_ShaderMap.at(ShaderName);
-		shaderMap->Shader = mat->UseShader;
+		auto& shaderData = m_ShaderMap.at(ShaderName);
+		shaderData->Shader = mat->UseShader;
+
+
 
 		//Check if the material key is already in the map, if not add it.
-		if (shaderMap->MaterialMap.find(matID) == shaderMap->MaterialMap.end())
+		if (shaderData->MaterialMap.find(matID) == shaderData->MaterialMap.end())
 		{
-			shaderMap->MaterialMap.emplace(matID, FY_NEW MaterialData);
+			shaderData->MaterialMap.emplace(matID, FY_NEW MaterialData);
 		}
-		auto& materialMap = shaderMap->MaterialMap.at(matID);
-		materialMap->Material = mat;
+		auto& materialData = shaderData->MaterialMap.at(matID);
+		materialData->Material = mat;
 		
+		//Add the material to the MaterialLookUpMap
+		m_MaterialLookUpMap.emplace(transformID, &shaderData->MaterialMap);
 
 		//Check if the mesh key is already in the map, if not add it.
-		if (materialMap->MeshMap.find(meshID) == materialMap->MeshMap.end())
+		if (materialData->MeshMap.find(meshID) == materialData->MeshMap.end())
 		{
-			materialMap->MeshMap.emplace(meshID, FY_NEW  MeshData);
+			materialData->MeshMap.emplace(meshID, FY_NEW  MeshData);
 		}
-		auto& meshMap = materialMap->MeshMap.at(meshID);
-		meshMap->VertexArray = vertexArray;
-		meshMap->TransformMap.emplace(transformID, transform);
+		auto& meshData = materialData->MeshMap.at(meshID);
+		meshData->VertexArray = vertexArray;
+		meshData->TransformMap.emplace(transformID, transform);
+
+		//Add the mesh to the MeshLookUpMap
+		m_MeshLookUpMap.emplace(transformID, &materialData->MeshMap);
 
 		//Add the tranform to the TransformLookUpMap
-		auto& transformMap = meshMap->TransformMap;
+		auto& transformMap = meshData->TransformMap;
 		m_TransformLookUpMap.emplace(transformID, &transformMap);
 
+		m_ShaderMap;
 	}
 
-	void Renderer::RemoveFromRenderer(const int& transformID)
+	void Renderer::RemoveFromRenderer(const int& matID, const std::string& meshName, const int& transformID)
 	{
-		if (m_TransformLookUpMap.find(transformID) == m_TransformLookUpMap.end())
+ 		if (m_TransformLookUpMap.find(transformID) != m_TransformLookUpMap.end())
 		{
+			m_ShaderMap;
+			
+			int nrOfTransforms = 0;
+			int nrOfMeshes = 0;
+
+			m_TransformLookUpMap.at(transformID)->at(transformID) = nullptr;
 			m_TransformLookUpMap.at(transformID)->erase(transformID);
+
+			if (m_TransformLookUpMap.at(transformID)->size() == 0)
+			{
+				nrOfTransforms = m_TransformLookUpMap.at(transformID)->size();
+				m_MeshLookUpMap.at(transformID)->erase(meshName);
+			}
+			
+			if (m_MeshLookUpMap.at(transformID)->size() == 0)
+			{
+				nrOfMeshes = m_MeshLookUpMap.at(transformID)->size();
+				m_MaterialLookUpMap.at(transformID)->erase(matID);
+
+				//m_MaterialLookUpMap.erase(transformID);
+				
+			}
+
+			if (nrOfTransforms == 0)
+			{
+				m_MeshLookUpMap.erase(transformID);
+			}
+
+ 			if (nrOfMeshes == 0)
+			{
+				m_MaterialLookUpMap.erase(transformID);
+			}
+
+
 			m_TransformLookUpMap.erase(transformID);
+
 		}
+		
 	}
 
 	float dt = 0;

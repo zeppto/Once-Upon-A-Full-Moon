@@ -29,59 +29,59 @@ namespace MCS
 			 Takes up performance if calculated every frame, but the other way will mean
 			 4 * 4 floats which is 4 * 4 * 4 = 64 bytes for EVERY entity
 			 For now we calculate it every frame*/
-			if (!m_Transform[i]->IsStatic)
-			{
-				glm::mat4 transform = glm::translate(glm::mat4(1.0f), m_Transform[i]->Position);
-				transform = glm::rotate(transform, glm::radians(m_Transform[i]->Rotation.x), { 1.0f, 0.0f, 0.0f });
-				transform = glm::rotate(transform, glm::radians(m_Transform[i]->Rotation.y), { 0.0f, 1.0f, 0.0f });
-				transform = glm::rotate(transform, glm::radians(m_Transform[i]->Rotation.z), { 0.0f, 0.0f, 1.0f });
-				transform = glm::scale(transform, m_Transform[i]->Scale);
-				m_Transform[i]->ModelMatrix = transform;
-			}
+		//	if (!m_Transform[i]->IsStatic)
+		//	{
+		//		glm::mat4 transform = glm::translate(glm::mat4(1.0f), m_Transform[i]->Position);
+		//		transform = glm::rotate(transform, glm::radians(m_Transform[i]->Rotation.x), { 1.0f, 0.0f, 0.0f });
+		//		transform = glm::rotate(transform, glm::radians(m_Transform[i]->Rotation.y), { 0.0f, 1.0f, 0.0f });
+		//		transform = glm::rotate(transform, glm::radians(m_Transform[i]->Rotation.z), { 0.0f, 0.0f, 1.0f });
+		//		transform = glm::scale(transform, m_Transform[i]->Scale);
+		//		m_Transform[i]->ModelMatrix = transform;
+		//	}
 
-			if (m_Materials[i]->UseShader->GetName() == "Texture2D" && m_Materials[i]->DiffuseTexture)m_Materials[i]->DiffuseTexture->Bind(0);
-			if (m_Materials[i]->UseShader->GetName() == "Texture2D" && m_Materials[i]->NormalTexture) m_Materials[i]->NormalTexture->Bind(1);
-			if (m_Materials[i]->UseShader->GetName() == "Texture2D" && m_Materials[i]->SpecularTexture) m_Materials[i]->SpecularTexture->Bind(2);
+		//	if (m_Materials[i]->UseShader->GetName() == "Texture2D" && m_Materials[i]->DiffuseTexture)m_Materials[i]->DiffuseTexture->Bind(0);
+		//	if (m_Materials[i]->UseShader->GetName() == "Texture2D" && m_Materials[i]->NormalTexture) m_Materials[i]->NormalTexture->Bind(1);
+		//	if (m_Materials[i]->UseShader->GetName() == "Texture2D" && m_Materials[i]->SpecularTexture) m_Materials[i]->SpecularTexture->Bind(2);
 
-			if (m_Materials[i]->UseShader->GetName() == "Animation" && m_Materials[i]->DiffuseTexture)m_Materials[i]->DiffuseTexture->Bind(0);
-			if (m_Materials[i]->UseShader->GetName() == "Animation" && m_Materials[i]->NormalTexture) m_Materials[i]->NormalTexture->Bind(1);
-			if (m_Materials[i]->UseShader->GetName() == "Animation" && m_Materials[i]->SpecularTexture) m_Materials[i]->SpecularTexture->Bind(2);
+		//	if (m_Materials[i]->UseShader->GetName() == "Animation" && m_Materials[i]->DiffuseTexture)m_Materials[i]->DiffuseTexture->Bind(0);
+		//	if (m_Materials[i]->UseShader->GetName() == "Animation" && m_Materials[i]->NormalTexture) m_Materials[i]->NormalTexture->Bind(1);
+		//	if (m_Materials[i]->UseShader->GetName() == "Animation" && m_Materials[i]->SpecularTexture) m_Materials[i]->SpecularTexture->Bind(2);
 
-			if (m_Materials[i]->UseShader->GetName() == "UI" && m_Materials[i]->DiffuseTexture) m_Materials[i]->DiffuseTexture->Bind(0);
+		//	if (m_Materials[i]->UseShader->GetName() == "UI" && m_Materials[i]->DiffuseTexture) m_Materials[i]->DiffuseTexture->Bind(0);
 
-			if (m_Materials[i]->UseShader->GetName() == "BlendShader" && m_Materials[i]->DiffuseTexture)m_Materials[i]->DiffuseTexture->Bind(0);
-			if (m_Materials[i]->UseShader->GetName() == "BlendShader" && m_Materials[i]->NormalTexture) m_Materials[i]->NormalTexture->Bind(1);
-			if (m_Materials[i]->UseShader->GetName() == "BlendShader" && m_Materials[i]->SpecularTexture) m_Materials[i]->SpecularTexture->Bind(2);
-			if (m_Materials[i]->UseShader->GetName() == "BlendShader" && m_Materials[i]->BlendMapTexture) m_Materials[i]->BlendMapTexture->Bind(3);
-			if (m_Materials[i]->UseShader->GetName() == "BlendShader" && m_Materials[i]->BlendTexture1) m_Materials[i]->BlendTexture1->Bind(4);
-			if (m_Materials[i]->UseShader->GetName() == "BlendShader" && m_Materials[i]->BlendTexture2) m_Materials[i]->BlendTexture2->Bind(5);
+		//	if (m_Materials[i]->UseShader->GetName() == "BlendShader" && m_Materials[i]->DiffuseTexture)m_Materials[i]->DiffuseTexture->Bind(0);
+		//	if (m_Materials[i]->UseShader->GetName() == "BlendShader" && m_Materials[i]->NormalTexture) m_Materials[i]->NormalTexture->Bind(1);
+		//	if (m_Materials[i]->UseShader->GetName() == "BlendShader" && m_Materials[i]->SpecularTexture) m_Materials[i]->SpecularTexture->Bind(2);
+		//	if (m_Materials[i]->UseShader->GetName() == "BlendShader" && m_Materials[i]->BlendMapTexture) m_Materials[i]->BlendMapTexture->Bind(3);
+		//	if (m_Materials[i]->UseShader->GetName() == "BlendShader" && m_Materials[i]->BlendTexture1) m_Materials[i]->BlendTexture1->Bind(4);
+		//	if (m_Materials[i]->UseShader->GetName() == "BlendShader" && m_Materials[i]->BlendTexture2) m_Materials[i]->BlendTexture2->Bind(5);
 
-			if (m_Materials[i]->UseShader->GetName() == "Animation")
-			{
-				Frosty::Renderer::AnimSubmit(m_Materials[i], m_Meshes[i]->Mesh, m_Transform[i]->ModelMatrix);
-			}
-			else
-			{
-				//Frosty::Renderer::Submit(m_Materials[i], m_Meshes[i]->Mesh, m_Transform[i]->ModelMatrix);
+		//	if (m_Materials[i]->UseShader->GetName() == "Animation")
+		//	{
+		//		Frosty::Renderer::AnimSubmit(m_Materials[i], m_Meshes[i]->Mesh, m_Transform[i]->ModelMatrix);
+		//	}
+		//	else
+		//	{
+		//		//Frosty::Renderer::Submit(m_Materials[i], m_Meshes[i]->Mesh, m_Transform[i]->ModelMatrix);
 
-			}
+		//	}
 
-			if (m_Materials[i]->UseShader->GetName() == "Animation" && m_Materials[i]->DiffuseTexture) m_Materials[i]->DiffuseTexture->Unbind();
-			if (m_Materials[i]->UseShader->GetName() == "Animation" && m_Materials[i]->NormalTexture) m_Materials[i]->NormalTexture->Unbind();
-			if (m_Materials[i]->UseShader->GetName() == "Animation" && m_Materials[i]->SpecularTexture) m_Materials[i]->SpecularTexture->Unbind();
+		//	if (m_Materials[i]->UseShader->GetName() == "Animation" && m_Materials[i]->DiffuseTexture) m_Materials[i]->DiffuseTexture->Unbind();
+		//	if (m_Materials[i]->UseShader->GetName() == "Animation" && m_Materials[i]->NormalTexture) m_Materials[i]->NormalTexture->Unbind();
+		//	if (m_Materials[i]->UseShader->GetName() == "Animation" && m_Materials[i]->SpecularTexture) m_Materials[i]->SpecularTexture->Unbind();
 
-			if (m_Materials[i]->UseShader->GetName() == "Texture2D" && m_Materials[i]->DiffuseTexture) m_Materials[i]->DiffuseTexture->Unbind();
-			if (m_Materials[i]->UseShader->GetName() == "Texture2D" && m_Materials[i]->NormalTexture) m_Materials[i]->NormalTexture->Unbind();
-			if (m_Materials[i]->UseShader->GetName() == "Texture2D" && m_Materials[i]->SpecularTexture) m_Materials[i]->SpecularTexture->Unbind();
+		//	if (m_Materials[i]->UseShader->GetName() == "Texture2D" && m_Materials[i]->DiffuseTexture) m_Materials[i]->DiffuseTexture->Unbind();
+		//	if (m_Materials[i]->UseShader->GetName() == "Texture2D" && m_Materials[i]->NormalTexture) m_Materials[i]->NormalTexture->Unbind();
+		//	if (m_Materials[i]->UseShader->GetName() == "Texture2D" && m_Materials[i]->SpecularTexture) m_Materials[i]->SpecularTexture->Unbind();
 
-			if (m_Materials[i]->UseShader->GetName() == "UI" && m_Materials[i]->DiffuseTexture) m_Materials[i]->DiffuseTexture->Unbind();
+		//	if (m_Materials[i]->UseShader->GetName() == "UI" && m_Materials[i]->DiffuseTexture) m_Materials[i]->DiffuseTexture->Unbind();
 
-			if (m_Materials[i]->UseShader->GetName() == "BlendShader" && m_Materials[i]->DiffuseTexture) m_Materials[i]->DiffuseTexture->Unbind();
-			if (m_Materials[i]->UseShader->GetName() == "BlendShader" && m_Materials[i]->NormalTexture) m_Materials[i]->NormalTexture->Unbind();
-			if (m_Materials[i]->UseShader->GetName() == "BlendShader" && m_Materials[i]->SpecularTexture) m_Materials[i]->SpecularTexture->Unbind();
-			if (m_Materials[i]->UseShader->GetName() == "BlendShader" && m_Materials[i]->BlendMapTexture) m_Materials[i]->BlendMapTexture->Unbind();
-			if (m_Materials[i]->UseShader->GetName() == "BlendShader" && m_Materials[i]->BlendTexture1) m_Materials[i]->BlendTexture1->Unbind();
-			if (m_Materials[i]->UseShader->GetName() == "BlendShader" && m_Materials[i]->BlendTexture2) m_Materials[i]->BlendTexture2->Unbind();
+		//	if (m_Materials[i]->UseShader->GetName() == "BlendShader" && m_Materials[i]->DiffuseTexture) m_Materials[i]->DiffuseTexture->Unbind();
+		//	if (m_Materials[i]->UseShader->GetName() == "BlendShader" && m_Materials[i]->NormalTexture) m_Materials[i]->NormalTexture->Unbind();
+		//	if (m_Materials[i]->UseShader->GetName() == "BlendShader" && m_Materials[i]->SpecularTexture) m_Materials[i]->SpecularTexture->Unbind();
+		//	if (m_Materials[i]->UseShader->GetName() == "BlendShader" && m_Materials[i]->BlendMapTexture) m_Materials[i]->BlendMapTexture->Unbind();
+		//	if (m_Materials[i]->UseShader->GetName() == "BlendShader" && m_Materials[i]->BlendTexture1) m_Materials[i]->BlendTexture1->Unbind();
+		//	if (m_Materials[i]->UseShader->GetName() == "BlendShader" && m_Materials[i]->BlendTexture2) m_Materials[i]->BlendTexture2->Unbind();
 		}
 	}
 
@@ -96,7 +96,7 @@ namespace MCS
 			m_Meshes[p_Total] = &world->GetComponent<Frosty::ECS::CMesh>(entity);
 			m_Materials[p_Total] = &world->GetComponent<Frosty::ECS::CMaterial>(entity);
 
-			Frosty::Renderer::AddToRenderer(m_Materials[p_Total], m_Meshes[p_Total]->Mesh, m_Transform[p_Total]);
+			Frosty::Renderer::AddToRenderer(m_Materials.at(p_Total), m_Meshes.at(p_Total)->Mesh, m_Transform.at(p_Total));
 
 			p_Total++;
 
@@ -111,7 +111,7 @@ namespace MCS
 		{
 			p_Total--;
 
-			Frosty::Renderer::RemoveFromRenderer(m_Transform[p_Total]->EntityPtr->Id);
+			Frosty::Renderer::RemoveFromRenderer(m_Materials[it->second]->EntityPtr->Id,m_Meshes[it->second]->Mesh->GetName(),m_Transform[it->second]->EntityPtr->Id);
 
 			auto& entityToUpdate = m_Transform[p_Total]->EntityPtr;
 			m_Transform[p_Total] = nullptr;

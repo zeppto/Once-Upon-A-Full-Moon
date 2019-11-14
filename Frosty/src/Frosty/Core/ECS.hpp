@@ -325,6 +325,7 @@ namespace Frosty
 
 				m_Data.at(index).EntityPtr.reset();
 				m_Data.at(index) = m_Data.at(Total - 1);
+				m_Data.at(index).EntityPtr = m_Data.at(Total - 1).EntityPtr;
 				m_Data.at(Total - 1).EntityPtr.reset();
 				m_Data.at(Total - 1) = ComponentType();
 

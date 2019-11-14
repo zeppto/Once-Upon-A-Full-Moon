@@ -79,13 +79,13 @@ namespace MCS
 
 		world->Awake();
 		
-		//auto& plane = world->CreateEntity({ 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 100.0f, 1.0f, 100.0f });
-		//world->AddComponent<Frosty::ECS::CMesh>(plane, Frosty::AssetManager::GetMesh("pPlane1"));
-		//auto& planeMat = world->AddComponent<Frosty::ECS::CMaterial>(plane, Frosty::AssetManager::GetShader("BlendShader"));
-		//planeMat.DiffuseTexture = Frosty::AssetManager::GetTexture2D("Grass");
-		//planeMat.BlendMapTexture = Frosty::AssetManager::GetTexture2D("blendMap_Test");	// why is this texture a problem
-		//planeMat.BlendTexture1 = Frosty::AssetManager::GetTexture2D("StoneGround");
-		//planeMat.BlendTexture2 = Frosty::AssetManager::GetTexture2D("Dirt");
+		auto& plane = world->CreateEntity({ 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 100.0f, 1.0f, 100.0f });
+		world->AddComponent<Frosty::ECS::CMesh>(plane, Frosty::AssetManager::GetMesh("pPlane1"));
+		auto& planeMat = world->AddComponent<Frosty::ECS::CMaterial>(plane, Frosty::AssetManager::GetShader("BlendShader"));
+		planeMat.DiffuseTexture = Frosty::AssetManager::GetTexture2D("Grass");
+		planeMat.BlendMapTexture = Frosty::AssetManager::GetTexture2D("blendMap_Test");	// why is this texture a problem
+		planeMat.BlendTexture1 = Frosty::AssetManager::GetTexture2D("StoneGround");
+		planeMat.BlendTexture2 = Frosty::AssetManager::GetTexture2D("Dirt");
 		
 		//auto& testEntity = world->CreateEntity({ -47.5f, 0.01f, 47.5f }, { 0.0f, 0.0f, 0.0f }, { 5.0f, 1.0f, 5.0f });
 		//world->AddComponent<Frosty::ECS::CMesh>(testEntity, Frosty::AssetManager::GetMesh("pPlane1"));
@@ -118,17 +118,17 @@ namespace MCS
 
 		//Frosty::Renderer::AddToRenderer(&playerMat, PlayerMesh.Mesh, &playerTransform);
 
-		auto& wall = world->CreateEntity({ 0.0f, 20.0f, -3.0f }, { 0.0f, 0.0f, 0.0f }, { 15.0f, 10.0f, 1.0f }, true);
+		/*auto& wall = world->CreateEntity({ 0.0f, 20.0f, -3.0f }, { 0.0f, 0.0f, 0.0f }, { 15.0f, 10.0f, 1.0f }, true);
 		auto& wallMesh = world->AddComponent<Frosty::ECS::CMesh>(wall, Frosty::AssetManager::GetMesh("pCube1"));
 		auto& wallMat = world->AddComponent<Frosty::ECS::CMaterial>(wall, Frosty::AssetManager::GetShader("FlatColor"));
 		world->AddComponent<Frosty::ECS::CPhysics>(wall, Frosty::AssetManager::GetBoundingBox("pCube1"));
 
-		auto& wallTransform = world->GetComponent<Frosty::ECS::CTransform>(wall);
+		auto& wallTransform = world->GetComponent<Frosty::ECS::CTransform>(wall);*/
 
 		//Frosty::Renderer::AddToRenderer(&wallMat, wallMesh.Mesh, &wallTransform);
 
 
-		/*auto& enemy = world->CreateEntity({ 27.0f, 1.0f, 25.0f }, { 0.0f, 0.0f, 0.0f }, { 2.0f, 2.0f, 2.0f });
+		auto& enemy = world->CreateEntity({ 27.0f, 1.0f, 25.0f }, { 0.0f, 0.0f, 0.0f }, { 2.0f, 2.0f, 2.0f });
 		world->AddComponent<Frosty::ECS::CMesh>(enemy, Frosty::AssetManager::GetMesh("pCube1"));
 		world->AddComponent<Frosty::ECS::CMaterial>(enemy, Frosty::AssetManager::GetShader("FlatColor"));
 		world->AddComponent<Frosty::ECS::CPhysics>(enemy, Frosty::AssetManager::GetBoundingBox("pCube1"), 6.0f);
@@ -146,11 +146,11 @@ namespace MCS
 		world->AddComponent<Frosty::ECS::CEnemy>(enemy2);
 		world->AddComponent<Frosty::ECS::CFollow>(enemy2, &playerTransform);
 		world->AddComponent<Frosty::ECS::CHealth>(enemy2);
-*/
-/*
-		for (int x = 0; x < 10; x++)
+
+
+		for (int x = 0; x < 1; x++)
 		{
-			for (int z = 0; z < 10; z++)
+			for (int z = 0; z < 1; z++)
 			{
 				auto& tree = world->CreateEntity({ 10.0f * x, 0.0f, 10.0f*z }, { 0.0f, 0.0f, 0.0f }, { 1.0f, 1.0f, 1.0f }, true);
 				auto& treeMesh = world->AddComponent<Frosty::ECS::CMesh>(tree, Frosty::AssetManager::GetMesh("tree1"));
@@ -160,9 +160,9 @@ namespace MCS
 
 				auto& treeTransform = world->GetComponent<Frosty::ECS::CTransform>(tree);
 
-				Frosty::Renderer::AddToRenderer(&treeMat, treeMesh.Mesh, &treeTransform);
+				//Frosty::Renderer::AddToRenderer(&treeMat, treeMesh.Mesh, &treeTransform);
 			}
-		}*/
+		}
 		
 		
 
