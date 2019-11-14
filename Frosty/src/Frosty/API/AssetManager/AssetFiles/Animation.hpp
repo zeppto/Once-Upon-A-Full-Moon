@@ -6,7 +6,7 @@
 #include "glm/gtx/quaternion.hpp"
 
 //CAREFUL: If changed. Change in animationVS too!
-#define MAX_BONES 64
+#define MAX_BONES 128
 
 namespace Frosty
 {
