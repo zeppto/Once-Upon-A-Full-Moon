@@ -12,7 +12,7 @@
 //#include "Frosty/UI/Canvas.h"
 
 //Particle Branch
-#include "Frosty/StateMachine/StateMachine.hpp"
+//#include "Frosty/StateMachine/StateMachine.hpp"
 #include "Frosty/Core/InputManager.hpp"
 //#include "Frosty/StateMachine/MainMenuState.h"
 

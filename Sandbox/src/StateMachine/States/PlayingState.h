@@ -1,13 +1,14 @@
 #ifndef PLAYING_STATE_HPP
 #define PLAYING_STATE_HPP
+#include "State.hpp"
 
-#include "Frosty/StateMachine/State.hpp"
-
-//~~ The state the game goes to once Play is pressed from the main menu.
-namespace Frosty
+namespace MCS
 {
 	class PlayingState :public State
 	{
+	private:
+
+
 	public:
 		PlayingState();
 		~PlayingState();
@@ -15,8 +16,7 @@ namespace Frosty
 		void Initiate();
 		void OnInput();
 		void OnUpdate();
-	private:
-		//~~ TODO: Add helpful variables here.
+		
 
 	};
 }

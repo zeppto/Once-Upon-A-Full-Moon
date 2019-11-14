@@ -1,8 +1,10 @@
 #ifndef STATE_MACHINE_HPP
 #define STATE_MACHINE_HPP
-#include "State.hpp"
+#include"StateMachine/States/MainMenuState.h"
+#include"StateMachine/States/PlayingState.h"
+#include"StateMachine/States/LoadState.hpp"
 
-namespace Frosty
+namespace MCS
 {
 	typedef std::unique_ptr<State> StateRef;
 

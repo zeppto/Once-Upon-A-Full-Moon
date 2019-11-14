@@ -2,7 +2,7 @@
 #define WORLD_HPP
 
 #include "Frosty/API/Scene.hpp"
-#include "Frosty/StateMachine/StateMachine.hpp"
+//#include "Frosty/StateMachine/StateMachine.hpp"
 
 namespace Frosty
 {

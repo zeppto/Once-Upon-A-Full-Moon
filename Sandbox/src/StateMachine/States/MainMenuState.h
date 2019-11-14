@@ -1,23 +1,20 @@
 #ifndef MAIN_MENU_STATE_HPP
 #define MAIN_MENU_STATE_HPP
 
-#include "Frosty/StateMachine/State.hpp"
-#include "Frosty/Core/Application.hpp"
-#include "OptionMenuState.h"
-#include "PlayingState.h"
+#include "State.hpp"
 
-namespace Frosty
+namespace MCS
 {
 	class MainMenuState:public State {
 	public:
-		MainMenuState(Application * app); 
+		MainMenuState(Frosty::Application * app); 
 		~MainMenuState();
 
 		void Initiate();
 		void OnInput();
 		void OnUpdate();
 	private:
-		Application *app;
+		Frosty::Application *app;
 	};
 }
 

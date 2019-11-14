@@ -1,8 +1,6 @@
 #ifndef FROSTY_HPP
 #define FROSTY_HPP
 
-#include "Editor/InspectorLayer.hpp"
-
 #include <imgui/imgui.h>
 
 namespace MCS
@@ -12,6 +10,7 @@ namespace MCS
 	{
 	public:
 		Game();
+		void RunGame();
 		virtual ~Game();
 
 	};

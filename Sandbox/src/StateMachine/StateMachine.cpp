@@ -1,10 +1,15 @@
-#include <fypch.hpp>
+#include <mcspch.hpp>
 #include "StateMachine.hpp"
 
-namespace Frosty
+
+
+
+
+
+namespace MCS
 {
-	std::stack<Frosty::StateRef> StateMachine::m_States;
-	Frosty::StateRef StateMachine::m_NewState;
+	std::stack<StateRef> StateMachine::m_States;
+	StateRef StateMachine::m_NewState;
 	bool StateMachine::m_IsRemoving = false;
 	bool StateMachine::m_IsAdding = false;
 	bool StateMachine::m_IsReplacing = false;

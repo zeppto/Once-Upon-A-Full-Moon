@@ -11,7 +11,7 @@ int main(int argc, char** argv)
 	srand((unsigned int)time(NULL));
 
 	auto app = FY_NEW MCS::Game();
-	app->Run();
+	app->RunGame();
 	delete app;
 
 	return 0;

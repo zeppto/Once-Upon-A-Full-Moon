@@ -1,7 +1,8 @@
 #ifndef STATE_HPP
 #define STATE_HPP
+#include "Frosty/Core/Application.hpp"
 
-namespace Frosty
+namespace MCS
 {
 	class State
 	{
