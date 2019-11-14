@@ -116,7 +116,7 @@ namespace Frosty
 		glDisable(GL_BLEND);
 	}
 
-	void Renderer::SubmitParticles(const std::shared_ptr<Shader>& shader, const std::shared_ptr<Shader>& computeShader, const std::shared_ptr<VertexArray>& vertexArray, glm::mat4& modelMat, size_t particleCount, float maxLifetime)
+	void Renderer::SubmitParticles(const std::shared_ptr<Shader>& shader, const std::shared_ptr<VertexArray>& vertexArray, glm::mat4& modelMat, size_t particleCount, float maxLifetime)
 	{
 		shader->Bind();
 		vertexArray->Bind();
