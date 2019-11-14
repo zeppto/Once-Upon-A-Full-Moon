@@ -101,7 +101,7 @@ namespace Frosty
 		m_Window->Shutdown();
 		Renderer::Shutdown();
 		AssetManager::Delete();
-		//PrefabManager::Delete();
+		BoolMapGenerator::Delete();
 	}
 
 	void Application::InitPrefabBuffers()
@@ -275,7 +275,7 @@ namespace Frosty
 				tempBatch.Indices = tempIndices;
 				tempBatch.Transforms.emplace_back(temp);
 
-				//BoolMapGenerator::AddToModelRenderList(tempBatch);
+				BoolMapGenerator::AddBatch(tempBatch);
 
 
 				//BoundBatch
@@ -375,12 +375,9 @@ namespace Frosty
 				m_World->BeginScene();
 			}
 
-			//Temp (Change if needed)
+			//(Change if needed)
 			glm::vec4 temp = m_Window->GetViewport();
-			
 			glViewport((int)temp.x, (int)temp.y, (int)temp.z, (int)temp.w);
-
-
 			m_World->Render();
 
 			Renderer::EndScene();

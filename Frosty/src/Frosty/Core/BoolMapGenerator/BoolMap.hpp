@@ -21,6 +21,7 @@ public:
 	
 	inline BoolMap() = delete;
 	BoolMap(const uint16_t& Width, const uint16_t& Height, const uint8_t PixRatio,std::shared_ptr<bool[]>& Boolmap, std::shared_ptr<uint64_t[]> BitMap);
+	BoolMap(const uint16_t& Width, const uint16_t& Height, const uint8_t PixRatio, std::shared_ptr<uint64_t[]> BitMap);
 	BoolMap(const BoolMap& other);
 	BoolMap& operator= (const BoolMap& other);
 
