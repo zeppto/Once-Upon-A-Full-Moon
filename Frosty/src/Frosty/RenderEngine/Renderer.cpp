@@ -140,6 +140,9 @@ namespace Frosty
 	
 	void Renderer::Submit(ECS::CMaterial* mat, const std::shared_ptr<VertexArray>& vertexArray, const glm::mat4& transform)
 	{
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
 		mat->UseShader->Bind();
 		mat->UseShader->UploadUniformMat4("u_ViewProjection", s_SceneData->GameCamera.ViewProjectionMatrix);
 		mat->UseShader->UploadUniformMat4("u_Transform", transform);
@@ -178,6 +181,8 @@ namespace Frosty
 		vertexArray->Bind();
 		RenderCommand::EnableBackfaceCulling();
 		RenderCommand::Draw2D(vertexArray);
+
+		glDisable(GL_BLEND);
 	}
 
 	//For 2D, might be temp
