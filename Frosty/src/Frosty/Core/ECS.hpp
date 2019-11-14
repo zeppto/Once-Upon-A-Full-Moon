@@ -373,8 +373,8 @@ namespace Frosty
 
 		private:
 			std::array<ComponentType, MAX_ENTITIES_PER_COMPONENT> m_Data;
-
 		};
+
 
 		// List of all Components //
 

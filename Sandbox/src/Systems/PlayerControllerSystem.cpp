@@ -173,11 +173,12 @@ namespace MCS
 			retInfo << "\t\t" << i << "\t" << m_Health[i] << "\t" << m_Health[i]->EntityPtr->Id << "\t\t" << m_Health[i]->EntityPtr << "\t\t" << m_Health[i]->EntityPtr.use_count() << "\n";
 			retInfo << "\t\t" << i << "\t" << m_Inventory[i] << "\t" << m_Inventory[i]->EntityPtr->Id << "\t\t" << m_Inventory[i]->EntityPtr << "\t\t" << m_Inventory[i]->EntityPtr.use_count() << "\n";
 			retInfo << "\n"; // Have this last
-		}
-		retInfo << "\t\t-----------Done-----------\n";
-		retInfo << "\t----------------Done----------------\n\n";
 
-		return retInfo.str();
+			retInfo << "\t\t-----------Done-----------\n";
+			retInfo << "\t----------------Done----------------\n\n";
+
+			return retInfo.str();
+		}
 	}
 
 	glm::vec3 PlayerControllerSystem::ScreenToTerrainPoint()
@@ -499,13 +500,6 @@ namespace MCS
 
 	void PlayerControllerSystem::OnSwaphWeaponEvent(Frosty::SwapWeaponEvent& e)	// ASK LEONA WHY FIND DOESN'T WORK	~ W-_-W ~
 	{
-		//auto& playerWeapon = p_EntityMap.find(e.GetPlayerWeaponEntity());	// Player's weapon
-		//auto& lootWeapon = p_EntityMap.find(e.GetWeaponEntity());			// Loot weapon
-		//// If both entities have a CWeapon --> proceed
-		//if ((playerWeapon != p_EntityMap.end() && playerWeapon->second > 0) && (lootWeapon != p_EntityMap.end() && lootWeapon->second > 0))
-		//{
-		//	SwapWeaponStats(playerWeapon->first, lootWeapon->first);
-		//}
 
 		auto& playerWeapon = e.GetPlayerWeaponEntity();	// Player's weapon
 		auto& lootWeapon = e.GetWeaponEntity();			// Loot weapon
@@ -526,37 +520,6 @@ namespace MCS
 				m_World->GetComponent<Frosty::ECS::CWeapon>(playerWeapon) = m_World->GetComponent<Frosty::ECS::CWeapon>(lootWeapon);
 				m_World->GetComponent<Frosty::ECS::CWeapon>(lootWeapon) = tempWeapon;
 
-				//Frosty::ECS::CWeapon tempComp;
-				//auto& playerWeaponComp = m_World->GetComponent<Frosty::ECS::CWeapon>(playerWeapon);
-				//auto& lootWeaponComp = m_World->GetComponent<Frosty::ECS::CWeapon>(lootWeapon);
-
-				//tempComp.Weapon = playerWeaponComp.Weapon;
-				//tempComp.LVL = playerWeaponComp.LVL;
-				//tempComp.Damage = playerWeaponComp.Damage;
-				//tempComp.CriticalHit = playerWeaponComp.CriticalHit;
-				//tempComp.CriticalHitChance = playerWeaponComp.CriticalHitChance;
-				//tempComp.Cooldown = playerWeaponComp.Cooldown;
-				//tempComp.CooldownTimer = playerWeaponComp.CooldownTimer;
-				//tempComp.Lifetime = playerWeaponComp.Lifetime;
-
-				//playerWeaponComp.Weapon = lootWeaponComp.Weapon;
-				//playerWeaponComp.LVL = lootWeaponComp.LVL;
-				//playerWeaponComp.Damage = lootWeaponComp.Damage;
-				//playerWeaponComp.CriticalHit = lootWeaponComp.CriticalHit;
-				//playerWeaponComp.CriticalHitChance = lootWeaponComp.CriticalHitChance;
-				//playerWeaponComp.Cooldown = lootWeaponComp.Cooldown;
-				//playerWeaponComp.CooldownTimer = lootWeaponComp.CooldownTimer;
-				//playerWeaponComp.Lifetime = lootWeaponComp.Lifetime;
-
-				//lootWeaponComp.Weapon = tempComp.Weapon;
-				//lootWeaponComp.LVL = tempComp.LVL;
-				//lootWeaponComp.Damage = tempComp.Damage;
-				//lootWeaponComp.CriticalHit = tempComp.CriticalHit;
-				//lootWeaponComp.CriticalHitChance = tempComp.CriticalHitChance;
-				//lootWeaponComp.Cooldown = tempComp.Cooldown;
-				//lootWeaponComp.CooldownTimer = tempComp.CooldownTimer;
-				//lootWeaponComp.Lifetime = tempComp.Lifetime;
-
 				// Only switch CMesh and CMaterial when weapon stats have been swapped
 				SwapMesh(playerWeapon, lootWeapon);
 				SwapMaterial(playerWeapon, lootWeapon);
@@ -576,16 +539,6 @@ namespace MCS
 				m_World->GetComponent<Frosty::ECS::CMesh>(playerWeapon) = m_World->GetComponent<Frosty::ECS::CMesh>(lootWeapon);
 				m_World->GetComponent<Frosty::ECS::CMesh>(lootWeapon) = tempMesh;
 
-				//Frosty::ECS::CMesh tempComp;
-				//auto& playerWeaponComp = m_World->GetComponent<Frosty::ECS::CMesh>(playerWeapon);
-				//auto& lootWeaponComp = m_World->GetComponent<Frosty::ECS::CMesh>(lootWeapon);
-
-				//tempComp.Mesh = playerWeaponComp.Mesh;
-
-				//playerWeaponComp.Mesh = lootWeaponComp.Mesh;
-
-				//lootWeaponComp.Mesh = tempComp.Mesh;
-
 			}
 		}
 	}
@@ -601,46 +554,6 @@ namespace MCS
 				tempMaterial = m_World->GetComponent<Frosty::ECS::CMaterial>(playerWeapon);
 				m_World->GetComponent<Frosty::ECS::CMaterial>(playerWeapon) = m_World->GetComponent<Frosty::ECS::CMaterial>(lootWeapon);
 				m_World->GetComponent<Frosty::ECS::CMaterial>(lootWeapon) = tempMaterial;
-
-				//Frosty::ECS::CMaterial tempComp;
-				//auto& playerWeaponComp = m_World->GetComponent<Frosty::ECS::CMaterial>(playerWeapon);
-				//auto& lootWeaponComp = m_World->GetComponent<Frosty::ECS::CMaterial>(lootWeapon);
-
-				//tempComp.UseShader = playerWeaponComp.UseShader;
-				//tempComp.Albedo = playerWeaponComp.Albedo;
-				//tempComp.DiffuseTexture = playerWeaponComp.DiffuseTexture;
-				//tempComp.SpecularTexture = playerWeaponComp.SpecularTexture;
-				//tempComp.NormalTexture = playerWeaponComp.NormalTexture;
-				//tempComp.BlendMapTexture = playerWeaponComp.BlendMapTexture;
-				//tempComp.BlendTexture1 = playerWeaponComp.BlendTexture1;
-				//tempComp.BlendTexture2 = playerWeaponComp.BlendTexture2;
-				//tempComp.SpecularStrength = playerWeaponComp.SpecularStrength;
-				//tempComp.Shininess = playerWeaponComp.Shininess;
-				//tempComp.TextureScale = playerWeaponComp.TextureScale;
-
-				//playerWeaponComp.UseShader = lootWeaponComp.UseShader;
-				//playerWeaponComp.Albedo = lootWeaponComp.Albedo;
-				//playerWeaponComp.DiffuseTexture = lootWeaponComp.DiffuseTexture;
-				//playerWeaponComp.SpecularTexture = lootWeaponComp.SpecularTexture;
-				//playerWeaponComp.NormalTexture = lootWeaponComp.NormalTexture;
-				//playerWeaponComp.BlendMapTexture = lootWeaponComp.BlendMapTexture;
-				//playerWeaponComp.BlendTexture1 = lootWeaponComp.BlendTexture1;
-				//playerWeaponComp.BlendTexture2 = lootWeaponComp.BlendTexture2;
-				//playerWeaponComp.SpecularStrength = lootWeaponComp.SpecularStrength;
-				//playerWeaponComp.Shininess = lootWeaponComp.Shininess;
-				//playerWeaponComp.TextureScale = lootWeaponComp.TextureScale;
-
-				//lootWeaponComp.UseShader = tempComp.UseShader;
-				//lootWeaponComp.Albedo = tempComp.Albedo;
-				//lootWeaponComp.DiffuseTexture = tempComp.DiffuseTexture;
-				//lootWeaponComp.SpecularTexture = tempComp.SpecularTexture;
-				//lootWeaponComp.NormalTexture = tempComp.NormalTexture;
-				//lootWeaponComp.BlendMapTexture = tempComp.BlendMapTexture;
-				//lootWeaponComp.BlendTexture1 = tempComp.BlendTexture1;
-				//lootWeaponComp.BlendTexture2 = tempComp.BlendTexture2;
-				//lootWeaponComp.SpecularStrength = tempComp.SpecularStrength;
-				//lootWeaponComp.Shininess = tempComp.Shininess;
-				//lootWeaponComp.TextureScale = tempComp.TextureScale;
 			}
 		}
 	}

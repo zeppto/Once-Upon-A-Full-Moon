@@ -130,8 +130,8 @@ namespace MCS
 		auto& camEntity = world->GetSceneCamera();
 		world->GetComponent<Frosty::ECS::CCamera>(camEntity).Target = &playerTransform;
 
-		// PLAYER 2 (testing)
-		auto& player2 = world->CreateEntity({ 25.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 2.0f, 2.0f, 2.0f });
+		// PLAYER 2
+		auto& player2 = world->CreateEntity({ 4.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 2.0f, 2.0f, 2.0f });
 		auto& playerTransform2 = world->GetComponent<Frosty::ECS::CTransform>(player2);
 		world->AddComponent<Frosty::ECS::CMesh>(player2, Frosty::AssetManager::GetMesh("scarlet"));
 		auto& playerMat2 = world->AddComponent<Frosty::ECS::CMaterial>(player2, Frosty::AssetManager::GetShader("Texture2D"));
@@ -143,6 +143,8 @@ namespace MCS
 		world->AddComponent<Frosty::ECS::CDash>(player2);
 		world->AddComponent<Frosty::ECS::CHealth>(player2);
 		world->AddComponent<Frosty::ECS::CInventory>(player2);
+		auto& camEntity2 = world->GetSceneCamera();
+		world->GetComponent<Frosty::ECS::CCamera>(camEntity2).Target = &playerTransform2;
 
 		// WALL
 		auto& wall = world->CreateEntity({ 0.0f, 5.0f, -3.0f }, { 0.0f, 0.0f, 0.0f }, { 15.0f, 10.0f, 1.0f }, true);
