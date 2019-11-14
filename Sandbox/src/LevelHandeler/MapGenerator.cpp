@@ -252,78 +252,93 @@ std::string MapGenerator::getRoomTextur(glm::ivec2 pos, int* rotation)
 	if (m_TileMap[pos.x][pos.y].sideExits[0] && m_TileMap[pos.x][pos.y].sideExits[1] && !m_TileMap[pos.x][pos.y].sideExits[2] && !m_TileMap[pos.x][pos.y].sideExits[3])
 	{
 		*rotation = 90;
-		return "RoomTempStraght";
+		//return "RoomTempStraght";
+		return "straightRoad_1";
 	}
 	if (!m_TileMap[pos.x][pos.y].sideExits[0] && !m_TileMap[pos.x][pos.y].sideExits[1] && m_TileMap[pos.x][pos.y].sideExits[2] && m_TileMap[pos.x][pos.y].sideExits[3])
 	{
 		*rotation = 0;
-		return "RoomTempStraght";
+		//return "RoomTempStraght";
+		return "straightRoad_1";
 	}
 	if (m_TileMap[pos.x][pos.y].sideExits[0] && !m_TileMap[pos.x][pos.y].sideExits[1] && m_TileMap[pos.x][pos.y].sideExits[2] && !m_TileMap[pos.x][pos.y].sideExits[3])
 	{
 		*rotation = 90;
-		return "RoomTempBend";
+		//return "RoomTempBend";
+		return "turningRoad_1";
 	}
 	if (m_TileMap[pos.x][pos.y].sideExits[0] && !m_TileMap[pos.x][pos.y].sideExits[1] && !m_TileMap[pos.x][pos.y].sideExits[2] && m_TileMap[pos.x][pos.y].sideExits[3])
 	{
 		*rotation = 0;
-		return "RoomTempBend";
+		//return "RoomTempBend";
+		return "turningRoad_1";
 	}
 	if (!m_TileMap[pos.x][pos.y].sideExits[0] && m_TileMap[pos.x][pos.y].sideExits[1] && m_TileMap[pos.x][pos.y].sideExits[2] && !m_TileMap[pos.x][pos.y].sideExits[3])
 	{
 		*rotation = 180;
-		return "RoomTempBend";
+		//return "RoomTempBend";
+		return "turningRoad_1";
 	}
 	if (!m_TileMap[pos.x][pos.y].sideExits[0] && m_TileMap[pos.x][pos.y].sideExits[1] && !m_TileMap[pos.x][pos.y].sideExits[2] && m_TileMap[pos.x][pos.y].sideExits[3])
 	{
 		*rotation = 270;
-		return "RoomTempBend";
+		//return "RoomTempBend";
+		return "turningRoad_1";
 	}
 	if (m_TileMap[pos.x][pos.y].sideExits[0] && !m_TileMap[pos.x][pos.y].sideExits[1] && m_TileMap[pos.x][pos.y].sideExits[2] && m_TileMap[pos.x][pos.y].sideExits[3])
 	{
 		*rotation = 0;
-		return "RoomTemp3";
+		//return "RoomTemp3";
+		return "threeWayRoad_2";
 	}
 	if (m_TileMap[pos.x][pos.y].sideExits[0] && m_TileMap[pos.x][pos.y].sideExits[1] && m_TileMap[pos.x][pos.y].sideExits[2] && !m_TileMap[pos.x][pos.y].sideExits[3])
 	{
 		*rotation = 90;
-		return "RoomTemp3";
+		//return "RoomTemp3";
+		return "threeWayRoad_2";
 	}
 	if (!m_TileMap[pos.x][pos.y].sideExits[0] && m_TileMap[pos.x][pos.y].sideExits[1] && m_TileMap[pos.x][pos.y].sideExits[2] && m_TileMap[pos.x][pos.y].sideExits[3])
 	{
 		*rotation = 180;
-		return "RoomTemp3";
+		//return "RoomTemp3";
+		return "threeWayRoad_2";
 	}
 	if (m_TileMap[pos.x][pos.y].sideExits[0] && m_TileMap[pos.x][pos.y].sideExits[1] && !m_TileMap[pos.x][pos.y].sideExits[2] && m_TileMap[pos.x][pos.y].sideExits[3])
 	{
 		*rotation = 270;
-		return "RoomTemp3";
+		//return "RoomTemp3";
+		return "threeWayRoad_2";
 	}
 	if (m_TileMap[pos.x][pos.y].sideExits[0] && m_TileMap[pos.x][pos.y].sideExits[1] && m_TileMap[pos.x][pos.y].sideExits[2] && m_TileMap[pos.x][pos.y].sideExits[3])
 	{
 		*rotation = 0;
-		return "RoomTempCross";
+		//return "RoomTempCross";
+		return "crossroad_1";
 	}
 	//dead ends
 	if (m_TileMap[pos.x][pos.y].sideExits[0] && !m_TileMap[pos.x][pos.y].sideExits[1] && !m_TileMap[pos.x][pos.y].sideExits[2] && !m_TileMap[pos.x][pos.y].sideExits[3])
 	{
 		*rotation = 0;
-		return "RoomTempDeadEnd";
+		//return "RoomTempDeadEnd";
+		return "deadend_1";
 	}
 	if (!m_TileMap[pos.x][pos.y].sideExits[0] && !m_TileMap[pos.x][pos.y].sideExits[1] && m_TileMap[pos.x][pos.y].sideExits[2] && !m_TileMap[pos.x][pos.y].sideExits[3])
 	{
 		*rotation = 90;
-		return "RoomTempDeadEnd";
+		//return "RoomTempDeadEnd";
+		return "deadend_1";
 	}
 	if (!m_TileMap[pos.x][pos.y].sideExits[0] && m_TileMap[pos.x][pos.y].sideExits[1] && !m_TileMap[pos.x][pos.y].sideExits[2] && !m_TileMap[pos.x][pos.y].sideExits[3])
 	{
 		*rotation = 180;
-		return "RoomTempDeadEnd";
+		//return "RoomTempDeadEnd";
+		return "deadend_1";
 	}
 	if (!m_TileMap[pos.x][pos.y].sideExits[0] && !m_TileMap[pos.x][pos.y].sideExits[1] && !m_TileMap[pos.x][pos.y].sideExits[2] && m_TileMap[pos.x][pos.y].sideExits[3])
 	{
 		*rotation = 270;
-		return "RoomTempDeadEnd";
+		//return "RoomTempDeadEnd";
+		return "deadend_1";
 	}
 	if (m_TileMap[pos.x][pos.y].Ocupide)
 		return "HeartFull";

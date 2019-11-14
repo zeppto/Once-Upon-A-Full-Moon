@@ -401,6 +401,32 @@ namespace Level
 		return toReturn;
 	}
 
+	glm::vec3 MoveToNewRoom(bool up, bool down, bool right, bool left, int entrensSide)
+	{
+		glm::vec3 toReturn;
+		if (up && entrensSide == 1)
+		{
+			toReturn = glm::vec3(0.00f, 0.00f, -145.00f) + glm::vec3(0.00f, 0.00f, 10.0f);
+		}
+		else if (down && entrensSide == 0)
+		{
+			toReturn = glm::vec3(0.00f, 0.00f, 145.00f) - glm::vec3(0.00f, 0.00f, 10.0f);
+		}
+		else if (right && entrensSide == 3)
+		{
+			toReturn = glm::vec3(-145.00f, 0.00f, 0.00f) + glm::vec3(10.00f, 0.00f, 0.00f);
+		}
+		else if (left && entrensSide == 2)
+		{
+			toReturn = glm::vec3(145.00f, 0.00f, 0.00f) - glm::vec3(10.00f, 0.00f, 0.00f);
+		}
+		else
+		{
+			toReturn = glm::vec3(0, 0, 0);
+		}
+		return toReturn;
+	}
+
 	glm::vec3 BorderTrees(int treeNr)
 	{
 		switch (treeNr)

@@ -44,9 +44,14 @@ namespace MCS
 			m_Map.generateMap();
 			m_CurrentRoome = m_Map.getRoom(m_PlayerPos);
 
-			int rotation = 0;
-			std::string texture = m_Map.getRoomTextur(m_PlayerPos, &rotation);
-			Level::Room(m_CurrentRoome.sideExits[0], m_CurrentRoome.sideExits[1], m_CurrentRoome.sideExits[2], m_CurrentRoome.sideExits[3], texture, rotation);
+			//int rotation = 0;
+			//std::string texture = m_Map.getRoomTextur(m_PlayerPos, &rotation);
+			//Level::Room(m_CurrentRoome.sideExits[0], m_CurrentRoome.sideExits[1], m_CurrentRoome.sideExits[2], m_CurrentRoome.sideExits[3], texture, rotation);
+			//this is curently the start room
+			int rotate;
+			m_Map.getRoomTextur(m_PlayerPos, &rotate);
+			Level::MoveToNewRoom(m_CurrentRoome.sideExits[0], m_CurrentRoome.sideExits[1], m_CurrentRoome.sideExits[2], m_CurrentRoome.sideExits[3]);
+			m_LevelFileFormat.OpenFromFile("deadend_1", nullptr, rotate);
 			m_Start = false;
 		}
 	}
@@ -127,7 +132,7 @@ namespace MCS
 		auto& ExitSide = m_World->GetComponent<Frosty::ECS::CLevelExit>(e.GetExitEntity());
 
 		auto& PlayerTranform = m_World->GetComponent<Frosty::ECS::CTransform>(e.GetPlayerEntity());
-
+		Frosty::ECS::CTransform* playerTransform;
 
 		//temp level swap
 		for (size_t i = 1; i < p_Total; i++)
@@ -160,6 +165,10 @@ namespace MCS
 							}
 					}
 				}
+				else
+				{
+					playerTransform = m_Transform[i];
+				}
 			}
 		}
 		if (ExitSide.ExitDirection == 0)
@@ -177,9 +186,12 @@ namespace MCS
 		//m_TempTimer = 0;
 
 		int rotation = 0;
-		std::string texture = m_Map.getRoomTextur(m_PlayerPos, &rotation);
-		PlayerTranform.Position = Level::Room(m_CurrentRoome.sideExits[0], m_CurrentRoome.sideExits[1], 
-			m_CurrentRoome.sideExits[2], m_CurrentRoome.sideExits[3], texture, rotation, ExitSide.ExitDirection);
+		std::string fileName = m_Map.getRoomTextur(m_PlayerPos, &rotation);
+		//PlayerTranform.Position = Level::Room(m_CurrentRoome.sideExits[0], m_CurrentRoome.sideExits[1], 
+		//	m_CurrentRoome.sideExits[2], m_CurrentRoome.sideExits[3], texture, rotation, ExitSide.ExitDirection);
+		PlayerTranform.Position = Level::MoveToNewRoom(m_CurrentRoome.sideExits[0], m_CurrentRoome.sideExits[1],
+			m_CurrentRoome.sideExits[2], m_CurrentRoome.sideExits[3], ExitSide.ExitDirection);
+		m_LevelFileFormat.OpenFromFile(fileName, playerTransform, rotation);
 
 	}
 	void LevelSystem::OnSaveLevelEvent(Frosty::SaveLevelEvent& e)

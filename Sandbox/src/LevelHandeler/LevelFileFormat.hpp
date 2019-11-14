@@ -172,7 +172,8 @@ public:
 
 	void AddEntity(const std::shared_ptr<Frosty::ECS::Entity>& entity);
 	void SaveToFile(std::string fileName);
-	void OpenFromFile(std::string fileName, Frosty::ECS::CTransform* playerTransform);
+	void OpenFromFile(std::string fileName, Frosty::ECS::CTransform* playerTransform = nullptr,
+		int rotation = 0, glm::vec3 move = glm::vec3(0,0,0));
 
 private:
 	//std::shared_ptr<ECS::Entity> m_ExitEntity;

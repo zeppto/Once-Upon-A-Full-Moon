@@ -2,6 +2,7 @@
 //#include "Frosty.h"
 #include "LevelFileFormat.hpp"
 #include "Frosty/API/AssetManager/AssetManager.hpp"
+#include <glm/gtx/matrix_decompose.hpp>
 
 
 LevelFileFormat::LevelFileFormat()
@@ -238,7 +239,7 @@ void LevelFileFormat::SaveToFile(std::string fileName)
 
 }
 
-void LevelFileFormat::OpenFromFile(std::string fileName, Frosty::ECS::CTransform* playerTransform)
+void LevelFileFormat::OpenFromFile(std::string fileName, Frosty::ECS::CTransform* playerTransform, int rotation, glm::vec3 move)
 {
 	std::ifstream existingFile;
 	existingFile.open("../../../assets/levels/" + fileName + ".lvl", std::ios::binary);
@@ -276,6 +277,32 @@ void LevelFileFormat::OpenFromFile(std::string fileName, Frosty::ECS::CTransform
 						tranform.Position = fileEntitys.myEntitys.at(i).myTransform.Position;
 						tranform.Scale = fileEntitys.myEntitys.at(i).myTransform.Scale;
 						tranform.Rotation = fileEntitys.myEntitys.at(i).myTransform.Rotation;
+						glm::mat4 matrix(1.0f);
+						//matrix = glm::rotate(matrix, glm::degrees(90.0f), glm::vec3(0, 1, 0));
+						matrix = glm::rotate(matrix, glm::radians((float)rotation), glm::vec3(0, 1, 0));
+						matrix = glm::translate(matrix, tranform.Position);
+						//matrix = glm::rotate(matrix, tranform.Rotation.x, glm::vec3(1, 0, 0));
+						matrix = glm::rotate(matrix, tranform.Rotation.y, glm::vec3(0, 1, 0));
+						//matrix = glm::rotate(matrix, tranform.Rotation.z, glm::vec3(0, 0, 1));
+						//matrix = glm::scale(matrix, tranform.Scale);
+												//temp
+						if (rotation == 90 || rotation == 270)
+						{
+							if (fileEntitys.myEntitys.at(i).MyComponents.at(10).HaveComponent)
+							{
+								tranform.Scale.x = fileEntitys.myEntitys.at(i).myTransform.Scale.z;
+								tranform.Scale.z = fileEntitys.myEntitys.at(i).myTransform.Scale.x;
+							}
+							else
+							{
+								tranform.Rotation.y += rotation;
+							}
+						}
+						tranform.Position = glm::vec3(matrix[3].x, matrix[3].y, matrix[3].z);
+						glm::quat tempRot;
+						glm::vec3 skew;
+						glm::vec4 perspective;
+						//glm::decompose(matrix, tranform.Scale, tempRot, tranform.Position, skew, perspective);
 					}
 					//1 = Mesh
 					if (j == 1)
