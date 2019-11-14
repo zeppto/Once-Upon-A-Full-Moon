@@ -2,6 +2,7 @@
 #define NODEMAP_HPP
 
 #include <sstream> 
+#include<fstream>
 
 namespace Frosty
 {
@@ -457,7 +458,8 @@ namespace Frosty
 					//if (in_ptr->IsConnectAble() && in_ptr->GetGroupID() != m_GroupID) // TODO
 					if (in_ptr->IsConnectAble())
 					{
-						in_ptr->AddExit(m_CurrentDir);
+						m_CurrentNode->AddExit(m_CurrentDir);
+						in_ptr->AddExit(m_CurrentDir,1);
 						m_CurrentNode = in_ptr;
 						stopWalk = true;
 					}
@@ -565,6 +567,75 @@ namespace Frosty
 
 		inline Node*** GetMap() {return m_Grid;}
 		inline const std::vector<Node>& GetNodes() { return m_Nodes; }
+		inline void WriteMapToFile()
+		{
+			char** grid = FY_NEW char* [(int)m_Width *3];
+			for (int i = 0; i < m_Width *3; i++)
+			{
+				grid[i] = FY_NEW char[(int)m_Height* 3];
+
+			}
+
+			std::ofstream file;
+			file.open("map.txt");
+
+
+			for (int i = 0; i < m_Nodes.size(); i++)
+			{
+				int tempX = m_Nodes.at(i).GetX() * 3;
+				int tempY = m_Nodes.at(i).GetY() * 3;
+
+				grid[tempX][tempY] = 'x';
+
+
+				const bool* tmpptr = m_Nodes.at(i).GetExits();
+
+				if (tmpptr[0])
+				{
+					grid[tempX][tempY-1] = '1';
+				}
+				if (tmpptr[1])
+				{
+					grid[tempX+1][tempY] = '1';
+				}
+				if (tmpptr[2])
+				{
+					grid[tempX-1][tempY] = '1';
+				}
+				if (tmpptr[3])
+				{
+					grid[tempX][tempY + 1] = '1';
+				}
+
+
+			}
+
+
+			for (int i = 0; i < m_Height * 3; i++)
+			{
+				for (int j = 0; j < m_Width * 3; j++)
+				{
+					if (grid[i][j] != '1' && grid[i][j] != 'x')
+					{
+						grid[i][j] = '0';
+					}
+
+
+					file << grid[i][j];
+
+				}
+				file << "\n";
+			}
+
+
+
+			for (int i = 0; i < m_Width * 3; i++)
+			{
+				delete[] grid[i];
+			}
+			delete[] grid;
+
+		}
 		inline void GenereateMap()
 		{
 			int cenX = m_Width / 2;
@@ -643,6 +714,7 @@ namespace Frosty
 			
 
 			TranslateMap();
+		//	WriteMapToFile();
 			DeleteWalkerList();
 		
 		
