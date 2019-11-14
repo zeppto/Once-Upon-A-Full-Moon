@@ -40,7 +40,7 @@ namespace MCS
 
 						m_Follow[i]->Target = &world->GetComponent<Frosty::ECS::CTransform>(m_Boss[i]->TargetList.at(0));
 						m_Boss[i]->Hunting = true;
-						m_Follow[i]->StopDistance = 0.1;
+						m_Follow[i]->StopDistance = 0.1f;
 					}
 				}
 
@@ -164,7 +164,7 @@ namespace MCS
 	{
 		for (size_t i = 1; i < p_Total; i++)
 		{
-			size_t index = p_EntityMap[e.GetEntity()];			// Why is this needed? If needed talk to Leona
+			
 			auto& entity = e.GetEntity();
 
 
@@ -190,7 +190,7 @@ namespace MCS
 
 			m_Follow[i]->Target = &world->GetComponent<Frosty::ECS::CTransform>(m_Boss[i]->TargetList.at(0));
 			m_Boss[i]->Hunting = true;
-			m_Follow[i]->StopDistance = 0.1;
+			m_Follow[i]->StopDistance = 0.1f;
 
 		}
 	}

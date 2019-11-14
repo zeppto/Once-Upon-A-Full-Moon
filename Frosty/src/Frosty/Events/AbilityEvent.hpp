@@ -53,6 +53,22 @@ namespace Frosty
 		std::shared_ptr<ECS::Entity> m_Entity;
 	};
 
+	class SwapWeaponEvent : public BaseEvent
+	{
+	public:
+		// 1) Player's weapon	2) Lootable weapon
+		SwapWeaponEvent(const std::shared_ptr<ECS::Entity>& playerWeapon, const std::shared_ptr<ECS::Entity>& LootWeapon) : m_PlayerWeapon(playerWeapon), m_LootWeapon(LootWeapon) { }
+
+		const std::shared_ptr<ECS::Entity>& GetPlayerWeaponEntity() const { return m_PlayerWeapon; }
+		const std::shared_ptr<ECS::Entity>& GetWeaponEntity() const { return m_LootWeapon; }
+
+		EVENT_TYPE(SwapWeapon)
+
+	private:
+		std::shared_ptr<ECS::Entity> m_PlayerWeapon;
+		std::shared_ptr<ECS::Entity> m_LootWeapon;
+	};
+
 	class ExitLevelEvent : public BaseEvent
 	{
 	public:

@@ -1,6 +1,8 @@
 #ifndef PLAYER_CONTROLLER_SYSTEM_HPP
 #define PLAYER_CONTROLLER_SYSTEM_HPP
 
+namespace Frosty { class SwapWeaponEvent; }
+
 namespace MCS
 {
 	class PlayerControllerSystem : public Frosty::ECS::BaseSystem
@@ -15,6 +17,7 @@ namespace MCS
 		virtual void Init() override;
 		virtual void OnInput() override;
 		virtual void OnUpdate() override;
+		virtual void OnEvent(Frosty::BaseEvent& e) override;
 
 		virtual void AddComponent(const std::shared_ptr<Frosty::ECS::Entity>& entity) override;
 		virtual void RemoveEntity(const std::shared_ptr<Frosty::ECS::Entity>& entity) override;
@@ -28,15 +31,28 @@ namespace MCS
 		void HandleAttack(const glm::vec3& point, size_t index);
 		void HandleInventory(size_t index);
 
+		void CreateBoundingBox(const std::shared_ptr<Frosty::ECS::Entity>& weaponCarrier, const std::shared_ptr<Frosty::ECS::Entity>& weapon);
+		void CreateProjectile(const std::shared_ptr<Frosty::ECS::Entity>& weaponCarrier, const std::shared_ptr<Frosty::ECS::Entity>& weapon);
+
+		void OnSwaphWeaponEvent(Frosty::SwapWeaponEvent& e);
+		void SwapWeaponStats(const std::shared_ptr<Frosty::ECS::Entity>& playerWeapon, const std::shared_ptr<Frosty::ECS::Entity>& lootWeapon);
+		void SwapMesh(const std::shared_ptr<Frosty::ECS::Entity>& playerWeapon, const std::shared_ptr<Frosty::ECS::Entity>& lootWeapon);
+		void SwapMaterial(const std::shared_ptr<Frosty::ECS::Entity>& playerWeapon, const std::shared_ptr<Frosty::ECS::Entity>& lootWeapon);
+		float GenerateCriticalHit(float criticalHit, float criticalHitChance);
+
 	private:
 		std::array<Frosty::ECS::CTransform*, Frosty::ECS::MAX_ENTITIES_PER_COMPONENT> m_Transform;
 		std::array<Frosty::ECS::CPlayer*, Frosty::ECS::MAX_ENTITIES_PER_COMPONENT> m_Player;
 		std::array<Frosty::ECS::CDash*, Frosty::ECS::MAX_ENTITIES_PER_COMPONENT> m_Dash;
-		std::array<Frosty::ECS::CWeapon*, Frosty::ECS::MAX_ENTITIES_PER_COMPONENT> m_Weapon;
 		std::array<Frosty::ECS::CPhysics*, Frosty::ECS::MAX_ENTITIES_PER_COMPONENT> m_Physics;
 		std::array<Frosty::ECS::CHealth*, Frosty::ECS::MAX_ENTITIES_PER_COMPONENT> m_Health;
 		std::array<Frosty::ECS::CInventory*, Frosty::ECS::MAX_ENTITIES_PER_COMPONENT> m_Inventory;
+
+		Frosty::World* m_World{ nullptr };
+
+		// Supertemp
+		float cooldown = 1.f;
+		float cooldownTimer = Frosty::Time::CurrentTime();
 	};
 }
-
 #endif // !PLAYER_CONTROLLER_SYSTEM_HPP

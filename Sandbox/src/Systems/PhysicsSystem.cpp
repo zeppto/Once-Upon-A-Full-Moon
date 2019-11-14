@@ -115,7 +115,7 @@ namespace MCS
 					{
 						auto& comp = m_World->GetComponent<Frosty::ECS::CAttack>(m_Transform[index]->EntityPtr);
 
-						// ... and an enemy has been hit my a player attack --> destroy enemy (should lower HP)
+						// ... and an enemy has been hit by a player attack --> destroy enemy (should lower HP)
 						if (m_World->HasComponent<Frosty::ECS::CEnemy>(m_Transform[i]->EntityPtr) && comp.Friendly)
 						{
 							if (!m_World->HasComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr))
