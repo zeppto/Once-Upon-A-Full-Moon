@@ -248,7 +248,7 @@ namespace Frosty
 	//	glDeleteTextures(1, &s_Texture);
 		s_VABatch.erase(s_VABatch.begin(), s_VABatch.end());
 		s_ModelBatch.erase(s_ModelBatch.begin(), s_ModelBatch.end());
-		s_BoundBatch.erase(s_BoundBatch.begin(), s_BoundBatch.end());
+		s_BoundBatch.erase(s_BoundBatch.begin(), s_BoundBatch.end()); 
 
 //		return std::shared_ptr<BoolMap>(FY_NEW BoolMap(TmpWidth, TmpHeight, s_Settings.Pix_Cord_Ratio, tmpMap, bitMap));
 		return std::shared_ptr<BoolMap>(FY_NEW BoolMap(TmpWidth, TmpHeight, s_Settings.Pix_Cord_Ratio, bitMap));

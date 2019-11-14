@@ -5,6 +5,7 @@
 #include "Frosty/Core/KeyCodes.h"
 #include"Frosty/API/AssetManager/AssetManager.hpp"
 #include"Frosty/Core/BoolMapGenerator/BoolMapGenerator.hpp"
+#include"Frosty/Core/BoolMapGenerator/TestMap.hpp"
 
 
 //Particle Branch Includes
@@ -362,6 +363,13 @@ namespace Frosty
 				bool random1 = ptr->CheckCollition(glm::vec3(51.0f, 1.0f, 50.0f));
 				bool random2= ptr->CheckCollition(glm::vec3(31.5f, 1.0f, 20.0f));
 				bool random3= ptr->CheckCollition(glm::vec3(34.0f, 1.0f, 19.0f));
+
+
+				NodeMap testMap(100, 100);
+
+				testMap.GenereateMap();
+
+				testMap.RenderMap();
 
 				Renderer::SetCamera(m_EditorCamera.GetPosition(), m_EditorCamera.GetViewMatrix(), m_EditorCamera.GetProjectionMatrix());
 			}

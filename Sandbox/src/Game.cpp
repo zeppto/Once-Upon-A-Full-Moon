@@ -16,7 +16,7 @@
 #include "Systems/SwordSystem.hpp"
 #include "Systems/NavigationSystem.hpp"
 #include "Systems/ParticleSystem.hpp"
-#include "Frosty/Core/BoolMapGenerator/TestMap.hpp"
+//#include "Frosty/Core/BoolMapGenerator/TestMap.hpp"
 //#include "Systems/PlayerAttackSystem.hpp"
 //#include "Systems/EnemyAttackSystem.hpp"
 //#include "Systems/HealthBarSystem.hpp"
@@ -121,83 +121,83 @@ namespace MCS
 
 
 
-		Frosty::NodeMap testMap(100, 100);
-		testMap.GenereateMap();
+		//Frosty::NodeMap testMap(100, 100);
+		//testMap.GenereateMap();
 
 
-		std::vector<Frosty::Node>  nodeMap = testMap.GetNodes();
+		//std::vector<Frosty::Node>  nodeMap = testMap.GetNodes();
 
-		float GridMult = 1.0f;
+		//float GridMult = 1.0f;
 
-		for (int i = 0; i < nodeMap.size(); i++)
-		{
-			float tempX = nodeMap.at(i).GetX() * GridMult;
-			float tempY = nodeMap.at(i).GetY() * GridMult;
+		//for (int i = 0; i < nodeMap.size(); i++)
+		//{
+		//	float tempX = nodeMap.at(i).GetX() * GridMult;
+		//	float tempY = nodeMap.at(i).GetY() * GridMult;
 
-			const bool* exits = nodeMap.at(i).GetExits();
+		//	const bool* exits = nodeMap.at(i).GetExits();
 
-			float xOffset = 5.0f;
-			float yOffset = 5.0f;
-			float scaleX = 0.05f;
-			float scaleY = 0.05f;
-
-
-
-
-			float PosX = tempX/10.0f ;
-			float PosY = tempY/10.0f ;
-
-			auto& Node = world->CreateEntity({ PosX, 10.0f, PosY }, { 0.0f, 0.0f, 0.0f }, { scaleX, 0.1f, scaleY });
-			world->AddComponent<Frosty::ECS::CMesh>(Node, Frosty::AssetManager::GetMesh("pCube1"));
-			world->AddComponent<Frosty::ECS::CMaterial>(Node, Frosty::AssetManager::GetShader("FlatColor"));
-
-
-
-			for (int j = 0; j < 4; j++)
-			{
-				xOffset = 0.05f;
-				yOffset = 0.05f;
-				if (exits[j])
-				{
-
-					float ofPosX = PosX;
-					float ofPosY = PosY;
-
-					if (j == 0)
-					{
-						ofPosY -= yOffset;
-					}
-					else if (j == 1)
-					{
-						ofPosX += xOffset;
-					}
-					else if (j == 2)
-					{
-						ofPosX -= xOffset;
-					}
-					else if (j == 3)
-					{
-						ofPosY += yOffset;
-					}
-					/*			scaleY = 2.0f;
-									scaleX = 2.0f;*/
+		//	float xOffset = 5.0f;
+		//	float yOffset = 5.0f;
+		//	float scaleX = 0.05f;
+		//	float scaleY = 0.05f;
 
 
 
 
+		//	float PosX = tempX/10.0f ;
+		//	float PosY = tempY/10.0f ;
+
+		//	auto& Node = world->CreateEntity({ PosX, 10.0f, PosY }, { 0.0f, 0.0f, 0.0f }, { scaleX, 0.1f, scaleY });
+		//	world->AddComponent<Frosty::ECS::CMesh>(Node, Frosty::AssetManager::GetMesh("pCube1"));
+		//	world->AddComponent<Frosty::ECS::CMaterial>(Node, Frosty::AssetManager::GetShader("FlatColor"));
 
 
-					auto& Node = world->CreateEntity({ ofPosX, 10.0f, ofPosY }, { 0.0f, 0.0f, 0.0f }, { scaleX/3, 0.05f/3, scaleY/3 });
-					world->AddComponent<Frosty::ECS::CMesh>(Node, Frosty::AssetManager::GetMesh("pSphere1"));
-					world->AddComponent<Frosty::ECS::CMaterial>(Node, Frosty::AssetManager::GetShader("FlatColor"));
 
-					
+		//	for (int j = 0; j < 4; j++)
+		//	{
+		//		xOffset = 0.05f;
+		//		yOffset = 0.05f;
+		//		if (exits[j])
+		//		{
 
-				}
+		//			float ofPosX = PosX;
+		//			float ofPosY = PosY;
 
-			}
+		//			if (j == 0)
+		//			{
+		//				ofPosY -= yOffset;
+		//			}
+		//			else if (j == 1)
+		//			{
+		//				ofPosX += xOffset;
+		//			}
+		//			else if (j == 2)
+		//			{
+		//				ofPosX -= xOffset;
+		//			}
+		//			else if (j == 3)
+		//			{
+		//				ofPosY += yOffset;
+		//			}
+		//			/*			scaleY = 2.0f;
+		//							scaleX = 2.0f;*/
 
-		}
+
+
+
+
+
+		//			auto& Node = world->CreateEntity({ ofPosX, 10.0f, ofPosY }, { 0.0f, 0.0f, 0.0f }, { scaleX/3, 0.05f/3, scaleY/3 });
+		//			world->AddComponent<Frosty::ECS::CMesh>(Node, Frosty::AssetManager::GetMesh("pSphere1"));
+		//			world->AddComponent<Frosty::ECS::CMaterial>(Node, Frosty::AssetManager::GetShader("FlatColor"));
+
+		//			
+
+		//		}
+
+		//	}
+
+		//}
 
 
 
