@@ -182,7 +182,7 @@ namespace Frosty
 	}
 
 	//For 2D, might be temp
-	void Renderer::Submit2d(Texture2D* tex, const std::shared_ptr<Shader>& shader, const std::shared_ptr<VertexArray>& vertexArray, const glm::mat4& transform)
+	void Renderer::Submit2d(const std::shared_ptr<Shader>& shader, const std::shared_ptr<VertexArray>& vertexArray, const glm::mat4& transform)
 	{
 
 		shader->Bind();
@@ -201,6 +201,30 @@ namespace Frosty
 		vertexArray->Unbind();
 		shader->UnBind();
 
+	}
+
+	void Renderer::SubmitHealthBar(const std::shared_ptr<Shader>& shader, const std::shared_ptr<VertexArray>& vertexArray, const glm::vec3& translate, const glm::vec3& scale, const glm::vec3& HealthBarSpace)
+	{
+		shader->Bind();
+		vertexArray->Bind();
+
+		
+		shader->UploadUniformFloat3("u_HealthBarSpace", HealthBarSpace);
+
+		shader->UploadUniformFloat3("u_Translate", translate);
+		shader->UploadUniformFloat3("u_Scale", scale);
+
+		shader->UploadUniformMat4("u_ViewProjection", s_SceneData->GameCamera.ViewProjectionMatrix);
+		shader->UploadUniformMat4("u_View", s_SceneData->GameCamera.ViewMatrix);
+
+		shader->UploadUniformFloat3("u_CameraRight_worldspace", glm::vec3(s_SceneData->GameCamera.ViewMatrix[0][0], s_SceneData->GameCamera.ViewMatrix[1][0], s_SceneData->GameCamera.ViewMatrix[2][0]));
+		shader->UploadUniformFloat3("u_CameraUp_worldspace", glm::vec3(s_SceneData->GameCamera.ViewMatrix[0][1], s_SceneData->GameCamera.ViewMatrix[1][1], s_SceneData->GameCamera.ViewMatrix[2][1]));
+
+		RenderCommand::DisableBackfaceCulling();
+		RenderCommand::Draw2D(vertexArray);
+
+		vertexArray->Unbind();
+		shader->UnBind();
 	}
 
 	float dt = 0;

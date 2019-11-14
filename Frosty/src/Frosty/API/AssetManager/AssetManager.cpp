@@ -111,6 +111,7 @@ namespace Frosty
 		s_Shaders.emplace("Particles", FY_NEW Shader("assets/shaders/ParticleVertex.glsl", "assets/shaders/ParticleGeometry.glsl", "assets/shaders/ParticleFragment.glsl", "Particles"));
 		s_Shaders.emplace("Animation", FY_NEW Shader("assets/shaders/AnimationVS.glsl", "assets/shaders/AnimationFS.glsl", "Animation"));
 		s_Shaders.emplace("Text", FY_NEW Shader("assets/shaders/TextVertex.glsl", "assets/shaders/TextFragment.glsl", "Text"));
+		s_Shaders.emplace("HealthBar", FY_NEW Shader("assets/shaders/HealthBarVertex.glsl", "assets/shaders/HealthBarFragment.glsl", "HealthBar"));
 
 		s_Shaders["Texture2D"]->Bind();
 
