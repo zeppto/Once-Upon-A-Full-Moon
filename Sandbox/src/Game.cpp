@@ -19,15 +19,14 @@
 #include "Systems/WeaponSystem.hpp"
 #include "Systems/NavigationSystem.hpp"
 #include "Systems/ParticleSystem.hpp"
+#include "Systems/ChestSystem.hpp"
+#include "Systems/LootingSystem.hpp"
 #include "Systems/LevelSystem.hpp"
 #include "Systems/HealthBarSystem.hpp"
 #include "Systems/BossBehaviorSystem.hpp"
 #include "Systems/GUISystem.hpp"
 
-
 //#include "LevelHandeler/LevelFileFormat.hpp"
-
-
 
 namespace MCS
 {
@@ -55,6 +54,8 @@ namespace MCS
 		ParticleSystem* particleSystem = dynamic_cast<ParticleSystem*>(retSystem);
 		world->AddSystem<BossBehaviorSystem>();
 		world->AddSystem<GUISystem>();
+		world->AddSystem<ChestSystem>();
+		world->AddSystem<LootingSystem>();
 
 		//MapGenerator map;
 		//map.generateMap();
@@ -107,7 +108,6 @@ namespace MCS
 		auto& lightTransform2 = world->GetComponent<Frosty::ECS::CTransform>(light2);
 		world->AddComponent<Frosty::ECS::CLight>(light2, Frosty::ECS::CLight::LightType::Directional, 0.3f, glm::vec3(0.6f, 0.7f, 1.f));
 
-
 		auto& player = world->CreateEntity({ 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 2.0f, 2.0f, 2.0f } );
 		auto& playerTransform = world->GetComponent<Frosty::ECS::CTransform>(player);
 		world->AddComponent<Frosty::ECS::CMesh>(player, Frosty::AssetManager::GetMesh("scarlet"));
@@ -139,7 +139,6 @@ namespace MCS
 		world->AddComponent<Frosty::ECS::CHealth>(enemy);
 		auto& bossComponent = world->AddComponent<Frosty::ECS::CBoss>(enemy);
 		bossComponent.TargetList.emplace_back(player);
-		
 
 		auto& enemy2 = world->CreateEntity({ -27.0f, 1.0f, 25.0f }, { 0.0f, 0.0f, 0.0f }, { 2.0f, 2.0f, 2.0f });
 		world->AddComponent<Frosty::ECS::CMesh>(enemy2, Frosty::AssetManager::GetMesh("pCube1"));
@@ -149,12 +148,46 @@ namespace MCS
 		world->AddComponent<Frosty::ECS::CFollow>(enemy2, &playerTransform);
 		world->AddComponent<Frosty::ECS::CHealth>(enemy2);
 
-
 		auto& tree = world->CreateEntity({ 17.0f, 0.0f, 5.0f }, { 0.0f, 0.0f, 0.0f }, { 1.0f, 1.0f, 1.0f }, true);
 		world->AddComponent<Frosty::ECS::CMesh>(tree, Frosty::AssetManager::GetMesh("tree1"));
 		auto& treeMat = world->AddComponent<Frosty::ECS::CMaterial>(tree, Frosty::AssetManager::GetShader("Texture2D"));
 		treeMat.DiffuseTexture = Frosty::AssetManager::GetTexture2D("Tree1");
 		world->AddComponent<Frosty::ECS::CPhysics>(tree, Frosty::AssetManager::GetBoundingBox("tree1"));
+
+		auto& chest = world->CreateEntity({ 0.0f, 1.0f, 25.0f }, { 0.0f, 0.0f, 0.0f }, { 2.0f, 2.0f, 2.0f });
+		world->AddComponent<Frosty::ECS::CMesh>(chest, Frosty::AssetManager::GetMesh("pCube1"));
+		world->AddComponent<Frosty::ECS::CMaterial>(chest, Frosty::AssetManager::GetShader("FlatColor"));
+		world->AddComponent<Frosty::ECS::CPhysics>(chest, Frosty::AssetManager::GetBoundingBox("pCube1"), 6.0f);
+		world->AddComponent<Frosty::ECS::CHealth>(chest, 10);
+		world->AddComponent<Frosty::ECS::CChest>(chest);
+
+		auto& chest2 = world->CreateEntity({ 5.0f, 1.0f, 25.0f }, { 0.0f, 0.0f, 0.0f }, { 2.0f, 2.0f, 2.0f });
+		world->AddComponent<Frosty::ECS::CMesh>(chest2, Frosty::AssetManager::GetMesh("pCube1"));
+		world->AddComponent<Frosty::ECS::CMaterial>(chest2, Frosty::AssetManager::GetShader("FlatColor"));
+		world->AddComponent<Frosty::ECS::CPhysics>(chest2, Frosty::AssetManager::GetBoundingBox("pCube1"), 6.0f);
+		world->AddComponent<Frosty::ECS::CHealth>(chest2, 10);
+		world->AddComponent<Frosty::ECS::CChest>(chest2);
+
+		auto& chest3 = world->CreateEntity({ 10.0f, 1.0f, 25.0f }, { 0.0f, 0.0f, 0.0f }, { 2.0f, 2.0f, 2.0f });
+		world->AddComponent<Frosty::ECS::CMesh>(chest3, Frosty::AssetManager::GetMesh("pCube1"));
+		world->AddComponent<Frosty::ECS::CMaterial>(chest3, Frosty::AssetManager::GetShader("FlatColor"));
+		world->AddComponent<Frosty::ECS::CPhysics>(chest3, Frosty::AssetManager::GetBoundingBox("pCube1"), 6.0f);
+		world->AddComponent<Frosty::ECS::CHealth>(chest3, 10);
+		world->AddComponent<Frosty::ECS::CChest>(chest3);
+
+		auto& chest4 = world->CreateEntity({ 15.0f, 1.0f, 25.0f }, { 0.0f, 0.0f, 0.0f }, { 2.0f, 2.0f, 2.0f });
+		world->AddComponent<Frosty::ECS::CMesh>(chest4, Frosty::AssetManager::GetMesh("pCube1"));
+		world->AddComponent<Frosty::ECS::CMaterial>(chest4, Frosty::AssetManager::GetShader("FlatColor"));
+		world->AddComponent<Frosty::ECS::CPhysics>(chest4, Frosty::AssetManager::GetBoundingBox("pCube1"), 6.0f);
+		world->AddComponent<Frosty::ECS::CHealth>(chest4, 10);
+		world->AddComponent<Frosty::ECS::CChest>(chest4);
+
+		auto& chest5 = world->CreateEntity({ 20.0f, 1.0f, 25.0f }, { 0.0f, 0.0f, 0.0f }, { 2.0f, 2.0f, 2.0f });
+		world->AddComponent<Frosty::ECS::CMesh>(chest5, Frosty::AssetManager::GetMesh("pCube1"));
+		world->AddComponent<Frosty::ECS::CMaterial>(chest5, Frosty::AssetManager::GetShader("FlatColor"));
+		world->AddComponent<Frosty::ECS::CPhysics>(chest5, Frosty::AssetManager::GetBoundingBox("pCube1"), 6.0f);
+		world->AddComponent<Frosty::ECS::CHealth>(chest5, 10);
+		world->AddComponent<Frosty::ECS::CChest>(chest5);
 
 		auto& GUI = world->CreateEntity();
 		Frosty::UILayout uiLayout(3, 1);
@@ -169,17 +202,12 @@ namespace MCS
 		world->PrintWorld();
 
 		//world->AddToDestroyList(plane);
-		
-
-
 	}
 
 	Game::~Game()
 	{
-
 	}
 }
-
 
 /*
 [22:33:06] FROSTY:

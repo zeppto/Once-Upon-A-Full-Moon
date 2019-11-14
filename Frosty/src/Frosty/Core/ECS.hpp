@@ -90,7 +90,7 @@ namespace Frosty
 #pragma region Settings
 
 		// Let's define a maximum number of unique components:
-		constexpr std::size_t MAX_COMPONENTS{ 20 };
+		constexpr std::size_t MAX_COMPONENTS{ 22 };
 
 		// Let's define a maximum number of entities that
 		// can have the same component type:
@@ -773,6 +773,29 @@ namespace Frosty
 			virtual std::string GetName() const { return NAME; }
 		};
 
+		struct CChest : public BaseComponent
+		{
+			static std::string NAME;
+
+			CChest() = default;
+			CChest(const CChest& org) { FY_CORE_ASSERT(false, "Copy constructor in CChest called."); }
+
+			virtual std::string GetName() const { return NAME; }
+		};
+
+		struct CLootable : public BaseComponent
+		{
+			static std::string NAME;
+			enum class LootType { HealingPotion, IncHealthPotion, SpeedPotion, SpeedBoot, Sword, Arrow };
+			LootType Type{ LootType::HealingPotion };
+
+			CLootable() = default;
+			CLootable(LootType type) : Type(type) {}
+			CLootable(const CLootable& org) { FY_CORE_ASSERT(false, "Copy constructor in CLootable called."); }
+
+			virtual std::string GetName() const { return NAME; }
+		};
+
 		struct CBoss : public BaseComponent
 		{
 			static std::string NAME;
@@ -840,9 +863,11 @@ namespace Frosty
 			case 14:	return "Dash";
 			case 15:	return "Destroy";
 			case 16:	return "ParticleSystem";
-			case 17:	return "Boss";
-			case 18:	return "LevelExit";
-			case 19:	return "GUI";
+			case 17:	return "Chest";
+			case 18:	return "Lootable";
+			case 19:	return "Boss";
+			case 20:	return "LevelExit";
+			case 21:	return "GUI";
 			default:	return "";
 			}
 		}
