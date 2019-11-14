@@ -96,6 +96,7 @@ namespace MCS
 			m_Meshes[p_Total] = &world->GetComponent<Frosty::ECS::CMesh>(entity);
 			m_Materials[p_Total] = &world->GetComponent<Frosty::ECS::CMaterial>(entity);
 
+			//Only triggers when added not when shader changed.
 			if (world->HasComponent<Frosty::ECS::CAnimController>(entity))
 			{
 				m_Anims[p_Total] = &world->GetComponent<Frosty::ECS::CAnimController>(entity);

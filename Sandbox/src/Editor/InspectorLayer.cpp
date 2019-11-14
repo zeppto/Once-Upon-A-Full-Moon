@@ -490,7 +490,29 @@ namespace MCS
 							// Diffuse // 
 							ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(10, 10));
 
-							if (ImGui::Checkbox("Anim Speed: ", &s_VSync))
+							
+				/*			world->AddComponent<Frosty::ECS::CAnimController>(m_SelectedEntity);
+
+							
+							Frosty::ECS::CAnimController& controlComp = world->GetComponent<Frosty::ECS::CAnimController>(m_SelectedEntity);
+							ImGui::SliderFloat("AnimSpeed", &controlComp.animSpeed, 0.f, 100.f);*/
+
+							//if (ImGui::CollapsingHeader("Animation Controller"))
+							//{
+							//	ImGui::SliderFloat("AnimSpeed", &controlComp.animSpeed, 0.f, 100.f);
+							//	
+							//	if (ImGui::Button("Pick Animation")) ImGui::OpenPopup("Animation menu");
+							//	if (ImGui::BeginPopup("Animation menu"))
+							//	{
+							//		for (auto& it: *Frosty::AssetManager::GetAnimationMap())
+							//		{
+							//			if (ImGui::Button(it.first.c_str())) controlComp.currAnim = &it.second;
+							//		}
+							//		if (ImGui::Button("Close")) ImGui::CloseCurrentPopup();
+
+							//		ImGui::EndPopup();
+							//	}
+							//}
 							//uint32_t selDiffuseID = 0;
 							//comp.DiffuseTexture ? selDiffuseID = comp.DiffuseTexture->GetRenderID() : selDiffuseID = Frosty::AssetManager::GetTexture2D("Checkerboard")->GetRenderID();
 							ImGui::Image(comp.DiffuseTexture ? comp.DiffuseTexture->GetRenderID() : Frosty::AssetManager::GetTexture2D("Checkerboard")->GetRenderID(), ImVec2(64, 64));
@@ -821,7 +843,20 @@ namespace MCS
 					Frosty::ECS::CAnimController& comp = world->GetComponent<Frosty::ECS::CAnimController>(m_SelectedEntity);
 					if (ImGui::CollapsingHeader("Animation Controller"))
 					{
-						ImGui::SliderFloat("AnimSpeed", &comp.animSpeed, -100.f, 100.f);
+
+						ImGui::SliderFloat("AnimSpeed", &comp.animSpeed, 0.f, 100.f);
+
+						if (ImGui::Button("Pick Animation")) ImGui::OpenPopup("Animation menu");
+						if (ImGui::BeginPopup("Animation menu"))
+						{
+							for (auto& it : *Frosty::AssetManager::GetAnimationMap())
+							{
+								if (ImGui::Button(it.first.c_str())) comp.currAnim = &it.second;
+							}
+							if (ImGui::Button("Close")) ImGui::CloseCurrentPopup();
+							ImGui::EndPopup();
+						}
+
 					}
 				}
 

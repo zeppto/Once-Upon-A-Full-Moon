@@ -235,8 +235,8 @@ namespace Frosty
 
 		void* skinDataPtr = nullptr;
 		int nrOfBones = 0;
-		AssetManager::GetAnimation(vertexArray->GetCurrentAnim().animationName)->CalculateAnimMatrix(&dt);
-		AssetManager::GetAnimation(vertexArray->GetCurrentAnim().animationName)->GetSkinData(skinDataPtr, nrOfBones);
+		controller->currAnim->CalculateAnimMatrix(&dt);
+		controller->currAnim->GetSkinData(skinDataPtr, nrOfBones);
 
 		vertexArray->GetUniformBuffer()->BindUpdate(skinDataPtr, nrOfBones);
 

@@ -5,6 +5,7 @@
 #include "Frosty/RenderEngine/Texture.hpp"
 #include "Frosty/Core/KeyCodes.h"
 #include "Frosty/Core/MouseButtonCodes.h"
+#include "Frosty/API/AssetManager/AssetFiles/Animation.hpp"
 
 #include <Luna/include/Luna.h>
 
@@ -793,6 +794,7 @@ namespace Frosty
 
 			bool isSliderControlled = false;
 			float animSpeed = 1;
+			Animation* currAnim;
 
 			virtual std::string GetName() const { return NAME; }
 		};
