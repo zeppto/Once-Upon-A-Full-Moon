@@ -6,6 +6,11 @@ BoolMap::BoolMap(const uint16_t& Width, const uint16_t& Height, const uint8_t Pi
 {
 }
 
+
+BoolMap::BoolMap(const uint16_t& Width, const uint16_t& Height, const uint8_t PixRatio, std::shared_ptr<uint64_t[]> BitMap) : m_PixWidth(Width), m_PixHeight(Height), m_PixCoordRatio(PixRatio), m_CoordHeight(Height / PixRatio), m_CoordWidth(Width / PixRatio), m_BitMap(BitMap)
+{
+}
+
 BoolMap::BoolMap(const BoolMap& other) : m_PixWidth(other.m_PixWidth), m_PixHeight(other.m_PixHeight), m_BoolMap(other.m_BoolMap), m_PixCoordRatio(other.m_PixCoordRatio), m_CoordWidth(other.m_CoordWidth),m_CoordHeight(other.m_CoordHeight), m_BitMap(other.m_BitMap)
 {
 
@@ -47,7 +52,7 @@ const bool& BoolMap::CheckCollition(const glm::vec3& LocalPos) const
 
 		int pos = xx + zz;
 
-		bool test = m_BoolMap[pos];
+	//	bool test = m_BoolMap[pos];
 
 		int div = static_cast<int>(pos / 64);
 		int mod = static_cast<int>(pos % 64);

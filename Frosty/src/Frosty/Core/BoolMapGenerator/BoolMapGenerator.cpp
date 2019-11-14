@@ -1,7 +1,6 @@
 #include<fypch.hpp>
 #include"BoolMapGenerator.hpp"
 #include "Glad/glad.h"
-#include"TestMap.hpp"
 
 
 #define BUFFER_OFFSET(i) ((char *)nullptr + (i))
@@ -42,8 +41,6 @@ namespace Frosty
 		glm::vec3 tempDir = s_Settings.Pos;
 		tempDir[1] = 0.0f;
 		glm::mat4 tempView = glm::lookAt(s_Settings.Pos, tempDir, s_Settings.UpVec);
-
-		//flipped
 		glm::vec4 OrthoVec((float)s_Settings.Width / -2.0f, (float)s_Settings.Width / 2.0f, (float)s_Settings.Height / 2.0f, (float)s_Settings.Height / -2.0f);
 		glm::mat4 tempOrtho = glm::ortho(OrthoVec[0], OrthoVec[1], OrthoVec[2], OrthoVec[3], 1.0f, 200.0f);
 
@@ -59,9 +56,6 @@ namespace Frosty
 			delete s_Instance;
 		}
 		s_Instance = new BoolMapGenerator;
-
-
-
 		InitiateProgram();
 	}
 
@@ -77,11 +71,10 @@ namespace Frosty
 		glGenFramebuffers(1, &s_GBuffer);
 		glBindFramebuffer(GL_FRAMEBUFFER, s_GBuffer);
 		glViewport(0, 0, (s_Settings.Width * s_Settings.Pix_Cord_Ratio), (s_Settings.Height * s_Settings.Pix_Cord_Ratio));
-		// - bright color buffer
 		glGenTextures(1, &s_Texture);
 		glBindTexture(GL_TEXTURE_2D, s_Texture);
 		//glGenerateMipmap(GL_TEXTURE_2D);
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_R8, (s_Settings.Width * s_Settings.Pix_Cord_Ratio), (s_Settings.Height * s_Settings.Pix_Cord_Ratio), 0, GL_RED, GL_FLOAT, NULL);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB8, (s_Settings.Width * s_Settings.Pix_Cord_Ratio), (s_Settings.Height * s_Settings.Pix_Cord_Ratio), 0, GL_RGB, GL_FLOAT, NULL);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
@@ -98,9 +91,7 @@ namespace Frosty
 			glGetProgramInfoLog(s_RenderProgramID, 1024, nullptr, buff);
 			OutputDebugStringA(buff);
 			FY_CORE_ASSERT("Collision Map Generator: Failed to Link program, GLFW Error ({0}) \n)", buff);
-
 		}
-		//glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	}
 
 
@@ -136,7 +127,7 @@ namespace Frosty
 			glBindVertexArray(VertID);
 			glBindBuffer(GL_ARRAY_BUFFER, VertID);
 			glBufferData(GL_ARRAY_BUFFER, sizeof(float)* ModelBatchIt->Verticies.size(), &ModelBatchIt->Verticies[0], GL_STATIC_DRAW);
-		//	glDisableVertexAttribArray(0);
+
 
 			glGenBuffers(1, &IndID);
 			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IndID);
@@ -175,23 +166,28 @@ namespace Frosty
 			std::list<glm::mat4>::iterator PosIt = BoundBatchIt->Transforms.begin();
 			while (PosIt != BoundBatchIt->Transforms.end())
 			{
-			
 				glUniformMatrix4fv(locationMM, 1, GL_FALSE, &(*PosIt)[0][0]);
-				//glDrawArrays(GL_TRIANGLES, 0, 3);
 				glDrawElements(GL_TRIANGLES, BoundBatchIt->NrOfIndices, GL_UNSIGNED_INT, 0);
 				PosIt++;
 			}
 			BoundBatchIt++;
 		}
 
-
-
-		//Translate
-		//can be optimized (+ bitmap)
-
-		//int* kk = new int[100];
-		//kk[99] = 1;
-		//kk[101] = 1;
+		//Need to be tested
+		//VABatch
+		std::list<VABatch>::iterator VABatchIt = s_VABatch.begin();
+		while (VABatchIt != s_VABatch.end())
+		{
+			VABatchIt->VertexArrayObj.Bind();
+			std::list<glm::mat4>::iterator PosIt = VABatchIt->Transforms.begin();
+			while (PosIt != BoundBatchIt->Transforms.end())
+			{
+				glUniformMatrix4fv(locationMM, 1, GL_FALSE, &(*PosIt)[0][0]);
+				glDrawElements(GL_TRIANGLES, VABatchIt->VertexArrayObj.GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, 0);
+				PosIt++;
+			}
+			VABatchIt++;
+		}
 
 		int texSize = (unsigned int)TmpWidth * (unsigned int)TmpHeight;
 
@@ -202,25 +198,26 @@ namespace Frosty
 		std::shared_ptr<uint64_t[]> bitMap(FY_NEW uint64_t[bitSize]);
 
 		//temp
-		std::shared_ptr<bool[]> tmpMap(FY_NEW bool[texSize]);
+		//boolmap
+		//std::shared_ptr<bool[]> tmpMap(FY_NEW bool[texSize]);
 
-		for (unsigned int i = 0; i < texSize; i++)
-		{
-			//temp
-			float xx = tempFloatPtr[i];
+		//for (unsigned int i = 0; i < texSize; i++)
+		//{
+		//	//temp
+		//	float xx = tempFloatPtr[i];
 
-			if (tempFloatPtr[i] > 0.001)
-			{
-				tmpMap[i] = true;
-			}
-			else
-			{
-				tmpMap[i] = false;
-			}
+		//	if (tempFloatPtr[i] > 0.001)
+		//	{
+		//		tmpMap[i] = true;
+		//	}
+		//	else
+		//	{
+		//		tmpMap[i] = false;
+		//	}
 
 
 
-		}
+		//}
 
 
 		int32_t bitmapCount = -1;
@@ -229,12 +226,6 @@ namespace Frosty
 
 		for (unsigned int i = 0; i < texSize; i++)
 		{
-			if (i > 1000)
-			{
-				int o = 0;
-			}
-
-
 			if (i % 64 == 0 || bitmapCount == -1 || i == texSize-1)
 			{
 				if (bitmapCount != -1)
@@ -245,14 +236,7 @@ namespace Frosty
 				bitmapCount++;
 			}
 
-			if (tempFloatPtr[i] > 0.001)
-			{
-				currentInt = (currentInt << 1)+1;
-			}
-			else
-			{
-				currentInt = currentInt << 1;
-			}
+			currentInt = (tempFloatPtr[i] > 0.001) ? (currentInt << 1) + 1 : currentInt << 1;
 		}
 
 
@@ -262,10 +246,12 @@ namespace Frosty
 		glBindTexture(GL_TEXTURE_2D, 0);
 		glDeleteFramebuffers(1, &s_GBuffer);
 	//	glDeleteTextures(1, &s_Texture);
+		s_VABatch.erase(s_VABatch.begin(), s_VABatch.end());
 		s_ModelBatch.erase(s_ModelBatch.begin(), s_ModelBatch.end());
 		s_BoundBatch.erase(s_BoundBatch.begin(), s_BoundBatch.end());
 
-		return std::shared_ptr<BoolMap>(FY_NEW BoolMap(TmpWidth, TmpHeight, s_Settings.Pix_Cord_Ratio, tmpMap, bitMap));
+//		return std::shared_ptr<BoolMap>(FY_NEW BoolMap(TmpWidth, TmpHeight, s_Settings.Pix_Cord_Ratio, tmpMap, bitMap));
+		return std::shared_ptr<BoolMap>(FY_NEW BoolMap(TmpWidth, TmpHeight, s_Settings.Pix_Cord_Ratio, bitMap));
 	}
 
 

@@ -9,10 +9,11 @@ namespace Frosty
 
 #define MAXEXITS (uint8_t)4
 #define DEADENDLENGTH (uint16_t)2
-#define LocRw (uint16_t)100
-#define LocLw (uint16_t)101
-#define LocFw (uint16_t)102
-#define CngDirw (uint16_t)3
+#define LocR (uint16_t)100
+#define LocL (uint16_t)101
+#define LocF (uint16_t)102
+#define CngDir (uint16_t)3
+#define PixUnit (uint16_t)10
 
 	
 
@@ -64,8 +65,6 @@ namespace Frosty
 				m_ConnectAble = other.m_ConnectAble;
 				m_CoordX = other.m_CoordX;
 				m_CoordY = other.m_CoordY;
-;
-
 			}
 		}
 	//	inline const void AddExit(const Direction& exit) {  m_Exits[exit] = 1; }
@@ -424,6 +423,10 @@ namespace Frosty
 	//};
 	*/
 
+
+
+
+
 	class Head : public BasePlacer //start here
 	{
 
@@ -481,6 +484,32 @@ namespace Frosty
 
 	class NodeMap
 	{
+	private:
+		inline static const std::string VERTEXSRC = R"(
+			#version 440 core
+			
+			layout(location = 0) in vec3 vsInPos;
+			
+			layout(location = 44) uniform mat4 u_ViewOrtho;
+			layout(location = 33) uniform mat4 u_ModelMat;
+			
+			void main()
+			{				
+				gl_Position = u_ViewOrtho *u_ModelMat * vec4(vsInPos, 1.0f);
+			}
+		)";
+		inline static const std::string FRAGMENTSRC = R"(
+			#version 440 core
+
+			layout(location = 0) out vec4 fsOutCol;
+			layout(location = 55) in vec3 renderCol;
+			
+			void main()
+			{
+				fsOutCol = vec4( renderCol, 1.0f ); 
+			}
+		)";
+
 
 
 	private:
@@ -702,9 +731,9 @@ namespace Frosty
 
 						if (!endWalk && !CangedDir)
 						{
-							if ((rand() % CngDirw) == 0)
+							if ((rand() % CngDir) == 0)
 							{
-								CangedDir = (*it)->ChangeDir(LocRw, LocLw, LocFw);
+								CangedDir = (*it)->ChangeDir(LocR, LocL, LocF);
 							}
 						}
 					
@@ -719,6 +748,9 @@ namespace Frosty
 		
 		
 		}
+		void RenderMap();
+
+		
 
 
 	};

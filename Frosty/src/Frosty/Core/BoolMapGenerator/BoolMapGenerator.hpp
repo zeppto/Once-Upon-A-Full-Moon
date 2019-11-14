@@ -120,13 +120,10 @@ namespace Frosty
 	private:
 		// 1 calls
 		static void Init();
+		static void InitCheck();
 		static void InitiateProgram();
 		static void Delete() { if (s_Instance != nullptr) { delete s_Instance; } }
 
-
-		static void InitCheck();
-
-		
 		static void InitiateRenderData();
 		static void InitiateGBuffer();
 		static std::shared_ptr<BoolMap> RenderMap();
