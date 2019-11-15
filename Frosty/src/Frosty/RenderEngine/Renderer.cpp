@@ -32,11 +32,6 @@ namespace Frosty
 		s_SceneData->GameCamera.ViewProjectionMatrix = projection * view;
 	}
 
-	Renderer::GameCameraProps Renderer::GetCamera()
-	{
-		return s_SceneData->GameCamera;
-	}
-
 	void Renderer::AddLight(const glm::vec3& color, const glm::vec3& pos, float strength, float radius)
 	{
 		PointLight light;
@@ -61,25 +56,24 @@ namespace Frosty
 		s_SceneData->DirectionalLights.emplace_back(light);
 	}
 
-	void Renderer::SubmitText(const std::shared_ptr<Shader>& shader, const std::shared_ptr<VertexArray>& vertexArray, std::string& text)
+	void Renderer::SubmitText(const std::shared_ptr<Shader>& shader, const std::shared_ptr<VertexArray>& vertexArray, std::string& text, glm::vec2 pos, glm::vec3 color, float scale)
 	{
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		shader->Bind();
 		vertexArray->Bind();
 
-		glm::mat4 projection = glm::ortho(0.0f, 800.0f, 0.0f, 600.0f);
-		glm::vec3 color = glm::vec3(0.0f, 0.0f, 1.0f);
+		float width = 1280.0f;
+		float height = 720.0f;
+		glm::mat4 projection = glm::ortho(0.0f, width, 0.0f, height);
 
 		shader->UploadUniformMat4("projection", projection);
 		shader->UploadUniformInt("text", 0); //Make sure this number matches the active and sampled texture
 		shader->UploadUniformFloat3("textColor", color);
 
 		std::string::const_iterator c;
-		float x = 25.0f;
-		float y = 24.0f;
-		float scale = 1.0f;
-		glm::vec3 vec = glm::vec3(0.5f, 0.8f, 0.2f);
+		float x = pos.x;
+		float y = pos.y;
 		for (c = text.begin(); c != text.end(); c++) {
 			Character ch = Frosty::AssetManager::GetTTF("Gabriola")->m_characters.at(*c); //TODO: Switch out for actual font provided by system
 			float xpos = x + ch.bearing.x * scale;
@@ -141,6 +135,9 @@ namespace Frosty
 	
 	void Renderer::Submit(ECS::CMaterial* mat, const std::shared_ptr<VertexArray>& vertexArray, const glm::mat4& transform)
 	{
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
 		mat->UseShader->Bind();
 		mat->UseShader->UploadUniformMat4("u_ViewProjection", s_SceneData->GameCamera.ViewProjectionMatrix);
 		mat->UseShader->UploadUniformMat4("u_Transform", transform);
@@ -179,6 +176,8 @@ namespace Frosty
 		vertexArray->Bind();
 		RenderCommand::EnableBackfaceCulling();
 		RenderCommand::Draw2D(vertexArray);
+
+		glDisable(GL_BLEND);
 	}
 
 	//For 2D, might be temp

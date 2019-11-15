@@ -60,6 +60,18 @@ namespace MCS
 		}
 	}
 
+	void PlayerControllerSystem::OnEvent(Frosty::BaseEvent & e)
+	{
+		switch (e.GetEventType())
+		{
+		case Frosty::EventType::PickUp:
+			OnPickUpEvent(static_cast<Frosty::PickUpEvent&>(e));
+			break;
+		default:
+			break;
+		}
+	}
+
 	void PlayerControllerSystem::AddComponent(const std::shared_ptr<Frosty::ECS::Entity>& entity)
 	{
 		if (Frosty::utils::BitsetFits<Frosty::ECS::MAX_COMPONENTS>(p_Signature, entity->Bitset) && !p_EntityMap.count(entity))
@@ -365,6 +377,21 @@ namespace MCS
 		}
 #pragma endregion Speed Boots
 
+#pragma region Pick Up
+		if (Frosty::InputManager::IsKeyPressed(FY_KEY_E))
+		{
+			if (!m_keyPressed)
+			{
+				m_keyPressed = true;
+				Frosty::EventBus::GetEventBus()->Publish<Frosty::PickUpAttemptEvent>(Frosty::PickUpAttemptEvent(m_Player[index]->EntityPtr));
+			}
+		}
+		else if (m_keyPressed)
+		{
+			m_keyPressed = false;
+		}
+#pragma endregion Pick Up
+
 #pragma region Bait
 		else if (Frosty::InputManager::IsKeyPressed(m_Player[index]->DropBaitKey))
 		{
@@ -387,5 +414,63 @@ namespace MCS
 			}
 		}
 #pragma endregion Bait
+	}
+
+	void PlayerControllerSystem::OnPickUpEvent(Frosty::PickUpEvent & e)
+	{
+		auto world = Frosty::Application::Get().GetWorld().get();
+		for (size_t i = 1; i < p_Total; i++)
+		{
+			auto& type = world->GetComponent<Frosty::ECS::CLootable>(e.GetEntity()).Type;
+
+			if (type == Frosty::ECS::CLootable::LootType::HealingPotion && m_Inventory[i]->CurrentHealingPotions < m_Inventory[i]->MaxHealingPotions)
+			{
+				m_Inventory[i]->CurrentHealingPotions++;
+				FY_INFO("HealingPotion in Inventory");
+				FY_INFO("{0} / {1}", m_Inventory[i]->CurrentHealingPotions, m_Inventory[i]->MaxHealingPotions);
+				if (!world->HasComponent<Frosty::ECS::CDestroy>(e.GetEntity()))
+				{
+					world->AddComponent<Frosty::ECS::CDestroy>(e.GetEntity());
+				}
+			}
+			else if (type == Frosty::ECS::CLootable::LootType::IncHealthPotion && m_Inventory[i]->CurrentIncreaseHPPotions < m_Inventory[i]->MaxIncreaseHPPotions)
+			{
+				m_Inventory[i]->CurrentIncreaseHPPotions++;
+				FY_INFO("IncHealthPotion in Inventory");
+				FY_INFO("{0} / {1}", m_Inventory[i]->CurrentIncreaseHPPotions, m_Inventory[i]->MaxIncreaseHPPotions);
+				if (!world->HasComponent<Frosty::ECS::CDestroy>(e.GetEntity()))
+				{
+					world->AddComponent<Frosty::ECS::CDestroy>(e.GetEntity());
+				}
+			}
+			else if (type == Frosty::ECS::CLootable::LootType::SpeedPotion && m_Inventory[i]->CurrentSpeedPotions < m_Inventory[i]->MaxSpeedPotions)
+			{
+				m_Inventory[i]->CurrentSpeedPotions++;
+				FY_INFO("SpeedPotion in Inventory");
+				FY_INFO("{0} / {1}", m_Inventory[i]->CurrentSpeedPotions, m_Inventory[i]->MaxSpeedPotions);
+				if (!world->HasComponent<Frosty::ECS::CDestroy>(e.GetEntity()))
+				{
+					world->AddComponent<Frosty::ECS::CDestroy>(e.GetEntity());
+				}
+			}
+			else if (type == Frosty::ECS::CLootable::LootType::SpeedBoot && m_Inventory[i]->CurrentSpeedBoots < m_Inventory[i]->MaxSpeedBoots)
+			{
+				m_Inventory[i]->CurrentSpeedBoots++;
+				FY_INFO("SpeedBoot in Inventory");
+				FY_INFO("{0} / {1}", m_Inventory[i]->CurrentSpeedBoots, m_Inventory[i]->MaxSpeedBoots);
+				if (!world->HasComponent<Frosty::ECS::CDestroy>(e.GetEntity()))
+				{
+					world->AddComponent<Frosty::ECS::CDestroy>(e.GetEntity());
+				}
+			}
+			else if (type == Frosty::ECS::CLootable::LootType::Sword)
+			{
+				FY_INFO("Sword in Inventory");
+			}
+			else if (type == Frosty::ECS::CLootable::LootType::Arrow)
+			{
+				FY_INFO("Arrow in Inventory");
+			}
+		}
 	}
 }

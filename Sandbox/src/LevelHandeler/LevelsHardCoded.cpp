@@ -1,8 +1,8 @@
-#include <fypch.hpp>
 #include <mcspch.hpp>
 //#include "MapGenerator.hpp"
 #include "LevelsHardCoded.hpp"
 #include "Frosty/API/AssetManager/AssetManager.hpp"
+#include "Map/GridMap.hpp"
 
 namespace Level
 {
@@ -262,6 +262,7 @@ namespace Level
 
 					treeName = "tree" + std::to_string(((rand() % NrOfTreeTypes) + 1));
 					world->AddComponent<Frosty::ECS::CMesh>(Tree, Frosty::AssetManager::GetMesh("tree1"));
+					world->AddComponent<Frosty::ECS::CPhysics>(Tree, Frosty::AssetManager::GetBoundingBox("tree1"));
 				}
 				if (!up)
 				{
@@ -424,6 +425,9 @@ namespace Level
 		{
 			toReturn = glm::vec3(0, 0, 0);
 		}
+
+
+
 		return toReturn;
 	}
 

@@ -9,11 +9,8 @@ namespace Frosty
 {
 	class UISprite : public UIElement
 	{
-	public:
-
-
 	private:
-		TYPE type = SPRITE;
+		TYPE type{ UIElement::TYPE::SPRITE };
 
 		float* m_vertices;
 		uint32_t m_TextureID;
@@ -35,8 +32,6 @@ namespace Frosty
 		uint32_t GetTexture() { return m_TextureID; };
 
 		TYPE GetType() { return type; };
-
-	private:
 
 	};
 }

@@ -40,6 +40,28 @@ namespace Frosty
 		std::shared_ptr<ECS::Entity> m_Entity;
 	};
 
+	class PickUpAttemptEvent : public BaseEvent
+	{
+	public:
+		PickUpAttemptEvent(const std::shared_ptr<ECS::Entity>& entity) : m_Entity(entity) { }
+		const std::shared_ptr<ECS::Entity>& GetEntity() const { return m_Entity; }
+
+		EVENT_TYPE(PickUpAttempt)
+	private:
+		std::shared_ptr<ECS::Entity> m_Entity;
+	};
+
+	class PickUpEvent : public BaseEvent
+	{
+	public:
+		PickUpEvent(const std::shared_ptr<ECS::Entity>& entity) : m_Entity(entity) { }
+		std::shared_ptr<ECS::Entity>& GetEntity() { return m_Entity; }
+
+		EVENT_TYPE(PickUp)
+	private:
+		std::shared_ptr<ECS::Entity> m_Entity;
+	};
+
 	class BaitPlacedEvent : public BaseEvent
 	{
 	public:

@@ -14,10 +14,10 @@ namespace MCS
 
 	void GUISystem::OnUpdate()
 	{
-		for (size_t i = 1; i < p_Total; i++)
-		{
+		//for (size_t i = 1; i < p_Total; i++)
+		//{
 
-		}
+		//}
 	}
 
 	void GUISystem::Render()
@@ -25,12 +25,10 @@ namespace MCS
 		for (size_t i = 1; i < p_Total; i++)
 		{
 			//Render all text
-			for (int j = 0; j < m_GUI[i]->texts.size(); j++)
+			for (int j = 0; j < m_GUI[i]->layout.texts.size(); j++)
 			{
-				Frosty::UIText& currText = m_GUI[i]->texts[j];
-				//currText.GetTexture()->Bind();
-				Frosty::Renderer::SubmitText(m_GUI[i]->textShader, currText.GetVertexArray(), currText.GetText());
-				//currText.GetTexture()->Unbind();
+				Frosty::UIText& currText = m_GUI[i]->layout.texts[j];
+				Frosty::Renderer::SubmitText(m_GUI[i]->textShader, currText.GetVertexArray(), currText.GetText(), currText.GetPosition(), currText.GetColor(), currText.GetFontScale());
 			}
 		}
 	}
@@ -46,10 +44,12 @@ namespace MCS
 
 			m_GUI[p_Total]->textShader = Frosty::AssetManager::GetShader("Text");
 
-			//Debug test
-			Frosty::UIText text;
-			m_GUI[p_Total]->texts.push_back(text);
-			////////////
+			////Debug test
+
+			//Frosty::UIText text(glm::vec2(0.0f), "Hello team");
+			//m_GUI[p_Total]->texts.push_back(text);
+			//m_GUI[p_Total]->textsCount += 1;
+			//////////////
 
 			p_Total++;
 		}

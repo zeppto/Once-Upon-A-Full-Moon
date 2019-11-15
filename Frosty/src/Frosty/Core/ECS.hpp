@@ -8,6 +8,7 @@
 
 #include "Frosty/UI/UIText.h"
 #include "Frosty/UI/UISprite.h"
+#include "Frosty/UI/UILayout.hpp"
 
 #include <Luna/include/Luna.h>
 
@@ -89,7 +90,7 @@ namespace Frosty
 #pragma region Settings
 
 		// Let's define a maximum number of unique components:
-		constexpr std::size_t MAX_COMPONENTS{ 20 };
+		constexpr std::size_t MAX_COMPONENTS{ 22 };
 
 		// Let's define a maximum number of entities that
 		// can have the same component type:
@@ -187,6 +188,11 @@ namespace Frosty
 			EntityManager& operator=(const EntityManager& e) { FY_CORE_ASSERT(false, "Assignment operator in EntityManager called."); return *this; }
 
 			inline std::vector<std::shared_ptr<Entity>>& GetEntities() { return m_Entities; }
+			inline std::shared_ptr<Entity>& GetEntityById(EntityID eid)
+			{
+				int index = utils::BinarySearch(m_Entities, eid);
+				return m_Entities[index];
+			}
 			inline size_t GetTotalEntities() const { return m_Entities.size(); }
 
 			inline std::shared_ptr<Entity>& At(size_t index) { return m_Entities.at(index); }
@@ -251,7 +257,7 @@ namespace Frosty
 
 		struct BaseComponentManager
 		{
-			ComponentID TypeId;
+			ComponentID TypeId{ 0 };
 			std::map<std::shared_ptr<Entity>, ComponentArrayIndex> EntityMap;
 
 			ComponentArrayIndex Total{ 1 };
@@ -328,6 +334,7 @@ namespace Frosty
 
 				m_Data.at(index).EntityPtr.reset();
 				m_Data.at(index) = m_Data.at(Total - 1);
+				m_Data.at(index).EntityPtr = m_Data.at(Total - 1).EntityPtr;
 				m_Data.at(Total - 1).EntityPtr.reset();
 				m_Data.at(Total - 1) = ComponentType();
 
@@ -402,9 +409,10 @@ namespace Frosty
 		{
 			static std::string NAME;
 			std::shared_ptr<VertexArray> Mesh;
+			bool RenderMesh{ true };
 
 			CMesh() = default;
-			CMesh(std::shared_ptr<VertexArray> mesh) : Mesh(mesh) { }
+			CMesh(std::shared_ptr<VertexArray> mesh, bool render = true) : Mesh(mesh), RenderMesh(render) { }
 			CMesh(const CMesh& org) { FY_CORE_ASSERT(false, "Copy constructor in CMesh called."); }
 
 			virtual std::string GetName() const { return NAME; }
@@ -533,8 +541,13 @@ namespace Frosty
 		struct CEnemy : public BaseComponent
 		{
 			static std::string NAME;
+			CTransform* Target{ nullptr };
+			glm::vec3 CellTarget{ 0.0f };
+			float AttackRange{ 2.5f };
+			float SightRange{ 40.0f };
 
 			CEnemy() = default;
+			CEnemy(CTransform * target) : Target(target) { }
 			CEnemy(const CEnemy& org) { FY_CORE_ASSERT(false, "Copy constructor in CEnemy called."); }
 
 			virtual std::string GetName() const { return NAME; }
@@ -770,10 +783,33 @@ namespace Frosty
 			virtual std::string GetName() const { return NAME; }
 		};
 
+		struct CChest : public BaseComponent
+		{
+			static std::string NAME;
+
+			CChest() = default;
+			CChest(const CChest& org) { FY_CORE_ASSERT(false, "Copy constructor in CChest called."); }
+
+			virtual std::string GetName() const { return NAME; }
+		};
+
+		struct CLootable : public BaseComponent
+		{
+			static std::string NAME;
+			enum class LootType { HealingPotion, IncHealthPotion, SpeedPotion, SpeedBoot, Sword, Arrow };
+			LootType Type{ LootType::HealingPotion };
+
+			CLootable() = default;
+			CLootable(LootType type) : Type(type) {}
+			CLootable(const CLootable& org) { FY_CORE_ASSERT(false, "Copy constructor in CLootable called."); }
+
+			virtual std::string GetName() const { return NAME; }
+		};
+
 		struct CBoss : public BaseComponent
 		{
 			static std::string NAME;
-			float DistractionTime{ 5.0f };
+			float DistractionTime{ 3.0f };
 			float DistractionTimer{ Frosty::Time::CurrentTime() };
 			bool Distracted{ false };
 			bool Hunting{ false };
@@ -804,15 +840,15 @@ namespace Frosty
 		{
 			static std::string NAME;
 
-			CGUI() = default;
-
-			std::vector<UIText> texts;
-			std::vector<UISprite> sprites;
-
 			std::shared_ptr<Shader> textShader;
 			std::shared_ptr<Shader> spriteShader;
 
+			UILayout layout;
+
+			CGUI() = default;
+			CGUI(UILayout& layout) : layout(layout) {  }
 			CGUI(const CGUI& org) { FY_CORE_ASSERT(false, "Copy constructor in CGUI called."); }
+
 			virtual std::string GetName() const { return NAME; }
 		};
 
@@ -837,9 +873,11 @@ namespace Frosty
 			case 14:	return "Dash";
 			case 15:	return "Destroy";
 			case 16:	return "ParticleSystem";
-			case 17:	return "Boss";
-			case 18:	return "LevelExit";
-			case 19:	return "GUI";
+			case 17:	return "Chest";
+			case 18:	return "Lootable";
+			case 19:	return "Boss";
+			case 20:	return "LevelExit";
+			case 21:	return "GUI";
 			default:	return "";
 			}
 		}

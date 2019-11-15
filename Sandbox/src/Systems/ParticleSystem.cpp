@@ -240,7 +240,7 @@ namespace MCS
 
 		p.camDistance = glm::length2(glm::vec3(p.position) - m_CameraTransform->Position);
 		p.position -= (p.direction * p.speed) * Frosty::Time::DeltaTime();
-		
+
 		//Fade in
 		//if (p.color.a < 1.0 && p.lifetime > 1.0) { //TODO: Fix this temporary code
 		//	p.color.a += 2.0 * Frosty::Time::DeltaTime();
@@ -255,7 +255,6 @@ namespace MCS
 				p.color.a = lerp(0.0f, 1.0f, t); //TODO: use endAlpha and startAlpha perhaps
 			}
 		}
-
 		if (m_ParticleSystem[systemIndex]->startParticleSize != m_ParticleSystem[systemIndex]->endParticleSize)
 		{
 			//Update particle size
@@ -330,6 +329,6 @@ namespace MCS
 
 	float ParticleSystem::lerp(float a, float b, float f)
 	{
-		return (a * (1.0 - f)) + (b * f);
+		return (a * (1.0f - f)) + (b * f);
 	}
 }

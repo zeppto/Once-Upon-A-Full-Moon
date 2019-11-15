@@ -38,9 +38,10 @@ namespace MCS
 
 		float lerp(float a, float b, float f);
 
+	private:
 		std::array<Frosty::ECS::CTransform*, Frosty::ECS::MAX_ENTITIES_PER_COMPONENT> m_Transform;
 		std::array<Frosty::ECS::CParticleSystem*, Frosty::ECS::MAX_ENTITIES_PER_COMPONENT> m_ParticleSystem;
-		bool m_editMode;
+		bool m_editMode{ false };
 
 		Frosty::ECS::CTransform* m_CameraTransform { nullptr };
 	};

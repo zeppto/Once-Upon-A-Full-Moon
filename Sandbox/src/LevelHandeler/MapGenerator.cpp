@@ -1,4 +1,3 @@
-#include <fypch.hpp>
 #include <mcspch.hpp>
 #include "MapGenerator.hpp"
 
@@ -220,6 +219,8 @@ glm::ivec2 MapGenerator::posOffset(int i)
 		return glm::ivec2(-1,  0);
 	if (i == 3)
 		return glm::ivec2( 1,  0);
+
+	return glm::ivec2(0, 0);
 }
 
 Room MapGenerator::getRoom(glm::ivec2 pos)

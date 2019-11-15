@@ -141,7 +141,7 @@ namespace Frosty
 	}
 
 #define BUFFER_OFFSET(i) ((char *)nullptr + (i))
-	void VertexArray::AddHardcodedVertexBuffer(const std::shared_ptr<VertexBuffer>& vertexBuffer, size_t size)
+	void VertexArray::AddHardcodedVertexBuffer(const std::shared_ptr<VertexBuffer>& vertexBuffer, int size)
 	{
 		glBindVertexArray(m_RendererID);
 		vertexBuffer->Bind();

@@ -30,12 +30,10 @@ namespace Frosty
 		template<typename SystemType>
 		inline ECS::BaseSystem* AddSystem()
 		{ 
-			//m_Systems[m_TotalSystems].reset(FY_NEW SystemType());
 			SystemType* system(FY_NEW SystemType());
 			std::unique_ptr<SystemType> systemPtr{ system };
 			m_Systems[m_TotalSystems] = std::move(systemPtr);
 			m_TotalSystems++;
-			//m_Systems[m_TotalSystems++].reset(FY_NEW SystemType());
 			return m_Systems[m_TotalSystems - 1].get();
 		}
 		

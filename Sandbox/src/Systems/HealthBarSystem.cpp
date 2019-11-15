@@ -20,64 +20,9 @@ namespace MCS
 
 	void HealthBarSystem::Render()
 	{
-		Frosty::Renderer::GameCameraProps cam = Frosty::Renderer::GetCamera();
-		glm::vec3 ndcSpacePos;
 		for (size_t i = 1; i < p_Total; i++)
 		{
-			if (true)
-			{
-				float pivot = 0.5f;
-
-				glm::vec3 TmaxHP = glm::vec3(m_Health[i]->MaxHealth, 1, 1);
-				glm::vec3 TcurrHP = glm::vec3(m_Health[i]->CurrentHealth, 1, 1);
-
-				//translate
-				//world position to screen position
-				glm::vec4 clipSpace = cam.ProjectionMatrix * (cam.ViewMatrix * glm::vec4(m_Transform[i]->Position + m_HealthBar[i]->BarOffset + glm::vec3(TcurrHP.x / TmaxHP.x - 1.0f, 0.0f, 0.0f), 1.0f));
-				ndcSpacePos = glm::vec3(clipSpace.x / clipSpace.w, clipSpace.y / clipSpace.w, clipSpace.z / clipSpace.w);
-
-				m_HealthBar[i]->hpTransform = glm::translate(glm::mat4{ 1.0f }, ndcSpacePos);
-
-
-				//scale
-				//scale calc
-				float camDistance = glm::distance(Frosty::Renderer::GetCamera().CameraPosition, m_Transform[i]->Position + m_HealthBar[i]->BarOffset);
-
-				m_HealthBar[i]->hpTransform = glm::scale(m_HealthBar[i]->hpTransform, (glm::vec3(((TcurrHP.x / TmaxHP.x) * 2), 1.0f, 1.0f) * (1 / camDistance)));
-
-
-				//rotate
-				m_HealthBar[i]->hpTransform = glm::rotate(m_HealthBar[i]->hpTransform, glm::radians(90.0f), { 1.0f, 0.0f, 0.0f });
-
-			}
-
-			if (false)
-			{
-				int TmaxHP = m_Health[i]->MaxHealth;
-				int TcurrHP = m_Health[i]->CurrentHealth;
-
-				float scaleFact = 1.0f;
-
-				float temp = std::max((TcurrHP / TmaxHP) - 1, 0) * scaleFact;
-
-				glm::vec4 clipSpace = cam.ProjectionMatrix * (cam.ViewMatrix * glm::vec4(m_Transform[i]->Position + m_HealthBar[i]->BarOffset + glm::vec3(temp, 0.0f, 0.0f), 1.0f));
-				
-				ndcSpacePos = glm::vec3(clipSpace.x / clipSpace.w, clipSpace.y / clipSpace.w, clipSpace.z / clipSpace.w);
-
-				m_HealthBar[i]->hpTransform = glm::translate(glm::mat4{ 1.0f }, ndcSpacePos);
-
-				//scale
-				//scale calc
-				float camDistance = glm::distance(Frosty::Renderer::GetCamera().CameraPosition,		m_Transform[i]->Position + m_HealthBar[i]->BarOffset);
-				m_HealthBar[i]->hpTransform = glm::scale(m_HealthBar[i]->hpTransform, glm::vec3(std::max((TcurrHP / TmaxHP), 0), 1.0f, 1.0f) * (1 / camDistance));
-
-
-				//rotate
-				m_HealthBar[i]->hpTransform = glm::rotate(m_HealthBar[i]->hpTransform, glm::radians(90.0f), { 1.0f, 0.0f, 0.0f });
-
-			}
-
-			if (m_HealthBar[i]->Texture && m_HealthBar[i]->UseShader->GetName() == "UI") m_HealthBar[i]->Texture->Bind(0);			
+			if (m_HealthBar[i]->Texture && m_HealthBar[i]->UseShader->GetName() == "UI") m_HealthBar[i]->Texture->Bind(0);
 
 			Frosty::Renderer::Submit2d(m_HealthBar[i]->Texture.get(), m_HealthBar[i]->UseShader, m_HealthBar[i]->Mesh, m_HealthBar[i]->hpTransform);
 
