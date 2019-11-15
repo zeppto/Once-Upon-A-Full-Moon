@@ -12,10 +12,11 @@ namespace MCS
 		p_Signature.set(Frosty::ECS::getComponentTypeID<Frosty::ECS::CTransform>(), true);
 		p_Signature.set(Frosty::ECS::getComponentTypeID<Frosty::ECS::CPlayer>(), true);
 		p_Signature.set(Frosty::ECS::getComponentTypeID<Frosty::ECS::CDash>(), true);
-		p_Signature.set(Frosty::ECS::getComponentTypeID<Frosty::ECS::CWeapon>(), true);
 		p_Signature.set(Frosty::ECS::getComponentTypeID<Frosty::ECS::CPhysics>(), true);
 		p_Signature.set(Frosty::ECS::getComponentTypeID<Frosty::ECS::CHealth>(), true);
 		p_Signature.set(Frosty::ECS::getComponentTypeID<Frosty::ECS::CInventory>(), true);
+
+		m_World = Frosty::Application::Get().GetWorld().get();
 	}
 
 	void PlayerControllerSystem::OnInput()
@@ -82,7 +83,6 @@ namespace MCS
 			m_Transform[p_Total] = &world->GetComponent<Frosty::ECS::CTransform>(entity);
 			m_Player[p_Total] = &world->GetComponent<Frosty::ECS::CPlayer>(entity);
 			m_Dash[p_Total] = &world->GetComponent<Frosty::ECS::CDash>(entity);
-			m_Weapon[p_Total] = &world->GetComponent<Frosty::ECS::CWeapon>(entity);
 			m_Physics[p_Total] = &world->GetComponent<Frosty::ECS::CPhysics>(entity);
 			m_Health[p_Total] = &world->GetComponent<Frosty::ECS::CHealth>(entity);
 			m_Inventory[p_Total] = &world->GetComponent<Frosty::ECS::CInventory>(entity);
@@ -102,7 +102,6 @@ namespace MCS
 			m_Transform[p_Total] = nullptr;
 			m_Player[p_Total] = nullptr;
 			m_Dash[p_Total] = nullptr;
-			m_Weapon[p_Total] = nullptr;
 			m_Physics[p_Total] = nullptr;
 			m_Health[p_Total] = nullptr;
 			m_Inventory[p_Total] = nullptr;
@@ -126,7 +125,6 @@ namespace MCS
 			Frosty::ECS::CTransform* transformPtr = world->GetComponentAddress<Frosty::ECS::CTransform>(entity);
 			Frosty::ECS::CPlayer* playerPtr = world->GetComponentAddress<Frosty::ECS::CPlayer>(entity);
 			Frosty::ECS::CDash* dashPtr = world->GetComponentAddress<Frosty::ECS::CDash>(entity);
-			Frosty::ECS::CWeapon* basicAttackPtr = world->GetComponentAddress<Frosty::ECS::CWeapon>(entity);
 			Frosty::ECS::CPhysics* physicsPtr = world->GetComponentAddress<Frosty::ECS::CPhysics>(entity);
 			Frosty::ECS::CHealth* healthPtr = world->GetComponentAddress<Frosty::ECS::CHealth>(entity);
 			Frosty::ECS::CInventory* inventoryPtr = world->GetComponentAddress<Frosty::ECS::CInventory>(entity);
@@ -134,7 +132,6 @@ namespace MCS
 			m_Transform[it->second] = transformPtr;
 			m_Player[it->second] = playerPtr;
 			m_Dash[it->second] = dashPtr;
-			m_Weapon[it->second] = basicAttackPtr;
 			m_Physics[it->second] = physicsPtr;
 			m_Health[it->second] = healthPtr;
 			m_Inventory[it->second] = inventoryPtr;
@@ -159,7 +156,6 @@ namespace MCS
 			retInfo << "\t\t" << i << "\t" << m_Transform[i] << "\t" << m_Transform[i]->EntityPtr->Id << "\t\t" << m_Transform[i]->EntityPtr << "\t\t" << m_Transform[i]->EntityPtr.use_count() << "\n";
 			retInfo << "\t\t" << i << "\t" << m_Player[i] << "\t" << m_Player[i]->EntityPtr->Id << "\t\t" << m_Player[i]->EntityPtr << "\t\t" << m_Player[i]->EntityPtr.use_count() << "\n";
 			retInfo << "\t\t" << i << "\t" << m_Dash[i] << "\t" << m_Dash[i]->EntityPtr->Id << "\t\t" << m_Dash[i]->EntityPtr << "\t\t" << m_Dash[i]->EntityPtr.use_count() << "\n";
-			retInfo << "\t\t" << i << "\t" << m_Weapon[i] << "\t" << m_Weapon[i]->EntityPtr->Id << "\t\t" << m_Weapon[i]->EntityPtr << "\t\t" << m_Weapon[i]->EntityPtr.use_count() << "\n";
 			retInfo << "\t\t" << i << "\t" << m_Physics[i] << "\t" << m_Physics[i]->EntityPtr->Id << "\t\t" << m_Physics[i]->EntityPtr << "\t\t" << m_Physics[i]->EntityPtr.use_count() << "\n";
 			retInfo << "\t\t" << i << "\t" << m_Health[i] << "\t" << m_Health[i]->EntityPtr->Id << "\t\t" << m_Health[i]->EntityPtr << "\t\t" << m_Health[i]->EntityPtr.use_count() << "\n";
 			retInfo << "\t\t" << i << "\t" << m_Inventory[i] << "\t" << m_Inventory[i]->EntityPtr->Id << "\t\t" << m_Inventory[i]->EntityPtr << "\t\t" << m_Inventory[i]->EntityPtr.use_count() << "\n";
@@ -276,14 +272,35 @@ namespace MCS
 	{
 		if (Frosty::InputManager::IsKeyPressed(m_Player[index]->BasicAttackKey))
 		{
-			Frosty::EventBus::GetEventBus()->Publish<Frosty::BasicAttackEvent>(Frosty::BasicAttackEvent(m_Transform[index]->EntityPtr));
+			// Player
+			auto& weaponCarrier = m_Player[index]->EntityPtr;
+
+			// The weapon that the player is wielding
+			auto& weaponComp = (m_World->GetComponent<Frosty::ECS::CWeapon>(m_Player[index]->Weapon->EntityPtr));
+
+			if (Frosty::Time::CurrentTime() - weaponComp.CooldownTimer >= weaponComp.Cooldown)
+			{
+				switch (weaponComp.Type)
+				{
+				case Frosty::ECS::CWeapon::WeaponType::Sword:
+					CreateBoundingBox(weaponCarrier, weaponComp.EntityPtr);
+					break;
+				case Frosty::ECS::CWeapon::WeaponType::Arrow:
+					CreateProjectile(weaponCarrier, weaponComp.EntityPtr);
+					break;
+				default:
+					break;
+				}
+
+				weaponComp.CooldownTimer = Frosty::Time::CurrentTime();
+			}
 		}
 	}
 
 	void PlayerControllerSystem::HandleInventory(size_t index)
 	{
 #pragma region Healing Potion
-		if (Frosty::InputManager::IsKeyPressed(m_Player[index]->HealingPostionKey))
+		if (Frosty::InputManager::IsKeyPressed(m_Player[index]->HealingPotionKey))
 		{
 			// If consumer has healing potion AND comsumer has not full health AND healing timer is bigger than cooldown--> drink healing potion
 			if ((m_Inventory[index]->CurrentHealingPotions > 0) && (m_Health[index]->CurrentHealth < m_Health[index]->MaxHealth) && (Frosty::Time::CurrentTime() - m_Inventory[index]->HealingTimer >= m_Inventory[index]->HealingCooldown))
@@ -470,6 +487,119 @@ namespace MCS
 			else if (type == Frosty::ECS::CLootable::LootType::Arrow)
 			{
 				FY_INFO("Arrow in Inventory");
+			}
+		}
+	}
+
+	void PlayerControllerSystem::CreateBoundingBox(const std::shared_ptr<Frosty::ECS::Entity>& weaponCarrier, const std::shared_ptr<Frosty::ECS::Entity>& weapon)
+	{
+		// Get necessary info
+		auto& weaponComp = m_World->GetComponent<Frosty::ECS::CWeapon>(weapon);
+		auto& attackerTransform = m_World->GetComponent<Frosty::ECS::CTransform>(weaponCarrier);
+
+		// Calculate direction vector
+		glm::mat4 mat = glm::mat4(1.0f);
+		mat = glm::rotate(mat, glm::radians(attackerTransform.Rotation.x), { 1.0f, 0.0f, 0.0f });
+		mat = glm::rotate(mat, glm::radians(attackerTransform.Rotation.y), { 0.0f, 1.0f, 0.0f });
+		mat = glm::rotate(mat, glm::radians(attackerTransform.Rotation.z), { 0.0f, 0.0f, 1.0f });
+		glm::vec4 direction = mat * glm::vec4(0.0f, 0.0f, 1.0f, 0.0);
+
+		// Create BB
+		glm::vec3 spawnPos = attackerTransform.Position + (glm::vec3(direction) * 4.0f);
+		glm::vec3 spawnScale = glm::vec3(10.0f, 6.0f, 4.0f);
+		auto& sword = m_World->CreateEntity({ spawnPos.x, 3.0f, spawnPos.z }, attackerTransform.Rotation, spawnScale);
+
+		m_World->AddComponent<Frosty::ECS::CMesh>(sword, Frosty::AssetManager::GetMesh("pCube1"));				// Should be according to weapon level type in CWeapon
+		m_World->AddComponent<Frosty::ECS::CMaterial>(sword, Frosty::AssetManager::GetShader("FlatColor"));
+		m_World->AddComponent<Frosty::ECS::CPhysics>(sword, Frosty::AssetManager::GetBoundingBox("pCube1"));
+
+		// Is it a friendly attack or an enemy attack? Add boolean in parameter accordingly
+		float criticalHit = GenerateCriticalHit(weaponComp.Damage, weaponComp.CriticalHit);
+		m_World->AddComponent<Frosty::ECS::CAttack>(sword, Frosty::ECS::CAttack::AttackType::Melee, weaponComp.Damage /*+ criticalHit*/, true); // <-- true because it's a friendly attack
+	}
+
+	void PlayerControllerSystem::CreateProjectile(const std::shared_ptr<Frosty::ECS::Entity>& weaponCarrier, const std::shared_ptr<Frosty::ECS::Entity>& weapon)
+	{
+		// Get necessary info
+		auto& weaponComp = m_World->GetComponent<Frosty::ECS::CWeapon>(weapon);
+		auto& attackerTransform = m_World->GetComponent<Frosty::ECS::CTransform>(weaponCarrier);
+
+		// Calculate direction vector
+		glm::mat4 mat = glm::mat4(1.0f);
+		mat = glm::rotate(mat, glm::radians(attackerTransform.Rotation.x), { 1.0f, 0.0f, 0.0f });
+		mat = glm::rotate(mat, glm::radians(attackerTransform.Rotation.y), { 0.0f, 1.0f, 0.0f });
+		mat = glm::rotate(mat, glm::radians(attackerTransform.Rotation.z), { 0.0f, 0.0f, 1.0f });
+		glm::vec4 direction = mat * glm::vec4(0.0f, 0.0f, 1.0f, 0.0);
+
+		// Create projectile
+		glm::vec3 spawnPos = attackerTransform.Position + (glm::vec3(direction) * 3.0f);
+		auto& projectile = m_World->CreateEntity({ spawnPos.x, 1.0f, spawnPos.z }, attackerTransform.Rotation, { 0.3f, 0.3f, 0.3f });
+		m_World->AddComponent<Frosty::ECS::CMesh>(projectile, Frosty::AssetManager::GetMesh("pSphere1"));
+		m_World->AddComponent<Frosty::ECS::CMaterial>(projectile, Frosty::AssetManager::GetShader("FlatColor"));
+		auto& projectilePhysics = m_World->AddComponent<Frosty::ECS::CPhysics>(projectile, Frosty::AssetManager::GetBoundingBox("pSphere1"), 20.0f);
+		projectilePhysics.Velocity = direction * projectilePhysics.Speed;
+
+		float criticalHit = GenerateCriticalHit(weaponComp.Damage, weaponComp.CriticalHit);
+		m_World->AddComponent<Frosty::ECS::CAttack>(projectile, Frosty::ECS::CAttack::AttackType::Range, weaponComp.Damage /*+ criticalHit*/, true, weaponComp.Lifetime);
+	}
+
+	float PlayerControllerSystem::GenerateCriticalHit(float criticalHit, float criticalHitChance)
+	{
+		int randomNumber = rand() % 100 + 1;
+
+		if (randomNumber <= (criticalHitChance * 100))
+		{
+			return criticalHit;
+		}
+		return 0.0f;
+	}
+
+	void PlayerControllerSystem::SwapWeapon(const std::shared_ptr<Frosty::ECS::Entity>& playerWeapon, const std::shared_ptr<Frosty::ECS::Entity>& lootWeapon)
+	{
+		// Swap CWeapon
+		if ((m_World->HasComponent<Frosty::ECS::CWeapon>(playerWeapon)) && (m_World->HasComponent<Frosty::ECS::CWeapon>(lootWeapon)))
+		{
+			if ((m_World->GetComponent<Frosty::ECS::CWeapon>(playerWeapon) != m_World->GetComponent<Frosty::ECS::CWeapon>(lootWeapon)))
+			{
+				Frosty::ECS::CWeapon tempWeapon;
+				tempWeapon = m_World->GetComponent<Frosty::ECS::CWeapon>(playerWeapon);
+				m_World->GetComponent<Frosty::ECS::CWeapon>(playerWeapon) = m_World->GetComponent<Frosty::ECS::CWeapon>(lootWeapon);
+				m_World->GetComponent<Frosty::ECS::CWeapon>(lootWeapon) = tempWeapon;
+
+				// Only switch CMesh and CMaterial when weapon stats have been swapped
+				SwapMesh(playerWeapon, lootWeapon);
+				SwapMaterial(playerWeapon, lootWeapon);
+			}
+		}
+	}
+
+	void PlayerControllerSystem::SwapMesh(const std::shared_ptr<Frosty::ECS::Entity>& playerWeapon, const std::shared_ptr<Frosty::ECS::Entity>& lootWeapon)
+	{
+		// Swap CMesh
+		if ((m_World->HasComponent<Frosty::ECS::CMesh>(playerWeapon)) && (m_World->HasComponent<Frosty::ECS::CMesh>(lootWeapon)))
+		{
+			if ((m_World->GetComponent<Frosty::ECS::CMesh>(playerWeapon)) != (m_World->GetComponent<Frosty::ECS::CMesh>(lootWeapon)))
+			{
+				Frosty::ECS::CMesh tempMesh;
+				tempMesh = m_World->GetComponent<Frosty::ECS::CMesh>(playerWeapon);
+				m_World->GetComponent<Frosty::ECS::CMesh>(playerWeapon) = m_World->GetComponent<Frosty::ECS::CMesh>(lootWeapon);
+				m_World->GetComponent<Frosty::ECS::CMesh>(lootWeapon) = tempMesh;
+
+			}
+		}
+	}
+
+	void PlayerControllerSystem::SwapMaterial(const std::shared_ptr<Frosty::ECS::Entity>& playerWeapon, const std::shared_ptr<Frosty::ECS::Entity>& lootWeapon)
+	{
+		// Swap CMesh
+		if ((m_World->HasComponent<Frosty::ECS::CMaterial>(playerWeapon)) && (m_World->HasComponent<Frosty::ECS::CMaterial>(lootWeapon)))
+		{
+			if ((m_World->GetComponent<Frosty::ECS::CMaterial>(playerWeapon)) != (m_World->GetComponent<Frosty::ECS::CMaterial>(lootWeapon)))
+			{
+				Frosty::ECS::CMaterial tempMaterial;
+				tempMaterial = m_World->GetComponent<Frosty::ECS::CMaterial>(playerWeapon);
+				m_World->GetComponent<Frosty::ECS::CMaterial>(playerWeapon) = m_World->GetComponent<Frosty::ECS::CMaterial>(lootWeapon);
+				m_World->GetComponent<Frosty::ECS::CMaterial>(lootWeapon) = tempMaterial;
 			}
 		}
 	}

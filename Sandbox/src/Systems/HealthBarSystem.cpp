@@ -24,7 +24,7 @@ namespace MCS
 		{
 			if (m_HealthBar[i]->Texture && m_HealthBar[i]->UseShader->GetName() == "UI") m_HealthBar[i]->Texture->Bind(0);
 
-			Frosty::Renderer::Submit2d(m_HealthBar[i]->Texture.get(), m_HealthBar[i]->UseShader, m_HealthBar[i]->Mesh, m_HealthBar[i]->hpTransform);
+			Frosty::Renderer::Submit2d(m_HealthBar[i]->Texture.get(), m_HealthBar[i]->UseShader, m_HealthBar[i]->Mesh, m_HealthBar[i]->HPTransform);
 
 			if (m_HealthBar[i]->UseShader->GetName() == "UI" && m_HealthBar[i]->Texture) m_HealthBar[i]->Texture->Unbind();
 		}

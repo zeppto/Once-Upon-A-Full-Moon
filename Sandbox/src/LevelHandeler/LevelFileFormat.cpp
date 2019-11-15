@@ -129,7 +129,7 @@ void LevelFileFormat::AddEntity(const std::shared_ptr<Frosty::ECS::Entity>& enti
 			myComponents.MyComponents.at(8).HaveComponent = true;
 			auto& healthBar = m_World->GetComponent<Frosty::ECS::CHealthBar>(entity);
 			myComponents.myHealthBar.BarOffset = healthBar.BarOffset;
-			myComponents.myHealthBar.HpTransform = healthBar.hpTransform;
+			myComponents.myHealthBar.HpTransform = healthBar.HPTransform;
 			strcpy_s(myComponents.myHealthBar.MeshName, healthBar.Mesh->GetName().c_str());
 			strcpy_s(myComponents.myHealthBar.TextureName, healthBar.Texture->GetName().c_str());
 			strcpy_s(myComponents.myHealthBar.UseShaderName, healthBar.UseShader->GetName().c_str());
