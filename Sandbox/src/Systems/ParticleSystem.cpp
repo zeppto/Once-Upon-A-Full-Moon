@@ -214,11 +214,11 @@ namespace MCS
 		m_ParticleSystem[systemIndex]->particles[index].position -= (m_ParticleSystem[systemIndex]->particles[index].direction * m_ParticleSystem[systemIndex]->particles[index].speed) * Frosty::Time::DeltaTime();
 		
 		//Fade in and fade out
-		if (m_ParticleSystem[systemIndex]->particles[index].color.a < 1.0 && m_ParticleSystem[systemIndex]->particles[index].lifetime > 1.0) {
-			m_ParticleSystem[systemIndex]->particles[index].color.a += 2.0 * Frosty::Time::DeltaTime();
+		if (m_ParticleSystem[systemIndex]->particles[index].color.a < 1.0f && m_ParticleSystem[systemIndex]->particles[index].lifetime > 1.0f) {
+			m_ParticleSystem[systemIndex]->particles[index].color.a += 2.0f * Frosty::Time::DeltaTime();
 		}
-		if (m_ParticleSystem[systemIndex]->particles[index].lifetime < 1.1) {
-			m_ParticleSystem[systemIndex]->particles[index].color.a -= 1.0 * Frosty::Time::DeltaTime();
+		if (m_ParticleSystem[systemIndex]->particles[index].lifetime < 1.1f) {
+			m_ParticleSystem[systemIndex]->particles[index].color.a -= 1.0f * Frosty::Time::DeltaTime();
 
 			//Update particle size
 			if (m_ParticleSystem[systemIndex]->particles[index].size > m_ParticleSystem[systemIndex]->endParticleSize)

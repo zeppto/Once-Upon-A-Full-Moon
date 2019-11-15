@@ -1,13 +1,14 @@
-#include <fypch.hpp>
 #include <mcspch.hpp>
 //#include "MapGenerator.hpp"
 #include "LevelsHardCoded.hpp"
 #include "Frosty/API/AssetManager/AssetManager.hpp"
+#include "Map/GridMap.hpp"
 
 namespace Level
 {
 	glm::vec3 Room(bool up, bool down, bool right, bool left, std::string texture, int rotation, int entrensSide, bool onlyPos)
 	{
+		Frosty::ECS::CTransform* planeTransform = nullptr;
 		//temp onlyPos to avoid bug
 		if (!onlyPos)
 		{
@@ -16,6 +17,7 @@ namespace Level
 			auto& testTranform = world->GetComponent<Frosty::ECS::CTransform>(PlaneOne);
 			testTranform.Scale = glm::vec3(300, 1.0f, 300);
 			testTranform.Rotation = glm::vec3(0, rotation, 0);
+			planeTransform = &testTranform;
 			world->AddComponent<Frosty::ECS::CMesh>(PlaneOne, Frosty::AssetManager::GetMesh("tiledGround"));
 			//world->AddComponent<Frosty::ECS::CMesh>(PlaneOne, Frosty::AssetManager::GetMesh("pPlane1"));
 			auto& testMaterial = world->AddComponent<Frosty::ECS::CMaterial>(PlaneOne, Frosty::AssetManager::GetShader("Texture2D"));
@@ -39,6 +41,7 @@ namespace Level
 
 				treeName = "tree" + std::to_string(((rand() % NrOfTreeTypes) + 1));
 				world->AddComponent<Frosty::ECS::CMesh>(Tree, Frosty::AssetManager::GetMesh("tree1"));
+				world->AddComponent<Frosty::ECS::CPhysics>(Tree, Frosty::AssetManager::GetBoundingBox("tree1"));
 			}
 			if (!up)
 			{
@@ -54,6 +57,7 @@ namespace Level
 
 					treeName = "Tree" + std::to_string(((rand() % NrOfTreeTypes) + 1));
 					world->AddComponent<Frosty::ECS::CMesh>(Tree, Frosty::AssetManager::GetMesh("tree1"));
+					world->AddComponent<Frosty::ECS::CPhysics>(Tree, Frosty::AssetManager::GetBoundingBox("tree1"));
 				}
 			}
 			else
@@ -82,6 +86,7 @@ namespace Level
 
 					treeName = "Tree" + std::to_string(((rand() % NrOfTreeTypes) + 1));
 					world->AddComponent<Frosty::ECS::CMesh>(Tree, Frosty::AssetManager::GetMesh("tree1"));
+					world->AddComponent<Frosty::ECS::CPhysics>(Tree, Frosty::AssetManager::GetBoundingBox("tree1"));
 				}
 			}
 			else
@@ -110,6 +115,7 @@ namespace Level
 
 					treeName = "Tree" + std::to_string(((rand() % NrOfTreeTypes) + 1));
 					world->AddComponent<Frosty::ECS::CMesh>(Tree, Frosty::AssetManager::GetMesh("tree1"));
+					world->AddComponent<Frosty::ECS::CPhysics>(Tree, Frosty::AssetManager::GetBoundingBox("tree1"));
 				}
 			}
 			else
@@ -138,6 +144,7 @@ namespace Level
 
 					treeName = "Tree" + std::to_string(((rand() % NrOfTreeTypes) + 1));
 					world->AddComponent<Frosty::ECS::CMesh>(Tree, Frosty::AssetManager::GetMesh("tree1"));
+					world->AddComponent<Frosty::ECS::CPhysics>(Tree, Frosty::AssetManager::GetBoundingBox("tree1"));
 				}
 			}
 			else
@@ -174,6 +181,9 @@ namespace Level
 		{
 			toReturn = glm::vec3(0, 0, 0);
 		}
+
+
+
 		return toReturn;
 	}
 

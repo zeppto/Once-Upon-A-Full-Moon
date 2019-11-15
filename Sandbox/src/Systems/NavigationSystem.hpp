@@ -24,10 +24,11 @@ namespace MCS
 		virtual void UpdateEntityComponent(const std::shared_ptr<Frosty::ECS::Entity>& entity) override;
 		virtual std::string GetInfo() const override;
 
-		void InitiateGridMap(const Frosty::ECS::CTransform& transform);
+		void InitiateGridMap(const Frosty::ECS::CTransform& mapTransform);
 
 	private:
 		std::array<Frosty::ECS::CTransform*, Frosty::ECS::MAX_ENTITIES_PER_COMPONENT> m_Transform;
+		std::array<Frosty::ECS::CPhysics*, Frosty::ECS::MAX_ENTITIES_PER_COMPONENT> m_Physics;
 		std::array<Frosty::ECS::CEnemy*, Frosty::ECS::MAX_ENTITIES_PER_COMPONENT> m_Enemy;
 
 		std::unique_ptr<GridMap> m_GridMap;

@@ -32,7 +32,6 @@ namespace Frosty
 		static void EndScene();
 
 		static 	void Renderer::SetCamera(const glm::vec3& pos, const glm::mat4& view, const glm::mat4& projection);
-		static GameCameraProps GetCamera();
 
 		static void AddLight(const glm::vec3& color, const glm::vec3& pos, float strength, float radius);
 		static void AddLight(const glm::vec3& color, glm::vec3& direction, float strength);

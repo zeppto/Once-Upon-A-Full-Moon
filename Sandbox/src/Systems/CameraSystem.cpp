@@ -23,7 +23,7 @@ namespace MCS
 			// Follow player
 			if (m_Cameras[i]->Target)
 			{
-				m_Transform[i]->Position = m_Cameras[i]->Target->Position + glm::vec3(0.0f, 30.0f, 30.0f);
+				m_Transform[i]->Position = m_Cameras[i]->Target->Position + glm::vec3(0.0f, 45.0f, 10.0f);
 				m_Cameras[i]->ViewMatrix = glm::lookAt(m_Transform[i]->Position, m_Cameras[i]->Target->Position, { 0.0f, 1.0f, 0.0f });
 			}
 			else

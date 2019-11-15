@@ -184,6 +184,11 @@ namespace Frosty
 			EntityManager& operator=(const EntityManager& e) { FY_CORE_ASSERT(false, "Assignment operator in EntityManager called."); return *this; }
 
 			inline std::vector<std::shared_ptr<Entity>>& GetEntities() { return m_Entities; }
+			inline std::shared_ptr<Entity>& GetEntityById(EntityID eid)
+			{
+				int index = utils::BinarySearch(m_Entities, eid);
+				return m_Entities[index]; 
+			}
 			inline size_t GetTotalEntities() const { return m_Entities.size(); }
 
 			inline std::shared_ptr<Entity>& At(size_t index) { return m_Entities.at(index); }
@@ -325,6 +330,7 @@ namespace Frosty
 
 				m_Data.at(index).EntityPtr.reset();
 				m_Data.at(index) = m_Data.at(Total - 1);
+				m_Data.at(index).EntityPtr = m_Data.at(Total - 1).EntityPtr;
 				m_Data.at(Total - 1).EntityPtr.reset();
 				m_Data.at(Total - 1) = ComponentType();
 
@@ -399,9 +405,10 @@ namespace Frosty
 		{
 			static std::string NAME;
 			std::shared_ptr<VertexArray> Mesh;
+			bool RenderMesh{ true };
 
 			CMesh() = default;
-			CMesh(std::shared_ptr<VertexArray> mesh) : Mesh(mesh) { }
+			CMesh(std::shared_ptr<VertexArray> mesh, bool render = true) : Mesh(mesh), RenderMesh(render) { }
 			CMesh(const CMesh& org) { FY_CORE_ASSERT(false, "Copy constructor in CMesh called."); }
 
 			virtual std::string GetName() const { return NAME; }
@@ -530,8 +537,13 @@ namespace Frosty
 		struct CEnemy : public BaseComponent
 		{
 			static std::string NAME;
+			CTransform* Target{ nullptr };
+			glm::vec3 CellTarget{ 0.0f };
+			float AttackRange{ 2.5f };
+			float SightRange{ 40.0f };
 
 			CEnemy() = default;
+			CEnemy(CTransform * target) : Target(target) { }
 			CEnemy(const CEnemy& org) { FY_CORE_ASSERT(false, "Copy constructor in CEnemy called."); }
 
 			virtual std::string GetName() const { return NAME; }
