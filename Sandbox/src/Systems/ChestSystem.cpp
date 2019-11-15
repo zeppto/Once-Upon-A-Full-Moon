@@ -76,7 +76,6 @@ namespace MCS
 					m_CoolDown = 0.0f;
 				}
 			}
-
 			else if (m_Chest[i]->EntityPtr != nullptr && m_Health[i]->CurrentHealth <= 0)
 			{
 				m_World->AddComponent<Frosty::ECS::CDestroy>(m_Chest[i]->EntityPtr);

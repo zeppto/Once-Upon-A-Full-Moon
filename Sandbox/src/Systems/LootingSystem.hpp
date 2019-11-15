@@ -29,7 +29,6 @@ namespace MCS
 
 		std::array<Frosty::ECS::CTransform*, Frosty::ECS::MAX_ENTITIES_PER_COMPONENT> m_Transform;
 		std::array<Frosty::ECS::CLootable*, Frosty::ECS::MAX_ENTITIES_PER_COMPONENT> m_Lootable;
-		std::array<std::shared_ptr<Frosty::ECS::Entity>, Frosty::ECS::MAX_ENTITIES_PER_COMPONENT> m_Items;
 
 		std::shared_ptr<Frosty::ECS::Entity> m_Player = nullptr;
 
