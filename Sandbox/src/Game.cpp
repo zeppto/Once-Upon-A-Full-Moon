@@ -118,7 +118,7 @@ namespace MCS
 		world->AddComponent<Frosty::ECS::CPlayer>(player);
 		world->AddComponent<Frosty::ECS::CPhysics>(player, Frosty::AssetManager::GetBoundingBox("scarlet"), 10.0f);
 		world->AddComponent<Frosty::ECS::CDash>(player);
-		world->AddComponent<Frosty::ECS::CWeapon>(player, Frosty::ECS::CWeapon::WeaponType::Arrow, 10.f);
+		world->AddComponent<Frosty::ECS::CWeapon>(player, Frosty::ECS::CWeapon::WeaponType::Arrow, 40.f);
 		world->AddComponent<Frosty::ECS::CHealth>(player);
 		world->AddComponent<Frosty::ECS::CInventory>(player);
 		world->AddComponent<Frosty::ECS::CHealthBar>(player, glm::vec3(0.0f, 10.0f, 0.0f));
