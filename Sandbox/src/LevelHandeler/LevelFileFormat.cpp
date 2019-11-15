@@ -145,14 +145,14 @@ void LevelFileFormat::AddEntity(const std::shared_ptr<Frosty::ECS::Entity>& enti
 		if (m_World->HasComponent<Frosty::ECS::CParticleSystem>(entity))
 		{
 			myComponents.MyComponents.at(9).HaveComponent = true;
-			auto& particelSystem = m_World->GetComponent<Frosty::ECS::CParticleSystem>(entity);
-			myComponents.myParticleSystem.startParticleSize = particelSystem.startParticleSize;
-			myComponents.myParticleSystem.endParticleSize = particelSystem.endParticleSize;
-			myComponents.myParticleSystem.particleSystemColor = particelSystem.particleSystemColor;
-			myComponents.myParticleSystem.emitRate = particelSystem.emitRate;
-			myComponents.myParticleSystem.emitCount = particelSystem.emitCount;
-			myComponents.myParticleSystem.maxLifetime = particelSystem.maxLifetime;
-			myComponents.myParticleSystem.fadeTreshold = particelSystem.fadeTreshold;
+			//auto& particelSystem = m_World->GetComponent<Frosty::ECS::CParticleSystem>(entity);
+			//myComponents.myParticleSystem.startParticleSize = particelSystem.startParticleSize;
+			//myComponents.myParticleSystem.endParticleSize = particelSystem.endParticleSize;
+			//myComponents.myParticleSystem.particleSystemColor = particelSystem.particleSystemColor;
+			//myComponents.myParticleSystem.emitRate = particelSystem.emitRate;
+			//myComponents.myParticleSystem.emitCount = particelSystem.emitCount;
+			//myComponents.myParticleSystem.maxLifetime = particelSystem.maxLifetime;
+			//myComponents.myParticleSystem.fadeTreshold = particelSystem.fadeTreshold;
 		}
 		else
 			myComponents.MyComponents.at(9).HaveComponent = false;
@@ -441,7 +441,7 @@ void LevelFileFormat::OpenFromFile(std::string fileName, Frosty::ECS::CTransform
 						existingFile.read((char*)& fileEntitys.myEntitys.at(i).myHealthBar, sizeof(Level_HealthBar));
 						auto& healthBar = m_World->AddComponent<Frosty::ECS::CHealthBar>(entity);
 						healthBar.BarOffset = fileEntitys.myEntitys.at(i).myHealthBar.BarOffset;
-						healthBar.hpTransform = fileEntitys.myEntitys.at(i).myHealthBar.HpTransform;
+						//healthBar.hpTransform = fileEntitys.myEntitys.at(i).myHealthBar.HpTransform;
 						healthBar.Mesh = Frosty::AssetManager::GetMesh(fileEntitys.myEntitys.at(i).myHealthBar.MeshName);
 						healthBar.Texture = Frosty::AssetManager::GetTexture2D(fileEntitys.myEntitys.at(i).myHealthBar.TextureName);
 						healthBar.UseShader = Frosty::AssetManager::GetShader(fileEntitys.myEntitys.at(i).myHealthBar.UseShaderName);
