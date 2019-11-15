@@ -34,10 +34,12 @@ namespace MCS
 					else
 					{
 						//Follow the nearest bait
-						int ShortestID = FindClosestBait(m_Transform[i]->Position, m_Boss[i]->TargetList);
+						if (m_Boss[i]->TargetList.size() > 2)
+						{
+							int ShortestID = FindClosestBait(m_Transform[i]->Position, m_Boss[i]->TargetList);
 
-						std::swap(m_Boss[i]->TargetList.at(0), m_Boss[i]->TargetList.at(ShortestID));
-
+							std::swap(m_Boss[i]->TargetList.at(0), m_Boss[i]->TargetList.at(ShortestID));
+						}
 						m_Follow[i]->Target = &world->GetComponent<Frosty::ECS::CTransform>(m_Boss[i]->TargetList.at(0));
 						m_Boss[i]->Hunting = true;
 						m_Follow[i]->StopDistance = 0.1f;
