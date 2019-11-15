@@ -25,7 +25,7 @@ namespace MCS
 		void OnPickUpAttemptEvent(Frosty::PickUpAttemptEvent& e);
 		float Distance2D(glm::vec3 pos1, glm::vec3 pos2);
 	private:
-		Frosty::World* m_World;
+		Frosty::World* m_World{ nullptr };
 
 		std::array<Frosty::ECS::CTransform*, Frosty::ECS::MAX_ENTITIES_PER_COMPONENT> m_Transform;
 		std::array<Frosty::ECS::CLootable*, Frosty::ECS::MAX_ENTITIES_PER_COMPONENT> m_Lootable;
@@ -33,8 +33,8 @@ namespace MCS
 
 		std::shared_ptr<Frosty::ECS::Entity> m_Player = nullptr;
 
-		float m_WorkingArea = 3.0f;
-		float m_CoolDown = 0.0f;
+		float m_WorkingArea{ 3.0f };
+		float m_CoolDown{ 0.0f };
 	};
 }
 #endif

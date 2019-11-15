@@ -40,7 +40,7 @@ namespace MCS
 		std::array<Frosty::ECS::CHealth*, Frosty::ECS::MAX_ENTITIES_PER_COMPONENT> m_Health;
 		std::array<Frosty::ECS::CInventory*, Frosty::ECS::MAX_ENTITIES_PER_COMPONENT> m_Inventory;
 
-		bool m_keyPressed = false;
+		bool m_keyPressed{ false };
 	};
 }
 

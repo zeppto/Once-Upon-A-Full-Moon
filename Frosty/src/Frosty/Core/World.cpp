@@ -88,7 +88,7 @@ namespace Frosty
 		auto& win = app.GetWindow();
 
 		// Creates a camera every time a scene is initiated
-		auto& camEntity = CreateEntity({ 0.0f, 40.0f, 25.0f }, { -90.0f, -65.0f, 0.0f });
+		auto& camEntity = CreateEntity({ 0.0f, 40.0f, 25.0f }, { 0.0f, 0.0f, 0.0f });
 		AddComponent<ECS::CCamera>(camEntity, 60.0f, (float)(win.GetViewport().z / win.GetViewport().w), 0.01f, 1000.0f);
 		m_Scene->AddCamera(camEntity);
 

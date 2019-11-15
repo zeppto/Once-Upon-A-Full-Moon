@@ -32,11 +32,6 @@ namespace Frosty
 		s_SceneData->GameCamera.ViewProjectionMatrix = projection * view;
 	}
 
-	Renderer::GameCameraProps Renderer::GetCamera()
-	{
-		return s_SceneData->GameCamera;
-	}
-
 	void Renderer::AddLight(const glm::vec3& color, const glm::vec3& pos, float strength, float radius)
 	{
 		PointLight light;

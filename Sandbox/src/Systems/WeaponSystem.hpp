@@ -22,7 +22,7 @@ namespace MCS
 		virtual std::string GetInfo() const override;
 
 	private:
-		Frosty::World* m_World;
+		Frosty::World* m_World{ nullptr };
 
 		std::array<Frosty::ECS::CAttack*, Frosty::ECS::MAX_ENTITIES_PER_COMPONENT> m_Attack;
 	};

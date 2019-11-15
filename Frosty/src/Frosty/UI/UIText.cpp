@@ -8,7 +8,7 @@ namespace Frosty
 {
 	UIText::UIText(glm::vec2 position, std::string text, glm::vec3 color, float fontScale, std::string font, uint16_t fontSize)
 	{
-		m_type = TEXT;
+		m_type = TYPE::TEXT;
 		m_Text = text;
 		m_Font = font;
 		m_FontSize = fontSize;

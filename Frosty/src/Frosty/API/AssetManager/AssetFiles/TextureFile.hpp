@@ -13,11 +13,11 @@ namespace Frosty
 	private:	//Variables
 
 	//	Need to be int for stbi loader
-		int m_Components;
-		int m_Image_Width;
-		int m_Image_Height;
+		int m_Components{ 0 };
+		int m_Image_Width{ 0 };
+		int m_Image_Height{ 0 };
 
-		unsigned char* m_ImageData;
+		unsigned char* m_ImageData{ nullptr };
 
 
 	public:		//Functions

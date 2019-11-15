@@ -64,7 +64,8 @@ namespace Frosty
 		// keyframes involved.
 		int k1 = (int)(*currentAnimTime * m_Animation.fps);
 		//keyFrameMap.
-		int k2 = fminf(k1 + 1, keyVec[keyVec.size() - 1].timePosition);
+		int k2 = (int)glm::min(k1 + 1.0f, keyVec[keyVec.size() - 1].timePosition);
+		//int k2 = fminf(k1 + 1.0f, keyVec[keyVec.size() - 1].timePosition);
 
 		// keyframes in anim_time terms
 		float k1_time = k1 / m_Animation.fps;
