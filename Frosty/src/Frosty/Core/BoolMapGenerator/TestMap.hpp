@@ -1,9 +1,12 @@
 #ifndef  NODEMAP_HPP
 #define NODEMAP_HPP
-
 #include <sstream> 
 #include<fstream>
 #include<Glad/glad.h>
+#define STB_IMAGE_WRITE_IMPLEMENTATION
+#include<stb_image_write.h>
+
+
 
 namespace Frosty
 {
@@ -43,7 +46,7 @@ namespace Frosty
 
 		uint16_t m_CoordX;
 		uint16_t m_CoordY;
-
+		
 		bool m_Exits [MAXEXITS];
 
 	public:
@@ -507,7 +510,7 @@ namespace Frosty
 			
 			void main()
 			{
-				fsOutCol = vec4( 1.0f,1.0f,1.0f, 1.0f ); 
+				fsOutCol = vec4( 1.0f,1.0f,0.0f, 1.0f ); 
 			}
 		)";
 
@@ -827,7 +830,7 @@ namespace Frosty
 			glGenTextures(1, &texture);
 			glBindTexture(GL_TEXTURE_2D, texture);
 			//glGenerateMipmap(GL_TEXTURE_2D);
-			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, tempTexWitdh, tempTexHeight, 0, GL_RGB, GL_FLOAT, NULL);
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, tempTexWitdh, tempTexHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
@@ -878,14 +881,13 @@ namespace Frosty
 			glEnableVertexAttribArray(0);
 
 
-			glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
-
-
+			//glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 
 
 			glUseProgram(renderProgram);
+
+			glBindVertexArray(VertID);
 			GLint locationVO = glGetUniformLocation(renderProgram, "u_ViewOrtho");
 			GLint locationMM = glGetUniformLocation(renderProgram, "u_ModelMat");
 			glUniformMatrix4fv(locationVO, 1, GL_FALSE, &ViewOrtho[0][0]);
@@ -902,6 +904,108 @@ namespace Frosty
 
 
 
+
+
+
+
+			
+		//float GridMult = 1.0f;
+
+		//for (int i = 0; i < nodeMap.size(); i++)
+		//{
+		//	float tempX = nodeMap.at(i).GetX() * GridMult;
+		//	float tempY = nodeMap.at(i).GetY() * GridMult;
+
+		//	const bool* exits = nodeMap.at(i).GetExits();
+
+		//	float xOffset = 5.0f;
+		//	float yOffset = 5.0f;
+		//	float scaleX = 0.05f;
+		//	float scaleY = 0.05f;
+
+
+
+
+		//	float PosX = tempX/10.0f ;
+		//	float PosY = tempY/10.0f ;
+
+		//	auto& Node = world->CreateEntity({ PosX, 10.0f, PosY }, { 0.0f, 0.0f, 0.0f }, { scaleX, 0.1f, scaleY });
+		//	world->AddComponent<Frosty::ECS::CMesh>(Node, Frosty::AssetManager::GetMesh("pCube1"));
+		//	world->AddComponent<Frosty::ECS::CMaterial>(Node, Frosty::AssetManager::GetShader("FlatColor"));
+
+
+
+		//	for (int j = 0; j < 4; j++)
+		//	{
+		//		xOffset = 0.05f;
+		//		yOffset = 0.05f;
+		//		if (exits[j])
+		//		{
+
+		//			float ofPosX = PosX;
+		//			float ofPosY = PosY;
+
+		//			if (j == 0)
+		//			{
+		//				ofPosY -= yOffset;
+		//			}
+		//			else if (j == 1)
+		//			{
+		//				ofPosX += xOffset;
+		//			}
+		//			else if (j == 2)
+		//			{
+		//				ofPosX -= xOffset;
+		//			}
+		//			else if (j == 3)
+		//			{
+		//				ofPosY += yOffset;
+		//			}
+		//			/*			scaleY = 2.0f;
+		//							scaleX = 2.0f;*/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+			const size_t bytesPerPixel = 3;	// RGB
+			const size_t imageSizeInBytes = bytesPerPixel * size_t(tempTexWitdh) * size_t(tempTexHeight);
+			//int texSize = tempTexWitdh * tempTexHeight * 3 * 4;
+			BYTE* pixels = static_cast<BYTE*>(malloc(imageSizeInBytes));
+			//uint8_t* tempintPtr = FY_NEW uint8_t[texSize];
+			glPixelStorei(GL_PACK_ALIGNMENT, 1);
+			glReadPixels(0, 0, tempTexWitdh, tempTexHeight, GL_RGB, GL_UNSIGNED_BYTE, pixels);
+
+
+			//for (int i = 0; i < texSize; i++)
+			//{
+			//	if (tempintPtr[i] > 0.01)
+			//	{
+			//		int o = 0;
+			//	}
+			//}
+
+			std::string tempstr((m_Seed + ".jpg"));
+			int check = stbi_write_jpg(tempstr.c_str(), tempTexWitdh, tempTexHeight, 3, pixels, 100);
+
+			free(pixels);
+
+
+
+			glDisableVertexAttribArray(0);
+			glDeleteProgram(renderProgram);
+			glDeleteVertexArrays(1,&VertID);
+			glDeleteFramebuffers(1, &gBuffer);
+			glDeleteTextures(1, &texture);
 
 		}
 

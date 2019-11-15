@@ -418,8 +418,8 @@ namespace Frosty
 					if (s_AutoLoad)
 					{
 						//Temp can be optimized
-						GetAnimation(tempFile.getAnimation().animationName)->LoadToMem();
-						GetAnimation(tempFile.getAnimation().animationName)->LoadToGPU();
+						//GetAnimation(tempFile.getAnimation().animationName)->LoadToMem();
+						//GetAnimation(tempFile.getAnimation().animationName)->LoadToGPU();
 					}
 
 				}
