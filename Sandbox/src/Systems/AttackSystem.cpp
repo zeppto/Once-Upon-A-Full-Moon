@@ -1,32 +1,33 @@
 #include <mcspch.hpp>
-#include "WeaponSystem.hpp"
+#include "AttackSystem.hpp"
+#include "Frosty/Events/AbilityEvent.hpp"
 
 namespace MCS
 {
-	const std::string WeaponSystem::NAME = "Arrow";
+	const std::string AttackSystem::NAME = "Attack";
 
-	void WeaponSystem::Init()
+	void AttackSystem::Init()
 	{
-		m_World = Frosty::Application::Get().GetWorld().get();
 		p_Signature.set(Frosty::ECS::getComponentTypeID<Frosty::ECS::CAttack>(), true);
 	}
 
-	void WeaponSystem::OnUpdate()
+	void AttackSystem::OnUpdate()
 	{
 		for (size_t i = 1; i < p_Total; i++)
 		{
 			if (Frosty::Time::CurrentTime() - m_Attack[i]->LifetimeTimer >= m_Attack[i]->Lifetime)
 			{
-				if (!m_World->HasComponent<Frosty::ECS::CDestroy>(m_Attack[i]->EntityPtr))
+				auto& world = Frosty::Application::Get().GetWorld();
+				if (!world->HasComponent<Frosty::ECS::CDestroy>(m_Attack[i]->EntityPtr))
 				{
-					m_World->AddComponent<Frosty::ECS::CDestroy>(m_Attack[i]->EntityPtr);
+					world->AddComponent<Frosty::ECS::CDestroy>(m_Attack[i]->EntityPtr);
 					m_Attack[i]->LifetimeTimer = Frosty::Time::CurrentTime();
 				}
 			}
 		}
 	}
 
-	void WeaponSystem::AddComponent(const std::shared_ptr<Frosty::ECS::Entity>& entity)
+	void AttackSystem::AddComponent(const std::shared_ptr<Frosty::ECS::Entity>& entity)
 	{
 		if (Frosty::utils::BitsetFits<Frosty::ECS::MAX_COMPONENTS>(p_Signature, entity->Bitset) && !p_EntityMap.count(entity))
 		{
@@ -39,7 +40,7 @@ namespace MCS
 		}
 	}
 
-	void WeaponSystem::RemoveEntity(const std::shared_ptr<Frosty::ECS::Entity>& entity)
+	void AttackSystem::RemoveEntity(const std::shared_ptr<Frosty::ECS::Entity>& entity)
 	{
 		auto& it = p_EntityMap.find(entity);
 
@@ -58,7 +59,7 @@ namespace MCS
 		}
 	}
 
-	void WeaponSystem::UpdateEntityComponent(const std::shared_ptr<Frosty::ECS::Entity>& entity)
+	void AttackSystem::UpdateEntityComponent(const std::shared_ptr<Frosty::ECS::Entity>& entity)
 	{
 		auto& it = p_EntityMap.find(entity);
 
@@ -71,7 +72,7 @@ namespace MCS
 		}
 	}
 
-	std::string WeaponSystem::GetInfo() const
+	std::string AttackSystem::GetInfo() const
 	{
 		std::stringstream retInfo;
 		retInfo << "\t-----------" << NAME << " System Info-----------\n";

@@ -118,7 +118,8 @@ struct Level_HealthBar
 	char UseShaderName[50] = "";
 	char TextureName[50] = "";
 
-	glm::mat4 HpTransform;
+	glm::vec3 Translate;
+	glm::vec3 Scale;
 };
 
 //9 = ParticleSystem

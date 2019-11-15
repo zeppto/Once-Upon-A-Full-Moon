@@ -670,15 +670,15 @@ namespace MCS
 					{
 						auto& comp = world->GetComponent<Frosty::ECS::CParticleSystem>(m_SelectedEntity);
 						ImGui::BeginChild("CParticleSystem", ImVec2(EDITOR_INSPECTOR_WIDTH, 245), true);
-						ImGui::Text("Active particles: %i", comp.particleCount);
-						ImGui::Checkbox("Preview", &comp.preview);
-						ImGui::ColorEdit4("Color", glm::value_ptr(comp.particleSystemColor));
-						ImGui::SliderInt("Particle count", (int*)&comp.particleCount, 1, comp.MAX_PARTICLE_COUNT);
-						ImGui::InputFloat("Start size", &comp.startParticleSize);
-						ImGui::InputFloat("End size", &comp.endParticleSize);
-						ImGui::InputFloat("Emit rate", &comp.emitRate);
-						ImGui::InputFloat("Lifetime", &comp.maxLifetime);
-						ImGui::SliderFloat("Fade", &comp.fadeTreshold, 0.0f, comp.maxLifetime);
+						ImGui::Text("Active particles: %i", comp.ParticleCount);
+						ImGui::Checkbox("Preview", &comp.Preview);
+						ImGui::ColorEdit4("Color", glm::value_ptr(comp.ParticleSystemColor));
+						ImGui::SliderInt("Particle count", (int*)&comp.ParticleCount, 1, comp.MAX_PARTICLE_COUNT);
+						ImGui::InputFloat("Start size", &comp.StartParticleSize);
+						ImGui::InputFloat("End size", &comp.EndParticleSize);
+						ImGui::InputFloat("Emit rate", &comp.EmitRate);
+						ImGui::InputFloat("Lifetime", &comp.MaxLifetime);
+						ImGui::SliderFloat("Fade", &comp.FadeTreshold, 0.0f, comp.MaxLifetime);
 						ImGui::EndChild();
 					}
 				}

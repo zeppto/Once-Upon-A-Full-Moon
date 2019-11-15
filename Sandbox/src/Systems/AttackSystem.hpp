@@ -1,17 +1,18 @@
-#ifndef WEAPON_SYSTEM_HPP
-#define WEAPON_SYSTEM_HPP
+#ifndef ATTACK_SYSTEM_HPP
+#define ATTACK_SYSTEM_HPP
 
+namespace Frosty { class SwapWeaponEvent; }
 
 namespace MCS
 {
-	class WeaponSystem : public Frosty::ECS::BaseSystem
+	class AttackSystem : public Frosty::ECS::BaseSystem
 	{
 	public:
 		const static std::string NAME;
 
 	public:
-		WeaponSystem() = default;
-		virtual ~WeaponSystem() = default;
+		AttackSystem() = default;
+		virtual ~AttackSystem() = default;
 
 		virtual void Init() override;
 		virtual void OnUpdate() override;
@@ -22,10 +23,7 @@ namespace MCS
 		virtual std::string GetInfo() const override;
 
 	private:
-		Frosty::World* m_World{ nullptr };
-
 		std::array<Frosty::ECS::CAttack*, Frosty::ECS::MAX_ENTITIES_PER_COMPONENT> m_Attack;
 	};
 }
-
 #endif // !WEAPON_SYSTEM_HPP

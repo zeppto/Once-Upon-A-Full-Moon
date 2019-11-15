@@ -401,6 +401,20 @@ namespace Frosty
 				}
 			}
 			CTransform(const CTransform& org) { FY_CORE_ASSERT(false, "Copy constructor in CTransform called."); }
+			CTransform& operator=(const CTransform& org)
+			{
+				FY_WARN("Assignment operator in CTransform called.");
+
+				if (this != &org)
+				{
+					Position = org.Position;
+					Rotation = org.Rotation;
+					Scale = org.Scale;
+					ModelMatrix = org.ModelMatrix;
+					IsStatic = org.IsStatic;
+				}
+				return *this;
+			}
 
 			virtual std::string GetName() const { return NAME; }
 		};
@@ -414,6 +428,18 @@ namespace Frosty
 			CMesh() = default;
 			CMesh(std::shared_ptr<VertexArray> mesh, bool render = true) : Mesh(mesh), RenderMesh(render) { }
 			CMesh(const CMesh& org) { FY_CORE_ASSERT(false, "Copy constructor in CMesh called."); }
+			CMesh& operator=(const CMesh& org)
+			{
+				FY_WARN("Assignment operator in CMesh called.");
+
+				if (this != &org)
+				{
+					Mesh = org.Mesh;
+				}
+
+				return *this;
+			}
+			bool operator!=(const CMesh& org) { return Mesh != org.Mesh; }
 
 			virtual std::string GetName() const { return NAME; }
 		};
@@ -438,6 +464,25 @@ namespace Frosty
 			{
 			}
 			CCamera(const CCamera& org) { FY_CORE_ASSERT(false, "Copy constructor in CCamera called."); }
+			CCamera& operator=(const CCamera& org)
+			{
+				FY_WARN("Assignment operator in CCamera called.");
+
+				if (this != &org)
+				{
+					Target = org.Target;
+					Front = org.Front;
+					Background = org.Background;
+					FieldOfView = org.FieldOfView;
+					Near = org.Near;
+					Far = org.Far;
+					ViewMatrix = org.ViewMatrix;
+					ProjectionMatrix = org.ProjectionMatrix;
+					ViewProjectionMatrix = org.ViewProjectionMatrix;
+					UpdateProjection = org.UpdateProjection;
+				}
+				return *this;
+			}
 
 			virtual std::string GetName() const { return NAME; }
 		};
@@ -463,29 +508,28 @@ namespace Frosty
 			CMaterial() = default;
 			CMaterial(const std::shared_ptr<Shader>& shader) : UseShader(shader) { }
 			CMaterial(const CMaterial& org) { FY_CORE_ASSERT(false, "Copy constructor in CMaterial called."); }
+			CMaterial& operator=(const CMaterial& org)
+			{
+				FY_WARN("Assignment operator in CMaterial called.");
 
-			virtual std::string GetName() const { return NAME; }
-		};
+				if (this != &org)
+				{
+					UseShader = org.UseShader;
+					Albedo = org.Albedo;
+					DiffuseTexture = org.DiffuseTexture;
+					SpecularTexture = org.SpecularTexture;
+					NormalTexture = org.NormalTexture;
+					BlendMapTexture = org.BlendMapTexture;
+					BlendTexture1 = org.BlendTexture1;
+					BlendTexture2 = org.BlendTexture2;
+					SpecularStrength = org.SpecularStrength;
+					Shininess = org.Shininess;
+					TextureScale = org.TextureScale;
+				}
 
-		struct CPlayer : public BaseComponent
-		{
-			static std::string NAME;
-			int MoveLeftKey{ FY_KEY_A };
-			int MoveForwardKey{ FY_KEY_W };
-			int MoveRightKey{ FY_KEY_D };
-			int MoveBackKey{ FY_KEY_S };
-			int DashKey{ FY_KEY_LEFT_SHIFT };
-			int BasicAttackKey{ FY_KEY_SPACE };
-
-			int HealingPostionKey{ FY_KEY_1 };
-			int IncreaseHPPotionKey{ FY_KEY_2 };
-			int SpeedPotionKey{ FY_KEY_3 };
-			int SpeedBootsKey{ FY_KEY_4 };
-			int DropBaitKey{ FY_KEY_Q };
-
-			CPlayer() = default;
-			CPlayer(const CPlayer& org) { FY_CORE_ASSERT(false, "Copy constructor in CPlayer called."); }
-
+				return *this;
+			}
+			bool operator!=(const CMaterial& org) { return Albedo != org.Albedo; }	// This works best for Flatcolor shader. Talk to W-_-W if you have any questions
 			virtual std::string GetName() const { return NAME; }
 		};
 
@@ -517,6 +561,19 @@ namespace Frosty
 			CLight(LightType lightType, float strength, glm::vec3 color, float radius) : Type(lightType), Strength(strength), Color(color), Radius(radius) { }
 			CLight(LightType lightType, float strength, glm::vec3 color) : Type(lightType), Strength(strength), Color(color) { }
 			CLight(const CLight& org) { FY_CORE_ASSERT(false, "Copy constructor in CLight called."); }
+			CLight& operator=(const CLight& org)
+			{
+				FY_WARN("Assignment operator in CLight called.");
+
+				if (this != &org)
+				{
+					Type = org.Type;
+					Color = org.Color;
+					Radius = org.Radius;
+					Strength = org.Strength;
+				}
+				return *this;
+			}
 
 			virtual std::string GetName() const { return NAME; }
 		};
@@ -534,21 +591,21 @@ namespace Frosty
 			CPhysics() = default;
 			CPhysics(const std::shared_ptr<Luna::BoundingBox>& bb, float speed = 0.0f) : BoundingBox(bb), Speed(speed) { }
 			CPhysics(const CPhysics& org) { FY_CORE_ASSERT(false, "Copy constructor in CPhysics called."); }
+			CPhysics& operator=(const CPhysics& org)
+			{
+				FY_WARN("Assignment operator in CPhysics called.");
 
-			virtual std::string GetName() const { return NAME; }
-		};
-
-		struct CEnemy : public BaseComponent
-		{
-			static std::string NAME;
-			CTransform* Target{ nullptr };
-			glm::vec3 CellTarget{ 0.0f };
-			float AttackRange{ 2.5f };
-			float SightRange{ 40.0f };
-
-			CEnemy() = default;
-			CEnemy(CTransform * target) : Target(target) { }
-			CEnemy(const CEnemy& org) { FY_CORE_ASSERT(false, "Copy constructor in CEnemy called."); }
+				if (this != &org)
+				{
+					BoundingBox = org.BoundingBox;
+					Direction = org.Direction;
+					MaxSpeed = org.MaxSpeed;
+					Speed = org.Speed;
+					Velocity = org.Velocity;
+					SpeedMultiplier = org.SpeedMultiplier;
+				}
+				return *this;
+			}
 
 			virtual std::string GetName() const { return NAME; }
 		};
@@ -558,26 +615,56 @@ namespace Frosty
 			static std::string NAME;
 
 			enum class WeaponType { Sword, Arrow };
-			WeaponType Weapon{ WeaponType::Sword };
+			WeaponType Type{ WeaponType::Sword };
+
+			unsigned int ItemID{ 1 };
+
+			// Range
+			float AttackRange{ 15.f };						// 6.f if melee and 25.f if bow
 
 			// Damage
 			float Damage{ 1.0f };
 
 			// Critical Hit
-			float CriticalHit{ 0.5f };							// Adds upp with damage for total damage
-			float CriticalHitChanse{ 0.10f };					// 10% chanse of performing a critical hit
+			float CriticalHit{ 0.5f };						// Adds upp with damage for total damage
+			float CriticalHitChance{ 0.1f };				// 10 % chanse of performing a critical hit
 
 			// Speed
 			float Cooldown{ 1.3f };
 			float CooldownTimer{ Frosty::Time::CurrentTime() };
 
-			float Lifetime{ 2.0f };
+			float Lifetime{ 2.f };
+
+			// Special Effect / Elemental Abilities
+			// Fire (+ CriticalChance)
+			// Earth (+ Damage)
+			// Wind (+ Speed)
+			// Water (+ Heal)
 
 			CWeapon() = default;
-			CWeapon(WeaponType type, float damage) : Weapon(type), Damage(damage) { }
-			CWeapon(WeaponType type, float damage, float criticalHit, float criticalHitChanse, float cooldown, float lifetime = 7.0f) : Weapon(type), Damage(damage), CriticalHit(criticalHit), CriticalHitChanse(criticalHitChanse), Cooldown(cooldown), Lifetime(lifetime) { }
+			CWeapon(WeaponType type, unsigned int itemID, float damage) : Type(type), ItemID(itemID), Damage(damage) { }
+			CWeapon(WeaponType type, float damage, float criticalHit, float criticalHitChanse, float cooldown, float lifetime = 7.0f) : Type(type), Damage(damage), CriticalHit(criticalHit), CriticalHitChance(criticalHitChanse), Cooldown(cooldown), Lifetime(lifetime) { }
 			CWeapon(const CWeapon& org) { FY_CORE_ASSERT(false, "Copy constructor in CWeapon called."); }
+			CWeapon& operator=(const CWeapon& org)
+			{
+				FY_WARN("Assignment operator in CWeapon called.");
 
+				if (this != &org)
+				{
+					Type = org.Type;
+					ItemID = org.ItemID;
+					AttackRange = org.AttackRange;
+					Damage = org.Damage;
+					CriticalHit = org.CriticalHit;
+					CriticalHitChance = org.CriticalHitChance;
+					Cooldown = org.Cooldown;
+					CooldownTimer = org.CooldownTimer;
+					Lifetime = org.Lifetime;
+				}
+
+				return *this;
+			}
+			bool operator!=(const CWeapon& org) { return ItemID != org.ItemID; }
 			virtual std::string GetName() const { return NAME; }
 		};
 
@@ -597,6 +684,89 @@ namespace Frosty
 			CAttack() = default;
 			CAttack(AttackType type, float damage, bool friendly = 0, float lifeTime = 0.5f) : Type(type), Damage(damage), Friendly(friendly), Lifetime(lifeTime) { }
 			CAttack(const CAttack& org) { FY_CORE_ASSERT(false, "Copy constructor in CAttack called."); }
+			CAttack& operator=(const CAttack& org)
+			{
+				FY_WARN("Assignment operator in CAttack called.");
+
+				if (this != &org)
+				{
+					Type = org.Type;
+					Damage = org.Damage;
+					Friendly = org.Friendly;
+					Lifetime = org.Lifetime;
+					LifetimeTimer = org.LifetimeTimer;
+				}
+
+				return *this;
+			}
+
+			virtual std::string GetName() const { return NAME; }
+		};
+
+		struct CPlayer : public BaseComponent
+		{
+			static std::string NAME;
+
+			CWeapon* Weapon{ nullptr };
+
+			int MoveLeftKey{ FY_KEY_A };
+			int MoveForwardKey{ FY_KEY_W };
+			int MoveRightKey{ FY_KEY_D };
+			int MoveBackKey{ FY_KEY_S };
+			int DashKey{ FY_KEY_LEFT_SHIFT };
+			int BasicAttackKey{ FY_KEY_SPACE };
+
+			int HealingPotionKey{ FY_KEY_1 };
+			int IncreaseHPPotionKey{ FY_KEY_2 };
+			int SpeedPotionKey{ FY_KEY_3 };
+			int SpeedBootsKey{ FY_KEY_4 };
+			int DropBaitKey{ FY_KEY_Q };
+
+			CPlayer() = default;
+			CPlayer(CWeapon* weapon) : Weapon(weapon) { }
+			CPlayer(const CPlayer& org) { FY_CORE_ASSERT(false, "Copy constructor in CPlayer called."); }
+			CPlayer& operator=(const CPlayer& org)
+			{
+				FY_WARN("Assignment operator in CPlayer called.");
+
+				if (this != &org)
+				{
+					Weapon = org.Weapon;
+
+					MoveLeftKey = org.MoveLeftKey;
+					MoveForwardKey = org.MoveForwardKey;
+					MoveRightKey = org.MoveRightKey;
+					MoveBackKey = org.MoveBackKey;
+					DashKey = org.DashKey;
+					BasicAttackKey = org.BasicAttackKey;
+
+					HealingPotionKey = org.HealingPotionKey;
+					IncreaseHPPotionKey = org.IncreaseHPPotionKey;
+					SpeedPotionKey = org.SpeedPotionKey;
+					SpeedBootsKey = org.SpeedBootsKey;
+					DropBaitKey = org.DropBaitKey;
+				}
+				return *this;
+			}
+
+			virtual std::string GetName() const { return NAME; }
+		};
+
+		struct CEnemy : public BaseComponent
+		{
+			static std::string NAME;
+
+			CWeapon* Weapon{ nullptr };
+			CTransform* Target{ nullptr };
+			
+			glm::vec3 CellTarget{ 0.0f };
+			float AttackRange{ 2.5f };
+			float SightRange{ 40.0f };
+
+			CEnemy() = default;
+			CEnemy(CWeapon* weapon) : Weapon(weapon) { }
+			CEnemy(CTransform* target) : Target(target) { }
+			CEnemy(const CEnemy& org) { FY_CORE_ASSERT(false, "Copy constructor in CEnemy called."); }
 
 			virtual std::string GetName() const { return NAME; }
 		};
@@ -611,6 +781,18 @@ namespace Frosty
 			CHealth() = default;
 			CHealth(float health) : MaxHealth(health), CurrentHealth(health) {};
 			CHealth(const CHealth& org) { FY_CORE_ASSERT(false, "Copy constructor in CHealth called."); }
+			CHealth& operator=(const CHealth& org)
+			{
+				FY_WARN("Assignment operator in CHealth called.");
+
+				if (this != &org)
+				{
+					MaxPossibleHealth = org.MaxPossibleHealth;
+					MaxHealth = org.MaxHealth;
+					CurrentHealth = org.CurrentHealth;
+				}
+				return *this;
+			}
 
 			virtual std::string GetName() const { return NAME; }
 		};
@@ -654,10 +836,43 @@ namespace Frosty
 			// WOLFSBANE - poisonous flower, used as currency
 			int CurrentWolfsbane{ 0 };
 
-
-
 			CInventory() = default;
 			CInventory(const CInventory& org) { FY_CORE_ASSERT(false, "Copy constructor in CInventory called."); }
+			CInventory& operator=(const CInventory& org)
+			{
+				FY_WARN("Assignment operator in CInventory called.");
+
+				if (this != &org)
+				{
+					MaxHealingPotions = org.MaxHealingPotions;
+					CurrentHealingPotions = org.CurrentHealingPotions;
+					Heal = org.Heal;
+					HealingCooldown = org.HealingCooldown;
+					HealingTimer = org.HealingTimer;
+
+					MaxIncreaseHPPotions = org.MaxIncreaseHPPotions;
+					CurrentIncreaseHPPotions = org.CurrentIncreaseHPPotions;
+					IncreaseHP = org.IncreaseHP;
+					IncreaseHPCooldown = org.IncreaseHPCooldown;
+					IncreaseHPTimer = org.IncreaseHPTimer;
+
+					MaxSpeedPotions = org.MaxSpeedPotions;
+					CurrentSpeedPotions = org.CurrentSpeedPotions;
+					IncreaseSpeedTemporary = org.IncreaseSpeedTemporary;
+					SpeedCooldown = org.SpeedCooldown;
+					SpeedTimer = org.SpeedTimer;
+
+					MaxSpeedBoots = org.MaxSpeedBoots;
+					CurrentSpeedBoots = org.CurrentSpeedBoots;
+					IncreaseSpeed = org.IncreaseSpeed;
+
+					MaxBaitAmount = org.MaxBaitAmount;
+					CurrentBaitAmount = org.CurrentBaitAmount;
+					BaitCooldown = org.BaitCooldown;
+					BaitTimer = org.BaitTimer;
+				}
+				return *this;
+			}
 
 			virtual std::string GetName() const { return NAME; }
 		};
@@ -670,13 +885,30 @@ namespace Frosty
 			std::shared_ptr<Shader> UseShader;
 			std::shared_ptr<Texture2D> Texture;
 
-			glm::mat4 hpTransform{ 1.0f };
+			glm::vec3 Translate{ 1.0f };
+			glm::vec3 Scale{ 1.0f };
 
 			CHealthBar() = default;
 			CHealthBar(glm::vec3 barOffset) : BarOffset(barOffset) { }
 			CHealthBar(glm::vec3 barOffset, std::shared_ptr<VertexArray> mesh, std::shared_ptr<Shader> shader, std::shared_ptr<Texture2D> tex)
 				: BarOffset(barOffset), Mesh(mesh), UseShader(shader), Texture(tex) { }
 			CHealthBar(const CHealthBar& org) { FY_CORE_ASSERT(false, "Copy constructor in CHealthBar called."); }
+			CHealthBar& operator=(const CHealthBar& org)
+			{
+				FY_WARN("Assignment operator in CHealthBar called.");
+
+				if (this != &org)
+				{
+					BarOffset = org.BarOffset;
+					Mesh = org.Mesh;
+					UseShader = org.UseShader;
+					Texture = org.Texture;
+
+					Translate = org.Translate;
+					Scale = org.Scale;
+				}
+				return *this;
+			}
 
 			virtual std::string GetName() const { return NAME; }
 		};
@@ -693,6 +925,19 @@ namespace Frosty
 
 			CDash() = default;
 			CDash(const CDash& org) { FY_CORE_ASSERT(false, "Copy constructor in CDash called."); }
+			CDash& operator=(const CDash& org)
+			{
+				FY_WARN("Assignment operator in CDash called.");
+
+				if (this != &org)
+				{
+					Active = org.Active;
+					CurrentCooldown = org.CurrentCooldown;
+					DistanceDashed = org.DistanceDashed;
+					SpeedMultiplier = org.SpeedMultiplier;
+				}
+				return *this;
+			}
 
 			virtual std::string GetName() const { return NAME; }
 		};
@@ -709,75 +954,76 @@ namespace Frosty
 
 		struct CParticleSystem : public BaseComponent
 		{
+			static std::string NAME;
+			
 			struct Particle
 			{
-				glm::vec4 position = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
-				glm::vec4 color = glm::vec4(1.0f);
-				float size = 1.0f; //The current size
+				glm::vec4 Position = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
+				glm::vec4 Color = glm::vec4(1.0f);
+				float Size = 1.0f; //The current size
 
-				glm::vec4 direction = glm::vec4(0.0f, 1.0f, 0.0f, 1.0f);
-				glm::vec4 startPos = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
-				float lifetime = -1.0f;
-				float speed = 2.0f;
-				float startSize = 1.0f;
-				float endSize = 1.0f;
+				glm::vec4 Direction = glm::vec4(0.0f, 1.0f, 0.0f, 1.0f);
+				glm::vec4 StartPos = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
+				float Lifetime = -1.0f;
+				float Speed = 2.0f;
+				float StartSize = 1.0f;
+				float EndSize = 1.0f;
 
-				float camDistance = -1.0f; //For sorting
+				float CamDistance = -1.0f; //For sorting
 
 				Particle() = default;
 				Particle(glm::vec4 color)
-					: color(color) {};
+					: Color(color) {};
+
 				bool operator<(Particle& that) // Sort in reverse order, far particles drawn first
 				{
-					return this->camDistance > that.camDistance;
+					return this->CamDistance > that.CamDistance;
 				}
 			};
 
 			struct GPUParticle
 			{
-				glm::vec4 position = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
-				glm::vec4 color = glm::vec4(1.0f);
-				float size = 1.0f;
+				glm::vec4 Position = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
+				glm::vec4 Color = glm::vec4(1.0f);
+				float Size = 1.0f;
 			};
 
 			static const uint32_t MAX_PARTICLE_COUNT = 100;
 			//uint32_t maxParticles = 0;
-			float startParticleSize = 1.0f;
-			float endParticleSize = 0.0f;
-			float particleSize = 1.0f; //For a constant size
+			float StartParticleSize = 1.0f;
+			float EndParticleSize = 0.0f;
+			float ParticleSize = 1.0f; //For a constant size
 
-			static std::string NAME;
-			uint32_t particleCount = 0;
-			glm::vec3 particleSystemColor = glm::vec3(1.0f);
-			float emitRate = 0.1f;
-			uint32_t emitCount = 1;
-			float maxLifetime = 3.0f; //All particles
-			float fadeTreshold = 0.0f; //No fade
-			bool preview = false;
-			float timer = 0.0f;
+			uint32_t ParticleCount = 0;
+			glm::vec3 ParticleSystemColor = glm::vec3(1.0f);
+			float EmitRate = 0.1f;
+			uint32_t EmitCount = 1;
+			float MaxLifetime = 3.0f; //All particles
+			float FadeTreshold = 0.0f; //No fade
+			bool Preview = false;
+			float Timer = 0.0f;
 
-			uint32_t lastUsedParticle = 0;
+			uint32_t LastUsedParticle = 0;
 
-			Particle particles[MAX_PARTICLE_COUNT]; //The complete data
-			GPUParticle gpuParticles[MAX_PARTICLE_COUNT]; //The data we send to the gpu
+			Particle Particles[MAX_PARTICLE_COUNT]; //The complete data
+			GPUParticle GpuParticles[MAX_PARTICLE_COUNT]; //The data we send to the gpu
 
-			std::shared_ptr<VertexArray> particleVertArray;
-			std::shared_ptr<Shader> shader;
-			std::shared_ptr<Texture2D> texture;
+			std::shared_ptr<VertexArray> ParticleVertArray;
+			std::shared_ptr<Shader> UseShader;
+			std::shared_ptr<Texture2D> Texture;
 
 			CParticleSystem() = default;
 			CParticleSystem(std::shared_ptr<VertexArray> verts, std::shared_ptr<Shader> shader, std::shared_ptr<Texture2D> tex)
-				: particleVertArray(verts), shader(shader), texture(tex) {}
+				: ParticleVertArray(verts), UseShader(shader), Texture(tex) {}
 			CParticleSystem(std::shared_ptr<VertexArray> verts, std::shared_ptr<Shader> shader, std::shared_ptr<Texture2D> tex, glm::vec4 color = glm::vec4(1.0f), float particleSize = 1.0f)
-				: particleVertArray(verts), shader(shader), texture(tex), particleSystemColor(color), particleSize(particleSize)
+				: ParticleVertArray(verts), UseShader(shader), Texture(tex), ParticleSystemColor(color), ParticleSize(particleSize)
 			{
 				for (uint32_t i = 0; i < MAX_PARTICLE_COUNT; i++)
 				{
-					particles[i].color = color;
-					particles[i].size = particleSize;
+					Particles[i].Color = color;
+					Particles[i].Size = particleSize;
 				}
 			}
-
 			CParticleSystem(const CParticleSystem& org) { FY_CORE_ASSERT(false, "Copy constructor in CParticleSystem called."); }
 
 			virtual std::string GetName() const { return NAME; }
@@ -802,7 +1048,14 @@ namespace Frosty
 			CLootable() = default;
 			CLootable(LootType type) : Type(type) {}
 			CLootable(const CLootable& org) { FY_CORE_ASSERT(false, "Copy constructor in CLootable called."); }
-
+			CLootable& operator=(const CLootable& org) 
+			{
+				if (this != &org)
+				{
+					Type = org.Type;
+				}
+				return *this;
+			}
 			virtual std::string GetName() const { return NAME; }
 		};
 
@@ -818,6 +1071,21 @@ namespace Frosty
 			CBoss() = default;
 			CBoss(float DistractionTime) : DistractionTime(DistractionTime) { }
 			CBoss(const CBoss& org) { FY_CORE_ASSERT(false, "Copy constructor in CBoss called."); }
+			CBoss& operator=(const CBoss& org)
+			{
+				FY_WARN("Assignment operator in CBoss called.");
+
+				if (this != &org)
+				{
+					DistractionTime = org.DistractionTime;
+					DistractionTimer = org.DistractionTimer;
+					Distracted = org.Distracted;
+					Hunting = org.Hunting;
+
+					TargetList = org.TargetList;
+				}
+				return *this;
+			}
 
 			virtual std::string GetName() const { return NAME; }
 
@@ -832,6 +1100,16 @@ namespace Frosty
 			CLevelExit() = default;
 			CLevelExit(int exitDirection) : ExitDirection(exitDirection) { }
 			CLevelExit(const CLevelExit& org) { FY_CORE_ASSERT(false, "Copy constructor in CLevelExit called."); }
+			CLevelExit& operator=(const CLevelExit& org)
+			{
+				FY_WARN("Assignment operator in CLevelExit called.");
+
+				if (this != &org)
+				{
+					ExitDirection = org.ExitDirection;
+				}
+				return *this;
+			}
 
 			virtual std::string GetName() const { return NAME; }
 		};
@@ -840,15 +1118,24 @@ namespace Frosty
 		{
 			static std::string NAME;
 
-			std::shared_ptr<Shader> textShader;
-			std::shared_ptr<Shader> spriteShader;
+			std::shared_ptr<Shader> TextShader;
+			std::shared_ptr<Shader> SpriteShader;
 
-			UILayout layout;
+			UILayout Layout;
 
 			CGUI() = default;
-			CGUI(UILayout& layout) : layout(layout) {  }
+			CGUI(UILayout& layout) : Layout(layout) {  }
 			CGUI(const CGUI& org) { FY_CORE_ASSERT(false, "Copy constructor in CGUI called."); }
-
+			CGUI& operator=(const CGUI& org)
+			{
+				if (this != &org)
+				{
+					TextShader = org.TextShader;
+					SpriteShader = org.SpriteShader;
+					Layout = org.Layout;
+				}
+				return *this;
+			}
 			virtual std::string GetName() const { return NAME; }
 		};
 
@@ -860,13 +1147,13 @@ namespace Frosty
 			case 1:		return "Mesh";
 			case 2:		return "Camera";
 			case 3:		return "Material";
-			case 4:		return "Player";
-			case 5:		return "Follow";
-			case 6:		return "Light";
-			case 7:		return "Physics";
-			case 8:		return "Enemy";
-			case 9:		return "Weapon";
-			case 10:	return "Attack";
+			case 4:		return "Follow";
+			case 5:		return "Light";
+			case 6:		return "Physics";
+			case 7:		return "Weapon";
+			case 8:		return "Attack";
+			case 9:		return "Player";
+			case 10:	return "Enemy";
 			case 11:	return "Health";
 			case 12:	return "Inventory";
 			case 13:	return "HealthBar";
