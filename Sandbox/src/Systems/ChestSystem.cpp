@@ -72,7 +72,7 @@ namespace MCS
 				if (Frosty::InputManager::IsKeyPressed(FY_KEY_G) && m_CoolDown > 1.0f)
 				{
 					m_Health[i]->CurrentHealth--;
-					FY_INFO("{0}", m_Health[i]->CurrentHealth);
+					FY_INFO("Chest {0} has {1} HP", m_Chest[i]->EntityPtr->Id, m_Health[i]->CurrentHealth);
 					m_CoolDown = 0.0f;
 				}
 			}

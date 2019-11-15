@@ -426,7 +426,8 @@ namespace MCS
 			if (type == Frosty::ECS::CLootable::LootType::HealingPotion && m_Inventory[i]->CurrentHealingPotions < m_Inventory[i]->MaxHealingPotions)
 			{
 				m_Inventory[i]->CurrentHealingPotions++;
-				FY_INFO("HealingPotion");
+				FY_INFO("HealingPotion in Inventory");
+				FY_INFO("{0} / {1}", m_Inventory[i]->CurrentHealingPotions, m_Inventory[i]->MaxHealingPotions);
 				if (!world->HasComponent<Frosty::ECS::CDestroy>(e.GetEntity()))
 				{
 					world->AddComponent<Frosty::ECS::CDestroy>(e.GetEntity());
@@ -435,7 +436,8 @@ namespace MCS
 			else if (type == Frosty::ECS::CLootable::LootType::IncHealthPotion && m_Inventory[i]->CurrentIncreaseHPPotions < m_Inventory[i]->MaxIncreaseHPPotions)
 			{
 				m_Inventory[i]->CurrentIncreaseHPPotions++;
-				FY_INFO("IncHealthPotion");
+				FY_INFO("IncHealthPotion in Inventory");
+				FY_INFO("{0} / {1}", m_Inventory[i]->CurrentIncreaseHPPotions, m_Inventory[i]->MaxIncreaseHPPotions);
 				if (!world->HasComponent<Frosty::ECS::CDestroy>(e.GetEntity()))
 				{
 					world->AddComponent<Frosty::ECS::CDestroy>(e.GetEntity());
@@ -444,7 +446,8 @@ namespace MCS
 			else if (type == Frosty::ECS::CLootable::LootType::SpeedPotion && m_Inventory[i]->CurrentSpeedPotions < m_Inventory[i]->MaxSpeedPotions)
 			{
 				m_Inventory[i]->CurrentSpeedPotions++;
-				FY_INFO("SpeedPotion");
+				FY_INFO("SpeedPotion in Inventory");
+				FY_INFO("{0} / {1}", m_Inventory[i]->CurrentSpeedPotions, m_Inventory[i]->MaxSpeedPotions);
 				if (!world->HasComponent<Frosty::ECS::CDestroy>(e.GetEntity()))
 				{
 					world->AddComponent<Frosty::ECS::CDestroy>(e.GetEntity());
@@ -453,7 +456,8 @@ namespace MCS
 			else if (type == Frosty::ECS::CLootable::LootType::SpeedBoot && m_Inventory[i]->CurrentSpeedBoots < m_Inventory[i]->MaxSpeedBoots)
 			{
 				m_Inventory[i]->CurrentSpeedBoots++;
-				FY_INFO("SpeedBoot");
+				FY_INFO("SpeedBoot in Inventory");
+				FY_INFO("{0} / {1}", m_Inventory[i]->CurrentSpeedBoots, m_Inventory[i]->MaxSpeedBoots);
 				if (!world->HasComponent<Frosty::ECS::CDestroy>(e.GetEntity()))
 				{
 					world->AddComponent<Frosty::ECS::CDestroy>(e.GetEntity());
@@ -461,11 +465,11 @@ namespace MCS
 			}
 			else if (type == Frosty::ECS::CLootable::LootType::Sword)
 			{
-				FY_INFO("Sword");
+				FY_INFO("Sword in Inventory");
 			}
 			else if (type == Frosty::ECS::CLootable::LootType::Arrow)
 			{
-				FY_INFO("Arrow");
+				FY_INFO("Arrow in Inventory");
 			}
 		}
 	}
