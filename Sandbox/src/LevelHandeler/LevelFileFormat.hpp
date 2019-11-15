@@ -125,6 +125,14 @@ struct Level_HealthBar
 struct Level_ParticleSystem
 {
 	//under construction
+	float startParticleSize = 1.0f;
+	float endParticleSize = 0.0f;
+
+	glm::vec3 particleSystemColor = glm::vec3(1.0f);
+	float emitRate = 0.1f;
+	uint32_t emitCount = 1;
+	float maxLifetime = 3.0f; //All particles
+	float fadeTreshold = 0.0f; //No fade
 };
 
 //10 = LevelExit

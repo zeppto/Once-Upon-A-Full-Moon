@@ -142,6 +142,14 @@ void LevelFileFormat::AddEntity(const std::shared_ptr<Frosty::ECS::Entity>& enti
 		if (m_World->HasComponent<Frosty::ECS::CParticleSystem>(entity))
 		{
 			myComponents.MyComponents.at(9).HaveComponent = true;
+			auto& particelSystem = m_World->GetComponent<Frosty::ECS::CParticleSystem>(entity);
+			myComponents.myParticleSystem.startParticleSize = particelSystem.startParticleSize;
+			myComponents.myParticleSystem.endParticleSize = particelSystem.endParticleSize;
+			myComponents.myParticleSystem.particleSystemColor = particelSystem.particleSystemColor;
+			myComponents.myParticleSystem.emitRate = particelSystem.emitRate;
+			myComponents.myParticleSystem.emitCount = particelSystem.emitCount;
+			myComponents.myParticleSystem.maxLifetime = particelSystem.maxLifetime;
+			myComponents.myParticleSystem.fadeTreshold = particelSystem.fadeTreshold;
 		}
 		else
 			myComponents.MyComponents.at(9).HaveComponent = false;

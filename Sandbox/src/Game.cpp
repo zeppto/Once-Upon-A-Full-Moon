@@ -35,7 +35,7 @@ namespace MCS
 		auto& world = Application::Get().GetWorld();
 		//std::srand((unsigned)std::time(0)); //We already seed in main. We shouldn't seed twice
 		// Add systems
-		//world->AddSystem<LevelSystem>();
+		world->AddSystem<LevelSystem>();
 		world->AddSystem<CameraSystem>();
 		world->AddSystem<LightSystem>();
 		world->AddSystem<RenderSystem>();
@@ -116,7 +116,7 @@ namespace MCS
 		playerMat.NormalTexture = Frosty::AssetManager::GetTexture2D("Scarlet_normal");
 		playerMat.SpecularTexture = Frosty::AssetManager::GetTexture2D("Scarlet_specular");
 		world->AddComponent<Frosty::ECS::CPlayer>(player);
-		world->AddComponent<Frosty::ECS::CPhysics>(player, Frosty::AssetManager::GetBoundingBox("scarlet"), 40.0f);
+		world->AddComponent<Frosty::ECS::CPhysics>(player, Frosty::AssetManager::GetBoundingBox("scarlet"), 10.0f);
 		world->AddComponent<Frosty::ECS::CDash>(player);
 		world->AddComponent<Frosty::ECS::CWeapon>(player, Frosty::ECS::CWeapon::WeaponType::Arrow, 10.f);
 		world->AddComponent<Frosty::ECS::CHealth>(player);
