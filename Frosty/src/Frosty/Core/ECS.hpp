@@ -670,9 +670,8 @@ namespace Frosty
 			std::shared_ptr<Shader> UseShader;
 			std::shared_ptr<Texture2D> Texture;
 
-			glm::mat4 hpTransform{ 1.0f };
-
-			float pivot{ 0.0f };
+			glm::vec3 Translate{ 1.0f };
+			glm::vec3 Scale{ 1.0f };
 
 			CHealthBar() = default;
 			CHealthBar(glm::vec3 barOffset) : BarOffset(barOffset) { }

@@ -136,6 +136,8 @@ namespace MCS
 		world->AddComponent<Frosty::ECS::CEnemy>(enemy, &playerTransform);
 		world->AddComponent<Frosty::ECS::CFollow>(enemy, &playerTransform);
 		world->AddComponent<Frosty::ECS::CHealth>(enemy);
+		auto& bossComponent = world->AddComponent<Frosty::ECS::CBoss>(enemy);
+		bossComponent.TargetList.emplace_back(player);
 
 		auto& enemy2 = world->CreateEntity({ -27.0f, 1.0f, 25.0f }, { 0.0f, 0.0f, 0.0f }, { 2.0f, 2.0f, 2.0f });
 		world->AddComponent<Frosty::ECS::CMesh>(enemy2, Frosty::AssetManager::GetMesh("pCube1"));
@@ -150,6 +152,11 @@ namespace MCS
 		auto& treeMat = world->AddComponent<Frosty::ECS::CMaterial>(tree, Frosty::AssetManager::GetShader("Texture2D"));
 		treeMat.DiffuseTexture = Frosty::AssetManager::GetTexture2D("Tree1");
 		world->AddComponent<Frosty::ECS::CPhysics>(tree, Frosty::AssetManager::GetBoundingBox("tree1"));
+		
+		//navSystem->InitiateGridMap(world->GetComponent<Frosty::ECS::CTransform>(plane));
+		
+		PushLayer(FY_NEW InspectorLayer());
+		world->PrintWorld();
 
 		auto& chest = world->CreateEntity({ 0.0f, 1.0f, 25.0f }, { 0.0f, 0.0f, 0.0f }, { 2.0f, 2.0f, 2.0f });
 		world->AddComponent<Frosty::ECS::CMesh>(chest, Frosty::AssetManager::GetMesh("pCube1"));
