@@ -23,8 +23,8 @@ namespace MCS
 			if (m_Boss[i]->TargetList.size() > 0 && m_Boss[i]->Distracted == false)
 			{
 				//Set new target
-				if (m_Boss[i]->Hunting == false)
-				{
+				/*if (m_Boss[i]->Hunting == false)
+				{*/
 					if (m_Boss[i]->TargetList.size() == 1)
 					{
 						//Follow player
@@ -42,7 +42,7 @@ namespace MCS
 						m_Boss[i]->Hunting = true;
 						m_Follow[i]->StopDistance = 0.1f;
 					}
-				}
+			//	}
 
 				float distance = CalcDistance2D(m_Transform[i]->Position, world->GetComponent<Frosty::ECS::CTransform>(m_Boss[i]->TargetList.at(0)).Position);
 
