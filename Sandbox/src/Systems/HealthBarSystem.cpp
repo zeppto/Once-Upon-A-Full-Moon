@@ -20,61 +20,22 @@ namespace MCS
 
 	void HealthBarSystem::Render()
 	{
-		Frosty::Renderer::GameCameraProps cam = Frosty::Renderer::GetCamera();
-		glm::vec3 ndcSpacePos;
 		for (size_t i = 1; i < p_Total; i++)
 		{
 
-			//if (true)
-			//{
-			//	//Shader: UI
-			//
-			//
-			//	float TmaxHP = m_Health[i]->MaxHealth;
-			//	float TcurrHP = m_Health[i]->CurrentHealth;
-			//
-			//	float sizeFact = 1.0;
-			//
-			//	//Translate
-			//	float translateFact = (std::clamp((TcurrHP / TmaxHP), 0.0f, 1.0f) - 1) * sizeFact;
-			//
-			//	glm::vec4 clipSpace = cam.ProjectionMatrix * cam.ViewMatrix * glm::vec4(m_Transform[i]->Position.x + translateFact, m_Transform[i]->Position.y + m_HealthBar[i]->BarOffset.y, m_Transform[i]->Position.z, 1.0f);
-			//
-			//	ndcSpacePos = glm::vec3(clipSpace.x / clipSpace.w, clipSpace.y / clipSpace.w, clipSpace.z / clipSpace.w);
-			//
-			//	m_HealthBar[i]->HpTransform = glm::translate(glm::mat4{ 1.0f }, ndcSpacePos);
-			//
-			//
-			//	//Scale 
-			//	float camDistance = glm::distance(Frosty::Renderer::GetCamera().CameraPosition,	m_Transform[i]->Position + m_HealthBar[i]->BarOffset);
-			//	
-			//	float scaleFact = std::clamp((TcurrHP / TmaxHP), 0.0f, 1.0f) * sizeFact;
-			//
-			//	m_HealthBar[i]->HpTransform = glm::scale(m_HealthBar[i]->HpTransform, glm::vec3(scaleFact * 1.0, 1.0f, 1.0f) * (1/camDistance));
-			//
-			//
-			//	//Rotate
-			//	m_HealthBar[i]->HpTransform = glm::rotate(m_HealthBar[i]->HpTransform, glm::radians(90.0f), glm::vec3( 1.0f, 0.0f, 0.0f ));
-			//}
+			float TmaxHP = m_Health[i]->MaxHealth;
+			float TcurrHP = m_Health[i]->CurrentHealth;
 
+			float sizeFact = 0.05 * TmaxHP;
 
-			if (true)
-			{
-				float TmaxHP = m_Health[i]->MaxHealth;
-				float TcurrHP = m_Health[i]->CurrentHealth;
+			float translateFact = (std::clamp((TcurrHP / TmaxHP), 0.0f, 1.0f) - 1) * (1.0f + sizeFact);
 
-				float sizeFact = 0.05 * TmaxHP;
+			float scaleFact = std::clamp((TcurrHP / TmaxHP), 0.0f, 1.0f) * (1.0f + sizeFact);
 
-				float translateFact = (std::clamp((TcurrHP / TmaxHP), 0.0f, 1.0f) - 1) * (1.0f + sizeFact);
+			m_HealthBar[i]->Translate = glm::vec3(m_Transform[i]->Position.x + translateFact, m_Transform[i]->Position.y, m_Transform[i]->Position.z);
 
-				float scaleFact = std::clamp((TcurrHP / TmaxHP), 0.0f, 1.0f) * (1.0f + sizeFact);
+			m_HealthBar[i]->Scale = glm::vec3(scaleFact, (0.3f + 0.05 * sizeFact), 1.0f);
 
-				m_HealthBar[i]->Translate = glm::vec3(m_Transform[i]->Position.x + translateFact, m_Transform[i]->Position.y, m_Transform[i]->Position.z);
-				
-				m_HealthBar[i]->Scale = glm::vec3(scaleFact, (0.3f + 0.05 * sizeFact), 1.0f);
-
-				
-			}
 
 			if (m_HealthBar[i]->Texture && m_HealthBar[i]->UseShader->GetName() == "HealthBar") m_HealthBar[i]->Texture->Bind(0);			
 

@@ -22,7 +22,7 @@
 #include "Systems/ChestSystem.hpp"
 #include "Systems/LootingSystem.hpp"
 #include "Systems/LevelSystem.hpp"
-//#include "Systems/HealthBarSystem.hpp"
+#include "Systems/HealthBarSystem.hpp"
 #include "Systems/BossBehaviorSystem.hpp"
 #include "Systems/GUISystem.hpp"
 
@@ -46,7 +46,7 @@ namespace MCS
 		world->AddSystem<CombatSystem>();
 		world->AddSystem<DestroySystem>();
 		world->AddSystem<WeaponSystem>();
-		//world->AddSystem<HealthBarSystem>();
+		world->AddSystem<HealthBarSystem>();
 		Frosty::ECS::BaseSystem* retSystem = world->AddSystem<NavigationSystem>();
 		NavigationSystem* navSystem = dynamic_cast<NavigationSystem*>(retSystem);
 		retSystem = world->AddSystem<ParticleSystem>();
@@ -155,9 +155,7 @@ namespace MCS
 		
 		//navSystem->InitiateGridMap(world->GetComponent<Frosty::ECS::CTransform>(plane));
 		
-		PushLayer(FY_NEW InspectorLayer());
-		world->PrintWorld();
-
+	
 		auto& chest = world->CreateEntity({ 0.0f, 1.0f, 25.0f }, { 0.0f, 0.0f, 0.0f }, { 2.0f, 2.0f, 2.0f });
 		world->AddComponent<Frosty::ECS::CMesh>(chest, Frosty::AssetManager::GetMesh("pCube1"));
 		world->AddComponent<Frosty::ECS::CMaterial>(chest, Frosty::AssetManager::GetShader("FlatColor"));
@@ -202,6 +200,9 @@ namespace MCS
 		
 		navSystem->InitiateGridMap(world->GetComponent<Frosty::ECS::CTransform>(plane));
 		
+		world->PrintWorld();
+
+
 #ifdef FY_DEBUG
 		PushLayer(FY_NEW InspectorLayer());
 #else
