@@ -235,6 +235,7 @@ void LevelFileFormat::SaveToFile(std::string fileName)
 			}
 	}
 	myFile.close();
+	m_Entitys.myEntitys.clear();
 
 
 }
@@ -252,13 +253,50 @@ void LevelFileFormat::OpenFromFile(std::string fileName, Frosty::ECS::CTransform
 		fileEntitys.myEntitys.resize(testHeder.NrOfEntitys);
 		for (int i = 0; i < testHeder.NrOfEntitys; i++)
 		{
+			//to Fix my problen
+			//if (i < 735)
+			//{
+			//	fileEntitys.myEntitys.at(i).MyComponents.resize(testHeder.NrOfComponents);
+			//	for (int j = 0; j < m_Header.NrOfComponents; j++)
+			//		existingFile.read((char*)& fileEntitys.myEntitys.at(i).MyComponents.at(j).HaveComponent, sizeof(bool));
+			//	for (int j = 0; j < testHeder.NrOfComponents; j++)
+			//	{
+			//		if (fileEntitys.myEntitys.at(i).MyComponents.at(j).HaveComponent)
+			//		{
+
+			//			if (j == 0)
+			//				existingFile.read((char*)& fileEntitys.myEntitys.at(i).myTransform, sizeof(Level_Transform));
+			//			if (j == 1)
+			//				existingFile.read((char*)& fileEntitys.myEntitys.at(i).myMesh, sizeof(Level_Mesh));
+			//			if (j == 2)
+			//				existingFile.read((char*)& fileEntitys.myEntitys.at(i).myMaterial, sizeof(Level_Material));
+			//			if (j == 3)
+			//				existingFile.read((char*)& fileEntitys.myEntitys.at(i).myFollow, sizeof(Level_Follow));
+			//			if (j == 4)
+			//				existingFile.read((char*)& fileEntitys.myEntitys.at(i).myLight, sizeof(Level_Light));
+			//			if (j == 5)
+			//				existingFile.read((char*)& fileEntitys.myEntitys.at(i).myPhysics, sizeof(Level_Physics));
+			//			if (j == 6)
+			//				existingFile.read((char*)& fileEntitys.myEntitys.at(i).myEnemy, sizeof(Level_Enemy));
+			//			if (j == 7)
+			//				existingFile.read((char*)& fileEntitys.myEntitys.at(i).myHealth, sizeof(Level_Health));
+			//			if (j == 8)
+			//				existingFile.read((char*)& fileEntitys.myEntitys.at(i).myHealthBar, sizeof(Level_HealthBar));
+			//			if (j == 9)
+			//				existingFile.read((char*)& fileEntitys.myEntitys.at(i).myParticleSystem, sizeof(Level_ParticleSystem));
+			//			if (j == 10)
+			//				existingFile.read((char*)& fileEntitys.myEntitys.at(i).myLevelExit, sizeof(Level_LevelExit));
+			//		}
+			//	}
+			//}
+
 			fileEntitys.myEntitys.at(i).MyComponents.resize(testHeder.NrOfComponents);
 			for (int j = 0; j < m_Header.NrOfComponents; j++)
 				existingFile.read((char*)& fileEntitys.myEntitys.at(i).MyComponents.at(j).HaveComponent, sizeof(bool));
-			
+
 			//create entity
 			auto& entity = m_World->CreateEntity();
-			
+
 			for (int j = 0; j < testHeder.NrOfComponents; j++)
 			{
 				if (j == 5 && (std::string)fileEntitys.myEntitys.at(i).myMesh.MeshName == "tree1" && !fileEntitys.myEntitys.at(i).MyComponents.at(j).HaveComponent)
@@ -285,10 +323,10 @@ void LevelFileFormat::OpenFromFile(std::string fileName, Frosty::ECS::CTransform
 						matrix = glm::rotate(matrix, tranform.Rotation.y, glm::vec3(0, 1, 0));
 						//matrix = glm::rotate(matrix, tranform.Rotation.z, glm::vec3(0, 0, 1));
 						//matrix = glm::scale(matrix, tranform.Scale);
-												//temp
+						//temp
 						if (rotation == 90 || rotation == 270)
 						{
-							if (fileEntitys.myEntitys.at(i).MyComponents.at(10).HaveComponent)
+							if (fileEntitys.myEntitys.at(i).MyComponents.at(10).HaveComponent || !fileEntitys.myEntitys.at(i).MyComponents.at(1).HaveComponent)
 							{
 								tranform.Scale.x = fileEntitys.myEntitys.at(i).myTransform.Scale.z;
 								tranform.Scale.z = fileEntitys.myEntitys.at(i).myTransform.Scale.x;
@@ -308,7 +346,7 @@ void LevelFileFormat::OpenFromFile(std::string fileName, Frosty::ECS::CTransform
 					if (j == 1)
 					{
 						existingFile.read((char*)& fileEntitys.myEntitys.at(i).myMesh, sizeof(Level_Mesh));
-						m_World->AddComponent<Frosty::ECS::CMesh>(entity, 
+						m_World->AddComponent<Frosty::ECS::CMesh>(entity,
 							Frosty::AssetManager::GetMesh(fileEntitys.myEntitys.at(i).myMesh.MeshName));
 					}
 					//2 = Material
@@ -320,7 +358,7 @@ void LevelFileFormat::OpenFromFile(std::string fileName, Frosty::ECS::CTransform
 						material.Albedo = fileEntitys.myEntitys.at(i).myMaterial.Albedo;
 						if ((std::string)fileEntitys.myEntitys.at(i).myMaterial.DiffuseTextureName != "")
 							material.DiffuseTexture = Frosty::AssetManager::GetTexture2D(fileEntitys.myEntitys.at(i).myMaterial.DiffuseTextureName);
-						if((std::string)fileEntitys.myEntitys.at(i).myMaterial.SpecularTextureName != "")
+						if ((std::string)fileEntitys.myEntitys.at(i).myMaterial.SpecularTextureName != "")
 							material.SpecularTexture = Frosty::AssetManager::GetTexture2D(fileEntitys.myEntitys.at(i).myMaterial.SpecularTextureName);
 						if ((std::string)fileEntitys.myEntitys.at(i).myMaterial.NormalTextureName != "")
 							material.NormalTexture = Frosty::AssetManager::GetTexture2D(fileEntitys.myEntitys.at(i).myMaterial.NormalTextureName);
@@ -369,13 +407,13 @@ void LevelFileFormat::OpenFromFile(std::string fileName, Frosty::ECS::CTransform
 						physics.SpeedMultiplier = fileEntitys.myEntitys.at(i).myPhysics.SpeedMultiplier;
 						physics.Velocity = fileEntitys.myEntitys.at(i).myPhysics.Velocity;
 					}
-						//6 = Enemy
+					//6 = Enemy
 					if (j == 6)
 					{
 						existingFile.read((char*)& fileEntitys.myEntitys.at(i).myEnemy, sizeof(Level_Enemy));
 						m_World->AddComponent<Frosty::ECS::CEnemy>(entity);
 					}
-						//7 = Health
+					//7 = Health
 					if (j == 7)
 					{
 						existingFile.read((char*)& fileEntitys.myEntitys.at(i).myHealth, sizeof(Level_Health));
@@ -384,7 +422,7 @@ void LevelFileFormat::OpenFromFile(std::string fileName, Frosty::ECS::CTransform
 						health.MaxHealth = fileEntitys.myEntitys.at(i).myHealth.MaxHealth;
 						health.MaxPossibleHealth = fileEntitys.myEntitys.at(i).myHealth.MaxPossibleHealth;
 					}
-						//8 = HealthBar
+					//8 = HealthBar
 					if (j == 8)
 					{
 						existingFile.read((char*)& fileEntitys.myEntitys.at(i).myHealthBar, sizeof(Level_HealthBar));
@@ -395,17 +433,51 @@ void LevelFileFormat::OpenFromFile(std::string fileName, Frosty::ECS::CTransform
 						healthBar.Texture = Frosty::AssetManager::GetTexture2D(fileEntitys.myEntitys.at(i).myHealthBar.TextureName);
 						healthBar.UseShader = Frosty::AssetManager::GetShader(fileEntitys.myEntitys.at(i).myHealthBar.UseShaderName);
 					}
-						//9 = ParticleSystem
+					//9 = ParticleSystem
 					if (j == 9)
 					{
 						existingFile.read((char*)& fileEntitys.myEntitys.at(i).myParticleSystem, sizeof(Level_ParticleSystem));
 						//not in use for now
 					}
-						//10 = LevelExit
+					//10 = LevelExit
 					if (j == 10)
 					{
 						existingFile.read((char*)& fileEntitys.myEntitys.at(i).myLevelExit, sizeof(Level_LevelExit));
-						m_World->AddComponent<Frosty::ECS::CLevelExit>(entity, fileEntitys.myEntitys.at(i).myLevelExit.ExitDirection);
+						int newExit = fileEntitys.myEntitys.at(i).myLevelExit.ExitDirection;
+						if (rotation == 270)
+						{
+							if (fileEntitys.myEntitys.at(i).myLevelExit.ExitDirection == 0)
+								newExit = 3;
+							if (fileEntitys.myEntitys.at(i).myLevelExit.ExitDirection == 3)
+								newExit = 1;
+							if (fileEntitys.myEntitys.at(i).myLevelExit.ExitDirection == 1)
+								newExit = 2;
+							if (fileEntitys.myEntitys.at(i).myLevelExit.ExitDirection == 2)
+								newExit = 0;
+						}
+						else if (rotation == 180)
+						{
+							if (fileEntitys.myEntitys.at(i).myLevelExit.ExitDirection == 0)
+								newExit = 1;
+							if (fileEntitys.myEntitys.at(i).myLevelExit.ExitDirection == 2)
+								newExit = 3;
+							if (fileEntitys.myEntitys.at(i).myLevelExit.ExitDirection == 1)
+								newExit = 0;
+							if (fileEntitys.myEntitys.at(i).myLevelExit.ExitDirection == 3)
+								newExit = 2;
+						}
+						else if (rotation == 90)
+						{
+							if (fileEntitys.myEntitys.at(i).myLevelExit.ExitDirection == 0)
+								newExit = 2;
+							if (fileEntitys.myEntitys.at(i).myLevelExit.ExitDirection == 2)
+								newExit = 1;
+							if (fileEntitys.myEntitys.at(i).myLevelExit.ExitDirection == 1)
+								newExit = 3;
+							if (fileEntitys.myEntitys.at(i).myLevelExit.ExitDirection == 3)
+								newExit = 0;
+						}
+						m_World->AddComponent<Frosty::ECS::CLevelExit>(entity, newExit);
 					}
 				}
 			}

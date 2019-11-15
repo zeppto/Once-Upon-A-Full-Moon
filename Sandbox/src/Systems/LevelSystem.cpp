@@ -137,37 +137,40 @@ namespace MCS
 		//temp level swap
 		for (size_t i = 1; i < p_Total; i++)
 		{
-			if (!m_World->HasComponent<Frosty::ECS::CCamera>(m_Transform[i]->EntityPtr))
+			if (m_Transform[i]->EntityPtr != nullptr)
 			{
-				if (!m_World->HasComponent<Frosty::ECS::CPlayer>(m_Transform[i]->EntityPtr))
+				if (!m_World->HasComponent<Frosty::ECS::CCamera>(m_Transform[i]->EntityPtr))
 				{
-					if (m_World->HasComponent<Frosty::ECS::CPhysics>(m_Transform[i]->EntityPtr))
+					if (!m_World->HasComponent<Frosty::ECS::CPlayer>(m_Transform[i]->EntityPtr))
 					{
-						if (!m_World->HasComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr))
+						if (m_World->HasComponent<Frosty::ECS::CPhysics>(m_Transform[i]->EntityPtr))
 						{
-							m_World->AddComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr);
-						}
-					}
-					else if (m_World->HasComponent<Frosty::ECS::CMesh>(m_Transform[i]->EntityPtr))
-					{
-						if (!m_World->HasComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr))
-						{
-							m_World->AddComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr);
-						}
-					}
-					else if (m_World->HasComponent<Frosty::ECS::CLight>(m_Transform[i]->EntityPtr))
-					{
-						auto& light = m_World->GetComponent<Frosty::ECS::CLight>(m_Transform[i]->EntityPtr);
-						if (light.Type == Frosty::ECS::CLight::LightType::Point)
 							if (!m_World->HasComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr))
 							{
 								m_World->AddComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr);
 							}
+						}
+						else if (m_World->HasComponent<Frosty::ECS::CMesh>(m_Transform[i]->EntityPtr))
+						{
+							if (!m_World->HasComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr))
+							{
+								m_World->AddComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr);
+							}
+						}
+						else if (m_World->HasComponent<Frosty::ECS::CLight>(m_Transform[i]->EntityPtr))
+						{
+							auto& light = m_World->GetComponent<Frosty::ECS::CLight>(m_Transform[i]->EntityPtr);
+							if (light.Type == Frosty::ECS::CLight::LightType::Point)
+								if (!m_World->HasComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr))
+								{
+									m_World->AddComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr);
+								}
+						}
 					}
-				}
-				else
-				{
-					playerTransform = m_Transform[i];
+					else
+					{
+						playerTransform = m_Transform[i];
+					}
 				}
 			}
 		}
