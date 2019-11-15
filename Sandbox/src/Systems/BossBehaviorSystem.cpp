@@ -10,8 +10,8 @@ namespace MCS
 	{
 		p_Signature.set(Frosty::ECS::getComponentTypeID<Frosty::ECS::CTransform>(), true);
 		p_Signature.set(Frosty::ECS::getComponentTypeID<Frosty::ECS::CBoss>(), true);
-		p_Signature.set(Frosty::ECS::getComponentTypeID<Frosty::ECS::CFollow>(), true);
-
+		//p_Signature.set(Frosty::ECS::getComponentTypeID<Frosty::ECS::CFollow>(), true);
+		p_Signature.set(Frosty::ECS::getComponentTypeID<Frosty::ECS::CEnemy>(), true);
 	}
 
 	void BossBehaviorSystem::OnUpdate()
@@ -28,8 +28,8 @@ namespace MCS
 					if (m_Boss[i]->TargetList.size() == 1)
 					{
 						//Follow player
-						m_Follow[i]->Target = &world->GetComponent<Frosty::ECS::CTransform>(m_Boss[i]->TargetList.at(m_Boss[i]->TargetList.size() - 1));
-						m_Follow[i]->StopDistance = 1.0f;
+						m_Enemy[i]->Target = &world->GetComponent<Frosty::ECS::CTransform>(m_Boss[i]->TargetList.at(m_Boss[i]->TargetList.size() - 1));
+						//m_Enemy[i]->StopDistance = 1.0f;
 					}
 					else
 					{
@@ -40,17 +40,17 @@ namespace MCS
 
 							std::swap(m_Boss[i]->TargetList.at(0), m_Boss[i]->TargetList.at(ShortestID));
 						}
-						m_Follow[i]->Target = &world->GetComponent<Frosty::ECS::CTransform>(m_Boss[i]->TargetList.at(0));
+						m_Enemy[i]->Target = &world->GetComponent<Frosty::ECS::CTransform>(m_Boss[i]->TargetList.at(0));
 						m_Boss[i]->Hunting = true;
-						m_Follow[i]->StopDistance = 0.1f;
+						//m_Enemy[i]->StopDistance = 0.1f;
 					}
 			//	}
 
 				float distance = CalcDistance2D(m_Transform[i]->Position, world->GetComponent<Frosty::ECS::CTransform>(m_Boss[i]->TargetList.at(0)).Position);
 
-				if (distance < 0.5 && m_Boss[i]->TargetList.size() > 1)
+				if (distance <5.0 && m_Boss[i]->TargetList.size() > 1)
 				{
-					m_Boss[i]->Distracted = true;
+				    m_Boss[i]->Distracted = true;
 					m_Boss[i]->DistractionTimer = Frosty::Time::CurrentTime();
 				}
 			}
@@ -92,7 +92,8 @@ namespace MCS
 			auto& world = Frosty::Application::Get().GetWorld();
 			m_Transform[p_Total] = &world->GetComponent<Frosty::ECS::CTransform>(entity);
 			m_Boss[p_Total] = &world->GetComponent<Frosty::ECS::CBoss>(entity);
-			m_Follow[p_Total] = &world->GetComponent<Frosty::ECS::CFollow>(entity);
+			//m_Enemy[p_Total] = &world->GetComponent<Frosty::ECS::CFollow>(entity);
+			m_Enemy[p_Total] = &world->GetComponent<Frosty::ECS::CEnemy>(entity);
 
 			p_Total++;
 		}
@@ -108,7 +109,7 @@ namespace MCS
 			auto& entityToUpdate = m_Transform[p_Total]->EntityPtr;
 			m_Transform[p_Total] = nullptr;
 			m_Boss[p_Total] = nullptr;
-			m_Follow[p_Total] = nullptr;
+			m_Enemy[p_Total] = nullptr;
 
 			if (p_Total > it->second)
 			{
@@ -128,11 +129,12 @@ namespace MCS
 			auto& world = Frosty::Application::Get().GetWorld();
 			Frosty::ECS::CTransform* transformPtr = world->GetComponentAddress<Frosty::ECS::CTransform>(entity);
 			Frosty::ECS::CBoss* bossPtr = world->GetComponentAddress<Frosty::ECS::CBoss>(entity);
-			Frosty::ECS::CFollow* followPtr = world->GetComponentAddress<Frosty::ECS::CFollow>(entity);
+			//Frosty::ECS::CFollow* followPtr = world->GetComponentAddress<Frosty::ECS::CFollow>(entity);
+			Frosty::ECS::CEnemy* enemyPtr = world->GetComponentAddress<Frosty::ECS::CEnemy>(entity);
 
 			m_Transform[it->second] = transformPtr;
 			m_Boss[it->second] = bossPtr;
-			m_Follow[it->second] = followPtr;
+			m_Enemy[it->second] = enemyPtr;
 		}
 	}
 
@@ -153,7 +155,7 @@ namespace MCS
 		{
 			retInfo << "\t\t" << i << "\t" << m_Transform[i] << "\t" << m_Transform[i]->EntityPtr->Id << "\t\t" << m_Transform[i]->EntityPtr << "\t\t" << m_Transform[i]->EntityPtr.use_count() << "\n";
 			retInfo << "\t\t" << i << "\t" << m_Boss[i] << "\t" << m_Boss[i]->EntityPtr->Id << "\t\t" << m_Boss[i]->EntityPtr << "\t\t" << m_Boss[i]->EntityPtr.use_count() << "\n";
-			retInfo << "\t\t" << i << "\t" << m_Follow[i] << "\t" << m_Follow[i]->EntityPtr->Id << "\t\t" << m_Follow[i]->EntityPtr << "\t\t" << m_Follow[i]->EntityPtr.use_count() << "\n";
+			retInfo << "\t\t" << i << "\t" << m_Enemy[i] << "\t" << m_Enemy[i]->EntityPtr->Id << "\t\t" << m_Enemy[i]->EntityPtr << "\t\t" << m_Enemy[i]->EntityPtr.use_count() << "\n";
 			retInfo << "\n"; // Have this last
 		}
 		retInfo << "\t\t-----------Done-----------\n";
@@ -177,9 +179,9 @@ namespace MCS
 
 			std::swap(m_Boss[i]->TargetList.at(0), m_Boss[i]->TargetList.at(ShortestID));
 
-			m_Follow[i]->Target = &world->GetComponent<Frosty::ECS::CTransform>(m_Boss[i]->TargetList.at(0));
+			m_Enemy[i]->Target = &world->GetComponent<Frosty::ECS::CTransform>(m_Boss[i]->TargetList.at(0));
 			m_Boss[i]->Hunting = true;
-			m_Follow[i]->StopDistance = 0.1f;
+			//m_Enemy[i]->StopDistance = 0.1f;
 
 		}
 	}

@@ -42,6 +42,7 @@ namespace MCS
 			Frosty::Renderer::SubmitHealthBar(m_HealthBar[i]->UseShader, m_HealthBar[i]->Mesh, m_HealthBar[i]->Translate, m_HealthBar[i]->Scale, m_HealthBar[i]->BarOffset);
 
 			if (m_HealthBar[i]->UseShader->GetName() == "HealthBar" && m_HealthBar[i]->Texture) m_HealthBar[i]->Texture->Unbind();
+
 		}
 	}
 
