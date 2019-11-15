@@ -39,7 +39,6 @@ namespace MCS
 
 			m_Transform[p_Total] = &m_World->GetComponent<Frosty::ECS::CTransform>(entity);
 			m_Lootable[p_Total] = &m_World->GetComponent<Frosty::ECS::CLootable>(entity);
-			m_Items[p_Total] = entity;
 			p_Total++;
 		}
 	}
@@ -54,7 +53,6 @@ namespace MCS
 			auto& entityToUpdate = m_Transform[p_Total]->EntityPtr;
 			m_Lootable[p_Total] = nullptr;
 			m_Transform[p_Total] = nullptr;
-			m_Items[p_Total] = nullptr;
 
 			if (p_Total > it->second)
 			{
@@ -76,7 +74,6 @@ namespace MCS
 
 			m_Transform[it->second] = transformPtr;
 			m_Lootable[it->second] = lootPtr;
-			m_Items[it->second] = entity;
 		}
 	}
 
@@ -115,7 +112,7 @@ namespace MCS
 
 			if (distanceToItem < m_WorkingArea && m_CoolDown > 2.0f)
 			{
-				Frosty::EventBus::GetEventBus()->Publish<Frosty::PickUpEvent>(Frosty::PickUpEvent(m_Items[i]));
+				Frosty::EventBus::GetEventBus()->Publish<Frosty::PickUpEvent>(Frosty::PickUpEvent(m_Lootable[i]->EntityPtr));
 				FY_INFO("{0}", distanceToItem);
 			}
 		}

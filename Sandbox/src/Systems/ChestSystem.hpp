@@ -27,8 +27,6 @@ namespace MCS
 		std::array<Frosty::ECS::CHealth*, Frosty::ECS::MAX_ENTITIES_PER_COMPONENT> m_Health;
 		std::array<Frosty::ECS::CTransform*, Frosty::ECS::MAX_ENTITIES_PER_COMPONENT> m_Transform;
 
-		std::shared_ptr<Frosty::ECS::Entity> m_Entity = nullptr;
-
 		float m_CoolDown = 0.0f;
 		unsigned int m_RandItem = 0;
 	};

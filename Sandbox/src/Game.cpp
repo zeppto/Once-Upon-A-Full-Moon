@@ -155,35 +155,35 @@ namespace MCS
 		world->AddComponent<Frosty::ECS::CMesh>(chest, Frosty::AssetManager::GetMesh("pCube1"));
 		world->AddComponent<Frosty::ECS::CMaterial>(chest, Frosty::AssetManager::GetShader("FlatColor"));
 		world->AddComponent<Frosty::ECS::CPhysics>(chest, Frosty::AssetManager::GetBoundingBox("pCube1"), 6.0f);
-		world->AddComponent<Frosty::ECS::CHealth>(chest, 10.0f);
+		world->AddComponent<Frosty::ECS::CHealth>(chest, 2.0f);
 		world->AddComponent<Frosty::ECS::CChest>(chest);
 
 		auto& chest2 = world->CreateEntity({ 5.0f, 1.0f, 25.0f }, { 0.0f, 0.0f, 0.0f }, { 2.0f, 2.0f, 2.0f });
 		world->AddComponent<Frosty::ECS::CMesh>(chest2, Frosty::AssetManager::GetMesh("pCube1"));
 		world->AddComponent<Frosty::ECS::CMaterial>(chest2, Frosty::AssetManager::GetShader("FlatColor"));
 		world->AddComponent<Frosty::ECS::CPhysics>(chest2, Frosty::AssetManager::GetBoundingBox("pCube1"), 6.0f);
-		world->AddComponent<Frosty::ECS::CHealth>(chest2, 10.0f);
+		world->AddComponent<Frosty::ECS::CHealth>(chest2, 2.0f);
 		world->AddComponent<Frosty::ECS::CChest>(chest2);
 
 		auto& chest3 = world->CreateEntity({ 10.0f, 1.0f, 25.0f }, { 0.0f, 0.0f, 0.0f }, { 2.0f, 2.0f, 2.0f });
 		world->AddComponent<Frosty::ECS::CMesh>(chest3, Frosty::AssetManager::GetMesh("pCube1"));
 		world->AddComponent<Frosty::ECS::CMaterial>(chest3, Frosty::AssetManager::GetShader("FlatColor"));
 		world->AddComponent<Frosty::ECS::CPhysics>(chest3, Frosty::AssetManager::GetBoundingBox("pCube1"), 6.0f);
-		world->AddComponent<Frosty::ECS::CHealth>(chest3, 10.0f);
+		world->AddComponent<Frosty::ECS::CHealth>(chest3, 2.0f);
 		world->AddComponent<Frosty::ECS::CChest>(chest3);
 
 		auto& chest4 = world->CreateEntity({ 15.0f, 1.0f, 25.0f }, { 0.0f, 0.0f, 0.0f }, { 2.0f, 2.0f, 2.0f });
 		world->AddComponent<Frosty::ECS::CMesh>(chest4, Frosty::AssetManager::GetMesh("pCube1"));
 		world->AddComponent<Frosty::ECS::CMaterial>(chest4, Frosty::AssetManager::GetShader("FlatColor"));
 		world->AddComponent<Frosty::ECS::CPhysics>(chest4, Frosty::AssetManager::GetBoundingBox("pCube1"), 6.0f);
-		world->AddComponent<Frosty::ECS::CHealth>(chest4, 10.0f);
+		world->AddComponent<Frosty::ECS::CHealth>(chest4, 2.0f);
 		world->AddComponent<Frosty::ECS::CChest>(chest4);
 
 		auto& chest5 = world->CreateEntity({ 20.0f, 1.0f, 25.0f }, { 0.0f, 0.0f, 0.0f }, { 2.0f, 2.0f, 2.0f });
 		world->AddComponent<Frosty::ECS::CMesh>(chest5, Frosty::AssetManager::GetMesh("pCube1"));
 		world->AddComponent<Frosty::ECS::CMaterial>(chest5, Frosty::AssetManager::GetShader("FlatColor"));
 		world->AddComponent<Frosty::ECS::CPhysics>(chest5, Frosty::AssetManager::GetBoundingBox("pCube1"), 6.0f);
-		world->AddComponent<Frosty::ECS::CHealth>(chest5, 10.0f);
+		world->AddComponent<Frosty::ECS::CHealth>(chest5, 2.0f);
 		world->AddComponent<Frosty::ECS::CChest>(chest5);
 
 		auto& GUI = world->CreateEntity();
