@@ -43,15 +43,44 @@ namespace MCS
 			}
 		}*/
 
-		for (size_t i = 1; i < p_Total; i++)
+		/*for (size_t i = 1; i < p_Total; i++)
 		{
 			if (m_Chest[i]->EntityPtr != nullptr && Frosty::InputManager::IsKeyPressed(FY_KEY_G) && m_CoolDown > 1.0f)
 			{
 				m_World->AddComponent<Frosty::ECS::CDestroy>(m_Chest[i]->EntityPtr);
 				SpawnItem(i);
 				m_CoolDown = 0.0f;
+			}
+		}*/
 
-				//FY_INFO("{0}", m_Health[i]->CurrentHealth);
+		/*if (m_Chest[i]->EntityPtr != nullptr && Frosty::InputManager::IsKeyPressed(FY_KEY_G) && m_CoolDown > 1.0f)
+			{
+				m_Health[i]->CurrentHealth--;
+				FY_INFO("{0}", m_Health[i]->CurrentHealth);
+				m_CoolDown = 0.0f;
+			}
+			if (m_Chest[i]->EntityPtr != nullptr && m_Health[i]->CurrentHealth <= 0)
+			{
+				m_World->AddComponent<Frosty::ECS::CDestroy>(m_Chest[i]->EntityPtr);
+				SpawnItem(i);
+			}*/
+
+		for (size_t i = 1; i < p_Total; i++)
+		{
+			if (m_Chest[i]->EntityPtr != nullptr && m_Health[i]->CurrentHealth > 0)
+			{
+				if (Frosty::InputManager::IsKeyPressed(FY_KEY_G) && m_CoolDown > 1.0f)
+				{
+					m_Health[i]->CurrentHealth--;
+					FY_INFO("{0}", m_Health[i]->CurrentHealth);
+					m_CoolDown = 0.0f;
+				}
+			}
+
+			else if (m_Chest[i]->EntityPtr != nullptr && m_Health[i]->CurrentHealth <= 0)
+			{
+				m_World->AddComponent<Frosty::ECS::CDestroy>(m_Chest[i]->EntityPtr);
+				SpawnItem(i);
 			}
 		}
 	}
@@ -140,8 +169,6 @@ namespace MCS
 		m_World->AddComponent<Frosty::ECS::CMesh>(item, Frosty::AssetManager::GetMesh("pCube1"));
 		m_World->AddComponent<Frosty::ECS::CMaterial>(item, Frosty::AssetManager::GetShader("FlatColor"));
 		m_World->AddComponent<Frosty::ECS::CPhysics>(item, Frosty::AssetManager::GetBoundingBox("pCube1"), 6.0f);
-
-		m_RandItem = 3;
 
 		switch (m_RandItem)
 		{
