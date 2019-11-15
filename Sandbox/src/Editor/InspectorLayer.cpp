@@ -640,8 +640,8 @@ namespace MCS
 						ImGui::InputInt("Increase Health Potions", &comp.CurrentIncreaseHPPotions, 1, 10, 0);
 						ImGui::InputInt("Speed Potions", &comp.CurrentSpeedPotions, 1, 1, 0);
 						ImGui::InputInt("Speed Boots", &comp.CurrentSpeedBoots, 1, 10, 0);
-						ImGui::InputInt("Bait", &comp.CurrentBaitAmount, 1.0, 10, 0);
-						ImGui::InputInt("Wolfsbane", &comp.CurrentWolfsbane, 1.0, 10.0, 0);
+						ImGui::InputInt("Bait", &comp.CurrentBaitAmount, 1, 10, 0);
+						ImGui::InputInt("Wolfsbane", &comp.CurrentWolfsbane, 1, 10, 0);
 						ImGui::EndChild();
 					}
 				}

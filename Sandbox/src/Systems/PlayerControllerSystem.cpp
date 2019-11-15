@@ -38,18 +38,6 @@ namespace MCS
 				HandleMovement(i);
 				HandleAttack(point3D, i);
 				HandleInventory(i);
-
-				// Weapon Swap testingm
-				if (Frosty::InputManager::IsKeyPressed(FY_KEY_E) && (Frosty::Time::CurrentTime() - cooldownTimer >= cooldown))
-				{
-					auto& world = Frosty::Application::Get().GetWorld();
-
-					auto& playerWeapon = world->GetComponent<Frosty::ECS::CWeapon>(m_Player[1]->Weapon->EntityPtr);
-					auto& lootWeapon = world->GetComponent<Frosty::ECS::CWeapon>(m_Player[2]->Weapon->EntityPtr);
-
-					Frosty::EventBus::GetEventBus()->Publish<Frosty::SwapWeaponEvent>(Frosty::SwapWeaponEvent(playerWeapon.EntityPtr, lootWeapon.EntityPtr));
-					cooldownTimer = Frosty::Time::CurrentTime();
-				}
 			}
 
 		}
@@ -70,18 +58,6 @@ namespace MCS
 					m_Dash[i]->DistanceDashed = 0.0f;
 				}
 			}
-		}
-	}
-
-	void PlayerControllerSystem::OnEvent(Frosty::BaseEvent& e)
-	{
-		switch (e.GetEventType())
-		{
-		case Frosty::EventType::SwapWeapon:
-			OnSwaphWeaponEvent(static_cast<Frosty::SwapWeaponEvent&>(e));
-			break;
-		default:
-			break;
 		}
 	}
 
@@ -496,16 +472,6 @@ namespace MCS
 			return criticalHit;
 		}
 		return 0.0f;
-	}
-
-	void PlayerControllerSystem::OnSwaphWeaponEvent(Frosty::SwapWeaponEvent& e)	// ASK LEONA WHY FIND DOESN'T WORK	~ W-_-W ~
-	{
-
-		auto& playerWeapon = e.GetPlayerWeaponEntity();	// Player's weapon
-		auto& lootWeapon = e.GetWeaponEntity();			// Loot weapon
-
-		SwapWeaponStats(playerWeapon, lootWeapon);
-
 	}
 
 	void PlayerControllerSystem::SwapWeaponStats(const std::shared_ptr<Frosty::ECS::Entity>& playerWeapon, const std::shared_ptr<Frosty::ECS::Entity>& lootWeapon)

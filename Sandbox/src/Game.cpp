@@ -98,21 +98,12 @@ namespace MCS
 		auto& lightTransform2 = world->GetComponent<Frosty::ECS::CTransform>(light2);
 		world->AddComponent<Frosty::ECS::CLight>(light2, Frosty::ECS::CLight::LightType::Directional, 0.3f, glm::vec3(0.6f, 0.7f, 1.f));
 
-		// WEAPON 1 (testing)
+		// WEAPON 1
 		auto& weapon = world->CreateEntity({ 0.f, 0.f, 0.f }, { 0.0f, 0.0f, 0.0f }, { 1.f, 1.f, 1.f });
 		world->AddComponent<Frosty::ECS::CMesh>(weapon, Frosty::AssetManager::GetMesh("pCube1"));
 		world->AddComponent<Frosty::ECS::CMaterial>(weapon, Frosty::AssetManager::GetShader("FlatColor"));
 		world->AddComponent<Frosty::ECS::CWeapon>(weapon, Frosty::ECS::CWeapon::WeaponType::Arrow, "2Default", 10.f, 0.1f);
 		auto& weaponComp = world->GetComponent<Frosty::ECS::CWeapon>(weapon);
-
-		// WEAPON 2 (testing)
-		auto& weapon2 = world->CreateEntity({ 4.f, 0.f, 0.f }, { 0.0f, 0.0f, 0.0f }, { 1.f, 1.f, 1.f });
-		world->AddComponent<Frosty::ECS::CMesh>(weapon2, Frosty::AssetManager::GetMesh("pCylinder1"));
-		world->AddComponent<Frosty::ECS::CMaterial>(weapon2, Frosty::AssetManager::GetShader("FlatColor"));
-		world->AddComponent<Frosty::ECS::CWeapon>(weapon2, Frosty::ECS::CWeapon::WeaponType::Sword, "1Default", 10.f, 0.2f);
-		auto& weaponMaterialComp = world->GetComponent<Frosty::ECS::CMaterial>(weapon2);
-		weaponMaterialComp.Albedo = glm::vec4(0.f, 0.f, 1.f, 1.f);
-		auto& weaponComp2 = world->GetComponent<Frosty::ECS::CWeapon>(weapon2);
 
 		// PLAYER
 		auto& player = world->CreateEntity({ 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 2.0f, 2.0f, 2.0f } );
@@ -122,29 +113,13 @@ namespace MCS
 		playerMat.DiffuseTexture = Frosty::AssetManager::GetTexture2D("Scarlet_diffuse");
 		playerMat.NormalTexture = Frosty::AssetManager::GetTexture2D("Scarlet_normal");
 		playerMat.SpecularTexture = Frosty::AssetManager::GetTexture2D("Scarlet_specular");
-		world->AddComponent<Frosty::ECS::CPlayer>(player, &weaponComp);
+		world->AddComponent<Frosty::ECS::CPlayer>(player, &weaponComp); // <-- Give weapon to player
 		world->AddComponent<Frosty::ECS::CPhysics>(player, Frosty::AssetManager::GetBoundingBox("scarlet"), 10.0f);
 		world->AddComponent<Frosty::ECS::CDash>(player);
 		world->AddComponent<Frosty::ECS::CHealth>(player);
 		world->AddComponent<Frosty::ECS::CInventory>(player);
 		auto& camEntity = world->GetSceneCamera();
 		world->GetComponent<Frosty::ECS::CCamera>(camEntity).Target = &playerTransform;
-
-		// PLAYER 2
-		auto& player2 = world->CreateEntity({ 4.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 2.0f, 2.0f, 2.0f });
-		auto& playerTransform2 = world->GetComponent<Frosty::ECS::CTransform>(player2);
-		world->AddComponent<Frosty::ECS::CMesh>(player2, Frosty::AssetManager::GetMesh("scarlet"));
-		auto& playerMat2 = world->AddComponent<Frosty::ECS::CMaterial>(player2, Frosty::AssetManager::GetShader("Texture2D"));
-		playerMat2.DiffuseTexture = Frosty::AssetManager::GetTexture2D("Scarlet_diffuse");
-		playerMat2.NormalTexture = Frosty::AssetManager::GetTexture2D("Scarlet_normal");
-		playerMat2.SpecularTexture = Frosty::AssetManager::GetTexture2D("Scarlet_specular");
-		world->AddComponent<Frosty::ECS::CPlayer>(player2, &weaponComp2);
-		world->AddComponent<Frosty::ECS::CPhysics>(player2, Frosty::AssetManager::GetBoundingBox("scarlet"), 10.0f);
-		world->AddComponent<Frosty::ECS::CDash>(player2);
-		world->AddComponent<Frosty::ECS::CHealth>(player2);
-		world->AddComponent<Frosty::ECS::CInventory>(player2);
-		auto& camEntity2 = world->GetSceneCamera();
-		world->GetComponent<Frosty::ECS::CCamera>(camEntity2).Target = &playerTransform2;
 
 		// WALL
 		auto& wall = world->CreateEntity({ 0.0f, 5.0f, -3.0f }, { 0.0f, 0.0f, 0.0f }, { 15.0f, 10.0f, 1.0f }, true);
