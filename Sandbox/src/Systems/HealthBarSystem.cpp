@@ -26,7 +26,7 @@ namespace MCS
 			float TmaxHP = m_Health[i]->MaxHealth;
 			float TcurrHP = m_Health[i]->CurrentHealth;
 
-			float sizeFact = 0.05 * TmaxHP;
+			float sizeFact = 0.05f * TmaxHP;
 
 			float translateFact = (std::clamp((TcurrHP / TmaxHP), 0.0f, 1.0f) - 1) * (1.0f + sizeFact);
 
