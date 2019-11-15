@@ -19,6 +19,6 @@ void main()
 {
 	v_TextureCoords = a_TextureCoords;
 
-	gl_Position = u_ViewProjection * vec4(u_CameraRight_worldspace * a_Position.x * u_Scale.x + u_CameraUp_worldspace * a_Position.z * u_Scale.y + u_CameraRight_worldspace * u_Translate + u_HealthBarSpace, 1.0f);
+	gl_Position = u_ViewProjection * vec4(u_CameraRight_worldspace * a_Position.x * u_Scale.x + u_CameraUp_worldspace * a_Position.z * u_Scale.y + u_Translate + u_HealthBarSpace, 1.0f);
                        
 }

@@ -211,7 +211,6 @@ namespace Frosty
 	{
 		shader->Bind();
 		vertexArray->Bind();
-
 		
 		shader->UploadUniformFloat3("u_HealthBarSpace", HealthBarSpace);
 
