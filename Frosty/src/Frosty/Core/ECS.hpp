@@ -811,7 +811,7 @@ namespace Frosty
 		struct CBoss : public BaseComponent
 		{
 			static std::string NAME;
-			float DistractionTime{ 5.0f };
+			float DistractionTime{ 3.0f };
 			float DistractionTimer{ Frosty::Time::CurrentTime() };
 			bool Distracted{ false };
 			bool Hunting{ false };

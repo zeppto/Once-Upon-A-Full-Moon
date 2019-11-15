@@ -141,7 +141,7 @@ namespace MCS
 		m_World->AddComponent<Frosty::ECS::CMaterial>(item, Frosty::AssetManager::GetShader("FlatColor"));
 		m_World->AddComponent<Frosty::ECS::CPhysics>(item, Frosty::AssetManager::GetBoundingBox("pCube1"), 6.0f);
 
-		m_RandItem = 3;
+		
 
 		switch (m_RandItem)
 		{
