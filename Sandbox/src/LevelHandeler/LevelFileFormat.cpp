@@ -346,6 +346,8 @@ void LevelFileFormat::OpenFromFile(std::string fileName, Frosty::ECS::CTransform
 					if (j == 1)
 					{
 						existingFile.read((char*)& fileEntitys.myEntitys.at(i).myMesh, sizeof(Level_Mesh));
+						//for in game
+						//if(!fileEntitys.myEntitys.at(i).MyComponents.at(10).HaveComponent)
 						m_World->AddComponent<Frosty::ECS::CMesh>(entity,
 							Frosty::AssetManager::GetMesh(fileEntitys.myEntitys.at(i).myMesh.MeshName));
 					}
