@@ -40,6 +40,28 @@ namespace Frosty
 		std::shared_ptr<ECS::Entity> m_Entity;
 	};
 
+	class PickUpAttemptEvent : public BaseEvent
+	{
+	public:
+		PickUpAttemptEvent(const std::shared_ptr<ECS::Entity>& entity) : m_Entity(entity) { }
+		const std::shared_ptr<ECS::Entity>& GetEntity() const { return m_Entity; }
+
+		EVENT_TYPE(PickUpAttempt)
+	private:
+		std::shared_ptr<ECS::Entity> m_Entity;
+	};
+
+	class PickUpEvent : public BaseEvent
+	{
+	public:
+		PickUpEvent(const std::shared_ptr<ECS::Entity>& entity) : m_Entity(entity) { }
+		std::shared_ptr<ECS::Entity>& GetEntity() { return m_Entity; }
+
+		EVENT_TYPE(PickUp)
+	private:
+		std::shared_ptr<ECS::Entity> m_Entity;
+	};
+
 	class BaitPlacedEvent : public BaseEvent
 	{
 	public:
@@ -66,6 +88,50 @@ namespace Frosty
 	private:
 		std::shared_ptr<ECS::Entity> m_ExitEntity;
 		std::shared_ptr<ECS::Entity> m_PlayerEntity;
+	};
+
+	class SaveLevelEvent : public BaseEvent
+	{
+	public:
+		SaveLevelEvent() {}
+
+		EVENT_TYPE(SaveLevel)
+
+	private:
+	};
+
+	class CreateLevelEvent : public BaseEvent
+	{
+	public:
+		CreateLevelEvent(const bool& up, const bool& down, const bool& left, const bool& right) : m_Up(up), m_Down(down), m_Left(left), m_Right(right){}
+
+		//0 = Up, 1 = down, 2 = left, 3 = right
+		const bool GetDirections(int direction) {
+			if (direction == 0) return m_Up; if (direction == 1) return m_Down; 
+			if (direction == 2) return m_Left; if (direction == 3) return m_Right;
+			return false;
+		}
+
+		EVENT_TYPE(CreateLevel)
+
+	private:
+		bool m_Up;
+		bool m_Down;
+		bool m_Left;
+		bool m_Right;
+	};
+
+	class OpenLevelEvent : public BaseEvent
+	{
+	public:
+		OpenLevelEvent(std::string filename) : m_Filename(filename){}
+
+		const std::string GetFilename() { return m_Filename; }
+
+		EVENT_TYPE(OpenLevel)
+
+	private:
+		std::string m_Filename;
 	};
 }
 

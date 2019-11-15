@@ -35,6 +35,9 @@ namespace MCS
 		// Static stuff (Mostly temporary)
 		static bool s_VSync;
 
+		//FOR OPENING LEVEL
+		char m_LevelName[50] = "name";
+
 	};
 }
 

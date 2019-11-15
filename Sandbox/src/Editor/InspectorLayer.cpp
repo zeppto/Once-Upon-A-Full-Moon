@@ -1,6 +1,7 @@
 #include <mcspch.hpp>
 #include "InspectorLayer.hpp"
 #include"Frosty/API/AssetManager/AssetManager.hpp"
+#include "Frosty/Events/AbilityEvent.hpp"
 
 #include "imgui/imgui.h"
 #include <PugiXML/pugixml.hpp>
@@ -732,6 +733,10 @@ namespace MCS
 
 				}
 				if (ImGui::MenuItem("Save All", "CTRL+SHIFT+S")) {}
+				if (ImGui::MenuItem("Save Room", ""))
+				{
+					Frosty::EventBus::GetEventBus()->Publish<Frosty::SaveLevelEvent>(Frosty::SaveLevelEvent());
+				}
 				ImGui::EndMenu();
 			}
 			if (ImGui::BeginMenu("Edit"))
@@ -742,6 +747,35 @@ namespace MCS
 				if (ImGui::MenuItem("Cut", "CTRL+X")) {}
 				if (ImGui::MenuItem("Copy", "CTRL+C")) {}
 				if (ImGui::MenuItem("Paste", "CTRL+V")) {}
+				ImGui::EndMenu();
+			}
+			if (ImGui::BeginMenu("Level"))
+			{
+				if (ImGui::MenuItem("Create Deadend"))
+				{
+					Frosty::EventBus::GetEventBus()->Publish<Frosty::CreateLevelEvent>(Frosty::CreateLevelEvent(true, false, false, false));
+				}
+				if (ImGui::MenuItem("Create turning road"))
+				{
+					Frosty::EventBus::GetEventBus()->Publish<Frosty::CreateLevelEvent>(Frosty::CreateLevelEvent(true, false, true, false));
+				}
+				if (ImGui::MenuItem("Create straight road"))
+				{
+					Frosty::EventBus::GetEventBus()->Publish<Frosty::CreateLevelEvent>(Frosty::CreateLevelEvent(false, false, true, true));
+				}
+				if (ImGui::MenuItem("Create three way road"))
+				{
+					Frosty::EventBus::GetEventBus()->Publish<Frosty::CreateLevelEvent>(Frosty::CreateLevelEvent(true, false, true, true));
+				}
+				if (ImGui::MenuItem("Create crossroad"))
+				{
+					Frosty::EventBus::GetEventBus()->Publish<Frosty::CreateLevelEvent>(Frosty::CreateLevelEvent(true, true, true, true));
+				}
+				ImGui::InputText("level name", m_LevelName, IM_ARRAYSIZE(m_LevelName));
+				if (ImGui::MenuItem("open existing level"))
+				{
+					Frosty::EventBus::GetEventBus()->Publish<Frosty::OpenLevelEvent>(Frosty::OpenLevelEvent(m_LevelName));
+				}
 				ImGui::EndMenu();
 			}
 			ImGui::SetCursorPosX(m_App->GetWindow().GetWidth() - 250.0f);

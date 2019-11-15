@@ -65,8 +65,8 @@ namespace Level
 				world->AddComponent<Frosty::ECS::CPhysics>(ExitBBox, Frosty::AssetManager::GetBoundingBox("pCube1"), 0.0f);
 				world->AddComponent<Frosty::ECS::CLevelExit>(ExitBBox, 0);
 
-				//world->AddComponent<Frosty::ECS::CMesh>(ExitBBox, Frosty::AssetManager::GetMesh("pCube1"));
-				//world->AddComponent<Frosty::ECS::CMaterial>(ExitBBox, Frosty::AssetManager::GetShader("FlatColor"));
+				world->AddComponent<Frosty::ECS::CMesh>(ExitBBox, Frosty::AssetManager::GetMesh("pCube1"));
+				world->AddComponent<Frosty::ECS::CMaterial>(ExitBBox, Frosty::AssetManager::GetShader("FlatColor"));
 			}
 			if (!down)
 			{
@@ -93,8 +93,8 @@ namespace Level
 				world->AddComponent<Frosty::ECS::CPhysics>(ExitBBox, Frosty::AssetManager::GetBoundingBox("pCube1"), 0.0f);
 				world->AddComponent<Frosty::ECS::CLevelExit>(ExitBBox, 1);
 
-				//world->AddComponent<Frosty::ECS::CMesh>(ExitBBox, Frosty::AssetManager::GetMesh("pCube1"));
-				//world->AddComponent<Frosty::ECS::CMaterial>(ExitBBox, Frosty::AssetManager::GetShader("FlatColor"));
+				world->AddComponent<Frosty::ECS::CMesh>(ExitBBox, Frosty::AssetManager::GetMesh("pCube1"));
+				world->AddComponent<Frosty::ECS::CMaterial>(ExitBBox, Frosty::AssetManager::GetShader("FlatColor"));
 			}
 			if (!left)
 			{
@@ -121,8 +121,8 @@ namespace Level
 				world->AddComponent<Frosty::ECS::CPhysics>(ExitBBox, Frosty::AssetManager::GetBoundingBox("pCube1"), 0.0f);
 				world->AddComponent<Frosty::ECS::CLevelExit>(ExitBBox, 3);
 
-				//world->AddComponent<Frosty::ECS::CMesh>(ExitBBox, Frosty::AssetManager::GetMesh("pCube1"));
-				//world->AddComponent<Frosty::ECS::CMaterial>(ExitBBox, Frosty::AssetManager::GetShader("FlatColor"));
+				world->AddComponent<Frosty::ECS::CMesh>(ExitBBox, Frosty::AssetManager::GetMesh("pCube1"));
+				world->AddComponent<Frosty::ECS::CMaterial>(ExitBBox, Frosty::AssetManager::GetShader("FlatColor"));
 			}
 			if (!right)
 			{
@@ -149,8 +149,8 @@ namespace Level
 				world->AddComponent<Frosty::ECS::CPhysics>(ExitBBox, Frosty::AssetManager::GetBoundingBox("pCube1"), 0.0f);
 				world->AddComponent<Frosty::ECS::CLevelExit>(ExitBBox, 2);
 
-				//world->AddComponent<Frosty::ECS::CMesh>(ExitBBox, Frosty::AssetManager::GetMesh("pCube1"));
-				//world->AddComponent<Frosty::ECS::CMaterial>(ExitBBox, Frosty::AssetManager::GetShader("FlatColor"));
+				world->AddComponent<Frosty::ECS::CMesh>(ExitBBox, Frosty::AssetManager::GetMesh("pCube1"));
+				world->AddComponent<Frosty::ECS::CMaterial>(ExitBBox, Frosty::AssetManager::GetShader("FlatColor"));
 			}
 		}
 		glm::vec3 toReturn;
@@ -377,6 +377,6 @@ namespace Level
 		default:
 			break;
 		}
-
+		return glm::vec3(0);
 	}
 }

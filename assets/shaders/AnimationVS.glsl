@@ -10,7 +10,7 @@ layout(location = 6) in ivec4 a_Joints;
 
 layout(std140, binding = 7) uniform a_jointDataBlock
 {
-	mat4 skinData[64];
+	mat4 skinData[128];
 };
 
 uniform mat4 u_ViewProjection;

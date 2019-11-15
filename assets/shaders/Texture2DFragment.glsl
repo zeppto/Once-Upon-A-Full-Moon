@@ -61,7 +61,7 @@ void main()
 		result += CalculateDirectionalLight(u_DirectionalLights[i], normal);
 	}
 
-	color = vec4(result * diffuseTexture.rgb, 1.0);
+	color = vec4(result, 1.0) * diffuseTexture;
 }
 
 vec3 CalculatePointLight(PointLight light, vec3 normal)

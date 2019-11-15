@@ -6,7 +6,7 @@
 #include "glm/gtx/quaternion.hpp"
 
 //CAREFUL: If changed. Change in animationVS too!
-#define MAX_BONES 64
+#define MAX_BONES 128
 
 namespace Frosty
 {
@@ -37,7 +37,13 @@ namespace Frosty
 	public:
 		inline Animation() : AssetFile(FileMetaData()) {}
 		inline Animation(const FileMetaData& MetaData, const uint16_t& MeshId, Luna::Animation LuAni, const bool& HasSkeleton = false)
-			:m_Mesh_Id(MeshId), m_Has_Skeleton(HasSkeleton), AssetFile(MetaData), m_Animation(LuAni){}
+			:m_Mesh_Id(MeshId), m_Has_Skeleton(HasSkeleton), AssetFile(MetaData), m_Animation(LuAni)
+		{
+			for (int i = 0; i < MAX_BONES ; i++)
+			{
+				m_SkinData.jTrans[i] = glm::mat4(0.0f);
+			}
+		}
 		virtual ~Animation();
 
 

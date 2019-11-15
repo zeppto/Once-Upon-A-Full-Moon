@@ -69,12 +69,6 @@ namespace MCS
 
 				float scaleFact = std::clamp((TcurrHP / TmaxHP), 0.0f, 1.0f) * (1.0f + sizeFact);
 
-				switch (m_HealthBar[i]->Mesh->GetName)
-				{
-				default:
-					break;
-				}
-
 				m_HealthBar[i]->Translate = glm::vec3(m_Transform[i]->Position.x + translateFact, m_Transform[i]->Position.y, m_Transform[i]->Position.z);
 				
 				m_HealthBar[i]->Scale = glm::vec3(scaleFact, (0.3f + 0.05 * sizeFact), 1.0f);

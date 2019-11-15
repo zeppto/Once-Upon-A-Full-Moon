@@ -1,6 +1,8 @@
 #ifndef PLAYER_CONTROLLER_SYSTEM_HPP
 #define PLAYER_CONTROLLER_SYSTEM_HPP
 
+namespace Frosty { class PickUpEvent; }
+
 namespace MCS
 {
 	class PlayerControllerSystem : public Frosty::ECS::BaseSystem
@@ -15,12 +17,12 @@ namespace MCS
 		virtual void Init() override;
 		virtual void OnInput() override;
 		virtual void OnUpdate() override;
+		virtual void OnEvent(Frosty::BaseEvent& e) override;
 
 		virtual void AddComponent(const std::shared_ptr<Frosty::ECS::Entity>& entity) override;
 		virtual void RemoveEntity(const std::shared_ptr<Frosty::ECS::Entity>& entity) override;
 		virtual void UpdateEntityComponent(const std::shared_ptr<Frosty::ECS::Entity>& entity) override;
 		virtual std::string GetInfo() const override;
-
 	private:
 		glm::vec3 ScreenToTerrainPoint();
 		void LookAtPoint(const glm::vec3& point, size_t index);
@@ -28,6 +30,7 @@ namespace MCS
 		void HandleAttack(const glm::vec3& point, size_t index);
 		void HandleInventory(size_t index);
 
+		void OnPickUpEvent(Frosty::PickUpEvent& e);
 	private:
 		std::array<Frosty::ECS::CTransform*, Frosty::ECS::MAX_ENTITIES_PER_COMPONENT> m_Transform;
 		std::array<Frosty::ECS::CPlayer*, Frosty::ECS::MAX_ENTITIES_PER_COMPONENT> m_Player;
@@ -36,6 +39,8 @@ namespace MCS
 		std::array<Frosty::ECS::CPhysics*, Frosty::ECS::MAX_ENTITIES_PER_COMPONENT> m_Physics;
 		std::array<Frosty::ECS::CHealth*, Frosty::ECS::MAX_ENTITIES_PER_COMPONENT> m_Health;
 		std::array<Frosty::ECS::CInventory*, Frosty::ECS::MAX_ENTITIES_PER_COMPONENT> m_Inventory;
+
+		bool m_keyPressed = false;
 	};
 }
 

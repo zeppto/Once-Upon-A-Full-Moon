@@ -20,6 +20,15 @@ namespace MCS
 		case Frosty::EventType::ExitCurrentLevel:
 			OnExitLevelEvent(static_cast<Frosty::ExitLevelEvent&>(e));
 			break;
+		case Frosty::EventType::SaveLevel:
+			OnSaveLevelEvent(static_cast<Frosty::SaveLevelEvent&>(e));
+			break;
+		case Frosty::EventType::CreateLevel:
+			OnCreateLevelEvent(static_cast<Frosty::CreateLevelEvent&>(e));
+			break;
+		case Frosty::EventType::OpenLevel:
+			OnOpenLevelEvent(static_cast<Frosty::OpenLevelEvent&>(e));
+			break;
 		default:
 			break;
 		}
@@ -124,6 +133,7 @@ namespace MCS
 
 		auto& PlayerTranform = m_World->GetComponent<Frosty::ECS::CTransform>(e.GetPlayerEntity());
 
+
 		//temp level swap
 		for (size_t i = 1; i < p_Total; i++)
 		{
@@ -145,6 +155,15 @@ namespace MCS
 							m_World->AddComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr);
 						}
 					}
+					else if (m_World->HasComponent<Frosty::ECS::CLight>(m_Transform[i]->EntityPtr))
+					{
+						auto& light = m_World->GetComponent<Frosty::ECS::CLight>(m_Transform[i]->EntityPtr);
+						if (light.Type == Frosty::ECS::CLight::LightType::Point)
+							if (!m_World->HasComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr))
+							{
+								m_World->AddComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr);
+							}
+					}
 				}
 			}
 		}
@@ -164,9 +183,123 @@ namespace MCS
 
 		int rotation = 0;
 		std::string texture = m_Map.getRoomTextur(m_PlayerPos, &rotation);
-		PlayerTranform.Position = Level::Room(m_CurrentRoome.sideExits[0], m_CurrentRoome.sideExits[1], m_CurrentRoome.sideExits[2], m_CurrentRoome.sideExits[3], texture, rotation, ExitSide.ExitDirection);
+		PlayerTranform.Position = Level::Room(m_CurrentRoome.sideExits[0], m_CurrentRoome.sideExits[1], 
+			m_CurrentRoome.sideExits[2], m_CurrentRoome.sideExits[3], texture, rotation, ExitSide.ExitDirection);
 
+	}
+	void LevelSystem::OnSaveLevelEvent(Frosty::SaveLevelEvent& e)
+	{
+		for (size_t i = 1; i < p_Total; i++)
+		{
+			if (!m_World->HasComponent<Frosty::ECS::CCamera>(m_Transform[i]->EntityPtr))
+			{
+				if (!m_World->HasComponent<Frosty::ECS::CPlayer>(m_Transform[i]->EntityPtr))
+				{
+					if (m_World->HasComponent<Frosty::ECS::CLight>(m_Transform[i]->EntityPtr))
+					{
+						auto& light = m_World->GetComponent<Frosty::ECS::CLight>(m_Transform[i]->EntityPtr);
+						if (light.Type == Frosty::ECS::CLight::LightType::Point)
+							m_LevelFileFormat.AddEntity(m_Transform[i]->EntityPtr);
+					}
+					else
+					{
+						m_LevelFileFormat.AddEntity(m_Transform[i]->EntityPtr);
+					}
+				}
+			}
+		}
+		m_LevelFileFormat.SaveToFile(m_RoomType);
+	}
+	void LevelSystem::OnCreateLevelEvent(Frosty::CreateLevelEvent& e)
+	{
+		for (size_t i = 1; i < p_Total; i++)
+		{
+			if (!m_World->HasComponent<Frosty::ECS::CCamera>(m_Transform[i]->EntityPtr))
+			{
+				if (!m_World->HasComponent<Frosty::ECS::CPlayer>(m_Transform[i]->EntityPtr))
+				{
+					if (m_World->HasComponent<Frosty::ECS::CPhysics>(m_Transform[i]->EntityPtr))
+					{
+						if (!m_World->HasComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr))
+						{
+							m_World->AddComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr);
+						}
+					}
+					else if (m_World->HasComponent<Frosty::ECS::CMesh>(m_Transform[i]->EntityPtr))
+					{
+						if (!m_World->HasComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr))
+						{
+							m_World->AddComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr);
+						}
+					}
+					else if (m_World->HasComponent<Frosty::ECS::CLight>(m_Transform[i]->EntityPtr))
+					{
+						auto& light = m_World->GetComponent<Frosty::ECS::CLight>(m_Transform[i]->EntityPtr);
+						if (light.Type == Frosty::ECS::CLight::LightType::Point)
+							if (!m_World->HasComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr))
+							{
+								m_World->AddComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr);
+							}
+					}
 
+				}
+			}
+		}
+		Level::Room(e.GetDirections(0), e.GetDirections(1), e.GetDirections(3), e.GetDirections(2));
+		if (e.GetDirections(0) && !e.GetDirections(1) && !e.GetDirections(3) && !e.GetDirections(2))
+			m_RoomType = "deadend";
+		else if (e.GetDirections(0) && !e.GetDirections(1) && !e.GetDirections(3) && e.GetDirections(2))
+			m_RoomType = "turningRoad";
+		else if (!e.GetDirections(0) && !e.GetDirections(1) && e.GetDirections(3) && e.GetDirections(2))
+			m_RoomType = "straightRoad";
+		else if (e.GetDirections(0) && !e.GetDirections(1) && e.GetDirections(3) && e.GetDirections(2))
+			m_RoomType = "threeWayRoad";
+		else if (e.GetDirections(0) && e.GetDirections(1) && e.GetDirections(3) && e.GetDirections(2))
+			m_RoomType = "crossroad";
+		else
+			m_RoomType = "unknown";
+	}
+	void LevelSystem::OnOpenLevelEvent(Frosty::OpenLevelEvent& e)
+	{
+		Frosty::ECS::CTransform* playerTransform;
+		for (size_t i = 1; i < p_Total; i++)
+		{
+			if (!m_World->HasComponent<Frosty::ECS::CCamera>(m_Transform[i]->EntityPtr))
+			{
+				if (!m_World->HasComponent<Frosty::ECS::CPlayer>(m_Transform[i]->EntityPtr))
+				{
+					if (m_World->HasComponent<Frosty::ECS::CPhysics>(m_Transform[i]->EntityPtr))
+					{
+						if (!m_World->HasComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr))
+						{
+							m_World->AddComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr);
+						}
+					}
+					else if (m_World->HasComponent<Frosty::ECS::CMesh>(m_Transform[i]->EntityPtr))
+					{
+						if (!m_World->HasComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr))
+						{
+							m_World->AddComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr);
+						}
+					}
+					else if (m_World->HasComponent<Frosty::ECS::CLight>(m_Transform[i]->EntityPtr))
+					{
+						auto& light = m_World->GetComponent<Frosty::ECS::CLight>(m_Transform[i]->EntityPtr);
+						if(light.Type == Frosty::ECS::CLight::LightType::Point)
+							if (!m_World->HasComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr))
+							{
+								m_World->AddComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr);
+							}
+					}
+				}
+				else
+				{
+					playerTransform = m_Transform[i];
+				}
+			}
+		}
+		m_RoomType = e.GetFilename();
+		m_LevelFileFormat.OpenFromFile(m_RoomType, playerTransform);
 	}
 }
 
