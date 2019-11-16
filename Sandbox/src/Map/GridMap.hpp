@@ -7,7 +7,7 @@ namespace MCS
 	class GridMap
 	{
 	public:
-		static const int CELL_SIZE = 1;
+		static const int CELL_SIZE = 3;
 		static const int ADJACENT_CELL_WEIGHT = 10;
 		static const int DIAGONAL_CELL_WEIGHT = 14;
 

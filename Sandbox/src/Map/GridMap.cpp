@@ -10,7 +10,11 @@ namespace MCS
 	{
 		for (size_t i = 0; i < m_Cells.size(); i++)
 		{
-			delete m_Cells[i];
+			if (m_Cells[i] != nullptr)
+			{
+				delete m_Cells[i];
+				m_Cells[i] = nullptr;
+			}
 		}
 	}
 
@@ -64,26 +68,27 @@ namespace MCS
 			);
 
 			OccupyCells(tempPhysics.EntityPtr->Id, collisionBox, -2);
-			
 		}
-		//FY_INFO("{0}", sizeof(Cell));
 
-		//int cellColor = 0;
-		//for (size_t i = 0; i < m_Cells.size(); i++)
-		//{
-		//	int r = ((int)glm::floor(i / (m_Scale.x / CELL_SIZE)) % 2) - (i % 2);
-		//	cellColor = glm::abs(r);
-		//	if (m_Cells[i].OccupiedBy == 0)
-		//	{
-		//		glm::vec3 worldPos = GetWorldPosition(m_Cells[i].LocalPosition);
-		//		auto& cell = m_World->CreateEntity({ worldPos.x, 0.05f, worldPos.z }, { 0.0f, 0.0f, 0.0f }, { CELL_SIZE, 1.0f, CELL_SIZE }, true);
-		//		m_World->AddComponent<Frosty::ECS::CMesh>(cell, Frosty::AssetManager::GetMesh("pPlane1"), m_Cells[i].FCost == -2 ? false : true);
-		//		auto& cellMat = m_World->AddComponent<Frosty::ECS::CMaterial>(cell, Frosty::AssetManager::GetShader("FlatColor"));
-		//		cellMat.Albedo = glm::vec4(cellColor, cellColor, cellColor, 1.0f);
-		//		//cellMat.Albedo = glm::vec4(m_Cells[i].LocalPosition.x / m_Scale.x, 0.0f, m_Cells[i].LocalPosition.y / m_Scale.z, 1.0f);
-		//		//m_Cells[i].CellEntityID = cell->Id;
-		//	}
-		//}
+		int cellColor = 0;
+		for (size_t i = 0; i < m_Cells.size(); i++)
+		{
+			int r = ((int)glm::floor(i / (m_Scale.x / CELL_SIZE)) % 2) - (i % 2);
+			cellColor = glm::abs(r);
+			if (m_Cells[i]->FCost != -2)
+			{
+				glm::vec3 worldPos = GetWorldPosition(m_Cells[i]->LocalPosition);
+				auto& cell = m_World->CreateEntity({ worldPos.x, 0.05f, worldPos.z }, { 0.0f, 0.0f, 0.0f }, { CELL_SIZE, 1.0f, CELL_SIZE }, true);
+				m_World->AddComponent<Frosty::ECS::CMesh>(cell, Frosty::AssetManager::GetMesh("pPlane1"), m_Cells[i]->FCost == -2 ? false : true);
+				auto& cellMat = m_World->AddComponent<Frosty::ECS::CMaterial>(cell, Frosty::AssetManager::GetShader("FlatColor"));
+				cellMat.Albedo = glm::vec4(cellColor, cellColor, cellColor, 1.0f);
+			}
+			else
+			{
+				delete m_Cells[i];
+				m_Cells[i] = nullptr;
+			}
+		}
 	}
 
 	glm::vec3 GridMap::GetWorldPosition(const glm::vec2& localPos) const
@@ -205,7 +210,7 @@ namespace MCS
 		{
 			if (m_Cells[neighborIndex] != nullptr)
 			{
-				if (m_Cells[neighborIndex]->LocalPosition.y == m_Cells[cellIndex]->LocalPosition.y)
+				if (m_Cells[neighborIndex]->LocalPosition.y == m_Cells[cellIndex]->LocalPosition.y && m_Cells[neighborIndex]->OccupiedBy == 0)
 				{
 					neighbors.emplace_back(neighborIndex);
 				}
@@ -217,7 +222,7 @@ namespace MCS
 		{
 			if (m_Cells[neighborIndex] != nullptr)
 			{
-				if (m_Cells[neighborIndex]->LocalPosition.y == m_Cells[cellIndex]->LocalPosition.y)
+				if (m_Cells[neighborIndex]->LocalPosition.y == m_Cells[cellIndex]->LocalPosition.y && m_Cells[neighborIndex]->OccupiedBy == 0)
 				{
 					neighbors.emplace_back(neighborIndex);
 				}
@@ -229,7 +234,7 @@ namespace MCS
 		{
 			if (m_Cells[neighborIndex] != nullptr)
 			{
-				if (m_Cells[neighborIndex]->LocalPosition.x == m_Cells[cellIndex]->LocalPosition.x)
+				if (m_Cells[neighborIndex]->LocalPosition.x == m_Cells[cellIndex]->LocalPosition.x && m_Cells[neighborIndex]->OccupiedBy == 0)
 				{
 					neighbors.emplace_back(neighborIndex);
 				}
@@ -241,7 +246,7 @@ namespace MCS
 		{
 			if (m_Cells[neighborIndex] != nullptr)
 			{
-				if (m_Cells[neighborIndex]->LocalPosition.x == m_Cells[cellIndex]->LocalPosition.x)
+				if (m_Cells[neighborIndex]->LocalPosition.x == m_Cells[cellIndex]->LocalPosition.x && m_Cells[neighborIndex]->OccupiedBy == 0)
 				{
 					neighbors.emplace_back(neighborIndex);
 				}
@@ -254,7 +259,7 @@ namespace MCS
 			if (m_Cells[neighborIndex] != nullptr)
 			{
 				if (m_Cells[neighborIndex]->LocalPosition.y == (m_Cells[cellIndex]->LocalPosition.y + CELL_SIZE) &&
-					m_Cells[neighborIndex]->LocalPosition.x == (m_Cells[cellIndex]->LocalPosition.x + CELL_SIZE))
+					m_Cells[neighborIndex]->LocalPosition.x == (m_Cells[cellIndex]->LocalPosition.x + CELL_SIZE) && m_Cells[neighborIndex]->OccupiedBy == 0)
 				{
 					neighbors.emplace_back(neighborIndex);
 				}
@@ -267,7 +272,7 @@ namespace MCS
 			if (m_Cells[neighborIndex] != nullptr)
 			{
 				if (m_Cells[neighborIndex]->LocalPosition.y == (m_Cells[cellIndex]->LocalPosition.y + CELL_SIZE) &&
-					m_Cells[neighborIndex]->LocalPosition.x == (m_Cells[cellIndex]->LocalPosition.x - CELL_SIZE))
+					m_Cells[neighborIndex]->LocalPosition.x == (m_Cells[cellIndex]->LocalPosition.x - CELL_SIZE) && m_Cells[neighborIndex]->OccupiedBy == 0)
 				{
 					neighbors.emplace_back(neighborIndex);
 				}
@@ -280,7 +285,7 @@ namespace MCS
 			if (m_Cells[neighborIndex] != nullptr)
 			{
 				if (m_Cells[neighborIndex]->LocalPosition.y == (m_Cells[cellIndex]->LocalPosition.y - CELL_SIZE) &&
-					m_Cells[neighborIndex]->LocalPosition.x == (m_Cells[cellIndex]->LocalPosition.x + CELL_SIZE))
+					m_Cells[neighborIndex]->LocalPosition.x == (m_Cells[cellIndex]->LocalPosition.x + CELL_SIZE) && m_Cells[neighborIndex]->OccupiedBy == 0)
 				{
 					neighbors.emplace_back(neighborIndex);
 				}
@@ -293,7 +298,7 @@ namespace MCS
 			if (m_Cells[neighborIndex] != nullptr)
 			{
 				if (m_Cells[neighborIndex]->LocalPosition.y == (m_Cells[cellIndex]->LocalPosition.y - CELL_SIZE) &&
-					m_Cells[neighborIndex]->LocalPosition.x == (m_Cells[cellIndex]->LocalPosition.x - CELL_SIZE))
+					m_Cells[neighborIndex]->LocalPosition.x == (m_Cells[cellIndex]->LocalPosition.x - CELL_SIZE) && m_Cells[neighborIndex]->OccupiedBy == 0)
 				{
 					neighbors.emplace_back(neighborIndex);
 				}
@@ -313,8 +318,6 @@ namespace MCS
 		size_t cellIndexTR = GetCellIndex(localPosTR);
 		size_t cellIndexBR = GetCellIndex(localPosBR);
 
-
-
 		size_t cellsInZ = (size_t)(glm::floor(cellIndexTR / (m_Scale.z / CELL_SIZE)) - glm::floor(cellIndexBL / (m_Scale.z / CELL_SIZE)));
 		size_t cellsInX = cellIndexBR - cellIndexBL;
 
@@ -323,11 +326,14 @@ namespace MCS
 			size_t cellIndexStart = cellIndexBL + (size_t)(m_Scale.x / CELL_SIZE) * z;
 			for (size_t x = 0; x <= cellsInX; x++)
 			{
-				if (weight == -1)
+				if (m_Cells[cellIndexStart + x] != nullptr)
 				{
-					m_DynamicOccupiedCells.emplace_back(cellIndexStart + x);
 					m_Cells[cellIndexStart + x]->FCost = weight;
-					m_Cells[cellIndexStart + x]->OccupiedBy = entityID;
+					if (weight == -1)
+					{
+						m_DynamicOccupiedCells.emplace_back(cellIndexStart + x);
+						m_Cells[cellIndexStart + x]->OccupiedBy = entityID;
+					}
 				}
 			}
 		}
@@ -363,10 +369,12 @@ namespace MCS
 
 	void GridMap::SetCellWeight(size_t current, size_t origin, size_t target)
 	{
+		// current = which cell we're looking at (i.e. neighbor)
+		// origin = which cell we're coming from
+		// target = which cell is our end cell (i.e. player cell)
 		if (current >= 0 && current < m_Cells.size())
 		{
 			m_Cells[current]->GCost = GetDistanceWeight(origin, current) + m_Cells[origin]->GCost;
-			//m_Cells[current].HCost = GetDistanceWeight(current, target);
 			int16_t totalGCost = m_Cells[current]->GCost + GetDistanceWeight(current, target);
 			m_Cells[current]->FCost = glm::min(m_Cells[current]->FCost, totalGCost);
 		}

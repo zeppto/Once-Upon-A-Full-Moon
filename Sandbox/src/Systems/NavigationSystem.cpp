@@ -24,19 +24,27 @@ namespace MCS
 		// Calculate route
 		for (size_t i = 1; i < p_Total; i++)
 		{
-			m_Physics[i]->Velocity = glm::vec3(0.0f);
-			m_Enemy[i]->CellTarget = glm::vec3(0.0f);
+			// Reset
+			//m_Physics[i]->Velocity = glm::vec3(0.0f);
+
 			// Check sight range
 			if (glm::distance(glm::vec2(m_Transform[i]->Position.x, m_Transform[i]->Position.z), glm::vec2(m_Enemy[i]->Target->Position.x, m_Enemy[i]->Target->Position.z)) <= m_Enemy[i]->SightRange)
 			{
-				m_Enemy[i]->CellTarget = m_GridMap->GetDestination(m_Transform[i]->EntityPtr->Id, m_Transform[i]->Position, m_Enemy[i]->Target->Position);
-				m_Physics[i]->Velocity = glm::normalize(m_Enemy[i]->CellTarget - glm::vec3(m_Transform[i]->Position.x, 0.0f, m_Transform[i]->Position.z)) * m_Physics[i]->Speed;
-
-				// Check attack range
-				if (glm::distance(glm::vec2(m_Transform[i]->Position.x, m_Transform[i]->Position.z), glm::vec2(m_Enemy[i]->Target->Position.x, m_Enemy[i]->Target->Position.z)) <= m_Enemy[i]->AttackRange)
+				// Check distance to cell target or if enemy has a cell target
+				float distanceFromCell = glm::distance(glm::vec2(m_Transform[i]->Position.x, m_Transform[i]->Position.z), glm::vec2(m_Enemy[i]->CellTarget.x, m_Enemy[i]->CellTarget.z));
+				FY_INFO("{0}", distanceFromCell);
+				if (distanceFromCell <= 0.5f || m_Enemy[i]->CellTarget == glm::vec3(0.0f))
 				{
-					m_Physics[i]->Velocity = glm::vec3(0.0f);
-					m_Enemy[i]->CellTarget = glm::vec3(0.0f);
+					m_Enemy[i]->CellTarget = m_GridMap->GetDestination(m_Transform[i]->EntityPtr->Id, m_Transform[i]->Position, m_Enemy[i]->Target->Position);
+					FY_INFO("({0}, {1}, {2})", m_Enemy[i]->CellTarget.x, m_Enemy[i]->CellTarget.y, m_Enemy[i]->CellTarget.z);
+					m_Physics[i]->Velocity = glm::normalize(m_Enemy[i]->CellTarget - glm::vec3(m_Transform[i]->Position.x, 0.0f, m_Transform[i]->Position.z)) * m_Physics[i]->Speed;
+
+					// Check attack range
+					if (glm::distance(glm::vec2(m_Transform[i]->Position.x, m_Transform[i]->Position.z), glm::vec2(m_Enemy[i]->Target->Position.x, m_Enemy[i]->Target->Position.z)) <= m_Enemy[i]->AttackRange)
+					{
+						m_Physics[i]->Velocity = glm::vec3(0.0f);
+						m_Enemy[i]->CellTarget = glm::vec3(0.0f);
+					}
 				}
 			}
 		}
