@@ -8,6 +8,7 @@
 
 #include <Luna/include/Luna.h>
 
+#include <queue> 
 namespace Frosty
 {
 	namespace utils
@@ -297,7 +298,7 @@ namespace Frosty
 
 				return m_Data[tempIndex];
 			}
-
+			  
 			inline std::array<ComponentType, MAX_ENTITIES_PER_COMPONENT>& GetAll() { return m_Data; }
 			inline const std::array<ComponentType, MAX_ENTITIES_PER_COMPONENT>& GetAll() const { return m_Data; }
 
@@ -307,12 +308,37 @@ namespace Frosty
 				FY_CORE_ASSERT(Total < MAX_ENTITIES_PER_COMPONENT,
 					"Maximum number of entities for this specific component({0}) is reached.", getComponentTypeID<ComponentType>());
 
-				EntityMap.emplace(entity, Total);
-				m_Data.at(Total) = ComponentType(std::forward<TArgs>(mArgs)...);
-				entity->Bitset.flip(getComponentTypeID<ComponentType>());
-				m_Data.at(Total).EntityPtr = entity;
+				
 
+				if (m_FreedData.size() > 0)
+				{
+					int index = m_FreedData.front();
+					//entity->Id = index;
+					
+					EntityMap.emplace(entity, index);
+					m_Data.at(index) = ComponentType(std::forward<TArgs>(mArgs)...);
+					entity->Bitset.flip(getComponentTypeID<ComponentType>());
+					m_Data.at(index).EntityPtr = entity;
+
+					m_FreedData.pop();
+					Total++;
+					return m_Data[index];
+
+				}
+				else
+				{
+					EntityMap.emplace(entity, Total);
+					m_Data.at(Total) = ComponentType(std::forward<TArgs>(mArgs)...);
+					entity->Bitset.flip(getComponentTypeID<ComponentType>());
+					m_Data.at(Total).EntityPtr = entity;
+					return m_Data[Total++];
+
+				}
+
+
+				
 				return m_Data[Total++];
+
 			}
 
 			inline const std::shared_ptr<Entity>& Remove(const std::shared_ptr<Entity>& entity)
@@ -324,19 +350,23 @@ namespace Frosty
 				ComponentArrayIndex index = it->second;
 
 				m_Data.at(index).EntityPtr.reset();
-				m_Data.at(index) = m_Data.at(Total - 1);
+				/*m_Data.at(index) = m_Data.at(Total - 1);
 				m_Data.at(index).EntityPtr = m_Data.at(Total - 1).EntityPtr;
 				m_Data.at(Total - 1).EntityPtr.reset();
-				m_Data.at(Total - 1) = ComponentType();
+				m_Data.at(Total - 1) = ComponentType();*/
+				m_Data.at(index) = ComponentType();
+
+				m_FreedData.emplace((int)index);
+
 
 				Total--;
-				if (Total > index)
-				{
-					auto& itUpdate = EntityMap.find(m_Data.at(index).EntityPtr);
-					FY_CORE_ASSERT(itUpdate != EntityMap.end(), "This should not happen!");
-					EntityMap[itUpdate->first] = index;
-					//EntityMap[m_Data.at(it->second).EntityPtr] = it->second;
-				}
+				//if (Total > index)
+				//{
+				//	auto& itUpdate = EntityMap.find(m_Data.at(index).EntityPtr);
+				//	FY_CORE_ASSERT(itUpdate != EntityMap.end(), "This should not happen!");
+				//	EntityMap[itUpdate->first] = index;
+				//	//EntityMap[m_Data.at(it->second).EntityPtr] = it->second;
+				//}
 
 				EntityMap.erase(entity);
 				entity->Bitset.flip(getComponentTypeID<ComponentType>());
@@ -364,7 +394,7 @@ namespace Frosty
 
 		private:
 			std::array<ComponentType, MAX_ENTITIES_PER_COMPONENT> m_Data;
-
+			std::queue< int> m_FreedData;
 		};
 
 		// List of all Components //

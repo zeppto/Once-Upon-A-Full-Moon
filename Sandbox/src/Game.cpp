@@ -152,7 +152,7 @@ namespace MCS
 		{
 			for (int z = 0; z < 1; z++)
 			{
-				auto& tree = world->CreateEntity({ 10.0f * x, 0.0f, 10.0f*z }, { 0.0f, 0.0f, 0.0f }, { 1.0f, 1.0f, 1.0f }, true);
+				auto& tree = world->CreateEntity({ 10.0f * 2, 0.0f, 10.0f*z }, { 0.0f, 0.0f, 0.0f }, { 1.0f, 1.0f, 1.0f }, true);
 				auto& treeMesh = world->AddComponent<Frosty::ECS::CMesh>(tree, Frosty::AssetManager::GetMesh("tree1"));
 				auto& treeMat = world->AddComponent<Frosty::ECS::CMaterial>(tree, Frosty::AssetManager::GetShader("Texture2D"));
 				treeMat.DiffuseTexture = Frosty::AssetManager::GetTexture2D("Tree1");
