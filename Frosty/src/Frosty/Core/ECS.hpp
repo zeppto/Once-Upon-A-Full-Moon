@@ -378,9 +378,11 @@ namespace Frosty
 
 		// List of all Components //
 
+
 		struct CTransform : public BaseComponent
 		{
 			static std::string NAME;
+			
 			glm::vec3 Position{ 0.0f };
 			glm::vec3 Rotation{ 0.0f };
 			glm::vec3 Scale{ 1.0f };
@@ -391,6 +393,7 @@ namespace Frosty
 			CTransform(const glm::vec3& position, const glm::vec3& rotation, const glm::vec3& scale, bool isStatic = false)
 				: Position(position), Rotation(rotation), Scale(scale), IsStatic(isStatic)
 			{
+			
 				if (isStatic)
 				{
 					ModelMatrix = glm::translate(glm::mat4(1.0f), Position);
@@ -416,6 +419,17 @@ namespace Frosty
 				return *this;
 			}
 
+			glm::mat4* GetModelMatrix()
+			{
+				ModelMatrix = glm::translate(glm::mat4(1.0f), Position);
+				ModelMatrix = glm::rotate(ModelMatrix, glm::radians(Rotation.x), { 1.0f, 0.0f, 0.0f });
+				ModelMatrix = glm::rotate(ModelMatrix, glm::radians(Rotation.y), { 0.0f, 1.0f, 0.0f });
+				ModelMatrix = glm::rotate(ModelMatrix, glm::radians(Rotation.z), { 0.0f, 0.0f, 1.0f });
+				ModelMatrix = glm::scale(ModelMatrix, Scale);
+
+				return &ModelMatrix;
+
+			}
 			virtual std::string GetName() const { return NAME; }
 		};
 
@@ -553,12 +567,13 @@ namespace Frosty
 			static std::string NAME;
 			LightType Type{ LightType::Point };
 			glm::vec3 Color{ 1.0f, 0.96f, 0.84f };
+			glm::vec3 Direction{ 1.0f, 0.0f, 1.0f };
 			float Radius{ 20.0f };
 			float Strength{ 1.0f };
 
 			CLight() = default;
 			CLight(LightType lightType) : Type(lightType) { }
-			CLight(LightType lightType, float strength, glm::vec3 color, float radius) : Type(lightType), Strength(strength), Color(color), Radius(radius) { }
+			CLight(LightType lightType, float strength, glm::vec3 color, float radius, glm::vec3 direction) : Type(lightType), Strength(strength), Color(color), Radius(radius),Direction(direction) { }
 			CLight(LightType lightType, float strength, glm::vec3 color) : Type(lightType), Strength(strength), Color(color) { }
 			CLight(const CLight& org) { FY_CORE_ASSERT(false, "Copy constructor in CLight called."); }
 			CLight& operator=(const CLight& org)
