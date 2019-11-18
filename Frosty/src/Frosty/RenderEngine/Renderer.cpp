@@ -337,7 +337,7 @@ namespace Frosty
 		}
 		auto& materialData = shaderData->MaterialMap.at(matID);
 		materialData->Material = mat;
-		
+
 		//Add the material to the MaterialLookUpMap
 		m_MaterialLookUpMap.emplace(transformID, &shaderData->MaterialMap);
 
@@ -362,10 +362,10 @@ namespace Frosty
 
 	void Renderer::RemoveFromRenderer(const int& matID, const std::string& meshName, const int& transformID)
 	{
- 		if (m_TransformLookUpMap.find(transformID) != m_TransformLookUpMap.end())
+		if (m_TransformLookUpMap.find(transformID) != m_TransformLookUpMap.end())
 		{
 			m_ShaderMap;
-			
+
 			int nrOfTransforms = 0;
 			int nrOfMeshes = 0;
 
@@ -377,14 +377,14 @@ namespace Frosty
 				nrOfTransforms = m_TransformLookUpMap.at(transformID)->size();
 				m_MeshLookUpMap.at(transformID)->erase(meshName);
 			}
-			
+
 			if (m_MeshLookUpMap.at(transformID)->size() == 0)
 			{
 				nrOfMeshes = m_MeshLookUpMap.at(transformID)->size();
 				m_MaterialLookUpMap.at(transformID)->erase(matID);
 
 				//m_MaterialLookUpMap.erase(transformID);
-				
+
 			}
 
 			if (nrOfTransforms == 0)
@@ -392,7 +392,7 @@ namespace Frosty
 				m_MeshLookUpMap.erase(transformID);
 			}
 
- 			if (nrOfMeshes == 0)
+			if (nrOfMeshes == 0)
 			{
 				m_MaterialLookUpMap.erase(transformID);
 			}
@@ -401,8 +401,24 @@ namespace Frosty
 			m_TransformLookUpMap.erase(transformID);
 
 		}
-		
+
 	}
+
+	void Renderer::UpdateEntity(const int& matID, ECS::CMaterial* mat, const std::string& meshName, std::shared_ptr<VertexArray> vertexArray, const int& transformID, ECS::CTransform* transform)
+	{
+		if (m_TransformLookUpMap.find(transformID) != m_TransformLookUpMap.end())
+		{
+			m_ShaderMap;
+
+			m_TransformLookUpMap.at(transformID)->at(transformID) = transform;
+			m_MeshLookUpMap.at(transformID)->at(meshName)->VertexArray = vertexArray;
+			m_MaterialLookUpMap.at(transformID)->at(matID)->Material = mat;
+		}
+	}
+
+	
+
+
 
 	float dt = 0;
 

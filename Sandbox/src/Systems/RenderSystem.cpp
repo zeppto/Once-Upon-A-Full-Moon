@@ -142,6 +142,9 @@ namespace MCS
 			m_Transform[it->second] = transformPtr;
 			m_Meshes[it->second] = meshPtr;
 			m_Materials[it->second] = materialPtr;
+
+			Frosty::Renderer::UpdateEntity(m_Materials[it->second]->EntityPtr->Id, m_Materials.at(it->second), m_Meshes[it->second]->Mesh->GetName(), m_Meshes.at(it->second)->Mesh, m_Transform[it->second]->EntityPtr->Id, m_Transform.at(it->second));
+
 		}
 	}
 
