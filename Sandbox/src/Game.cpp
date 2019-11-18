@@ -13,16 +13,15 @@
 //temp
 //#include "LevelHandeler/LevelsHardCoded.hpp"
 #include "Systems/FollowSystem.hpp"
-#include "Systems/BasicAttackSystem.hpp"
+#include "Systems/AttackSystem.hpp"
 #include "Systems/CombatSystem.hpp"
 #include "Systems/DestroySystem.hpp"
-#include "Systems/WeaponSystem.hpp"
 #include "Systems/NavigationSystem.hpp"
 #include "Systems/ParticleSystem.hpp"
 #include "Systems/ChestSystem.hpp"
 #include "Systems/LootingSystem.hpp"
 #include "Systems/LevelSystem.hpp"
-//#include "Systems/HealthBarSystem.hpp"
+#include "Systems/HealthBarSystem.hpp"
 #include "Systems/BossBehaviorSystem.hpp"
 #include "Systems/GUISystem.hpp"
 
@@ -33,163 +32,167 @@ namespace MCS
 	Game::Game()
 	{
 		auto& world = Application::Get().GetWorld();
-		//std::srand((unsigned)std::time(0)); //We already seed in main. We shouldn't seed twice
 		// Add systems
-		//world->AddSystem<LevelSystem>();
+		world->AddSystem<LevelSystem>();
 		world->AddSystem<CameraSystem>();
 		world->AddSystem<LightSystem>();
 		world->AddSystem<RenderSystem>();
 		world->AddSystem<PlayerControllerSystem>();
 		world->AddSystem<PhysicsSystem>();
 		world->AddSystem<FollowSystem>();
-		world->AddSystem<BasicAttackSystem>();
+		world->AddSystem<AttackSystem>();
 		world->AddSystem<CombatSystem>();
 		world->AddSystem<DestroySystem>();
-		world->AddSystem<WeaponSystem>();
-		//world->AddSystem<HealthBarSystem>();
-		Frosty::ECS::BaseSystem* retSystem = world->AddSystem<NavigationSystem>();
+
+		world->AddSystem<HealthBarSystem>();
+
+		/*Frosty::ECS::BaseSystem* retSystem = world->AddSystem<NavigationSystem>();
 		NavigationSystem* navSystem = dynamic_cast<NavigationSystem*>(retSystem);
 		retSystem = world->AddSystem<ParticleSystem>();
-		ParticleSystem* particleSystem = dynamic_cast<ParticleSystem*>(retSystem);
+		ParticleSystem* particleSystem = dynamic_cast<ParticleSystem*>(retSystem);*/
+
+		Frosty::ECS::BaseSystem* retSystem = world->AddSystem<ParticleSystem>();
+		ParticleSystem* particleSystem = dynamic_cast<ParticleSystem*>(retSystem); 
+
+
 		world->AddSystem<BossBehaviorSystem>();
 		world->AddSystem<GUISystem>();
 		world->AddSystem<ChestSystem>();
 		world->AddSystem<LootingSystem>();
 
 
+
 		world->Awake();
 		
-		auto& plane = world->CreateEntity({ 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 60.0f, 1.0f, 60.0f });
-		auto& planeTransform = world->GetComponent<Frosty::ECS::CTransform>(plane);
-		world->AddComponent<Frosty::ECS::CMesh>(plane, Frosty::AssetManager::GetMesh("pPlane1"));
-		auto& planeMat = world->AddComponent<Frosty::ECS::CMaterial>(plane, Frosty::AssetManager::GetShader("FlatColor"));
-		planeMat.Albedo = glm::vec4(0.2f, 0.8f, 0.3f, 1.0f);
-		auto& camEntity = world->GetSceneCamera();
-		world->GetComponent<Frosty::ECS::CCamera>(camEntity).Target = &planeTransform;
+
 		
-		//auto& testEntity = world->CreateEntity({ -47.5f, 0.01f, 47.5f }, { 0.0f, 0.0f, 0.0f }, { 5.0f, 1.0f, 5.0f });
-		//world->AddComponent<Frosty::ECS::CMesh>(testEntity, Frosty::AssetManager::GetMesh("pPlane1"));
-		//world->AddComponent<Frosty::ECS::CMaterial>(testEntity, Frosty::AssetManager::GetShader("FlatColor"));
-		
-		// Night Light
+		// LIGHT 1
 		auto& light = world->CreateEntity({ 0.0f, 0.0f, 0.0f }, { 120.0f, 8.0f, -10.0f });
-		world->AddComponent<Frosty::ECS::CLight>(light, Frosty::ECS::CLight::LightType::Directional, 0.9f, glm::vec3(0.6f, 0.7f, 1.f));
-		
-		// Night Light (makeshift reflection)
+		auto& DLight = world->AddComponent<Frosty::ECS::CLight>(light, Frosty::ECS::CLight::LightType::Directional, 0.9f, glm::vec3(0.6f, 0.7f, 1.f));
+		DLight.Direction = glm::vec3(-1.0f, -1.0, 1.0);
+		//LIGHT 2
 		auto& light2 = world->CreateEntity({ 0.0f, 0.0f, 0.0f }, { -190.0f, 8.0f, -10.0f });
-		world->AddComponent<Frosty::ECS::CLight>(light2, Frosty::ECS::CLight::LightType::Directional, 0.3f, glm::vec3(0.6f, 0.7f, 1.f));
 
-#pragma region Obstacles
+		auto& lightTransform2 = world->GetComponent<Frosty::ECS::CTransform>(light2);
+		auto& DLight2 = world->AddComponent<Frosty::ECS::CLight>(light2, Frosty::ECS::CLight::LightType::Directional, 0.3f, glm::vec3(0.6f, 0.7f, 1.f));
+		DLight2.Direction = glm::vec3(-1.0f, -1.0, 1.0);
 
-		auto& obsA = world->CreateEntity({ -14.0f, 2.0f, -9.0f }, { 0.0f, 0.0f, 0.0f }, { 4.0f, 4.0f, 10.0f }, true);
-		world->AddComponent<Frosty::ECS::CMesh>(obsA, Frosty::AssetManager::GetMesh("pCube1"));
-		auto& obsAMat = world->AddComponent<Frosty::ECS::CMaterial>(obsA, Frosty::AssetManager::GetShader("FlatColor"));
-		obsAMat.Albedo = glm::vec4(0.8f, 0.2f, 0.3f, 1.0f);
-		world->AddComponent<Frosty::ECS::CPhysics>(obsA, Frosty::AssetManager::GetBoundingBox("pCube1"));
+		//// WEAPON 1
+		auto& weapon = world->CreateEntity({ 0.f, 0.f, 0.f }, { 0.0f, 0.0f, 0.0f }, { 1.f, 1.f, 1.f });
+		world->AddComponent<Frosty::ECS::CMesh>(weapon, Frosty::AssetManager::GetMesh("pCube1"));
+		world->AddComponent<Frosty::ECS::CMaterial>(weapon, Frosty::AssetManager::GetShader("FlatColor"));
+		world->AddComponent<Frosty::ECS::CWeapon>(weapon, Frosty::ECS::CWeapon::WeaponType::Arrow, 1, 10.f);
+		auto& weaponComp = world->GetComponent<Frosty::ECS::CWeapon>(weapon);
 
-		auto& obsB = world->CreateEntity({ 3.0f, 2.0f, -20.0f }, { 0.0f, 0.0f, 0.0f }, { 9.0f, 4.0f, 5.0f }, true);
-		world->AddComponent<Frosty::ECS::CMesh>(obsB, Frosty::AssetManager::GetMesh("pCube1"));
-		auto& obsBMat = world->AddComponent<Frosty::ECS::CMaterial>(obsB, Frosty::AssetManager::GetShader("FlatColor"));
-		obsBMat.Albedo = glm::vec4(0.8f, 0.2f, 0.3f, 1.0f);
-		world->AddComponent<Frosty::ECS::CPhysics>(obsB, Frosty::AssetManager::GetBoundingBox("pCube1"));
-
-		auto& obsC = world->CreateEntity({ -4.0f, 2.0f, 20.0f }, { 0.0f, 0.0f, 0.0f }, { 14.0f, 4.0f, 9.0f }, true);
-		world->AddComponent<Frosty::ECS::CMesh>(obsC, Frosty::AssetManager::GetMesh("pCube1"));
-		auto& obsCMat = world->AddComponent<Frosty::ECS::CMaterial>(obsC, Frosty::AssetManager::GetShader("FlatColor"));
-		obsCMat.Albedo = glm::vec4(0.8f, 0.2f, 0.3f, 1.0f);
-		world->AddComponent<Frosty::ECS::CPhysics>(obsC, Frosty::AssetManager::GetBoundingBox("pCube1"));
-
-		auto& obsD = world->CreateEntity({ 20.0f, 2.0f, 13.0f }, { 0.0f, 0.0f, 0.0f }, { 10.0f, 4.0f, 14.0f }, true);
-		world->AddComponent<Frosty::ECS::CMesh>(obsD, Frosty::AssetManager::GetMesh("pCube1"));
-		auto& obsDMat = world->AddComponent<Frosty::ECS::CMaterial>(obsD, Frosty::AssetManager::GetShader("FlatColor"));
-		obsDMat.Albedo = glm::vec4(0.8f, 0.2f, 0.3f, 1.0f);
-		world->AddComponent<Frosty::ECS::CPhysics>(obsD, Frosty::AssetManager::GetBoundingBox("pCube1"));
-
-		auto& obsE = world->CreateEntity({ 2.0f, 2.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 5.0f, 4.0f, 3.0f }, true);
-		world->AddComponent<Frosty::ECS::CMesh>(obsE, Frosty::AssetManager::GetMesh("pCube1"));
-		auto& obsEMat = world->AddComponent<Frosty::ECS::CMaterial>(obsE, Frosty::AssetManager::GetShader("FlatColor"));
-		obsEMat.Albedo = glm::vec4(0.8f, 0.2f, 0.3f, 1.0f);
-		world->AddComponent<Frosty::ECS::CPhysics>(obsE, Frosty::AssetManager::GetBoundingBox("pCube1"));
-
-		auto& obsF = world->CreateEntity({ 13.0f, 2.0f, -9.0f }, { 0.0f, 0.0f, 0.0f }, { 8.0f, 4.0f, 8.0f }, true);
-		world->AddComponent<Frosty::ECS::CMesh>(obsF, Frosty::AssetManager::GetMesh("pCube1"));
-		auto& obsFMat = world->AddComponent<Frosty::ECS::CMaterial>(obsF, Frosty::AssetManager::GetShader("FlatColor"));
-		obsFMat.Albedo = glm::vec4(0.8f, 0.2f, 0.3f, 1.0f);
-		world->AddComponent<Frosty::ECS::CPhysics>(obsF, Frosty::AssetManager::GetBoundingBox("pCube1"));
-
-		auto& obsG = world->CreateEntity({ -17.0f, 2.0f, 15.0f }, { 0.0f, 0.0f, 0.0f }, { 4.0f, 4.0f, 12.0f }, true);
-		world->AddComponent<Frosty::ECS::CMesh>(obsG, Frosty::AssetManager::GetMesh("pCube1"));
-		auto& obsGMat = world->AddComponent<Frosty::ECS::CMaterial>(obsG, Frosty::AssetManager::GetShader("FlatColor"));
-		obsGMat.Albedo = glm::vec4(0.8f, 0.2f, 0.3f, 1.0f);
-		world->AddComponent<Frosty::ECS::CPhysics>(obsG, Frosty::AssetManager::GetBoundingBox("pCube1"));
-
-		auto& obsH = world->CreateEntity({ -8.0f, 2.0f, 8.0f }, { 0.0f, 0.0f, 0.0f }, { 8.0f, 4.0f, 5.0f }, true);
-		world->AddComponent<Frosty::ECS::CMesh>(obsH, Frosty::AssetManager::GetMesh("pCube1"));
-		auto& obsHMat = world->AddComponent<Frosty::ECS::CMaterial>(obsH, Frosty::AssetManager::GetShader("FlatColor"));
-		obsHMat.Albedo = glm::vec4(0.8f, 0.2f, 0.3f, 1.0f);
-		world->AddComponent<Frosty::ECS::CPhysics>(obsH, Frosty::AssetManager::GetBoundingBox("pCube1"));
-		
-#pragma endregion Obstacles
-
-		navSystem->InitiateGridMap(planeTransform);
-
-		auto& player = world->CreateEntity({ -19.0f, 0.0f, 27.0f }, { 0.0f,0.0f,0.0f }, { 2.0f, 2.0f, 2.0f });
+		// PLAYER
+		auto& player = world->CreateEntity({ -104.0f, 0.0f, -15.4f }, { 0.0f, 0.0f, 0.0f }, { 2.0f, 2.0f, 2.0f } );
 		auto& playerTransform = world->GetComponent<Frosty::ECS::CTransform>(player);
-		//world->AddComponent<Frosty::ECS::CMesh>(player, Frosty::AssetManager::GetMesh("pCylinder1"));
-		//auto& playerMat = world->AddComponent<Frosty::ECS::CMaterial>(player, Frosty::AssetManager::GetShader("FlatColor"));
-		//playerMat.Albedo = glm::vec4(0.2f, 0.3f, 0.8f, 1.0f);
-		world->AddComponent<Frosty::ECS::CMesh>(player, Frosty::AssetManager::GetMesh("scarlet"));
+		auto& PlayerMesh = world->AddComponent<Frosty::ECS::CMesh>(player, Frosty::AssetManager::GetMesh("scarlet"));
 		auto& playerMat = world->AddComponent<Frosty::ECS::CMaterial>(player, Frosty::AssetManager::GetShader("Texture2D"));
 		playerMat.DiffuseTexture = Frosty::AssetManager::GetTexture2D("Scarlet_diffuse");
 		playerMat.NormalTexture = Frosty::AssetManager::GetTexture2D("Scarlet_normal");
 		playerMat.SpecularTexture = Frosty::AssetManager::GetTexture2D("Scarlet_specular");
-		world->AddComponent<Frosty::ECS::CPlayer>(player);
+		world->AddComponent<Frosty::ECS::CPlayer>(player, &weaponComp);	// <-- Give player a weapon
 		world->AddComponent<Frosty::ECS::CPhysics>(player, Frosty::AssetManager::GetBoundingBox("scarlet"), 10.0f);
 		world->AddComponent<Frosty::ECS::CDash>(player);
-		world->AddComponent<Frosty::ECS::CWeapon>(player, Frosty::ECS::CWeapon::WeaponType::Arrow, 10.f);
 		world->AddComponent<Frosty::ECS::CHealth>(player);
 		world->AddComponent<Frosty::ECS::CInventory>(player);
 		world->AddComponent<Frosty::ECS::CHealthBar>(player, glm::vec3(0.0f, 10.0f, 0.0f));
-		//auto& camEntity = world->GetSceneCamera();
-		//world->GetComponent<Frosty::ECS::CCamera>(camEntity).Target = &playerTransform;
 
-		auto& enemyA = world->CreateEntity({ 25.0f, 2.0f, -27.0f }, { 0.0f,0.0f,0.0f }, { 1.0f, 2.0f, 1.0f });
-		world->AddComponent<Frosty::ECS::CMesh>(enemyA, Frosty::AssetManager::GetMesh("pCylinder1"));
-		auto& enemyMatA = world->AddComponent<Frosty::ECS::CMaterial>(enemyA, Frosty::AssetManager::GetShader("FlatColor"));
-		enemyMatA.Albedo = glm::vec4(0.2f, 0.2f, 0.2f, 1.0f);
-		world->AddComponent<Frosty::ECS::CEnemy>(enemyA, &playerTransform);
-		world->AddComponent<Frosty::ECS::CPhysics>(enemyA, Frosty::AssetManager::GetBoundingBox("pCylinder1"), 6.0f);
+		auto& camEntity = world->GetSceneCamera();
+		world->GetComponent<Frosty::ECS::CCamera>(camEntity).Target = &playerTransform;
 
-		//auto& enemyB = world->CreateEntity({ 17.0f, 2.0f, -17.0f }, { 0.0f,0.0f,0.0f }, { 1.0f, 2.0f, 1.0f });
-		//world->AddComponent<Frosty::ECS::CMesh>(enemyB, Frosty::AssetManager::GetMesh("pCylinder1"));
-		//auto& enemyMatB = world->AddComponent<Frosty::ECS::CMaterial>(enemyB, Frosty::AssetManager::GetShader("FlatColor"));
-		//enemyMatB.Albedo = glm::vec4(0.2f, 0.2f, 0.2f, 1.0f);
-		//world->AddComponent<Frosty::ECS::CEnemy>(enemyB, &playerTransform);
-		//world->AddComponent<Frosty::ECS::CPhysics>(enemyB, Frosty::AssetManager::GetBoundingBox("pCylinder1"), 6.0f);
+		//// WALL
+		//auto& wall = world->CreateEntity({ -16.0f, 5.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 15.0f, 10.0f, 20.0f }, true);
+		//world->AddComponent<Frosty::ECS::CMesh>(wall, Frosty::AssetManager::GetMesh("pCube1"));
+		//world->AddComponent<Frosty::ECS::CMaterial>(wall, Frosty::AssetManager::GetShader("FlatColor"));
+		//world->AddComponent<Frosty::ECS::CPhysics>(wall, Frosty::AssetManager::GetBoundingBox("pCube1"));
 
-		//auto& player = world->CreateEntity({ -3.0f, 0.0f, -3.0f }, { 0.0f, 0.0f, 0.0f }, { 2.0f, 2.0f, 2.0f } );
-		//auto& playerTransform = world->GetComponent<Frosty::ECS::CTransform>(player);
-		//world->AddComponent<Frosty::ECS::CMesh>(player, Frosty::AssetManager::GetMesh("scarlet"));
-		//auto& playerMat = world->AddComponent<Frosty::ECS::CMaterial>(player, Frosty::AssetManager::GetShader("Texture2D"));
-		//playerMat.DiffuseTexture = Frosty::AssetManager::GetTexture2D("Scarlet_diffuse");
-		//playerMat.NormalTexture = Frosty::AssetManager::GetTexture2D("Scarlet_normal");
-		//playerMat.SpecularTexture = Frosty::AssetManager::GetTexture2D("Scarlet_specular");
-		//world->AddComponent<Frosty::ECS::CPlayer>(player);
-		//world->AddComponent<Frosty::ECS::CPhysics>(player, Frosty::AssetManager::GetBoundingBox("scarlet"), 10.0f);
-		//world->AddComponent<Frosty::ECS::CDash>(player);
-		//world->AddComponent<Frosty::ECS::CWeapon>(player, Frosty::ECS::CWeapon::WeaponType::Arrow, 10.f);
-		//world->AddComponent<Frosty::ECS::CHealth>(player);
-		//world->AddComponent<Frosty::ECS::CInventory>(player);
-		//world->AddComponent<Frosty::ECS::CHealthBar>(player, glm::vec3(0.0f, 10.0f, 0.0f));
-		//auto& camEntity = world->GetSceneCamera();
-		//world->GetComponent<Frosty::ECS::CCamera>(camEntity).Target = &playerTransform;
+		//// ENEMY 1
+		auto& enemy = world->CreateEntity({ 27.0f, 1.0f, 25.0f }, { 0.0f, 0.0f, 0.0f }, { 2.0f, 2.0f, 2.0f });
+		world->AddComponent<Frosty::ECS::CMesh>(enemy, Frosty::AssetManager::GetMesh("pCube1"));
+		world->AddComponent<Frosty::ECS::CMaterial>(enemy, Frosty::AssetManager::GetShader("FlatColor"));
+		world->AddComponent<Frosty::ECS::CPhysics>(enemy, Frosty::AssetManager::GetBoundingBox("pCube1"), 6.0f);
+		world->AddComponent<Frosty::ECS::CEnemy>(enemy, &playerTransform);
+		world->AddComponent<Frosty::ECS::CFollow>(enemy, &playerTransform);
+		world->AddComponent<Frosty::ECS::CHealth>(enemy);
+		auto& bossComponent = world->AddComponent<Frosty::ECS::CBoss>(enemy);
+		bossComponent.TargetList.emplace_back(player);
 
+		// ENEMY 2
+		auto& enemy2 = world->CreateEntity({ -27.0f, 1.0f, 25.0f }, { 0.0f, 0.0f, 0.0f }, { 2.0f, 2.0f, 2.0f });
+		world->AddComponent<Frosty::ECS::CMesh>(enemy2, Frosty::AssetManager::GetMesh("pCube1"));
+		world->AddComponent<Frosty::ECS::CMaterial>(enemy2, Frosty::AssetManager::GetShader("FlatColor"));
+		world->AddComponent<Frosty::ECS::CPhysics>(enemy2, Frosty::AssetManager::GetBoundingBox("pCube1"), 6.0f);
+		world->AddComponent<Frosty::ECS::CEnemy>(enemy2, &playerTransform);
+		world->AddComponent<Frosty::ECS::CFollow>(enemy2, &playerTransform);
+		world->AddComponent<Frosty::ECS::CHealth>(enemy2);
+
+		//// TREE
+		//auto& tree = world->CreateEntity({ 17.0f, 0.0f, 5.0f }, { 0.0f, 0.0f, 0.0f }, { 1.0f, 1.0f, 1.0f }, true);
+		//world->AddComponent<Frosty::ECS::CMesh>(tree, Frosty::AssetManager::GetMesh("tree1"));
+		//auto& treeMat = world->AddComponent<Frosty::ECS::CMaterial>(tree, Frosty::AssetManager::GetShader("Texture2D"));
+		//treeMat.DiffuseTexture = Frosty::AssetManager::GetTexture2D("Tree1");
+		//world->AddComponent<Frosty::ECS::CPhysics>(tree, Frosty::AssetManager::GetBoundingBox("tree1"));
+
+		//// CHEST 1
+		//auto& chest = world->CreateEntity({ 0.0f, 1.0f, 25.0f }, { 0.0f, 0.0f, 0.0f }, { 2.0f, 2.0f, 2.0f });
+		//world->AddComponent<Frosty::ECS::CMesh>(chest, Frosty::AssetManager::GetMesh("pCube1"));
+		//world->AddComponent<Frosty::ECS::CMaterial>(chest, Frosty::AssetManager::GetShader("FlatColor"));
+		//world->AddComponent<Frosty::ECS::CPhysics>(chest, Frosty::AssetManager::GetBoundingBox("pCube1"), 6.0f);
+		//world->AddComponent<Frosty::ECS::CHealth>(chest, 2.0f);
+		//world->AddComponent<Frosty::ECS::CChest>(chest);
+		//
+		//// CHEST 2
+		//auto& chest2 = world->CreateEntity({ 5.0f, 1.0f, 25.0f }, { 0.0f, 0.0f, 0.0f }, { 2.0f, 2.0f, 2.0f });
+		//world->AddComponent<Frosty::ECS::CMesh>(chest2, Frosty::AssetManager::GetMesh("pCube1"));
+		//world->AddComponent<Frosty::ECS::CMaterial>(chest2, Frosty::AssetManager::GetShader("FlatColor"));
+		//world->AddComponent<Frosty::ECS::CPhysics>(chest2, Frosty::AssetManager::GetBoundingBox("pCube1"), 6.0f);
+		//world->AddComponent<Frosty::ECS::CHealth>(chest2, 2.0f);
+		//world->AddComponent<Frosty::ECS::CChest>(chest2);
+
+		//// CHEST 3
+		//auto& chest3 = world->CreateEntity({ 10.0f, 1.0f, 25.0f }, { 0.0f, 0.0f, 0.0f }, { 2.0f, 2.0f, 2.0f });
+		//world->AddComponent<Frosty::ECS::CMesh>(chest3, Frosty::AssetManager::GetMesh("pCube1"));
+		//world->AddComponent<Frosty::ECS::CMaterial>(chest3, Frosty::AssetManager::GetShader("FlatColor"));
+		//world->AddComponent<Frosty::ECS::CPhysics>(chest3, Frosty::AssetManager::GetBoundingBox("pCube1"), 6.0f);
+		//world->AddComponent<Frosty::ECS::CHealth>(chest3, 2.0f);
+		//world->AddComponent<Frosty::ECS::CChest>(chest3);
+
+		//// CHEST 4
+		//auto& chest4 = world->CreateEntity({ 15.0f, 1.0f, 25.0f }, { 0.0f, 0.0f, 0.0f }, { 2.0f, 2.0f, 2.0f });
+		//world->AddComponent<Frosty::ECS::CMesh>(chest4, Frosty::AssetManager::GetMesh("pCube1"));
+		//world->AddComponent<Frosty::ECS::CMaterial>(chest4, Frosty::AssetManager::GetShader("FlatColor"));
+		//world->AddComponent<Frosty::ECS::CPhysics>(chest4, Frosty::AssetManager::GetBoundingBox("pCube1"), 6.0f);
+		//world->AddComponent<Frosty::ECS::CHealth>(chest4, 2.0f);
+		//world->AddComponent<Frosty::ECS::CChest>(chest4);
+
+		//// CHEST 5
+		//auto& chest5 = world->CreateEntity({ 20.0f, 1.0f, 25.0f }, { 0.0f, 0.0f, 0.0f }, { 2.0f, 2.0f, 2.0f });
+		//world->AddComponent<Frosty::ECS::CMesh>(chest5, Frosty::AssetManager::GetMesh("pCube1"));
+		//world->AddComponent<Frosty::ECS::CMaterial>(chest5, Frosty::AssetManager::GetShader("FlatColor"));
+		//world->AddComponent<Frosty::ECS::CPhysics>(chest5, Frosty::AssetManager::GetBoundingBox("pCube1"), 6.0f);
+		//world->AddComponent<Frosty::ECS::CHealth>(chest5, 2.0f);
+		//world->AddComponent<Frosty::ECS::CChest>(chest5);
+
+		// TEXT
+		auto& GUI = world->CreateEntity();
+		Frosty::UILayout uiLayout(3, 1);
+		uiLayout.AddText(glm::vec2(25.0f, 20.0f), "Hello team");
+		uiLayout.AddText(glm::vec2(20.0f, 700.0f), "uwu", glm::vec3(1.0f, 0.0f, 1.0f), 0.25f);
+		uiLayout.AddText(glm::vec2(25.0f, 220.0f), "1234!", glm::vec3(0.5f, 0.1f, 0.9f), 1.5f);
+		world->AddComponent<Frosty::ECS::CGUI>(GUI, uiLayout);
 		
-//#ifdef FY_DEBUG || FY_RELEASE
-		PushLayer(FY_NEW InspectorLayer());
-//#else
+		//navSystem->InitiateGridMap(world->GetComponent<Frosty::ECS::CTransform>(plane));
+		
+		world->PrintWorld();
+
+
+//ifdef FY_DEBUG
+	PushLayer(FY_NEW InspectorLayer());
+//else
 //		Application::Get().StartGame(true);
-//#endif // FY_DEBUG
+//endif // FY_DEBUG
 	}
 
 

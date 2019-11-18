@@ -25,10 +25,10 @@ namespace MCS
 		for (size_t i = 1; i < p_Total; i++)
 		{
 			//Render all text
-			for (int j = 0; j < m_GUI[i]->layout.texts.size(); j++)
+			for (int j = 0; j < m_GUI[i]->Layout.texts.size(); j++)
 			{
-				Frosty::UIText& currText = m_GUI[i]->layout.texts[j];
-				Frosty::Renderer::SubmitText(m_GUI[i]->textShader, currText.GetVertexArray(), currText.GetText(), currText.GetPosition(), currText.GetColor(), currText.GetFontScale());
+				Frosty::UIText& currText = m_GUI[i]->Layout.texts[j];
+				Frosty::Renderer::SubmitText(m_GUI[i]->TextShader, currText.GetVertexArray(), currText.GetText(), currText.GetPosition(), currText.GetColor(), currText.GetFontScale());
 			}
 		}
 	}
@@ -42,7 +42,7 @@ namespace MCS
 			m_Transform[p_Total] = &world->GetComponent<Frosty::ECS::CTransform>(entity);
 			m_GUI[p_Total] = &world->GetComponent<Frosty::ECS::CGUI>(entity);
 
-			m_GUI[p_Total]->textShader = Frosty::AssetManager::GetShader("Text");
+			m_GUI[p_Total]->TextShader = Frosty::AssetManager::GetShader("Text");
 
 			////Debug test
 

@@ -4,6 +4,7 @@
 namespace Level
 {
 	glm::vec3 Room(bool up, bool down, bool right, bool left, std::string texture = "brown_mud_diffuse", int rotation = 0, int entrensSide = 3, bool onlyPos = false);
+	glm::vec3 MoveToNewRoom(bool up, bool down, bool right, bool left, int entrensSide = 3);
 	glm::vec3 BorderTrees(int treeNr);
 }
 
