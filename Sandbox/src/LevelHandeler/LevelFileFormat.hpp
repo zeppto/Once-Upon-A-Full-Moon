@@ -171,6 +171,12 @@ struct Level_Entitys
 	std::vector<Level_Components> myEntitys;
 };
 
+
+struct Level_rememberedEntitys
+{
+	glm::ivec2 myRoomId = { 0, 0 };
+	std::vector<int> removeEnemy;
+};
 //________________________________________________
 
 class LevelFileFormat
@@ -181,7 +187,7 @@ public:
 
 	void AddEntity(const std::shared_ptr<Frosty::ECS::Entity>& entity);
 	void SaveToFile(std::string fileName);
-	void OpenFromFile(std::string fileName, Frosty::ECS::CTransform* playerTransform = nullptr,
+	void OpenFromFile(std::string fileName, glm::ivec2 roomId = glm::ivec2(0, 0), Frosty::ECS::CTransform* playerTransform = nullptr,
 		int rotation = 0, glm::vec3 move = glm::vec3(0,0,0));
 
 private:
@@ -189,6 +195,8 @@ private:
 	Frosty::World* m_World;
 	Level_Entitys m_Entitys;
 	Level_Header m_Header;
+	std::vector<Level_rememberedEntitys> m_VisitedRooms;
+	std::vector<std::shared_ptr<Frosty::ECS::Entity>> m_Enemys;
 };
 
 

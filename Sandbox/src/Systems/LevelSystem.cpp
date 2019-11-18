@@ -51,7 +51,7 @@ namespace MCS
 			int rotate;
 			m_Map.getRoomTextur(m_PlayerPos, &rotate);
 			Level::MoveToNewRoom(m_CurrentRoome.sideExits[0], m_CurrentRoome.sideExits[1], m_CurrentRoome.sideExits[2], m_CurrentRoome.sideExits[3]);
-			m_LevelFileFormat.OpenFromFile("deadend_1", nullptr, rotate);
+			m_LevelFileFormat.OpenFromFile("deadend_2", m_PlayerPos, nullptr, rotate);
 			m_Start = false;
 		}
 	}
@@ -194,7 +194,7 @@ namespace MCS
 		//	m_CurrentRoome.sideExits[2], m_CurrentRoome.sideExits[3], texture, rotation, ExitSide.ExitDirection);
 		PlayerTranform.Position = Level::MoveToNewRoom(m_CurrentRoome.sideExits[0], m_CurrentRoome.sideExits[1],
 			m_CurrentRoome.sideExits[2], m_CurrentRoome.sideExits[3], ExitSide.ExitDirection);
-		m_LevelFileFormat.OpenFromFile(fileName, playerTransform, rotation);
+		m_LevelFileFormat.OpenFromFile(fileName, m_PlayerPos, playerTransform, rotation);
 
 	}
 	void LevelSystem::OnSaveLevelEvent(Frosty::SaveLevelEvent& e)
@@ -271,7 +271,7 @@ namespace MCS
 	}
 	void LevelSystem::OnOpenLevelEvent(Frosty::OpenLevelEvent& e)
 	{
-		Frosty::ECS::CTransform* playerTransform;
+		Frosty::ECS::CTransform* playerTransform = nullptr;
 		for (size_t i = 1; i < p_Total; i++)
 		{
 			if (!m_World->HasComponent<Frosty::ECS::CCamera>(m_Transform[i]->EntityPtr))
@@ -309,7 +309,7 @@ namespace MCS
 			}
 		}
 		m_RoomType = e.GetFilename();
-		m_LevelFileFormat.OpenFromFile(m_RoomType, playerTransform);
+		m_LevelFileFormat.OpenFromFile(m_RoomType, m_PlayerPos, playerTransform);
 	}
 	void LevelSystem::OnCreatEntityEvent(Frosty::CreatEntityEvent& e)
 	{
@@ -320,7 +320,7 @@ namespace MCS
 			m_World->AddComponent<Frosty::ECS::CMesh>(enemy, Frosty::AssetManager::GetMesh("pCube1"));
 			m_World->AddComponent<Frosty::ECS::CMaterial>(enemy, Frosty::AssetManager::GetShader("FlatColor"));
 			m_World->AddComponent<Frosty::ECS::CPhysics>(enemy, Frosty::AssetManager::GetBoundingBox("pCube1"), 6.0f);
-			m_World->AddComponent<Frosty::ECS::CEnemy>(enemy);
+			//m_World->AddComponent<Frosty::ECS::CEnemy>(enemy);
 			m_World->AddComponent<Frosty::ECS::CFollow>(enemy);
 			m_World->AddComponent<Frosty::ECS::CHealth>(enemy);
 		}

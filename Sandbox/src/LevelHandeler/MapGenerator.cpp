@@ -103,7 +103,7 @@ bool MapGenerator::generateRoom(glm::ivec2 startPos, int startSide, bool notLast
 		{
 			int nrToRemove = rand() % (nrOfPotentialExits);
 			numberOfExits = nrOfPotentialExits - nrToRemove;
-			while (nrOfPotentialExits != numberOfExits)
+			while (nrOfPotentialExits != numberOfExits && m_SaftyNr < 20)
 			{
 				int remove = rand() % 4;
 				if (m_TileMap[pos.x][pos.y].sideExits[remove])
@@ -111,7 +111,9 @@ bool MapGenerator::generateRoom(glm::ivec2 startPos, int startSide, bool notLast
 					m_TileMap[pos.x][pos.y].sideExits[remove] = false;
 					nrOfPotentialExits--;
 				}
+				m_SaftyNr++;
 			}
+			m_SaftyNr = 0;
 
 			if (notLastBatch)
 			{
@@ -153,7 +155,7 @@ bool MapGenerator::generateRoom(glm::ivec2 startPos, int startSide, bool notLast
 					{
 						int nrToAdd = 2 + nrOfCloseRoomExits;
 						m_TileMap[pos.x][pos.y].sideExits[0];
-						while (nrToAdd != nrOfCloseRoomExits)
+						while (nrToAdd != nrOfCloseRoomExits && m_SaftyNr < 20)
 						{
 							int add = rand() % 4;
 							if (!m_TileMap[pos.x + posOffset(i).x][pos.y + posOffset(i).y].sideExits[add] && pos + posOffset(i) + posOffset(add) != glm::ivec2(10, 15))
@@ -162,7 +164,9 @@ bool MapGenerator::generateRoom(glm::ivec2 startPos, int startSide, bool notLast
 								m_TileMap[pos.x + posOffset(i).x + posOffset(add).x][pos.y + posOffset(i).y + posOffset(add).y].sideExits[1 + (add / 2) * 4 - add] = true;
 								nrOfCloseRoomExits++;
 							}
+							m_SaftyNr++;
 						}
+						m_SaftyNr = 0;
 					}
 				}
 			}
@@ -191,7 +195,7 @@ bool MapGenerator::generateRoom(glm::ivec2 startPos, int startSide, bool notLast
 			if (nrOfEntrensesInParantRoom < 3 && pos != glm::ivec2(10, 15))
 			{
 				int nrToAdd = 2 + numberOfExits;
-				while (nrToAdd != numberOfExits)
+				while (nrToAdd != numberOfExits && m_SaftyNr < 20)
 				{
 					int add = rand() % 4;
 					if (!m_TileMap[pos.x][pos.y].sideExits[add] && pos + posOffset(add) != glm::ivec2(10, 15))
@@ -200,7 +204,9 @@ bool MapGenerator::generateRoom(glm::ivec2 startPos, int startSide, bool notLast
 						m_TileMap[pos.x][pos.y].sideExits[add] = true;
 						numberOfExits++;
 					}
+					m_SaftyNr++;
 				}
+				m_SaftyNr = 0;
 
 			}
 		}
@@ -321,25 +327,25 @@ std::string MapGenerator::getRoomTextur(glm::ivec2 pos, int* rotation)
 	{
 		*rotation = 0;
 		//return "RoomTempDeadEnd";
-		return "deadend_1";
+		return "deadend_2";
 	}
 	if (!m_TileMap[pos.x][pos.y].sideExits[0] && !m_TileMap[pos.x][pos.y].sideExits[1] && m_TileMap[pos.x][pos.y].sideExits[2] && !m_TileMap[pos.x][pos.y].sideExits[3])
 	{
 		*rotation = 90;
 		//return "RoomTempDeadEnd";
-		return "deadend_1";
+		return "deadend_2";
 	}
 	if (!m_TileMap[pos.x][pos.y].sideExits[0] && m_TileMap[pos.x][pos.y].sideExits[1] && !m_TileMap[pos.x][pos.y].sideExits[2] && !m_TileMap[pos.x][pos.y].sideExits[3])
 	{
 		*rotation = 180;
 		//return "RoomTempDeadEnd";
-		return "deadend_1";
+		return "deadend_2";
 	}
 	if (!m_TileMap[pos.x][pos.y].sideExits[0] && !m_TileMap[pos.x][pos.y].sideExits[1] && !m_TileMap[pos.x][pos.y].sideExits[2] && m_TileMap[pos.x][pos.y].sideExits[3])
 	{
 		*rotation = 270;
 		//return "RoomTempDeadEnd";
-		return "deadend_1";
+		return "deadend_2";
 	}
 	if (m_TileMap[pos.x][pos.y].Ocupide)
 		return "HeartFull";
