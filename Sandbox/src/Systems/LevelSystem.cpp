@@ -11,6 +11,7 @@ namespace MCS
 	{
 		m_World = Frosty::Application::Get().GetWorld().get();
 		p_Signature.set(Frosty::ECS::getComponentTypeID<Frosty::ECS::CTransform>(), true);
+		m_LevelFileFormat.LoadBoolMap("deadend_1");
 	}
 
 	void LevelSystem::OnEvent(Frosty::BaseEvent& e)

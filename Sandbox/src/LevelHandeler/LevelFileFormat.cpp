@@ -3,6 +3,7 @@
 #include "LevelFileFormat.hpp"
 #include "Frosty/API/AssetManager/AssetManager.hpp"
 #include <glm/gtx/matrix_decompose.hpp>
+#include "Frosty/Core/BoolMap/BoolMapGenerator.hpp"
 
 
 LevelFileFormat::LevelFileFormat()
@@ -52,7 +53,7 @@ void LevelFileFormat::AddEntity(const std::shared_ptr<Frosty::ECS::Entity>& enti
 			auto& material = m_World->GetComponent<Frosty::ECS::CMaterial>(entity);
 			strcpy_s(myComponents.myMaterial.UseShaderName, material.UseShader->GetName().c_str());
 			myComponents.myMaterial.Albedo = material.Albedo;
-			if(material.DiffuseTexture != nullptr)
+			if (material.DiffuseTexture != nullptr)
 				strcpy_s(myComponents.myMaterial.DiffuseTextureName, material.DiffuseTexture->GetName().c_str());
 			if (material.SpecularTexture != nullptr)
 				strcpy_s(myComponents.myMaterial.SpecularTextureName, material.SpecularTexture->GetName().c_str());
@@ -132,8 +133,8 @@ void LevelFileFormat::AddEntity(const std::shared_ptr<Frosty::ECS::Entity>& enti
 			auto& healthBar = m_World->GetComponent<Frosty::ECS::CHealthBar>(entity);
 			myComponents.myHealthBar.BarOffset = healthBar.BarOffset;
 
-			myComponents.myHealthBar.Translate= healthBar.Translate;
-			myComponents.myHealthBar.Scale= healthBar.Scale;
+			myComponents.myHealthBar.Translate = healthBar.Translate;
+			myComponents.myHealthBar.Scale = healthBar.Scale;
 
 			strcpy_s(myComponents.myHealthBar.MeshName, healthBar.Mesh->GetName().c_str());
 			strcpy_s(myComponents.myHealthBar.TextureName, healthBar.Texture->GetName().c_str());
@@ -176,7 +177,7 @@ void LevelFileFormat::SaveToFile(std::string fileName)
 	int x = 0;
 	std::string filePath;
 	std::ifstream existingFile;
-	do 
+	do
 	{
 		x++;
 		filePath = "../../../assets/levels/" + fileName + "_" + std::to_string(x) + ".lvl";
@@ -189,8 +190,8 @@ void LevelFileFormat::SaveToFile(std::string fileName)
 	myFile.write((const char*)&m_Header, sizeof(Level_Header));
 	for (int i = 0; i < m_Entitys.myEntitys.size(); i++)
 	{
-		for(int j = 0; j < m_Header.NrOfComponents; j++)
-			myFile.write((const char*)& m_Entitys.myEntitys.at(i).MyComponents.at(j).HaveComponent, sizeof(bool));
+		for (int j = 0; j < m_Header.NrOfComponents; j++)
+			myFile.write((const char*)&m_Entitys.myEntitys.at(i).MyComponents.at(j).HaveComponent, sizeof(bool));
 		for (int j = 0; j < m_Header.NrOfComponents; j++)
 			if (m_Entitys.myEntitys.at(i).MyComponents.at(j).HaveComponent)
 			{
@@ -198,47 +199,47 @@ void LevelFileFormat::SaveToFile(std::string fileName)
 				{
 					//0 = Transform
 				case 0:
-					myFile.write((const char*)& m_Entitys.myEntitys.at(i).myTransform, sizeof(Level_Transform));
+					myFile.write((const char*)&m_Entitys.myEntitys.at(i).myTransform, sizeof(Level_Transform));
 					break;
 					//1 = Mesh
 				case 1:
-					myFile.write((const char*)& m_Entitys.myEntitys.at(i).myMesh, sizeof(Level_Mesh));
+					myFile.write((const char*)&m_Entitys.myEntitys.at(i).myMesh, sizeof(Level_Mesh));
 					break;
 					//2 = Material
 				case 2:
-					myFile.write((const char*)& m_Entitys.myEntitys.at(i).myMaterial, sizeof(Level_Material));
+					myFile.write((const char*)&m_Entitys.myEntitys.at(i).myMaterial, sizeof(Level_Material));
 					break;
 					//3 = Follow
 				case 3:
-					myFile.write((const char*)& m_Entitys.myEntitys.at(i).myFollow, sizeof(Level_Follow));
+					myFile.write((const char*)&m_Entitys.myEntitys.at(i).myFollow, sizeof(Level_Follow));
 					break;
 					//4 = Light
 				case 4:
-					myFile.write((const char*)& m_Entitys.myEntitys.at(i).myLight, sizeof(Level_Light));
+					myFile.write((const char*)&m_Entitys.myEntitys.at(i).myLight, sizeof(Level_Light));
 					break;
 					//5 = Physics
 				case 5:
-					myFile.write((const char*)& m_Entitys.myEntitys.at(i).myPhysics, sizeof(Level_Physics));
+					myFile.write((const char*)&m_Entitys.myEntitys.at(i).myPhysics, sizeof(Level_Physics));
 					break;
 					//6 = Enemy
 				case 6:
-					myFile.write((const char*)& m_Entitys.myEntitys.at(i).myEnemy, sizeof(Level_Enemy));
+					myFile.write((const char*)&m_Entitys.myEntitys.at(i).myEnemy, sizeof(Level_Enemy));
 					break;
 					//7 = Health
 				case 7:
-					myFile.write((const char*)& m_Entitys.myEntitys.at(i).myHealth, sizeof(Level_Health));
+					myFile.write((const char*)&m_Entitys.myEntitys.at(i).myHealth, sizeof(Level_Health));
 					break;
 					//8 = HealthBar
 				case 8:
-					myFile.write((const char*)& m_Entitys.myEntitys.at(i).myHealthBar, sizeof(Level_HealthBar));
+					myFile.write((const char*)&m_Entitys.myEntitys.at(i).myHealthBar, sizeof(Level_HealthBar));
 					break;
 					//9 = ParticleSystem
 				case 9:
-					myFile.write((const char*)& m_Entitys.myEntitys.at(i).myParticleSystem, sizeof(Level_ParticleSystem));
+					myFile.write((const char*)&m_Entitys.myEntitys.at(i).myParticleSystem, sizeof(Level_ParticleSystem));
 					break;
 					//10 = LevelExit
 				case 10:
-					myFile.write((const char*)& m_Entitys.myEntitys.at(i).myLevelExit, sizeof(Level_LevelExit));
+					myFile.write((const char*)&m_Entitys.myEntitys.at(i).myLevelExit, sizeof(Level_LevelExit));
 					break;
 				default:
 					break;
@@ -260,7 +261,7 @@ void LevelFileFormat::OpenFromFile(std::string fileName, Frosty::ECS::CTransform
 
 	if (existingFile.good())
 	{
-		existingFile.read((char*)& testHeder, sizeof(Level_Header));
+		existingFile.read((char*)&testHeder, sizeof(Level_Header));
 		fileEntitys.myEntitys.resize(testHeder.NrOfEntitys);
 		for (int i = 0; i < testHeder.NrOfEntitys; i++)
 		{
@@ -303,7 +304,7 @@ void LevelFileFormat::OpenFromFile(std::string fileName, Frosty::ECS::CTransform
 
 			fileEntitys.myEntitys.at(i).MyComponents.resize(testHeder.NrOfComponents);
 			for (int j = 0; j < m_Header.NrOfComponents; j++)
-				existingFile.read((char*)& fileEntitys.myEntitys.at(i).MyComponents.at(j).HaveComponent, sizeof(bool));
+				existingFile.read((char*)&fileEntitys.myEntitys.at(i).MyComponents.at(j).HaveComponent, sizeof(bool));
 
 			//create entity
 			auto& entity = m_World->CreateEntity();
@@ -321,7 +322,7 @@ void LevelFileFormat::OpenFromFile(std::string fileName, Frosty::ECS::CTransform
 					//0 = Transform
 					if (j == 0)
 					{
-						existingFile.read((char*)& fileEntitys.myEntitys.at(i).myTransform, sizeof(Level_Transform));
+						existingFile.read((char*)&fileEntitys.myEntitys.at(i).myTransform, sizeof(Level_Transform));
 						auto& tranform = m_World->GetComponent<Frosty::ECS::CTransform>(entity);
 						tranform.Position = fileEntitys.myEntitys.at(i).myTransform.Position;
 						tranform.Scale = fileEntitys.myEntitys.at(i).myTransform.Scale;
@@ -332,6 +333,10 @@ void LevelFileFormat::OpenFromFile(std::string fileName, Frosty::ECS::CTransform
 						matrix = glm::translate(matrix, tranform.Position);
 						//matrix = glm::rotate(matrix, tranform.Rotation.x, glm::vec3(1, 0, 0));
 						matrix = glm::rotate(matrix, tranform.Rotation.y, glm::vec3(0, 1, 0));
+
+
+
+
 						//matrix = glm::rotate(matrix, tranform.Rotation.z, glm::vec3(0, 0, 1));
 						//matrix = glm::scale(matrix, tranform.Scale);
 						//temp
@@ -356,7 +361,7 @@ void LevelFileFormat::OpenFromFile(std::string fileName, Frosty::ECS::CTransform
 					//1 = Mesh
 					if (j == 1)
 					{
-						existingFile.read((char*)& fileEntitys.myEntitys.at(i).myMesh, sizeof(Level_Mesh));
+						existingFile.read((char*)&fileEntitys.myEntitys.at(i).myMesh, sizeof(Level_Mesh));
 						//for in game
 						//if(!fileEntitys.myEntitys.at(i).MyComponents.at(10).HaveComponent)
 						m_World->AddComponent<Frosty::ECS::CMesh>(entity,
@@ -365,7 +370,7 @@ void LevelFileFormat::OpenFromFile(std::string fileName, Frosty::ECS::CTransform
 					//2 = Material
 					if (j == 2)
 					{
-						existingFile.read((char*)& fileEntitys.myEntitys.at(i).myMaterial, sizeof(Level_Material));
+						existingFile.read((char*)&fileEntitys.myEntitys.at(i).myMaterial, sizeof(Level_Material));
 						auto& material = m_World->AddComponent<Frosty::ECS::CMaterial>(entity,
 							Frosty::AssetManager::GetShader(fileEntitys.myEntitys.at(i).myMaterial.UseShaderName));
 						material.Albedo = fileEntitys.myEntitys.at(i).myMaterial.Albedo;
@@ -388,7 +393,7 @@ void LevelFileFormat::OpenFromFile(std::string fileName, Frosty::ECS::CTransform
 					//3 = Follow
 					if (j == 3)
 					{
-						existingFile.read((char*)& fileEntitys.myEntitys.at(i).myFollow, sizeof(Level_Follow));
+						existingFile.read((char*)&fileEntitys.myEntitys.at(i).myFollow, sizeof(Level_Follow));
 						auto& follow = m_World->AddComponent<Frosty::ECS::CFollow>(entity, playerTransform);
 						//For edeting old level
 						//auto& follow = m_World->AddComponent<Frosty::ECS::CFollow>(entity);// , playerTransform);
@@ -398,7 +403,7 @@ void LevelFileFormat::OpenFromFile(std::string fileName, Frosty::ECS::CTransform
 					//4 = Light
 					if (j == 4)
 					{
-						existingFile.read((char*)& fileEntitys.myEntitys.at(i).myLight, sizeof(Level_Light));
+						existingFile.read((char*)&fileEntitys.myEntitys.at(i).myLight, sizeof(Level_Light));
 						auto& light = m_World->AddComponent<Frosty::ECS::CLight>(entity);
 						light.Color = fileEntitys.myEntitys.at(i).myLight.Color;
 						light.Radius = fileEntitys.myEntitys.at(i).myLight.Radius;
@@ -408,7 +413,7 @@ void LevelFileFormat::OpenFromFile(std::string fileName, Frosty::ECS::CTransform
 					//5 = Physics
 					if (j == 5)
 					{
-						existingFile.read((char*)& fileEntitys.myEntitys.at(i).myPhysics, sizeof(Level_Physics));
+						existingFile.read((char*)&fileEntitys.myEntitys.at(i).myPhysics, sizeof(Level_Physics));
 						auto& physics = m_World->AddComponent<Frosty::ECS::CPhysics>(entity);
 						if (fileEntitys.myEntitys.at(i).MyComponents.at(1).HaveComponent)
 							physics.BoundingBox = Frosty::AssetManager::GetBoundingBox(fileEntitys.myEntitys.at(i).myMesh.MeshName);
@@ -423,13 +428,13 @@ void LevelFileFormat::OpenFromFile(std::string fileName, Frosty::ECS::CTransform
 					//6 = Enemy
 					if (j == 6)
 					{
-						existingFile.read((char*)& fileEntitys.myEntitys.at(i).myEnemy, sizeof(Level_Enemy));
+						existingFile.read((char*)&fileEntitys.myEntitys.at(i).myEnemy, sizeof(Level_Enemy));
 						m_World->AddComponent<Frosty::ECS::CEnemy>(entity);
 					}
 					//7 = Health
 					if (j == 7)
 					{
-						existingFile.read((char*)& fileEntitys.myEntitys.at(i).myHealth, sizeof(Level_Health));
+						existingFile.read((char*)&fileEntitys.myEntitys.at(i).myHealth, sizeof(Level_Health));
 						auto& health = m_World->AddComponent<Frosty::ECS::CHealth>(entity);
 						health.CurrentHealth = fileEntitys.myEntitys.at(i).myHealth.CurrentHealth;
 						health.MaxHealth = fileEntitys.myEntitys.at(i).myHealth.MaxHealth;
@@ -438,7 +443,7 @@ void LevelFileFormat::OpenFromFile(std::string fileName, Frosty::ECS::CTransform
 					//8 = HealthBar
 					if (j == 8)
 					{
-						existingFile.read((char*)& fileEntitys.myEntitys.at(i).myHealthBar, sizeof(Level_HealthBar));
+						existingFile.read((char*)&fileEntitys.myEntitys.at(i).myHealthBar, sizeof(Level_HealthBar));
 						auto& healthBar = m_World->AddComponent<Frosty::ECS::CHealthBar>(entity);
 						healthBar.BarOffset = fileEntitys.myEntitys.at(i).myHealthBar.BarOffset;
 						//healthBar.hpTransform = fileEntitys.myEntitys.at(i).myHealthBar.HpTransform;
@@ -449,13 +454,13 @@ void LevelFileFormat::OpenFromFile(std::string fileName, Frosty::ECS::CTransform
 					//9 = ParticleSystem
 					if (j == 9)
 					{
-						existingFile.read((char*)& fileEntitys.myEntitys.at(i).myParticleSystem, sizeof(Level_ParticleSystem));
+						existingFile.read((char*)&fileEntitys.myEntitys.at(i).myParticleSystem, sizeof(Level_ParticleSystem));
 						//not in use for now
 					}
 					//10 = LevelExit
 					if (j == 10)
 					{
-						existingFile.read((char*)& fileEntitys.myEntitys.at(i).myLevelExit, sizeof(Level_LevelExit));
+						existingFile.read((char*)&fileEntitys.myEntitys.at(i).myLevelExit, sizeof(Level_LevelExit));
 						int newExit = fileEntitys.myEntitys.at(i).myLevelExit.ExitDirection;
 						if (rotation == 270)
 						{
@@ -498,6 +503,111 @@ void LevelFileFormat::OpenFromFile(std::string fileName, Frosty::ECS::CTransform
 		existingFile.close();
 	}
 }
+
+void LevelFileFormat::LoadBoolMap(std::string fileName)
+{
+	std::ifstream existingFile;
+	existingFile.open("../../../assets/levels/" + fileName + ".lvl", std::ios::binary);
+	Level_Header testHeder;
+	Level_Entitys fileEntitys;
+
+
+
+
+	if (existingFile.good())
+	{
+		existingFile.read((char*)&testHeder, sizeof(Level_Header));
+		fileEntitys.myEntitys.resize(testHeder.NrOfEntitys);
+		for (int i = 0; i < testHeder.NrOfEntitys; i++)
+		{
+
+			bool MeshAdded = false;
+			std::vector<std::string> AddedMeshes;
+			std::unordered_map<std::string, Frosty::VABatch> TestMap;
+
+			fileEntitys.myEntitys.at(i).MyComponents.resize(testHeder.NrOfComponents);
+			for (int j = 0; j < m_Header.NrOfComponents; j++)
+			{
+				existingFile.read((char*)&fileEntitys.myEntitys.at(i).MyComponents.at(j).HaveComponent, sizeof(bool));
+			}
+
+
+
+
+
+			if (fileEntitys.myEntitys.at(i).MyComponents.at(0).HaveComponent)
+			{
+				existingFile.read((char*)&fileEntitys.myEntitys.at(i).myTransform, sizeof(Level_Transform));
+
+
+
+			}
+
+
+
+			if (fileEntitys.myEntitys.at(i).MyComponents.at(1).HaveComponent)
+			{
+				existingFile.read((char*)&fileEntitys.myEntitys.at(i).myMesh, sizeof(Level_Mesh));
+
+				if (!TestMap.count(fileEntitys.myEntitys.at(i).myMesh.MeshName))
+				{
+					Frosty::VABatch Temp;
+					//Change to ptr
+					Temp.VertexArrayObj = *Frosty::AssetManager::GetMesh(fileEntitys.myEntitys.at(i).myMesh.MeshName);
+
+
+					glm::mat4 TempMat(1.0f);
+					TempMat = glm::translate(TempMat, fileEntitys.myEntitys.at(i).myTransform.Position);
+					TempMat = glm::rotate(TempMat, glm::radians(fileEntitys.myEntitys.at(i).myTransform.Rotation.y), glm::vec3(0.0f, 1.0f, 0.0f));
+					TempMat = glm::scale(TempMat, fileEntitys.myEntitys.at(i).myTransform.Scale);
+					Temp.Transforms.emplace_back(TempMat);
+					TestMap[fileEntitys.myEntitys.at(i).myMesh.MeshName] = Temp;
+				}
+				else
+				{
+
+					glm::mat4 TempMat(1.0f);
+					TempMat = glm::translate(TempMat, fileEntitys.myEntitys.at(i).myTransform.Position);
+					TempMat = glm::rotate(TempMat, glm::radians(fileEntitys.myEntitys.at(i).myTransform.Rotation.y), glm::vec3(0.0f, 1.0f, 0.0f));
+					TempMat = glm::scale(TempMat, fileEntitys.myEntitys.at(i).myTransform.Scale);
+
+					TestMap[fileEntitys.myEntitys.at(i).myMesh.MeshName].Transforms.emplace_back(TempMat);
+				}
+			
+
+			}
+
+
+			if (fileEntitys.myEntitys.at(i).MyComponents.at(2).HaveComponent)
+				existingFile.read((char*)&fileEntitys.myEntitys.at(i).myMaterial, sizeof(Level_Material));
+			if (fileEntitys.myEntitys.at(i).MyComponents.at(3).HaveComponent)
+				existingFile.read((char*)&fileEntitys.myEntitys.at(i).myFollow, sizeof(Level_Follow));
+			if (fileEntitys.myEntitys.at(i).MyComponents.at(4).HaveComponent)
+				existingFile.read((char*)&fileEntitys.myEntitys.at(i).myLight, sizeof(Level_Light));
+			if (fileEntitys.myEntitys.at(i).MyComponents.at(5).HaveComponent)
+				existingFile.read((char*)&fileEntitys.myEntitys.at(i).myPhysics, sizeof(Level_Physics));
+			if (fileEntitys.myEntitys.at(i).MyComponents.at(6).HaveComponent)
+				existingFile.read((char*)&fileEntitys.myEntitys.at(i).myEnemy, sizeof(Level_Enemy));
+			if (fileEntitys.myEntitys.at(i).MyComponents.at(7).HaveComponent)
+				existingFile.read((char*)&fileEntitys.myEntitys.at(i).myHealth, sizeof(Level_Health));
+			if (fileEntitys.myEntitys.at(i).MyComponents.at(8).HaveComponent)
+				existingFile.read((char*)&fileEntitys.myEntitys.at(i).myHealthBar, sizeof(Level_HealthBar));
+			if (fileEntitys.myEntitys.at(i).MyComponents.at(9).HaveComponent)
+				existingFile.read((char*)&fileEntitys.myEntitys.at(i).myParticleSystem, sizeof(Level_ParticleSystem));
+			if (fileEntitys.myEntitys.at(i).MyComponents.at(10).HaveComponent)
+				existingFile.read((char*)&fileEntitys.myEntitys.at(i).myLevelExit, sizeof(Level_LevelExit));
+		}
+		existingFile.close();
+	}
+
+
+
+
+
+
+
+}
+
 
 
 
