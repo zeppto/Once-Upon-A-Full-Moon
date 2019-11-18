@@ -3,7 +3,9 @@
 
 // TEMPORARY UNTIL COLLISION MAP
 // OR MAKE A NEW (BETTER) ONE IN SCENE
-#include "Map/GridMap.hpp"
+//#include "Map/GridMap.hpp"
+//#include "Pathfinding/Grid.hpp"
+#include "Pathfinding/Pathfinding.hpp"
 
 namespace MCS
 {
@@ -31,7 +33,9 @@ namespace MCS
 		std::array<Frosty::ECS::CPhysics*, Frosty::ECS::MAX_ENTITIES_PER_COMPONENT> m_Physics;
 		std::array<Frosty::ECS::CEnemy*, Frosty::ECS::MAX_ENTITIES_PER_COMPONENT> m_Enemy;
 
-		std::unique_ptr<GridMap> m_GridMap;
+		//std::unique_ptr<GridMap> m_GridMap;
+		std::unique_ptr<Grid> m_Grid;
+		std::unique_ptr<Pathfinding> m_Pathfinding;
 
 	};
 }

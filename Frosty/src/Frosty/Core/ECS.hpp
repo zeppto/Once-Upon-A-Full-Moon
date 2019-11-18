@@ -94,7 +94,7 @@ namespace Frosty
 
 		// Let's define a maximum number of entities that
 		// can have the same component type:
-		constexpr std::size_t MAX_ENTITIES_PER_COMPONENT{ 1024 };
+		constexpr std::size_t MAX_ENTITIES_PER_COMPONENT{ 4024 };
 
 		// Defining the maximum nr of systems
 		constexpr std::size_t MAX_SYSTEMS{ 20 };
@@ -149,6 +149,7 @@ namespace Frosty
 			inline static EntityID s_LastId{ 1 };
 			EntityID Id{ 0 };
 			ComponentBitset Bitset;
+			bool ShowInEditor{ true };
 
 			Entity() : Id(s_LastId++) { FY_CORE_INFO("An entity({0}) was successfully created.", Id); }
 			Entity(const Entity& obj) { FY_CORE_ASSERT(false, "Copy constructor in Entity called."); }

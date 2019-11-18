@@ -175,7 +175,8 @@ project "Sandbox"
 	
 	postbuildcommands
 	{
-		("{COPY} %{wks.location.relpath} ../assets ../bin/" .. outputdir .. "/%{prj.name}/assets/")
+		("{COPY} %{wks.location.relpath} ../assets ../bin/" .. outputdir .. "/%{prj.name}/assets/"),
+		("{COPY} %{wks.location.relpath} ../Frosty/vendor/FreeType/lib/freetype.dll ../bin/" .. outputdir .. "/%{prj.name}/")
 	}
 
 	filter "system:windows"
