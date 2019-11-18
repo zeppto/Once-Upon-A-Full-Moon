@@ -196,7 +196,6 @@ private:
 	Level_Entitys m_Entitys;
 	Level_Header m_Header;
 	std::vector<Level_rememberedEntitys> m_VisitedRooms;
-	std::vector<std::shared_ptr<Frosty::ECS::Entity>> m_Enemys;
 };
 
 

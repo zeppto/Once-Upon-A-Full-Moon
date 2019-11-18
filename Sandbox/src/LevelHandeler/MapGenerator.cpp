@@ -327,25 +327,25 @@ std::string MapGenerator::getRoomTextur(glm::ivec2 pos, int* rotation)
 	{
 		*rotation = 0;
 		//return "RoomTempDeadEnd";
-		return "deadend_2";
+		return "deadend_3";
 	}
 	if (!m_TileMap[pos.x][pos.y].sideExits[0] && !m_TileMap[pos.x][pos.y].sideExits[1] && m_TileMap[pos.x][pos.y].sideExits[2] && !m_TileMap[pos.x][pos.y].sideExits[3])
 	{
 		*rotation = 90;
 		//return "RoomTempDeadEnd";
-		return "deadend_2";
+		return "deadend_3";
 	}
 	if (!m_TileMap[pos.x][pos.y].sideExits[0] && m_TileMap[pos.x][pos.y].sideExits[1] && !m_TileMap[pos.x][pos.y].sideExits[2] && !m_TileMap[pos.x][pos.y].sideExits[3])
 	{
 		*rotation = 180;
 		//return "RoomTempDeadEnd";
-		return "deadend_2";
+		return "deadend_3";
 	}
 	if (!m_TileMap[pos.x][pos.y].sideExits[0] && !m_TileMap[pos.x][pos.y].sideExits[1] && !m_TileMap[pos.x][pos.y].sideExits[2] && m_TileMap[pos.x][pos.y].sideExits[3])
 	{
 		*rotation = 270;
 		//return "RoomTempDeadEnd";
-		return "deadend_2";
+		return "deadend_3";
 	}
 	if (m_TileMap[pos.x][pos.y].Ocupide)
 		return "HeartFull";

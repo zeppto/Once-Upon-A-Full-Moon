@@ -51,7 +51,7 @@ namespace MCS
 			int rotate;
 			m_Map.getRoomTextur(m_PlayerPos, &rotate);
 			Level::MoveToNewRoom(m_CurrentRoome.sideExits[0], m_CurrentRoome.sideExits[1], m_CurrentRoome.sideExits[2], m_CurrentRoome.sideExits[3]);
-			m_LevelFileFormat.OpenFromFile("deadend_2", m_PlayerPos, nullptr, rotate);
+			m_LevelFileFormat.OpenFromFile("deadend_3", m_PlayerPos, nullptr, rotate);
 			m_Start = false;
 		}
 	}
@@ -203,17 +203,20 @@ namespace MCS
 		{
 			if (!m_World->HasComponent<Frosty::ECS::CCamera>(m_Transform[i]->EntityPtr))
 			{
-				if (!m_World->HasComponent<Frosty::ECS::CPlayer>(m_Transform[i]->EntityPtr))
+				if (!m_World->HasComponent<Frosty::ECS::CGUI>(m_Transform[i]->EntityPtr))
 				{
-					if (m_World->HasComponent<Frosty::ECS::CLight>(m_Transform[i]->EntityPtr))
+					if (!m_World->HasComponent<Frosty::ECS::CPlayer>(m_Transform[i]->EntityPtr))
 					{
-						auto& light = m_World->GetComponent<Frosty::ECS::CLight>(m_Transform[i]->EntityPtr);
-						if (light.Type == Frosty::ECS::CLight::LightType::Point)
+						if (m_World->HasComponent<Frosty::ECS::CLight>(m_Transform[i]->EntityPtr))
+						{
+							auto& light = m_World->GetComponent<Frosty::ECS::CLight>(m_Transform[i]->EntityPtr);
+							if (light.Type == Frosty::ECS::CLight::LightType::Point)
+								m_LevelFileFormat.AddEntity(m_Transform[i]->EntityPtr);
+						}
+						else
+						{
 							m_LevelFileFormat.AddEntity(m_Transform[i]->EntityPtr);
-					}
-					else
-					{
-						m_LevelFileFormat.AddEntity(m_Transform[i]->EntityPtr);
+						}
 					}
 				}
 			}
