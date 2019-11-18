@@ -674,6 +674,7 @@ namespace MCS
 						ImGui::Checkbox("Preview", &comp.Preview);
 						ImGui::ColorEdit4("Color", glm::value_ptr(comp.ParticleSystemColor));
 						ImGui::SliderInt("Particle count", (int*)&comp.ParticleCount, 1, comp.MAX_PARTICLE_COUNT);
+						ImGui::DragFloat3("Direction", glm::value_ptr(comp.ParticleSystemDirection), 0.1f, 0.0f, 0.0f, "%.2f");
 						ImGui::InputFloat("Start size", &comp.StartParticleSize);
 						ImGui::InputFloat("End size", &comp.EndParticleSize);
 						ImGui::InputFloat("Emit rate", &comp.EmitRate);

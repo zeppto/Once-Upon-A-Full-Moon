@@ -996,6 +996,7 @@ namespace Frosty
 
 			uint32_t ParticleCount = 0;
 			glm::vec3 ParticleSystemColor = glm::vec3(1.0f);
+			glm::vec3 ParticleSystemDirection = glm::vec3(1.0f);
 			float EmitRate = 0.1f;
 			uint32_t EmitCount = 1;
 			float MaxLifetime = 3.0f; //All particles

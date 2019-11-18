@@ -52,7 +52,7 @@ namespace MCS
 
 			auto& world = Frosty::Application::Get().GetWorld();
 			m_Transform[p_Total] = &world->GetComponent<Frosty::ECS::CTransform>(entity);
-			m_Transform[p_Total]->Position = glm::vec3(0.0f, 7.0f, 0.0f); //Debug
+			//m_Transform[p_Total]->Position = glm::vec3(0.0f, 7.0f, 0.0f); //Debug
 			m_ParticleSystem[p_Total] = &world->GetComponent<Frosty::ECS::CParticleSystem>(entity);
 
 			m_ParticleSystem[p_Total]->ParticleVertArray.reset(Frosty::VertexArray::Create());
@@ -195,6 +195,15 @@ namespace MCS
 				m_ParticleSystem[systemIndex]->Particles[i].StartSize = m_ParticleSystem[systemIndex]->StartParticleSize;
 			}
 		}
+		if (glm::vec3(m_ParticleSystem[systemIndex]->Particles[0].Direction) != m_ParticleSystem[systemIndex]->ParticleSystemDirection)
+		{
+			for (uint32_t i = 0; i < Frosty::ECS::CParticleSystem::MAX_PARTICLE_COUNT; i++)
+			{
+				m_ParticleSystem[systemIndex]->Particles[i].Direction.x = m_ParticleSystem[systemIndex]->ParticleSystemDirection.x;
+				m_ParticleSystem[systemIndex]->Particles[i].Direction.y = m_ParticleSystem[systemIndex]->ParticleSystemDirection.y;
+				m_ParticleSystem[systemIndex]->Particles[i].Direction.z = m_ParticleSystem[systemIndex]->ParticleSystemDirection.z;
+			}
+		}
 
 		if (m_ParticleSystem[systemIndex]->Preview)
 		{
@@ -239,7 +248,7 @@ namespace MCS
 		Frosty::ECS::CParticleSystem::Particle& p = m_ParticleSystem[systemIndex]->Particles[index];
 
 		p.CamDistance = glm::length2(glm::vec3(p.Position) - m_CameraTransform->Position);
-		p.Position -= (p.Direction * p.Speed) * Frosty::Time::DeltaTime();
+		p.Position += (p.Direction * p.Speed) * Frosty::Time::DeltaTime();
 
 		//Fade in
 		//if (p.color.a < 1.0 && p.lifetime > 1.0) { //TODO: Fix this temporary code
@@ -278,6 +287,8 @@ namespace MCS
 		p.Position = m_ParticleSystem[systemIndex]->Particles[index].StartPos;
 		p.Size = p.StartSize;
 		p.Color.a = 1.0f; //TODO: set to startColor/startAlpha
+		//TODO: Start Direction?
+		//TODO: Start Color?
 	}
 
 	void ParticleSystem::UpdateGpuData(size_t systemIndex, size_t index, uint32_t particleCount)
