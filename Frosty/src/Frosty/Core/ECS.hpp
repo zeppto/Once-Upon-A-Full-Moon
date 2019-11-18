@@ -90,7 +90,7 @@ namespace Frosty
 #pragma region Settings
 
 		// Let's define a maximum number of unique components:
-		constexpr std::size_t MAX_COMPONENTS{ 22 };
+		constexpr std::size_t MAX_COMPONENTS{ 23 };
 
 		// Let's define a maximum number of entities that
 		// can have the same component type:
@@ -1042,7 +1042,12 @@ namespace Frosty
 		struct CLootable : public BaseComponent
 		{
 			static std::string NAME;
-			enum class LootType { HealingPotion, IncHealthPotion, SpeedPotion, SpeedBoot, Sword, Arrow };
+			enum class LootType 
+			{ 
+				HealingPotion, IncHealthPotion, SpeedPotion, SpeedBoot, 
+				Sword1, Sword2, Sword3,
+				Arrow1, Arrow2, Arrow3
+			};
 			LootType Type{ LootType::HealingPotion };
 
 			CLootable() = default;
@@ -1056,6 +1061,16 @@ namespace Frosty
 				}
 				return *this;
 			}
+			virtual std::string GetName() const { return NAME; }
+		};
+
+		struct CDropItem : public BaseComponent
+		{
+			static std::string NAME;
+
+			CDropItem() = default;
+			CDropItem(const CDropItem& org) { FY_CORE_ASSERT(false, "Copy constructor in CDropItem called."); }
+
 			virtual std::string GetName() const { return NAME; }
 		};
 
@@ -1162,9 +1177,10 @@ namespace Frosty
 			case 16:	return "ParticleSystem";
 			case 17:	return "Chest";
 			case 18:	return "Lootable";
-			case 19:	return "Boss";
-			case 20:	return "LevelExit";
-			case 21:	return "GUI";
+			case 19:	return "DropItem";
+			case 20:	return "Boss";
+			case 21:	return "LevelExit";
+			case 22:	return "GUI";
 			default:	return "";
 			}
 		}

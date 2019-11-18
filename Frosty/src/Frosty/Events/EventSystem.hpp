@@ -16,6 +16,7 @@ namespace Frosty
 		KeyPressed, KeyReleased,
 		MouseButtonPressed, MouseButtonReleased, MouseMoved, MouseScrolled,
 		ArrowHit, Dash, CheckCollision, Collision, BasicAttack, 
+		SpawnItem,
 		PickUpAttempt, PickUp,
 		BaitPlaced, ExitCurrentLevel,
 		SaveLevel, CreateLevel, OpenLevel, CreatEntity
