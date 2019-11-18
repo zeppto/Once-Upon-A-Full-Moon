@@ -2,8 +2,8 @@
 #define BOOLMAPGENERATOR_HPP
 #include"BoolMap.hpp"
 #include<Frosty/RenderEngine/VertexArray.hpp>
-#define DEFAULT_BOOLMAP_WIDTH 200
-#define DEFAULT_BOOLMAP_HEIGHT 200
+#define DEFAULT_BOOLMAP_WIDTH 300
+#define DEFAULT_BOOLMAP_HEIGHT 300
 #define DEFAULT_BOOLMAP_PIXELCOORD_RATIO 10
 
 //Change to MCS
@@ -29,7 +29,7 @@ namespace Frosty
 	struct VABatch
 	{	
 		//Pointer?
-		VertexArray VertexArrayObj;
+		std::shared_ptr<VertexArray> VertexArrayObj;
 		std::list<glm::mat4> Transforms;
 	};
 

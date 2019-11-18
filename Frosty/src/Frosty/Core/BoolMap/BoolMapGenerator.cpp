@@ -98,7 +98,7 @@ namespace Frosty
 	std::shared_ptr<BoolMap> BoolMapGenerator::RenderMap()
 	{
 		//temp
-		glDeleteTextures(1, &s_Texture);
+	//	glDeleteTextures(1, &s_Texture);
 
 		InitiateRenderData();
 
@@ -178,14 +178,15 @@ namespace Frosty
 		std::list<VABatch>::iterator VABatchIt = s_VABatch.begin();
 		while (VABatchIt != s_VABatch.end())
 		{
-			VABatchIt->VertexArrayObj.Bind();
+			VABatchIt->VertexArrayObj->Bind();
 			std::list<glm::mat4>::iterator PosIt = VABatchIt->Transforms.begin();
-			while (PosIt != BoundBatchIt->Transforms.end())
+			while (PosIt != VABatchIt->Transforms.end())
 			{
 				glUniformMatrix4fv(locationMM, 1, GL_FALSE, &(*PosIt)[0][0]);
-				glDrawElements(GL_TRIANGLES, VABatchIt->VertexArrayObj.GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, 0);
+				glDrawElements(GL_TRIANGLES, VABatchIt->VertexArrayObj->GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, 0);
 				PosIt++;
 			}
+			VABatchIt->VertexArrayObj->Unbind();
 			VABatchIt++;
 		}
 
@@ -242,6 +243,7 @@ namespace Frosty
 
 		delete[]tempFloatPtr;
 
+
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		glBindTexture(GL_TEXTURE_2D, 0);
 		glDeleteFramebuffers(1, &s_GBuffer);
@@ -251,7 +253,7 @@ namespace Frosty
 		s_BoundBatch.erase(s_BoundBatch.begin(), s_BoundBatch.end()); 
 
 //		return std::shared_ptr<BoolMap>(FY_NEW BoolMap(TmpWidth, TmpHeight, s_Settings.Pix_Cord_Ratio, tmpMap, bitMap));
-		return std::shared_ptr<BoolMap>(FY_NEW BoolMap(TmpWidth, TmpHeight, s_Settings.Pix_Cord_Ratio, bitMap));
+		return std::shared_ptr<BoolMap>(FY_NEW BoolMap(TmpWidth, TmpHeight, s_Settings.Pix_Cord_Ratio, bitMap, bitmapCount));
 	}
 
 

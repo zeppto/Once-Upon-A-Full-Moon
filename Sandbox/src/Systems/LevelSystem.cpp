@@ -2,6 +2,7 @@
 #include "LevelSystem.hpp"
 #include "Frosty/API/AssetManager/AssetManager.hpp"
 #include "Frosty/Events/AbilityEvent.hpp"
+#include "Frosty/Core/BoolMap/BoolMapGenerator.hpp"
 
 namespace MCS
 {
@@ -26,9 +27,11 @@ namespace MCS
 			break;
 		case Frosty::EventType::CreateLevel:
 			OnCreateLevelEvent(static_cast<Frosty::CreateLevelEvent&>(e));
+		
 			break;
 		case Frosty::EventType::OpenLevel:
 			OnOpenLevelEvent(static_cast<Frosty::OpenLevelEvent&>(e));
+
 			break;
 		case Frosty::EventType::CreatEntity:
 			OnCreatEntityEvent(static_cast<Frosty::CreatEntityEvent&>(e));

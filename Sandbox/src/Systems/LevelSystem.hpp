@@ -49,9 +49,13 @@ namespace MCS
 		std::string m_RoomType = "unknown";
 		LevelFileFormat m_LevelFileFormat;
 
+
+	//	std::unordered_map<std::string, std::shared_ptr<BoolMap>> m_LoadedBoolMaps;
+
+
 		//temp
 		bool m_NextLevel = false;
-		int m_EntrensSide = -1;
+		int m_EntranceSide = -1;
 		float m_TempTimer = 0;
 
 
