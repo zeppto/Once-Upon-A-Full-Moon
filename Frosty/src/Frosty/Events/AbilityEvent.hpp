@@ -133,6 +133,19 @@ namespace Frosty
 	private:
 		std::string m_Filename;
 	};
+
+	class CreatEntityEvent : public BaseEvent
+	{
+	public:
+		CreatEntityEvent(unsigned int preSetEntityID) : m_EntityType(preSetEntityID) {}
+
+		const unsigned int GetEntityType() { return m_EntityType; }
+
+		EVENT_TYPE(CreatEntity)
+
+	private:
+		unsigned int m_EntityType;
+	};
 }
 
 #endif // !ABILITY_EVENT_HPP

@@ -16,11 +16,13 @@ namespace MCS
 
 	void PhysicsSystem::OnUpdate()
 	{
+		Frosty::Time::StartTimer("Collision and movement.");
 		for (size_t i = 1; i < p_Total; i++)
 		{
 			m_Transform[i]->Position += m_Physics[i]->Velocity * Frosty::Time::DeltaTime();
 			CheckCollision(i);
 		}
+		Frosty::Time::EndTimer("Collision and movement.");
 	}
 
 	void PhysicsSystem::AddComponent(const std::shared_ptr<Frosty::ECS::Entity>& entity)
@@ -101,7 +103,7 @@ namespace MCS
 	{
 		for (size_t i = 1; i < p_Total; i++)
 		{
-			if (index != i)
+			if (index != i && m_Physics[index]->Speed != 0)
 			{
 				glm::vec3 finalCenterA = m_Transform[index]->Position + glm::vec3(m_Physics[index]->BoundingBox->pos[0], m_Physics[index]->BoundingBox->pos[1], m_Physics[index]->BoundingBox->pos[2]);
 				glm::vec3 finalCenterB = m_Transform[i]->Position + glm::vec3(m_Physics[i]->BoundingBox->pos[0], m_Physics[i]->BoundingBox->pos[1], m_Physics[i]->BoundingBox->pos[2]);

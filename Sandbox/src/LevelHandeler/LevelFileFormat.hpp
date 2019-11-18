@@ -35,7 +35,14 @@ struct Level_Transform
 	glm::vec3 Position{ 0.0f };
 	glm::vec3 Rotation{ 0.0f };
 	glm::vec3 Scale{ 1.0f };
-
+	bool IsStatic{ false };
+};
+//temp
+struct Level_Transform_Old
+{
+	glm::vec3 Position{ 0.0f };
+	glm::vec3 Rotation{ 0.0f };
+	glm::vec3 Scale{ 1.0f };
 };
 
 //1 = Mesh
@@ -111,13 +118,22 @@ struct Level_HealthBar
 	char UseShaderName[50] = "";
 	char TextureName[50] = "";
 
-	glm::mat4 HpTransform;
+	glm::vec3 Translate;
+	glm::vec3 Scale;
 };
 
 //9 = ParticleSystem
 struct Level_ParticleSystem
 {
 	//under construction
+	float startParticleSize = 1.0f;
+	float endParticleSize = 0.0f;
+
+	glm::vec3 particleSystemColor = glm::vec3(1.0f);
+	float emitRate = 0.1f;
+	uint32_t emitCount = 1;
+	float maxLifetime = 3.0f; //All particles
+	float fadeTreshold = 0.0f; //No fade
 };
 
 //10 = LevelExit
@@ -165,7 +181,8 @@ public:
 
 	void AddEntity(const std::shared_ptr<Frosty::ECS::Entity>& entity);
 	void SaveToFile(std::string fileName);
-	void OpenFromFile(std::string fileName, Frosty::ECS::CTransform* playerTransform);
+	void OpenFromFile(std::string fileName, Frosty::ECS::CTransform* playerTransform = nullptr,
+		int rotation = 0, glm::vec3 move = glm::vec3(0,0,0));
 
 private:
 	//std::shared_ptr<ECS::Entity> m_ExitEntity;
