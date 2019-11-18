@@ -52,7 +52,7 @@ namespace MCS
 
 			auto& world = Frosty::Application::Get().GetWorld();
 			m_Transform[p_Total] = &world->GetComponent<Frosty::ECS::CTransform>(entity);
-			m_Transform[p_Total]->Position = glm::vec3(0.0f, 7.0f, 0.0f); //Debug
+			//m_Transform[p_Total]->Position = glm::vec3(0.0f, 7.0f, 0.0f); //Debug
 			m_ParticleSystem[p_Total] = &world->GetComponent<Frosty::ECS::CParticleSystem>(entity);
 
 			m_ParticleSystem[p_Total]->particleVertArray.reset(Frosty::VertexArray::Create());
@@ -87,6 +87,7 @@ namespace MCS
 			p_Total--;
 			auto& entityToUpdate = m_Transform[p_Total]->EntityPtr;
 			m_Transform[p_Total] = nullptr;
+			//auto& entityToUpdate = m_ParticleSystem[p_Total]->EntityPtr;
 			m_ParticleSystem[p_Total] = nullptr;
 
 			if (p_Total > it->second)

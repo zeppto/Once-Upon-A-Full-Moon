@@ -418,7 +418,7 @@ namespace Frosty
 			CTransform* Target{ nullptr };
 			glm::vec3 Front{ 0.0f, 0.0f, -1.0f };
 			glm::vec3 Background{ 0.2f };
-			float FieldOfView{ 40.0f };
+			float FieldOfView{ 10.0f };
 			float Near{ 0.03f };
 			float Far{ 1000.0f };
 			glm::mat4 ViewMatrix{ 1.0f };
@@ -736,6 +736,8 @@ namespace Frosty
 			float startParticleSize = 1.0f;
 			float endParticleSize = 0.0f;
 			float particleSize = 1.0f; //For a constant size
+
+			glm::vec3 sytemPosition = glm::vec3(0.0f);
 
 			static std::string NAME;
 			uint32_t particleCount = 0;
