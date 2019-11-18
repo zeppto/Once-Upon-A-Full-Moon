@@ -42,10 +42,12 @@ namespace Frosty
 		std::string ReadFile(const std::string& filepath);
 		std::unordered_map<GLenum, std::string> PreProcess(const std::string& source);
 		void Compile(const std::unordered_map<GLenum, std::string>& shaderSources);	
+		unsigned int GetUniformLocation(const std::string& name);
 
 	private:
 		std::string m_Name;
 		uint32_t m_RendererID;
+		std::unordered_map<std::string, unsigned int> m_UniformCache;
 	};
 
 	class ShaderLibrary

@@ -22,22 +22,28 @@ namespace MCS
 		virtual void UpdateEntityComponent(const std::shared_ptr<Frosty::ECS::Entity>& entity) override;
 		virtual std::string GetInfo() const override;
 
+		void AttachGameCamera(Frosty::ECS::CTransform* gameCamera) { m_CameraTransform = gameCamera; }
+
 	private:
-		void UpdateParticleSystem(uint32_t systemIndex);
-		void EditorUpdateParticleSystem(uint32_t systemIndex);
-		void UpdateParticle(uint32_t systemIndex, uint32_t index);
-		void ResetParticle(uint32_t systemIndex, uint32_t index);
-		void UpdateGpuData(uint32_t systemIndex, uint32_t index, uint32_t particleCount);
-		void UpdateGpuData(uint32_t systemIndex, uint32_t index);
-		void UpdateBuffer(uint32_t systemIndex);
+		void UpdateParticleSystem(size_t systemIndex);
+		void EditorUpdateParticleSystem(size_t systemIndex);
+		void UpdateParticle(size_t systemIndex, size_t index);
+		void ResetParticle(size_t systemIndex, size_t index);
+		void UpdateGpuData(size_t systemIndex, size_t index, uint32_t particleCount);
+		void UpdateGpuData(size_t systemIndex, size_t index);
+		void UpdateBuffer(size_t systemIndex);
 
-		uint32_t FindUnusedParticle(uint32_t systemIndex);
-		void SortParticles(uint32_t systemIndex);
+		uint32_t FindUnusedParticle(size_t systemIndex);
+		void SortParticles(size_t systemIndex);
 
+		float Lerp(float a, float b, float f);
+
+	private:
 		std::array<Frosty::ECS::CTransform*, Frosty::ECS::MAX_ENTITIES_PER_COMPONENT> m_Transform;
 		std::array<Frosty::ECS::CParticleSystem*, Frosty::ECS::MAX_ENTITIES_PER_COMPONENT> m_ParticleSystem;
-		float m_maxLifetime; //All particles
-		bool m_editMode;
+		bool m_EditMode{ false };
+
+		Frosty::ECS::CTransform* m_CameraTransform { nullptr };
 	};
 }
 

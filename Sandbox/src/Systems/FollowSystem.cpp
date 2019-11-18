@@ -14,21 +14,21 @@ namespace MCS
 
 	void FollowSystem::OnUpdate()
 	{
-		for (size_t i = 1; i < p_Total; i++)
-		{
-			if (m_Follow[i]->Target)
-			{
-				float distance = glm::distance({ m_Transform[i]->Position.x, 0.0f, m_Transform[i]->Position.z }, m_Follow[i]->Target->Position);
-				if (distance > m_Follow[i]->StopDistance)
-				{
-					m_Physics[i]->Velocity = glm::normalize(m_Follow[i]->Target->Position - glm::vec3(m_Transform[i]->Position.x, 0.0f, m_Transform[i]->Position.z)) * m_Physics[i]->Speed;
-				}
-				else
-				{
-					m_Physics[i]->Velocity = glm::vec3(0.0f);
-				}
-			}
-		}
+		//for (size_t i = 1; i < p_Total; i++)
+		//{
+		//	if (m_Follow[i]->Target)
+		//	{
+		//		float distance = glm::distance({ m_Transform[i]->Position.x, 0.0f, m_Transform[i]->Position.z }, m_Follow[i]->Target->Position);
+		//		if (distance > m_Follow[i]->StopDistance)
+		//		{
+		//			m_Physics[i]->Velocity = glm::normalize(m_Follow[i]->Target->Position - glm::vec3(m_Transform[i]->Position.x, 0.0f, m_Transform[i]->Position.z)) * m_Physics[i]->Speed;
+		//		}
+		//		else
+		//		{
+		//			m_Physics[i]->Velocity = glm::vec3(0.0f);
+		//		}
+		//	}
+		//}
 	}
 
 	void FollowSystem::AddComponent(const std::shared_ptr<Frosty::ECS::Entity>& entity)

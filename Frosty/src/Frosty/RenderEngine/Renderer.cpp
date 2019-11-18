@@ -43,26 +43,38 @@ namespace Frosty
 			shaderData->Shader->UploadUniformMat4("u_ViewProjection", s_SceneData->GameCamera.ViewProjectionMatrix);
 			shaderData->Shader->UploadUniformFloat3("u_CameraPosition", s_SceneData->GameCamera.CameraPosition);
 
-
+			if (shaderData->Shader->GetName() == "Texture2D")
+			{
+				glEnable(GL_BLEND);
+				glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+				RenderCommand::EnableBackfaceCulling();
+			}
 
 			// Point Lights
 			shaderData->Shader->UploadUniformInt("u_TotalPointLights", (int)s_SceneData->PointLights.size());
-			for (size_t i = 0; i < s_SceneData->PointLights.size(); i++)
+			int PointLI = 0;
+			for (auto& PLightIt : s_SceneData->PointLights)
 			{
-				shaderData->Shader->UploadUniformFloat3Array("u_PointLights[" + std::to_string(i) + "].Color", s_SceneData->PointLights[i].Color);
-				shaderData->Shader->UploadUniformFloat3Array("u_PointLights[" + std::to_string(i) + "].Position", s_SceneData->PointLights[i].Position);
-				shaderData->Shader->UploadUniformFloatArray("u_PointLights[" + std::to_string(i) + "].Radius", s_SceneData->PointLights[i].Radius);
-				shaderData->Shader->UploadUniformFloatArray("u_PointLights[" + std::to_string(i) + "].Strength", s_SceneData->PointLights[i].Strength);
+
+				shaderData->Shader->UploadUniformFloat3Array("u_PointLights[" + std::to_string(PointLI) + "].Color", s_SceneData->PointLights[PLightIt.first]->PointLight->Color);
+				shaderData->Shader->UploadUniformFloat3Array("u_PointLights[" + std::to_string(PointLI) + "].Position", s_SceneData->PointLights[PLightIt.first]->Transform->Position);
+				shaderData->Shader->UploadUniformFloatArray("u_PointLights[" + std::to_string(PointLI) + "].Radius", s_SceneData->PointLights[PLightIt.first]->PointLight->Radius);
+				shaderData->Shader->UploadUniformFloatArray("u_PointLights[" + std::to_string(PointLI) + "].Strength", s_SceneData->PointLights[PLightIt.first]->PointLight->Strength);
+				PointLI++;
 			}
 
 			// Directional Lights
 			shaderData->Shader->UploadUniformInt("u_TotalDirectionalLights", (int)s_SceneData->DirectionalLights.size());
-			for (size_t i = 0; i < s_SceneData->DirectionalLights.size(); i++)
+			int DirectLI = 0;
+			for (auto& DLightIt : s_SceneData->DirectionalLights)
 			{
-				shaderData->Shader->UploadUniformFloat3Array("u_DirectionalLights[" + std::to_string(i) + "].Color", s_SceneData->DirectionalLights[i].Color);
-				shaderData->Shader->UploadUniformFloat3Array("u_DirectionalLights[" + std::to_string(i) + "].Direction", s_SceneData->DirectionalLights[i].Direction);
-				shaderData->Shader->UploadUniformFloatArray("u_DirectionalLights[" + std::to_string(i) + "].Strength", s_SceneData->DirectionalLights[i].Strength);
+				shaderData->Shader->UploadUniformFloat3Array("u_DirectionalLights[" + std::to_string(DirectLI) + "].Color", s_SceneData->DirectionalLights[DLightIt.first]->DirectionalLight->Color);
+				shaderData->Shader->UploadUniformFloat3Array("u_DirectionalLights[" + std::to_string(DirectLI) + "].Direction", s_SceneData->DirectionalLights[DLightIt.first]->DirectionalLight->Direction);
+				shaderData->Shader->UploadUniformFloatArray("u_DirectionalLights[" + std::to_string(DirectLI) + "].Strength", s_SceneData->DirectionalLights[DLightIt.first]->DirectionalLight->Strength);
+				DirectLI++;
 			}
+
+			
 
 
 
@@ -72,6 +84,8 @@ namespace Frosty
 				nrOfMaterials++;
 
 				auto& materialData = shaderData->MaterialMap.at(MaterialIt.first);
+
+				shaderData->Shader->UploadUniformInt("u_Shininess", materialData->Material->Shininess);
 
 
 				if (shaderData->Shader->GetName() == "FlatColor")
@@ -119,6 +133,12 @@ namespace Frosty
 				glBindTexture(GL_TEXTURE_2D, 0);
 			}
 			glUseProgram(0);
+
+			if (shaderData->Shader->GetName() == "Texture2D")
+			{
+				glDisable(GL_BLEND);
+				RenderCommand::DisableBackfaceCulling();
+			}
 		}
 		int test = 0;
 	}
@@ -137,12 +157,61 @@ namespace Frosty
 		s_SceneData->GameCamera.ViewProjectionMatrix = projection * view;
 	}
 
-	Renderer::GameCameraProps Renderer::GetCamera()
+	void Renderer::AddLight(Frosty::ECS::CLight* light, ECS::CTransform* transform)
 	{
-		return s_SceneData->GameCamera;
+		if (light->Type == Frosty::ECS::CLight::LightType::Point)
+		{
+			s_SceneData->PointLights.emplace(light->EntityPtr->Id, FY_NEW PointLight);
+			s_SceneData->PointLights.at(light->EntityPtr->Id)->PointLight = light;
+			s_SceneData->PointLights.at(light->EntityPtr->Id)->Transform = transform;
+		}
+		else if (light->Type == Frosty::ECS::CLight::LightType::Directional)
+		{
+			glm::mat4 mat = glm::mat4(1.0f);
+			mat = glm::rotate(mat, glm::radians(light->Direction.x), { 1.0f, 0.0f, 0.0f });
+			mat = glm::rotate(mat, glm::radians(light->Direction.x), { 0.0f, 1.0f, 0.0f });
+			mat = glm::rotate(mat, glm::radians(light->Direction.x), { 0.0f, 0.0f, 1.0f });
+
+			light->Direction = mat * glm::vec4(light->Direction, 0);
+
+
+			s_SceneData->DirectionalLights.emplace(light->EntityPtr->Id, FY_NEW DirectionalLight);
+			s_SceneData->DirectionalLights.at(light->EntityPtr->Id)->DirectionalLight = light;
+			s_SceneData->DirectionalLights.at(light->EntityPtr->Id)->Transform = transform;
+		}
 	}
 
-	void Renderer::AddLight(const glm::vec3& color, const glm::vec3& pos, float strength, float radius)
+	void Renderer::UppdateLight(Frosty::ECS::CLight* light, ECS::CTransform* transform)
+	{
+		if (light->Type == Frosty::ECS::CLight::LightType::Point)
+		{
+			s_SceneData->PointLights.at(light->EntityPtr->Id)->PointLight = light;
+			s_SceneData->PointLights.at(light->EntityPtr->Id)->Transform = transform;
+		}
+		else if (light->Type == Frosty::ECS::CLight::LightType::Directional)
+		{
+
+			s_SceneData->DirectionalLights.at(light->EntityPtr->Id)->DirectionalLight = light;
+			s_SceneData->DirectionalLights.at(light->EntityPtr->Id)->Transform = transform;
+		}
+	}
+
+	void Renderer::RemoveLight(Frosty::ECS::CLight* light)
+	{
+	/*	if (light->Type == Frosty::ECS::CLight::LightType::Point)
+		{
+			s_SceneData->PointLights.erase(light->EntityPtr->Id);
+			
+		}
+		else if (light->Type == Frosty::ECS::CLight::LightType::Directional)
+		{
+			s_SceneData->DirectionalLights.erase(light->EntityPtr->Id);
+		}*/
+	}
+
+	
+
+	/*void Renderer::AddLight(const glm::vec3& color, const glm::vec3& pos, float strength, float radius)
 	{
 		PointLight light;
 		light.Color = color;
@@ -150,9 +219,9 @@ namespace Frosty
 		light.Strength = strength;
 		light.Radius = radius;
 		s_SceneData->PointLights.emplace_back(light);
-	}
+	}*/
 
-	void Renderer::AddLight(const glm::vec3& color, glm::vec3& direction, float strength)
+	/*void Renderer::AddLight(const glm::vec3& color, glm::vec3& direction, float strength)
 	{
 		glm::mat4 mat = glm::mat4(1.0f);
 		mat = glm::rotate(mat, glm::radians(direction.x), { 1.0f, 0.0f, 0.0f });
@@ -164,27 +233,28 @@ namespace Frosty
 		light.Direction = mat * glm::vec4(0.0f, 0.0f, 1.0f, 0.0);
 		light.Strength = strength;
 		s_SceneData->DirectionalLights.emplace_back(light);
-	}
+	}*/
 
-	void Renderer::SubmitText(const std::shared_ptr<Shader>& shader, const std::shared_ptr<VertexArray>& vertexArray, std::string& text)
+	void Renderer::SubmitText(const std::shared_ptr<Shader>& shader, const std::shared_ptr<VertexArray>& vertexArray, std::string& text, glm::vec2 pos, glm::vec3 color, float scale)
 	{
-		/*shader->Bind();
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		shader->Bind();
 		vertexArray->Bind();
 
-		glm::mat4 projection = glm::ortho(0.0f, 800.0f, 0.0f, 600.0f);
-		glm::vec3 color = glm::vec3(1.0f, 0.0f, 1.0f);
+		float width = 1280.0f;
+		float height = 720.0f;
+		glm::mat4 projection = glm::ortho(0.0f, width, 0.0f, height);
 
-		shader->UploadUniforMat4("projection", projection);
-		shader->UploadUniformInt("text", 1);
+		shader->UploadUniformMat4("projection", projection);
+		shader->UploadUniformInt("text", 0); //Make sure this number matches the active and sampled texture
 		shader->UploadUniformFloat3("textColor", color);
 
 		std::string::const_iterator c;
-		float x = 25.0f;
-		float y = 24.0f;
-		float scale = 1.0f;
-		glm::vec3 vec = glm::vec3(0.5f, 0.8f, 0.2f);
+		float x = pos.x;
+		float y = pos.y;
 		for (c = text.begin(); c != text.end(); c++) {
-			Character ch = Assetmanager::GetAssetmanager()->GetFontMetaData("Gabriola")->GetData()->m_characters.at(*c);
+			Character ch = Frosty::AssetManager::GetTTF("Gabriola")->m_characters.at(*c); //TODO: Switch out for actual font provided by system
 			float xpos = x + ch.bearing.x * scale;
 			float ypos = y - (ch.size.y - ch.bearing.y) * scale;
 			float width = ch.size.x * scale;
@@ -202,30 +272,25 @@ namespace Frosty
 			};
 
 			vertexArray->GetVertexBuffer().front()->Bind();
-			vertexArray->GetVertexBuffer().front()->SetData(*verts, sizeof(verts), GL_DYNAMIC_DRAW);
+			vertexArray->GetVertexBuffer().front()->SetData(*verts, sizeof(verts), Frosty::BufferType::DYNAMIC);
 
-			glActiveTexture(GL_TEXTURE1);
+
+			glActiveTexture(GL_TEXTURE0);
 			glBindTexture(GL_TEXTURE_2D, ch.textureID);
 
-			RenderCommand::Draw2D(vertexArray);
+			RenderCommand::DrawUIText(vertexArray); //Will probably change later
 
 			x += (ch.advance >> 6) * scale;
 		}
 		glBindTexture(GL_TEXTURE_2D, 0);
+
+		shader->UnBind();
 		vertexArray->Unbind();
-		vertexArray->GetVertexBuffer().front()->Unbind();*/
+		glDisable(GL_BLEND);
 	}
 
-	void Renderer::SubmitParticles(const std::shared_ptr<Shader>& shader, const std::shared_ptr<Shader>& computeShader, const std::shared_ptr<VertexArray>& vertexArray, glm::mat4& modelMat, size_t particleCount, float maxLifetime)
+	void Renderer::SubmitParticles(const std::shared_ptr<Shader>& shader, const std::shared_ptr<VertexArray>& vertexArray, glm::mat4& modelMat, size_t particleCount, float maxLifetime)
 	{
-		//computeShader->Bind();
-		//vertexArray->BindShaderStorageBuffer();
-
-		//computeShader->UploadUniformFloat("deltaTime", Frosty::Time::DeltaTime());
-		//computeShader->UploadUniformFloat("maxLifetime", maxLifetime);
-
-		//ComputeCommand::Send(particleCount);
-
 		shader->Bind();
 		vertexArray->Bind();
 
@@ -249,62 +314,94 @@ namespace Frosty
 
 	void Renderer::Submit(ECS::CMaterial* mat, const std::shared_ptr<VertexArray>& vertexArray, const glm::mat4& transform)
 	{
-		mat->UseShader->Bind();
-		mat->UseShader->UploadUniformMat4("u_ViewProjection", s_SceneData->GameCamera.ViewProjectionMatrix);
-		mat->UseShader->UploadUniformMat4("u_Transform", transform);
-		mat->UseShader->UploadUniformFloat3("u_CameraPosition", s_SceneData->GameCamera.CameraPosition);
-		mat->UseShader->UploadUniformInt("u_Shininess", mat->Shininess);
+		//glEnable(GL_BLEND);
+		//glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-		// Point Lights
-		mat->UseShader->UploadUniformInt("u_TotalPointLights", (int)s_SceneData->PointLights.size());
-		for (size_t i = 0; i < s_SceneData->PointLights.size(); i++)
-		{
-			mat->UseShader->UploadUniformFloat3Array("u_PointLights[" + std::to_string(i) + "].Color", s_SceneData->PointLights[i].Color);
-			mat->UseShader->UploadUniformFloat3Array("u_PointLights[" + std::to_string(i) + "].Position", s_SceneData->PointLights[i].Position);
-			mat->UseShader->UploadUniformFloatArray("u_PointLights[" + std::to_string(i) + "].Radius", s_SceneData->PointLights[i].Radius);
-			mat->UseShader->UploadUniformFloatArray("u_PointLights[" + std::to_string(i) + "].Strength", s_SceneData->PointLights[i].Strength);
-		}
+		//mat->UseShader->Bind();
+		//mat->UseShader->UploadUniformMat4("u_ViewProjection", s_SceneData->GameCamera.ViewProjectionMatrix);
+		//mat->UseShader->UploadUniformMat4("u_Transform", transform);
+		//mat->UseShader->UploadUniformFloat3("u_CameraPosition", s_SceneData->GameCamera.CameraPosition);
+		//mat->UseShader->UploadUniformInt("u_Shininess", mat->Shininess);
 
-		// Directional Lights
-		mat->UseShader->UploadUniformInt("u_TotalDirectionalLights", (int)s_SceneData->DirectionalLights.size());
-		for (size_t i = 0; i < s_SceneData->DirectionalLights.size(); i++)
-		{
-			mat->UseShader->UploadUniformFloat3Array("u_DirectionalLights[" + std::to_string(i) + "].Color", s_SceneData->DirectionalLights[i].Color);
-			mat->UseShader->UploadUniformFloat3Array("u_DirectionalLights[" + std::to_string(i) + "].Direction", s_SceneData->DirectionalLights[i].Direction);
-			mat->UseShader->UploadUniformFloatArray("u_DirectionalLights[" + std::to_string(i) + "].Strength", s_SceneData->DirectionalLights[i].Strength);
-		}
+		//// Point Lights
+		//mat->UseShader->UploadUniformInt("u_TotalPointLights", (int)s_SceneData->PointLights.size());
+		//for (size_t i = 0; i < s_SceneData->PointLights.size(); i++)
+		//{
+		//	mat->UseShader->UploadUniformFloat3Array("u_PointLights[" + std::to_string(i) + "].Color", s_SceneData->PointLights[i].Color);
+		//	mat->UseShader->UploadUniformFloat3Array("u_PointLights[" + std::to_string(i) + "].Position", s_SceneData->PointLights[i].Position);
+		//	mat->UseShader->UploadUniformFloatArray("u_PointLights[" + std::to_string(i) + "].Radius", s_SceneData->PointLights[i].Radius);
+		//	mat->UseShader->UploadUniformFloatArray("u_PointLights[" + std::to_string(i) + "].Strength", s_SceneData->PointLights[i].Strength);
+		//}
 
-		if (mat->UseShader->GetName() == "FlatColor")
-		{
-			mat->UseShader->UploadUniformFloat4("u_ObjectColor", mat->Albedo);
-			mat->UseShader->UploadUniformFloat("u_SpecularStrength", mat->SpecularStrength);
+		//// Directional Lights
+		//mat->UseShader->UploadUniformInt("u_TotalDirectionalLights", (int)s_SceneData->DirectionalLights.size());
+		//for (size_t i = 0; i < s_SceneData->DirectionalLights.size(); i++)
+		//{
+		//	mat->UseShader->UploadUniformFloat3Array("u_DirectionalLights[" + std::to_string(i) + "].Color", s_SceneData->DirectionalLights[i].Color);
+		//	mat->UseShader->UploadUniformFloat3Array("u_DirectionalLights[" + std::to_string(i) + "].Direction", s_SceneData->DirectionalLights[i].Direction);
+		//	mat->UseShader->UploadUniformFloatArray("u_DirectionalLights[" + std::to_string(i) + "].Strength", s_SceneData->DirectionalLights[i].Strength);
+		//}
 
-		}
-		else if (mat->UseShader->GetName() == "Texture2D" || mat->UseShader->GetName() == "BlendShader")
-		{
-			mat->UseShader->UploadUniformFloat2("u_TextureCoordScale", mat->TextureScale);
-		}
-		vertexArray->Bind();
-		RenderCommand::EnableBackfaceCulling();
-		RenderCommand::Draw2D(vertexArray);
+		//if (mat->UseShader->GetName() == "FlatColor")
+		//{
+		//	mat->UseShader->UploadUniformFloat4("u_ObjectColor", mat->Albedo);
+		//	mat->UseShader->UploadUniformFloat("u_SpecularStrength", mat->SpecularStrength);
+
+		//}
+		//else if (mat->UseShader->GetName() == "Texture2D" || mat->UseShader->GetName() == "BlendShader")
+		//{
+		//	mat->UseShader->UploadUniformFloat2("u_TextureCoordScale", mat->TextureScale);
+		//}
+		//vertexArray->Bind();
+		//RenderCommand::EnableBackfaceCulling();
+		//RenderCommand::Draw2D(vertexArray);
+
+		//glDisable(GL_BLEND);
 	}
 
 	//For 2D, might be temp
-	void Renderer::Submit2d(Texture2D* tex, Shader* shader, const std::shared_ptr<VertexArray>& vertexArray, const glm::mat4& transform)
+	void Renderer::Submit2d(const std::shared_ptr<Shader>& shader, const std::shared_ptr<VertexArray>& vertexArray, const glm::mat4& transform)
 	{
+
 		shader->Bind();
-		shader->UploadUniformMat4("u_Transform", transform);
-
-
 		vertexArray->Bind();
+
+		shader->UploadUniformMat4("u_Transform", transform);
 
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
 
-		// Might wanna do this, not sure if needed: RenderCommand::DisableBackfaceCulling();
+		RenderCommand::DisableBackfaceCulling();
 		RenderCommand::Draw2D(vertexArray);
 
 		glDisable(GL_BLEND);
+
+		vertexArray->Unbind();
+		shader->UnBind();
+
+	}
+
+	void Renderer::SubmitHealthBar(const std::shared_ptr<Shader>& shader, const std::shared_ptr<VertexArray>& vertexArray, const glm::vec3& translate, const glm::vec3& scale, const glm::vec3& HealthBarSpace)
+	{
+		shader->Bind();
+		vertexArray->Bind();
+		
+		shader->UploadUniformFloat3("u_HealthBarSpace", HealthBarSpace);
+
+		shader->UploadUniformFloat3("u_Translate", translate);
+		shader->UploadUniformFloat3("u_Scale", scale);
+
+		shader->UploadUniformMat4("u_ViewProjection", s_SceneData->GameCamera.ViewProjectionMatrix);
+		shader->UploadUniformMat4("u_View", s_SceneData->GameCamera.ViewMatrix);
+
+		shader->UploadUniformFloat3("u_CameraRight_worldspace", glm::vec3(s_SceneData->GameCamera.ViewMatrix[0][0], s_SceneData->GameCamera.ViewMatrix[1][0], s_SceneData->GameCamera.ViewMatrix[2][0]));
+		shader->UploadUniformFloat3("u_CameraUp_worldspace", glm::vec3(s_SceneData->GameCamera.ViewMatrix[0][1], s_SceneData->GameCamera.ViewMatrix[1][1], s_SceneData->GameCamera.ViewMatrix[2][1]));
+
+		RenderCommand::DisableBackfaceCulling();
+		RenderCommand::Draw2D(vertexArray);
+
+		vertexArray->Unbind();
+		shader->UnBind();
 	}
 
 	int counter = 0;
@@ -437,7 +534,7 @@ namespace Frosty
 		vertexArray->GetUniformBuffer()->BindUpdate(skinDataPtr, nrOfBones);
 
 		vertexArray->Bind();
-		RenderCommand::EnableBackfaceCulling();
+		/*RenderCommand::EnableBackfaceCulling();*/
 		RenderCommand::Draw2D(vertexArray);
 		dt += Frosty::Time::DeltaTime();
 	}

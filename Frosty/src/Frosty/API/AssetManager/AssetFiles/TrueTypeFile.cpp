@@ -68,8 +68,13 @@ namespace Frosty
 				texture,
 				glm::ivec2(m_face->glyph->bitmap.width, m_face->glyph->bitmap.rows),
 				glm::ivec2(m_face->glyph->bitmap_left, m_face->glyph->bitmap_top),
-				m_face->glyph->advance.x
+				(uint32_t)m_face->glyph->advance.x
 			};
+
+			//uint32_t textureID; //ID-Handle of the glyph texture
+			//glm::ivec2 size;	//Glyph-size
+			//glm::ivec2 bearing;	//Offset from baselne to left/top of glyph
+			//uint32_t advance;	//Offset to advance to next glyph
 
 			m_characters.insert(std::pair<char, Character>(c, character));
 		}

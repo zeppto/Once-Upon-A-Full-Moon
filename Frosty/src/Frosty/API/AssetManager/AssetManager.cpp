@@ -26,6 +26,7 @@ namespace Frosty
 	std::map<std::string, std::shared_ptr<Shader>> AssetManager::s_Shaders;
 	std::map<std::string, std::shared_ptr<Texture2D>> AssetManager::s_Textures2D;
 	std::map<std::string, std::shared_ptr<Luna::BoundingBox>> AssetManager::s_BoundingBoxes;
+	std::map<std::string, std::shared_ptr<TrueTypeFile>> AssetManager::s_TruefontTypes;
 
 	std::vector<std::string> AssetManager::s_FilePath_Vector;
 
@@ -72,13 +73,13 @@ namespace Frosty
 				break;
 
 			case LUNA:
-				if (TempFileInfo.FileName == "Tree1")
-				{
-					int f = 0;
-				}
 
 				returnValue = LoadLunaFile(TempFileInfo);
 
+				break;
+
+			case TTF:
+				returnValue = LoadTTF_File(TempFileInfo);
 				break;
 
 
@@ -109,9 +110,8 @@ namespace Frosty
 		s_Shaders.emplace("UI", FY_NEW Shader("assets/shaders/UIVertex.glsl", "assets/shaders/UIFragment.glsl", "UI"));
 		s_Shaders.emplace("Particles", FY_NEW Shader("assets/shaders/ParticleVertex.glsl", "assets/shaders/ParticleGeometry.glsl", "assets/shaders/ParticleFragment.glsl", "Particles"));
 		s_Shaders.emplace("Animation", FY_NEW Shader("assets/shaders/AnimationVS.glsl", "assets/shaders/AnimationFS.glsl", "Animation"));
-
-		//Don't try to apply a compute shader as a material! This might have to be separate from normal shaders just to avoid confusion.
-		s_Shaders.emplace("ParticleCompute", FY_NEW Shader("assets/shaders/ParticleCompute.glsl", "ParticleCompute"));
+		s_Shaders.emplace("Text", FY_NEW Shader("assets/shaders/TextVertex.glsl", "assets/shaders/TextFragment.glsl", "Text"));
+		s_Shaders.emplace("HealthBar", FY_NEW Shader("assets/shaders/HealthBarVertex.glsl", "assets/shaders/HealthBarFragment.glsl", "HealthBar"));
 
 		s_Shaders["Texture2D"]->Bind();
 
@@ -196,7 +196,7 @@ namespace Frosty
 
 			// Vertex Buffer
 			std::shared_ptr<VertexBuffer> vertexBuffer;
-			vertexBuffer.reset(VertexBuffer::Create(&vertices.front(), sizeof(AnimVert) * (uint32_t)vertices.size(), BufferType::STATIC));
+			vertexBuffer.reset(VertexBuffer::Create(&vertices.front(), sizeof(AnimVert) * (uint32_t)vertices.size(), BufferType::DYNAMIC));
 
 			BufferLayout layout = {
 				{ ShaderDataType::Float3, "a_Position" },
@@ -246,6 +246,22 @@ namespace Frosty
 		}
 		return true;
 	}
+
+	bool AssetManager::AddTTF(const FileMetaData & MetaData)
+	{
+		if (TTFLoaded(MetaData.FileName))
+		{
+			FY_CORE_INFO("TTF: {0}, Is already loaded", MetaData.FileName);
+			return false;
+		}
+		else
+		{
+			//Change later
+			s_TruefontTypes.emplace(MetaData.FileName, FY_NEW TrueTypeFile(MetaData.FullFilePath));
+		}
+		return true;
+	}
+	
 
 	bool AssetManager::AddMaterial(LinkedMaterial& LnkMat)
 	{
@@ -457,6 +473,23 @@ namespace Frosty
 
 		std::unordered_map<std::string, LinkedMaterial>::iterator it;
 		for (it = s_LinkedMaterials.begin(); it != s_LinkedMaterials.end() && returnValue == false; it++)
+		{
+			if (it->first == FileName)
+			{
+				returnValue = true;
+			}
+		}
+
+		return returnValue;
+	}
+
+	bool Frosty::AssetManager::TTFLoaded(const std::string & FileName)
+	{
+		bool returnValue = false;
+
+
+		std::map<std::string, std::shared_ptr<TrueTypeFile>>::iterator it;
+		for (it = s_TruefontTypes.begin(); it != s_TruefontTypes.end() && returnValue == false; it++)
 		{
 			if (it->first == FileName)
 			{
@@ -707,6 +740,25 @@ namespace Frosty
 		return returnValue;
 	}
 
+	bool AssetManager::LoadTTF_File(const FileMetaData & FileNameInformation, const bool & Reload)
+	{
+		bool returnValue = false;
+		if (AddTTF(FileNameInformation))
+		{
+
+			std::shared_ptr<TrueTypeFile> ptr = GetTTF(FileNameInformation.FileName);
+
+			if (ptr->LoadFont())
+			{
+
+				returnValue = true;
+			}
+
+
+		}
+		return returnValue;
+	}
+
 	bool AssetManager::LoadGraphicFile(const FileMetaData& FileNameInformation, const bool& Reload)
 	{
 		bool returnValue = false;
@@ -795,6 +847,10 @@ namespace Frosty
 		else if (fileType == FILE_TYPE_GLSL)
 		{
 			return GLSL;
+		}
+		else if (fileType == FILE_TYPE_TTF)
+		{
+			return TTF;
 		}
 
 

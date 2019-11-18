@@ -20,6 +20,18 @@ namespace MCS
 		case Frosty::EventType::ExitCurrentLevel:
 			OnExitLevelEvent(static_cast<Frosty::ExitLevelEvent&>(e));
 			break;
+		case Frosty::EventType::SaveLevel:
+			OnSaveLevelEvent(static_cast<Frosty::SaveLevelEvent&>(e));
+			break;
+		case Frosty::EventType::CreateLevel:
+			OnCreateLevelEvent(static_cast<Frosty::CreateLevelEvent&>(e));
+			break;
+		case Frosty::EventType::OpenLevel:
+			OnOpenLevelEvent(static_cast<Frosty::OpenLevelEvent&>(e));
+			break;
+		case Frosty::EventType::CreatEntity:
+			OnCreatEntityEvent(static_cast<Frosty::CreatEntityEvent&>(e));
+			break;
 		default:
 			break;
 		}
@@ -32,19 +44,16 @@ namespace MCS
 			m_Map.generateMap();
 			m_CurrentRoome = m_Map.getRoom(m_PlayerPos);
 
-			int rotation = 0;
-			std::string texture = m_Map.getRoomTextur(m_PlayerPos, &rotation);
-			Level::Room(m_CurrentRoome.sideExits[0], m_CurrentRoome.sideExits[1], m_CurrentRoome.sideExits[2], m_CurrentRoome.sideExits[3], texture, rotation);
+			//int rotation = 0;
+			//std::string texture = m_Map.getRoomTextur(m_PlayerPos, &rotation);
+			//Level::Room(m_CurrentRoome.sideExits[0], m_CurrentRoome.sideExits[1], m_CurrentRoome.sideExits[2], m_CurrentRoome.sideExits[3], texture, rotation);
+			//this is curently the start room
+			int rotate;
+			m_Map.getRoomTextur(m_PlayerPos, &rotate);
+			Level::MoveToNewRoom(m_CurrentRoome.sideExits[0], m_CurrentRoome.sideExits[1], m_CurrentRoome.sideExits[2], m_CurrentRoome.sideExits[3]);
+			m_LevelFileFormat.OpenFromFile("deadend_1", nullptr, rotate);
 			m_Start = false;
 		}
-		//if (m_NextLevel && m_TempTimer > 9)
-		//{
-		//	int rotation = 0;
-		//	std::string texture = m_Map.getRoomTextur(m_PlayerPos, &rotation);
-		//	Level::Room(m_CurrentRoome.sideExits[0], m_CurrentRoome.sideExits[1], m_CurrentRoome.sideExits[2], m_CurrentRoome.sideExits[3], texture, rotation, m_EntrensSide);
-		//	m_NextLevel = false;
-		//}
-		//m_TempTimer += 1;//Frosty::Time::DeltaTime();
 	}
 
 	void LevelSystem::AddComponent(const std::shared_ptr<Frosty::ECS::Entity>& entity)
@@ -123,8 +132,96 @@ namespace MCS
 		auto& ExitSide = m_World->GetComponent<Frosty::ECS::CLevelExit>(e.GetExitEntity());
 
 		auto& PlayerTranform = m_World->GetComponent<Frosty::ECS::CTransform>(e.GetPlayerEntity());
+		Frosty::ECS::CTransform* playerTransform;
 
 		//temp level swap
+		for (size_t i = 1; i < p_Total; i++)
+		{
+			if (m_Transform[i]->EntityPtr != nullptr)
+			{
+				if (!m_World->HasComponent<Frosty::ECS::CCamera>(m_Transform[i]->EntityPtr))
+				{
+					if (!m_World->HasComponent<Frosty::ECS::CPlayer>(m_Transform[i]->EntityPtr))
+					{
+						if (m_World->HasComponent<Frosty::ECS::CPhysics>(m_Transform[i]->EntityPtr))
+						{
+							if (!m_World->HasComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr))
+							{
+								m_World->AddComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr);
+							}
+						}
+						else if (m_World->HasComponent<Frosty::ECS::CMesh>(m_Transform[i]->EntityPtr))
+						{
+							if (!m_World->HasComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr))
+							{
+								m_World->AddComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr);
+							}
+						}
+						else if (m_World->HasComponent<Frosty::ECS::CLight>(m_Transform[i]->EntityPtr))
+						{
+							auto& light = m_World->GetComponent<Frosty::ECS::CLight>(m_Transform[i]->EntityPtr);
+							if (light.Type == Frosty::ECS::CLight::LightType::Point)
+								if (!m_World->HasComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr))
+								{
+									m_World->AddComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr);
+								}
+						}
+					}
+					else
+					{
+						playerTransform = m_Transform[i];
+					}
+				}
+			}
+		}
+		if (ExitSide.ExitDirection == 0)
+			m_PlayerPos += glm::ivec2(0, -1);
+		if (ExitSide.ExitDirection == 1)
+			m_PlayerPos += glm::ivec2(0, 1);
+		if (ExitSide.ExitDirection == 2)
+			m_PlayerPos += glm::ivec2(-1, 0);
+		if (ExitSide.ExitDirection == 3)
+			m_PlayerPos += glm::ivec2(1, 0);
+
+		m_CurrentRoome = m_Map.getRoom(m_PlayerPos);
+		//m_EntrensSide = ExitSide.ExitDirection;
+		//m_NextLevel = true;
+		//m_TempTimer = 0;
+
+		int rotation = 0;
+		std::string fileName = m_Map.getRoomTextur(m_PlayerPos, &rotation);
+		//PlayerTranform.Position = Level::Room(m_CurrentRoome.sideExits[0], m_CurrentRoome.sideExits[1], 
+		//	m_CurrentRoome.sideExits[2], m_CurrentRoome.sideExits[3], texture, rotation, ExitSide.ExitDirection);
+		PlayerTranform.Position = Level::MoveToNewRoom(m_CurrentRoome.sideExits[0], m_CurrentRoome.sideExits[1],
+			m_CurrentRoome.sideExits[2], m_CurrentRoome.sideExits[3], ExitSide.ExitDirection);
+		m_LevelFileFormat.OpenFromFile(fileName, playerTransform, rotation);
+
+	}
+	void LevelSystem::OnSaveLevelEvent(Frosty::SaveLevelEvent& e)
+	{
+		for (size_t i = 1; i < p_Total; i++)
+		{
+			if (!m_World->HasComponent<Frosty::ECS::CCamera>(m_Transform[i]->EntityPtr))
+			{
+				if (!m_World->HasComponent<Frosty::ECS::CPlayer>(m_Transform[i]->EntityPtr))
+				{
+					if (m_World->HasComponent<Frosty::ECS::CLight>(m_Transform[i]->EntityPtr))
+					{
+						auto& light = m_World->GetComponent<Frosty::ECS::CLight>(m_Transform[i]->EntityPtr);
+						if (light.Type == Frosty::ECS::CLight::LightType::Point)
+							m_LevelFileFormat.AddEntity(m_Transform[i]->EntityPtr);
+					}
+					else
+					{
+						m_LevelFileFormat.AddEntity(m_Transform[i]->EntityPtr);
+					}
+				}
+			}
+		}
+		m_LevelFileFormat.SaveToFile(m_RoomType);
+	}
+	void LevelSystem::OnCreateLevelEvent(Frosty::CreateLevelEvent& e)
+	{
 		for (size_t i = 1; i < p_Total; i++)
 		{
 			if (!m_World->HasComponent<Frosty::ECS::CCamera>(m_Transform[i]->EntityPtr))
@@ -145,28 +242,228 @@ namespace MCS
 							m_World->AddComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr);
 						}
 					}
+					else if (m_World->HasComponent<Frosty::ECS::CLight>(m_Transform[i]->EntityPtr))
+					{
+						auto& light = m_World->GetComponent<Frosty::ECS::CLight>(m_Transform[i]->EntityPtr);
+						if (light.Type == Frosty::ECS::CLight::LightType::Point)
+							if (!m_World->HasComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr))
+							{
+								m_World->AddComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr);
+							}
+					}
+
 				}
 			}
 		}
-		if (ExitSide.ExitDirection == 0)
-			m_PlayerPos += glm::ivec2(0, -1);
-		if (ExitSide.ExitDirection == 1)
-			m_PlayerPos += glm::ivec2(0, 1);
-		if (ExitSide.ExitDirection == 2)
-			m_PlayerPos += glm::ivec2(-1, 0);
-		if (ExitSide.ExitDirection == 3)
-			m_PlayerPos += glm::ivec2(1, 0);
-
-		m_CurrentRoome = m_Map.getRoom(m_PlayerPos);
-		//m_EntrensSide = ExitSide.ExitDirection;
-		//m_NextLevel = true;
-		//m_TempTimer = 0;
-
-		int rotation = 0;
-		std::string texture = m_Map.getRoomTextur(m_PlayerPos, &rotation);
-		PlayerTranform.Position = Level::Room(m_CurrentRoome.sideExits[0], m_CurrentRoome.sideExits[1], m_CurrentRoome.sideExits[2], m_CurrentRoome.sideExits[3], texture, rotation, ExitSide.ExitDirection);
-
-
+		Level::Room(e.GetDirections(0), e.GetDirections(1), e.GetDirections(3), e.GetDirections(2));
+		if (e.GetDirections(0) && !e.GetDirections(1) && !e.GetDirections(3) && !e.GetDirections(2))
+			m_RoomType = "deadend";
+		else if (e.GetDirections(0) && !e.GetDirections(1) && !e.GetDirections(3) && e.GetDirections(2))
+			m_RoomType = "turningRoad";
+		else if (!e.GetDirections(0) && !e.GetDirections(1) && e.GetDirections(3) && e.GetDirections(2))
+			m_RoomType = "straightRoad";
+		else if (e.GetDirections(0) && !e.GetDirections(1) && e.GetDirections(3) && e.GetDirections(2))
+			m_RoomType = "threeWayRoad";
+		else if (e.GetDirections(0) && e.GetDirections(1) && e.GetDirections(3) && e.GetDirections(2))
+			m_RoomType = "crossroad";
+		else
+			m_RoomType = "unknown";
+	}
+	void LevelSystem::OnOpenLevelEvent(Frosty::OpenLevelEvent& e)
+	{
+		Frosty::ECS::CTransform* playerTransform;
+		for (size_t i = 1; i < p_Total; i++)
+		{
+			if (!m_World->HasComponent<Frosty::ECS::CCamera>(m_Transform[i]->EntityPtr))
+			{
+				if (!m_World->HasComponent<Frosty::ECS::CPlayer>(m_Transform[i]->EntityPtr))
+				{
+					if (m_World->HasComponent<Frosty::ECS::CPhysics>(m_Transform[i]->EntityPtr))
+					{
+						if (!m_World->HasComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr))
+						{
+							m_World->AddComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr);
+						}
+					}
+					else if (m_World->HasComponent<Frosty::ECS::CMesh>(m_Transform[i]->EntityPtr))
+					{
+						if (!m_World->HasComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr))
+						{
+							m_World->AddComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr);
+						}
+					}
+					else if (m_World->HasComponent<Frosty::ECS::CLight>(m_Transform[i]->EntityPtr))
+					{
+						auto& light = m_World->GetComponent<Frosty::ECS::CLight>(m_Transform[i]->EntityPtr);
+						if(light.Type == Frosty::ECS::CLight::LightType::Point)
+							if (!m_World->HasComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr))
+							{
+								m_World->AddComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr);
+							}
+					}
+				}
+				else
+				{
+					playerTransform = m_Transform[i];
+				}
+			}
+		}
+		m_RoomType = e.GetFilename();
+		m_LevelFileFormat.OpenFromFile(m_RoomType, playerTransform);
+	}
+	void LevelSystem::OnCreatEntityEvent(Frosty::CreatEntityEvent& e)
+	{
+		//Enemy
+		if (e.GetEntityType() == 0)
+		{
+			auto& enemy = m_World->CreateEntity({ 0.0f, 1.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 2.0f, 2.0f, 2.0f });
+			m_World->AddComponent<Frosty::ECS::CMesh>(enemy, Frosty::AssetManager::GetMesh("pCube1"));
+			m_World->AddComponent<Frosty::ECS::CMaterial>(enemy, Frosty::AssetManager::GetShader("FlatColor"));
+			m_World->AddComponent<Frosty::ECS::CPhysics>(enemy, Frosty::AssetManager::GetBoundingBox("pCube1"), 6.0f);
+			m_World->AddComponent<Frosty::ECS::CEnemy>(enemy);
+			m_World->AddComponent<Frosty::ECS::CFollow>(enemy);
+			m_World->AddComponent<Frosty::ECS::CHealth>(enemy);
+		}
+		//Stone
+		if (e.GetEntityType() == 1)
+		{
+			auto& stone = m_World->CreateEntity({ 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 90.0f }, { 3.0f, 3.0f, 3.0f });
+			m_World->AddComponent<Frosty::ECS::CMesh>(stone, Frosty::AssetManager::GetMesh("stone1"));
+			auto& material = m_World->AddComponent<Frosty::ECS::CMaterial>(stone, Frosty::AssetManager::GetShader("Texture2D"));
+			material.DiffuseTexture = Frosty::AssetManager::GetTexture2D("stoneTexture2");
+			m_World->AddComponent<Frosty::ECS::CPhysics>(stone, Frosty::AssetManager::GetBoundingBox("stone1"), 0.0f);
+		}
+		//Tree 
+		if (e.GetEntityType() == 2)
+		{
+			auto& mushroom = m_World->CreateEntity({ 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 1.0f, 1.0f, 1.0f });
+			m_World->AddComponent<Frosty::ECS::CMesh>(mushroom, Frosty::AssetManager::GetMesh("tree1"));
+			auto& material = m_World->AddComponent<Frosty::ECS::CMaterial>(mushroom, Frosty::AssetManager::GetShader("Texture2D"));
+			material.DiffuseTexture = Frosty::AssetManager::GetTexture2D("Tree7");
+			m_World->AddComponent<Frosty::ECS::CPhysics>(mushroom, Frosty::AssetManager::GetBoundingBox("tree1"), 0.0f);
+		}
+		//Mushroom 
+		if (e.GetEntityType() == 3)
+		{
+			auto& mushroom = m_World->CreateEntity({ 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 1.0f, 1.0f, 1.0f });
+			m_World->AddComponent<Frosty::ECS::CMesh>(mushroom, Frosty::AssetManager::GetMesh("mashrom1"));
+			auto& material = m_World->AddComponent<Frosty::ECS::CMaterial>(mushroom, Frosty::AssetManager::GetShader("Texture2D"));
+			material.DiffuseTexture = Frosty::AssetManager::GetTexture2D("mashRoomCirkel");
+		}
+		//Mushroom cirkel
+		if (e.GetEntityType() == 4)
+		{
+			auto& mushroom = m_World->CreateEntity({ 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 2.0f, 2.0f, 2.0f });
+			m_World->AddComponent<Frosty::ECS::CMesh>(mushroom, Frosty::AssetManager::GetMesh("hexCircle"));
+			auto& material = m_World->AddComponent<Frosty::ECS::CMaterial>(mushroom, Frosty::AssetManager::GetShader("Texture2D"));
+			material.DiffuseTexture = Frosty::AssetManager::GetTexture2D("mashRoomCirkel");
+			m_World->AddComponent<Frosty::ECS::CPhysics>(mushroom, Frosty::AssetManager::GetBoundingBox("hexCircle"), 0.0f);
+		}
+		//mushroomsAndStonesBig
+		if (e.GetEntityType() == 5)
+		{
+			auto& mushroom = m_World->CreateEntity({ 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 1.0f, 1.0f, 1.0f });
+			m_World->AddComponent<Frosty::ECS::CMesh>(mushroom, Frosty::AssetManager::GetMesh("mushroomsAndStonesBig"));
+			auto& material = m_World->AddComponent<Frosty::ECS::CMaterial>(mushroom, Frosty::AssetManager::GetShader("Texture2D"));
+			material.DiffuseTexture = Frosty::AssetManager::GetTexture2D("stoneAndMushRooms");
+			m_World->AddComponent<Frosty::ECS::CPhysics>(mushroom, Frosty::AssetManager::GetBoundingBox("mushroomsAndStonesBig"), 0.0f);
+		}
+		//mushroomsAndStonesSmall
+		if (e.GetEntityType() == 6)
+		{
+			auto& mushroom = m_World->CreateEntity({ 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 1.0f, 1.0f, 1.0f });
+			m_World->AddComponent<Frosty::ECS::CMesh>(mushroom, Frosty::AssetManager::GetMesh("mushroomsAndStonesSmall"));
+			auto& material = m_World->AddComponent<Frosty::ECS::CMaterial>(mushroom, Frosty::AssetManager::GetShader("Texture2D"));
+			material.DiffuseTexture = Frosty::AssetManager::GetTexture2D("stoneAndMushRooms");
+			m_World->AddComponent<Frosty::ECS::CPhysics>(mushroom, Frosty::AssetManager::GetBoundingBox("mushroomsAndStonesSmall"), 0.0f);
+		}
+		//mushrooms
+		if (e.GetEntityType() == 7)
+		{
+			auto& mushroom = m_World->CreateEntity({ 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 1.0f, 1.0f, 1.0f });
+			m_World->AddComponent<Frosty::ECS::CMesh>(mushroom, Frosty::AssetManager::GetMesh("mushrooms"));
+			auto& material = m_World->AddComponent<Frosty::ECS::CMaterial>(mushroom, Frosty::AssetManager::GetShader("Texture2D"));
+			material.DiffuseTexture = Frosty::AssetManager::GetTexture2D("mashRoomCirkel");
+		}
+		//mushroomLong
+		if (e.GetEntityType() == 8)
+		{
+			auto& mushroom = m_World->CreateEntity({ 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 1.0f, 1.0f, 1.0f });
+			m_World->AddComponent<Frosty::ECS::CMesh>(mushroom, Frosty::AssetManager::GetMesh("mushroomLongTree"));
+			auto& material = m_World->AddComponent<Frosty::ECS::CMaterial>(mushroom, Frosty::AssetManager::GetShader("Texture2D"));
+			material.DiffuseTexture = Frosty::AssetManager::GetTexture2D("mashRoomCirkel");
+		}
+		//mushroomsFlat
+		if (e.GetEntityType() == 9)
+		{
+			auto& mushroom = m_World->CreateEntity({ 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 1.0f, 1.0f, 1.0f });
+			m_World->AddComponent<Frosty::ECS::CMesh>(mushroom, Frosty::AssetManager::GetMesh("mushroomsFlat"));
+			auto& material = m_World->AddComponent<Frosty::ECS::CMaterial>(mushroom, Frosty::AssetManager::GetShader("Texture2D"));
+			material.DiffuseTexture = Frosty::AssetManager::GetTexture2D("mashRoomCirkel");
+		}
+		//2stones
+		if (e.GetEntityType() == 10)
+		{
+			auto& mushroom = m_World->CreateEntity({ 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 1.0f, 1.0f, 1.0f });
+			m_World->AddComponent<Frosty::ECS::CMesh>(mushroom, Frosty::AssetManager::GetMesh("stones2"));
+			auto& material = m_World->AddComponent<Frosty::ECS::CMaterial>(mushroom, Frosty::AssetManager::GetShader("Texture2D"));
+			material.DiffuseTexture = Frosty::AssetManager::GetTexture2D("stoneTexture2");
+			m_World->AddComponent<Frosty::ECS::CPhysics>(mushroom, Frosty::AssetManager::GetBoundingBox("stones2"), 0.0f);
+		}
+		//3stones
+		if (e.GetEntityType() == 11)
+		{
+			auto& mushroom = m_World->CreateEntity({ 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 1.0f, 1.0f, 1.0f });
+			m_World->AddComponent<Frosty::ECS::CMesh>(mushroom, Frosty::AssetManager::GetMesh("stones3"));
+			auto& material = m_World->AddComponent<Frosty::ECS::CMaterial>(mushroom, Frosty::AssetManager::GetShader("Texture2D"));
+			material.DiffuseTexture = Frosty::AssetManager::GetTexture2D("stoneTexture2");
+			m_World->AddComponent<Frosty::ECS::CPhysics>(mushroom, Frosty::AssetManager::GetBoundingBox("stones3"), 0.0f);
+		}
+		//stones4
+		if (e.GetEntityType() == 12)
+		{
+			auto& mushroom = m_World->CreateEntity({ 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 1.0f, 1.0f, 1.0f });
+			m_World->AddComponent<Frosty::ECS::CMesh>(mushroom, Frosty::AssetManager::GetMesh("stones4"));
+			auto& material = m_World->AddComponent<Frosty::ECS::CMaterial>(mushroom, Frosty::AssetManager::GetShader("Texture2D"));
+			material.DiffuseTexture = Frosty::AssetManager::GetTexture2D("stoneTexture2");
+			m_World->AddComponent<Frosty::ECS::CPhysics>(mushroom, Frosty::AssetManager::GetBoundingBox("stones4"), 0.0f);
+		}
+		//treeBunch3
+		if (e.GetEntityType() == 13)
+		{
+			auto& mushroom = m_World->CreateEntity({ 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 1.0f, 1.0f, 1.0f });
+			m_World->AddComponent<Frosty::ECS::CMesh>(mushroom, Frosty::AssetManager::GetMesh("treeBunch3"));
+			auto& material = m_World->AddComponent<Frosty::ECS::CMaterial>(mushroom, Frosty::AssetManager::GetShader("Texture2D"));
+			material.DiffuseTexture = Frosty::AssetManager::GetTexture2D("Tree7");
+			m_World->AddComponent<Frosty::ECS::CPhysics>(mushroom, Frosty::AssetManager::GetBoundingBox("treeBunch3"), 0.0f);
+		}
+		//treeBunch4
+		if (e.GetEntityType() == 14)
+		{
+			auto& mushroom = m_World->CreateEntity({ 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 1.0f, 1.0f, 1.0f });
+			m_World->AddComponent<Frosty::ECS::CMesh>(mushroom, Frosty::AssetManager::GetMesh("treeBunch4"));
+			auto& material = m_World->AddComponent<Frosty::ECS::CMaterial>(mushroom, Frosty::AssetManager::GetShader("Texture2D"));
+			material.DiffuseTexture = Frosty::AssetManager::GetTexture2D("Tree7");
+			m_World->AddComponent<Frosty::ECS::CPhysics>(mushroom, Frosty::AssetManager::GetBoundingBox("treeBunch4"), 0.0f);
+		}
+		//treeBunch7
+		if (e.GetEntityType() == 15)
+		{
+			auto& mushroom = m_World->CreateEntity({ 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 1.0f, 1.0f, 1.0f });
+			m_World->AddComponent<Frosty::ECS::CMesh>(mushroom, Frosty::AssetManager::GetMesh("treeBunch7"));
+			auto& material = m_World->AddComponent<Frosty::ECS::CMaterial>(mushroom, Frosty::AssetManager::GetShader("Texture2D"));
+			material.DiffuseTexture = Frosty::AssetManager::GetTexture2D("Tree7");
+			m_World->AddComponent<Frosty::ECS::CPhysics>(mushroom, Frosty::AssetManager::GetBoundingBox("treeBunch7"), 0.0f);
+		}
+		//treeBunchWall
+		if (e.GetEntityType() == 16)
+		{
+			auto& mushroom = m_World->CreateEntity({ 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 1.0f, 1.0f, 1.0f });
+			m_World->AddComponent<Frosty::ECS::CMesh>(mushroom, Frosty::AssetManager::GetMesh("treeBunchWall"));
+			auto& material = m_World->AddComponent<Frosty::ECS::CMaterial>(mushroom, Frosty::AssetManager::GetShader("Texture2D"));
+			material.DiffuseTexture = Frosty::AssetManager::GetTexture2D("Tree7");
+			m_World->AddComponent<Frosty::ECS::CPhysics>(mushroom, Frosty::AssetManager::GetBoundingBox("treeBunchWall"), 0.0f);
+		}
 	}
 }
 

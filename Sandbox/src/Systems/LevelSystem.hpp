@@ -2,8 +2,13 @@
 #define LEVEL_SYSTEM_HPP
 #include "LevelHandeler/MapGenerator.hpp"
 #include "LevelHandeler/LevelsHardCoded.hpp"
+#include "LevelHandeler/LevelFileFormat.hpp"
 
 namespace Frosty { class ExitLevelEvent; }
+namespace Frosty { class SaveLevelEvent; }
+namespace Frosty { class CreateLevelEvent; }
+namespace Frosty { class OpenLevelEvent; }
+namespace Frosty { class CreatEntityEvent; }
 
 namespace MCS
 {
@@ -24,6 +29,10 @@ namespace MCS
 
 	private:
 		void OnExitLevelEvent(Frosty::ExitLevelEvent& e);
+		void OnSaveLevelEvent(Frosty::SaveLevelEvent& e);
+		void OnCreateLevelEvent(Frosty::CreateLevelEvent& e);
+		void OnOpenLevelEvent(Frosty::OpenLevelEvent& e);
+		void OnCreatEntityEvent(Frosty::CreatEntityEvent& e);
 
 	private:
 		Frosty::World* m_World;
@@ -35,6 +44,10 @@ namespace MCS
 		//map.generateMap();
 		Room m_CurrentRoome;// = map.getRoom(glm::ivec2(11, 15));
 		bool m_Start = true;
+
+		//type of room (needed for creation of file)
+		std::string m_RoomType = "unknown";
+		LevelFileFormat m_LevelFileFormat;
 
 		//temp
 		bool m_NextLevel = false;

@@ -30,7 +30,7 @@ namespace Frosty
 		//TEMP FUNCS SHOULD BE MOVED AFTER ECS INTEGRATION
 		void SetUniformBuffer(std::shared_ptr<UniformBuffer>& uniformBuffer);
 		const std::shared_ptr<UniformBuffer>& GetUniformBuffer();
-		void AddHardcodedVertexBuffer(const std::shared_ptr<VertexBuffer>& vertexBuffer, size_t size);
+		void AddHardcodedVertexBuffer(const std::shared_ptr<VertexBuffer>& vertexBuffer, int size);
 		void SetCurrentAnim(Luna::Animation &anim);
 		Luna::Animation GetCurrentAnim();
 		//TEMP FUNCS END

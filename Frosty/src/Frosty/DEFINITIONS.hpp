@@ -3,6 +3,7 @@
 
 /// Very careful when changing solution settings on where the path starts from
 
+
 // Window/Editor settings (might be moved to a file, settings.txt or something)
 #define EDITOR_EXPLORER_WIDTH 300
 #define EDITOR_INSPECTOR_WIDTH 400

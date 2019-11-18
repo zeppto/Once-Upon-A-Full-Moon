@@ -86,71 +86,67 @@ namespace Frosty
 
 	void Shader::UploadUniformInt(const std::string& name, int value)
 	{
-		GLuint location = glGetUniformLocation(m_RendererID, name.c_str());
-		//FY_CORE_ASSERT(location == -1, "Error finding uniform location for {0}", name);
+		GLuint location = GetUniformLocation(name);
 		glUniform1i(location, value);
 	}
 
 	void Shader::UploadUniformFloat(const std::string& name, float value)
 	{
-		GLuint location = glGetUniformLocation(m_RendererID, name.c_str());
+		GLuint location = GetUniformLocation(name);
 		glUniform1f(location, value);
 	}
 
 	void Shader::UploadUniformFloat2(const std::string& name, const glm::vec2& value)
 	{
-		GLuint location = glGetUniformLocation(m_RendererID, name.c_str());
-		//FY_CORE_ASSERT(location > -1, "Error finding uniform location for {0}", name);
+		GLuint location = GetUniformLocation(name);
 		glUniform2f(location, value.x, value.y);
 	}
 
 	void Shader::UploadUniformFloat3(const std::string& name, const glm::vec3& value)
 	{
-		GLuint location = glGetUniformLocation(m_RendererID, name.c_str());
+		GLuint location = GetUniformLocation(name);
 		glUniform3f(location, value.x, value.y, value.z);
 	}
 
 	void Shader::UploadUniformFloat4(const std::string& name, const glm::vec4& value)
 	{
-		GLint location = glGetUniformLocation(m_RendererID, name.c_str());
-		//FY_CORE_ASSERT(location > -1, "Error finding uniform location for {0}", name);
+		GLuint location = GetUniformLocation(name);
 		glUniform4f(location, value.x, value.y, value.z, value.w);
 	}
 
 	void Shader::UploadUniformFloatArray(const std::string& name, float value)
 	{
-		GLint location = glGetUniformLocation(m_RendererID, name.c_str());
+		GLuint location = GetUniformLocation(name);
 		glUniform1fv(location, 1, &value);
 	}
 
 	void Shader::UploadUniformFloat2Array(const std::string& name, const glm::vec2& value)
 	{
-		GLint location = glGetUniformLocation(m_RendererID, name.c_str());
+		GLuint location = GetUniformLocation(name);
 		glUniform2fv(location, 1, &value[0]);
 	}
 
 	void Shader::UploadUniformFloat3Array(const std::string& name, const glm::vec3& value)
 	{
-		GLint location = glGetUniformLocation(m_RendererID, name.c_str());
+		GLuint location = GetUniformLocation(name);
 		glUniform3fv(location, 1, &value[0]);
 	}
 
 	void Shader::UploadUniformFloat4Array(const std::string& name, const glm::vec4& value)
 	{
-		GLint location = glGetUniformLocation(m_RendererID, name.c_str());
+		GLuint location = GetUniformLocation(name);
 		glUniform4fv(location, 1, &value[0]);
 	}
 
 	void Shader::UploadUniformMat3(const std::string& name, const glm::mat3& matrix)
 	{
-		GLuint location = glGetUniformLocation(m_RendererID, name.c_str());
+		GLuint location = GetUniformLocation(name);
 		glUniformMatrix3fv(location, 1, GL_FALSE, glm::value_ptr(matrix));
 	}
 
 	void Shader::UploadUniformMat4(const std::string& name, const glm::mat4& matrix)
 	{
-		GLint location = glGetUniformLocation(m_RendererID, name.c_str());
-		//FY_CORE_ASSERT(location > -1, "Error finding uniform location for {0}", name);
+		GLuint location = GetUniformLocation(name);
 		glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(matrix));
 	}
 
@@ -288,6 +284,22 @@ namespace Frosty
 		}
 
 		m_RendererID = program;
+	}
+
+	unsigned int Shader::GetUniformLocation(const std::string& name)
+	{
+		//GLuint location = -1;
+		//if (m_UniformCache.count(name) == 0)
+		//{
+		//	location = glGetUniformLocation(m_RendererID, name.c_str());
+		//	m_UniformCache.emplace(name, location);
+		//}
+		//else
+		//{
+		//	location = m_UniformCache[name];
+		//}
+		GLuint location = glGetUniformLocation(m_RendererID, name.c_str());
+		return location;
 	}
 
 	void ShaderLibrary::Add(const std::shared_ptr<Shader>& shader)

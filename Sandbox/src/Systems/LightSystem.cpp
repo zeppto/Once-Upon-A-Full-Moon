@@ -44,15 +44,17 @@ namespace MCS
 			m_Transform[p_Total] = &world->GetComponent<Frosty::ECS::CTransform>(entity);
 			m_Light[p_Total] = &world->GetComponent<Frosty::ECS::CLight>(entity);
 
+			Frosty::Renderer::AddLight(m_Light[p_Total], m_Transform[p_Total]);
 
-			if (m_Light[p_Total]->Type == Frosty::ECS::CLight::LightType::Point)
+
+			/*if (m_Light[p_Total]->Type == Frosty::ECS::CLight::LightType::Point)
 			{
 				Frosty::Renderer::AddLight(m_Light[p_Total]->Color, m_Transform[p_Total]->Position, m_Light[p_Total]->Strength, m_Light[p_Total]->Radius);
 			}
 			else if (m_Light[p_Total]->Type == Frosty::ECS::CLight::LightType::Directional)
 			{
 				Frosty::Renderer::AddLight(m_Light[p_Total]->Color, m_Transform[p_Total]->Rotation, m_Light[p_Total]->Strength);
-			}
+			}*/
 
 			p_Total++;
 		}
@@ -65,6 +67,9 @@ namespace MCS
 		if (it != p_EntityMap.end())
 		{
 			p_Total--;
+
+			Frosty::Renderer::RemoveLight(m_Light[p_Total]);
+
 			auto& entityToUpdate = m_Transform[p_Total]->EntityPtr;
 			m_Transform[p_Total] = nullptr;
 			m_Light[p_Total] = nullptr;
@@ -90,6 +95,9 @@ namespace MCS
 
 			m_Transform[it->second] = transformPtr;
 			m_Light[it->second] = lightPtr;
+
+			Frosty::Renderer::AddLight(m_Light[it->second], m_Transform[it->second]);
+
 		}
 	}
 

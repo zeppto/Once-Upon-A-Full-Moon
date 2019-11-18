@@ -22,11 +22,6 @@ enum RoomType
 	Right,				//14
 };
 
-enum RoomfromLeft
-{
-
-};
-
 
 struct Room
 {

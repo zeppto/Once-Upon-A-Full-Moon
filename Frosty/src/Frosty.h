@@ -24,11 +24,6 @@
 
 
 
-
-
-
-
-
 // ---TEMPORARY----------------------
 #include "Frosty/Core/CollisionDetection.hpp"
 // ----------------------------------
