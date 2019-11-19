@@ -6,7 +6,7 @@ namespace Frosty
 {
 	Frosty::UiBar::UiBar(std::string filename, std::string name)
 	{
-		m_Type = BAR;
+		m_Type = TYPE::BAR;
 		//m_Texture.id = SetTexture(filename);
 		//m_Texture.name = name;
 	}

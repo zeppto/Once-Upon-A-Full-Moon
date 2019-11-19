@@ -8,12 +8,38 @@ namespace MCS
 	void NavigationSystem::Init()
 	{
 		p_Signature.set(Frosty::ECS::getComponentTypeID<Frosty::ECS::CTransform>(), true);
+		p_Signature.set(Frosty::ECS::getComponentTypeID<Frosty::ECS::CPhysics>(), true);
 		p_Signature.set(Frosty::ECS::getComponentTypeID<Frosty::ECS::CEnemy>(), true);
 	}
 
 	void NavigationSystem::OnUpdate()
 	{
+		// Reset all cells and give occupied cells -1 weight
+		m_GridMap->ResetCellWeights();
+		for (size_t i = 1; i < p_Total; i++)
+		{
+			m_GridMap->UpdateOccupiedCells(m_Transform[i]->EntityPtr->Id, m_Transform[i], &*m_Physics[i]->BoundingBox);
+		}
+		
+		// Calculate route
+		for (size_t i = 1; i < p_Total; i++)
+		{
+			m_Physics[i]->Velocity = glm::vec3(0.0f);
+			m_Enemy[i]->CellTarget = glm::vec3(0.0f);
+			// Check sight range
+			if (glm::distance(glm::vec2(m_Transform[i]->Position.x, m_Transform[i]->Position.z), glm::vec2(m_Enemy[i]->Target->Position.x, m_Enemy[i]->Target->Position.z)) <= m_Enemy[i]->SightRange)
+			{
+				m_Enemy[i]->CellTarget = m_GridMap->GetDestination(m_Transform[i]->EntityPtr->Id, m_Transform[i]->Position, m_Enemy[i]->Target->Position);
+				m_Physics[i]->Velocity = glm::normalize(m_Enemy[i]->CellTarget - glm::vec3(m_Transform[i]->Position.x, 0.0f, m_Transform[i]->Position.z)) * m_Physics[i]->Speed;
 
+				// Check attack range
+				if (glm::distance(glm::vec2(m_Transform[i]->Position.x, m_Transform[i]->Position.z), glm::vec2(m_Enemy[i]->Target->Position.x, m_Enemy[i]->Target->Position.z)) <= m_Enemy[i]->AttackRange)
+				{
+					m_Physics[i]->Velocity = glm::vec3(0.0f);
+					m_Enemy[i]->CellTarget = glm::vec3(0.0f);
+				}
+			}
+		}
 	}
 
 	void NavigationSystem::AddComponent(const std::shared_ptr<Frosty::ECS::Entity>& entity)
@@ -24,6 +50,7 @@ namespace MCS
 
 			auto& world = Frosty::Application::Get().GetWorld();
 			m_Transform[p_Total] = &world->GetComponent<Frosty::ECS::CTransform>(entity);
+			m_Physics[p_Total] = &world->GetComponent<Frosty::ECS::CPhysics>(entity);
 			m_Enemy[p_Total] = &world->GetComponent<Frosty::ECS::CEnemy>(entity);
 
 			p_Total++;
@@ -39,6 +66,7 @@ namespace MCS
 			p_Total--;
 			auto& entityToUpdate = m_Transform[p_Total]->EntityPtr;
 			m_Transform[p_Total] = nullptr;
+			m_Physics[p_Total] = nullptr;
 			m_Enemy[p_Total] = nullptr;
 
 			if (p_Total > it->second)
@@ -58,9 +86,11 @@ namespace MCS
 		{
 			auto& world = Frosty::Application::Get().GetWorld();
 			Frosty::ECS::CTransform* transformPtr = world->GetComponentAddress<Frosty::ECS::CTransform>(entity);
+			Frosty::ECS::CPhysics* physicsPtr = world->GetComponentAddress<Frosty::ECS::CPhysics>(entity);
 			Frosty::ECS::CEnemy* enemyPtr = world->GetComponentAddress<Frosty::ECS::CEnemy>(entity);
 
 			m_Transform[it->second] = transformPtr;
+			m_Physics[it->second] = physicsPtr;
 			m_Enemy[it->second] = enemyPtr;
 		}
 	}
@@ -81,6 +111,7 @@ namespace MCS
 		for (size_t i = 1; i < p_Total; i++)
 		{
 			retInfo << "\t\t" << i << "\t" << m_Transform[i] << "\t" << m_Transform[i]->EntityPtr->Id << "\t\t" << m_Transform[i]->EntityPtr << "\t\t" << m_Transform[i]->EntityPtr.use_count() << "\n";
+			retInfo << "\t\t" << i << "\t" << m_Physics[i] << "\t" << m_Physics[i]->EntityPtr->Id << "\t\t" << m_Physics[i]->EntityPtr << "\t\t" << m_Physics[i]->EntityPtr.use_count() << "\n";
 			retInfo << "\t\t" << i << "\t" << m_Enemy[i] << "\t" << m_Enemy[i]->EntityPtr->Id << "\t\t" << m_Enemy[i]->EntityPtr << "\t\t" << m_Enemy[i]->EntityPtr.use_count() << "\n";
 			retInfo << "\n"; // Have this last
 		}
@@ -90,11 +121,11 @@ namespace MCS
 		return retInfo.str();
 	}
 
-	void NavigationSystem::InitiateGridMap(const Frosty::ECS::CTransform& transform)
+	void NavigationSystem::InitiateGridMap(const Frosty::ECS::CTransform& mapTransform)
 	{
 		m_GridMap.reset(FY_NEW GridMap());
 		Frosty::Time::StartTimer("GridMap::Init()");
-		m_GridMap->Init(transform);
+		m_GridMap->Init(mapTransform);
 		Frosty::Time::EndTimer("GridMap::Init()");
 	}
 }

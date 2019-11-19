@@ -35,8 +35,8 @@ namespace Frosty
 
 
 	public:
-		inline Animation() : AssetFile(FileMetaData()) {}
-		inline Animation(const FileMetaData& MetaData, const uint16_t& MeshId, Luna::Animation LuAni, const bool& HasSkeleton = false)
+		Animation() : AssetFile(FileMetaData()) {}
+		Animation(const FileMetaData& MetaData, const uint16_t& MeshId, Luna::Animation LuAni, const bool& HasSkeleton = false)
 			:m_Mesh_Id(MeshId), m_Has_Skeleton(HasSkeleton), AssetFile(MetaData), m_Animation(LuAni)
 		{
 			for (int i = 0; i < MAX_BONES ; i++)

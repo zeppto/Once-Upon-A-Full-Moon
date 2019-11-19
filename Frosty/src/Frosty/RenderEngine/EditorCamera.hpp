@@ -5,10 +5,10 @@ namespace Frosty
 {
 	struct EditorCameraProps
 	{
-		glm::vec3 Position;
-		glm::vec3 Rotation;
-		float FieldOfView;
-		glm::vec2 ClippingPlanes;
+		glm::vec3 Position{ 0.0f };
+		glm::vec3 Rotation{ 0.0f };
+		float FieldOfView{ 0.0f };
+		glm::vec2 ClippingPlanes{ 0.0f };
 
 		EditorCameraProps(const glm::vec3& pos = glm::vec3(0.0f, 0.0f, 0.0f), const glm::vec3& rotation = glm::vec3(0.0f, 0.0f, 0.0f), float fov = 60.0f, const glm::vec2& nearFar = glm::vec2(0.03f, 1000.0f))
 			: Position(pos), Rotation(rotation), FieldOfView(fov), ClippingPlanes(nearFar) { }
@@ -50,18 +50,18 @@ namespace Frosty
 	private:
 		bool m_Active{ true };
 
-		glm::mat4 m_ProjectionMatrix;
-		glm::mat4 m_ViewMatrix;
-		glm::mat4 m_ViewProjectionMatrix;
+		glm::mat4 m_ProjectionMatrix{ 0.0f };
+		glm::mat4 m_ViewMatrix{ 0.0f };
+		glm::mat4 m_ViewProjectionMatrix{ 0.0f };
 
 		glm::vec3 m_Position{ 0.0f };
 		glm::vec3 m_Rotation{ 0.0f, 0.0f, 0.0f };		// Yaw, Pitch, Roll
-		glm::vec3 m_Front;
+		glm::vec3 m_Front{ 0.0f };
 
 		// Settings
 		bool m_ResetMouse{ true };
-		float m_LastX;
-		float m_LastY;
+		float m_LastX{ 0.0f };
+		float m_LastY{ 0.0f };
 		float m_TranslationSpeed{ 10.0f };
 		float m_RotationSpeed{ 0.5f };
 

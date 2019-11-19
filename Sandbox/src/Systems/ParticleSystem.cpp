@@ -38,7 +38,7 @@ namespace MCS
 
 			m_ParticleSystem[i]->texture->Bind();
 
-			Frosty::Renderer::SubmitParticles(m_ParticleSystem[i]->shader, m_ParticleSystem[i]->computeShader, m_ParticleSystem[i]->particleVertArray, transform, m_ParticleSystem[i]->particleCount, 2.0f);
+			Frosty::Renderer::SubmitParticles(m_ParticleSystem[i]->shader, m_ParticleSystem[i]->particleVertArray, transform, m_ParticleSystem[i]->particleCount, 2.0f);
 
 			m_ParticleSystem[i]->texture->Unbind();
 		}
@@ -72,7 +72,6 @@ namespace MCS
 			m_ParticleSystem[p_Total]->particleVertArray->AddVertexBuffer(vertBuffer); //Add to array
 
 			m_ParticleSystem[p_Total]->shader = Frosty::AssetManager::GetShader("Particles");
-			//m_ParticleSystem[p_Total]->computeShader = Frosty::AssetManager::GetShader("ParticleCompute");
 			m_ParticleSystem[p_Total]->texture = Frosty::AssetManager::GetTexture2D("particle");
 
 			p_Total++;
@@ -241,7 +240,7 @@ namespace MCS
 
 		p.camDistance = glm::length2(glm::vec3(p.position) - m_CameraTransform->Position);
 		p.position -= (p.direction * p.speed) * Frosty::Time::DeltaTime();
-		
+
 		//Fade in
 		//if (p.color.a < 1.0 && p.lifetime > 1.0) { //TODO: Fix this temporary code
 		//	p.color.a += 2.0 * Frosty::Time::DeltaTime();
@@ -256,7 +255,6 @@ namespace MCS
 				p.color.a = lerp(0.0f, 1.0f, t); //TODO: use endAlpha and startAlpha perhaps
 			}
 		}
-
 		if (m_ParticleSystem[systemIndex]->startParticleSize != m_ParticleSystem[systemIndex]->endParticleSize)
 		{
 			//Update particle size
@@ -331,6 +329,6 @@ namespace MCS
 
 	float ParticleSystem::lerp(float a, float b, float f)
 	{
-		return (a * (1.0 - f)) + (b * f);
+		return (a * (1.0f - f)) + (b * f);
 	}
 }

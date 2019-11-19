@@ -7,7 +7,7 @@ namespace Frosty
 	class UIElement
 	{
 	public:
-		enum TYPE 
+		enum class TYPE 
 		{
 			TEXT,
 			SPRITE,
