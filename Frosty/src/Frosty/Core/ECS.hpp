@@ -1007,14 +1007,16 @@ namespace Frosty
 				float Size = 1.0f;
 			};
 
-			static const uint32_t MAX_PARTICLE_COUNT = 100;
-			//uint32_t maxParticles = 0;
+			static const uint32_t MAX_PARTICLE_COUNT = 200; //Absolute suported max
+
+			uint32_t MaxParticles = 1; //User's choice of max particles
 			float StartParticleSize = 1.0f;
 			float EndParticleSize = 0.0f;
 			float ParticleSize = 1.0f; //For a constant size
 
 			uint32_t ParticleCount = 0;
 			glm::vec3 ParticleSystemColor = glm::vec3(1.0f);
+			glm::vec3 ParticleSystemDirection = glm::vec3(0.0f, 1.0f, 0.0f);
 			float EmitRate = 0.1f;
 			uint32_t EmitCount = 1;
 			float MaxLifetime = 3.0f; //All particles
@@ -1024,7 +1026,7 @@ namespace Frosty
 
 			uint32_t LastUsedParticle = 0;
 
-			Particle Particles[MAX_PARTICLE_COUNT]; //The complete data
+			std::vector<Particle> Particles; //The complete data
 			GPUParticle GpuParticles[MAX_PARTICLE_COUNT]; //The data we send to the gpu
 
 			std::shared_ptr<VertexArray> ParticleVertArray;
@@ -1037,7 +1039,7 @@ namespace Frosty
 			CParticleSystem(std::shared_ptr<VertexArray> verts, std::shared_ptr<Shader> shader, std::shared_ptr<Texture2D> tex, glm::vec4 color = glm::vec4(1.0f), float particleSize = 1.0f)
 				: ParticleVertArray(verts), UseShader(shader), Texture(tex), ParticleSystemColor(color), ParticleSize(particleSize)
 			{
-				for (uint32_t i = 0; i < MAX_PARTICLE_COUNT; i++)
+				for (uint32_t i = 0; i < MaxParticles; i++)
 				{
 					Particles[i].Color = color;
 					Particles[i].Size = particleSize;
