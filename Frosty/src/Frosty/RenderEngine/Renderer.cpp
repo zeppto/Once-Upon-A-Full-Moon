@@ -13,12 +13,19 @@ namespace Frosty
 	std::unordered_map<int, std::unordered_map<int, Frosty::ECS::CTransform*>*> Renderer::s_TransformLookUpMap;
 	std::unordered_map<int, std::unordered_map<std::string, std::shared_ptr<Renderer::MeshData>>*> Renderer::s_MeshLookUpMap;
 	std::unordered_map<int, std::unordered_map<int, std::shared_ptr<Renderer::MaterialData>>*> Renderer::s_MaterialLookUpMap;
+	std::vector<Renderer::RenderPassData>  Renderer::s_RenderPas;
+
 	int Renderer::s_TotalNrOfFrames;
 	bool Renderer::s_DistanceCulling;
 
 	void Renderer::Init()
 	{
-		RenderCommand::Init();
+		RenderCommand::Init(); 
+
+		for (uint8_t i = 0; i < 3; i++)
+		{
+			s_RenderPas.emplace_back(RenderPassData());
+		}
 	}
 
 	void Renderer::BeginScene()
@@ -479,6 +486,20 @@ namespace Frosty
 	{
 		if (mat->UseShader->GetName() != "Animation")
 		{
+			std::unordered_map<std::string, std::shared_ptr<ShaderData>>* ShaderMap = &s_ShaderMap;
+			//std::unordered_map<std::string, std::shared_ptr<ShaderData>>* ShaderMap = nullptr;
+
+			//// at(0) will be for dept sampling for shadow map
+			//if (mat->HasTransparency)
+			//{
+			//	ShaderMap = &s_RenderPas.at(1);
+			//}
+			//else
+			//{
+			//	ShaderMap = &s_RenderPas.at(2);
+			//	
+			//}
+
 
 			counter++;
 			//Set up IDs
@@ -489,12 +510,12 @@ namespace Frosty
 
 			//Check if the shader key is already in the map, if not add it.
 			std::string ShaderName = mat->UseShader->GetName();
-			if (s_ShaderMap.find(mat->UseShader->GetName()) == s_ShaderMap.end())
+			if (ShaderMap->find(mat->UseShader->GetName()) == ShaderMap->end())
 			{
-				s_ShaderMap.emplace(mat->UseShader->GetName(), FY_NEW ShaderData);
+				ShaderMap->emplace(mat->UseShader->GetName(), FY_NEW ShaderData);
 
 			}
-			auto& shaderData = s_ShaderMap.at(ShaderName);
+			auto& shaderData = ShaderMap->at(ShaderName);
 			shaderData->Shader = mat->UseShader;
 
 
@@ -526,7 +547,7 @@ namespace Frosty
 			auto& transformMap = meshData->TransformMap;
 			s_TransformLookUpMap.emplace(transformID, &transformMap);
 
-			s_ShaderMap;
+			ShaderMap;
 		}
 	}
 

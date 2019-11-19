@@ -515,6 +515,8 @@ namespace Frosty
 			int Shininess{ 16 };
 			glm::vec2 TextureScale{ 1.0f };
 
+			bool HasTransparency = false;
+
 			CMaterial() = default;
 			CMaterial(const std::shared_ptr<Shader>& shader) : UseShader(shader) { }
 			CMaterial(const CMaterial& org) { FY_CORE_ASSERT(false, "Copy constructor in CMaterial called."); }

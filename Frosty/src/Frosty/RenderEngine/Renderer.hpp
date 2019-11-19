@@ -88,10 +88,19 @@ namespace Frosty
 			std::unordered_map<int, std::shared_ptr<MaterialData>> MaterialMap;
 		};
 
+		struct RenderPassData
+		{
+			static std::unordered_map<std::string, std::shared_ptr<ShaderData>> ShaderMap;
+			static std::unordered_map<int, std::unordered_map<int, Frosty::ECS::CTransform*>*> TransformLookUpMap;
+			static std::unordered_map<int, std::unordered_map<std::string, std::shared_ptr<MeshData>>*> MeshLookUpMap;
+			static std::unordered_map<int, std::unordered_map<int, std::shared_ptr<MaterialData>>*> MaterialLookUpMap;
+		};
+
 		static std::unordered_map<std::string, std::shared_ptr<ShaderData>> s_ShaderMap;
 		static std::unordered_map<int, std::unordered_map<int, Frosty::ECS::CTransform*>*> s_TransformLookUpMap;
 		static std::unordered_map<int, std::unordered_map<std::string, std::shared_ptr<MeshData>>*> s_MeshLookUpMap;
 		static std::unordered_map<int, std::unordered_map<int, std::shared_ptr<MaterialData>>*> s_MaterialLookUpMap;
+		static std::vector<RenderPassData> s_RenderPas;
 
 		struct PointLight
 		{
