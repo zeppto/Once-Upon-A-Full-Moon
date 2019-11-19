@@ -25,7 +25,7 @@ namespace MCS
 		{
 			if (m_Meshes[i]->RenderMesh)
 			{
-				if (m_Materials[i]->UseShader->GetName() == "Animation" && m_Materials[i]->DiffuseTexture)m_Materials[i]->DiffuseTexture->Bind(0);
+				/*if (m_Materials[i]->UseShader->GetName() == "Animation" && m_Materials[i]->DiffuseTexture)m_Materials[i]->DiffuseTexture->Bind(0);
 				if (m_Materials[i]->UseShader->GetName() == "Animation" && m_Materials[i]->NormalTexture) m_Materials[i]->NormalTexture->Bind(1);
 				if (m_Materials[i]->UseShader->GetName() == "Animation" && m_Materials[i]->SpecularTexture) m_Materials[i]->SpecularTexture->Bind(2);
 
@@ -36,9 +36,9 @@ namespace MCS
 
 				if (m_Materials[i]->UseShader->GetName() == "Animation" && m_Materials[i]->DiffuseTexture) m_Materials[i]->DiffuseTexture->Unbind();
 				if (m_Materials[i]->UseShader->GetName() == "Animation" && m_Materials[i]->NormalTexture) m_Materials[i]->NormalTexture->Unbind();
-				if (m_Materials[i]->UseShader->GetName() == "Animation" && m_Materials[i]->SpecularTexture) m_Materials[i]->SpecularTexture->Unbind();
+				if (m_Materials[i]->UseShader->GetName() == "Animation" && m_Materials[i]->SpecularTexture) m_Materials[i]->SpecularTexture->Unbind();*/
 
-	/*			if (!m_Transform[i]->IsStatic)
+				if (!m_Transform[i]->IsStatic)
 				{
 					glm::mat4 transform = glm::translate(glm::mat4(1.0f), m_Transform[i]->Position);
 					transform = glm::rotate(transform, glm::radians(m_Transform[i]->Rotation.x), { 1.0f, 0.0f, 0.0f });

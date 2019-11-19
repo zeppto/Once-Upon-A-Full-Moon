@@ -859,18 +859,17 @@ namespace MCS
 				
 				if (world->HasComponent<Frosty::ECS::CAnimController>(m_SelectedEntity))
 				{
-					Frosty::ECS::CAnimController& comp = world->GetComponent<Frosty::ECS::CAnimController>(m_SelectedEntity);
 					if (ImGui::CollapsingHeader("Animation Controller"))
 					{
-
-						ImGui::SliderFloat("AnimSpeed", &comp.animSpeed, 0.f, 100.f);
+						Frosty::ECS::CAnimController * comp = &world->GetComponent<Frosty::ECS::CAnimController>(m_SelectedEntity);
+						ImGui::SliderFloat("AnimSpeed", &comp->animSpeed, 0.f, 50.f);
 
 						if (ImGui::Button("Pick Animation")) ImGui::OpenPopup("Animation menu");
 						if (ImGui::BeginPopup("Animation menu"))
 						{
 							for (auto& it : *Frosty::AssetManager::GetAnimationMap())
 							{
-								if (ImGui::Button(it.first.c_str())) comp.currAnim = &it.second;
+								if (ImGui::Button(it.first.c_str())) comp->currAnim = &it.second;
 							}
 							if (ImGui::Button("Close")) ImGui::CloseCurrentPopup();
 							ImGui::EndPopup();

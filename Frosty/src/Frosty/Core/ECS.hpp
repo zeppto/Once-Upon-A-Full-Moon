@@ -1118,6 +1118,7 @@ namespace Frosty
 			bool isSliderControlled = false;
 			float animSpeed = 1;
 			Animation* currAnim;
+			float dt = 0;
 
 			virtual std::string GetName() const { return NAME; }
 		};
