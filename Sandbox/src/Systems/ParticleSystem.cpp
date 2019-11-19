@@ -195,7 +195,7 @@ namespace MCS
 				m_ParticleSystem[systemIndex]->Particles[i].StartSize = m_ParticleSystem[systemIndex]->StartParticleSize;
 			}
 		}
-		if (glm::vec3(m_ParticleSystem[systemIndex]->Particles[0].Direction) != m_ParticleSystem[systemIndex]->ParticleSystemDirection)
+		if (glm::vec3(m_ParticleSystem[systemIndex]->Particles[0].Direction) != m_ParticleSystem[systemIndex]->ParticleSystemDirection) //Temporary if we're gonna have gravity. Needs to be startrDir otherwise.
 		{
 			for (uint32_t i = 0; i < Frosty::ECS::CParticleSystem::MAX_PARTICLE_COUNT; i++)
 			{

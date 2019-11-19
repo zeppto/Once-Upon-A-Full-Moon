@@ -673,6 +673,43 @@ namespace MCS
 						ImGui::Text("Active particles: %i", comp.ParticleCount);
 						ImGui::Checkbox("Preview", &comp.Preview);
 						ImGui::ColorEdit4("Color", glm::value_ptr(comp.ParticleSystemColor));
+						ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(10, 10));
+						ImGui::Image(comp.Texture ? comp.Texture->GetRenderID() : Frosty::AssetManager::GetTexture2D("Checkerboard")->GetRenderID(), ImVec2(64, 64));
+						ImGui::PopStyleVar();
+						if (ImGui::IsItemClicked()) ImGui::OpenPopup("particle_texture_selector");
+						ImGui::SetNextWindowSize(ImVec2(160, 370));
+						if (ImGui::BeginPopupModal("particle_texture_selector", NULL))
+						{
+							size_t index = 0;
+							ImGuiTreeNodeFlags node_flags = ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen; // ImGuiTreeNodeFlags_Bullet
+							uint32_t diffuseID = 0;
+							int nrOfCols = 2;
+							int col = 0;
+
+							for (auto& texture : Frosty::AssetManager::GetTextures2D())
+							{
+								ImGui::SetCursorPos(ImVec2((col % nrOfCols) * 66.0f, ImGui::GetCursorPosY() - (col % nrOfCols) * 68.0f));
+								col++;
+								ImGui::Image(texture.second->GetRenderID(), ImVec2(64, 64));
+								if (ImGui::IsItemClicked())
+								{
+									if (texture.first == "Checkerboard")
+									{
+										comp.Texture->Unbind();
+										comp.Texture.reset();
+									}
+									else
+									{
+										comp.Texture = texture.second;
+									}
+								}
+							}
+
+							if (ImGui::Button("Close")) ImGui::CloseCurrentPopup();
+							ImGui::EndPopup();
+						}
+						ImGui::SameLine();
+						ImGui::Text("Texture");
 						ImGui::SliderInt("Particle count", (int*)&comp.ParticleCount, 1, comp.MAX_PARTICLE_COUNT);
 						ImGui::DragFloat3("Direction", glm::value_ptr(comp.ParticleSystemDirection), 0.1f, 0.0f, 0.0f, "%.2f");
 						ImGui::InputFloat("Start size", &comp.StartParticleSize);
