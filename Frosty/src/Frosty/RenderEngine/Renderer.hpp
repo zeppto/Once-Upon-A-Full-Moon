@@ -79,10 +79,10 @@ namespace Frosty
 			std::unordered_map<int, std::shared_ptr<MaterialData>> MaterialMap;
 		};
 
-		static std::unordered_map<std::string, std::shared_ptr<ShaderData>> m_ShaderMap;
-		static std::unordered_map<int, std::unordered_map<int, Frosty::ECS::CTransform*>*> m_TransformLookUpMap;
-		static std::unordered_map<int, std::unordered_map<std::string, std::shared_ptr<MeshData>>*> m_MeshLookUpMap;
-		static std::unordered_map<int, std::unordered_map<int, std::shared_ptr<MaterialData>>*> m_MaterialLookUpMap;
+		static std::unordered_map<std::string, std::shared_ptr<ShaderData>> s_ShaderMap;
+		static std::unordered_map<int, std::unordered_map<int, Frosty::ECS::CTransform*>*> s_TransformLookUpMap;
+		static std::unordered_map<int, std::unordered_map<std::string, std::shared_ptr<MeshData>>*> s_MeshLookUpMap;
+		static std::unordered_map<int, std::unordered_map<int, std::shared_ptr<MaterialData>>*> s_MaterialLookUpMap;
 
 		struct PointLight
 		{
@@ -116,6 +116,7 @@ namespace Frosty
 		};
 		static SceneData* s_SceneData;
 
+		static int s_TotalNrOfFrames;
 	};
 }
 #endif // !RENDERER_HPP
