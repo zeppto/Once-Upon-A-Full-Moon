@@ -323,8 +323,8 @@ namespace MCS
 			m_World->AddComponent<Frosty::ECS::CMesh>(enemy, Frosty::AssetManager::GetMesh("pCube1"));
 			m_World->AddComponent<Frosty::ECS::CMaterial>(enemy, Frosty::AssetManager::GetShader("FlatColor"));
 			m_World->AddComponent<Frosty::ECS::CPhysics>(enemy, Frosty::AssetManager::GetBoundingBox("pCube1"), 6.0f);
-			//m_World->AddComponent<Frosty::ECS::CEnemy>(enemy);
-			m_World->AddComponent<Frosty::ECS::CFollow>(enemy);
+			m_World->AddComponent<Frosty::ECS::CEnemy>(enemy);
+			//m_World->AddComponent<Frosty::ECS::CFollow>(enemy);
 			m_World->AddComponent<Frosty::ECS::CHealth>(enemy);
 		}
 		//Stone

@@ -176,6 +176,9 @@ struct Level_rememberedEntitys
 {
 	glm::ivec2 myRoomId = { 0, 0 };
 	std::vector<int> removeEnemy;
+	std::vector<int> existingIDs;
+	std::vector<int> killedIds;
+	float timePlayerLeft;
 };
 //________________________________________________
 
