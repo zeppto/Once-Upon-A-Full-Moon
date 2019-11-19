@@ -25,7 +25,7 @@ namespace MCS
 		{
 			if (m_Meshes[i]->RenderMesh)
 			{
-	/*			if (!m_Transform[i]->IsStatic)
+				if (!m_Transform[i]->IsStatic)
 				{
 					glm::mat4 transform = glm::translate(glm::mat4(1.0f), m_Transform[i]->Position);
 					transform = glm::rotate(transform, glm::radians(m_Transform[i]->Rotation.x), { 1.0f, 0.0f, 0.0f });
@@ -76,7 +76,7 @@ namespace MCS
 				if (m_Materials[i]->UseShader->GetName() == "BlendShader" && m_Materials[i]->SpecularTexture) m_Materials[i]->SpecularTexture->Unbind();
 				if (m_Materials[i]->UseShader->GetName() == "BlendShader" && m_Materials[i]->BlendMapTexture) m_Materials[i]->BlendMapTexture->Unbind();
 				if (m_Materials[i]->UseShader->GetName() == "BlendShader" && m_Materials[i]->BlendTexture1) m_Materials[i]->BlendTexture1->Unbind();
-				if (m_Materials[i]->UseShader->GetName() == "BlendShader" && m_Materials[i]->BlendTexture2) m_Materials[i]->BlendTexture2->Unbind();*/
+				if (m_Materials[i]->UseShader->GetName() == "BlendShader" && m_Materials[i]->BlendTexture2) m_Materials[i]->BlendTexture2->Unbind();
 			}
 		}
 	}
