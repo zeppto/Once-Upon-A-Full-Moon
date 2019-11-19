@@ -13,6 +13,7 @@ namespace Frosty
 	std::unordered_map<int, std::unordered_map<std::string, std::shared_ptr<Renderer::MeshData>>*> Renderer::s_MeshLookUpMap;
 	std::unordered_map<int, std::unordered_map<int, std::shared_ptr<Renderer::MaterialData>>*> Renderer::s_MaterialLookUpMap;
 	int Renderer::s_TotalNrOfFrames;
+	bool Renderer::s_DistanceCulling;
 
 	void Renderer::Init()
 	{
@@ -135,7 +136,7 @@ namespace Frosty
 					for (auto& TransformIt : meshData->TransformMap)
 					{
 						float distance = 0;																	//The scale check is so the plane is not culled
-						if (culling && Time::GetFrameCount /*&& s_TotalNrOfFrames % 2 == 0*/ && meshData->TransformMap.at(TransformIt.first)->Scale.x < 100)
+						if (culling && Time::GetFrameCount /*&& s_TotalNrOfFrames % 2 == 0*/ && meshData->TransformMap.at(TransformIt.first)->Scale.x < 100 && s_DistanceCulling)
 						{
 							distance = glm::distance(meshData->TransformMap.at(TransformIt.first)->Position, s_SceneData->GameCamera.CameraPosition);
 						}
@@ -171,6 +172,11 @@ namespace Frosty
 				glDisable(GL_BLEND);
 				RenderCommand::DisableBackfaceCulling();
 			}
+			else if (shaderData->Shader->GetName() == "FlatColor")
+			{
+				glDisable(GL_BLEND);
+				RenderCommand::DisableBackfaceCulling();
+			}
 		}
 		s_TotalNrOfFrames++;
 	}
@@ -194,8 +200,8 @@ namespace Frosty
 		if (light->Type == Frosty::ECS::CLight::LightType::Point)
 		{
 			s_SceneData->PointLights.emplace(light->EntityPtr->Id, FY_NEW PointLight);
-			s_SceneData->PointLights.at(light->EntityPtr->Id)->PointLight = light;
-			s_SceneData->PointLights.at(light->EntityPtr->Id)->Transform = transform;
+			s_SceneData->PointLights.at(int(light->EntityPtr->Id))->PointLight = light;
+			s_SceneData->PointLights.at(int(light->EntityPtr->Id))->Transform = transform;
 		}
 		else if (light->Type == Frosty::ECS::CLight::LightType::Directional)
 		{
@@ -207,9 +213,9 @@ namespace Frosty
 			light->Direction = mat * glm::vec4(light->Direction, 0);
 
 
-			s_SceneData->DirectionalLights.emplace(light->EntityPtr->Id, FY_NEW DirectionalLight);
-			s_SceneData->DirectionalLights.at(light->EntityPtr->Id)->DirectionalLight = light;
-			s_SceneData->DirectionalLights.at(light->EntityPtr->Id)->Transform = transform;
+			s_SceneData->DirectionalLights.emplace(int(light->EntityPtr->Id), FY_NEW DirectionalLight);
+			s_SceneData->DirectionalLights.at(int(light->EntityPtr->Id))->DirectionalLight = light;
+			s_SceneData->DirectionalLights.at(int(light->EntityPtr->Id))->Transform = transform;
 		}
 	}
 
@@ -217,14 +223,14 @@ namespace Frosty
 	{
 		if (light->Type == Frosty::ECS::CLight::LightType::Point)
 		{
-			s_SceneData->PointLights.at(light->EntityPtr->Id)->PointLight = light;
-			s_SceneData->PointLights.at(light->EntityPtr->Id)->Transform = transform;
+			s_SceneData->PointLights.at(int(light->EntityPtr->Id))->PointLight = light;
+			s_SceneData->PointLights.at(int(light->EntityPtr->Id))->Transform = transform;
 		}
 		else if (light->Type == Frosty::ECS::CLight::LightType::Directional)
 		{
 
-			s_SceneData->DirectionalLights.at(light->EntityPtr->Id)->DirectionalLight = light;
-			s_SceneData->DirectionalLights.at(light->EntityPtr->Id)->Transform = transform;
+			s_SceneData->DirectionalLights.at(int(light->EntityPtr->Id))->DirectionalLight = light;
+			s_SceneData->DirectionalLights.at(int(light->EntityPtr->Id))->Transform = transform;
 		}
 	}
 
@@ -446,9 +452,9 @@ namespace Frosty
 	{
 		counter++;
 		//Set up IDs
-		int matID = transform->EntityPtr->Id; //Works but can be improved whith a real material ID
+		int matID = int(transform->EntityPtr->Id); //Works but can be improved whith a real material ID
 		std::string meshID = vertexArray->GetName();
-		int transformID = transform->EntityPtr->Id;
+		int transformID = int(transform->EntityPtr->Id);
 
 
 		//Check if the shader key is already in the map, if not add it.

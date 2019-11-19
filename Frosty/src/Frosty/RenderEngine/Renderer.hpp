@@ -56,6 +56,9 @@ namespace Frosty
 
 		inline static void Shutdown() { delete s_SceneData; }
 
+		inline static void SetDistanceCulling(bool& distanceCulling) { s_DistanceCulling = distanceCulling; }
+
+
 	private:
 	
 
@@ -117,6 +120,7 @@ namespace Frosty
 		static SceneData* s_SceneData;
 
 		static int s_TotalNrOfFrames;
+		static bool s_DistanceCulling;
 	};
 }
 #endif // !RENDERER_HPP

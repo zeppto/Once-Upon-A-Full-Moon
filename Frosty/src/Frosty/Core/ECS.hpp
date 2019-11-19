@@ -406,8 +406,6 @@ namespace Frosty
 			CTransform(const CTransform& org) { FY_CORE_ASSERT(false, "Copy constructor in CTransform called."); }
 			CTransform& operator=(const CTransform& org)
 			{
-				FY_WARN("Assignment operator in CTransform called.");
-
 				if (this != &org)
 				{
 					Position = org.Position;
@@ -480,8 +478,6 @@ namespace Frosty
 			CCamera(const CCamera& org) { FY_CORE_ASSERT(false, "Copy constructor in CCamera called."); }
 			CCamera& operator=(const CCamera& org)
 			{
-				FY_WARN("Assignment operator in CCamera called.");
-
 				if (this != &org)
 				{
 					Target = org.Target;
@@ -524,8 +520,6 @@ namespace Frosty
 			CMaterial(const CMaterial& org) { FY_CORE_ASSERT(false, "Copy constructor in CMaterial called."); }
 			CMaterial& operator=(const CMaterial& org)
 			{
-				FY_WARN("Assignment operator in CMaterial called.");
-
 				if (this != &org)
 				{
 					UseShader = org.UseShader;
@@ -578,8 +572,6 @@ namespace Frosty
 			CLight(const CLight& org) { FY_CORE_ASSERT(false, "Copy constructor in CLight called."); }
 			CLight& operator=(const CLight& org)
 			{
-				FY_WARN("Assignment operator in CLight called.");
-
 				if (this != &org)
 				{
 					Type = org.Type;
@@ -633,6 +625,7 @@ namespace Frosty
 			WeaponType Type{ WeaponType::Sword };
 
 			unsigned int ItemID{ 1 };
+			bool IsPlayerWeapon{ false };
 
 			// Range
 			float AttackRange{ 15.f };						// 6.f if melee and 25.f if bow
@@ -645,8 +638,13 @@ namespace Frosty
 			float CriticalHitChance{ 0.1f };				// 10 % chanse of performing a critical hit
 
 			// Speed
-			float Cooldown{ 1.3f };
-			float CooldownTimer{ Frosty::Time::CurrentTime() };
+			float LVL1AttackCooldown{ 1.f };
+			float LVL2AttackCooldown{ 2.f };
+			float LVL3AttackCooldown{ 3.f };
+
+			float LVL1AttackCooldownTimer{ Frosty::Time::CurrentTime() };
+			float LVL2AttackCooldownTimer{ Frosty::Time::CurrentTime() };
+			float LVL3AttackCooldownTimer{ Frosty::Time::CurrentTime() };
 
 			float Lifetime{ 2.f };
 
@@ -657,13 +655,10 @@ namespace Frosty
 			// Water (+ Heal)
 
 			CWeapon() = default;
-			CWeapon(WeaponType type, unsigned int itemID, float damage) : Type(type), ItemID(itemID), Damage(damage) { }
-			CWeapon(WeaponType type, float damage, float criticalHit, float criticalHitChanse, float cooldown, float lifetime = 7.0f) : Type(type), Damage(damage), CriticalHit(criticalHit), CriticalHitChance(criticalHitChanse), Cooldown(cooldown), Lifetime(lifetime) { }
+			CWeapon(WeaponType type, unsigned int itemID, float damage, bool isPlayerWeapon = false) : Type(type), ItemID(itemID), Damage(damage), IsPlayerWeapon(isPlayerWeapon) { }
 			CWeapon(const CWeapon& org) { FY_CORE_ASSERT(false, "Copy constructor in CWeapon called."); }
 			CWeapon& operator=(const CWeapon& org)
 			{
-				FY_WARN("Assignment operator in CWeapon called.");
-
 				if (this != &org)
 				{
 					Type = org.Type;
@@ -672,8 +667,12 @@ namespace Frosty
 					Damage = org.Damage;
 					CriticalHit = org.CriticalHit;
 					CriticalHitChance = org.CriticalHitChance;
-					Cooldown = org.Cooldown;
-					CooldownTimer = org.CooldownTimer;
+					LVL1AttackCooldown = org.LVL1AttackCooldown;
+					LVL2AttackCooldown = org.LVL2AttackCooldown;
+					LVL3AttackCooldown = org.LVL3AttackCooldown;
+					LVL1AttackCooldownTimer = org.LVL1AttackCooldownTimer;
+					LVL2AttackCooldownTimer = org.LVL2AttackCooldownTimer;
+					LVL3AttackCooldownTimer = org.LVL3AttackCooldownTimer;
 					Lifetime = org.Lifetime;
 				}
 
@@ -691,23 +690,24 @@ namespace Frosty
 			AttackType Type{ AttackType::Melee };
 
 			float Damage{ 10.0f };
-			bool Friendly{ 0 };		// A friendly attack effects neither the Player or the attack. 1 = friendly attack, 0 = enemy attack
+			bool Friendly{ 0 };			// A friendly attack effects neither the Player or the attack. 1 = friendly attack, 0 = enemy attack
 
 			float Lifetime{ 0.5f };
 			float LifetimeTimer{ Frosty::Time::CurrentTime() };
 
+			bool Destroyable{ true };	// Cannot be destr0yed in collision with other enemies
+
 			CAttack() = default;
-			CAttack(AttackType type, float damage, bool friendly = 0, float lifeTime = 0.5f) : Type(type), Damage(damage), Friendly(friendly), Lifetime(lifeTime) { }
+			CAttack(AttackType type, float damage, bool friendly = 0, float lifeTime = 0.5f, bool destroyable = true) : Type(type), Damage(damage), Friendly(friendly), Lifetime(lifeTime), Destroyable(destroyable) { }
 			CAttack(const CAttack& org) { FY_CORE_ASSERT(false, "Copy constructor in CAttack called."); }
 			CAttack& operator=(const CAttack& org)
 			{
-				FY_WARN("Assignment operator in CAttack called.");
-
 				if (this != &org)
 				{
 					Type = org.Type;
 					Damage = org.Damage;
 					Friendly = org.Friendly;
+					Destroyable = org.Destroyable;
 					Lifetime = org.Lifetime;
 					LifetimeTimer = org.LifetimeTimer;
 				}
@@ -729,12 +729,12 @@ namespace Frosty
 			int MoveRightKey{ FY_KEY_D };
 			int MoveBackKey{ FY_KEY_S };
 			int DashKey{ FY_KEY_LEFT_SHIFT };
-			int BasicAttackKey{ FY_KEY_SPACE };
+			int LVL1Attack{ FY_MOUSE_BUTTON_LEFT };
+			int LVL2Attack{ FY_MOUSE_BUTTON_RIGHT };
+			int LVL3Attack{ FY_KEY_SPACE };
 
 			int HealingPotionKey{ FY_KEY_1 };
-			int IncreaseHPPotionKey{ FY_KEY_2 };
-			int SpeedPotionKey{ FY_KEY_3 };
-			int SpeedBootsKey{ FY_KEY_4 };
+			int SpeedPotionKey{ FY_KEY_2 };
 			int DropBaitKey{ FY_KEY_Q };
 
 			CPlayer() = default;
@@ -742,8 +742,6 @@ namespace Frosty
 			CPlayer(const CPlayer& org) { FY_CORE_ASSERT(false, "Copy constructor in CPlayer called."); }
 			CPlayer& operator=(const CPlayer& org)
 			{
-				FY_WARN("Assignment operator in CPlayer called.");
-
 				if (this != &org)
 				{
 					Weapon = org.Weapon;
@@ -753,12 +751,12 @@ namespace Frosty
 					MoveRightKey = org.MoveRightKey;
 					MoveBackKey = org.MoveBackKey;
 					DashKey = org.DashKey;
-					BasicAttackKey = org.BasicAttackKey;
+					LVL1Attack = org.LVL1Attack;
+					LVL2Attack = org.LVL2Attack;
+					LVL3Attack = org.LVL3Attack;
 
 					HealingPotionKey = org.HealingPotionKey;
-					IncreaseHPPotionKey = org.IncreaseHPPotionKey;
 					SpeedPotionKey = org.SpeedPotionKey;
-					SpeedBootsKey = org.SpeedBootsKey;
 					DropBaitKey = org.DropBaitKey;
 				}
 				return *this;
@@ -782,7 +780,19 @@ namespace Frosty
 			CEnemy(CWeapon* weapon) : Weapon(weapon) { }
 			CEnemy(CTransform* target) : Target(target) { }
 			CEnemy(const CEnemy& org) { FY_CORE_ASSERT(false, "Copy constructor in CEnemy called."); }
+			CEnemy& operator=(const CEnemy& org)
+			{
+				if (this != &org)
+				{
+					Weapon = org.Weapon;
+					Target = org.Target;
 
+					CellTarget = org.CellTarget;
+					AttackRange = org.AttackRange;
+					SightRange = org.SightRange;
+				}
+				return *this;
+			}
 			virtual std::string GetName() const { return NAME; }
 		};
 
@@ -798,8 +808,6 @@ namespace Frosty
 			CHealth(const CHealth& org) { FY_CORE_ASSERT(false, "Copy constructor in CHealth called."); }
 			CHealth& operator=(const CHealth& org)
 			{
-				FY_WARN("Assignment operator in CHealth called.");
-
 				if (this != &org)
 				{
 					MaxPossibleHealth = org.MaxPossibleHealth;
@@ -833,14 +841,14 @@ namespace Frosty
 			// SPEED BOOSTER POTION - boosts speed during a time interval (temp)
 			int MaxSpeedPotions{ 5 };
 			int CurrentSpeedPotions{ 3 };
-			float IncreaseSpeedTemporary{ 0.3f };
+			float IncreaseSpeedTemporary{ 0.2f };
 			float SpeedCooldown{ 5.f };
 			float SpeedTimer{ Frosty::Time::CurrentTime() };
 
 			// SPEED BOOTS - boots add speed by a small procentage (const)
 			int MaxSpeedBoots{ 5 };
 			int CurrentSpeedBoots{ 0 };
-			float IncreaseSpeed{ 1.2f };
+			float IncreaseSpeed{ 1.f };
 
 			// BAIT - chunks of meat used to distract the wolf
 			int MaxBaitAmount{ 5 };
@@ -855,8 +863,6 @@ namespace Frosty
 			CInventory(const CInventory& org) { FY_CORE_ASSERT(false, "Copy constructor in CInventory called."); }
 			CInventory& operator=(const CInventory& org)
 			{
-				FY_WARN("Assignment operator in CInventory called.");
-
 				if (this != &org)
 				{
 					MaxHealingPotions = org.MaxHealingPotions;
@@ -910,8 +916,6 @@ namespace Frosty
 			CHealthBar(const CHealthBar& org) { FY_CORE_ASSERT(false, "Copy constructor in CHealthBar called."); }
 			CHealthBar& operator=(const CHealthBar& org)
 			{
-				FY_WARN("Assignment operator in CHealthBar called.");
-
 				if (this != &org)
 				{
 					BarOffset = org.BarOffset;
@@ -942,8 +946,6 @@ namespace Frosty
 			CDash(const CDash& org) { FY_CORE_ASSERT(false, "Copy constructor in CDash called."); }
 			CDash& operator=(const CDash& org)
 			{
-				FY_WARN("Assignment operator in CDash called.");
-
 				if (this != &org)
 				{
 					Active = org.Active;
@@ -1093,8 +1095,6 @@ namespace Frosty
 			CBoss(const CBoss& org) { FY_CORE_ASSERT(false, "Copy constructor in CBoss called."); }
 			CBoss& operator=(const CBoss& org)
 			{
-				FY_WARN("Assignment operator in CBoss called.");
-
 				if (this != &org)
 				{
 					DistractionTime = org.DistractionTime;
@@ -1122,8 +1122,6 @@ namespace Frosty
 			CLevelExit(const CLevelExit& org) { FY_CORE_ASSERT(false, "Copy constructor in CLevelExit called."); }
 			CLevelExit& operator=(const CLevelExit& org)
 			{
-				FY_WARN("Assignment operator in CLevelExit called.");
-
 				if (this != &org)
 				{
 					ExitDirection = org.ExitDirection;
