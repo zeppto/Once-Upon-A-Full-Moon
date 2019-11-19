@@ -347,7 +347,7 @@ void LevelFileFormat::OpenFromFile(std::string fileName, glm::ivec2 roomId , Fro
 						tempRotation.y += rotation;
 					}
 				}
-				auto& entity = m_World->CreateEntity(glm::vec3(matrix[3].x, matrix[3].y, matrix[3].z), tempRotation, fileEntitys.myEntitys.at(i).myTransform.Scale, true);
+				auto& entity = m_World->CreateEntity(glm::vec3(matrix[3].x, matrix[3].y, matrix[3].z), tempRotation, fileEntitys.myEntitys.at(i).myTransform.Scale, fileEntitys.myEntitys.at(i).myTransform.IsStatic);
 
 				//1 = Mesh
 				if (fileEntitys.myEntitys.at(i).MyComponents.at(1).HaveComponent)
@@ -366,22 +366,7 @@ void LevelFileFormat::OpenFromFile(std::string fileName, glm::ivec2 roomId , Fro
 						Frosty::AssetManager::GetShader(fileEntitys.myEntitys.at(i).myMaterial.UseShaderName));
 					material.Albedo = fileEntitys.myEntitys.at(i).myMaterial.Albedo;
 					if ((std::string)fileEntitys.myEntitys.at(i).myMaterial.DiffuseTextureName != "")
-					{
-						std::string stringName = fileEntitys.myEntitys.at(i).myMaterial.DiffuseTextureName;
-						if (stringName.find("testPineLeves") != std::string::npos)
-						{
-							stringName.replace(stringName.begin(), stringName.begin() + 13, "Tree");
-							if (stringName.find("11") != std::string::npos)
-								stringName.replace(stringName.end() -2, stringName.end(), "1");
-							if (stringName.find("13") != std::string::npos)
-								stringName.replace(stringName.end() - 2, stringName.end(), "3");
-							if (stringName.find("12") != std::string::npos)
-								stringName.replace(stringName.end() - 2, stringName.end(), "8");
-							if (stringName.find("14") != std::string::npos)
-								stringName.replace(stringName.end() - 2, stringName.end(), "9");
-						}
-						material.DiffuseTexture = Frosty::AssetManager::GetTexture2D(stringName);
-					}
+						material.DiffuseTexture = Frosty::AssetManager::GetTexture2D(fileEntitys.myEntitys.at(i).myMaterial.DiffuseTextureName);
 					if ((std::string)fileEntitys.myEntitys.at(i).myMaterial.SpecularTextureName != "")
 						material.SpecularTexture = Frosty::AssetManager::GetTexture2D(fileEntitys.myEntitys.at(i).myMaterial.SpecularTextureName);
 					if ((std::string)fileEntitys.myEntitys.at(i).myMaterial.NormalTextureName != "")
