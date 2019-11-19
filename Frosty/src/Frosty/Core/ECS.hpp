@@ -378,9 +378,11 @@ namespace Frosty
 
 		// List of all Components //
 
+
 		struct CTransform : public BaseComponent
 		{
 			static std::string NAME;
+			
 			glm::vec3 Position{ 0.0f };
 			glm::vec3 Rotation{ 0.0f };
 			glm::vec3 Scale{ 1.0f };
@@ -391,6 +393,7 @@ namespace Frosty
 			CTransform(const glm::vec3& position, const glm::vec3& rotation, const glm::vec3& scale, bool isStatic = false)
 				: Position(position), Rotation(rotation), Scale(scale), IsStatic(isStatic)
 			{
+			
 				if (isStatic)
 				{
 					ModelMatrix = glm::translate(glm::mat4(1.0f), Position);
@@ -416,6 +419,17 @@ namespace Frosty
 				return *this;
 			}
 
+			glm::mat4* GetModelMatrix()
+			{
+				ModelMatrix = glm::translate(glm::mat4(1.0f), Position);
+				ModelMatrix = glm::rotate(ModelMatrix, glm::radians(Rotation.x), { 1.0f, 0.0f, 0.0f });
+				ModelMatrix = glm::rotate(ModelMatrix, glm::radians(Rotation.y), { 0.0f, 1.0f, 0.0f });
+				ModelMatrix = glm::rotate(ModelMatrix, glm::radians(Rotation.z), { 0.0f, 0.0f, 1.0f });
+				ModelMatrix = glm::scale(ModelMatrix, Scale);
+
+				return &ModelMatrix;
+
+			}
 			virtual std::string GetName() const { return NAME; }
 		};
 
@@ -553,12 +567,13 @@ namespace Frosty
 			static std::string NAME;
 			LightType Type{ LightType::Point };
 			glm::vec3 Color{ 1.0f, 0.96f, 0.84f };
+			glm::vec3 Direction{ 1.0f, 0.0f, 1.0f };
 			float Radius{ 20.0f };
 			float Strength{ 1.0f };
 
 			CLight() = default;
 			CLight(LightType lightType) : Type(lightType) { }
-			CLight(LightType lightType, float strength, glm::vec3 color, float radius) : Type(lightType), Strength(strength), Color(color), Radius(radius) { }
+			CLight(LightType lightType, float strength, glm::vec3 color, float radius, glm::vec3 direction) : Type(lightType), Strength(strength), Color(color), Radius(radius),Direction(direction) { }
 			CLight(LightType lightType, float strength, glm::vec3 color) : Type(lightType), Strength(strength), Color(color) { }
 			CLight(const CLight& org) { FY_CORE_ASSERT(false, "Copy constructor in CLight called."); }
 			CLight& operator=(const CLight& org)
@@ -1029,20 +1044,15 @@ namespace Frosty
 			virtual std::string GetName() const { return NAME; }
 		};
 
-		struct CChest : public BaseComponent
-		{
-			static std::string NAME;
-
-			CChest() = default;
-			CChest(const CChest& org) { FY_CORE_ASSERT(false, "Copy constructor in CChest called."); }
-
-			virtual std::string GetName() const { return NAME; }
-		};
-
 		struct CLootable : public BaseComponent
 		{
 			static std::string NAME;
-			enum class LootType { HealingPotion, IncHealthPotion, SpeedPotion, SpeedBoot, Sword, Arrow };
+			enum class LootType 
+			{ 
+				HealingPotion, IncHealthPotion, SpeedPotion, SpeedBoot, 
+				Sword1, Sword2, Sword3,
+				Arrow1, Arrow2, Arrow3
+			};
 			LootType Type{ LootType::HealingPotion };
 
 			CLootable() = default;
@@ -1056,6 +1066,16 @@ namespace Frosty
 				}
 				return *this;
 			}
+			virtual std::string GetName() const { return NAME; }
+		};
+
+		struct CDropItem : public BaseComponent
+		{
+			static std::string NAME;
+
+			CDropItem() = default;
+			CDropItem(const CDropItem& org) { FY_CORE_ASSERT(false, "Copy constructor in CDropItem called."); }
+
 			virtual std::string GetName() const { return NAME; }
 		};
 
@@ -1143,29 +1163,29 @@ namespace Frosty
 		{
 			switch (i)
 			{
-			case 0:		return "Transform";
-			case 1:		return "Mesh";
-			case 2:		return "Camera";
-			case 3:		return "Material";
-			case 4:		return "Follow";
-			case 5:		return "Light";
-			case 6:		return "Physics";
-			case 7:		return "Weapon";
-			case 8:		return "Attack";
-			case 9:		return "Player";
-			case 10:	return "Enemy";
-			case 11:	return "Health";
-			case 12:	return "Inventory";
-			case 13:	return "HealthBar";
-			case 14:	return "Dash";
-			case 15:	return "Destroy";
-			case 16:	return "ParticleSystem";
-			case 17:	return "Chest";
-			case 18:	return "Lootable";
-			case 19:	return "Boss";
-			case 20:	return "LevelExit";
-			case 21:	return "GUI";
-			default:	return "";
+				case 0:		return "Transform";
+				case 1:		return "Mesh";
+				case 2:		return "Camera";
+				case 3:		return "Material";
+				case 4:		return "Follow";
+				case 5:		return "Light";
+				case 6:		return "Physics";
+				case 7:		return "Weapon";
+				case 8:		return "Attack";
+				case 9:		return "Player";
+				case 10:	return "Enemy";
+				case 11:	return "Health";
+				case 12:	return "Inventory";
+				case 13:	return "HealthBar";
+				case 14:	return "Dash";
+				case 15:	return "Destroy";
+				case 16:	return "ParticleSystem";
+				case 17:	return "Lootable";
+				case 18:	return "DropItem";
+				case 19:	return "Boss";
+				case 20:	return "LevelExit";
+				case 21:	return "GUI";
+				default:	return "";
 			}
 		}
 
@@ -1217,4 +1237,3 @@ namespace Frosty
 }
 
 #endif // !ECS_HPP
-

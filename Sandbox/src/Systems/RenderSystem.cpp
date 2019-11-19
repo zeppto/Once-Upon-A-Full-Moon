@@ -11,6 +11,8 @@ namespace MCS
 		p_Signature.set(Frosty::ECS::getComponentTypeID<Frosty::ECS::CTransform>(), true);
 		p_Signature.set(Frosty::ECS::getComponentTypeID<Frosty::ECS::CMesh>(), true);
 		p_Signature.set(Frosty::ECS::getComponentTypeID<Frosty::ECS::CMaterial>(), true);
+
+
 	}
 
 	void RenderSystem::OnUpdate()
@@ -90,7 +92,10 @@ namespace MCS
 			m_Meshes[p_Total] = &world->GetComponent<Frosty::ECS::CMesh>(entity);
 			m_Materials[p_Total] = &world->GetComponent<Frosty::ECS::CMaterial>(entity);
 
+			Frosty::Renderer::AddToRenderer(m_Materials.at(p_Total), m_Meshes.at(p_Total)->Mesh, m_Transform.at(p_Total));
+
 			p_Total++;
+
 		}
 	}
 
@@ -101,6 +106,9 @@ namespace MCS
 		if (it != p_EntityMap.end())
 		{
 			p_Total--;
+
+			Frosty::Renderer::RemoveFromRenderer(m_Materials[it->second]->EntityPtr->Id,m_Meshes[it->second]->Mesh->GetName(),m_Transform[it->second]->EntityPtr->Id);
+
 			auto& entityToUpdate = m_Transform[p_Total]->EntityPtr;
 			m_Transform[p_Total] = nullptr;
 			m_Meshes[p_Total] = nullptr;
@@ -110,6 +118,7 @@ namespace MCS
 			{
 				p_EntityMap[entityToUpdate] = it->second;
 			}
+
 
 			p_EntityMap.erase(entity);
 		}
@@ -129,9 +138,12 @@ namespace MCS
 			m_Transform[it->second] = transformPtr;
 			m_Meshes[it->second] = meshPtr;
 			m_Materials[it->second] = materialPtr;
+
+			Frosty::Renderer::UpdateEntity(m_Materials[it->second]->EntityPtr->Id, m_Materials.at(it->second), m_Meshes[it->second]->Mesh->GetName(), m_Meshes.at(it->second)->Mesh, m_Transform[it->second]->EntityPtr->Id, m_Transform.at(it->second));
+
 		}
 	}
-	
+
 	std::string RenderSystem::GetInfo() const
 	{
 		std::stringstream retInfo;
