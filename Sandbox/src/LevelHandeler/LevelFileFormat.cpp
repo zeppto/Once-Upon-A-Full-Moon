@@ -322,43 +322,33 @@ void LevelFileFormat::OpenFromFile(std::string fileName, glm::ivec2 roomId , Fro
 			//create entity
 			if (fileEntitys.myEntitys.at(i).MyComponents.at(0).HaveComponent)
 			{
-				auto& entity = m_World->CreateEntity();
 
 				//0 = Transform
-				if (fileEntitys.myEntitys.at(i).MyComponents.at(0).HaveComponent)
+				existingFile.read((char*)& fileEntitys.myEntitys.at(i).myTransform, sizeof(Level_Transform));
+				glm::mat4 matrix(1.0f);
+				matrix = glm::rotate(matrix, glm::radians((float)rotation), glm::vec3(0, 1, 0));
+				matrix = glm::translate(matrix, fileEntitys.myEntitys.at(i).myTransform.Position);
+				matrix = glm::rotate(matrix, fileEntitys.myEntitys.at(i).myTransform.Rotation.x, glm::vec3(1, 0, 0));
+				matrix = glm::rotate(matrix, fileEntitys.myEntitys.at(i).myTransform.Rotation.y, glm::vec3(0, 1, 0));
+				matrix = glm::rotate(matrix, fileEntitys.myEntitys.at(i).myTransform.Rotation.z, glm::vec3(0, 0, 1));
+				//matrix = glm::scale(matrix, tranform.Scale);
+				//temp ( becuse hitbox rotition dosent exist)
+				glm::vec3 tempRotation = fileEntitys.myEntitys.at(i).myTransform.Rotation;
+				if (rotation == 90 || rotation == 270)
 				{
-					existingFile.read((char*)& fileEntitys.myEntitys.at(i).myTransform, sizeof(Level_Transform));
-					auto& tranform = m_World->GetComponent<Frosty::ECS::CTransform>(entity);
-					tranform.Position = fileEntitys.myEntitys.at(i).myTransform.Position;
-					tranform.Scale = fileEntitys.myEntitys.at(i).myTransform.Scale;
-					tranform.Rotation = fileEntitys.myEntitys.at(i).myTransform.Rotation;
-					glm::mat4 matrix(1.0f);
-					//matrix = glm::rotate(matrix, glm::degrees(90.0f), glm::vec3(0, 1, 0));
-					matrix = glm::rotate(matrix, glm::radians((float)rotation), glm::vec3(0, 1, 0));
-					matrix = glm::translate(matrix, tranform.Position);
-					//matrix = glm::rotate(matrix, tranform.Rotation.x, glm::vec3(1, 0, 0));
-					matrix = glm::rotate(matrix, tranform.Rotation.y, glm::vec3(0, 1, 0));
-					//matrix = glm::rotate(matrix, tranform.Rotation.z, glm::vec3(0, 0, 1));
-					//matrix = glm::scale(matrix, tranform.Scale);
-					//temp
-					if (rotation == 90 || rotation == 270)
+					if (fileEntitys.myEntitys.at(i).MyComponents.at(10).HaveComponent || !fileEntitys.myEntitys.at(i).MyComponents.at(1).HaveComponent)
 					{
-						if (fileEntitys.myEntitys.at(i).MyComponents.at(10).HaveComponent || !fileEntitys.myEntitys.at(i).MyComponents.at(1).HaveComponent)
-						{
-							tranform.Scale.x = fileEntitys.myEntitys.at(i).myTransform.Scale.z;
-							tranform.Scale.z = fileEntitys.myEntitys.at(i).myTransform.Scale.x;
-						}
-						else
-						{
-							tranform.Rotation.y += rotation;
-						}
+						float savedX = fileEntitys.myEntitys.at(i).myTransform.Scale.x;
+						fileEntitys.myEntitys.at(i).myTransform.Scale.x = fileEntitys.myEntitys.at(i).myTransform.Scale.z;
+						fileEntitys.myEntitys.at(i).myTransform.Scale.z = savedX;
 					}
-					tranform.Position = glm::vec3(matrix[3].x, matrix[3].y, matrix[3].z);
-					glm::quat tempRot;
-					glm::vec3 skew;
-					glm::vec4 perspective;
-					//glm::decompose(matrix, tranform.Scale, tempRot, tranform.Position, skew, perspective);
+					else
+					{
+						tempRotation.y += rotation;
+					}
 				}
+				auto& entity = m_World->CreateEntity(glm::vec3(matrix[3].x, matrix[3].y, matrix[3].z), tempRotation, fileEntitys.myEntitys.at(i).myTransform.Scale, fileEntitys.myEntitys.at(i).myTransform.IsStatic);
+
 				//1 = Mesh
 				if (fileEntitys.myEntitys.at(i).MyComponents.at(1).HaveComponent)
 				{
