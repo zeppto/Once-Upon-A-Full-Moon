@@ -182,7 +182,7 @@ namespace Frosty
 
 	void Renderer::EndScene()
 	{
-		//RemoveAllLights();
+		
 	}
 
 	void Renderer::SetCamera(const glm::vec3& pos, const glm::mat4& view, const glm::mat4& projection)
@@ -469,53 +469,57 @@ namespace Frosty
 
 	void Renderer::AddToRenderer(ECS::CMaterial* mat, std::shared_ptr<VertexArray> vertexArray, ECS::CTransform* transform, ECS::CAnimController* anim)
 	{
-		counter++;
-		//Set up IDs
-		int matID = transform->EntityPtr->Id; //Works but can be improved whith a real material ID
-		std::string meshID = vertexArray->GetName();
-		int transformID = transform->EntityPtr->Id;
-
-
-		//Check if the shader key is already in the map, if not add it.
-		std::string ShaderName = mat->UseShader->GetName();
-		if (s_ShaderMap.find(mat->UseShader->GetName()) == s_ShaderMap.end())
+		if (mat->UseShader->GetName() != "Animation")
 		{
-			s_ShaderMap.emplace(mat->UseShader->GetName(), FY_NEW ShaderData);
 
+			counter++;
+			//Set up IDs
+			int matID = transform->EntityPtr->Id; //Works but can be improved whith a real material ID
+			std::string meshID = vertexArray->GetName();
+			int transformID = transform->EntityPtr->Id;
+
+
+			//Check if the shader key is already in the map, if not add it.
+			std::string ShaderName = mat->UseShader->GetName();
+			if (s_ShaderMap.find(mat->UseShader->GetName()) == s_ShaderMap.end())
+			{
+				s_ShaderMap.emplace(mat->UseShader->GetName(), FY_NEW ShaderData);
+
+			}
+			auto& shaderData = s_ShaderMap.at(ShaderName);
+			shaderData->Shader = mat->UseShader;
+
+
+
+			//Check if the material key is already in the map, if not add it.
+			if (shaderData->MaterialMap.find(matID) == shaderData->MaterialMap.end())
+			{
+				shaderData->MaterialMap.emplace(matID, FY_NEW MaterialData);
+			}
+			auto& materialData = shaderData->MaterialMap.at(matID);
+			materialData->Material = mat;
+
+			//Add the material to the MaterialLookUpMap
+			s_MaterialLookUpMap.emplace(transformID, &shaderData->MaterialMap);
+
+			//Check if the mesh key is already in the map, if not add it.
+			if (materialData->MeshMap.find(meshID) == materialData->MeshMap.end())
+			{
+				materialData->MeshMap.emplace(meshID, FY_NEW  MeshData);
+			}
+			auto& meshData = materialData->MeshMap.at(meshID);
+			meshData->VertexArray = vertexArray;
+			meshData->TransformMap.emplace(transformID, transform);
+
+			//Add the mesh to the MeshLookUpMap
+			s_MeshLookUpMap.emplace(transformID, &materialData->MeshMap);
+
+			//Add the tranform to the TransformLookUpMap
+			auto& transformMap = meshData->TransformMap;
+			s_TransformLookUpMap.emplace(transformID, &transformMap);
+
+			s_ShaderMap;
 		}
-		auto& shaderData = s_ShaderMap.at(ShaderName);
-		shaderData->Shader = mat->UseShader;
-
-
-
-		//Check if the material key is already in the map, if not add it.
-		if (shaderData->MaterialMap.find(matID) == shaderData->MaterialMap.end())
-		{
-			shaderData->MaterialMap.emplace(matID, FY_NEW MaterialData);
-		}
-		auto& materialData = shaderData->MaterialMap.at(matID);
-		materialData->Material = mat;
-
-		//Add the material to the MaterialLookUpMap
-		s_MaterialLookUpMap.emplace(transformID, &shaderData->MaterialMap);
-
-		//Check if the mesh key is already in the map, if not add it.
-		if (materialData->MeshMap.find(meshID) == materialData->MeshMap.end())
-		{
-			materialData->MeshMap.emplace(meshID, FY_NEW  MeshData);
-		}
-		auto& meshData = materialData->MeshMap.at(meshID);
-		meshData->VertexArray = vertexArray;
-		meshData->TransformMap.emplace(transformID, transform);
-
-		//Add the mesh to the MeshLookUpMap
-		s_MeshLookUpMap.emplace(transformID, &materialData->MeshMap);
-
-		//Add the tranform to the TransformLookUpMap
-		auto& transformMap = meshData->TransformMap;
-		s_TransformLookUpMap.emplace(transformID, &transformMap);
-
-		s_ShaderMap;
 	}
 
 	void Renderer::RemoveFromRenderer(const int& matID, const std::string& meshName, const int& transformID)
@@ -586,7 +590,7 @@ namespace Frosty
 			//Add new
 			if (mat->UseShader->GetName() != "Animation")
 			{
-				AddToRenderer(mat, vertexArray, transform);
+				AddToRenderer(mat, vertexArray, transform, nullptr);
 			}
 
 		}
@@ -596,7 +600,7 @@ namespace Frosty
 
 
 
-	float dt = 0;
+
 
 	void Renderer::AnimSubmit(ECS::CMaterial* mat, const std::shared_ptr<VertexArray>& vertexArray, const glm::mat4& transform, ECS::CAnimController* controller)
 	{
@@ -608,28 +612,28 @@ namespace Frosty
 		mat->UseShader->UploadUniformFloat3("u_CameraPosition", s_SceneData->GameCamera.CameraPosition);
 		mat->UseShader->UploadUniformInt("u_Shininess", mat->Shininess);
 
-		auto& shaderData = m_ShaderMap.at("Animation");
+		
 		// Point Lights
-		shaderData->Shader->UploadUniformInt("u_TotalPointLights", (int)s_SceneData->PointLights.size());
+		mat->UseShader->UploadUniformInt("u_TotalPointLights", (int)s_SceneData->PointLights.size());
 		int PointLI = 0;
 		for (auto& PLightIt : s_SceneData->PointLights)
 		{
 
-			shaderData->Shader->UploadUniformFloat3Array("u_PointLights[" + std::to_string(PointLI) + "].Color", s_SceneData->PointLights[PLightIt.first]->PointLight->Color);
-			shaderData->Shader->UploadUniformFloat3Array("u_PointLights[" + std::to_string(PointLI) + "].Position", s_SceneData->PointLights[PLightIt.first]->Transform->Position);
-			shaderData->Shader->UploadUniformFloatArray("u_PointLights[" + std::to_string(PointLI) + "].Radius", s_SceneData->PointLights[PLightIt.first]->PointLight->Radius);
-			shaderData->Shader->UploadUniformFloatArray("u_PointLights[" + std::to_string(PointLI) + "].Strength", s_SceneData->PointLights[PLightIt.first]->PointLight->Strength);
+			mat->UseShader->UploadUniformFloat3Array("u_PointLights[" + std::to_string(PointLI) + "].Color", s_SceneData->PointLights[PLightIt.first].PointLight->Color);
+			mat->UseShader->UploadUniformFloat3Array("u_PointLights[" + std::to_string(PointLI) + "].Position", s_SceneData->PointLights[PLightIt.first].Transform->Position);
+			mat->UseShader->UploadUniformFloatArray("u_PointLights[" + std::to_string(PointLI) + "].Radius", s_SceneData->PointLights[PLightIt.first].PointLight->Radius);
+			mat->UseShader->UploadUniformFloatArray("u_PointLights[" + std::to_string(PointLI) + "].Strength", s_SceneData->PointLights[PLightIt.first].PointLight->Strength);
 			PointLI++;
 		}
 
 		// Directional Lights
-		shaderData->Shader->UploadUniformInt("u_TotalDirectionalLights", (int)s_SceneData->DirectionalLights.size());
+		mat->UseShader->UploadUniformInt("u_TotalDirectionalLights", (int)s_SceneData->DirectionalLights.size());
 		int DirectLI = 0;
 		for (auto& DLightIt : s_SceneData->DirectionalLights)
 		{
-			shaderData->Shader->UploadUniformFloat3Array("u_DirectionalLights[" + std::to_string(DirectLI) + "].Color", s_SceneData->DirectionalLights[DLightIt.first]->DirectionalLight->Color);
-			shaderData->Shader->UploadUniformFloat3Array("u_DirectionalLights[" + std::to_string(DirectLI) + "].Direction", s_SceneData->DirectionalLights[DLightIt.first]->DirectionalLight->Direction);
-			shaderData->Shader->UploadUniformFloatArray("u_DirectionalLights[" + std::to_string(DirectLI) + "].Strength", s_SceneData->DirectionalLights[DLightIt.first]->DirectionalLight->Strength);
+			mat->UseShader->UploadUniformFloat3Array("u_DirectionalLights[" + std::to_string(DirectLI) + "].Color", s_SceneData->DirectionalLights[DLightIt.first].DirectionalLight->Color);
+			mat->UseShader->UploadUniformFloat3Array("u_DirectionalLights[" + std::to_string(DirectLI) + "].Direction", s_SceneData->DirectionalLights[DLightIt.first].DirectionalLight->Direction);
+			mat->UseShader->UploadUniformFloatArray("u_DirectionalLights[" + std::to_string(DirectLI) + "].Strength", s_SceneData->DirectionalLights[DLightIt.first].DirectionalLight->Strength);
 			DirectLI++;
 		}
 		//// Point Lights
