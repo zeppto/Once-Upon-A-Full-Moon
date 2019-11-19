@@ -1,7 +1,7 @@
 #ifndef ANIMATIONSYSTEM_HPP
 #define ANIMATIONSYSTEM_HPP
 
-namespace Frosty { class CollisionEvent; }
+namespace Frosty { class BasicAttackEvent; }
 
 namespace MCS
 {
@@ -24,7 +24,7 @@ namespace MCS
 		virtual std::string GetInfo() const override;
 
 	private:
-
+		void OnBasicAttackEvent(Frosty::BasicAttackEvent& e);
 
 	private:
 		std::array<Frosty::ECS::CTransform*, Frosty::ECS::MAX_ENTITIES_PER_COMPONENT> m_Transform;
