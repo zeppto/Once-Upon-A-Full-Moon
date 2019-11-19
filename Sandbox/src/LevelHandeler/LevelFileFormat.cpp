@@ -165,6 +165,15 @@ void LevelFileFormat::AddEntity(const std::shared_ptr<Frosty::ECS::Entity>& enti
 		}
 		else
 			myComponents.MyComponents.at(10).HaveComponent = false;
+		//DropItem
+		if (m_World->HasComponent<Frosty::ECS::CDropItem>(entity))
+		{
+			myComponents.MyComponents.at(11).HaveComponent = true;
+			m_World->GetComponent<Frosty::ECS::CDropItem>(entity);
+			//auto& dropItem = m_World->GetComponent<Frosty::ECS::CDropItem>(entity);
+		}
+		else
+			myComponents.MyComponents.at(11).HaveComponent = false;
 		m_Entitys.myEntitys.push_back(myComponents);
 	}
 }
@@ -238,6 +247,10 @@ void LevelFileFormat::SaveToFile(std::string fileName)
 				case 10:
 					myFile.write((const char*)& m_Entitys.myEntitys.at(i).myLevelExit, sizeof(Level_LevelExit));
 					break;
+					//10 = LevelExit
+				case 11:
+					myFile.write((const char*)& m_Entitys.myEntitys.at(i).myDropItem, sizeof(Level_DropItem));
+					break;
 				default:
 					break;
 				}
@@ -253,24 +266,24 @@ void LevelFileFormat::OpenFromFile(std::string fileName, glm::ivec2 roomId , Fro
 {
 	std::ifstream existingFile;
 	existingFile.open("../../../assets/levels/" + fileName + ".lvl", std::ios::binary);
-	Level_Header testHeder;
+	Level_Header heder;
 	Level_Entitys fileEntitys;
 	std::vector<std::shared_ptr<Frosty::ECS::Entity>> m_Enemys;
 	
 
 	if (existingFile.good())
 	{
-		existingFile.read((char*)& testHeder, sizeof(Level_Header));
-		fileEntitys.myEntitys.resize(testHeder.NrOfEntitys);
-		for (int i = 0; i < testHeder.NrOfEntitys; i++)
+		existingFile.read((char*)& heder, sizeof(Level_Header));
+		fileEntitys.myEntitys.resize(heder.NrOfEntitys);
+		for (int i = 0; i < heder.NrOfEntitys; i++)
 		{
 			//to Fix my problen
 			//if (i < 735)
 			//{
-			//	fileEntitys.myEntitys.at(i).MyComponents.resize(testHeder.NrOfComponents);
-			//	for (int j = 0; j < m_Header.NrOfComponents; j++)
+			//	fileEntitys.myEntitys.at(i).MyComponents.resize(heder.NrOfComponents);
+			//	for (int j = 0; j < heder.NrOfComponents; j++)
 			//		existingFile.read((char*)& fileEntitys.myEntitys.at(i).MyComponents.at(j).HaveComponent, sizeof(bool));
-			//	for (int j = 0; j < testHeder.NrOfComponents; j++)
+			//	for (int j = 0; j < heder.NrOfComponents; j++)
 			//	{
 			//		if (fileEntitys.myEntitys.at(i).MyComponents.at(j).HaveComponent)
 			//		{
@@ -301,8 +314,8 @@ void LevelFileFormat::OpenFromFile(std::string fileName, glm::ivec2 roomId , Fro
 			//	}
 			//}
 
-			fileEntitys.myEntitys.at(i).MyComponents.resize(testHeder.NrOfComponents);
-			for (int j = 0; j < m_Header.NrOfComponents; j++)
+			fileEntitys.myEntitys.at(i).MyComponents.resize(m_Header.NrOfComponents);
+			for (int j = 0; j < heder.NrOfComponents; j++)
 				existingFile.read((char*)& fileEntitys.myEntitys.at(i).MyComponents.at(j).HaveComponent, sizeof(bool));
 
 			//create entity
@@ -383,7 +396,6 @@ void LevelFileFormat::OpenFromFile(std::string fileName, glm::ivec2 roomId , Fro
 				//For edeting old level
 				//auto& follow = m_World->AddComponent<Frosty::ECS::CFollow>(entity);// , playerTransform);
 				follow.StopDistance = fileEntitys.myEntitys.at(i).myFollow.StopDistance;
-				m_Enemys.push_back(entity);
 				//under construction
 			}
 			//4 = Light
@@ -483,7 +495,13 @@ void LevelFileFormat::OpenFromFile(std::string fileName, glm::ivec2 roomId , Fro
 				}
 				m_World->AddComponent<Frosty::ECS::CLevelExit>(entity, newExit);
 			}
-
+			//11 = DropItem
+			if (fileEntitys.myEntitys.at(i).MyComponents.at(11).HaveComponent)
+			{
+				existingFile.read((char*)& fileEntitys.myEntitys.at(i).myDropItem, sizeof(Level_DropItem));
+				m_World->AddComponent<Frosty::ECS::CDropItem>(entity);
+				m_Enemys.push_back(entity);
+			}
 		}
 		
 		//to remove "enemys" or chest m.m to control the number and randomize pos
@@ -496,44 +514,44 @@ void LevelFileFormat::OpenFromFile(std::string fileName, glm::ivec2 roomId , Fro
 				enteredRoomId = i;
 			}
 		}
-		//if (enteredRoomId != -1)
-		//{
-		//	if (m_Enemys.size() >= nrToHave)
-		//	{
-		//		for (int i = 0; i < m_Enemys.size() - nrToHave; i++)
-		//		{
-		//			if (!m_World->HasComponent<Frosty::ECS::CDestroy>(m_Enemys.at(m_VisitedRooms.at(enteredRoomId).removeEnemy.at(i))))
-		//			{
-		//				m_World->AddComponent<Frosty::ECS::CDestroy>(m_Enemys.at(m_VisitedRooms.at(enteredRoomId).removeEnemy.at(i)));
-		//			}
-		//			std::shared_ptr<Frosty::ECS::Entity> temp = m_Enemys.at(m_VisitedRooms.at(enteredRoomId).removeEnemy.at(i));
-		//			m_Enemys.at(m_VisitedRooms.at(enteredRoomId).removeEnemy.at(i)) = m_Enemys.at(m_Enemys.size() - 1 - i);
-		//			m_Enemys.back() = temp;
-		//		}
-		//	}
-		//}
-		//else
-		//{
-		//	Level_rememberedEntitys rEntitys;
-		//	rEntitys.myRoomId = roomId;
-		//	//temp nr of 
-		//	if (m_Enemys.size() >= nrToHave)
-		//	{
-		//		for (int i = 0; i < m_Enemys.size() - nrToHave; i++)
-		//		{
-		//			int rnd = rand() % (m_Enemys.size() - i);
-		//			if (!m_World->HasComponent<Frosty::ECS::CDestroy>(m_Enemys.at(rnd)))
-		//			{
-		//				rEntitys.removeEnemy.push_back(rnd);
-		//				m_World->AddComponent<Frosty::ECS::CDestroy>(m_Enemys.at(rnd));
-		//			}
-		//			std::shared_ptr<Frosty::ECS::Entity> temp = m_Enemys.at(rnd);
-		//			m_Enemys.at(rnd) = m_Enemys.at(m_Enemys.size() - 1 - i);
-		//			m_Enemys.back() = temp;
-		//		}
-		//	}
-		//	m_VisitedRooms.push_back(rEntitys);
-		//}
+		if (enteredRoomId != -1)
+		{
+			if (m_Enemys.size() >= nrToHave)
+			{
+				for (int i = 0; i < m_Enemys.size() - nrToHave; i++)
+				{
+					if (!m_World->HasComponent<Frosty::ECS::CDestroy>(m_Enemys.at(m_VisitedRooms.at(enteredRoomId).removeEnemy.at(i))))
+					{
+						m_World->AddComponent<Frosty::ECS::CDestroy>(m_Enemys.at(m_VisitedRooms.at(enteredRoomId).removeEnemy.at(i)));
+					}
+					std::shared_ptr<Frosty::ECS::Entity> temp = m_Enemys.at(m_VisitedRooms.at(enteredRoomId).removeEnemy.at(i));
+					m_Enemys.at(m_VisitedRooms.at(enteredRoomId).removeEnemy.at(i)) = m_Enemys.at(m_Enemys.size() - 1 - i);
+					m_Enemys.back() = temp;
+				}
+			}
+		}
+		else
+		{
+			Level_rememberedEntitys rEntitys;
+			rEntitys.myRoomId = roomId;
+			//temp nr of 
+			if (m_Enemys.size() >= nrToHave)
+			{
+				for (int i = 0; i < m_Enemys.size() - nrToHave; i++)
+				{
+					int rnd = rand() % (m_Enemys.size() - i);
+					if (!m_World->HasComponent<Frosty::ECS::CDestroy>(m_Enemys.at(rnd)))
+					{
+						rEntitys.removeEnemy.push_back(rnd);
+						m_World->AddComponent<Frosty::ECS::CDestroy>(m_Enemys.at(rnd));
+					}
+					std::shared_ptr<Frosty::ECS::Entity> temp = m_Enemys.at(rnd);
+					m_Enemys.at(rnd) = m_Enemys.at(m_Enemys.size() - 1 - i);
+					m_Enemys.back() = temp;
+				}
+			}
+			m_VisitedRooms.push_back(rEntitys);
+		}
 	}
 	existingFile.close();
 }

@@ -18,7 +18,7 @@ namespace ECS { struct Entity; }
 struct Level_Header
 {
 	int NrOfEntitys = 0;
-	int NrOfComponents = 11;
+	int NrOfComponents = 12;
 };
 
 //Do this per nrOfEntitys and as meny times as nrOfComponents (to make older files have a higer shans of combadebilety) 
@@ -142,6 +142,12 @@ struct Level_LevelExit
 	int ExitDirection = 0;
 };
 
+//11 = DropItem
+struct Level_DropItem
+{
+	//int ExitDirection = 0;
+};
+
 //n = name
 //struct Level_
 //{
@@ -163,6 +169,7 @@ struct Level_Components
 	Level_HealthBar myHealthBar;
 	Level_ParticleSystem myParticleSystem;
 	Level_LevelExit myLevelExit;
+	Level_DropItem myDropItem;
 
 };
 

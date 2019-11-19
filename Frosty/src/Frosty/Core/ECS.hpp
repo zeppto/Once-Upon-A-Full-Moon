@@ -677,6 +677,7 @@ namespace Frosty
 					Lifetime = org.Lifetime;
 				}
 
+
 				return *this;
 			}
 			bool operator!=(const CWeapon& org) { return ItemID != org.ItemID; }

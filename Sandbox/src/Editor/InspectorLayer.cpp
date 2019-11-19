@@ -801,6 +801,11 @@ namespace MCS
 			{
 				Frosty::EventBus::GetEventBus()->Publish<Frosty::CreatEntityEvent>(Frosty::CreatEntityEvent(16));
 			}
+			ImGui::SameLine();
+			if (ImGui::Button("chest", ImVec2(80.0f, EDITOR_MAIN_MENU_BAR_HEIGHT)))
+			{
+				Frosty::EventBus::GetEventBus()->Publish<Frosty::CreatEntityEvent>(Frosty::CreatEntityEvent(17));
+			}
 		}
 		ImGui::End();
 
