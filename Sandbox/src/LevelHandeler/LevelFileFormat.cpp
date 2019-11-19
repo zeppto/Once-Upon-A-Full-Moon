@@ -322,43 +322,33 @@ void LevelFileFormat::OpenFromFile(std::string fileName, glm::ivec2 roomId , Fro
 			//create entity
 			if (fileEntitys.myEntitys.at(i).MyComponents.at(0).HaveComponent)
 			{
-				auto& entity = m_World->CreateEntity();
 
 				//0 = Transform
-				if (fileEntitys.myEntitys.at(i).MyComponents.at(0).HaveComponent)
+				existingFile.read((char*)& fileEntitys.myEntitys.at(i).myTransform, sizeof(Level_Transform));
+				glm::mat4 matrix(1.0f);
+				matrix = glm::rotate(matrix, glm::radians((float)rotation), glm::vec3(0, 1, 0));
+				matrix = glm::translate(matrix, fileEntitys.myEntitys.at(i).myTransform.Position);
+				matrix = glm::rotate(matrix, fileEntitys.myEntitys.at(i).myTransform.Rotation.x, glm::vec3(1, 0, 0));
+				matrix = glm::rotate(matrix, fileEntitys.myEntitys.at(i).myTransform.Rotation.y, glm::vec3(0, 1, 0));
+				matrix = glm::rotate(matrix, fileEntitys.myEntitys.at(i).myTransform.Rotation.z, glm::vec3(0, 0, 1));
+				//matrix = glm::scale(matrix, tranform.Scale);
+				//temp ( becuse hitbox rotition dosent exist)
+				glm::vec3 tempRotation = fileEntitys.myEntitys.at(i).myTransform.Rotation;
+				if (rotation == 90 || rotation == 270)
 				{
-					existingFile.read((char*)& fileEntitys.myEntitys.at(i).myTransform, sizeof(Level_Transform));
-					auto& tranform = m_World->GetComponent<Frosty::ECS::CTransform>(entity);
-					tranform.Position = fileEntitys.myEntitys.at(i).myTransform.Position;
-					tranform.Scale = fileEntitys.myEntitys.at(i).myTransform.Scale;
-					tranform.Rotation = fileEntitys.myEntitys.at(i).myTransform.Rotation;
-					glm::mat4 matrix(1.0f);
-					//matrix = glm::rotate(matrix, glm::degrees(90.0f), glm::vec3(0, 1, 0));
-					matrix = glm::rotate(matrix, glm::radians((float)rotation), glm::vec3(0, 1, 0));
-					matrix = glm::translate(matrix, tranform.Position);
-					//matrix = glm::rotate(matrix, tranform.Rotation.x, glm::vec3(1, 0, 0));
-					matrix = glm::rotate(matrix, tranform.Rotation.y, glm::vec3(0, 1, 0));
-					//matrix = glm::rotate(matrix, tranform.Rotation.z, glm::vec3(0, 0, 1));
-					//matrix = glm::scale(matrix, tranform.Scale);
-					//temp
-					if (rotation == 90 || rotation == 270)
+					if (fileEntitys.myEntitys.at(i).MyComponents.at(10).HaveComponent || !fileEntitys.myEntitys.at(i).MyComponents.at(1).HaveComponent)
 					{
-						if (fileEntitys.myEntitys.at(i).MyComponents.at(10).HaveComponent || !fileEntitys.myEntitys.at(i).MyComponents.at(1).HaveComponent)
-						{
-							tranform.Scale.x = fileEntitys.myEntitys.at(i).myTransform.Scale.z;
-							tranform.Scale.z = fileEntitys.myEntitys.at(i).myTransform.Scale.x;
-						}
-						else
-						{
-							tranform.Rotation.y += rotation;
-						}
+						float savedX = fileEntitys.myEntitys.at(i).myTransform.Scale.x;
+						fileEntitys.myEntitys.at(i).myTransform.Scale.x = fileEntitys.myEntitys.at(i).myTransform.Scale.z;
+						fileEntitys.myEntitys.at(i).myTransform.Scale.z = savedX;
 					}
-					tranform.Position = glm::vec3(matrix[3].x, matrix[3].y, matrix[3].z);
-					glm::quat tempRot;
-					glm::vec3 skew;
-					glm::vec4 perspective;
-					//glm::decompose(matrix, tranform.Scale, tempRot, tranform.Position, skew, perspective);
+					else
+					{
+						tempRotation.y += rotation;
+					}
 				}
+				auto& entity = m_World->CreateEntity(glm::vec3(matrix[3].x, matrix[3].y, matrix[3].z), tempRotation, fileEntitys.myEntitys.at(i).myTransform.Scale, true);
+
 				//1 = Mesh
 				if (fileEntitys.myEntitys.at(i).MyComponents.at(1).HaveComponent)
 				{
@@ -376,7 +366,22 @@ void LevelFileFormat::OpenFromFile(std::string fileName, glm::ivec2 roomId , Fro
 						Frosty::AssetManager::GetShader(fileEntitys.myEntitys.at(i).myMaterial.UseShaderName));
 					material.Albedo = fileEntitys.myEntitys.at(i).myMaterial.Albedo;
 					if ((std::string)fileEntitys.myEntitys.at(i).myMaterial.DiffuseTextureName != "")
-						material.DiffuseTexture = Frosty::AssetManager::GetTexture2D(fileEntitys.myEntitys.at(i).myMaterial.DiffuseTextureName);
+					{
+						std::string stringName = fileEntitys.myEntitys.at(i).myMaterial.DiffuseTextureName;
+						if (stringName.find("testPineLeves") != std::string::npos)
+						{
+							stringName.replace(stringName.begin(), stringName.begin() + 13, "Tree");
+							if (stringName.find("11") != std::string::npos)
+								stringName.replace(stringName.end() -2, stringName.end(), "1");
+							if (stringName.find("13") != std::string::npos)
+								stringName.replace(stringName.end() - 2, stringName.end(), "3");
+							if (stringName.find("12") != std::string::npos)
+								stringName.replace(stringName.end() - 2, stringName.end(), "8");
+							if (stringName.find("14") != std::string::npos)
+								stringName.replace(stringName.end() - 2, stringName.end(), "9");
+						}
+						material.DiffuseTexture = Frosty::AssetManager::GetTexture2D(stringName);
+					}
 					if ((std::string)fileEntitys.myEntitys.at(i).myMaterial.SpecularTextureName != "")
 						material.SpecularTexture = Frosty::AssetManager::GetTexture2D(fileEntitys.myEntitys.at(i).myMaterial.SpecularTextureName);
 					if ((std::string)fileEntitys.myEntitys.at(i).myMaterial.NormalTextureName != "")
@@ -509,50 +514,50 @@ void LevelFileFormat::OpenFromFile(std::string fileName, glm::ivec2 roomId , Fro
 		}
 		
 		//to remove "enemys" or chest m.m to control the number and randomize pos
-		int enteredRoomId = -1;
-		for (int i = 0; i < m_VisitedRooms.size(); i++)
-		{
-			if (m_VisitedRooms.at(i).myRoomId == roomId)
-			{
-				enteredRoomId = i;
-			}
-		}
-		if (enteredRoomId != -1)
-		{
-			for (int i = 0; i < m_VisitedRooms.at(enteredRoomId).removeEnemy.size(); i++)
-			{
-				if (!m_World->HasComponent<Frosty::ECS::CDestroy>(m_Enemys.at(m_VisitedRooms.at(enteredRoomId).removeEnemy.at(i))))
-				{
-					m_World->AddComponent<Frosty::ECS::CDestroy>(m_Enemys.at(m_VisitedRooms.at(enteredRoomId).removeEnemy.at(i)));
-				}
-				std::shared_ptr<Frosty::ECS::Entity> temp = m_Enemys.at(m_VisitedRooms.at(enteredRoomId).removeEnemy.at(i));
-				m_Enemys.at(m_VisitedRooms.at(enteredRoomId).removeEnemy.at(i)) = m_Enemys.at(m_Enemys.size() - 1 - i);
-				m_Enemys.back() = temp;
-			}
-		}
-		else
-		{
-			int nrToHave = rand() % 3;
-			Level_rememberedEntitys rEntitys;
-			rEntitys.myRoomId = roomId;
-			//temp nr of 
-			if (m_Enemys.size() >= nrToHave)
-			{
-				for (int i = 0; i < m_Enemys.size() - nrToHave; i++)
-				{
-					int rnd = rand() % (m_Enemys.size() - i);
-					if (!m_World->HasComponent<Frosty::ECS::CDestroy>(m_Enemys.at(rnd)))
-					{
-						rEntitys.removeEnemy.push_back(rnd);
-						m_World->AddComponent<Frosty::ECS::CDestroy>(m_Enemys.at(rnd));
-					}
-					std::shared_ptr<Frosty::ECS::Entity> temp = m_Enemys.at(rnd);
-					m_Enemys.at(rnd) = m_Enemys.at(m_Enemys.size() - 1 - i);
-					m_Enemys.back() = temp;
-				}
-			}
-			m_VisitedRooms.push_back(rEntitys);
-		}
+		//int enteredRoomId = -1;
+		//for (int i = 0; i < m_VisitedRooms.size(); i++)
+		//{
+		//	if (m_VisitedRooms.at(i).myRoomId == roomId)
+		//	{
+		//		enteredRoomId = i;
+		//	}
+		//}
+		//if (enteredRoomId != -1)
+		//{
+		//	for (int i = 0; i < m_VisitedRooms.at(enteredRoomId).removeEnemy.size(); i++)
+		//	{
+		//		if (!m_World->HasComponent<Frosty::ECS::CDestroy>(m_Enemys.at(m_VisitedRooms.at(enteredRoomId).removeEnemy.at(i))))
+		//		{
+		//			m_World->AddComponent<Frosty::ECS::CDestroy>(m_Enemys.at(m_VisitedRooms.at(enteredRoomId).removeEnemy.at(i)));
+		//		}
+		//		std::shared_ptr<Frosty::ECS::Entity> temp = m_Enemys.at(m_VisitedRooms.at(enteredRoomId).removeEnemy.at(i));
+		//		m_Enemys.at(m_VisitedRooms.at(enteredRoomId).removeEnemy.at(i)) = m_Enemys.at(m_Enemys.size() - 1 - i);
+		//		m_Enemys.back() = temp;
+		//	}
+		//}
+		//else
+		//{
+		//	int nrToHave = rand() % 3;
+		//	Level_rememberedEntitys rEntitys;
+		//	rEntitys.myRoomId = roomId;
+		//	//temp nr of 
+		//	if (m_Enemys.size() >= nrToHave)
+		//	{
+		//		for (int i = 0; i < m_Enemys.size() - nrToHave; i++)
+		//		{
+		//			int rnd = rand() % (m_Enemys.size() - i);
+		//			if (!m_World->HasComponent<Frosty::ECS::CDestroy>(m_Enemys.at(rnd)))
+		//			{
+		//				rEntitys.removeEnemy.push_back(rnd);
+		//				m_World->AddComponent<Frosty::ECS::CDestroy>(m_Enemys.at(rnd));
+		//			}
+		//			std::shared_ptr<Frosty::ECS::Entity> temp = m_Enemys.at(rnd);
+		//			m_Enemys.at(rnd) = m_Enemys.at(m_Enemys.size() - 1 - i);
+		//			m_Enemys.back() = temp;
+		//		}
+		//	}
+		//	m_VisitedRooms.push_back(rEntitys);
+		//}
 	}
 	existingFile.close();
 }

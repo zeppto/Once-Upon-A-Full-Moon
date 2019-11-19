@@ -219,10 +219,11 @@ namespace MCS
 					if (ImGui::CollapsingHeader("Transform"))
 					{
 						auto& comp = world->GetComponent<Frosty::ECS::CTransform>(m_SelectedEntity);
-						ImGui::BeginChild("CTransform", ImVec2(EDITOR_INSPECTOR_WIDTH, 85), true);
+						ImGui::BeginChild("CTransform", ImVec2(EDITOR_INSPECTOR_WIDTH, 100), true);
 						ImGui::DragFloat3("Position", glm::value_ptr(comp.Position), 0.1f, 0.0f, 0.0f, "%.2f");
 						ImGui::DragFloat3("Rotation", glm::value_ptr(comp.Rotation), 0.1f, 0.0f, 0.0f, "%.2f");
 						ImGui::DragFloat3("Scale", glm::value_ptr(comp.Scale), 0.1f, 0.0f, 0.0f, "%.2f");
+						ImGui::Checkbox("IsStatic", &comp.IsStatic);
 						ImGui::EndChild();
 					}
 				}
