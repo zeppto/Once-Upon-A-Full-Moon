@@ -132,7 +132,7 @@ namespace Frosty
 	{
 	
 
-		for (int i = m_DestroyedEntities.size()-1; m_DestroyedEntities.size() > 0; i--)
+		for (int i = int(m_DestroyedEntities.size())-1; int(m_DestroyedEntities.size()) > 0; i--)
 		{
 			RemoveEntity(m_DestroyedEntities[i]);
 			m_DestroyedEntities.erase(m_DestroyedEntities.begin() + i);
