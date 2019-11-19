@@ -43,6 +43,9 @@ namespace Frosty
 		static void UppdateLight(Frosty::ECS::CLight* light, ECS::CTransform* transform);
 		static void RemoveLight(const std::shared_ptr<ECS::Entity>& entity);
 		static void RemoveAllLights();
+		static void ChangeLight(const std::shared_ptr<ECS::Entity>& entity);
+
+
 
 		static void Submit(ECS::CMaterial* mat, const std::shared_ptr<VertexArray>& vertexArray, const glm::mat4& transform);
 		static void AnimSubmit(ECS::CMaterial* mat, const std::shared_ptr<VertexArray>& vertexArray, const glm::mat4& transform, ECS::CAnimController * controller);

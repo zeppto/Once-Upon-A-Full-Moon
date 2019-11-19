@@ -743,10 +743,12 @@ namespace MCS
 							if (ImGui::MenuItem("Point", "", comp.Type == Frosty::ECS::CLight::LightType::Point ? true : false))
 							{
 								comp.Type = Frosty::ECS::CLight::LightType::Point;
+								Frosty::Renderer::ChangeLight(m_SelectedEntity);
 							}
 							if (ImGui::MenuItem("Directional", "", comp.Type == Frosty::ECS::CLight::LightType::Directional ? true : false))
 							{
 								comp.Type = Frosty::ECS::CLight::LightType::Directional;
+								Frosty::Renderer::ChangeLight(m_SelectedEntity);
 							}
 							ImGui::EndPopup();
 						}

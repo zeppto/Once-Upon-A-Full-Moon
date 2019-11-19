@@ -267,6 +267,14 @@ namespace Frosty
 
 	}
 
+	void Renderer::ChangeLight(const std::shared_ptr<ECS::Entity>& entity)
+	{
+		auto& world = Application::Get().GetWorld();
+
+		RemoveLight(entity);
+		AddLight(&world->GetComponent<Frosty::ECS::CLight>(entity), &world->GetComponent<Frosty::ECS::CTransform>(entity));
+	}
+
 
 
 	/*void Renderer::AddLight(const glm::vec3& color, const glm::vec3& pos, float strength, float radius)
