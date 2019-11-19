@@ -669,7 +669,7 @@ namespace MCS
 					if (ImGui::CollapsingHeader("Particle System"))
 					{
 						auto& comp = world->GetComponent<Frosty::ECS::CParticleSystem>(m_SelectedEntity);
-						ImGui::BeginChild("CParticleSystem", ImVec2(EDITOR_INSPECTOR_WIDTH, 245), true);
+						ImGui::BeginChild("CParticleSystem", ImVec2(EDITOR_INSPECTOR_WIDTH, 345), true);
 						ImGui::Text("Active particles: %i", comp.ParticleCount);
 						ImGui::Checkbox("Preview", &comp.Preview);
 						ImGui::ColorEdit4("Color", glm::value_ptr(comp.ParticleSystemColor));
@@ -710,7 +710,10 @@ namespace MCS
 						}
 						ImGui::SameLine();
 						ImGui::Text("Texture");
-						ImGui::SliderInt("Particle count", (int*)&comp.ParticleCount, 1, comp.MAX_PARTICLE_COUNT);
+						if (!Frosty::Application::Get().GameIsRunning())
+						{
+							ImGui::SliderInt("Particle count", (int*)&comp.MaxParticles, 1, comp.MAX_PARTICLE_COUNT);
+						}
 						ImGui::DragFloat3("Direction", glm::value_ptr(comp.ParticleSystemDirection), 0.1f, 0.0f, 0.0f, "%.2f");
 						ImGui::InputFloat("Start size", &comp.StartParticleSize);
 						ImGui::InputFloat("End size", &comp.EndParticleSize);
