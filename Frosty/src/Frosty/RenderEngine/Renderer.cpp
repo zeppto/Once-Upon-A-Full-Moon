@@ -2,6 +2,7 @@
 #include "Renderer.hpp"
 #include "Frosty/Core/ECS.hpp"
 #include "Frosty/API/AssetManager/AssetManager.hpp"
+#include "Frosty/Core/Application.hpp"
 
 #include <glad/glad.h>
 
@@ -71,10 +72,10 @@ namespace Frosty
 			for (auto& PLightIt : s_SceneData->PointLights)
 			{
 
-				shaderData->Shader->UploadUniformFloat3Array("u_PointLights[" + std::to_string(PointLI) + "].Color", s_SceneData->PointLights[PLightIt.first]->PointLight->Color);
-				shaderData->Shader->UploadUniformFloat3Array("u_PointLights[" + std::to_string(PointLI) + "].Position", s_SceneData->PointLights[PLightIt.first]->Transform->Position);
-				shaderData->Shader->UploadUniformFloatArray("u_PointLights[" + std::to_string(PointLI) + "].Radius", s_SceneData->PointLights[PLightIt.first]->PointLight->Radius);
-				shaderData->Shader->UploadUniformFloatArray("u_PointLights[" + std::to_string(PointLI) + "].Strength", s_SceneData->PointLights[PLightIt.first]->PointLight->Strength);
+				shaderData->Shader->UploadUniformFloat3Array("u_PointLights[" + std::to_string(PointLI) + "].Color", s_SceneData->PointLights[PLightIt.first].PointLight->Color);
+				shaderData->Shader->UploadUniformFloat3Array("u_PointLights[" + std::to_string(PointLI) + "].Position", s_SceneData->PointLights[PLightIt.first].Transform->Position);
+				shaderData->Shader->UploadUniformFloatArray("u_PointLights[" + std::to_string(PointLI) + "].Radius", s_SceneData->PointLights[PLightIt.first].PointLight->Radius);
+				shaderData->Shader->UploadUniformFloatArray("u_PointLights[" + std::to_string(PointLI) + "].Strength", s_SceneData->PointLights[PLightIt.first].PointLight->Strength);
 				PointLI++;
 			}
 
@@ -83,9 +84,9 @@ namespace Frosty
 			int DirectLI = 0;
 			for (auto& DLightIt : s_SceneData->DirectionalLights)
 			{
-				shaderData->Shader->UploadUniformFloat3Array("u_DirectionalLights[" + std::to_string(DirectLI) + "].Color", s_SceneData->DirectionalLights[DLightIt.first]->DirectionalLight->Color);
-				shaderData->Shader->UploadUniformFloat3Array("u_DirectionalLights[" + std::to_string(DirectLI) + "].Direction", s_SceneData->DirectionalLights[DLightIt.first]->DirectionalLight->Direction);
-				shaderData->Shader->UploadUniformFloatArray("u_DirectionalLights[" + std::to_string(DirectLI) + "].Strength", s_SceneData->DirectionalLights[DLightIt.first]->DirectionalLight->Strength);
+				shaderData->Shader->UploadUniformFloat3Array("u_DirectionalLights[" + std::to_string(DirectLI) + "].Color", s_SceneData->DirectionalLights[DLightIt.first].DirectionalLight->Color);
+				shaderData->Shader->UploadUniformFloat3Array("u_DirectionalLights[" + std::to_string(DirectLI) + "].Direction", s_SceneData->DirectionalLights[DLightIt.first].DirectionalLight->Direction);
+				shaderData->Shader->UploadUniformFloatArray("u_DirectionalLights[" + std::to_string(DirectLI) + "].Strength", s_SceneData->DirectionalLights[DLightIt.first].DirectionalLight->Strength);
 				DirectLI++;
 			}
 
@@ -183,8 +184,7 @@ namespace Frosty
 
 	void Renderer::EndScene()
 	{
-		/*s_SceneData->PointLights.clear();
-		s_SceneData->DirectionalLights.clear();*/
+		//RemoveAllLights();
 	}
 
 	void Renderer::SetCamera(const glm::vec3& pos, const glm::mat4& view, const glm::mat4& projection)
@@ -199,9 +199,9 @@ namespace Frosty
 	{
 		if (light->Type == Frosty::ECS::CLight::LightType::Point)
 		{
-			s_SceneData->PointLights.emplace(light->EntityPtr->Id, FY_NEW PointLight);
-			s_SceneData->PointLights.at(int(light->EntityPtr->Id))->PointLight = light;
-			s_SceneData->PointLights.at(int(light->EntityPtr->Id))->Transform = transform;
+			s_SceneData->PointLights.emplace(light->EntityPtr->Id, PointLight());
+			s_SceneData->PointLights.at(int(light->EntityPtr->Id)).PointLight = light;
+			s_SceneData->PointLights.at(int(light->EntityPtr->Id)).Transform = transform;
 		}
 		else if (light->Type == Frosty::ECS::CLight::LightType::Directional)
 		{
@@ -213,9 +213,9 @@ namespace Frosty
 			light->Direction = mat * glm::vec4(light->Direction, 0);
 
 
-			s_SceneData->DirectionalLights.emplace(int(light->EntityPtr->Id), FY_NEW DirectionalLight);
-			s_SceneData->DirectionalLights.at(int(light->EntityPtr->Id))->DirectionalLight = light;
-			s_SceneData->DirectionalLights.at(int(light->EntityPtr->Id))->Transform = transform;
+			s_SceneData->DirectionalLights.emplace(int(light->EntityPtr->Id), DirectionalLight());
+			s_SceneData->DirectionalLights.at(int(light->EntityPtr->Id)).DirectionalLight = light;
+			s_SceneData->DirectionalLights.at(int(light->EntityPtr->Id)).Transform = transform;
 		}
 	}
 
@@ -223,28 +223,50 @@ namespace Frosty
 	{
 		if (light->Type == Frosty::ECS::CLight::LightType::Point)
 		{
-			s_SceneData->PointLights.at(int(light->EntityPtr->Id))->PointLight = light;
-			s_SceneData->PointLights.at(int(light->EntityPtr->Id))->Transform = transform;
+			s_SceneData->PointLights.at(int(light->EntityPtr->Id)).PointLight = light;
+			s_SceneData->PointLights.at(int(light->EntityPtr->Id)).Transform = transform;
 		}
 		else if (light->Type == Frosty::ECS::CLight::LightType::Directional)
 		{
 
-			s_SceneData->DirectionalLights.at(int(light->EntityPtr->Id))->DirectionalLight = light;
-			s_SceneData->DirectionalLights.at(int(light->EntityPtr->Id))->Transform = transform;
+			s_SceneData->DirectionalLights.at(int(light->EntityPtr->Id)).DirectionalLight = light;
+			s_SceneData->DirectionalLights.at(int(light->EntityPtr->Id)).Transform = transform;
 		}
 	}
 
-	void Renderer::RemoveLight(Frosty::ECS::CLight* light)
+	void Renderer::RemoveLight(const std::shared_ptr<ECS::Entity>& entity)
 	{
-		/*	if (light->Type == Frosty::ECS::CLight::LightType::Point)
-			{
-				s_SceneData->PointLights.erase(light->EntityPtr->Id);
+		/*auto& world = Application::Get().GetWorld();
+		auto& light = world->GetComponent<Frosty::ECS::CLight>(entity);
+*/
 
-			}
-			else if (light->Type == Frosty::ECS::CLight::LightType::Directional)
-			{
-				s_SceneData->DirectionalLights.erase(light->EntityPtr->Id);
-			}*/
+		if (s_SceneData->PointLights.find(entity->Id) != s_SceneData->PointLights.end())
+		{
+			s_SceneData->PointLights.erase(entity->Id);
+
+		}
+		else if (s_SceneData->DirectionalLights.find(entity->Id) != s_SceneData->DirectionalLights.end())
+		{
+			s_SceneData->DirectionalLights.erase(entity->Id);
+		}
+	}
+
+
+
+	void Renderer::RemoveAllLights()
+	{
+		for (auto& PLightIt : s_SceneData->PointLights)
+		{
+			//delete s_SceneData->PointLights.at(PLightIt.first);
+			s_SceneData->PointLights.erase(PLightIt.first);
+		}
+
+		for (auto& DLightIt : s_SceneData->DirectionalLights)
+		{
+			//delete s_SceneData->DirectionalLights.at(DLightIt.first);
+			s_SceneData->DirectionalLights.erase(DLightIt.first);
+		}
+
 	}
 
 
@@ -366,10 +388,10 @@ namespace Frosty
 		int PointLI = 0;
 		for (auto& pointLIt : s_SceneData->PointLights)
 		{
-			mat->UseShader->UploadUniformFloat3Array("u_PointLights[" + std::to_string(PointLI) + "].Color", s_SceneData->PointLights[pointLIt.first]->PointLight->Color);
-			mat->UseShader->UploadUniformFloat3Array("u_PointLights[" + std::to_string(PointLI) + "].Position", s_SceneData->PointLights[pointLIt.first]->Position);
-			mat->UseShader->UploadUniformFloatArray("u_PointLights[" + std::to_string(PointLI) + "].Radius", s_SceneData->PointLights[pointLIt.first]->PointLight->Radius);
-			mat->UseShader->UploadUniformFloatArray("u_PointLights[" + std::to_string(PointLI) + "].Strength", s_SceneData->PointLights[pointLIt.first]->PointLight->Strength);
+			mat->UseShader->UploadUniformFloat3Array("u_PointLights[" + std::to_string(PointLI) + "].Color", s_SceneData->PointLights[pointLIt.first].PointLight->Color);
+			mat->UseShader->UploadUniformFloat3Array("u_PointLights[" + std::to_string(PointLI) + "].Position", s_SceneData->PointLights[pointLIt.first].Position);
+			mat->UseShader->UploadUniformFloatArray("u_PointLights[" + std::to_string(PointLI) + "].Radius", s_SceneData->PointLights[pointLIt.first].PointLight->Radius);
+			mat->UseShader->UploadUniformFloatArray("u_PointLights[" + std::to_string(PointLI) + "].Strength", s_SceneData->PointLights[pointLIt.first].PointLight->Strength);
 			PointLI++;
 		}
 
@@ -378,9 +400,9 @@ namespace Frosty
 		int dirLI = 0;
 		for (auto& DirLIt : s_SceneData->DirectionalLights)
 		{
-			mat->UseShader->UploadUniformFloat3Array("u_DirectionalLights[" + std::to_string(dirLI) + "].Color", s_SceneData->DirectionalLights[DirLIt.first]->DirectionalLight->Color);
-			mat->UseShader->UploadUniformFloat3Array("u_DirectionalLights[" + std::to_string(dirLI) + "].Direction", s_SceneData->DirectionalLights[DirLIt.first]->DirectionalLight->Direction);
-			mat->UseShader->UploadUniformFloatArray("u_DirectionalLights[" + std::to_string(dirLI) + "].Strength", s_SceneData->DirectionalLights[DirLIt.first]->DirectionalLight->Strength);
+			mat->UseShader->UploadUniformFloat3Array("u_DirectionalLights[" + std::to_string(dirLI) + "].Color", s_SceneData->DirectionalLights[DirLIt.first].DirectionalLight->Color);
+			mat->UseShader->UploadUniformFloat3Array("u_DirectionalLights[" + std::to_string(dirLI) + "].Direction", s_SceneData->DirectionalLights[DirLIt.first].DirectionalLight->Direction);
+			mat->UseShader->UploadUniformFloatArray("u_DirectionalLights[" + std::to_string(dirLI) + "].Strength", s_SceneData->DirectionalLights[DirLIt.first].DirectionalLight->Strength);
 			dirLI++;
 		}
 
@@ -543,7 +565,7 @@ namespace Frosty
 
 	}
 
-	void Renderer::UpdateEntity(const int& matID, ECS::CMaterial* mat, const std::string& meshName, std::shared_ptr<VertexArray> vertexArray, const int& transformID, ECS::CTransform* transform)
+	void Renderer::UppdateEntity(const int& matID, ECS::CMaterial* mat, const std::string& meshName, std::shared_ptr<VertexArray> vertexArray, const int& transformID, ECS::CTransform* transform)
 	{
 		if (s_TransformLookUpMap.find(transformID) != s_TransformLookUpMap.end())
 		{

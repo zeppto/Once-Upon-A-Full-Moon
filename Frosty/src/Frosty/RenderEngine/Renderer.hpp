@@ -12,6 +12,7 @@ namespace Frosty
 		struct CMaterial;
 		struct CTransform;
 		struct CLight;
+		struct Entity;
 	}
 
 	class Renderer
@@ -39,7 +40,8 @@ namespace Frosty
 		//static void AddLight(const int& ID, const glm::vec3& color, const glm::vec3& pos, float strength, float radius);
 		static void AddLight(Frosty::ECS::CLight* light, ECS::CTransform* transform);
 		static void UppdateLight(Frosty::ECS::CLight* light, ECS::CTransform* transform);
-		static void RemoveLight(Frosty::ECS::CLight* light);
+		static void RemoveLight(const std::shared_ptr<ECS::Entity>& entity);
+		static void RemoveAllLights();
 
 		static void Submit(ECS::CMaterial* mat, const std::shared_ptr<VertexArray>& vertexArray, const glm::mat4& transform);
 		static void AnimSubmit(ECS::CMaterial* mat, const std::shared_ptr<VertexArray>& vertexArray, const glm::mat4& transform);
@@ -50,7 +52,7 @@ namespace Frosty
 		static void SubmitHealthBar(const std::shared_ptr<Shader>& shader, const std::shared_ptr<VertexArray>& vertexArray, const glm::vec3& translate, const glm::vec3& scale, const glm::vec3& HealthBarSpace);
 		static void AddToRenderer(ECS::CMaterial* mat, std::shared_ptr<VertexArray> vertexArray, ECS::CTransform* transform);
 		static void RemoveFromRenderer( const int& matID ,const std::string& meshName,const int& transformID);
-		static void UpdateEntity (const int& matID,ECS::CMaterial* mat, const std::string& meshName, std::shared_ptr<VertexArray> vertexArray, const int& transformID, ECS::CTransform* transform);
+		static void UppdateEntity (const int& matID,ECS::CMaterial* mat, const std::string& meshName, std::shared_ptr<VertexArray> vertexArray, const int& transformID, ECS::CTransform* transform);
 		
 		static void ChangeEntity (const int& OldMatID,ECS::CMaterial* mat, const std::string& OldMeshName, std::shared_ptr<VertexArray> vertexArray, const int& transformID, ECS::CTransform* transform);
 
@@ -112,10 +114,10 @@ namespace Frosty
 		{
 			GameCameraProps GameCamera;
 			//std::vector<PointLight> PointLights;
-			std::unordered_map<int, PointLight*>PointLights;
+			std::unordered_map<int, PointLight>PointLights;
 
 			//std::vector<DirectionalLight> DirectionalLights;
-			std::unordered_map<int, DirectionalLight*>DirectionalLights;
+			std::unordered_map<int, DirectionalLight>DirectionalLights;
 		};
 		static SceneData* s_SceneData;
 
