@@ -19,6 +19,17 @@ namespace Frosty
 		};
 	}
 
+	UISprite::UISprite(const UISprite& other)
+	{
+		FY_CORE_ASSERT(false, "Copy constructor in UISprite called.");
+
+		this->m_vertices = FY_NEW float;
+		*this->m_vertices = *other.m_vertices;
+		this->m_TextureID = other.m_TextureID;
+		this->m_Texture = other.m_Texture;
+		this->m_VertArray = other.m_VertArray;
+	}
+
 	UISprite::~UISprite()
 	{
 		delete(m_vertices);
@@ -41,5 +52,17 @@ namespace Frosty
 	void UISprite::LoadTexture()
 	{
 		m_TextureID = AssetManager::GetTexture2D("frame2")->GetRenderID();
+	}
+	UISprite& UISprite::operator=(const UISprite& other)
+	{
+		FY_CORE_ASSERT(false, "Assignment operator in UISprite called.");
+
+		this->m_vertices = FY_NEW float;
+		*this->m_vertices = *other.m_vertices;
+		this->m_TextureID = other.m_TextureID;
+		this->m_Texture = other.m_Texture;
+		this->m_VertArray = other.m_VertArray;
+
+		return *this;
 	}
 }

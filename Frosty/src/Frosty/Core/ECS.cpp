@@ -9,13 +9,13 @@ namespace Frosty
 		std::string CMesh::NAME = "Mesh";
 		std::string CCamera::NAME = "Camera";
 		std::string CMaterial::NAME = "Material";
-		std::string CPlayer::NAME = "Player";
 		std::string CFollow::NAME = "Follow";
 		std::string CLight::NAME = "Light";
 		std::string CPhysics::NAME = "Physics";
-		std::string CEnemy::NAME = "Enemy";
 		std::string CWeapon::NAME = "Weapon";
 		std::string CAttack::NAME = "Attack";
+		std::string CPlayer::NAME = "Player";
+		std::string CEnemy::NAME = "Enemy";
 		std::string CHealth::NAME = "Health";
 		std::string CInventory::NAME = "Inventory";
 		std::string CHealthBar::NAME = "HealthBar";

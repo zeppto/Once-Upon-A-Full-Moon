@@ -36,12 +36,12 @@ namespace MCS
 		uint32_t FindUnusedParticle(size_t systemIndex);
 		void SortParticles(size_t systemIndex);
 
-		float lerp(float a, float b, float f);
+		float Lerp(float a, float b, float f);
 
 	private:
 		std::array<Frosty::ECS::CTransform*, Frosty::ECS::MAX_ENTITIES_PER_COMPONENT> m_Transform;
 		std::array<Frosty::ECS::CParticleSystem*, Frosty::ECS::MAX_ENTITIES_PER_COMPONENT> m_ParticleSystem;
-		bool m_editMode{ false };
+		bool m_EditMode{ false };
 
 		Frosty::ECS::CTransform* m_CameraTransform { nullptr };
 	};

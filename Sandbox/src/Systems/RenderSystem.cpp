@@ -11,6 +11,8 @@ namespace MCS
 		p_Signature.set(Frosty::ECS::getComponentTypeID<Frosty::ECS::CTransform>(), true);
 		p_Signature.set(Frosty::ECS::getComponentTypeID<Frosty::ECS::CMesh>(), true);
 		p_Signature.set(Frosty::ECS::getComponentTypeID<Frosty::ECS::CMaterial>(), true);
+
+
 	}
 
 	void RenderSystem::OnUpdate()
@@ -23,7 +25,7 @@ namespace MCS
 		{
 			if (m_Meshes[i]->RenderMesh)
 			{
-				if (!m_Transform[i]->IsStatic)
+	/*			if (!m_Transform[i]->IsStatic)
 				{
 					glm::mat4 transform = glm::translate(glm::mat4(1.0f), m_Transform[i]->Position);
 					transform = glm::rotate(transform, glm::radians(m_Transform[i]->Rotation.x), { 1.0f, 0.0f, 0.0f });
@@ -74,7 +76,7 @@ namespace MCS
 				if (m_Materials[i]->UseShader->GetName() == "BlendShader" && m_Materials[i]->SpecularTexture) m_Materials[i]->SpecularTexture->Unbind();
 				if (m_Materials[i]->UseShader->GetName() == "BlendShader" && m_Materials[i]->BlendMapTexture) m_Materials[i]->BlendMapTexture->Unbind();
 				if (m_Materials[i]->UseShader->GetName() == "BlendShader" && m_Materials[i]->BlendTexture1) m_Materials[i]->BlendTexture1->Unbind();
-				if (m_Materials[i]->UseShader->GetName() == "BlendShader" && m_Materials[i]->BlendTexture2) m_Materials[i]->BlendTexture2->Unbind();
+				if (m_Materials[i]->UseShader->GetName() == "BlendShader" && m_Materials[i]->BlendTexture2) m_Materials[i]->BlendTexture2->Unbind();*/
 			}
 		}
 	}
@@ -95,8 +97,10 @@ namespace MCS
 			{
 				m_Anims[p_Total] = &world->GetComponent<Frosty::ECS::CAnimController>(entity);
 			}
+			Frosty::Renderer::AddToRenderer(m_Materials.at(p_Total), m_Meshes.at(p_Total)->Mesh, m_Transform.at(p_Total));
 
 			p_Total++;
+
 		}
 	}
 
@@ -107,6 +111,9 @@ namespace MCS
 		if (it != p_EntityMap.end())
 		{
 			p_Total--;
+
+			Frosty::Renderer::RemoveFromRenderer(m_Materials[it->second]->EntityPtr->Id,m_Meshes[it->second]->Mesh->GetName(),m_Transform[it->second]->EntityPtr->Id);
+
 			auto& entityToUpdate = m_Transform[p_Total]->EntityPtr;
 			m_Transform[p_Total] = nullptr;
 			m_Meshes[p_Total] = nullptr;
@@ -117,6 +124,7 @@ namespace MCS
 			{
 				p_EntityMap[entityToUpdate] = it->second;
 			}
+
 
 			p_EntityMap.erase(entity);
 		}
@@ -136,9 +144,12 @@ namespace MCS
 			m_Transform[it->second] = transformPtr;
 			m_Meshes[it->second] = meshPtr;
 			m_Materials[it->second] = materialPtr;
+
+			Frosty::Renderer::UpdateEntity(m_Materials[it->second]->EntityPtr->Id, m_Materials.at(it->second), m_Meshes[it->second]->Mesh->GetName(), m_Meshes.at(it->second)->Mesh, m_Transform[it->second]->EntityPtr->Id, m_Transform.at(it->second));
+
 		}
 	}
-	
+
 	std::string RenderSystem::GetInfo() const
 	{
 		std::stringstream retInfo;

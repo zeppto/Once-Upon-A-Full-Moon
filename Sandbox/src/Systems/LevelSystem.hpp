@@ -8,6 +8,7 @@ namespace Frosty { class ExitLevelEvent; }
 namespace Frosty { class SaveLevelEvent; }
 namespace Frosty { class CreateLevelEvent; }
 namespace Frosty { class OpenLevelEvent; }
+namespace Frosty { class CreatEntityEvent; }
 
 namespace MCS
 {
@@ -31,6 +32,7 @@ namespace MCS
 		void OnSaveLevelEvent(Frosty::SaveLevelEvent& e);
 		void OnCreateLevelEvent(Frosty::CreateLevelEvent& e);
 		void OnOpenLevelEvent(Frosty::OpenLevelEvent& e);
+		void OnCreatEntityEvent(Frosty::CreatEntityEvent& e);
 
 	private:
 		Frosty::World* m_World;

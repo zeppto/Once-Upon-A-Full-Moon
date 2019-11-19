@@ -20,6 +20,7 @@ namespace Frosty
 
 	public:
 		UISprite();
+		UISprite(const UISprite& p);
 		~UISprite();
 
 		//bool Init();
@@ -28,6 +29,8 @@ namespace Frosty
 
 		float* GetVertices() { return m_vertices; };
 		uint8_t GetVerticesSize() { return sizeof(*m_vertices) / sizeof(float); };
+
+		UISprite& operator= (const UISprite& other);
 
 		uint32_t GetTexture() { return m_TextureID; };
 
