@@ -1019,6 +1019,7 @@ namespace Frosty
 			glm::vec3 ParticleSystemDirection = glm::vec3(0.0f, 1.0f, 0.0f);
 			float EmitRate = 0.1f;
 			uint32_t EmitCount = 1;
+			float Speed = 1.0f;
 			float MaxLifetime = 3.0f; //All particles
 			float FadeTreshold = 0.0f; //No fade
 			bool Preview = false;

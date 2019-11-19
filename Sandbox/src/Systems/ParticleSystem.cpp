@@ -211,6 +211,13 @@ namespace MCS
 				m_ParticleSystem[systemIndex]->Particles[i].Direction.z = m_ParticleSystem[systemIndex]->ParticleSystemDirection.z;
 			}
 		}
+		if (m_ParticleSystem[systemIndex]->Particles[0].Speed != m_ParticleSystem[systemIndex]->Speed) //Temporary for same reason as above
+		{
+			for (uint32_t i = 0; i < m_ParticleSystem[systemIndex]->MaxParticles; i++)
+			{
+				m_ParticleSystem[systemIndex]->Particles[i].Speed = m_ParticleSystem[systemIndex]->Speed;
+			}
+		}
 
 		if (m_ParticleSystem[systemIndex]->Preview)
 		{
