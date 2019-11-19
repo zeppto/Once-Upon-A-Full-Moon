@@ -454,9 +454,9 @@ namespace MCS
 			}
 			else if (type == Frosty::ECS::CLootable::LootType::IncHealthPotion && m_Inventory[i]->CurrentIncreaseHPPotions < m_Inventory[i]->MaxIncreaseHPPotions)
 			{
-				m_Inventory[i]->CurrentIncreaseHPPotions++;
-				FY_INFO("IncHealthPotion in Inventory");
-				FY_INFO("{0} / {1}", m_Inventory[i]->CurrentIncreaseHPPotions, m_Inventory[i]->MaxIncreaseHPPotions);
+				m_Health[i]->MaxHealth += 3;
+				FY_INFO("Health Increased");
+				//FY_INFO("{0} / {1}", m_Inventory[i]->CurrentIncreaseHPPotions, m_Inventory[i]->MaxIncreaseHPPotions);
 				if (!world->HasComponent<Frosty::ECS::CDestroy>(e.GetEntity()))
 				{
 					world->AddComponent<Frosty::ECS::CDestroy>(e.GetEntity());
@@ -474,21 +474,24 @@ namespace MCS
 			}
 			else if (type == Frosty::ECS::CLootable::LootType::SpeedBoot && m_Inventory[i]->CurrentSpeedBoots < m_Inventory[i]->MaxSpeedBoots)
 			{
-				m_Inventory[i]->CurrentSpeedBoots++;
-				FY_INFO("SpeedBoot in Inventory");
+				if (m_Inventory[i]->IncreaseSpeed <= (m_Physics[i]->MaxSpeed - m_Physics[i]->Speed))
+				{
+					m_Physics[i]->Speed += m_Inventory[i]->IncreaseSpeed;
+				}
+				FY_INFO("SpeedBoots Activated");
 				FY_INFO("{0} / {1}", m_Inventory[i]->CurrentSpeedBoots, m_Inventory[i]->MaxSpeedBoots);
 				if (!world->HasComponent<Frosty::ECS::CDestroy>(e.GetEntity()))
 				{
 					world->AddComponent<Frosty::ECS::CDestroy>(e.GetEntity());
 				}
 			}
-			else if (type == Frosty::ECS::CLootable::LootType::Sword)
+			else if (type == Frosty::ECS::CLootable::LootType::Sword1)
 			{
-				FY_INFO("Sword in Inventory");
+				FY_INFO("Sword1");
 			}
-			else if (type == Frosty::ECS::CLootable::LootType::Arrow)
+			else if (type == Frosty::ECS::CLootable::LootType::Arrow1)
 			{
-				FY_INFO("Arrow in Inventory");
+				FY_INFO("Arrow1");
 			}
 		}
 	}

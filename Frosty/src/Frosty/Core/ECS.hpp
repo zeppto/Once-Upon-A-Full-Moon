@@ -1044,20 +1044,15 @@ namespace Frosty
 			virtual std::string GetName() const { return NAME; }
 		};
 
-		struct CChest : public BaseComponent
-		{
-			static std::string NAME;
-
-			CChest() = default;
-			CChest(const CChest& org) { FY_CORE_ASSERT(false, "Copy constructor in CChest called."); }
-
-			virtual std::string GetName() const { return NAME; }
-		};
-
 		struct CLootable : public BaseComponent
 		{
 			static std::string NAME;
-			enum class LootType { HealingPotion, IncHealthPotion, SpeedPotion, SpeedBoot, Sword, Arrow };
+			enum class LootType 
+			{ 
+				HealingPotion, IncHealthPotion, SpeedPotion, SpeedBoot, 
+				Sword1, Sword2, Sword3,
+				Arrow1, Arrow2, Arrow3
+			};
 			LootType Type{ LootType::HealingPotion };
 
 			CLootable() = default;
@@ -1071,6 +1066,16 @@ namespace Frosty
 				}
 				return *this;
 			}
+			virtual std::string GetName() const { return NAME; }
+		};
+
+		struct CDropItem : public BaseComponent
+		{
+			static std::string NAME;
+
+			CDropItem() = default;
+			CDropItem(const CDropItem& org) { FY_CORE_ASSERT(false, "Copy constructor in CDropItem called."); }
+
 			virtual std::string GetName() const { return NAME; }
 		};
 
@@ -1244,4 +1249,3 @@ namespace Frosty
 }
 
 #endif // !ECS_HPP
-
