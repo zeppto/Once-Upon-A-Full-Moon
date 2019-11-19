@@ -43,7 +43,7 @@ namespace MCS
 		std::array<Frosty::ECS::CParticleSystem*, Frosty::ECS::MAX_ENTITIES_PER_COMPONENT> m_ParticleSystem;
 		bool m_EditMode{ false };
 
-		Frosty::ECS::CTransform* m_CameraTransform { nullptr };
+		Frosty::ECS::CTransform* m_CameraTransform{ nullptr };
 	};
 }
 

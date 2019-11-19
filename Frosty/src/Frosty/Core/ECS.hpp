@@ -674,7 +674,7 @@ namespace Frosty
 
 			float Lifetime{ 0.5f };
 			float LifetimeTimer{ Frosty::Time::CurrentTime() };
-			
+
 			bool Destroyable{ true };	// Cannot be destr0yed in collision with other enemies
 
 			CAttack() = default;
@@ -754,7 +754,7 @@ namespace Frosty
 
 			CWeapon* Weapon{ nullptr };
 			CTransform* Target{ nullptr };
-			
+
 			glm::vec3 CellTarget{ 0.0f };
 			float AttackRange{ 2.5f };
 			float SightRange{ 40.0f };
@@ -941,7 +941,7 @@ namespace Frosty
 		struct CParticleSystem : public BaseComponent
 		{
 			static std::string NAME;
-			
+
 			struct Particle
 			{
 				glm::vec4 Position = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
@@ -1034,7 +1034,7 @@ namespace Frosty
 			CLootable() = default;
 			CLootable(LootType type) : Type(type) {}
 			CLootable(const CLootable& org) { FY_CORE_ASSERT(false, "Copy constructor in CLootable called."); }
-			CLootable& operator=(const CLootable& org) 
+			CLootable& operator=(const CLootable& org)
 			{
 				if (this != &org)
 				{
@@ -1197,6 +1197,4 @@ namespace Frosty
 
 	}
 }
-
 #endif // !ECS_HPP
-

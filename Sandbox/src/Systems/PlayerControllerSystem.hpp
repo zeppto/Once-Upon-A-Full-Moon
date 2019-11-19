@@ -32,17 +32,17 @@ namespace MCS
 		void LVL1Attack(const size_t index);
 		void LVL2Attack(const size_t index);
 		void LVL3Attack(const size_t index);
-		
+
 		void CreateLVL1BoundingBox(const std::shared_ptr<Frosty::ECS::Entity>& weaponCarrier, const std::shared_ptr<Frosty::ECS::Entity>& weapon);
 		void CreateLVL2BoundingBox(const std::shared_ptr<Frosty::ECS::Entity>& weaponCarrier, const std::shared_ptr<Frosty::ECS::Entity>& weapon);
 		void CreateLVL3BoundingBox(const std::shared_ptr<Frosty::ECS::Entity>& weaponCarrier, const std::shared_ptr<Frosty::ECS::Entity>& weapon);
-		
+
 		void CreateLVL1Projectile(const std::shared_ptr<Frosty::ECS::Entity>& weaponCarrier, const std::shared_ptr<Frosty::ECS::Entity>& weapon);
 		void CreateLVL2Projectile(const std::shared_ptr<Frosty::ECS::Entity>& weaponCarrier, const std::shared_ptr<Frosty::ECS::Entity>& weapon);
 		void CreateLVL3Projectile(const std::shared_ptr<Frosty::ECS::Entity>& weaponCarrier, const std::shared_ptr<Frosty::ECS::Entity>& weapon);
-		
+
 		float GenerateCriticalHit(float criticalHit, float criticalHitChance);
-		
+
 		void HandleInventory(size_t index);
 		void OnPickUpEvent(Frosty::PickUpEvent& e);
 

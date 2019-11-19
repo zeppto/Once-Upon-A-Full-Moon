@@ -61,7 +61,7 @@ namespace MCS
 		}
 	}
 
-	void PlayerControllerSystem::OnEvent(Frosty::BaseEvent & e)
+	void PlayerControllerSystem::OnEvent(Frosty::BaseEvent& e)
 	{
 		switch (e.GetEventType())
 		{
@@ -379,7 +379,7 @@ namespace MCS
 			weaponComp.LVL3AttackCooldownTimer = Frosty::Time::CurrentTime();
 		}
 	}
-	
+
 	void PlayerControllerSystem::CreateLVL1BoundingBox(const std::shared_ptr<Frosty::ECS::Entity>& weaponCarrier, const std::shared_ptr<Frosty::ECS::Entity>& weapon)
 	{
 		// Get necessary info
@@ -557,7 +557,7 @@ namespace MCS
 		}
 		return 0.0f;
 	}
-	
+
 	void PlayerControllerSystem::HandleInventory(size_t index)
 	{
 #pragma region Healing Potion
@@ -694,7 +694,7 @@ namespace MCS
 #pragma endregion Bait
 	}
 
-	void PlayerControllerSystem::OnPickUpEvent(Frosty::PickUpEvent & e)
+	void PlayerControllerSystem::OnPickUpEvent(Frosty::PickUpEvent& e)
 	{
 		auto world = Frosty::Application::Get().GetWorld().get();
 		for (size_t i = 1; i < p_Total; i++)
