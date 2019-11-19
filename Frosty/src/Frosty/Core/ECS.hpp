@@ -5,6 +5,7 @@
 #include "Frosty/RenderEngine/Texture.hpp"
 #include "Frosty/Core/KeyCodes.h"
 #include "Frosty/Core/MouseButtonCodes.h"
+#include "Frosty/API/AssetManager/AssetFiles/Animation.hpp"
 
 #include "Frosty/UI/UIText.h"
 #include "Frosty/UI/UISprite.h"
@@ -90,7 +91,7 @@ namespace Frosty
 #pragma region Settings
 
 		// Let's define a maximum number of unique components:
-		constexpr std::size_t MAX_COMPONENTS{ 22 };
+		constexpr std::size_t MAX_COMPONENTS{ 23 };
 
 		// Let's define a maximum number of entities that
 		// can have the same component type:
@@ -377,7 +378,6 @@ namespace Frosty
 		};
 
 		// List of all Components //
-
 
 		struct CTransform : public BaseComponent
 		{
@@ -1007,14 +1007,16 @@ namespace Frosty
 				float Size = 1.0f;
 			};
 
-			static const uint32_t MAX_PARTICLE_COUNT = 100;
-			//uint32_t maxParticles = 0;
+			static const uint32_t MAX_PARTICLE_COUNT = 200; //Absolute suported max
+
+			uint32_t MaxParticles = 1; //User's choice of max particles
 			float StartParticleSize = 1.0f;
 			float EndParticleSize = 0.0f;
 			float ParticleSize = 1.0f; //For a constant size
 
 			uint32_t ParticleCount = 0;
 			glm::vec3 ParticleSystemColor = glm::vec3(1.0f);
+			glm::vec3 ParticleSystemDirection = glm::vec3(0.0f, 1.0f, 0.0f);
 			float EmitRate = 0.1f;
 			uint32_t EmitCount = 1;
 			float MaxLifetime = 3.0f; //All particles
@@ -1024,7 +1026,7 @@ namespace Frosty
 
 			uint32_t LastUsedParticle = 0;
 
-			Particle Particles[MAX_PARTICLE_COUNT]; //The complete data
+			std::vector<Particle> Particles; //The complete data
 			GPUParticle GpuParticles[MAX_PARTICLE_COUNT]; //The data we send to the gpu
 
 			std::shared_ptr<VertexArray> ParticleVertArray;
@@ -1037,7 +1039,7 @@ namespace Frosty
 			CParticleSystem(std::shared_ptr<VertexArray> verts, std::shared_ptr<Shader> shader, std::shared_ptr<Texture2D> tex, glm::vec4 color = glm::vec4(1.0f), float particleSize = 1.0f)
 				: ParticleVertArray(verts), UseShader(shader), Texture(tex), ParticleSystemColor(color), ParticleSize(particleSize)
 			{
-				for (uint32_t i = 0; i < MAX_PARTICLE_COUNT; i++)
+				for (uint32_t i = 0; i < MaxParticles; i++)
 				{
 					Particles[i].Color = color;
 					Particles[i].Size = particleSize;
@@ -1113,6 +1115,18 @@ namespace Frosty
 
 		};
 
+		struct CAnimController :public BaseComponent
+		{
+			static std::string NAME;
+
+			bool isSliderControlled = false;
+			float animSpeed = 1;
+			Animation* currAnim;
+			float dt = 0;
+
+			virtual std::string GetName() const { return NAME; }
+		};
+
 		struct CLevelExit : public BaseComponent
 		{
 			static std::string NAME;
@@ -1163,29 +1177,30 @@ namespace Frosty
 		{
 			switch (i)
 			{
-				case 0:		return "Transform";
-				case 1:		return "Mesh";
-				case 2:		return "Camera";
-				case 3:		return "Material";
-				case 4:		return "Follow";
-				case 5:		return "Light";
-				case 6:		return "Physics";
-				case 7:		return "Weapon";
-				case 8:		return "Attack";
-				case 9:		return "Player";
-				case 10:	return "Enemy";
-				case 11:	return "Health";
-				case 12:	return "Inventory";
-				case 13:	return "HealthBar";
-				case 14:	return "Dash";
-				case 15:	return "Destroy";
-				case 16:	return "ParticleSystem";
-				case 17:	return "Lootable";
-				case 18:	return "DropItem";
-				case 19:	return "Boss";
-				case 20:	return "LevelExit";
-				case 21:	return "GUI";
-				default:	return "";
+			case 0:		return "Transform";
+			case 1:		return "Mesh";
+			case 2:		return "Camera";
+			case 3:		return "Material";
+			case 4:		return "Follow";
+			case 5:		return "Light";
+			case 6:		return "Physics";
+			case 7:		return "Weapon";
+			case 8:		return "Attack";
+			case 9:		return "Player";
+			case 10:	return "Enemy";
+			case 11:	return "Health";
+			case 12:	return "Inventory";
+			case 13:	return "HealthBar";
+			case 14:	return "Dash";
+			case 15:	return "Destroy";
+			case 16:	return "ParticleSystem";
+			case 17:	return "Chest";
+			case 18:	return "Lootable";
+			case 19:	return "Boss";
+			case 20:	return "LevelExit";
+			case 21:	return "GUI";
+			case 22:	return "AnimController";
+			default:	return "";
 			}
 		}
 

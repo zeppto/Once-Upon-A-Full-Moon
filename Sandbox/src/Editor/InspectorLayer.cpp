@@ -104,6 +104,7 @@ namespace MCS
 					if (world->HasComponent<Frosty::ECS::CHealthBar>(m_SelectedEntity)) toggles[11] = true;
 					if (world->HasComponent<Frosty::ECS::CParticleSystem>(m_SelectedEntity)) toggles[12] = true;
 					if (world->HasComponent<Frosty::ECS::CBoss>(m_SelectedEntity)) toggles[13] = true;
+					if (world->HasComponent<Frosty::ECS::CAnimController>(m_SelectedEntity)) toggles[17] = true;
 				}
 
 				// Information
@@ -209,6 +210,12 @@ namespace MCS
 							world->AddComponent<Frosty::ECS::CGUI>(m_SelectedEntity);
 						else
 							world->RemoveComponent<Frosty::ECS::CGUI>(m_SelectedEntity);
+					}
+					if (ImGui::MenuItem("Anim Controller", "", &toggles[17])) {
+						if (!world->HasComponent<Frosty::ECS::CAnimController>(m_SelectedEntity))
+							world->AddComponent<Frosty::ECS::CAnimController>(m_SelectedEntity);
+						else
+							world->RemoveComponent<Frosty::ECS::CAnimController>(m_SelectedEntity);
 					}
 					ImGui::EndPopup();
 				}
@@ -487,6 +494,153 @@ namespace MCS
 							ImGui::Text("Texture");
 						}
 
+						if (comp.UseShader->GetName() == "Animation")
+						{
+							// Diffuse // 
+							ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(10, 10));
+
+							
+				/*			world->AddComponent<Frosty::ECS::CAnimController>(m_SelectedEntity);
+
+							
+							Frosty::ECS::CAnimController& controlComp = world->GetComponent<Frosty::ECS::CAnimController>(m_SelectedEntity);
+							ImGui::SliderFloat("AnimSpeed", &controlComp.animSpeed, 0.f, 100.f);*/
+
+							//if (ImGui::CollapsingHeader("Animation Controller"))
+							//{
+							//	ImGui::SliderFloat("AnimSpeed", &controlComp.animSpeed, 0.f, 100.f);
+							//	
+							//	if (ImGui::Button("Pick Animation")) ImGui::OpenPopup("Animation menu");
+							//	if (ImGui::BeginPopup("Animation menu"))
+							//	{
+							//		for (auto& it: *Frosty::AssetManager::GetAnimationMap())
+							//		{
+							//			if (ImGui::Button(it.first.c_str())) controlComp.currAnim = &it.second;
+							//		}
+							//		if (ImGui::Button("Close")) ImGui::CloseCurrentPopup();
+
+							//		ImGui::EndPopup();
+							//	}
+							//}
+							//uint32_t selDiffuseID = 0;
+							//comp.DiffuseTexture ? selDiffuseID = comp.DiffuseTexture->GetRenderID() : selDiffuseID = Frosty::AssetManager::GetTexture2D("Checkerboard")->GetRenderID();
+							ImGui::Image(comp.DiffuseTexture ? comp.DiffuseTexture->GetRenderID() : Frosty::AssetManager::GetTexture2D("Checkerboard")->GetRenderID(), ImVec2(64, 64));
+							ImGui::PopStyleVar();
+							if (ImGui::IsItemClicked()) ImGui::OpenPopup("diffuse_texture_selector");
+							ImGui::SetNextWindowSize(ImVec2(160, 370));
+							if (ImGui::BeginPopupModal("diffuse_texture_selector", NULL))
+							{
+								size_t index = 0;
+								ImGuiTreeNodeFlags node_flags = ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen; // ImGuiTreeNodeFlags_Bullet
+								uint32_t diffuseID = 0;
+								int nrOfCols = 2;
+								int col = 0;
+
+								for (auto& texture : Frosty::AssetManager::GetTextures2D())
+								{
+									ImGui::SetCursorPos(ImVec2((col % nrOfCols) * 66.0f, ImGui::GetCursorPosY() - (col % nrOfCols) * 68.0f));
+									col++;
+									ImGui::Image(texture.second->GetRenderID(), ImVec2(64, 64));
+									if (ImGui::IsItemClicked())
+									{
+										if (texture.first == "Checkerboard")
+										{
+											comp.DiffuseTexture->Unbind();
+											comp.DiffuseTexture.reset();
+										}
+										else
+										{
+											comp.DiffuseTexture = texture.second;
+										}
+									}
+								}
+
+								if (ImGui::Button("Close")) ImGui::CloseCurrentPopup();
+								ImGui::EndPopup();
+							}
+							ImGui::SameLine();
+							ImGui::Text("Diffuse");
+
+							// Specular // 
+							ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 10.f);
+							ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(10, 10));
+							ImGui::Image(comp.SpecularTexture ? comp.SpecularTexture->GetRenderID() : Frosty::AssetManager::GetTexture2D("Checkerboard")->GetRenderID(), ImVec2(64, 64));
+							ImGui::PopStyleVar();
+							if (ImGui::IsItemClicked()) ImGui::OpenPopup("specular_texture_selector");
+							if (ImGui::BeginPopupModal("specular_texture_selector", NULL))
+							{
+								size_t index = 0;
+								ImGuiTreeNodeFlags node_flags = ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen; // ImGuiTreeNodeFlags_Bullet
+								uint32_t glossID = 0;
+								int nrOfCols = 2;
+								int col = 0;
+
+								for (auto& texture : Frosty::AssetManager::GetTextures2D())
+								{
+									ImGui::SetCursorPos(ImVec2((col % nrOfCols) * 66.0f, ImGui::GetCursorPosY() - (col % nrOfCols) * 68.0f));
+									col++;
+									ImGui::Image(texture.second->GetRenderID(), ImVec2(64, 64));
+									if (ImGui::IsItemClicked())
+									{
+										if (texture.first == "Checkerboard")
+										{
+											comp.SpecularTexture->Unbind();
+											comp.SpecularTexture.reset();
+										}
+										else
+										{
+											comp.SpecularTexture = texture.second;
+										}
+									}
+								}
+
+								if (ImGui::Button("Close")) ImGui::CloseCurrentPopup();
+								ImGui::EndPopup();
+							}
+							ImGui::SameLine();
+							ImGui::Text("Specular");
+							ImGui::SliderInt("Shininess", &comp.Shininess, 2, 256);
+
+							// Normal // 
+							ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 10.f);
+							ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(10, 10));
+							ImGui::Image(comp.NormalTexture ? comp.NormalTexture->GetRenderID() : Frosty::AssetManager::GetTexture2D("Checkerboard")->GetRenderID(), ImVec2(64, 64));
+							ImGui::PopStyleVar();
+							if (ImGui::IsItemClicked()) ImGui::OpenPopup("normal_texture_selector");
+							if (ImGui::BeginPopupModal("normal_texture_selector", NULL))
+							{
+								size_t index = 0;
+								ImGuiTreeNodeFlags node_flags = ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen; // ImGuiTreeNodeFlags_Bullet
+								uint32_t normalID = 0;
+								int nrOfCols = 2;
+								int col = 0;
+
+								for (auto& texture : Frosty::AssetManager::GetTextures2D())
+								{
+									ImGui::SetCursorPos(ImVec2((col % nrOfCols) * 66.0f, ImGui::GetCursorPosY() - (col % nrOfCols) * 68.0f));
+									col++;
+									ImGui::Image(texture.second->GetRenderID(), ImVec2(64, 64));
+									if (ImGui::IsItemClicked())
+									{
+										if (texture.first == "Checkerboard")
+										{
+											comp.NormalTexture->Unbind();
+											comp.NormalTexture.reset();
+										}
+										else
+										{
+											comp.NormalTexture = texture.second;
+										}
+									}
+								}
+
+								if (ImGui::Button("Close")) ImGui::CloseCurrentPopup();
+								ImGui::EndPopup();
+							}
+							ImGui::SameLine();
+							ImGui::Text("Normal");
+						}
+
 						// Add more parameters like texture etc
 						ImGui::EndChild();
 					}
@@ -670,11 +824,52 @@ namespace MCS
 					if (ImGui::CollapsingHeader("Particle System"))
 					{
 						auto& comp = world->GetComponent<Frosty::ECS::CParticleSystem>(m_SelectedEntity);
-						ImGui::BeginChild("CParticleSystem", ImVec2(EDITOR_INSPECTOR_WIDTH, 245), true);
+						ImGui::BeginChild("CParticleSystem", ImVec2(EDITOR_INSPECTOR_WIDTH, 345), true);
 						ImGui::Text("Active particles: %i", comp.ParticleCount);
 						ImGui::Checkbox("Preview", &comp.Preview);
 						ImGui::ColorEdit4("Color", glm::value_ptr(comp.ParticleSystemColor));
-						ImGui::SliderInt("Particle count", (int*)&comp.ParticleCount, 1, comp.MAX_PARTICLE_COUNT);
+						ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(10, 10));
+						ImGui::Image(comp.Texture ? comp.Texture->GetRenderID() : Frosty::AssetManager::GetTexture2D("Checkerboard")->GetRenderID(), ImVec2(64, 64));
+						ImGui::PopStyleVar();
+						if (ImGui::IsItemClicked()) ImGui::OpenPopup("particle_texture_selector");
+						ImGui::SetNextWindowSize(ImVec2(160, 370));
+						if (ImGui::BeginPopupModal("particle_texture_selector", NULL))
+						{
+							size_t index = 0;
+							ImGuiTreeNodeFlags node_flags = ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen; // ImGuiTreeNodeFlags_Bullet
+							uint32_t diffuseID = 0;
+							int nrOfCols = 2;
+							int col = 0;
+
+							for (auto& texture : Frosty::AssetManager::GetTextures2D())
+							{
+								ImGui::SetCursorPos(ImVec2((col % nrOfCols) * 66.0f, ImGui::GetCursorPosY() - (col % nrOfCols) * 68.0f));
+								col++;
+								ImGui::Image(texture.second->GetRenderID(), ImVec2(64, 64));
+								if (ImGui::IsItemClicked())
+								{
+									if (texture.first == "Checkerboard")
+									{
+										comp.Texture->Unbind();
+										comp.Texture.reset();
+									}
+									else
+									{
+										comp.Texture = texture.second;
+									}
+								}
+							}
+
+							if (ImGui::Button("Close")) ImGui::CloseCurrentPopup();
+							ImGui::EndPopup();
+						}
+						ImGui::SameLine();
+						ImGui::Text("Texture");
+						if (!Frosty::Application::Get().GameIsRunning())
+						{
+							ImGui::SliderInt("Particle count", (int*)&comp.MaxParticles, 1, comp.MAX_PARTICLE_COUNT);
+						}
+						ImGui::DragFloat3("Direction", glm::value_ptr(comp.ParticleSystemDirection), 0.1f, 0.0f, 0.0f, "%.2f");
 						ImGui::InputFloat("Start size", &comp.StartParticleSize);
 						ImGui::InputFloat("End size", &comp.EndParticleSize);
 						ImGui::InputFloat("Emit rate", &comp.EmitRate);
@@ -701,6 +896,27 @@ namespace MCS
 						ImGui::BeginChild("CGUI", ImVec2(EDITOR_INSPECTOR_WIDTH, 45), true);
 						ImGui::Text("Test text"); //TODO: Fill with info
 						ImGui::EndChild();
+					}
+				}
+				
+				if (world->HasComponent<Frosty::ECS::CAnimController>(m_SelectedEntity))
+				{
+					if (ImGui::CollapsingHeader("Animation Controller"))
+					{
+						Frosty::ECS::CAnimController * comp = &world->GetComponent<Frosty::ECS::CAnimController>(m_SelectedEntity);
+						ImGui::SliderFloat("AnimSpeed", &comp->animSpeed, 0.f, 50.f);
+
+						if (ImGui::Button("Pick Animation")) ImGui::OpenPopup("Animation menu");
+						if (ImGui::BeginPopup("Animation menu"))
+						{
+							for (auto& it : *Frosty::AssetManager::GetAnimationMap())
+							{
+								if (ImGui::Button(it.first.c_str())) comp->currAnim = &it.second;
+							}
+							if (ImGui::Button("Close")) ImGui::CloseCurrentPopup();
+							ImGui::EndPopup();
+						}
+
 					}
 				}
 			}

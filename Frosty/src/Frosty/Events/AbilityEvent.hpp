@@ -40,6 +40,19 @@ namespace Frosty
 		std::shared_ptr<ECS::Entity> m_Entity;
 	};
 
+	class DashEvent : public BaseEvent
+	{
+	public:
+		DashEvent(const std::shared_ptr<ECS::Entity>& entity) : m_Entity(entity) { }
+
+		const std::shared_ptr<ECS::Entity>& GetEntity() const { return m_Entity; }
+
+		EVENT_TYPE(Dash)
+
+	private:
+		std::shared_ptr<ECS::Entity> m_Entity;
+	};
+
 	class PickUpAttemptEvent : public BaseEvent
 	{
 	public:

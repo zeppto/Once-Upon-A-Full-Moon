@@ -22,8 +22,6 @@ namespace Frosty
 	{
 	}
 
-
-
 	void Renderer::RenderScene()
 	{
 		//For debugging
@@ -74,7 +72,7 @@ namespace Frosty
 				DirectLI++;
 			}
 
-			
+
 
 
 
@@ -162,8 +160,8 @@ namespace Frosty
 		if (light->Type == Frosty::ECS::CLight::LightType::Point)
 		{
 			s_SceneData->PointLights.emplace(light->EntityPtr->Id, FY_NEW PointLight);
-			s_SceneData->PointLights.at(int(light->EntityPtr->Id))->PointLight = light;
-			s_SceneData->PointLights.at(int(light->EntityPtr->Id))->Transform = transform;
+			s_SceneData->PointLights.at(light->EntityPtr->Id)->PointLight = light;
+			s_SceneData->PointLights.at(light->EntityPtr->Id)->Transform = transform;
 		}
 		else if (light->Type == Frosty::ECS::CLight::LightType::Directional)
 		{
@@ -175,9 +173,9 @@ namespace Frosty
 			light->Direction = mat * glm::vec4(light->Direction, 0);
 
 
-			s_SceneData->DirectionalLights.emplace(int(light->EntityPtr->Id), FY_NEW DirectionalLight);
-			s_SceneData->DirectionalLights.at(int(light->EntityPtr->Id))->DirectionalLight = light;
-			s_SceneData->DirectionalLights.at(int(light->EntityPtr->Id))->Transform = transform;
+			s_SceneData->DirectionalLights.emplace(light->EntityPtr->Id, FY_NEW DirectionalLight);
+			s_SceneData->DirectionalLights.at(light->EntityPtr->Id)->DirectionalLight = light;
+			s_SceneData->DirectionalLights.at(light->EntityPtr->Id)->Transform = transform;
 		}
 	}
 
@@ -185,31 +183,31 @@ namespace Frosty
 	{
 		if (light->Type == Frosty::ECS::CLight::LightType::Point)
 		{
-			s_SceneData->PointLights.at(int(light->EntityPtr->Id))->PointLight = light;
-			s_SceneData->PointLights.at(int(light->EntityPtr->Id))->Transform = transform;
+			s_SceneData->PointLights.at(light->EntityPtr->Id)->PointLight = light;
+			s_SceneData->PointLights.at(light->EntityPtr->Id)->Transform = transform;
 		}
 		else if (light->Type == Frosty::ECS::CLight::LightType::Directional)
 		{
 
-			s_SceneData->DirectionalLights.at(int(light->EntityPtr->Id))->DirectionalLight = light;
-			s_SceneData->DirectionalLights.at(int(light->EntityPtr->Id))->Transform = transform;
+			s_SceneData->DirectionalLights.at(light->EntityPtr->Id)->DirectionalLight = light;
+			s_SceneData->DirectionalLights.at(light->EntityPtr->Id)->Transform = transform;
 		}
 	}
 
 	void Renderer::RemoveLight(Frosty::ECS::CLight* light)
 	{
-	/*	if (light->Type == Frosty::ECS::CLight::LightType::Point)
-		{
-			s_SceneData->PointLights.erase(light->EntityPtr->Id);
-			
-		}
-		else if (light->Type == Frosty::ECS::CLight::LightType::Directional)
-		{
-			s_SceneData->DirectionalLights.erase(light->EntityPtr->Id);
-		}*/
+		/*	if (light->Type == Frosty::ECS::CLight::LightType::Point)
+			{
+				s_SceneData->PointLights.erase(light->EntityPtr->Id);
+
+			}
+			else if (light->Type == Frosty::ECS::CLight::LightType::Directional)
+			{
+				s_SceneData->DirectionalLights.erase(light->EntityPtr->Id);
+			}*/
 	}
 
-	
+
 
 	/*void Renderer::AddLight(const glm::vec3& color, const glm::vec3& pos, float strength, float radius)
 	{
@@ -227,7 +225,6 @@ namespace Frosty
 		mat = glm::rotate(mat, glm::radians(direction.x), { 1.0f, 0.0f, 0.0f });
 		mat = glm::rotate(mat, glm::radians(direction.y), { 0.0f, 1.0f, 0.0f });
 		mat = glm::rotate(mat, glm::radians(direction.z), { 0.0f, 0.0f, 1.0f });
-
 		DirectionalLight light;
 		light.Color = color;
 		light.Direction = mat * glm::vec4(0.0f, 0.0f, 1.0f, 0.0);
@@ -280,7 +277,7 @@ namespace Frosty
 
 			RenderCommand::DrawUIText(vertexArray); //Will probably change later
 
-			x += (ch.advance >> 6) * scale;
+			x += (ch.advance >> 6)* scale;
 		}
 		glBindTexture(GL_TEXTURE_2D, 0);
 
@@ -389,7 +386,7 @@ namespace Frosty
 	{
 		shader->Bind();
 		vertexArray->Bind();
-		
+
 		shader->UploadUniformFloat3("u_HealthBarSpace", HealthBarSpace);
 
 		shader->UploadUniformFloat3("u_Translate", translate);
@@ -410,13 +407,13 @@ namespace Frosty
 
 	int counter = 0;
 
-	void Renderer::AddToRenderer(ECS::CMaterial* mat, std::shared_ptr<VertexArray> vertexArray, ECS::CTransform* transform)
+	void Renderer::AddToRenderer(ECS::CMaterial* mat, std::shared_ptr<VertexArray> vertexArray, ECS::CTransform* transform, ECS::CAnimController* anim)
 	{
 		counter++;
 		//Set up IDs
-		int matID = int(transform->EntityPtr->Id); //Works but can be improved whith a real material ID
+		int matID = transform->EntityPtr->Id; //Works but can be improved whith a real material ID
 		std::string meshID = vertexArray->GetName();
-		int transformID = int(transform->EntityPtr->Id);
+		int transformID = transform->EntityPtr->Id;
 
 
 		//Check if the shader key is already in the map, if not add it.
@@ -475,13 +472,13 @@ namespace Frosty
 
 			if (m_TransformLookUpMap.at(transformID)->size() == 0)
 			{
-				nrOfTransforms = int(m_TransformLookUpMap.at(transformID)->size());
+				nrOfTransforms = m_TransformLookUpMap.at(transformID)->size();
 				m_MeshLookUpMap.at(transformID)->erase(meshName);
 			}
 
 			if (m_MeshLookUpMap.at(transformID)->size() == 0)
 			{
-				nrOfMeshes = int(m_MeshLookUpMap.at(transformID)->size());
+				nrOfMeshes = m_MeshLookUpMap.at(transformID)->size();
 				m_MaterialLookUpMap.at(transformID)->erase(matID);
 
 				//m_MaterialLookUpMap.erase(transformID);
@@ -517,30 +514,70 @@ namespace Frosty
 		}
 	}
 
-	
-
-
-
-	float dt = 0;
-
-	void Renderer::AnimSubmit(ECS::CMaterial* mat, const std::shared_ptr<VertexArray>& vertexArray, const glm::mat4& transform)
+	void Renderer::AnimSubmit(ECS::CMaterial* mat, const std::shared_ptr<VertexArray>& vertexArray, const glm::mat4& transform, ECS::CAnimController* controller)
 	{
 		mat->UseShader->Bind();
 		mat->UseShader->UploadUniformMat4("u_ViewProjection", s_SceneData->GameCamera.ViewProjectionMatrix);
 		mat->UseShader->UploadUniformMat4("u_Transform", transform);
 		mat->UseShader->AssignUniformBlock("a_jointDataBlock");
 
+		mat->UseShader->UploadUniformFloat3("u_CameraPosition", s_SceneData->GameCamera.CameraPosition);
+		mat->UseShader->UploadUniformInt("u_Shininess", mat->Shininess);
+
+		auto& shaderData = m_ShaderMap.at("Animation");
+		// Point Lights
+		shaderData->Shader->UploadUniformInt("u_TotalPointLights", (int)s_SceneData->PointLights.size());
+		int PointLI = 0;
+		for (auto& PLightIt : s_SceneData->PointLights)
+		{
+
+			shaderData->Shader->UploadUniformFloat3Array("u_PointLights[" + std::to_string(PointLI) + "].Color", s_SceneData->PointLights[PLightIt.first]->PointLight->Color);
+			shaderData->Shader->UploadUniformFloat3Array("u_PointLights[" + std::to_string(PointLI) + "].Position", s_SceneData->PointLights[PLightIt.first]->Transform->Position);
+			shaderData->Shader->UploadUniformFloatArray("u_PointLights[" + std::to_string(PointLI) + "].Radius", s_SceneData->PointLights[PLightIt.first]->PointLight->Radius);
+			shaderData->Shader->UploadUniformFloatArray("u_PointLights[" + std::to_string(PointLI) + "].Strength", s_SceneData->PointLights[PLightIt.first]->PointLight->Strength);
+			PointLI++;
+		}
+
+		// Directional Lights
+		shaderData->Shader->UploadUniformInt("u_TotalDirectionalLights", (int)s_SceneData->DirectionalLights.size());
+		int DirectLI = 0;
+		for (auto& DLightIt : s_SceneData->DirectionalLights)
+		{
+			shaderData->Shader->UploadUniformFloat3Array("u_DirectionalLights[" + std::to_string(DirectLI) + "].Color", s_SceneData->DirectionalLights[DLightIt.first]->DirectionalLight->Color);
+			shaderData->Shader->UploadUniformFloat3Array("u_DirectionalLights[" + std::to_string(DirectLI) + "].Direction", s_SceneData->DirectionalLights[DLightIt.first]->DirectionalLight->Direction);
+			shaderData->Shader->UploadUniformFloatArray("u_DirectionalLights[" + std::to_string(DirectLI) + "].Strength", s_SceneData->DirectionalLights[DLightIt.first]->DirectionalLight->Strength);
+			DirectLI++;
+		}
+		//// Point Lights
+		//mat->UseShader->UploadUniformInt("u_TotalPointLights", (int)s_SceneData->PointLights.size());
+		//for (size_t i = 0; i < s_SceneData->PointLights.size(); i++)
+		//{
+		//	mat->UseShader->UploadUniformFloat3Array("u_PointLights[" + std::to_string(i) + "].Color", s_SceneData->PointLights[i].Color);
+		//	mat->UseShader->UploadUniformFloat3Array("u_PointLights[" + std::to_string(i) + "].Position", s_SceneData->PointLights[i].Position);
+		//	mat->UseShader->UploadUniformFloatArray("u_PointLights[" + std::to_string(i) + "].Radius", s_SceneData->PointLights[i].Radius);
+		//	mat->UseShader->UploadUniformFloatArray("u_PointLights[" + std::to_string(i) + "].Strength", s_SceneData->PointLights[i].Strength);
+		//}
+
+		//// Directional Lights
+		//mat->UseShader->UploadUniformInt("u_TotalDirectionalLights", (int)s_SceneData->DirectionalLights.size());
+		//for (size_t i = 0; i < s_SceneData->DirectionalLights.size(); i++)
+		//{
+		//	mat->UseShader->UploadUniformFloat3Array("u_DirectionalLights[" + std::to_string(i) + "].Color", s_SceneData->DirectionalLights[i].Color);
+		//	mat->UseShader->UploadUniformFloat3Array("u_DirectionalLights[" + std::to_string(i) + "].Direction", s_SceneData->DirectionalLights[i].Direction);
+		//	mat->UseShader->UploadUniformFloatArray("u_DirectionalLights[" + std::to_string(i) + "].Strength", s_SceneData->DirectionalLights[i].Strength);
+		//}
+
 		void* skinDataPtr = nullptr;
 		int nrOfBones = 0;
-		AssetManager::GetAnimation(vertexArray->GetCurrentAnim().animationName)->CalculateAnimMatrix(&dt);
-		AssetManager::GetAnimation(vertexArray->GetCurrentAnim().animationName)->GetSkinData(skinDataPtr, nrOfBones);
+		controller->currAnim->CalculateAnimMatrix(&controller->dt);
+		controller->currAnim->GetSkinData(skinDataPtr, nrOfBones);
 
 		vertexArray->GetUniformBuffer()->BindUpdate(skinDataPtr, nrOfBones);
 
 		vertexArray->Bind();
-		/*RenderCommand::EnableBackfaceCulling();*/
+		RenderCommand::EnableBackfaceCulling();
 		RenderCommand::Draw2D(vertexArray);
-		dt += Frosty::Time::DeltaTime();
+		controller->dt += Frosty::Time::DeltaTime() * controller->animSpeed;
 	}
 
 }

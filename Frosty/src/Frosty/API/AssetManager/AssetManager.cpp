@@ -124,8 +124,8 @@ namespace Frosty
 		s_Shaders["Animation"]->Bind();
 
 		s_Shaders["Animation"]->UploadUniformInt("u_DiffuseTexture", 0);
-		s_Shaders["Animation"]->UploadUniformInt("u_GlossTexture", 1);
-		s_Shaders["Animation"]->UploadUniformInt("u_NormalTexture", 2);
+		s_Shaders["Animation"]->UploadUniformInt("u_NormalTexture", 1);
+		s_Shaders["Animation"]->UploadUniformInt("u_SpecularTexture", 2);
 
 		s_Shaders["BlendShader"]->Bind();
 		s_Shaders["BlendShader"]->UploadUniformInt("u_DiffuseTexture", 0);
