@@ -90,7 +90,7 @@ namespace Frosty
 #pragma region Settings
 
 		// Let's define a maximum number of unique components:
-		constexpr std::size_t MAX_COMPONENTS{ 23 };
+		constexpr std::size_t MAX_COMPONENTS{ 22 };
 
 		// Let's define a maximum number of entities that
 		// can have the same component type:
@@ -1044,16 +1044,6 @@ namespace Frosty
 			virtual std::string GetName() const { return NAME; }
 		};
 
-		struct CChest : public BaseComponent
-		{
-			static std::string NAME;
-
-			CChest() = default;
-			CChest(const CChest& org) { FY_CORE_ASSERT(false, "Copy constructor in CChest called."); }
-
-			virtual std::string GetName() const { return NAME; }
-		};
-
 		struct CLootable : public BaseComponent
 		{
 			static std::string NAME;
@@ -1173,30 +1163,29 @@ namespace Frosty
 		{
 			switch (i)
 			{
-			case 0:		return "Transform";
-			case 1:		return "Mesh";
-			case 2:		return "Camera";
-			case 3:		return "Material";
-			case 4:		return "Follow";
-			case 5:		return "Light";
-			case 6:		return "Physics";
-			case 7:		return "Weapon";
-			case 8:		return "Attack";
-			case 9:		return "Player";
-			case 10:	return "Enemy";
-			case 11:	return "Health";
-			case 12:	return "Inventory";
-			case 13:	return "HealthBar";
-			case 14:	return "Dash";
-			case 15:	return "Destroy";
-			case 16:	return "ParticleSystem";
-			case 17:	return "Chest";
-			case 18:	return "Lootable";
-			case 19:	return "DropItem";
-			case 20:	return "Boss";
-			case 21:	return "LevelExit";
-			case 22:	return "GUI";
-			default:	return "";
+				case 0:		return "Transform";
+				case 1:		return "Mesh";
+				case 2:		return "Camera";
+				case 3:		return "Material";
+				case 4:		return "Follow";
+				case 5:		return "Light";
+				case 6:		return "Physics";
+				case 7:		return "Weapon";
+				case 8:		return "Attack";
+				case 9:		return "Player";
+				case 10:	return "Enemy";
+				case 11:	return "Health";
+				case 12:	return "Inventory";
+				case 13:	return "HealthBar";
+				case 14:	return "Dash";
+				case 15:	return "Destroy";
+				case 16:	return "ParticleSystem";
+				case 17:	return "Lootable";
+				case 18:	return "DropItem";
+				case 19:	return "Boss";
+				case 20:	return "LevelExit";
+				case 21:	return "GUI";
+				default:	return "";
 			}
 		}
 
@@ -1248,4 +1237,3 @@ namespace Frosty
 }
 
 #endif // !ECS_HPP
-
