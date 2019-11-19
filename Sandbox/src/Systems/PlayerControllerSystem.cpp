@@ -270,33 +270,294 @@ namespace MCS
 
 	void PlayerControllerSystem::HandleAttack(const glm::vec3& point, size_t index)
 	{
-		if (Frosty::InputManager::IsKeyPressed(m_Player[index]->BasicAttackKey))
+		// The entity pointing to a CWeapon component (player / enemy)
+		auto& weaponCarrier = m_Player[index]->EntityPtr;
+
+		// The weapon that the player is wielding
+		auto& weaponComp = (m_World->GetComponent<Frosty::ECS::CWeapon>(m_Player[index]->Weapon->EntityPtr));
+
+		if (Frosty::InputManager::IsMouseButtonPressed(m_Player[index]->LVL1Attack))
 		{
-			// Player
-			auto& weaponCarrier = m_Player[index]->EntityPtr;
-
-			// The weapon that the player is wielding
-			auto& weaponComp = (m_World->GetComponent<Frosty::ECS::CWeapon>(m_Player[index]->Weapon->EntityPtr));
-
-			if (Frosty::Time::CurrentTime() - weaponComp.CooldownTimer >= weaponComp.Cooldown)
+			// LVL: 1, 2, 3
+			if (weaponComp.ItemID == 1 || weaponComp.ItemID == 2 || weaponComp.ItemID == 3)
 			{
-				switch (weaponComp.Type)
-				{
-				case Frosty::ECS::CWeapon::WeaponType::Sword:
-					CreateBoundingBox(weaponCarrier, weaponComp.EntityPtr);
-					break;
-				case Frosty::ECS::CWeapon::WeaponType::Arrow:
-					CreateProjectile(weaponCarrier, weaponComp.EntityPtr);
-					break;
-				default:
-					break;
-				}
-
-				weaponComp.CooldownTimer = Frosty::Time::CurrentTime();
+				LVL1Attack(index);
+			}
+		}
+		else if (Frosty::InputManager::IsMouseButtonPressed(m_Player[index]->LVL2Attack))
+		{
+			// LVL: 1, 2
+			if (weaponComp.ItemID == 2 || weaponComp.ItemID == 3)
+			{
+				LVL2Attack(index);
+			}
+		}
+		else if (Frosty::InputManager::IsKeyPressed(m_Player[index]->LVL3Attack))
+		{
+			// LVL: 1, 2, 3
+			if (weaponComp.ItemID == 3)
+			{
+				LVL3Attack(index);
 			}
 		}
 	}
 
+	void PlayerControllerSystem::LVL1Attack(const size_t index)
+	{
+		// The entity pointing to a CWeapon component (player / enemy)
+		auto& weaponCarrier = m_Player[index]->EntityPtr;
+
+		// The weapon that the player is wielding
+		auto& weaponComp = (m_World->GetComponent<Frosty::ECS::CWeapon>(m_Player[index]->Weapon->EntityPtr));
+
+		if (Frosty::Time::CurrentTime() - weaponComp.LVL1AttackCooldownTimer >= weaponComp.LVL1AttackCooldown)
+		{
+			switch (weaponComp.Type)
+			{
+			case Frosty::ECS::CWeapon::WeaponType::Sword:
+				CreateLVL1BoundingBox(weaponCarrier, weaponComp.EntityPtr);
+				break;
+			case Frosty::ECS::CWeapon::WeaponType::Arrow:
+				CreateLVL1Projectile(weaponCarrier, weaponComp.EntityPtr);
+				break;
+			default:
+				break;
+			}
+
+			weaponComp.LVL1AttackCooldownTimer = Frosty::Time::CurrentTime();
+		}
+	}
+
+	void PlayerControllerSystem::LVL2Attack(const size_t index)
+	{
+		// The entity pointing to a CWeapon component (player / enemy)
+		auto& weaponCarrier = m_Player[index]->EntityPtr;
+
+		// The weapon that the player is wielding
+		auto& weaponComp = (m_World->GetComponent<Frosty::ECS::CWeapon>(m_Player[index]->Weapon->EntityPtr));
+
+		if (Frosty::Time::CurrentTime() - weaponComp.LVL2AttackCooldownTimer >= weaponComp.LVL2AttackCooldown)
+		{
+			switch (weaponComp.Type)
+			{
+			case Frosty::ECS::CWeapon::WeaponType::Sword:
+				CreateLVL2BoundingBox(weaponCarrier, weaponComp.EntityPtr);
+				break;
+			case Frosty::ECS::CWeapon::WeaponType::Arrow:
+				CreateLVL2Projectile(weaponCarrier, weaponComp.EntityPtr);
+				break;
+			default:
+				break;
+			}
+
+			weaponComp.LVL2AttackCooldownTimer = Frosty::Time::CurrentTime();
+		}
+	}
+
+	void PlayerControllerSystem::LVL3Attack(const size_t index)
+	{
+		// The entity pointing to a CWeapon component (player / enemy)
+		auto& weaponCarrier = m_Player[index]->EntityPtr;
+
+		// The weapon that the player is wielding
+		auto& weaponComp = (m_World->GetComponent<Frosty::ECS::CWeapon>(m_Player[index]->Weapon->EntityPtr));
+
+		if (Frosty::Time::CurrentTime() - weaponComp.LVL3AttackCooldownTimer >= weaponComp.LVL3AttackCooldown)
+		{
+			switch (weaponComp.Type)
+			{
+			case Frosty::ECS::CWeapon::WeaponType::Sword:
+				CreateLVL3BoundingBox(weaponCarrier, weaponComp.EntityPtr);
+				break;
+			case Frosty::ECS::CWeapon::WeaponType::Arrow:
+				CreateLVL3Projectile(weaponCarrier, weaponComp.EntityPtr);
+				break;
+			default:
+				break;
+			}
+
+			weaponComp.LVL3AttackCooldownTimer = Frosty::Time::CurrentTime();
+		}
+	}
+	
+	void PlayerControllerSystem::CreateLVL1BoundingBox(const std::shared_ptr<Frosty::ECS::Entity>& weaponCarrier, const std::shared_ptr<Frosty::ECS::Entity>& weapon)
+	{
+		// Get necessary info
+		auto& weaponComp = m_World->GetComponent<Frosty::ECS::CWeapon>(weapon);
+		auto& attackerTransform = m_World->GetComponent<Frosty::ECS::CTransform>(weaponCarrier);
+
+		// Calculate direction vector
+		glm::mat4 mat = glm::mat4(1.0f);
+		mat = glm::rotate(mat, glm::radians(attackerTransform.Rotation.x), { 1.0f, 0.0f, 0.0f });
+		mat = glm::rotate(mat, glm::radians(attackerTransform.Rotation.y), { 0.0f, 1.0f, 0.0f });
+		mat = glm::rotate(mat, glm::radians(attackerTransform.Rotation.z), { 0.0f, 0.0f, 1.0f });
+		glm::vec4 direction = mat * glm::vec4(0.0f, 0.0f, 1.0f, 0.0);
+
+		// Create BB
+		glm::vec3 spawnPos = attackerTransform.Position + (glm::vec3(direction) * 4.0f);
+		glm::vec3 spawnScale = glm::vec3(10.0f, 6.0f, 4.0f);
+		auto& sword = m_World->CreateEntity({ spawnPos.x, 3.0f, spawnPos.z }, attackerTransform.Rotation, spawnScale);
+
+		m_World->AddComponent<Frosty::ECS::CMesh>(sword, Frosty::AssetManager::GetMesh("pCube1"));
+		m_World->AddComponent<Frosty::ECS::CMaterial>(sword, Frosty::AssetManager::GetShader("FlatColor"));
+		m_World->AddComponent<Frosty::ECS::CPhysics>(sword, Frosty::AssetManager::GetBoundingBox("pCube1"));
+
+		float criticalHit = 0;
+		criticalHit = GenerateCriticalHit(weaponComp.Damage, weaponComp.CriticalHit);
+
+		m_World->AddComponent<Frosty::ECS::CAttack>(sword, Frosty::ECS::CAttack::AttackType::Melee, weaponComp.Damage + criticalHit, true); // <-- true in the end because it's a friendly attack
+	}
+
+	void PlayerControllerSystem::CreateLVL2BoundingBox(const std::shared_ptr<Frosty::ECS::Entity>& weaponCarrier, const std::shared_ptr<Frosty::ECS::Entity>& weapon)
+	{
+		// Get necessary info
+		auto& weaponComp = m_World->GetComponent<Frosty::ECS::CWeapon>(weapon);
+		auto& attackerTransform = m_World->GetComponent<Frosty::ECS::CTransform>(weaponCarrier);
+
+		// Create BB
+		glm::vec3 spawnPos = attackerTransform.Position;
+
+		glm::vec3 spawnScale = glm::vec3(10.0f, 6.0f, 10.0f);
+		auto& sword = m_World->CreateEntity({ spawnPos.x, 3.0f, spawnPos.z }, { 0.f, 0.f, 0.f }, spawnScale);
+
+		m_World->AddComponent<Frosty::ECS::CMesh>(sword, Frosty::AssetManager::GetMesh("pCube1"));
+		m_World->AddComponent<Frosty::ECS::CMaterial>(sword, Frosty::AssetManager::GetShader("FlatColor"));
+		m_World->AddComponent<Frosty::ECS::CPhysics>(sword, Frosty::AssetManager::GetBoundingBox("pCube1"));
+
+		float criticalHit = 0;
+		criticalHit = GenerateCriticalHit(weaponComp.Damage, weaponComp.CriticalHit);
+
+		m_World->AddComponent<Frosty::ECS::CAttack>(sword, Frosty::ECS::CAttack::AttackType::Melee, weaponComp.Damage + criticalHit, true); // <-- true in the end because it's a friendly attack
+	}
+
+	void PlayerControllerSystem::CreateLVL3BoundingBox(const std::shared_ptr<Frosty::ECS::Entity>& weaponCarrier, const std::shared_ptr<Frosty::ECS::Entity>& weapon)
+	{
+		// Get necessary info
+		auto& weaponComp = m_World->GetComponent<Frosty::ECS::CWeapon>(weapon);
+		auto& attackerTransform = m_World->GetComponent<Frosty::ECS::CTransform>(weaponCarrier);
+
+		// Calculate direction vector
+		glm::mat4 mat = glm::mat4(1.0f);
+		mat = glm::rotate(mat, glm::radians(attackerTransform.Rotation.x), { 1.0f, 0.0f, 0.0f });
+		mat = glm::rotate(mat, glm::radians(attackerTransform.Rotation.y), { 0.0f, 1.0f, 0.0f });
+		mat = glm::rotate(mat, glm::radians(attackerTransform.Rotation.z), { 0.0f, 0.0f, 1.0f });
+		glm::vec4 direction = mat * glm::vec4(0.0f, 0.0f, 1.0f, 0.0);
+
+		// Create BB
+		glm::vec3 spawnPos = attackerTransform.Position + (glm::vec3(direction) * 5.0f);
+		glm::vec3 spawnScale = glm::vec3(2.0f, 6.0f, 10.0f);
+		auto& sword = m_World->CreateEntity({ spawnPos.x, 3.0f, spawnPos.z }, attackerTransform.Rotation, spawnScale);
+
+		m_World->AddComponent<Frosty::ECS::CMesh>(sword, Frosty::AssetManager::GetMesh("pCube1"));
+		m_World->AddComponent<Frosty::ECS::CMaterial>(sword, Frosty::AssetManager::GetShader("FlatColor"));
+		m_World->AddComponent<Frosty::ECS::CPhysics>(sword, Frosty::AssetManager::GetBoundingBox("pCube1"));
+
+		float criticalHit = 0;
+		criticalHit = GenerateCriticalHit(weaponComp.Damage, weaponComp.CriticalHit);
+
+		m_World->AddComponent<Frosty::ECS::CAttack>(sword, Frosty::ECS::CAttack::AttackType::Melee, weaponComp.Damage + criticalHit, true); // <-- true in the end because it's a friendly attack
+	}
+
+	void PlayerControllerSystem::CreateLVL1Projectile(const std::shared_ptr<Frosty::ECS::Entity>& weaponCarrier, const std::shared_ptr<Frosty::ECS::Entity>& weapon)
+	{
+		// Get necessary info
+		auto& weaponComp = m_World->GetComponent<Frosty::ECS::CWeapon>(weapon);
+		auto& attackerTransform = m_World->GetComponent<Frosty::ECS::CTransform>(weaponCarrier);
+
+		// Calculate direction vector
+		glm::mat4 mat = glm::mat4(1.0f);
+		mat = glm::rotate(mat, glm::radians(attackerTransform.Rotation.x), { 1.0f, 0.0f, 0.0f });
+		mat = glm::rotate(mat, glm::radians(attackerTransform.Rotation.y), { 0.0f, 1.0f, 0.0f });
+		mat = glm::rotate(mat, glm::radians(attackerTransform.Rotation.z), { 0.0f, 0.0f, 1.0f });
+		glm::vec4 direction = mat * glm::vec4(0.0f, 0.0f, 1.0f, 0.0);
+
+		// Create projectile
+		glm::vec3 spawnPos = attackerTransform.Position + (glm::vec3(direction) * 3.0f);
+		auto& projectile = m_World->CreateEntity({ spawnPos.x, 1.0f, spawnPos.z }, attackerTransform.Rotation, { 0.3f, 0.3f, 0.3f });
+		m_World->AddComponent<Frosty::ECS::CMesh>(projectile, Frosty::AssetManager::GetMesh("pSphere1"));
+		m_World->AddComponent<Frosty::ECS::CMaterial>(projectile, Frosty::AssetManager::GetShader("FlatColor"));
+		auto& projectilePhysics = m_World->AddComponent<Frosty::ECS::CPhysics>(projectile, Frosty::AssetManager::GetBoundingBox("pSphere1"), 20.0f);
+		projectilePhysics.Velocity = direction * projectilePhysics.Speed;
+
+		float criticalHit = 0;
+		criticalHit = GenerateCriticalHit(weaponComp.Damage, weaponComp.CriticalHit);
+		m_World->AddComponent<Frosty::ECS::CAttack>(projectile, Frosty::ECS::CAttack::AttackType::Range, weaponComp.Damage + criticalHit, true, weaponComp.Lifetime);
+	}
+
+	void PlayerControllerSystem::CreateLVL2Projectile(const std::shared_ptr<Frosty::ECS::Entity>& weaponCarrier, const std::shared_ptr<Frosty::ECS::Entity>& weapon)
+	{
+		// Get necessary info
+		auto& weaponComp = m_World->GetComponent<Frosty::ECS::CWeapon>(weapon);
+		auto& attackerTransform = m_World->GetComponent<Frosty::ECS::CTransform>(weaponCarrier);
+
+		glm::mat4 mat = glm::mat4(1.0f);
+		mat = glm::rotate(mat, glm::radians(attackerTransform.Rotation.x), { 1.0f, 0.0f, 0.0f });
+		mat = glm::rotate(mat, glm::radians(attackerTransform.Rotation.y), { 0.0f, 1.0f, 0.0f });
+		mat = glm::rotate(mat, glm::radians(attackerTransform.Rotation.z), { 0.0f, 0.0f, 1.0f });
+		glm::vec4 direction = mat * glm::vec4(0.0f, 0.0f, 1.0f, 0.0);
+		float criticalHit = 0;
+		for (int i = 0; i < 3; i++)
+		{
+			if (i == 1)
+			{
+				mat = glm::rotate(mat, glm::radians(attackerTransform.Rotation.x + 10.0f), { 0.0f, 1.0f, 0.0f });
+				direction = mat * glm::vec4(0.0f, 0.0f, 1.0f, 0.0);
+			}
+			else if (i == 2)
+			{
+				mat = glm::rotate(mat, glm::radians(attackerTransform.Rotation.x + 340.0f), { 0.0f, 1.0f, 0.0f });
+				direction = mat * glm::vec4(0.0f, 0.0f, 1.0f, 0.0);
+			}
+
+			glm::vec3 spawnPos = attackerTransform.Position + (glm::vec3(direction) * 3.0f);
+			auto& projectile = m_World->CreateEntity({ spawnPos.x, 1.0f, spawnPos.z }, attackerTransform.Rotation, { 0.3f, 0.3f, 0.3f });
+			m_World->AddComponent<Frosty::ECS::CMesh>(projectile, Frosty::AssetManager::GetMesh("pSphere1"));
+			m_World->AddComponent<Frosty::ECS::CMaterial>(projectile, Frosty::AssetManager::GetShader("FlatColor"));
+			auto& projectilePhysics = m_World->AddComponent<Frosty::ECS::CPhysics>(projectile, Frosty::AssetManager::GetBoundingBox("pSphere1"), 20.0f);
+			projectilePhysics.Velocity = direction * projectilePhysics.Speed;
+
+			criticalHit = GenerateCriticalHit(weaponComp.Damage, weaponComp.CriticalHit);
+			m_World->AddComponent<Frosty::ECS::CAttack>(projectile, Frosty::ECS::CAttack::AttackType::Range, weaponComp.Damage + criticalHit, true, weaponComp.Lifetime);
+		}
+	}
+
+	void PlayerControllerSystem::CreateLVL3Projectile(const std::shared_ptr<Frosty::ECS::Entity>& weaponCarrier, const std::shared_ptr<Frosty::ECS::Entity>& weapon)
+	{
+		// Get necessary info
+		auto& weaponComp = m_World->GetComponent<Frosty::ECS::CWeapon>(weapon);
+		auto& attackerTransform = m_World->GetComponent<Frosty::ECS::CTransform>(weaponCarrier);
+
+		// Calculate direction vector
+		glm::mat4 mat = glm::mat4(1.0f);
+		mat = glm::rotate(mat, glm::radians(attackerTransform.Rotation.x), { 1.0f, 0.0f, 0.0f });
+		mat = glm::rotate(mat, glm::radians(attackerTransform.Rotation.y), { 0.0f, 1.0f, 0.0f });
+		mat = glm::rotate(mat, glm::radians(attackerTransform.Rotation.z), { 0.0f, 0.0f, 1.0f });
+		glm::vec4 direction = mat * glm::vec4(0.0f, 0.0f, 1.0f, 0.0);
+
+		// Create projectile
+		glm::vec3 spawnPos = attackerTransform.Position + (glm::vec3(direction) * 3.0f);
+		auto& projectile = m_World->CreateEntity({ spawnPos.x, 1.0f, spawnPos.z }, attackerTransform.Rotation, { 0.3f, 0.3f, 0.3f });
+		m_World->AddComponent<Frosty::ECS::CMesh>(projectile, Frosty::AssetManager::GetMesh("pSphere1"));
+		m_World->AddComponent<Frosty::ECS::CMaterial>(projectile, Frosty::AssetManager::GetShader("FlatColor"));
+		auto& projectilePhysics = m_World->AddComponent<Frosty::ECS::CPhysics>(projectile, Frosty::AssetManager::GetBoundingBox("pSphere1"), 20.0f);
+		projectilePhysics.Velocity = direction * projectilePhysics.Speed;
+
+		float criticalHit = 0;
+		criticalHit = GenerateCriticalHit(weaponComp.Damage, weaponComp.CriticalHit);
+		m_World->AddComponent<Frosty::ECS::CAttack>(projectile, Frosty::ECS::CAttack::AttackType::Range, weaponComp.Damage + criticalHit, true, weaponComp.Lifetime, false);
+	}
+
+	float PlayerControllerSystem::GenerateCriticalHit(float criticalHit, float criticalHitChance)
+	{
+		int randomNumber = rand() % 100 + 1;
+
+		if (randomNumber <= (criticalHitChance * 100))
+		{
+			return criticalHit;
+		}
+		return 0.0f;
+	}
+	
 	void PlayerControllerSystem::HandleInventory(size_t index)
 	{
 #pragma region Healing Potion
@@ -489,69 +750,6 @@ namespace MCS
 				FY_INFO("Arrow in Inventory");
 			}
 		}
-	}
-
-	void PlayerControllerSystem::CreateBoundingBox(const std::shared_ptr<Frosty::ECS::Entity>& weaponCarrier, const std::shared_ptr<Frosty::ECS::Entity>& weapon)
-	{
-		// Get necessary info
-		auto& weaponComp = m_World->GetComponent<Frosty::ECS::CWeapon>(weapon);
-		auto& attackerTransform = m_World->GetComponent<Frosty::ECS::CTransform>(weaponCarrier);
-
-		// Calculate direction vector
-		glm::mat4 mat = glm::mat4(1.0f);
-		mat = glm::rotate(mat, glm::radians(attackerTransform.Rotation.x), { 1.0f, 0.0f, 0.0f });
-		mat = glm::rotate(mat, glm::radians(attackerTransform.Rotation.y), { 0.0f, 1.0f, 0.0f });
-		mat = glm::rotate(mat, glm::radians(attackerTransform.Rotation.z), { 0.0f, 0.0f, 1.0f });
-		glm::vec4 direction = mat * glm::vec4(0.0f, 0.0f, 1.0f, 0.0);
-
-		// Create BB
-		glm::vec3 spawnPos = attackerTransform.Position + (glm::vec3(direction) * 4.0f);
-		glm::vec3 spawnScale = glm::vec3(10.0f, 6.0f, 4.0f);
-		auto& sword = m_World->CreateEntity({ spawnPos.x, 3.0f, spawnPos.z }, attackerTransform.Rotation, spawnScale);
-
-		m_World->AddComponent<Frosty::ECS::CMesh>(sword, Frosty::AssetManager::GetMesh("pCube1"));				// Should be according to weapon level type in CWeapon
-		m_World->AddComponent<Frosty::ECS::CMaterial>(sword, Frosty::AssetManager::GetShader("FlatColor"));
-		m_World->AddComponent<Frosty::ECS::CPhysics>(sword, Frosty::AssetManager::GetBoundingBox("pCube1"));
-
-		// Is it a friendly attack or an enemy attack? Add boolean in parameter accordingly
-		float criticalHit = GenerateCriticalHit(weaponComp.Damage, weaponComp.CriticalHit);
-		m_World->AddComponent<Frosty::ECS::CAttack>(sword, Frosty::ECS::CAttack::AttackType::Melee, weaponComp.Damage /*+ criticalHit*/, true); // <-- true because it's a friendly attack
-	}
-
-	void PlayerControllerSystem::CreateProjectile(const std::shared_ptr<Frosty::ECS::Entity>& weaponCarrier, const std::shared_ptr<Frosty::ECS::Entity>& weapon)
-	{
-		// Get necessary info
-		auto& weaponComp = m_World->GetComponent<Frosty::ECS::CWeapon>(weapon);
-		auto& attackerTransform = m_World->GetComponent<Frosty::ECS::CTransform>(weaponCarrier);
-
-		// Calculate direction vector
-		glm::mat4 mat = glm::mat4(1.0f);
-		mat = glm::rotate(mat, glm::radians(attackerTransform.Rotation.x), { 1.0f, 0.0f, 0.0f });
-		mat = glm::rotate(mat, glm::radians(attackerTransform.Rotation.y), { 0.0f, 1.0f, 0.0f });
-		mat = glm::rotate(mat, glm::radians(attackerTransform.Rotation.z), { 0.0f, 0.0f, 1.0f });
-		glm::vec4 direction = mat * glm::vec4(0.0f, 0.0f, 1.0f, 0.0);
-
-		// Create projectile
-		glm::vec3 spawnPos = attackerTransform.Position + (glm::vec3(direction) * 3.0f);
-		auto& projectile = m_World->CreateEntity({ spawnPos.x, 1.0f, spawnPos.z }, attackerTransform.Rotation, { 0.3f, 0.3f, 0.3f });
-		m_World->AddComponent<Frosty::ECS::CMesh>(projectile, Frosty::AssetManager::GetMesh("pSphere1"));
-		m_World->AddComponent<Frosty::ECS::CMaterial>(projectile, Frosty::AssetManager::GetShader("FlatColor"));
-		auto& projectilePhysics = m_World->AddComponent<Frosty::ECS::CPhysics>(projectile, Frosty::AssetManager::GetBoundingBox("pSphere1"), 20.0f);
-		projectilePhysics.Velocity = direction * projectilePhysics.Speed;
-
-		float criticalHit = GenerateCriticalHit(weaponComp.Damage, weaponComp.CriticalHit);
-		m_World->AddComponent<Frosty::ECS::CAttack>(projectile, Frosty::ECS::CAttack::AttackType::Range, weaponComp.Damage /*+ criticalHit*/, true, weaponComp.Lifetime);
-	}
-
-	float PlayerControllerSystem::GenerateCriticalHit(float criticalHit, float criticalHitChance)
-	{
-		int randomNumber = rand() % 100 + 1;
-
-		if (randomNumber <= (criticalHitChance * 100))
-		{
-			return criticalHit;
-		}
-		return 0.0f;
 	}
 
 	void PlayerControllerSystem::SwapWeapon(const std::shared_ptr<Frosty::ECS::Entity>& playerWeapon, const std::shared_ptr<Frosty::ECS::Entity>& lootWeapon)

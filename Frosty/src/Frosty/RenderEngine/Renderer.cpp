@@ -169,9 +169,14 @@ namespace Frosty
 			mat->UseShader->UploadUniformFloat("u_SpecularStrength", mat->SpecularStrength);
 
 		}
-		else if (mat->UseShader->GetName() == "Texture2D"|| mat->UseShader->GetName() == "BlendShader")
+		else if (mat->UseShader->GetName() == "Texture2D")
 		{
 			mat->UseShader->UploadUniformFloat2("u_TextureCoordScale", mat->TextureScale);
+		}
+		else if (mat->UseShader->GetName() == "Texture2D" || mat->UseShader->GetName() == "BlendShader")
+		{
+			mat->UseShader->UploadUniformFloat2("u_TextureCoordScale", mat->TextureScale);
+			mat->UseShader->UploadUniformFloat("u_RepeatableTextureSize", 20.f);
 		}
 		vertexArray->Bind();
 		RenderCommand::EnableBackfaceCulling();

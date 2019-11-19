@@ -29,17 +29,26 @@ namespace MCS
 		void LookAtPoint(const glm::vec3& point, size_t index);
 		void HandleMovement(size_t index);
 		void HandleAttack(const glm::vec3& point, size_t index);
+		void LVL1Attack(const size_t index);
+		void LVL2Attack(const size_t index);
+		void LVL3Attack(const size_t index);
+		
+		void CreateLVL1BoundingBox(const std::shared_ptr<Frosty::ECS::Entity>& weaponCarrier, const std::shared_ptr<Frosty::ECS::Entity>& weapon);
+		void CreateLVL2BoundingBox(const std::shared_ptr<Frosty::ECS::Entity>& weaponCarrier, const std::shared_ptr<Frosty::ECS::Entity>& weapon);
+		void CreateLVL3BoundingBox(const std::shared_ptr<Frosty::ECS::Entity>& weaponCarrier, const std::shared_ptr<Frosty::ECS::Entity>& weapon);
+		
+		void CreateLVL1Projectile(const std::shared_ptr<Frosty::ECS::Entity>& weaponCarrier, const std::shared_ptr<Frosty::ECS::Entity>& weapon);
+		void CreateLVL2Projectile(const std::shared_ptr<Frosty::ECS::Entity>& weaponCarrier, const std::shared_ptr<Frosty::ECS::Entity>& weapon);
+		void CreateLVL3Projectile(const std::shared_ptr<Frosty::ECS::Entity>& weaponCarrier, const std::shared_ptr<Frosty::ECS::Entity>& weapon);
+		
+		float GenerateCriticalHit(float criticalHit, float criticalHitChance);
+		
 		void HandleInventory(size_t index);
-
 		void OnPickUpEvent(Frosty::PickUpEvent& e);
-
-		void CreateBoundingBox(const std::shared_ptr<Frosty::ECS::Entity>& weaponCarrier, const std::shared_ptr<Frosty::ECS::Entity>& weapon);
-		void CreateProjectile(const std::shared_ptr<Frosty::ECS::Entity>& weaponCarrier, const std::shared_ptr<Frosty::ECS::Entity>& weapon);
 
 		void SwapWeapon(const std::shared_ptr<Frosty::ECS::Entity>& playerWeapon, const std::shared_ptr<Frosty::ECS::Entity>& lootWeapon);
 		void SwapMesh(const std::shared_ptr<Frosty::ECS::Entity>& playerWeapon, const std::shared_ptr<Frosty::ECS::Entity>& lootWeapon);
 		void SwapMaterial(const std::shared_ptr<Frosty::ECS::Entity>& playerWeapon, const std::shared_ptr<Frosty::ECS::Entity>& lootWeapon);
-		float GenerateCriticalHit(float criticalHit, float criticalHitChance);
 
 	private:
 		std::array<Frosty::ECS::CTransform*, Frosty::ECS::MAX_ENTITIES_PER_COMPONENT> m_Transform;
@@ -54,5 +63,4 @@ namespace MCS
 		bool m_keyPressed{ false };
 	};
 }
-
 #endif // !PLAYER_CONTROLLER_SYSTEM_HPP
