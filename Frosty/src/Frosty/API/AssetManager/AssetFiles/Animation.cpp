@@ -55,10 +55,6 @@ namespace Frosty
 		float duration = m_Animation.duration;
 		if (*currentAnimTime > m_Animation.duration)
 		{
-			if (m_Animation.animationName == "p_atk")
-			{
-				//go back to idle/running??
-			}
 			*currentAnimTime = 0;
 		}
 		//Since all animations are baked which joint it is irrelevant for determining last keyframe.

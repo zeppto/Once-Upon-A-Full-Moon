@@ -24,6 +24,7 @@
 #include "Systems/HealthBarSystem.hpp"
 #include "Systems/BossBehaviorSystem.hpp"
 #include "Systems/GUISystem.hpp"
+#include "Systems/AnimationSystem.hpp"
 
 //#include "LevelHandeler/LevelFileFormat.hpp"
 
@@ -43,7 +44,7 @@ namespace MCS
 		world->AddSystem<AttackSystem>();
 		world->AddSystem<CombatSystem>();
 		world->AddSystem<DestroySystem>();
-
+		world->AddSystem<AnimationSystem>();
 		world->AddSystem<HealthBarSystem>();
 
 		/*Frosty::ECS::BaseSystem* retSystem = world->AddSystem<NavigationSystem>();
