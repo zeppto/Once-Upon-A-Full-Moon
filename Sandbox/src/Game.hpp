@@ -7,7 +7,7 @@
 
 namespace MCS
 {
-
+	
 	class Game : public Frosty::Application
 	{
 	public:
