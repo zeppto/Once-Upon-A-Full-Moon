@@ -51,6 +51,8 @@ namespace Frosty
 		static void AddToRenderer(ECS::CMaterial* mat, std::shared_ptr<VertexArray> vertexArray, ECS::CTransform* transform);
 		static void RemoveFromRenderer( const int& matID ,const std::string& meshName,const int& transformID);
 		static void UpdateEntity (const int& matID,ECS::CMaterial* mat, const std::string& meshName, std::shared_ptr<VertexArray> vertexArray, const int& transformID, ECS::CTransform* transform);
+		
+		static void ChangeEntity (const int& OldMatID,ECS::CMaterial* mat, const std::string& OldMeshName, std::shared_ptr<VertexArray> vertexArray, const int& transformID, ECS::CTransform* transform);
 
 		inline static void Shutdown() { delete s_SceneData; }
 

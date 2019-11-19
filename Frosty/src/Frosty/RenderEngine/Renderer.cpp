@@ -74,7 +74,7 @@ namespace Frosty
 				DirectLI++;
 			}
 
-			
+
 
 
 
@@ -198,18 +198,18 @@ namespace Frosty
 
 	void Renderer::RemoveLight(Frosty::ECS::CLight* light)
 	{
-	/*	if (light->Type == Frosty::ECS::CLight::LightType::Point)
-		{
-			s_SceneData->PointLights.erase(light->EntityPtr->Id);
-			
-		}
-		else if (light->Type == Frosty::ECS::CLight::LightType::Directional)
-		{
-			s_SceneData->DirectionalLights.erase(light->EntityPtr->Id);
-		}*/
+		/*	if (light->Type == Frosty::ECS::CLight::LightType::Point)
+			{
+				s_SceneData->PointLights.erase(light->EntityPtr->Id);
+
+			}
+			else if (light->Type == Frosty::ECS::CLight::LightType::Directional)
+			{
+				s_SceneData->DirectionalLights.erase(light->EntityPtr->Id);
+			}*/
 	}
 
-	
+
 
 	/*void Renderer::AddLight(const glm::vec3& color, const glm::vec3& pos, float strength, float radius)
 	{
@@ -389,7 +389,7 @@ namespace Frosty
 	{
 		shader->Bind();
 		vertexArray->Bind();
-		
+
 		shader->UploadUniformFloat3("u_HealthBarSpace", HealthBarSpace);
 
 		shader->UploadUniformFloat3("u_Translate", translate);
@@ -517,7 +517,25 @@ namespace Frosty
 		}
 	}
 
-	
+	void Renderer::ChangeEntity(const int& OldMatID, ECS::CMaterial* mat, const std::string& OldMeshName, std::shared_ptr<VertexArray> vertexArray, const int& transformID, ECS::CTransform* transform)
+	{
+		//Not the best but it works
+
+		if (m_TransformLookUpMap.find(transformID) != m_TransformLookUpMap.end())
+		{
+			//Remove old
+			RemoveFromRenderer(OldMatID, OldMeshName, transformID);
+
+			//Add new
+			if (mat->UseShader->GetName() != "Animation")
+			{
+				AddToRenderer(mat, vertexArray, transform);
+			}
+
+		}
+	}
+
+
 
 
 

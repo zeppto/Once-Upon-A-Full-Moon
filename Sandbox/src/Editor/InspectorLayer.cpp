@@ -245,7 +245,16 @@ namespace MCS
 								ImGui::TreeNodeEx((void*)(intptr_t)index, node_flags, "%s", mesh.first.c_str());
 								if (ImGui::IsItemClicked())
 								{
-									world->GetComponent<Frosty::ECS::CMesh>(m_SelectedEntity).Mesh = mesh.second;
+									auto& currentMesh = world->GetComponent<Frosty::ECS::CMesh>(m_SelectedEntity).Mesh;
+									std::string oldMeshName = currentMesh->GetName();
+									currentMesh = mesh.second;
+
+
+									//Updates the renderer
+									Frosty::Renderer::ChangeEntity(m_SelectedEntity->Id, &world->GetComponent<Frosty::ECS::CMaterial>(m_SelectedEntity),
+										oldMeshName, world->GetComponent<Frosty::ECS::CMesh>(m_SelectedEntity).Mesh,
+										m_SelectedEntity->Id, &world->GetComponent<Frosty::ECS::CTransform>(m_SelectedEntity));
+
 								}
 							}
 
@@ -309,6 +318,12 @@ namespace MCS
 								if (ImGui::Selectable(shader.first.c_str()))
 								{
 									comp.UseShader = shader.second;
+
+									//Updates the renderer
+									Frosty::Renderer::ChangeEntity(m_SelectedEntity->Id, &world->GetComponent<Frosty::ECS::CMaterial>(m_SelectedEntity),
+										world->GetComponent<Frosty::ECS::CMesh>(m_SelectedEntity).Mesh->GetName(), world->GetComponent<Frosty::ECS::CMesh>(m_SelectedEntity).Mesh,
+										m_SelectedEntity->Id, &world->GetComponent<Frosty::ECS::CTransform>(m_SelectedEntity));
+
 								}
 							}
 							ImGui::EndPopup();
