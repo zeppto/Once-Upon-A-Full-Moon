@@ -52,7 +52,7 @@ namespace MCS
 
 				if (m_Materials[i]->UseShader->GetName() == "Animation")
 				{
-					Frosty::Renderer::AnimSubmit(m_Materials[i], m_Meshes[i]->Mesh, m_Transform[i]->ModelMatrix);
+					Frosty::Renderer::AnimSubmit(m_Materials[i], m_Meshes[i]->Mesh, m_Transform[i]->ModelMatrix, m_Anims[i]);
 				}
 				else
 				{
@@ -111,6 +111,7 @@ namespace MCS
 			m_Transform[p_Total] = nullptr;
 			m_Meshes[p_Total] = nullptr;
 			m_Materials[p_Total] = nullptr;
+			m_Anims[p_Total] = nullptr;
 
 			if (p_Total > it->second)
 			{
