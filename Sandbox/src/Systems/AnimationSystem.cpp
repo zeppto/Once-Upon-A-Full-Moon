@@ -6,7 +6,10 @@
 
 void MCS::AnimationSystem::Init()
 {
+	p_Signature.set(Frosty::ECS::getComponentTypeID<Frosty::ECS::CTransform>(), true);
 	p_Signature.set(Frosty::ECS::getComponentTypeID<Frosty::ECS::CAnimController>(), true);
+	p_Signature.set(Frosty::ECS::getComponentTypeID<Frosty::ECS::CDash>(), true);
+	p_Signature.set(Frosty::ECS::getComponentTypeID<Frosty::ECS::CPhysics>(), true);
 }
 
 void MCS::AnimationSystem::OnUpdate()
@@ -17,13 +20,16 @@ void MCS::AnimationSystem::OnUpdate()
 		//May become a problem if enemies get dash.
 		if (m_Dash[i])
 		{
-			if (m_Physics[i]->Speed >= 0)
+			if (!m_Dash[i]->Active)
 			{
+				if (m_Physics[i]->Direction.x != 0.0f || m_Physics[i]->Direction.y != 0.0f || m_Physics[i]->Direction.z != 0.0f)
+				{
+					m_AControllers[i]->currAnim = Frosty::AssetManager::GetAnimation("NewRun");
+				}
+				else
+				{
 
-			}
-			else
-			{
-
+				}
 			}
 		}
 	}
