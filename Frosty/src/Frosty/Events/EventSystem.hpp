@@ -19,7 +19,8 @@ namespace Frosty
 		SpawnItem,
 		PickUpAttempt, PickUp,
 		BaitPlaced, ExitCurrentLevel,
-		SaveLevel, CreateLevel, OpenLevel, CreatEntity, LoadBoolMap
+		SaveLevel, CreateLevel, OpenLevel, CreatEntity, 
+		LoadBoolMap, InitiateGridMap
 	};
 
 #define EVENT_TYPE(type) static EventType GetStaticType() { return EventType::##type; }\

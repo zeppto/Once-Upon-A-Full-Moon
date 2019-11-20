@@ -18,13 +18,11 @@ namespace MCS
 
 	void PhysicsSystem::OnUpdate()
 	{
-		Frosty::Time::StartTimer("Collision and movement.");
 		for (size_t i = 1; i < p_Total; i++)
 		{
 			m_Transform[i]->Position += m_Physics[i]->Velocity * Frosty::Time::DeltaTime();
 			CheckCollision(i);
 		}
-		Frosty::Time::EndTimer("Collision and movement.");
 	}
 
 	void PhysicsSystem::OnEvent(Frosty::BaseEvent& e)

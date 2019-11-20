@@ -16,7 +16,7 @@ namespace Frosty
 		Scene& operator=(const Scene& org) { FY_CORE_ASSERT(false, "Assignment operator in Scene called."); return *this; }
 
 		void Init();
-		void AddCamera(std::shared_ptr<ECS::Entity>& camera);
+		void AddCamera(const std::shared_ptr<ECS::Entity>& camera);
 		inline const std::shared_ptr<ECS::Entity>& GetCamera() const { return m_GameCamera; }
 
 		// Entity Functions

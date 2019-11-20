@@ -1,5 +1,6 @@
 #include <mcspch.hpp>
 #include "NavigationSystem.hpp"
+#include "Frosty/Events/AbilityEvent.hpp"
 
 namespace MCS
 {
@@ -14,6 +15,49 @@ namespace MCS
 
 	void NavigationSystem::OnUpdate()
 	{
+		bool printTime = false;
+		//if (Frosty::Time::GetFrameCount() % 60 == 0) printTime = true;
+
+		if (printTime) Frosty::Time::StartTimer("Grid::Reset() - ALL");
+		m_Grid->Reset();
+		if (printTime) { Frosty::Time::EndTimer("Grid::Reset() - ALL"); }
+
+		//if (p_Total >= 1)
+		//{
+		//	m_Grid->DrawTargetCell(m_Enemy[1]->Target);
+		//}
+
+		if (printTime) Frosty::Time::StartTimer("Grid::SetNodeUnwalkable() - ALL");
+		for (size_t i = 1; i < p_Total; i++)
+		{
+			m_Grid->SetNodeUnwalkable(m_Transform[i]->Position);
+		}
+		if (printTime) { Frosty::Time::EndTimer("Grid::SetNodeUnwalkable() - ALL"); }
+		
+		if (printTime) Frosty::Time::StartTimer("Find path and draw enemy path - ALL");
+		for (size_t i = 1; i < p_Total; i++)
+		{
+			m_Grid->DrawSeekerCell(m_Transform[i]);
+
+			if (m_Enemy[i]->Target != nullptr)
+			{
+				if (glm::distance(glm::vec2(m_Transform[i]->Position.x, m_Transform[i]->Position.z), glm::vec2(m_Enemy[i]->Target->Position.x, m_Enemy[i]->Target->Position.z)) > m_Enemy[i]->AttackRange &&
+					glm::distance(glm::vec2(m_Transform[i]->Position.x, m_Transform[i]->Position.z), glm::vec2(m_Enemy[i]->Target->Position.x, m_Enemy[i]->Target->Position.z)) <= m_Enemy[i]->SightRange)
+				{
+					glm::vec3 cellTarget = m_Pathfinding->FindPath(m_Transform[i]->Position, m_Enemy[i]->Target->Position);
+					m_Enemy[i]->CellTarget = cellTarget;
+					m_Physics[i]->Velocity = glm::normalize(m_Enemy[i]->CellTarget - glm::vec3(m_Transform[i]->Position.x, 0.0f, m_Transform[i]->Position.z)) * m_Physics[i]->Speed;
+				}
+				else
+				{
+					m_Physics[i]->Velocity = glm::vec3(0.0f);
+				}
+			}
+		}
+		if (printTime) { Frosty::Time::EndTimer("Find path and draw enemy path - ALL"); std::cout << "\n"; printTime = false; }
+		
+
+		/*
 		// Reset all cells and give occupied cells -1 weight
 		m_GridMap->ResetCellWeights();
 		for (size_t i = 1; i < p_Total; i++)
@@ -47,6 +91,18 @@ namespace MCS
 					}
 				}
 			}
+		}*/
+	}
+
+	void NavigationSystem::OnEvent(Frosty::BaseEvent& e)
+	{
+		switch (e.GetEventType())
+		{
+		case Frosty::EventType::InitiateGridMap:
+			OnInitiateGridMap(static_cast<Frosty::InitiateGridEvent&>(e));
+			break;
+		default:
+			break;
 		}
 	}
 
@@ -129,11 +185,25 @@ namespace MCS
 		return retInfo.str();
 	}
 
-	void NavigationSystem::InitiateGridMap(const Frosty::ECS::CTransform& mapTransform)
+	void NavigationSystem::InitiateGridMap(const Frosty::ECS::CTransform& planeTransform)
 	{
-		m_GridMap.reset(FY_NEW GridMap());
-		Frosty::Time::StartTimer("GridMap::Init()");
-		m_GridMap->Init(mapTransform);
-		Frosty::Time::EndTimer("GridMap::Init()");
+		m_Grid.reset(FY_NEW Grid());
+		Frosty::Time::StartTimer("Grid::Init()");
+		m_Grid->Init(planeTransform);
+		Frosty::Time::EndTimer("Grid::Init()");
+
+		m_Pathfinding.reset(FY_NEW Pathfinding());
+		m_Pathfinding->Init(m_Grid.get());
+	}
+
+	void NavigationSystem::OnInitiateGridMap(Frosty::InitiateGridEvent& e)
+	{
+		m_Grid.reset(FY_NEW Grid());
+		Frosty::Time::StartTimer("Grid::Init()");
+		m_Grid->Init(*e.GetTransform());
+		Frosty::Time::EndTimer("Grid::Init()");
+
+		m_Pathfinding.reset(FY_NEW Pathfinding());
+		m_Pathfinding->Init(m_Grid.get());
 	}
 }
