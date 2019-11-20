@@ -65,8 +65,6 @@ namespace Frosty
 		std::vector<Weapon> m_Weapons;
 		unsigned int m_LowestWeaponLevel;
 		unsigned int m_HighestWeaponLevel;
-
-
 	};
 }
 #endif // !WEAPONHANDLER_HPP

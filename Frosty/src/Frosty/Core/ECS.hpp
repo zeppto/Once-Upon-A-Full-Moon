@@ -382,7 +382,7 @@ namespace Frosty
 		struct CTransform : public BaseComponent
 		{
 			static std::string NAME;
-			
+
 			glm::vec3 Position{ 0.0f };
 			glm::vec3 Rotation{ 0.0f };
 			glm::vec3 Scale{ 1.0f };
@@ -393,7 +393,7 @@ namespace Frosty
 			CTransform(const glm::vec3& position, const glm::vec3& rotation, const glm::vec3& scale, bool isStatic = false)
 				: Position(position), Rotation(rotation), Scale(scale), IsStatic(isStatic)
 			{
-			
+
 				if (isStatic)
 				{
 					ModelMatrix = glm::translate(glm::mat4(1.0f), Position);
@@ -565,7 +565,7 @@ namespace Frosty
 
 			CLight() = default;
 			CLight(LightType lightType) : Type(lightType) { }
-			CLight(LightType lightType, float strength, glm::vec3 color, float radius, glm::vec3 direction) : Type(lightType), Strength(strength), Color(color), Radius(radius),Direction(direction) { }
+			CLight(LightType lightType, float strength, glm::vec3 color, float radius, glm::vec3 direction) : Type(lightType), Strength(strength), Color(color), Radius(radius), Direction(direction) { }
 			CLight(LightType lightType, float strength, glm::vec3 color) : Type(lightType), Strength(strength), Color(color) { }
 			CLight(const CLight& org) { FY_CORE_ASSERT(false, "Copy constructor in CLight called."); }
 			CLight& operator=(const CLight& org)
@@ -767,7 +767,7 @@ namespace Frosty
 
 			CWeapon* Weapon{ nullptr };
 			CTransform* Target{ nullptr };
-			
+
 			glm::vec3 CellTarget{ 0.0f };
 			float AttackRange{ 2.5f };
 			float SightRange{ 40.0f };
@@ -968,7 +968,7 @@ namespace Frosty
 		struct CParticleSystem : public BaseComponent
 		{
 			static std::string NAME;
-			
+
 			struct Particle
 			{
 				glm::vec4 Position = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
@@ -1045,9 +1045,9 @@ namespace Frosty
 		struct CLootable : public BaseComponent
 		{
 			static std::string NAME;
-			enum class LootType 
-			{ 
-				HealingPotion, IncHealthPotion, SpeedPotion, SpeedBoot, 
+			enum class LootType
+			{
+				HealingPotion, IncHealthPotion, SpeedPotion, SpeedBoot,
 				Sword1, Sword2, Sword3,
 				Arrow1, Arrow2, Arrow3
 			};
@@ -1056,7 +1056,7 @@ namespace Frosty
 			CLootable() = default;
 			CLootable(LootType type) : Type(type) {}
 			CLootable(const CLootable& org) { FY_CORE_ASSERT(false, "Copy constructor in CLootable called."); }
-			CLootable& operator=(const CLootable& org) 
+			CLootable& operator=(const CLootable& org)
 			{
 				if (this != &org)
 				{
@@ -1157,29 +1157,29 @@ namespace Frosty
 		{
 			switch (i)
 			{
-				case 0:		return "Transform";
-				case 1:		return "Mesh";
-				case 2:		return "Camera";
-				case 3:		return "Material";
-				case 4:		return "Follow";
-				case 5:		return "Light";
-				case 6:		return "Physics";
-				case 7:		return "Weapon";
-				case 8:		return "Attack";
-				case 9:		return "Player";
-				case 10:	return "Enemy";
-				case 11:	return "Health";
-				case 12:	return "Inventory";
-				case 13:	return "HealthBar";
-				case 14:	return "Dash";
-				case 15:	return "Destroy";
-				case 16:	return "ParticleSystem";
-				case 17:	return "Lootable";
-				case 18:	return "DropItem";
-				case 19:	return "Boss";
-				case 20:	return "LevelExit";
-				case 21:	return "GUI";
-				default:	return "";
+			case 0:		return "Transform";
+			case 1:		return "Mesh";
+			case 2:		return "Camera";
+			case 3:		return "Material";
+			case 4:		return "Follow";
+			case 5:		return "Light";
+			case 6:		return "Physics";
+			case 7:		return "Weapon";
+			case 8:		return "Attack";
+			case 9:		return "Player";
+			case 10:	return "Enemy";
+			case 11:	return "Health";
+			case 12:	return "Inventory";
+			case 13:	return "HealthBar";
+			case 14:	return "Dash";
+			case 15:	return "Destroy";
+			case 16:	return "ParticleSystem";
+			case 17:	return "Lootable";
+			case 18:	return "DropItem";
+			case 19:	return "Boss";
+			case 20:	return "LevelExit";
+			case 21:	return "GUI";
+			default:	return "";
 			}
 		}
 

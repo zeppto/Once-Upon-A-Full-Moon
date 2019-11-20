@@ -110,14 +110,6 @@ namespace Frosty
 		inline static std::unordered_map<std::string, TextureFile>* GetTextureMap() { return &s_Textures; }
 		inline static std::unordered_map<std::string, LinkedMaterial>* GetMaterialMap() { return &s_LinkedMaterials; }
 
-		//Get Functions
-		inline static const int GetNumberOfWeapons() { return s_WeaponHandler.at(0)->GetNumberOfWeapons(); }
-		inline static const Weapon& GetWeaponAt(unsigned int index) { return s_WeaponHandler.at(0)->GetWeaponAt(index); }
-		inline static const std::vector<Weapon>& GetAllWeapons() { return s_WeaponHandler.at(0)->GetAllWeapons(); }
-		inline static const Weapon& GetWeaponUpToLevel(unsigned int level) { return s_WeaponHandler.at(0)->GetWeaponUpToLevel(level); }
-		inline static const Weapon& GetWeaponFromLevel(unsigned int level) { return s_WeaponHandler.at(0)->GetWeaponFromLevel(level); }
-		inline static const Weapon& GetWeaponByType(Weapon::WeaponType type) { return s_WeaponHandler.at(0)->GetWeaponByType(type); }
-
 
 		//Use Mesh name
 		inline static std::shared_ptr<VertexArray>& GetMesh(const std::string& MeshName) { FY_CORE_ASSERT(s_VertexArrays.count(MeshName), "Mesh error!\n{0} doesn't exist!", MeshName); return s_VertexArrays[MeshName]; }

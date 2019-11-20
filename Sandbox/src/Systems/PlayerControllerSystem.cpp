@@ -267,7 +267,7 @@ namespace MCS
 			}
 		}
 	}
-	
+
 	void PlayerControllerSystem::HandleAttack(const glm::vec3& point, size_t index)
 	{
 		// The entity pointing to a CWeapon component (player / enemy)
@@ -584,29 +584,29 @@ namespace MCS
 		}
 #pragma endregion Healing Potion
 
-//#pragma region Increase Health Potion
-//		else if (Frosty::InputManager::IsKeyPressed(m_Player[index]->IncreaseHPPotionKey))
-//		{
-//			// If consumer has increase HP potion AND comsumer can increse health AND increase HP timer is bigger than cooldown--> drink increase HP potion
-//			if ((m_Inventory[index]->CurrentIncreaseHPPotions > 0) && (m_Health[index]->MaxHealth < m_Health[index]->MaxPossibleHealth) && (Frosty::Time::CurrentTime() - m_Inventory[index]->IncreaseHPTimer >= m_Inventory[index]->IncreaseHPCooldown))
-//			{
-//				// If increse HP won't exceed maximum health capacity --> directly increase health capacity 
-//				if (m_Inventory[index]->IncreaseHP <= (m_Health[index]->MaxPossibleHealth - m_Health[index]->MaxHealth))
-//				{
-//					m_Health[index]->MaxHealth += m_Inventory[index]->IncreaseHP;
-//				}
-//				// But if increase HP exceeds maximum health capacity --> max possible health achieved
-//				else
-//				{
-//					m_Health[index]->MaxHealth = m_Health[index]->MaxPossibleHealth;
-//				}
-//
-//				// Decrease number of potions in inventory and activate the timer for cooldown
-//				m_Inventory[index]->CurrentIncreaseHPPotions--;
-//				m_Inventory[index]->IncreaseHPTimer = Frosty::Time::CurrentTime();
-//			}
-//		}
-//#pragma endregion Increase Health Potion
+		//#pragma region Increase Health Potion
+		//		else if (Frosty::InputManager::IsKeyPressed(m_Player[index]->IncreaseHPPotionKey))
+		//		{
+		//			// If consumer has increase HP potion AND comsumer can increse health AND increase HP timer is bigger than cooldown--> drink increase HP potion
+		//			if ((m_Inventory[index]->CurrentIncreaseHPPotions > 0) && (m_Health[index]->MaxHealth < m_Health[index]->MaxPossibleHealth) && (Frosty::Time::CurrentTime() - m_Inventory[index]->IncreaseHPTimer >= m_Inventory[index]->IncreaseHPCooldown))
+		//			{
+		//				// If increse HP won't exceed maximum health capacity --> directly increase health capacity 
+		//				if (m_Inventory[index]->IncreaseHP <= (m_Health[index]->MaxPossibleHealth - m_Health[index]->MaxHealth))
+		//				{
+		//					m_Health[index]->MaxHealth += m_Inventory[index]->IncreaseHP;
+		//				}
+		//				// But if increase HP exceeds maximum health capacity --> max possible health achieved
+		//				else
+		//				{
+		//					m_Health[index]->MaxHealth = m_Health[index]->MaxPossibleHealth;
+		//				}
+		//
+		//				// Decrease number of potions in inventory and activate the timer for cooldown
+		//				m_Inventory[index]->CurrentIncreaseHPPotions--;
+		//				m_Inventory[index]->IncreaseHPTimer = Frosty::Time::CurrentTime();
+		//			}
+		//		}
+		//#pragma endregion Increase Health Potion
 
 #pragma region Speed Potion
 		else if (Frosty::InputManager::IsKeyPressed(m_Player[index]->SpeedPotionKey))
@@ -632,28 +632,28 @@ namespace MCS
 		}
 #pragma endregion Speed Potion
 
-//#pragma region Speed Boots
-//		else if (Frosty::InputManager::IsKeyPressed(m_Player[index]->SpeedBootsKey))		// Appearently a temporary thing. Player picks this up automatically so onimput is unnecessary	~ W-_-W ~
-//		{
-//			// If consumer has speed potion AND comsumer has not full speed capacity
-//			if ((m_Inventory[index]->CurrentSpeedBoots < m_Inventory[index]->MaxSpeedBoots) && (m_Physics[index]->Speed < m_Physics[index]->MaxSpeed))
-//			{
-//				// If speed boots won't exceed maximum possible speed capacity --> directly add value to speed
-//				if (m_Inventory[index]->IncreaseSpeed <= (m_Physics[index]->MaxSpeed - m_Physics[index]->Speed))
-//				{
-//					m_Physics[index]->Speed += m_Inventory[index]->IncreaseSpeed;
-//				}
-//				// But if speed boots exceeds maximum possible speed capacity --> max speed achieved
-//				else
-//				{
-//					m_Physics[index]->Speed += m_Physics[index]->MaxSpeed - m_Physics[index]->Speed;
-//				}
-//
-//				// Add number of boots in inventory since boots are something the entity is wearing
-//				m_Inventory[index]->CurrentSpeedBoots++;
-//			}
-//		}
-//#pragma endregion Speed Boots
+		//#pragma region Speed Boots
+		//		else if (Frosty::InputManager::IsKeyPressed(m_Player[index]->SpeedBootsKey))		// Appearently a temporary thing. Player picks this up automatically so onimput is unnecessary	~ W-_-W ~
+		//		{
+		//			// If consumer has speed potion AND comsumer has not full speed capacity
+		//			if ((m_Inventory[index]->CurrentSpeedBoots < m_Inventory[index]->MaxSpeedBoots) && (m_Physics[index]->Speed < m_Physics[index]->MaxSpeed))
+		//			{
+		//				// If speed boots won't exceed maximum possible speed capacity --> directly add value to speed
+		//				if (m_Inventory[index]->IncreaseSpeed <= (m_Physics[index]->MaxSpeed - m_Physics[index]->Speed))
+		//				{
+		//					m_Physics[index]->Speed += m_Inventory[index]->IncreaseSpeed;
+		//				}
+		//				// But if speed boots exceeds maximum possible speed capacity --> max speed achieved
+		//				else
+		//				{
+		//					m_Physics[index]->Speed += m_Physics[index]->MaxSpeed - m_Physics[index]->Speed;
+		//				}
+		//
+		//				// Add number of boots in inventory since boots are something the entity is wearing
+		//				m_Inventory[index]->CurrentSpeedBoots++;
+		//			}
+		//		}
+		//#pragma endregion Speed Boots
 
 #pragma region Pick Up
 		if (Frosty::InputManager::IsKeyPressed(FY_KEY_E))
@@ -754,7 +754,7 @@ namespace MCS
 			}
 		}
 	}
-	
+
 	void PlayerControllerSystem::SwapWeapon(const std::shared_ptr<Frosty::ECS::Entity>& playerWeapon, const std::shared_ptr<Frosty::ECS::Entity>& lootWeapon)
 	{
 		// Swap CWeapon

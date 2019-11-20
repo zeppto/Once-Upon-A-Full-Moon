@@ -49,13 +49,13 @@ namespace Frosty
 		static void Submit2d(const std::shared_ptr<Shader>& shader, const std::shared_ptr<VertexArray>& vertexArray, const glm::mat4& transform);
 		static void SubmitHealthBar(const std::shared_ptr<Shader>& shader, const std::shared_ptr<VertexArray>& vertexArray, const glm::vec3& translate, const glm::vec3& scale, const glm::vec3& HealthBarSpace);
 		static void AddToRenderer(ECS::CMaterial* mat, std::shared_ptr<VertexArray> vertexArray, ECS::CTransform* transform);
-		static void RemoveFromRenderer( const int& matID ,const std::string& meshName,const int& transformID);
-		static void UpdateEntity (const int& matID,ECS::CMaterial* mat, const std::string& meshName, std::shared_ptr<VertexArray> vertexArray, const int& transformID, ECS::CTransform* transform);
+		static void RemoveFromRenderer(const int& matID, const std::string& meshName, const int& transformID);
+		static void UpdateEntity(const int& matID, ECS::CMaterial* mat, const std::string& meshName, std::shared_ptr<VertexArray> vertexArray, const int& transformID, ECS::CTransform* transform);
 
 		inline static void Shutdown() { delete s_SceneData; }
 
 	private:
-	
+
 
 
 		struct MeshData

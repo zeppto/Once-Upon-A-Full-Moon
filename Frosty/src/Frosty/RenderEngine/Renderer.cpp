@@ -74,7 +74,7 @@ namespace Frosty
 				DirectLI++;
 			}
 
-			
+
 
 
 
@@ -198,18 +198,18 @@ namespace Frosty
 
 	void Renderer::RemoveLight(Frosty::ECS::CLight* light)
 	{
-	/*	if (light->Type == Frosty::ECS::CLight::LightType::Point)
-		{
-			s_SceneData->PointLights.erase(light->EntityPtr->Id);
-			
-		}
-		else if (light->Type == Frosty::ECS::CLight::LightType::Directional)
-		{
-			s_SceneData->DirectionalLights.erase(light->EntityPtr->Id);
-		}*/
+		/*	if (light->Type == Frosty::ECS::CLight::LightType::Point)
+			{
+				s_SceneData->PointLights.erase(light->EntityPtr->Id);
+
+			}
+			else if (light->Type == Frosty::ECS::CLight::LightType::Directional)
+			{
+				s_SceneData->DirectionalLights.erase(light->EntityPtr->Id);
+			}*/
 	}
 
-	
+
 
 	/*void Renderer::AddLight(const glm::vec3& color, const glm::vec3& pos, float strength, float radius)
 	{
@@ -280,7 +280,7 @@ namespace Frosty
 
 			RenderCommand::DrawUIText(vertexArray); //Will probably change later
 
-			x += (ch.advance >> 6) * scale;
+			x += (ch.advance >> 6)* scale;
 		}
 		glBindTexture(GL_TEXTURE_2D, 0);
 
@@ -389,7 +389,7 @@ namespace Frosty
 	{
 		shader->Bind();
 		vertexArray->Bind();
-		
+
 		shader->UploadUniformFloat3("u_HealthBarSpace", HealthBarSpace);
 
 		shader->UploadUniformFloat3("u_Translate", translate);
@@ -517,7 +517,7 @@ namespace Frosty
 		}
 	}
 
-	
+
 
 
 
