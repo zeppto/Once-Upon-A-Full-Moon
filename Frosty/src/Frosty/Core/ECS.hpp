@@ -1022,6 +1022,7 @@ namespace Frosty
 			float Speed = 1.0f;
 			float MaxLifetime = 3.0f; //All particles
 			float FadeTreshold = 0.0f; //No fade
+			bool AlwaysFaceCamera = true;
 			bool Preview = false;
 			float Timer = 0.0f;
 
@@ -1029,6 +1030,8 @@ namespace Frosty
 
 			std::vector<Particle> Particles; //The complete data
 			GPUParticle GpuParticles[MAX_PARTICLE_COUNT]; //The data we send to the gpu
+
+			std::string ShaderName = "Particles";
 
 			std::shared_ptr<VertexArray> ParticleVertArray;
 			std::shared_ptr<Shader> UseShader;

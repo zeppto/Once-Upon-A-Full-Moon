@@ -71,7 +71,7 @@ namespace MCS
 			vertBuffer->SetNrOfVertices(m_ParticleSystem[p_Total]->ParticleCount);
 			m_ParticleSystem[p_Total]->ParticleVertArray->AddVertexBuffer(vertBuffer); //Add to array
 
-			m_ParticleSystem[p_Total]->UseShader = Frosty::AssetManager::GetShader("Particles");
+			m_ParticleSystem[p_Total]->UseShader = Frosty::AssetManager::GetShader(m_ParticleSystem[p_Total]->ShaderName);
 			m_ParticleSystem[p_Total]->Texture = Frosty::AssetManager::GetTexture2D("particle");
 
 			m_ParticleSystem[p_Total]->Particles.resize(m_ParticleSystem[p_Total]->MaxParticles);
