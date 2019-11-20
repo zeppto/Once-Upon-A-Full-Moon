@@ -56,6 +56,7 @@ public:
 private:
 	Room m_TileMap[30][30];
 	std::vector<RoomOnTile> m_LoosEndsRooms;
+	int m_SaftyNr = 0;
 };
 
 

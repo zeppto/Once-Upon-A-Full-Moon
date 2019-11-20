@@ -130,10 +130,14 @@ namespace Frosty
 
 	void World::HandleDestroyedEntities()
 	{
-		for (size_t i = 0; i < m_DestroyedEntities.size(); i++)
+	
+
+		for (int i = int(m_DestroyedEntities.size())-1; int(m_DestroyedEntities.size()) > 0; i--)
 		{
 			RemoveEntity(m_DestroyedEntities[i]);
 			m_DestroyedEntities.erase(m_DestroyedEntities.begin() + i);
+		
 		}
+
 	}
 }

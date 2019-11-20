@@ -231,6 +231,8 @@ namespace Frosty
 				m_World->BeginScene();
 			}
 
+			Renderer::RenderScene();
+
 			m_World->Render();
 
 			Renderer::EndScene();
