@@ -199,6 +199,7 @@ public:
 	void SaveToFile(std::string fileName);
 	void OpenFromFile(std::string fileName, glm::ivec2 roomId = glm::ivec2(0, 0), Frosty::ECS::CTransform* playerTransform = nullptr,
 		int rotation = 0, glm::vec3 move = glm::vec3(0,0,0));
+	void LoadBoolMap(std::string fileName);
 
 private:
 	//std::shared_ptr<ECS::Entity> m_ExitEntity;

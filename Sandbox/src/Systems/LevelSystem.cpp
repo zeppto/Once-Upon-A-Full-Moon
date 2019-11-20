@@ -11,6 +11,7 @@ namespace MCS
 	{
 		m_World = Frosty::Application::Get().GetWorld().get();
 		p_Signature.set(Frosty::ECS::getComponentTypeID<Frosty::ECS::CTransform>(), true);
+
 	}
 
 	void LevelSystem::OnEvent(Frosty::BaseEvent& e)
@@ -53,6 +54,7 @@ namespace MCS
 			Level::MoveToNewRoom(m_CurrentRoome.sideExits[0], m_CurrentRoome.sideExits[1], m_CurrentRoome.sideExits[2], m_CurrentRoome.sideExits[3]);
 			m_LevelFileFormat.OpenFromFile("deadend_chests_IsStatick", m_PlayerPos, nullptr, rotate);
 			m_Start = false;
+			m_LevelFileFormat.LoadBoolMap("deadend_1");
 		}
 	}
 

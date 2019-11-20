@@ -3,6 +3,7 @@
 #include "LevelFileFormat.hpp"
 #include "Frosty/API/AssetManager/AssetManager.hpp"
 #include <glm/gtx/matrix_decompose.hpp>
+#include "Frosty/Core/BoolMap/BoolMapGenerator.hpp"
 
 
 LevelFileFormat::LevelFileFormat()
@@ -546,6 +547,113 @@ void LevelFileFormat::OpenFromFile(std::string fileName, glm::ivec2 roomId , Fro
 	}
 	existingFile.close();
 }
+
+
+
+void LevelFileFormat::LoadBoolMap(std::string fileName)
+{
+	std::ifstream existingFile;
+	existingFile.open("../../../assets/levels/" + fileName + ".lvl", std::ios::binary);
+	Level_Header testHeder;
+	Level_Entitys fileEntitys;
+
+
+
+
+	if (existingFile.good())
+	{
+		existingFile.read((char*)&testHeder, sizeof(Level_Header));
+		fileEntitys.myEntitys.resize(testHeder.NrOfEntitys);
+		for (int i = 0; i < testHeder.NrOfEntitys; i++)
+		{
+
+			bool MeshAdded = false;
+			std::vector<std::string> AddedMeshes;
+			std::unordered_map<std::string, Frosty::VABatch> TestMap;
+
+			fileEntitys.myEntitys.at(i).MyComponents.resize(testHeder.NrOfComponents);
+			for (int j = 0; j < m_Header.NrOfComponents; j++)
+			{
+				existingFile.read((char*)&fileEntitys.myEntitys.at(i).MyComponents.at(j).HaveComponent, sizeof(bool));
+			}
+
+
+
+
+
+			if (fileEntitys.myEntitys.at(i).MyComponents.at(0).HaveComponent)
+			{
+				existingFile.read((char*)&fileEntitys.myEntitys.at(i).myTransform, sizeof(Level_Transform));
+
+
+
+			}
+
+
+
+			if (fileEntitys.myEntitys.at(i).MyComponents.at(1).HaveComponent)
+			{
+				existingFile.read((char*)&fileEntitys.myEntitys.at(i).myMesh, sizeof(Level_Mesh));
+
+				if (!TestMap.count(fileEntitys.myEntitys.at(i).myMesh.MeshName))
+				{
+					Frosty::VABatch Temp;
+					//Change to ptr
+					Temp.VertexArrayObj = Frosty::AssetManager::GetMesh(fileEntitys.myEntitys.at(i).myMesh.MeshName);
+
+
+					glm::mat4 TempMat(1.0f);
+					TempMat = glm::translate(TempMat, fileEntitys.myEntitys.at(i).myTransform.Position);
+					TempMat = glm::rotate(TempMat, glm::radians(fileEntitys.myEntitys.at(i).myTransform.Rotation.y), glm::vec3(0.0f, 1.0f, 0.0f));
+					TempMat = glm::scale(TempMat, fileEntitys.myEntitys.at(i).myTransform.Scale);
+					Temp.Transforms.emplace_back(TempMat);
+					TestMap[fileEntitys.myEntitys.at(i).myMesh.MeshName] = Temp;
+				}
+				else
+				{
+
+					glm::mat4 TempMat(1.0f);
+					TempMat = glm::translate(TempMat, fileEntitys.myEntitys.at(i).myTransform.Position);
+					TempMat = glm::rotate(TempMat, glm::radians(fileEntitys.myEntitys.at(i).myTransform.Rotation.y), glm::vec3(0.0f, 1.0f, 0.0f));
+					TempMat = glm::scale(TempMat, fileEntitys.myEntitys.at(i).myTransform.Scale);
+
+					TestMap[fileEntitys.myEntitys.at(i).myMesh.MeshName].Transforms.emplace_back(TempMat);
+				}
+
+
+			}
+
+
+			if (fileEntitys.myEntitys.at(i).MyComponents.at(2).HaveComponent)
+				existingFile.read((char*)&fileEntitys.myEntitys.at(i).myMaterial, sizeof(Level_Material));
+			if (fileEntitys.myEntitys.at(i).MyComponents.at(3).HaveComponent)
+				existingFile.read((char*)&fileEntitys.myEntitys.at(i).myFollow, sizeof(Level_Follow));
+			if (fileEntitys.myEntitys.at(i).MyComponents.at(4).HaveComponent)
+				existingFile.read((char*)&fileEntitys.myEntitys.at(i).myLight, sizeof(Level_Light));
+			if (fileEntitys.myEntitys.at(i).MyComponents.at(5).HaveComponent)
+				existingFile.read((char*)&fileEntitys.myEntitys.at(i).myPhysics, sizeof(Level_Physics));
+			if (fileEntitys.myEntitys.at(i).MyComponents.at(6).HaveComponent)
+				existingFile.read((char*)&fileEntitys.myEntitys.at(i).myEnemy, sizeof(Level_Enemy));
+			if (fileEntitys.myEntitys.at(i).MyComponents.at(7).HaveComponent)
+				existingFile.read((char*)&fileEntitys.myEntitys.at(i).myHealth, sizeof(Level_Health));
+			if (fileEntitys.myEntitys.at(i).MyComponents.at(8).HaveComponent)
+				existingFile.read((char*)&fileEntitys.myEntitys.at(i).myHealthBar, sizeof(Level_HealthBar));
+			if (fileEntitys.myEntitys.at(i).MyComponents.at(9).HaveComponent)
+				existingFile.read((char*)&fileEntitys.myEntitys.at(i).myParticleSystem, sizeof(Level_ParticleSystem));
+			if (fileEntitys.myEntitys.at(i).MyComponents.at(10).HaveComponent)
+				existingFile.read((char*)&fileEntitys.myEntitys.at(i).myLevelExit, sizeof(Level_LevelExit));
+		}
+		existingFile.close();
+	}
+
+
+
+
+
+
+
+}
+
 
 
 
