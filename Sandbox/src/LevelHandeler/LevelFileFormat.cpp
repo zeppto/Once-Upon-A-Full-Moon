@@ -277,8 +277,28 @@ void LevelFileFormat::OpenFromFile(std::string fileName, glm::ivec2 roomId , Fro
 	{
 		existingFile.read((char*)& heder, sizeof(Level_Header));
 		fileEntitys.myEntitys.resize(heder.NrOfEntitys);
+
+
+		float xOffset = 0.0f;
+		float zOffset = 0.0f;
+		glm::vec3 startOffset(150.0f, 0.0f, 150.0f);
+
+		if (playerTransform != nullptr)
+		{
+			glm::vec3 playerCalc = playerTransform->Position;//+ startOffset;
+			xOffset = std::ceil(playerCalc.x / 300.0f);
+			zOffset = std::ceil(playerCalc.z / 300.0f);
+		}
+
+		startOffset.x = xOffset * 300.0f;
+		startOffset.z = zOffset * 300.0f;
+
+
+
 		for (int i = 0; i < heder.NrOfEntitys; i++)
 		{
+
+
 			//to Fix my problen
 			//if (i < 735)
 			//{
@@ -352,7 +372,7 @@ void LevelFileFormat::OpenFromFile(std::string fileName, glm::ivec2 roomId , Fro
 				{
 					tempRotation.y += rotation;
 				}
-				auto& entity = m_World->CreateEntity(glm::vec3(matrix[3].x, matrix[3].y, matrix[3].z), tempRotation, fileEntitys.myEntitys.at(i).myTransform.Scale, fileEntitys.myEntitys.at(i).myTransform.IsStatic);
+				auto& entity = m_World->CreateEntity((glm::vec3(matrix[3].x, matrix[3].y, matrix[3].z) + startOffset), tempRotation, fileEntitys.myEntitys.at(i).myTransform.Scale, fileEntitys.myEntitys.at(i).myTransform.IsStatic);
 
 				//1 = Mesh
 				if (fileEntitys.myEntitys.at(i).MyComponents.at(1).HaveComponent)
