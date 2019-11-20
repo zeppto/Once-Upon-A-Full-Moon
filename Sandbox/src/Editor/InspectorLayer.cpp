@@ -744,10 +744,12 @@ namespace MCS
 							if (ImGui::MenuItem("Point", "", comp.Type == Frosty::ECS::CLight::LightType::Point ? true : false))
 							{
 								comp.Type = Frosty::ECS::CLight::LightType::Point;
+								Frosty::Renderer::ChangeLight(m_SelectedEntity);
 							}
 							if (ImGui::MenuItem("Directional", "", comp.Type == Frosty::ECS::CLight::LightType::Directional ? true : false))
 							{
 								comp.Type = Frosty::ECS::CLight::LightType::Directional;
+								Frosty::Renderer::ChangeLight(m_SelectedEntity);
 							}
 							ImGui::EndPopup();
 						}
@@ -844,6 +846,19 @@ namespace MCS
 						ImGui::BeginChild("CParticleSystem", ImVec2(EDITOR_INSPECTOR_WIDTH, 345), true);
 						ImGui::Text("Active particles: %i", comp.ParticleCount);
 						ImGui::Checkbox("Preview", &comp.Preview);
+						ImGui::Checkbox("Face camera", &comp.AlwaysFaceCamera);
+						if (ImGui::IsItemClicked())
+						{
+							if (comp.AlwaysFaceCamera == false) //Was false, changed to true
+							{
+								comp.UseShader = Frosty::AssetManager::GetShader("Particles");
+							}
+							else if(comp.AlwaysFaceCamera == true) //Was true, changed to false
+							{
+								comp.UseShader = Frosty::AssetManager::GetShader("ParticlesHorizontal");
+
+							}
+						}
 						ImGui::ColorEdit4("Color", glm::value_ptr(comp.ParticleSystemColor));
 						ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(10, 10));
 						ImGui::Image(comp.Texture ? comp.Texture->GetRenderID() : Frosty::AssetManager::GetTexture2D("Checkerboard")->GetRenderID(), ImVec2(64, 64));
@@ -887,6 +902,7 @@ namespace MCS
 							ImGui::SliderInt("Particle count", (int*)&comp.MaxParticles, 1, comp.MAX_PARTICLE_COUNT);
 						}
 						ImGui::DragFloat3("Direction", glm::value_ptr(comp.ParticleSystemDirection), 0.1f, 0.0f, 0.0f, "%.2f");
+						ImGui::InputFloat("Speed", &comp.Speed);
 						ImGui::InputFloat("Start size", &comp.StartParticleSize);
 						ImGui::InputFloat("End size", &comp.EndParticleSize);
 						ImGui::InputFloat("Emit rate", &comp.EmitRate);

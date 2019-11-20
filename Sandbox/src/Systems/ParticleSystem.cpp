@@ -71,7 +71,7 @@ namespace MCS
 			vertBuffer->SetNrOfVertices(m_ParticleSystem[p_Total]->ParticleCount);
 			m_ParticleSystem[p_Total]->ParticleVertArray->AddVertexBuffer(vertBuffer); //Add to array
 
-			m_ParticleSystem[p_Total]->UseShader = Frosty::AssetManager::GetShader("Particles");
+			m_ParticleSystem[p_Total]->UseShader = Frosty::AssetManager::GetShader(m_ParticleSystem[p_Total]->ShaderName);
 			m_ParticleSystem[p_Total]->Texture = Frosty::AssetManager::GetTexture2D("particle");
 
 			m_ParticleSystem[p_Total]->Particles.resize(m_ParticleSystem[p_Total]->MaxParticles);
@@ -209,6 +209,13 @@ namespace MCS
 				m_ParticleSystem[systemIndex]->Particles[i].Direction.x = m_ParticleSystem[systemIndex]->ParticleSystemDirection.x;
 				m_ParticleSystem[systemIndex]->Particles[i].Direction.y = m_ParticleSystem[systemIndex]->ParticleSystemDirection.y;
 				m_ParticleSystem[systemIndex]->Particles[i].Direction.z = m_ParticleSystem[systemIndex]->ParticleSystemDirection.z;
+			}
+		}
+		if (m_ParticleSystem[systemIndex]->Particles[0].Speed != m_ParticleSystem[systemIndex]->Speed) //Temporary for same reason as above
+		{
+			for (uint32_t i = 0; i < m_ParticleSystem[systemIndex]->MaxParticles; i++)
+			{
+				m_ParticleSystem[systemIndex]->Particles[i].Speed = m_ParticleSystem[systemIndex]->Speed;
 			}
 		}
 
