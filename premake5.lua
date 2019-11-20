@@ -21,6 +21,7 @@ IncludeDir["glm"] = "Frosty/vendor/glm"
 IncludeDir["Luna"] = "Frosty/vendor/Luna"
 IncludeDir["stb_image"] = "Frosty/vendor/stb_image"
 IncludeDir["FreeType"] = "Frosty/vendor/FreeType/include"
+IncludeDir["PugiXML"] = "Frosty/vendor/PugiXML"
 
 group "Dependencies"
 	include "Frosty/vendor/GLFW"
@@ -49,7 +50,9 @@ project "Frosty"
 		"%{prj.name}/src/**.hpp",
 		"%{prj.name}/src/**.cpp",
 		"%{prj.name}/vendor/stb_image/**.h",
-		"%{prj.name}/vendor/stb_image/**.cpp"
+		"%{prj.name}/vendor/stb_image/**.cpp",
+		"%{prj.name}/vendor/PugiXML/**.hpp",
+        "%{prj.name}/vendor/PugiXML/**.cpp"
 	}
 
 	includedirs
@@ -63,7 +66,8 @@ project "Frosty"
 		"%{IncludeDir.Luna}",
 		"%{IncludeDir.glm}",
 		"%{IncludeDir.stb_image}",
-		"%{IncludeDir.FreeType}"
+		"%{IncludeDir.FreeType}",
+		"%{IncludeDir.PugiXML}"
 	}
 	
 	excludes

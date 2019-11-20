@@ -279,7 +279,7 @@ namespace MCS
 		if (Frosty::InputManager::IsMouseButtonPressed(m_Player[index]->LVL1Attack))
 		{
 			// LVL: 1, 2, 3
-			if (weaponComp.ItemID == 1 || weaponComp.ItemID == 2 || weaponComp.ItemID == 3)
+			if (weaponComp.Level == 1 || weaponComp.Level == 2 || weaponComp.Level == 3)
 			{
 				LVL1Attack(index);
 			}
@@ -287,7 +287,7 @@ namespace MCS
 		else if (Frosty::InputManager::IsMouseButtonPressed(m_Player[index]->LVL2Attack))
 		{
 			// LVL: 1, 2
-			if (weaponComp.ItemID == 2 || weaponComp.ItemID == 3)
+			if (weaponComp.Level == 2 || weaponComp.Level == 3)
 			{
 				LVL2Attack(index);
 			}
@@ -295,7 +295,7 @@ namespace MCS
 		else if (Frosty::InputManager::IsKeyPressed(m_Player[index]->LVL3Attack))
 		{
 			// LVL: 1, 2, 3
-			if (weaponComp.ItemID == 3)
+			if (weaponComp.Level == 3)
 			{
 				LVL3Attack(index);
 			}
@@ -317,7 +317,7 @@ namespace MCS
 			case Frosty::ECS::CWeapon::WeaponType::Sword:
 				CreateLVL1BoundingBox(weaponCarrier, weaponComp.EntityPtr);
 				break;
-			case Frosty::ECS::CWeapon::WeaponType::Arrow:
+			case Frosty::ECS::CWeapon::WeaponType::Bow:
 				CreateLVL1Projectile(weaponCarrier, weaponComp.EntityPtr);
 				break;
 			default:
@@ -343,7 +343,7 @@ namespace MCS
 			case Frosty::ECS::CWeapon::WeaponType::Sword:
 				CreateLVL2BoundingBox(weaponCarrier, weaponComp.EntityPtr);
 				break;
-			case Frosty::ECS::CWeapon::WeaponType::Arrow:
+			case Frosty::ECS::CWeapon::WeaponType::Bow:
 				CreateLVL2Projectile(weaponCarrier, weaponComp.EntityPtr);
 				break;
 			default:
@@ -369,7 +369,7 @@ namespace MCS
 			case Frosty::ECS::CWeapon::WeaponType::Sword:
 				CreateLVL3BoundingBox(weaponCarrier, weaponComp.EntityPtr);
 				break;
-			case Frosty::ECS::CWeapon::WeaponType::Arrow:
+			case Frosty::ECS::CWeapon::WeaponType::Bow:
 				CreateLVL3Projectile(weaponCarrier, weaponComp.EntityPtr);
 				break;
 			default:

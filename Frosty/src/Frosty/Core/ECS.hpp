@@ -442,8 +442,6 @@ namespace Frosty
 			CMesh(const CMesh& org) { FY_CORE_ASSERT(false, "Copy constructor in CMesh called."); }
 			CMesh& operator=(const CMesh& org)
 			{
-				FY_WARN("Assignment operator in CMesh called.");
-
 				if (this != &org)
 				{
 					Mesh = org.Mesh;
@@ -600,8 +598,6 @@ namespace Frosty
 			CPhysics(const CPhysics& org) { FY_CORE_ASSERT(false, "Copy constructor in CPhysics called."); }
 			CPhysics& operator=(const CPhysics& org)
 			{
-				FY_WARN("Assignment operator in CPhysics called.");
-
 				if (this != &org)
 				{
 					BoundingBox = org.BoundingBox;
@@ -621,14 +617,14 @@ namespace Frosty
 		{
 			static std::string NAME;
 
-			enum class WeaponType { Sword, Arrow };
+			enum class WeaponType { Sword, Bow, Fang };
 			WeaponType Type{ WeaponType::Sword };
 
-			unsigned int ItemID{ 1 };
+			unsigned int Level{ 1 };
 			bool IsPlayerWeapon{ false };
 
 			// Range
-			float AttackRange{ 15.f };						// 6.f if melee and 25.f if bow
+			float AttackRange{ 6.f };						// 6.f if melee and 25.f if bow (can change)
 
 			// Damage
 			float Damage{ 1.0f };
@@ -655,14 +651,14 @@ namespace Frosty
 			// Water (+ Heal)
 
 			CWeapon() = default;
-			CWeapon(WeaponType type, unsigned int itemID, float damage, bool isPlayerWeapon = false) : Type(type), ItemID(itemID), Damage(damage), IsPlayerWeapon(isPlayerWeapon) { }
+			CWeapon(WeaponType type, unsigned int itemID, float damage, bool isPlayerWeapon = false) : Type(type), Level(itemID), Damage(damage), IsPlayerWeapon(isPlayerWeapon) { }
 			CWeapon(const CWeapon& org) { FY_CORE_ASSERT(false, "Copy constructor in CWeapon called."); }
 			CWeapon& operator=(const CWeapon& org)
 			{
 				if (this != &org)
 				{
 					Type = org.Type;
-					ItemID = org.ItemID;
+					Level = org.Level;
 					AttackRange = org.AttackRange;
 					Damage = org.Damage;
 					CriticalHit = org.CriticalHit;
@@ -678,7 +674,7 @@ namespace Frosty
 
 				return *this;
 			}
-			bool operator!=(const CWeapon& org) { return ItemID != org.ItemID; }
+			bool operator!=(const CWeapon& org) { return Level != org.Level; }
 			virtual std::string GetName() const { return NAME; }
 		};
 

@@ -58,41 +58,8 @@ namespace MCS
 		world->AddSystem<GUISystem>();
 		world->AddSystem<LootingSystem>();
 
-		//MapGenerator map;
-		//map.generateMap();
-		//Room myRoome = map.getRoom(glm::ivec2(11, 15));
-		//for (int i = 0; i < 30; i++)
-		//{
-		//	for (int j = 0; j < 30; j++)
-		//	{
-		//		auto& cube = world->CreateEntity();
-		//		auto& cubeTranform = world->GetComponent<Frosty::ECS::CTransform>(cube);
-		//		cubeTranform.Position = glm::vec3(i,2,j);
-		//		auto& cubeMaterial = world->AddComponent<Frosty::ECS::CMaterial>(cube, Frosty::AssetManager::GetShader("Texture2D"));
-		//		Room myRoome = map.getRoom(glm::ivec2(i, j));
-		//		int rotation = 0;
-		//		//cubeMaterial.Albedo = glm::vec4( 0.1f, 0.8f, 0.1f, 1.0f);
-		//		cubeMaterial.DiffuseTexture = Frosty::AssetManager::GetTexture2D(map.getRoomTextur(glm::ivec2(i,j), &rotation));
-		//		cubeTranform.Rotation = glm::vec3(0, rotation, 0);
-		//		if (i == 10 && j == 15)
-		//			cubeTranform.Scale = glm::vec3(0.5f, 0.5f, 0.5f);
-		//		//std::string cubeName = "cube" + std::to_string(((rand() % NrOfcubeTypes) + 1));
-		//		//cubeMaterial.DiffuseTexture = Frosty::AssetManager::GetTexture2D(cubeName);
-		//		//cubeName = "cube" + std::to_string(((rand() % NrOfcubeTypes) + 1));
-		//		world->AddComponent<Frosty::ECS::CMesh>(cube, Frosty::AssetManager::GetMesh("Plane"));
-		//	}
-		//}
-
 		world->Awake();
 		particleSystem->AttachGameCamera(&world->GetComponent<Frosty::ECS::CTransform>(world->GetSceneCamera()));
-		
-		//auto& plane = world->CreateEntity({ 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 60.0f, 1.0f, 60.0f });
-		//world->AddComponent<Frosty::ECS::CMesh>(plane, Frosty::AssetManager::GetMesh("pPlane1"));
-		//auto& planeMat = world->AddComponent<Frosty::ECS::CMaterial>(plane, Frosty::AssetManager::GetShader("BlendShader"));
-		//planeMat.DiffuseTexture = Frosty::AssetManager::GetTexture2D("Grass");
-		//planeMat.BlendMapTexture = Frosty::AssetManager::GetTexture2D("blendMap_Test");	// why is this texture a problem
-		//planeMat.BlendTexture1 = Frosty::AssetManager::GetTexture2D("StoneGround");
-		//planeMat.BlendTexture2 = Frosty::AssetManager::GetTexture2D("Dirt");
 		
 		// LIGHT 1
 		auto& light = world->CreateEntity({ 0.0f, 0.0f, 0.0f }, { 120.0f, 8.0f, -10.0f });
@@ -108,7 +75,7 @@ namespace MCS
 		auto& weapon = world->CreateEntity({ 0.f, 0.f, 0.f }, { 0.0f, 0.0f, 0.0f }, { 1.f, 1.f, 1.f });
 		world->AddComponent<Frosty::ECS::CMesh>(weapon, Frosty::AssetManager::GetMesh("pCube1"));
 		world->AddComponent<Frosty::ECS::CMaterial>(weapon, Frosty::AssetManager::GetShader("FlatColor"));
-		world->AddComponent<Frosty::ECS::CWeapon>(weapon, Frosty::ECS::CWeapon::WeaponType::Arrow, 3, 10.f);
+		world->AddComponent<Frosty::ECS::CWeapon>(weapon, Frosty::ECS::CWeapon::WeaponType::Bow, 3, 10.f, true);
 		auto& weaponComp = world->GetComponent<Frosty::ECS::CWeapon>(weapon);
 
 		// PLAYER
@@ -128,13 +95,7 @@ namespace MCS
 		auto& camEntity = world->GetSceneCamera();
 		world->GetComponent<Frosty::ECS::CCamera>(camEntity).Target = &playerTransform;
 
-		//// WALL
-		//auto& wall = world->CreateEntity({ -16.0f, 5.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 15.0f, 10.0f, 20.0f }, true);
-		//world->AddComponent<Frosty::ECS::CMesh>(wall, Frosty::AssetManager::GetMesh("pCube1"));
-		//world->AddComponent<Frosty::ECS::CMaterial>(wall, Frosty::AssetManager::GetShader("FlatColor"));
-		//world->AddComponent<Frosty::ECS::CPhysics>(wall, Frosty::AssetManager::GetBoundingBox("pCube1"));
-
-		//// ENEMY 1
+		// ENEMY 1
 		auto& enemy = world->CreateEntity({ 27.0f, 1.0f, 25.0f }, { 0.0f, 0.0f, 0.0f }, { 2.0f, 2.0f, 2.0f });
 		world->AddComponent<Frosty::ECS::CMesh>(enemy, Frosty::AssetManager::GetMesh("pCube1"));
 		world->AddComponent<Frosty::ECS::CMaterial>(enemy, Frosty::AssetManager::GetShader("FlatColor"));
@@ -155,13 +116,6 @@ namespace MCS
 		world->AddComponent<Frosty::ECS::CFollow>(enemy2, &playerTransform);
 		world->AddComponent<Frosty::ECS::CHealth>(enemy2);
 		world->AddComponent<Frosty::ECS::CDropItem>(enemy2);
-
-		//// TREE
-		//auto& tree = world->CreateEntity({ 17.0f, 0.0f, 5.0f }, { 0.0f, 0.0f, 0.0f }, { 1.0f, 1.0f, 1.0f }, true);
-		//world->AddComponent<Frosty::ECS::CMesh>(tree, Frosty::AssetManager::GetMesh("tree1"));
-		//auto& treeMat = world->AddComponent<Frosty::ECS::CMaterial>(tree, Frosty::AssetManager::GetShader("Texture2D"));
-		//treeMat.DiffuseTexture = Frosty::AssetManager::GetTexture2D("Tree1");
-		//world->AddComponent<Frosty::ECS::CPhysics>(tree, Frosty::AssetManager::GetBoundingBox("tree1"));
 
 		// CHEST 1
 		auto& chest = world->CreateEntity({ 0.0f, 1.0f, 25.0f }, { 0.0f, 0.0f, 0.0f }, { 2.0f, 2.0f, 2.0f });

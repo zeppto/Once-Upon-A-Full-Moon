@@ -216,11 +216,11 @@ namespace MCS
 			break;
 		case 5:
 			m_World->AddComponent<Frosty::ECS::CLootable>(item, Frosty::ECS::CLootable::LootType::Sword1);
-			m_World->AddComponent<Frosty::ECS::CWeapon>(item, Frosty::ECS::CWeapon::WeaponType::Sword, 1, 1);
+			m_World->AddComponent<Frosty::ECS::CWeapon>(item, Frosty::ECS::CWeapon::WeaponType::Sword, 1, 1.f);
 			break;
 		case 6:
 			m_World->AddComponent<Frosty::ECS::CLootable>(item, Frosty::ECS::CLootable::LootType::Arrow1);
-			m_World->AddComponent<Frosty::ECS::CWeapon>(item, Frosty::ECS::CWeapon::WeaponType::Arrow, 1, 1);
+			m_World->AddComponent<Frosty::ECS::CWeapon>(item, Frosty::ECS::CWeapon::WeaponType::Bow, 1, 1.f);
 			break;
 		default:
 			break;
