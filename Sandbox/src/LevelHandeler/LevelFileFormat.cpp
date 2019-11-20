@@ -264,7 +264,7 @@ void LevelFileFormat::SaveToFile(std::string fileName)
 
 }
 
-void LevelFileFormat::OpenFromFile(std::string fileName, glm::ivec2 roomId , Frosty::ECS::CTransform* playerTransform, int rotation, glm::vec3 move)
+void LevelFileFormat::OpenFromFile(std::string fileName, glm::ivec2 roomId , Frosty::ECS::CTransform* playerTransform, int rotation, glm::vec3 move,  const int& RoomExitDir)
 {
 	std::ifstream existingFile;
 	existingFile.open("../../../assets/levels/" + fileName + ".lvl", std::ios::binary);
@@ -476,8 +476,10 @@ void LevelFileFormat::OpenFromFile(std::string fileName, glm::ivec2 roomId , Fro
 				//10 = LevelExit
 				if (fileEntitys.myEntitys.at(i).MyComponents.at(10).HaveComponent)
 				{
+
 					existingFile.read((char*)& fileEntitys.myEntitys.at(i).myLevelExit, sizeof(Level_LevelExit));
 					int newExit = fileEntitys.myEntitys.at(i).myLevelExit.ExitDirection;
+					int translatedExitDir = -2;
 					if (rotation == 270)
 					{
 						if (fileEntitys.myEntitys.at(i).myLevelExit.ExitDirection == 0)
@@ -511,7 +513,44 @@ void LevelFileFormat::OpenFromFile(std::string fileName, glm::ivec2 roomId , Fro
 						if (fileEntitys.myEntitys.at(i).myLevelExit.ExitDirection == 3)
 							newExit = 0;
 					}
-					m_World->AddComponent<Frosty::ECS::CLevelExit>(entity, newExit);
+					if (RoomExitDir != -2)
+					{
+		
+						if (newExit == 0)
+						{
+							translatedExitDir = 1;
+						}
+						else if (newExit == 1)
+						{
+							translatedExitDir = 0;
+						}
+						else if (newExit == 2)
+						{
+							translatedExitDir = 3;
+						}
+						else if (newExit == 3)
+						{
+							translatedExitDir = 2;
+						}
+						else
+						{
+							FY_ASSERT("Translation Fault!",0);
+						}
+
+
+
+					}
+
+
+	
+
+
+
+					auto& exit =  m_World->AddComponent<Frosty::ECS::CLevelExit>(entity, newExit);
+					if (RoomExitDir == translatedExitDir)
+					{
+						exit.IsTriggered = true;
+					}
 				}
 				//11 = DropItem
 				if (fileEntitys.myEntitys.at(i).MyComponents.at(11).HaveComponent)

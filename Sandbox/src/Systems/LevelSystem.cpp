@@ -201,7 +201,7 @@ namespace MCS
 		//	m_CurrentRoome.sideExits[2], m_CurrentRoome.sideExits[3], ExitSide.ExitDirection);
 
 
-		m_LevelFileFormat.OpenFromFile(fileName, m_PlayerPos, playerTransform, rotation);
+		m_LevelFileFormat.OpenFromFile(fileName, m_PlayerPos, playerTransform, rotation,glm::vec3(0.0f,0.0f,0.0f),ExitSide.ExitDirection);
 
 	}
 	void LevelSystem::OnSaveLevelEvent(Frosty::SaveLevelEvent& e)
