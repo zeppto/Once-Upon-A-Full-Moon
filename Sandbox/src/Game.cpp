@@ -58,6 +58,7 @@ namespace MCS
 
 
 		world->Awake();
+		particleSystem->AttachGameCamera(&world->GetComponent<Frosty::ECS::CTransform>(world->GetSceneCamera()));
 
 
 		// SCENE 1
@@ -104,6 +105,11 @@ namespace MCS
 		uiLayout.AddText(glm::vec2(25.0f, 220.0f), "1234!", glm::vec3(0.5f, 0.1f, 0.9f), 1.5f);
 		
 		world->AddComponent<Frosty::ECS::CGUI>(GUI, uiLayout);
+
+		//Particle System Test
+		auto& ParticleSystem1 = world->CreateEntity();
+		auto& particleSystem1Transform = world->GetComponent<Frosty::ECS::CTransform>(ParticleSystem1);
+		world->AddComponent<Frosty::ECS::CParticleSystem>(ParticleSystem1);
 
 //ifdef FY_DEBUG
 	PushLayer(FY_NEW InspectorLayer());

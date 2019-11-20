@@ -1044,18 +1044,43 @@ namespace Frosty
 			std::shared_ptr<Texture2D> Texture;
 
 			CParticleSystem() = default;
-			CParticleSystem(const std::shared_ptr<VertexArray>& verts, const std::shared_ptr<Shader>& shader, const std::shared_ptr<Texture2D>& tex)
-				: ParticleVertArray(verts), UseShader(shader), Texture(tex) {}
-			CParticleSystem(const std::shared_ptr<VertexArray>& verts, const std::shared_ptr<Shader>& shader, const std::shared_ptr<Texture2D>& tex, const glm::vec4& color = glm::vec4(1.0f), float particleSize = 1.0f)
-				: ParticleVertArray(verts), UseShader(shader), Texture(tex), ParticleSystemColor(color), ParticleSize(particleSize)
-			{
-				for (uint32_t i = 0; i < MaxParticles; i++)
-				{
-					Particles[i].Color = color;
-					Particles[i].Size = particleSize;
-				}
-			}
+			//CParticleSystem(const std::shared_ptr<VertexArray>& verts, const std::shared_ptr<Shader>& shader, const std::shared_ptr<Texture2D>& tex)
+			//	: ParticleVertArray(verts), UseShader(shader), Texture(tex) {}
+			//CParticleSystem(const std::shared_ptr<VertexArray>& verts, const std::shared_ptr<Shader>& shader, const std::shared_ptr<Texture2D>& tex, const glm::vec4& color = glm::vec4(1.0f), float particleSize = 1.0f)
+			//	: ParticleVertArray(verts), UseShader(shader), Texture(tex), ParticleSystemColor(color), ParticleSize(particleSize)
+			//{
+			//	for (uint32_t i = 0; i < MaxParticles; i++)
+			//	{
+			//		Particles[i].Color = color;
+			//		Particles[i].Size = particleSize;
+			//	}
+			//}
 			CParticleSystem(const CParticleSystem& org) { FY_CORE_ASSERT(false, "Copy constructor in CParticleSystem called."); }
+
+			//CParticleSystem& operator=(const CParticleSystem& org)
+			//{
+			//	if (this != &org)
+			//	{
+			//		MaxParticles = org.MaxParticles;
+			//		StartParticleSize = org.StartParticleSize;
+			//		EndParticleSize = org.EndParticleSize;
+			//		ParticleSize = org.ParticleSize;
+			//		ParticleCount = org.ParticleCount;
+			//		ParticleSystemColor = org.ParticleSystemColor;
+			//		ParticleSystemDirection = org.ParticleSystemDirection;
+			//		EmitRate = org.EmitRate;
+			//		EmitCount = org.EmitCount;
+			//		Speed = org.Speed;
+			//		MaxLifetime = org.MaxLifetime;
+			//		FadeTreshold = org.FadeTreshold;
+			//		AlwaysFaceCamera = org.AlwaysFaceCamera;
+			//		Preview = org.Preview;
+			//		Timer = org.Timer;
+			//		LastUsedParticle = org.LastUsedParticle;
+			//		ShaderName = org.ShaderName;
+			//	}
+			//	return *this;
+			//}
 
 			virtual std::string GetName() const { return NAME; }
 		};
