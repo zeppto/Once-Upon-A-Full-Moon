@@ -348,6 +348,6 @@ std::string MapGenerator::getRoomTextur(glm::ivec2 pos, int* rotation)
 		return "deadend_chests_IsStatick";
 	}
 	if (m_TileMap[pos.x][pos.y].Ocupide)
-		return "HeartFull";
-	return "red";
+		return "deadend_chests_IsStatick";
+	return "deadend_chests_IsStatick";
 }

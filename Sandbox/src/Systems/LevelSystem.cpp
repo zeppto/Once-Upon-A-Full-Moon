@@ -481,11 +481,11 @@ namespace MCS
 		//chest
 		if (e.GetEntityType() == 17)
 		{
-			auto& chest = m_World->CreateEntity({ 0.0f, 1.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 4.0f, 2.0f, 2.0f });
-			m_World->AddComponent<Frosty::ECS::CMesh>(chest, Frosty::AssetManager::GetMesh("pCube1"));
-			auto& material = m_World->AddComponent<Frosty::ECS::CMaterial>(chest, Frosty::AssetManager::GetShader("FlatColor"));
-			material.Albedo = glm::vec4(1.0f, 0.56f, 0.09f, 1.0f);
-			m_World->AddComponent<Frosty::ECS::CPhysics>(chest, Frosty::AssetManager::GetBoundingBox("pCube1"), 6.0f);
+			auto& chest = m_World->CreateEntity({ 0.0f, 1.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 1.0f, 1.0f, 1.0f });
+			m_World->AddComponent<Frosty::ECS::CMesh>(chest, Frosty::AssetManager::GetMesh("chest"));
+			auto& material = m_World->AddComponent<Frosty::ECS::CMaterial>(chest, Frosty::AssetManager::GetShader("Texture2D"));
+			material.DiffuseTexture = Frosty::AssetManager::GetTexture2D("chest");
+			m_World->AddComponent<Frosty::ECS::CPhysics>(chest, Frosty::AssetManager::GetBoundingBox("chest"), 6.0f);
 			m_World->AddComponent<Frosty::ECS::CHealth>(chest, 2.0f);
 			m_World->AddComponent<Frosty::ECS::CDropItem>(chest);
 		}
