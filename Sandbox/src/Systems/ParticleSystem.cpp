@@ -52,7 +52,7 @@ namespace MCS
 
 			auto& world = Frosty::Application::Get().GetWorld();
 			m_Transform[p_Total] = &world->GetComponent<Frosty::ECS::CTransform>(entity);
-			//m_Transform[p_Total]->Position = glm::vec3(0.0f, 7.0f, 0.0f); //Debug
+			m_Transform[p_Total]->Position = glm::vec3(0.0f, 7.0f, 0.0f); //Debug
 			m_ParticleSystem[p_Total] = &world->GetComponent<Frosty::ECS::CParticleSystem>(entity);
 
 			m_ParticleSystem[p_Total]->ParticleVertArray.reset(Frosty::VertexArray::Create());
@@ -71,10 +71,8 @@ namespace MCS
 			vertBuffer->SetNrOfVertices(m_ParticleSystem[p_Total]->ParticleCount);
 			m_ParticleSystem[p_Total]->ParticleVertArray->AddVertexBuffer(vertBuffer); //Add to array
 
-			m_ParticleSystem[p_Total]->UseShader = Frosty::AssetManager::GetShader(m_ParticleSystem[p_Total]->ShaderName);
+			m_ParticleSystem[p_Total]->UseShader = Frosty::AssetManager::GetShader("Particles");
 			m_ParticleSystem[p_Total]->Texture = Frosty::AssetManager::GetTexture2D("particle");
-
-			m_ParticleSystem[p_Total]->Particles.resize(m_ParticleSystem[p_Total]->MaxParticles);
 
 			p_Total++;
 		}
@@ -154,7 +152,7 @@ namespace MCS
 
 		//Iterate all particles
 		m_ParticleSystem[systemIndex]->ParticleCount = 0;
-		for (size_t j = 0; j < m_ParticleSystem[systemIndex]->MaxParticles; j++)
+		for (size_t j = 0; j < Frosty::ECS::CParticleSystem::MAX_PARTICLE_COUNT; j++)
 		{
 			if (m_ParticleSystem[systemIndex]->Particles[j].Lifetime > 0.0f)
 			{
@@ -179,14 +177,9 @@ namespace MCS
 
 	void ParticleSystem::EditorUpdateParticleSystem(size_t systemIndex)
 	{
-		if (m_ParticleSystem[systemIndex]->Particles.size() != m_ParticleSystem[systemIndex]->MaxParticles)
-		{
-			m_ParticleSystem[systemIndex]->Particles.resize(m_ParticleSystem[systemIndex]->MaxParticles);
-			m_ParticleSystem[systemIndex]->LastUsedParticle = m_ParticleSystem[systemIndex]->MaxParticles; //To avoid searching for a used particle that shouldn't exist any more
-		}
 		if (glm::vec3(m_ParticleSystem[systemIndex]->Particles[0].Color) != m_ParticleSystem[systemIndex]->ParticleSystemColor) //Workaround
 		{
-			for (uint32_t i = 0; i < m_ParticleSystem[systemIndex]->MaxParticles; i++)
+			for (uint32_t i = 0; i < Frosty::ECS::CParticleSystem::MAX_PARTICLE_COUNT; i++)
 			{
 				m_ParticleSystem[systemIndex]->Particles[i].Color[0] = m_ParticleSystem[systemIndex]->ParticleSystemColor.r;
 				m_ParticleSystem[systemIndex]->Particles[i].Color[1] = m_ParticleSystem[systemIndex]->ParticleSystemColor.g;
@@ -197,25 +190,9 @@ namespace MCS
 			UpdateBuffer(systemIndex);
 		}
 		if (m_ParticleSystem[systemIndex]->Particles[0].StartSize != m_ParticleSystem[systemIndex]->StartParticleSize) {
-			for (uint32_t i = 0; i < m_ParticleSystem[systemIndex]->MaxParticles; i++)
+			for (uint32_t i = 0; i < Frosty::ECS::CParticleSystem::MAX_PARTICLE_COUNT; i++)
 			{
 				m_ParticleSystem[systemIndex]->Particles[i].StartSize = m_ParticleSystem[systemIndex]->StartParticleSize;
-			}
-		}
-		if (glm::vec3(m_ParticleSystem[systemIndex]->Particles[0].Direction) != m_ParticleSystem[systemIndex]->ParticleSystemDirection) //Temporary if we're gonna have gravity. Needs to be startrDir otherwise.
-		{
-			for (uint32_t i = 0; i < m_ParticleSystem[systemIndex]->MaxParticles; i++)
-			{
-				m_ParticleSystem[systemIndex]->Particles[i].Direction.x = m_ParticleSystem[systemIndex]->ParticleSystemDirection.x;
-				m_ParticleSystem[systemIndex]->Particles[i].Direction.y = m_ParticleSystem[systemIndex]->ParticleSystemDirection.y;
-				m_ParticleSystem[systemIndex]->Particles[i].Direction.z = m_ParticleSystem[systemIndex]->ParticleSystemDirection.z;
-			}
-		}
-		if (m_ParticleSystem[systemIndex]->Particles[0].Speed != m_ParticleSystem[systemIndex]->Speed) //Temporary for same reason as above
-		{
-			for (uint32_t i = 0; i < m_ParticleSystem[systemIndex]->MaxParticles; i++)
-			{
-				m_ParticleSystem[systemIndex]->Particles[i].Speed = m_ParticleSystem[systemIndex]->Speed;
 			}
 		}
 
@@ -233,7 +210,7 @@ namespace MCS
 
 			//Iterate all particles
 			m_ParticleSystem[systemIndex]->ParticleCount = 0;
-			for (size_t j = 0; j < m_ParticleSystem[systemIndex]->MaxParticles; j++)
+			for (size_t j = 0; j < Frosty::ECS::CParticleSystem::MAX_PARTICLE_COUNT; j++)
 			{
 				if (m_ParticleSystem[systemIndex]->Particles[j].Lifetime > 0.0f)
 				{
@@ -262,7 +239,7 @@ namespace MCS
 		Frosty::ECS::CParticleSystem::Particle& p = m_ParticleSystem[systemIndex]->Particles[index];
 
 		p.CamDistance = glm::length2(glm::vec3(p.Position) - m_CameraTransform->Position);
-		p.Position += (p.Direction * p.Speed) * Frosty::Time::DeltaTime();
+		p.Position -= (p.Direction * p.Speed) * Frosty::Time::DeltaTime();
 
 		//Fade in
 		//if (p.color.a < 1.0 && p.lifetime > 1.0) { //TODO: Fix this temporary code
@@ -301,8 +278,6 @@ namespace MCS
 		p.Position = m_ParticleSystem[systemIndex]->Particles[index].StartPos;
 		p.Size = p.StartSize;
 		p.Color.a = 1.0f; //TODO: set to startColor/startAlpha
-		//TODO: Start Direction?
-		//TODO: Start Color?
 	}
 
 	void ParticleSystem::UpdateGpuData(size_t systemIndex, size_t index, uint32_t particleCount)
@@ -330,7 +305,7 @@ namespace MCS
 	{
 		//Linear search, but since we start at the last used index it will usually return immediately
 
-		for (unsigned int i = m_ParticleSystem[systemIndex]->LastUsedParticle; i < m_ParticleSystem[systemIndex]->MaxParticles; i++) {
+		for (unsigned int i = m_ParticleSystem[systemIndex]->LastUsedParticle; i < Frosty::ECS::CParticleSystem::MAX_PARTICLE_COUNT; i++) {
 			if (m_ParticleSystem[systemIndex]->Particles[i].Lifetime < 0.0f) {
 				m_ParticleSystem[systemIndex]->LastUsedParticle = i;
 				return i;
@@ -349,7 +324,7 @@ namespace MCS
 
 	void ParticleSystem::SortParticles(size_t systemIndex)
 	{
-		std::sort(&m_ParticleSystem[systemIndex]->Particles[0], &m_ParticleSystem[systemIndex]->Particles[m_ParticleSystem[systemIndex]->MaxParticles - 1]);
+		std::sort(&m_ParticleSystem[systemIndex]->Particles[0], &m_ParticleSystem[systemIndex]->Particles[Frosty::ECS::CParticleSystem::MAX_PARTICLE_COUNT]);
 	}
 
 	float ParticleSystem::Lerp(float a, float b, float f)

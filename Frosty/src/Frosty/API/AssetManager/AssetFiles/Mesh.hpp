@@ -18,7 +18,7 @@ namespace Frosty
 		Luna::BoundingBox m_BoundingBox;
 		std::vector<Luna::Index> m_MeshIndices;
 		std::vector<Luna::Vertex> m_MeshVertices;
-		//std::vector<Animation> m_Anims;
+
 
 	public:
 

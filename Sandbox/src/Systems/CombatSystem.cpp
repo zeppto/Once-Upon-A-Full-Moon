@@ -45,12 +45,10 @@ namespace MCS
 	void CombatSystem::RemoveEntity(const std::shared_ptr<Frosty::ECS::Entity>& entity)
 	{
 		auto& it = p_EntityMap.find(entity);
-		auto& world = Frosty::Application::Get().GetWorld();
 
 		if (it != p_EntityMap.end())
 		{
 			p_Total--;
-			
 			auto& entityToUpdate = m_Transform[p_Total]->EntityPtr;
 			m_Transform[p_Total] = nullptr;
 			m_Health[p_Total] = nullptr;

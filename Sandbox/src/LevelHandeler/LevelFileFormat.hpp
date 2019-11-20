@@ -18,7 +18,7 @@ namespace ECS { struct Entity; }
 struct Level_Header
 {
 	int NrOfEntitys = 0;
-	int NrOfComponents = 12;
+	int NrOfComponents = 11;
 };
 
 //Do this per nrOfEntitys and as meny times as nrOfComponents (to make older files have a higer shans of combadebilety) 
@@ -142,12 +142,6 @@ struct Level_LevelExit
 	int ExitDirection = 0;
 };
 
-//11 = DropItem
-struct Level_DropItem
-{
-	//int ExitDirection = 0;
-};
-
 //n = name
 //struct Level_
 //{
@@ -169,7 +163,6 @@ struct Level_Components
 	Level_HealthBar myHealthBar;
 	Level_ParticleSystem myParticleSystem;
 	Level_LevelExit myLevelExit;
-	Level_DropItem myDropItem;
 
 };
 
@@ -178,15 +171,6 @@ struct Level_Entitys
 	std::vector<Level_Components> myEntitys;
 };
 
-
-struct Level_rememberedEntitys
-{
-	glm::ivec2 myRoomId = { 0, 0 };
-	std::vector<int> removeEnemy;
-	std::vector<int> existingIDs;
-	std::vector<int> killedIds;
-	float timePlayerLeft;
-};
 //________________________________________________
 
 class LevelFileFormat
@@ -197,7 +181,7 @@ public:
 
 	void AddEntity(const std::shared_ptr<Frosty::ECS::Entity>& entity);
 	void SaveToFile(std::string fileName);
-	void OpenFromFile(std::string fileName, glm::ivec2 roomId = glm::ivec2(0, 0), Frosty::ECS::CTransform* playerTransform = nullptr,
+	void OpenFromFile(std::string fileName, Frosty::ECS::CTransform* playerTransform = nullptr,
 		int rotation = 0, glm::vec3 move = glm::vec3(0,0,0));
 	void LoadBoolMap(std::string fileName);
 
@@ -206,7 +190,6 @@ private:
 	Frosty::World* m_World;
 	Level_Entitys m_Entitys;
 	Level_Header m_Header;
-	std::vector<Level_rememberedEntitys> m_VisitedRooms;
 };
 
 

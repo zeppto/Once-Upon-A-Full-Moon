@@ -34,7 +34,6 @@ namespace MCS
 			auto& entityToUpdate = m_Destroy[p_Total]->EntityPtr;
 			m_Destroy[p_Total] = nullptr;
 
-
 			if (p_Total > it->second)
 			{
 				p_EntityMap[entityToUpdate] = it->second;

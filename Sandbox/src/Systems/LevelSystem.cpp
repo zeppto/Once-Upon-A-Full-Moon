@@ -55,7 +55,7 @@ namespace MCS
 			int rotate;
 			m_Map.getRoomTextur(m_PlayerPos, &rotate);
 			Level::MoveToNewRoom(m_CurrentRoome.sideExits[0], m_CurrentRoome.sideExits[1], m_CurrentRoome.sideExits[2], m_CurrentRoome.sideExits[3]);
-			m_LevelFileFormat.OpenFromFile("deadend_chests_IsStatick", m_PlayerPos, nullptr, rotate);
+			m_LevelFileFormat.OpenFromFile("deadend_1", nullptr, rotate);
 			m_Start = false;
 		}
 	}
@@ -198,7 +198,7 @@ namespace MCS
 		//	m_CurrentRoome.sideExits[2], m_CurrentRoome.sideExits[3], texture, rotation, ExitSide.ExitDirection);
 		PlayerTranform.Position = Level::MoveToNewRoom(m_CurrentRoome.sideExits[0], m_CurrentRoome.sideExits[1],
 			m_CurrentRoome.sideExits[2], m_CurrentRoome.sideExits[3], ExitSide.ExitDirection);
-		m_LevelFileFormat.OpenFromFile(fileName, m_PlayerPos, playerTransform, rotation);
+		m_LevelFileFormat.OpenFromFile(fileName, playerTransform, rotation);
 
 	}
 	void LevelSystem::OnSaveLevelEvent(Frosty::SaveLevelEvent& e)
@@ -207,24 +207,17 @@ namespace MCS
 		{
 			if (!m_World->HasComponent<Frosty::ECS::CCamera>(m_Transform[i]->EntityPtr))
 			{
-				if (!m_World->HasComponent<Frosty::ECS::CGUI>(m_Transform[i]->EntityPtr))
+				if (!m_World->HasComponent<Frosty::ECS::CPlayer>(m_Transform[i]->EntityPtr))
 				{
-					if (!m_World->HasComponent<Frosty::ECS::CPlayer>(m_Transform[i]->EntityPtr))
+					if (m_World->HasComponent<Frosty::ECS::CLight>(m_Transform[i]->EntityPtr))
 					{
-						if (!m_World->HasComponent<Frosty::ECS::CWeapon>(m_Transform[i]->EntityPtr))
-						{
-
-							if (m_World->HasComponent<Frosty::ECS::CLight>(m_Transform[i]->EntityPtr))
-							{
-								auto& light = m_World->GetComponent<Frosty::ECS::CLight>(m_Transform[i]->EntityPtr);
-								if (light.Type == Frosty::ECS::CLight::LightType::Point)
-									m_LevelFileFormat.AddEntity(m_Transform[i]->EntityPtr);
-							}
-							else
-							{
-								m_LevelFileFormat.AddEntity(m_Transform[i]->EntityPtr);
-							}
-						}
+						auto& light = m_World->GetComponent<Frosty::ECS::CLight>(m_Transform[i]->EntityPtr);
+						if (light.Type == Frosty::ECS::CLight::LightType::Point)
+							m_LevelFileFormat.AddEntity(m_Transform[i]->EntityPtr);
+					}
+					else
+					{
+						m_LevelFileFormat.AddEntity(m_Transform[i]->EntityPtr);
 					}
 				}
 			}
@@ -239,33 +232,30 @@ namespace MCS
 			{
 				if (!m_World->HasComponent<Frosty::ECS::CPlayer>(m_Transform[i]->EntityPtr))
 				{
-					if (!m_World->HasComponent<Frosty::ECS::CWeapon>(m_Transform[i]->EntityPtr))
+					if (m_World->HasComponent<Frosty::ECS::CPhysics>(m_Transform[i]->EntityPtr))
 					{
-						if (m_World->HasComponent<Frosty::ECS::CPhysics>(m_Transform[i]->EntityPtr))
+						if (!m_World->HasComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr))
 						{
-							if (!m_World->HasComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr))
-							{
-								m_World->AddComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr);
-							}
-						}
-						else if (m_World->HasComponent<Frosty::ECS::CMesh>(m_Transform[i]->EntityPtr))
-						{
-							if (!m_World->HasComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr))
-							{
-								m_World->AddComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr);
-							}
-						}
-						else if (m_World->HasComponent<Frosty::ECS::CLight>(m_Transform[i]->EntityPtr))
-						{
-							auto& light = m_World->GetComponent<Frosty::ECS::CLight>(m_Transform[i]->EntityPtr);
-							if (light.Type == Frosty::ECS::CLight::LightType::Point)
-								if (!m_World->HasComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr))
-								{
-									m_World->AddComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr);
-								}
+							m_World->AddComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr);
 						}
 					}
-					//else remove weapon if it isent player weapon
+					else if (m_World->HasComponent<Frosty::ECS::CMesh>(m_Transform[i]->EntityPtr))
+					{
+						if (!m_World->HasComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr))
+						{
+							m_World->AddComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr);
+						}
+					}
+					else if (m_World->HasComponent<Frosty::ECS::CLight>(m_Transform[i]->EntityPtr))
+					{
+						auto& light = m_World->GetComponent<Frosty::ECS::CLight>(m_Transform[i]->EntityPtr);
+						if (light.Type == Frosty::ECS::CLight::LightType::Point)
+							if (!m_World->HasComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr))
+							{
+								m_World->AddComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr);
+							}
+					}
+
 				}
 			}
 		}
@@ -285,40 +275,36 @@ namespace MCS
 	}
 	void LevelSystem::OnOpenLevelEvent(Frosty::OpenLevelEvent& e)
 	{
-		Frosty::ECS::CTransform* playerTransform = nullptr;
+		Frosty::ECS::CTransform* playerTransform;
 		for (size_t i = 1; i < p_Total; i++)
 		{
 			if (!m_World->HasComponent<Frosty::ECS::CCamera>(m_Transform[i]->EntityPtr))
 			{
 				if (!m_World->HasComponent<Frosty::ECS::CPlayer>(m_Transform[i]->EntityPtr))
 				{
-					if (!m_World->HasComponent<Frosty::ECS::CWeapon>(m_Transform[i]->EntityPtr))
+					if (m_World->HasComponent<Frosty::ECS::CPhysics>(m_Transform[i]->EntityPtr))
 					{
-						if (m_World->HasComponent<Frosty::ECS::CPhysics>(m_Transform[i]->EntityPtr))
+						if (!m_World->HasComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr))
 						{
-							if (!m_World->HasComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr))
-							{
-								m_World->AddComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr);
-							}
-						}
-						else if (m_World->HasComponent<Frosty::ECS::CMesh>(m_Transform[i]->EntityPtr))
-						{
-							if (!m_World->HasComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr))
-							{
-								m_World->AddComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr);
-							}
-						}
-						else if (m_World->HasComponent<Frosty::ECS::CLight>(m_Transform[i]->EntityPtr))
-						{
-							auto& light = m_World->GetComponent<Frosty::ECS::CLight>(m_Transform[i]->EntityPtr);
-							if (light.Type == Frosty::ECS::CLight::LightType::Point)
-								if (!m_World->HasComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr))
-								{
-									m_World->AddComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr);
-								}
+							m_World->AddComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr);
 						}
 					}
-					//else remove weapon if it isent player weapon
+					else if (m_World->HasComponent<Frosty::ECS::CMesh>(m_Transform[i]->EntityPtr))
+					{
+						if (!m_World->HasComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr))
+						{
+							m_World->AddComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr);
+						}
+					}
+					else if (m_World->HasComponent<Frosty::ECS::CLight>(m_Transform[i]->EntityPtr))
+					{
+						auto& light = m_World->GetComponent<Frosty::ECS::CLight>(m_Transform[i]->EntityPtr);
+						if(light.Type == Frosty::ECS::CLight::LightType::Point)
+							if (!m_World->HasComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr))
+							{
+								m_World->AddComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr);
+							}
+					}
 				}
 				else
 				{
@@ -327,7 +313,7 @@ namespace MCS
 			}
 		}
 		m_RoomType = e.GetFilename();
-		m_LevelFileFormat.OpenFromFile(m_RoomType, m_PlayerPos, playerTransform);
+		m_LevelFileFormat.OpenFromFile(m_RoomType, playerTransform);
 	}
 	void LevelSystem::OnCreatEntityEvent(Frosty::CreatEntityEvent& e)
 	{
@@ -339,7 +325,7 @@ namespace MCS
 			m_World->AddComponent<Frosty::ECS::CMaterial>(enemy, Frosty::AssetManager::GetShader("FlatColor"));
 			m_World->AddComponent<Frosty::ECS::CPhysics>(enemy, Frosty::AssetManager::GetBoundingBox("pCube1"), 6.0f);
 			m_World->AddComponent<Frosty::ECS::CEnemy>(enemy);
-			//m_World->AddComponent<Frosty::ECS::CFollow>(enemy);
+			m_World->AddComponent<Frosty::ECS::CFollow>(enemy);
 			m_World->AddComponent<Frosty::ECS::CHealth>(enemy);
 		}
 		//Stone
@@ -481,17 +467,6 @@ namespace MCS
 			auto& material = m_World->AddComponent<Frosty::ECS::CMaterial>(mushroom, Frosty::AssetManager::GetShader("Texture2D"));
 			material.DiffuseTexture = Frosty::AssetManager::GetTexture2D("Tree7");
 			m_World->AddComponent<Frosty::ECS::CPhysics>(mushroom, Frosty::AssetManager::GetBoundingBox("treeBunchWall"), 0.0f);
-		}
-		//chest
-		if (e.GetEntityType() == 17)
-		{
-			auto& chest = m_World->CreateEntity({ 0.0f, 1.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 4.0f, 2.0f, 2.0f });
-			m_World->AddComponent<Frosty::ECS::CMesh>(chest, Frosty::AssetManager::GetMesh("pCube1"));
-			auto& material = m_World->AddComponent<Frosty::ECS::CMaterial>(chest, Frosty::AssetManager::GetShader("FlatColor"));
-			material.Albedo = glm::vec4(1.0f, 0.56f, 0.09f, 1.0f);
-			m_World->AddComponent<Frosty::ECS::CPhysics>(chest, Frosty::AssetManager::GetBoundingBox("pCube1"), 6.0f);
-			m_World->AddComponent<Frosty::ECS::CHealth>(chest, 2.0f);
-			m_World->AddComponent<Frosty::ECS::CDropItem>(chest);
 		}
 	}
 }

@@ -11,8 +11,6 @@ namespace MCS
 		p_Signature.set(Frosty::ECS::getComponentTypeID<Frosty::ECS::CTransform>(), true);
 		p_Signature.set(Frosty::ECS::getComponentTypeID<Frosty::ECS::CMesh>(), true);
 		p_Signature.set(Frosty::ECS::getComponentTypeID<Frosty::ECS::CMaterial>(), true);
-
-
 	}
 
 	void RenderSystem::OnUpdate()
@@ -25,19 +23,6 @@ namespace MCS
 		{
 			if (m_Meshes[i]->RenderMesh)
 			{
-				/*if (m_Materials[i]->UseShader->GetName() == "Animation" && m_Materials[i]->DiffuseTexture)m_Materials[i]->DiffuseTexture->Bind(0);
-				if (m_Materials[i]->UseShader->GetName() == "Animation" && m_Materials[i]->NormalTexture) m_Materials[i]->NormalTexture->Bind(1);
-				if (m_Materials[i]->UseShader->GetName() == "Animation" && m_Materials[i]->SpecularTexture) m_Materials[i]->SpecularTexture->Bind(2);
-
-				if (m_Materials[i]->UseShader->GetName() == "Animation")
-				{
-					Frosty::Renderer::AnimSubmit(m_Materials[i], m_Meshes[i]->Mesh, m_Transform[i]->ModelMatrix, m_Anims[i]);
-				}
-
-				if (m_Materials[i]->UseShader->GetName() == "Animation" && m_Materials[i]->DiffuseTexture) m_Materials[i]->DiffuseTexture->Unbind();
-				if (m_Materials[i]->UseShader->GetName() == "Animation" && m_Materials[i]->NormalTexture) m_Materials[i]->NormalTexture->Unbind();
-				if (m_Materials[i]->UseShader->GetName() == "Animation" && m_Materials[i]->SpecularTexture) m_Materials[i]->SpecularTexture->Unbind();*/
-
 				if (!m_Transform[i]->IsStatic)
 				{
 					glm::mat4 transform = glm::translate(glm::mat4(1.0f), m_Transform[i]->Position);
@@ -48,9 +33,9 @@ namespace MCS
 					m_Transform[i]->ModelMatrix = transform;
 				}
 
-				/*if (m_Materials[i]->UseShader->GetName() == "Texture2D" && m_Materials[i]->DiffuseTexture)m_Materials[i]->DiffuseTexture->Bind(0);
+				if (m_Materials[i]->UseShader->GetName() == "Texture2D" && m_Materials[i]->DiffuseTexture)m_Materials[i]->DiffuseTexture->Bind(0);
 				if (m_Materials[i]->UseShader->GetName() == "Texture2D" && m_Materials[i]->NormalTexture) m_Materials[i]->NormalTexture->Bind(1);
-				if (m_Materials[i]->UseShader->GetName() == "Texture2D" && m_Materials[i]->SpecularTexture) m_Materials[i]->SpecularTexture->Bind(2);*/
+				if (m_Materials[i]->UseShader->GetName() == "Texture2D" && m_Materials[i]->SpecularTexture) m_Materials[i]->SpecularTexture->Bind(2);
 
 				if (m_Materials[i]->UseShader->GetName() == "Animation" && m_Materials[i]->DiffuseTexture)m_Materials[i]->DiffuseTexture->Bind(0);
 				if (m_Materials[i]->UseShader->GetName() == "Animation" && m_Materials[i]->NormalTexture) m_Materials[i]->NormalTexture->Bind(1);
@@ -58,25 +43,25 @@ namespace MCS
 
 				if (m_Materials[i]->UseShader->GetName() == "UI" && m_Materials[i]->DiffuseTexture) m_Materials[i]->DiffuseTexture->Bind(0);
 
-				/*if (m_Materials[i]->UseShader->GetName() == "BlendShader" && m_Materials[i]->DiffuseTexture)m_Materials[i]->DiffuseTexture->Bind(0);
+				if (m_Materials[i]->UseShader->GetName() == "BlendShader" && m_Materials[i]->DiffuseTexture)m_Materials[i]->DiffuseTexture->Bind(0);
 				if (m_Materials[i]->UseShader->GetName() == "BlendShader" && m_Materials[i]->NormalTexture) m_Materials[i]->NormalTexture->Bind(1);
 				if (m_Materials[i]->UseShader->GetName() == "BlendShader" && m_Materials[i]->SpecularTexture) m_Materials[i]->SpecularTexture->Bind(2);
 				if (m_Materials[i]->UseShader->GetName() == "BlendShader" && m_Materials[i]->BlendMapTexture) m_Materials[i]->BlendMapTexture->Bind(3);
 				if (m_Materials[i]->UseShader->GetName() == "BlendShader" && m_Materials[i]->BlendTexture1) m_Materials[i]->BlendTexture1->Bind(4);
-				if (m_Materials[i]->UseShader->GetName() == "BlendShader" && m_Materials[i]->BlendTexture2) m_Materials[i]->BlendTexture2->Bind(5);*/
+				if (m_Materials[i]->UseShader->GetName() == "BlendShader" && m_Materials[i]->BlendTexture2) m_Materials[i]->BlendTexture2->Bind(5);
 
 				if (m_Materials[i]->UseShader->GetName() == "Animation")
 				{
-					Frosty::Renderer::AnimSubmit(m_Materials[i], m_Meshes[i]->Mesh, m_Transform[i]->ModelMatrix, m_Anims[i]);
+					Frosty::Renderer::AnimSubmit(m_Materials[i], m_Meshes[i]->Mesh, m_Transform[i]->ModelMatrix);
 				}
 				else
 				{
-					//Frosty::Renderer::Submit(m_Materials[i], m_Meshes[i]->Mesh, m_Transform[i]->ModelMatrix);
+					Frosty::Renderer::Submit(m_Materials[i], m_Meshes[i]->Mesh, m_Transform[i]->ModelMatrix);
 				}
 
-				/*if (m_Materials[i]->UseShader->GetName() == "Animation" && m_Materials[i]->DiffuseTexture) m_Materials[i]->DiffuseTexture->Unbind();
+				if (m_Materials[i]->UseShader->GetName() == "Animation" && m_Materials[i]->DiffuseTexture) m_Materials[i]->DiffuseTexture->Unbind();
 				if (m_Materials[i]->UseShader->GetName() == "Animation" && m_Materials[i]->NormalTexture) m_Materials[i]->NormalTexture->Unbind();
-				if (m_Materials[i]->UseShader->GetName() == "Animation" && m_Materials[i]->SpecularTexture) m_Materials[i]->SpecularTexture->Unbind();*/
+				if (m_Materials[i]->UseShader->GetName() == "Animation" && m_Materials[i]->SpecularTexture) m_Materials[i]->SpecularTexture->Unbind();
 
 				if (m_Materials[i]->UseShader->GetName() == "Texture2D" && m_Materials[i]->DiffuseTexture) m_Materials[i]->DiffuseTexture->Unbind();
 				if (m_Materials[i]->UseShader->GetName() == "Texture2D" && m_Materials[i]->NormalTexture) m_Materials[i]->NormalTexture->Unbind();
@@ -84,12 +69,12 @@ namespace MCS
 
 				if (m_Materials[i]->UseShader->GetName() == "UI" && m_Materials[i]->DiffuseTexture) m_Materials[i]->DiffuseTexture->Unbind();
 
-				/*if (m_Materials[i]->UseShader->GetName() == "BlendShader" && m_Materials[i]->DiffuseTexture) m_Materials[i]->DiffuseTexture->Unbind();
+				if (m_Materials[i]->UseShader->GetName() == "BlendShader" && m_Materials[i]->DiffuseTexture) m_Materials[i]->DiffuseTexture->Unbind();
 				if (m_Materials[i]->UseShader->GetName() == "BlendShader" && m_Materials[i]->NormalTexture) m_Materials[i]->NormalTexture->Unbind();
 				if (m_Materials[i]->UseShader->GetName() == "BlendShader" && m_Materials[i]->SpecularTexture) m_Materials[i]->SpecularTexture->Unbind();
 				if (m_Materials[i]->UseShader->GetName() == "BlendShader" && m_Materials[i]->BlendMapTexture) m_Materials[i]->BlendMapTexture->Unbind();
 				if (m_Materials[i]->UseShader->GetName() == "BlendShader" && m_Materials[i]->BlendTexture1) m_Materials[i]->BlendTexture1->Unbind();
-				if (m_Materials[i]->UseShader->GetName() == "BlendShader" && m_Materials[i]->BlendTexture2) m_Materials[i]->BlendTexture2->Unbind();*/
+				if (m_Materials[i]->UseShader->GetName() == "BlendShader" && m_Materials[i]->BlendTexture2) m_Materials[i]->BlendTexture2->Unbind();
 			}
 		}
 	}
@@ -105,19 +90,7 @@ namespace MCS
 			m_Meshes[p_Total] = &world->GetComponent<Frosty::ECS::CMesh>(entity);
 			m_Materials[p_Total] = &world->GetComponent<Frosty::ECS::CMaterial>(entity);
 
-			//Only triggers when added not when shader changed.
-			if (world->HasComponent<Frosty::ECS::CAnimController>(entity))
-			{
-				m_Anims[p_Total] = &world->GetComponent<Frosty::ECS::CAnimController>(entity);
-			}
-			else
-			{
-				m_Anims[p_Total] = nullptr;
-			}
-			Frosty::Renderer::AddToRenderer(m_Materials.at(p_Total), m_Meshes.at(p_Total)->Mesh, m_Transform.at(p_Total), m_Anims[p_Total]);
-
 			p_Total++;
-
 		}
 	}
 
@@ -128,20 +101,15 @@ namespace MCS
 		if (it != p_EntityMap.end())
 		{
 			p_Total--;
-
-			Frosty::Renderer::RemoveFromRenderer(m_Materials[it->second]->EntityPtr->Id,m_Meshes[it->second]->Mesh->GetName(),m_Transform[it->second]->EntityPtr->Id);
-
 			auto& entityToUpdate = m_Transform[p_Total]->EntityPtr;
 			m_Transform[p_Total] = nullptr;
 			m_Meshes[p_Total] = nullptr;
 			m_Materials[p_Total] = nullptr;
-			m_Anims[p_Total] = nullptr;
 
 			if (p_Total > it->second)
 			{
 				p_EntityMap[entityToUpdate] = it->second;
 			}
-
 
 			p_EntityMap.erase(entity);
 		}
@@ -161,12 +129,9 @@ namespace MCS
 			m_Transform[it->second] = transformPtr;
 			m_Meshes[it->second] = meshPtr;
 			m_Materials[it->second] = materialPtr;
-
-			Frosty::Renderer::UppdateEntity(m_Materials[it->second]->EntityPtr->Id, m_Materials.at(it->second), m_Meshes[it->second]->Mesh->GetName(), m_Meshes.at(it->second)->Mesh, m_Transform[it->second]->EntityPtr->Id, m_Transform.at(it->second));
-
 		}
 	}
-
+	
 	std::string RenderSystem::GetInfo() const
 	{
 		std::stringstream retInfo;

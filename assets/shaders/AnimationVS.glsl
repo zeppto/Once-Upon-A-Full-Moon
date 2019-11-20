@@ -16,10 +16,11 @@ layout(std140, binding = 7) uniform a_jointDataBlock
 uniform mat4 u_ViewProjection;
 uniform mat4 u_Transform;
 
-out vec3 v_FragPosition;
 out vec2 v_TextureCoords;
-out vec3 v_Normal;
-out mat3 v_TBN;
+out vec4 pos;
+out vec3 normal;
+out vec3 colour;
+out mat3 TBN;
 
 void main()
 {
@@ -28,27 +29,16 @@ void main()
 	jointTransform += skinData[a_Joints.z] * a_Weights.z;
 	jointTransform += skinData[a_Joints.w] * a_Weights.w;
 	
-	v_FragPosition = vec3(u_Transform * jointTransform * vec4(a_Position,1.0));
+	gl_Position = u_ViewProjection * u_Transform * (jointTransform * vec4(a_Position,1.0));
 
-	// JOINT TRANSFORM NOT CURRENTLY APPLIED TO NORMAL MAP. SHOULD THEY BE?
-	vec4 tempNormal = u_Transform* jointTransform * vec4(a_Normal,1.0);
-//
-//	vec4 tangentFinal = jointTransform * vec4(a_Tangent,1.0);
-//	vec4 bitangentFinal = jointTransform * vec4(a_Bitangent,1.0);
+	normal = mat3(transpose(inverse(u_Transform))) * a_Normal;		// Oldie but goldie
 
-//	v_Normal = mat3(transpose(inverse(u_Transform))) * vec3(tempNormal);		// Oldie but goldie
-//
-//	vec3 T = normalize(vec3(u_Transform * vec4(tangentFinal.xyz,0.0)));
-//	vec3 B = normalize(vec3(u_Transform * vec4(bitangentFinal.xyz, 0.0)));
-//	vec3 N = normalize(vec3(u_Transform * vec4(vec3(tempNormal),0.0)));
-
-	v_Normal = mat3(transpose(inverse(u_Transform))) * vec3(a_Normal);		// Oldie but goldie
-
-	vec3 T = normalize(vec3(u_Transform * vec4(a_Tangent, 0.0)));
+	vec3 T = normalize(vec3(u_Transform * vec4(a_Tangent,   0.0)));
 	vec3 B = normalize(vec3(u_Transform * vec4(a_Bitangent, 0.0)));
-	vec3 N = normalize(vec3(u_Transform * vec4(a_Normal,0.0)));
-	v_TBN = mat3(T, B, N);
+	vec3 N = normalize(vec3(u_Transform * vec4(a_Normal,    0.0)));
+	TBN = mat3(T, B, N);
 
+	colour = vec3(a_Weights.y,a_Weights.w,a_Weights.z);
 	v_TextureCoords = a_TextureCoords;
-	gl_Position = u_ViewProjection * u_Transform * jointTransform * vec4(a_Position,1.0);
+	pos = gl_Position;
 }
