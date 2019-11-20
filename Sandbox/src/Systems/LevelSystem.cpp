@@ -55,7 +55,7 @@ namespace MCS
 			Level::MoveToNewRoom(m_CurrentRoome.sideExits[0], m_CurrentRoome.sideExits[1], m_CurrentRoome.sideExits[2], m_CurrentRoome.sideExits[3]);
 			m_LevelFileFormat.OpenFromFile("deadend_chests_IsStatick", m_PlayerPos, nullptr, rotate);
 			m_Start = false;
-			m_LevelFileFormat.LoadBoolMap("deadend_1");
+			m_LevelFileFormat.LoadBoolMap("deadend_chests_IsStatick");
 		}
 	}
 

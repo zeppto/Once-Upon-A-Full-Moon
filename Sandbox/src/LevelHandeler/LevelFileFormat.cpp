@@ -645,6 +645,13 @@ void LevelFileFormat::LoadBoolMap(std::string fileName)
 				existingFile.read((char*)&fileEntitys.myEntitys.at(i).myParticleSystem, sizeof(Level_ParticleSystem));
 			if (fileEntitys.myEntitys.at(i).MyComponents.at(10).HaveComponent)
 				existingFile.read((char*)&fileEntitys.myEntitys.at(i).myLevelExit, sizeof(Level_LevelExit));
+
+			//11 = DropItem
+			if (fileEntitys.myEntitys.at(i).MyComponents.at(11).HaveComponent)
+			{
+				existingFile.read((char*)&fileEntitys.myEntitys.at(i).myDropItem, sizeof(Level_DropItem));
+
+			}
 		}
 		existingFile.close();
 	}
@@ -671,7 +678,7 @@ void LevelFileFormat::LoadBoolMap(std::string fileName)
 	//		}
 	//	}
 	//}
-
+	bool k = ABoolMap->CheckCollition(glm::vec3(1.0f, 0.0f, 1.0f));
 	ABoolMap->SaveMap("", "BoolMap");
 	ABoolMap->LoadMap("BoolMap.bmap");
 

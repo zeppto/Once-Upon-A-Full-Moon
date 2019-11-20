@@ -2,6 +2,7 @@
 #define LEVEL_FILE_FORMAT_HPP
 
 namespace ECS { struct Entity; }
+//namespace ECS { struct BoolMap; }
 
 //shuled switch string to const char sizes and maybi glm to flot arrays
 

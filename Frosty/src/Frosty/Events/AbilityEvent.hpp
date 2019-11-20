@@ -2,9 +2,11 @@
 #define ABILITY_EVENT_HPP
 
 #include "EventSystem.hpp"
+#include "Frosty/Core/BoolMap/BoolMap.hpp"
 
 namespace Frosty
 {
+	class BoolMap; 
 	namespace ECS { struct Entity; }
 
 	class CollisionEvent : public BaseEvent
@@ -112,6 +114,21 @@ namespace Frosty
 
 	private:
 	};
+
+
+	class BoolMapLoadedEvent : public BaseEvent
+	{
+	public:
+		BoolMapLoadedEvent(const std::shared_ptr<BoolMap>& BoolMap) :  m_BoolMap(BoolMap){}
+
+		inline const std::shared_ptr<BoolMap>& GetBoolMap() { return m_BoolMap; }
+
+		EVENT_TYPE(LoadBoolMap)
+
+	private:
+		std::shared_ptr <BoolMap> m_BoolMap;
+	};
+
 
 	class CreateLevelEvent : public BaseEvent
 	{
