@@ -40,7 +40,7 @@ namespace Frosty
 
 		//static void AddLight(const int& ID, const glm::vec3& color, const glm::vec3& pos, float strength, float radius);
 		static void AddLight(Frosty::ECS::CLight* light, ECS::CTransform* transform);
-		static void UppdateLight(Frosty::ECS::CLight* light, ECS::CTransform* transform);
+		static void UpdateLight(Frosty::ECS::CLight* light, ECS::CTransform* transform);
 		static void RemoveLight(const std::shared_ptr<ECS::Entity>& entity);
 		static void RemoveAllLights();
 		static void ChangeLight(const std::shared_ptr<ECS::Entity>& entity);
@@ -56,7 +56,7 @@ namespace Frosty
 		static void SubmitHealthBar(const std::shared_ptr<Shader>& shader, const std::shared_ptr<VertexArray>& vertexArray, const glm::vec3& translate, const glm::vec3& scale, const glm::vec3& HealthBarSpace);
 		static void AddToRenderer(ECS::CMaterial* mat, std::shared_ptr<VertexArray> vertexArray, ECS::CTransform* transform, ECS::CAnimController* anim);
 		static void RemoveFromRenderer( const int& matID ,const std::string& meshName,const int& transformID);
-		static void UppdateEntity (const int& matID,ECS::CMaterial* mat, const std::string& meshName, std::shared_ptr<VertexArray> vertexArray, const int& transformID, ECS::CTransform* transform);
+		static void UpdateEntity (const int& matID,ECS::CMaterial* mat, const std::string& meshName, std::shared_ptr<VertexArray> vertexArray, const int& transformID, ECS::CTransform* transform);
 		
 		static void ChangeEntity (const int& OldMatID,ECS::CMaterial* mat, const std::string& OldMeshName, std::shared_ptr<VertexArray> vertexArray, const int& transformID, ECS::CTransform* transform);
 

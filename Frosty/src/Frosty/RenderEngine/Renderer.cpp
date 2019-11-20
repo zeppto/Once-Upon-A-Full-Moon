@@ -224,7 +224,7 @@ namespace Frosty
 		}
 	}
 
-	void Renderer::UppdateLight(Frosty::ECS::CLight* light, ECS::CTransform* transform)
+	void Renderer::UpdateLight(Frosty::ECS::CLight* light, ECS::CTransform* transform)
 	{
 		if (light->Type == Frosty::ECS::CLight::LightType::Point)
 		{
@@ -311,6 +311,7 @@ namespace Frosty
 	{
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		glDisable(GL_DEPTH_TEST);
 		shader->Bind();
 		vertexArray->Bind();
 
@@ -359,6 +360,7 @@ namespace Frosty
 		shader->UnBind();
 		vertexArray->Unbind();
 		glDisable(GL_BLEND);
+		glEnable(GL_DEPTH_TEST);
 	}
 
 	void Renderer::SubmitParticles(const std::shared_ptr<Shader>& shader, const std::shared_ptr<VertexArray>& vertexArray, glm::mat4& modelMat, size_t particleCount, float maxLifetime)
@@ -595,7 +597,7 @@ namespace Frosty
 
 	}
 
-	void Renderer::UppdateEntity(const int& matID, ECS::CMaterial* mat, const std::string& meshName, std::shared_ptr<VertexArray> vertexArray, const int& transformID, ECS::CTransform* transform)
+	void Renderer::UpdateEntity(const int& matID, ECS::CMaterial* mat, const std::string& meshName, std::shared_ptr<VertexArray> vertexArray, const int& transformID, ECS::CTransform* transform)
 	{
 		if (s_TransformLookUpMap.find(transformID) != s_TransformLookUpMap.end())
 		{

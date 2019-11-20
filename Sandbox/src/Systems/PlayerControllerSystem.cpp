@@ -58,6 +58,8 @@ namespace MCS
 					m_Dash[i]->DistanceDashed = 0.0f;
 				}
 			}
+
+			UpdateHUD(i);
 		}
 	}
 
@@ -269,7 +271,7 @@ namespace MCS
 			}
 		}
 	}
-	
+
 	void PlayerControllerSystem::HandleAttack(const glm::vec3& point, size_t index)
 	{
 		// The entity pointing to a CWeapon component (player / enemy)
@@ -586,29 +588,29 @@ namespace MCS
 		}
 #pragma endregion Healing Potion
 
-//#pragma region Increase Health Potion
-//		else if (Frosty::InputManager::IsKeyPressed(m_Player[index]->IncreaseHPPotionKey))
-//		{
-//			// If consumer has increase HP potion AND comsumer can increse health AND increase HP timer is bigger than cooldown--> drink increase HP potion
-//			if ((m_Inventory[index]->CurrentIncreaseHPPotions > 0) && (m_Health[index]->MaxHealth < m_Health[index]->MaxPossibleHealth) && (Frosty::Time::CurrentTime() - m_Inventory[index]->IncreaseHPTimer >= m_Inventory[index]->IncreaseHPCooldown))
-//			{
-//				// If increse HP won't exceed maximum health capacity --> directly increase health capacity 
-//				if (m_Inventory[index]->IncreaseHP <= (m_Health[index]->MaxPossibleHealth - m_Health[index]->MaxHealth))
-//				{
-//					m_Health[index]->MaxHealth += m_Inventory[index]->IncreaseHP;
-//				}
-//				// But if increase HP exceeds maximum health capacity --> max possible health achieved
-//				else
-//				{
-//					m_Health[index]->MaxHealth = m_Health[index]->MaxPossibleHealth;
-//				}
-//
-//				// Decrease number of potions in inventory and activate the timer for cooldown
-//				m_Inventory[index]->CurrentIncreaseHPPotions--;
-//				m_Inventory[index]->IncreaseHPTimer = Frosty::Time::CurrentTime();
-//			}
-//		}
-//#pragma endregion Increase Health Potion
+		//#pragma region Increase Health Potion
+		//		else if (Frosty::InputManager::IsKeyPressed(m_Player[index]->IncreaseHPPotionKey))
+		//		{
+		//			// If consumer has increase HP potion AND comsumer can increse health AND increase HP timer is bigger than cooldown--> drink increase HP potion
+		//			if ((m_Inventory[index]->CurrentIncreaseHPPotions > 0) && (m_Health[index]->MaxHealth < m_Health[index]->MaxPossibleHealth) && (Frosty::Time::CurrentTime() - m_Inventory[index]->IncreaseHPTimer >= m_Inventory[index]->IncreaseHPCooldown))
+		//			{
+		//				// If increse HP won't exceed maximum health capacity --> directly increase health capacity 
+		//				if (m_Inventory[index]->IncreaseHP <= (m_Health[index]->MaxPossibleHealth - m_Health[index]->MaxHealth))
+		//				{
+		//					m_Health[index]->MaxHealth += m_Inventory[index]->IncreaseHP;
+		//				}
+		//				// But if increase HP exceeds maximum health capacity --> max possible health achieved
+		//				else
+		//				{
+		//					m_Health[index]->MaxHealth = m_Health[index]->MaxPossibleHealth;
+		//				}
+		//
+		//				// Decrease number of potions in inventory and activate the timer for cooldown
+		//				m_Inventory[index]->CurrentIncreaseHPPotions--;
+		//				m_Inventory[index]->IncreaseHPTimer = Frosty::Time::CurrentTime();
+		//			}
+		//		}
+		//#pragma endregion Increase Health Potion
 
 #pragma region Speed Potion
 		else if (Frosty::InputManager::IsKeyPressed(m_Player[index]->SpeedPotionKey))
@@ -634,28 +636,28 @@ namespace MCS
 		}
 #pragma endregion Speed Potion
 
-//#pragma region Speed Boots
-//		else if (Frosty::InputManager::IsKeyPressed(m_Player[index]->SpeedBootsKey))		// Appearently a temporary thing. Player picks this up automatically so onimput is unnecessary	~ W-_-W ~
-//		{
-//			// If consumer has speed potion AND comsumer has not full speed capacity
-//			if ((m_Inventory[index]->CurrentSpeedBoots < m_Inventory[index]->MaxSpeedBoots) && (m_Physics[index]->Speed < m_Physics[index]->MaxSpeed))
-//			{
-//				// If speed boots won't exceed maximum possible speed capacity --> directly add value to speed
-//				if (m_Inventory[index]->IncreaseSpeed <= (m_Physics[index]->MaxSpeed - m_Physics[index]->Speed))
-//				{
-//					m_Physics[index]->Speed += m_Inventory[index]->IncreaseSpeed;
-//				}
-//				// But if speed boots exceeds maximum possible speed capacity --> max speed achieved
-//				else
-//				{
-//					m_Physics[index]->Speed += m_Physics[index]->MaxSpeed - m_Physics[index]->Speed;
-//				}
-//
-//				// Add number of boots in inventory since boots are something the entity is wearing
-//				m_Inventory[index]->CurrentSpeedBoots++;
-//			}
-//		}
-//#pragma endregion Speed Boots
+		//#pragma region Speed Boots
+		//		else if (Frosty::InputManager::IsKeyPressed(m_Player[index]->SpeedBootsKey))		// Appearently a temporary thing. Player picks this up automatically so onimput is unnecessary	~ W-_-W ~
+		//		{
+		//			// If consumer has speed potion AND comsumer has not full speed capacity
+		//			if ((m_Inventory[index]->CurrentSpeedBoots < m_Inventory[index]->MaxSpeedBoots) && (m_Physics[index]->Speed < m_Physics[index]->MaxSpeed))
+		//			{
+		//				// If speed boots won't exceed maximum possible speed capacity --> directly add value to speed
+		//				if (m_Inventory[index]->IncreaseSpeed <= (m_Physics[index]->MaxSpeed - m_Physics[index]->Speed))
+		//				{
+		//					m_Physics[index]->Speed += m_Inventory[index]->IncreaseSpeed;
+		//				}
+		//				// But if speed boots exceeds maximum possible speed capacity --> max speed achieved
+		//				else
+		//				{
+		//					m_Physics[index]->Speed += m_Physics[index]->MaxSpeed - m_Physics[index]->Speed;
+		//				}
+		//
+		//				// Add number of boots in inventory since boots are something the entity is wearing
+		//				m_Inventory[index]->CurrentSpeedBoots++;
+		//			}
+		//		}
+		//#pragma endregion Speed Boots
 
 #pragma region Pick Up
 		if (Frosty::InputManager::IsKeyPressed(FY_KEY_E))
@@ -703,47 +705,83 @@ namespace MCS
 		{
 			auto& type = world->GetComponent<Frosty::ECS::CLootable>(e.GetEntity()).Type;
 
-			if (type == Frosty::ECS::CLootable::LootType::HealingPotion && m_Inventory[i]->CurrentHealingPotions < m_Inventory[i]->MaxHealingPotions)
+			if (type == Frosty::ECS::CLootable::LootType::HealingPotion)
 			{
-				m_Inventory[i]->CurrentHealingPotions++;
-				FY_INFO("HealingPotion in Inventory");
-				FY_INFO("{0} / {1}", m_Inventory[i]->CurrentHealingPotions, m_Inventory[i]->MaxHealingPotions);
-				if (!world->HasComponent<Frosty::ECS::CDestroy>(e.GetEntity()))
+				if (m_Inventory[i]->CurrentHealingPotions < m_Inventory[i]->MaxHealingPotions)
 				{
-					world->AddComponent<Frosty::ECS::CDestroy>(e.GetEntity());
+					m_Inventory[i]->CurrentHealingPotions++;
+					SetPickUpText(i, "+1 Healing Potion");
+
+					FY_INFO("HealingPotion in Inventory");
+					FY_INFO("{0} / {1}", m_Inventory[i]->CurrentHealingPotions, m_Inventory[i]->MaxHealingPotions);
+					if (!world->HasComponent<Frosty::ECS::CDestroy>(e.GetEntity()))
+					{
+						world->AddComponent<Frosty::ECS::CDestroy>(e.GetEntity());
+					}
+				}
+				else
+				{
+					SetPickUpText(i, "Can't Pick Up Healing Potion");
+				}
+
+			}
+			else if (type == Frosty::ECS::CLootable::LootType::IncHealthPotion)
+			{
+				if (m_Inventory[i]->CurrentHealingPotions < m_Inventory[i]->MaxHealingPotions)
+				{
+					m_Health[i]->MaxHealth += 3;
+					SetPickUpText(i, "Health Increased");
+
+					FY_INFO("Health Increased");
+					//FY_INFO("{0} / {1}", m_Inventory[i]->CurrentIncreaseHPPotions, m_Inventory[i]->MaxIncreaseHPPotions);
+					if (!world->HasComponent<Frosty::ECS::CDestroy>(e.GetEntity()))
+					{
+						world->AddComponent<Frosty::ECS::CDestroy>(e.GetEntity());
+					}
+				}
+				else
+				{
+					SetPickUpText(i, "Can't Pick Up Health Increaser");
 				}
 			}
-			else if (type == Frosty::ECS::CLootable::LootType::IncHealthPotion && m_Inventory[i]->CurrentIncreaseHPPotions < m_Inventory[i]->MaxIncreaseHPPotions)
+			else if (type == Frosty::ECS::CLootable::LootType::SpeedPotion)
 			{
-				m_Health[i]->MaxHealth += 3;
-				FY_INFO("Health Increased");
-				//FY_INFO("{0} / {1}", m_Inventory[i]->CurrentIncreaseHPPotions, m_Inventory[i]->MaxIncreaseHPPotions);
-				if (!world->HasComponent<Frosty::ECS::CDestroy>(e.GetEntity()))
+				if (m_Inventory[i]->CurrentSpeedPotions < m_Inventory[i]->MaxSpeedPotions)
 				{
-					world->AddComponent<Frosty::ECS::CDestroy>(e.GetEntity());
+					m_Inventory[i]->CurrentSpeedPotions++;
+					SetPickUpText(i, "+1 Speed Potion");
+
+					FY_INFO("SpeedPotion in Inventory");
+					FY_INFO("{0} / {1}", m_Inventory[i]->CurrentSpeedPotions, m_Inventory[i]->MaxSpeedPotions);
+					if (!world->HasComponent<Frosty::ECS::CDestroy>(e.GetEntity()))
+					{
+						world->AddComponent<Frosty::ECS::CDestroy>(e.GetEntity());
+					}
+				}
+				else
+				{
+					SetPickUpText(i, "Can't Pick Up Speed Potion");
 				}
 			}
-			else if (type == Frosty::ECS::CLootable::LootType::SpeedPotion && m_Inventory[i]->CurrentSpeedPotions < m_Inventory[i]->MaxSpeedPotions)
+			else if (type == Frosty::ECS::CLootable::LootType::SpeedBoot)
 			{
-				m_Inventory[i]->CurrentSpeedPotions++;
-				FY_INFO("SpeedPotion in Inventory");
-				FY_INFO("{0} / {1}", m_Inventory[i]->CurrentSpeedPotions, m_Inventory[i]->MaxSpeedPotions);
-				if (!world->HasComponent<Frosty::ECS::CDestroy>(e.GetEntity()))
+				if (m_Inventory[i]->CurrentSpeedBoots < m_Inventory[i]->MaxSpeedBoots)
 				{
-					world->AddComponent<Frosty::ECS::CDestroy>(e.GetEntity());
+					if (m_Inventory[i]->IncreaseSpeed <= (m_Physics[i]->MaxSpeed - m_Physics[i]->Speed))
+					{
+						m_Physics[i]->Speed += m_Inventory[i]->IncreaseSpeed;
+						SetPickUpText(i, "Speed Increased");
+					}
+					FY_INFO("SpeedBoots Activated");
+					FY_INFO("{0} / {1}", m_Inventory[i]->CurrentSpeedBoots, m_Inventory[i]->MaxSpeedBoots);
+					if (!world->HasComponent<Frosty::ECS::CDestroy>(e.GetEntity()))
+					{
+						world->AddComponent<Frosty::ECS::CDestroy>(e.GetEntity());
+					}
 				}
-			}
-			else if (type == Frosty::ECS::CLootable::LootType::SpeedBoot && m_Inventory[i]->CurrentSpeedBoots < m_Inventory[i]->MaxSpeedBoots)
-			{
-				if (m_Inventory[i]->IncreaseSpeed <= (m_Physics[i]->MaxSpeed - m_Physics[i]->Speed))
+				else
 				{
-					m_Physics[i]->Speed += m_Inventory[i]->IncreaseSpeed;
-				}
-				FY_INFO("SpeedBoots Activated");
-				FY_INFO("{0} / {1}", m_Inventory[i]->CurrentSpeedBoots, m_Inventory[i]->MaxSpeedBoots);
-				if (!world->HasComponent<Frosty::ECS::CDestroy>(e.GetEntity()))
-				{
-					world->AddComponent<Frosty::ECS::CDestroy>(e.GetEntity());
+					SetPickUpText(i, "Can't Pick Up SpeedBoots");
 				}
 			}
 			else if (type == Frosty::ECS::CLootable::LootType::Sword1)
@@ -756,7 +794,7 @@ namespace MCS
 			}
 		}
 	}
-	
+
 	void PlayerControllerSystem::SwapWeapon(const std::shared_ptr<Frosty::ECS::Entity>& playerWeapon, const std::shared_ptr<Frosty::ECS::Entity>& lootWeapon)
 	{
 		// Swap CWeapon
@@ -806,4 +844,110 @@ namespace MCS
 			}
 		}
 	}
+	void PlayerControllerSystem::UpdateHUD(size_t index)
+	{
+		if (m_World->HasComponent<Frosty::ECS::CGUI>(m_Transform[index]->EntityPtr))
+		{
+			auto& HUD = m_World->GetComponent<Frosty::ECS::CGUI>(m_Transform[index]->EntityPtr);
+			//Items
+			HUD.Layout.texts.at(0).SetText(std::string(std::to_string(m_Inventory[index]->CurrentHealingPotions) + "/" + std::string(std::to_string(m_Inventory[index]->MaxHealingPotions))));
+			HUD.Layout.texts.at(1).SetText(std::string(std::to_string(m_Inventory[index]->CurrentSpeedPotions) + "/" + std::string(std::to_string(m_Inventory[index]->MaxSpeedBoots))));
+			HUD.Layout.texts.at(2).SetText(std::string(std::to_string(m_Inventory[index]->CurrentBaitAmount) + "/" + std::string(std::to_string(m_Inventory[index]->MaxBaitAmount))));
+			HUD.Layout.texts.at(3).SetText(std::string(std::to_string(m_Inventory[index]->CurrentWolfsbane) + "x"));
+
+			//Points
+			HUD.Layout.texts.at(4).SetText(std::string("Points: " + std::to_string(m_Player[index]->Score)));
+
+			//Temp Health
+			HUD.Layout.texts.at(5).SetText(std::string(std::to_string((int)m_Health[index]->CurrentHealth) + "/" + std::to_string((int)m_Health[index]->MaxHealth)));
+
+			//Pickup Text
+			if (Frosty::Time::CurrentTime() - m_Player[index]->PickUpTextTimer >= m_Player[index]->PickUpTextTime)
+			{
+				HUD.Layout.texts.at(6).SetText("");
+			}
+
+			//Attack cooldowns
+
+
+			auto& weapon = m_Player[index]->Weapon;
+			if (weapon->ItemID == 3)
+			{
+				
+
+				float timer = weapon->LVL3AttackCooldownTimer;
+				float time = Frosty::Time::CurrentTime();
+				float dif = (time - timer);
+				float cooldown = weapon->LVL3AttackCooldown - dif;
+				if (cooldown > 0)
+				{
+					int cooldown1 = (int)cooldown;
+					int cooldown2 = (int)((cooldown - cooldown1) * 10);
+					HUD.Layout.texts.at(7).SetText(std::string(std::to_string(cooldown1) + "." + std::to_string(cooldown2)));
+
+				}
+				else
+				{
+					HUD.Layout.texts.at(7).SetText(std::string(""));
+				}
+			}
+			if (weapon->ItemID >= 2)
+			{
+			
+				float timer = weapon->LVL2AttackCooldownTimer;
+				float time = Frosty::Time::CurrentTime();
+				float dif = (time - timer);
+				float cooldown = weapon->LVL2AttackCooldown - dif;
+				if (cooldown > 0)
+				{
+					int cooldown1 = (int)cooldown;
+					int cooldown2 = (int)((cooldown - cooldown1) * 10);
+					HUD.Layout.texts.at(8).SetText(std::string(std::to_string(cooldown1) + "." + std::to_string(cooldown2)));
+
+				}
+				else
+				{
+					HUD.Layout.texts.at(8).SetText(std::string(""));
+				}
+
+			}
+			if (weapon->ItemID >= 1)
+			{
+				float timer = weapon->LVL1AttackCooldownTimer;
+				float time = Frosty::Time::CurrentTime();
+				float dif = (time - timer);
+				float cooldown = weapon->LVL1AttackCooldown - dif;
+				if (cooldown > 0)
+				{
+					int cooldown1 = (int)cooldown;
+					int cooldown2 = (int)((cooldown - cooldown1) * 10);
+					HUD.Layout.texts.at(9).SetText(std::string(std::to_string(cooldown1) + "." +std::to_string( cooldown2)));
+
+				}
+				else
+				{
+					HUD.Layout.texts.at(9).SetText(std::string(""));
+				}
+
+			}
+
+
+
+
+		}
+	}
+
+	void PlayerControllerSystem::SetPickUpText(size_t index, std::string text)
+	{
+		if (m_World->HasComponent<Frosty::ECS::CGUI>(m_Transform[index]->EntityPtr))
+		{
+			auto& HUD = m_World->GetComponent<Frosty::ECS::CGUI>(m_Transform[index]->EntityPtr);
+
+			HUD.Layout.texts.at(6).SetText(text);
+			m_Player[index]->PickUpTextTimer = Frosty::Time::CurrentTime();
+
+		}
+	}
+
+
 }
