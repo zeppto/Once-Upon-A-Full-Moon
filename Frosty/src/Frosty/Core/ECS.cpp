@@ -22,9 +22,10 @@ namespace Frosty
 		std::string CDash::NAME = "Dash";
 		std::string CDestroy::NAME = "Destroy";
 		std::string CParticleSystem::NAME = "ParticleSystem";
-		std::string CChest::NAME = "Chest";
 		std::string CLootable::NAME = "Lootable";
+		std::string CDropItem::NAME = "DropItem";
 		std::string CBoss::NAME = "Boss";
+		std::string CAnimController::NAME = "AnimController";
 		std::string CLevelExit::NAME = "Level Exit";
 		std::string CGUI::NAME = "GUI";
 	}
