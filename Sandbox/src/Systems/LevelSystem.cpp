@@ -2,6 +2,7 @@
 #include "LevelSystem.hpp"
 #include "Frosty/API/AssetManager/AssetManager.hpp"
 #include "Frosty/Events/AbilityEvent.hpp"
+#include "Frosty/Core/BoolMap/BoolMapGenerator.hpp"
 
 namespace MCS
 {

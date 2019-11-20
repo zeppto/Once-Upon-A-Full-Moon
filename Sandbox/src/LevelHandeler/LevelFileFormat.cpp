@@ -558,7 +558,7 @@ void LevelFileFormat::LoadBoolMap(std::string fileName)
 	Level_Entitys fileEntitys;
 
 
-
+	std::unordered_map<std::string, Frosty::VABatch> TestMap;
 
 	if (existingFile.good())
 	{
@@ -603,7 +603,8 @@ void LevelFileFormat::LoadBoolMap(std::string fileName)
 
 
 					glm::mat4 TempMat(1.0f);
-					TempMat = glm::translate(TempMat, fileEntitys.myEntitys.at(i).myTransform.Position);
+					glm::vec3 Offset(150.0f, 0.0f, 150.0f);
+					TempMat = glm::translate(TempMat, fileEntitys.myEntitys.at(i).myTransform.Position + Offset);
 					TempMat = glm::rotate(TempMat, glm::radians(fileEntitys.myEntitys.at(i).myTransform.Rotation.y), glm::vec3(0.0f, 1.0f, 0.0f));
 					TempMat = glm::scale(TempMat, fileEntitys.myEntitys.at(i).myTransform.Scale);
 					Temp.Transforms.emplace_back(TempMat);
@@ -613,7 +614,9 @@ void LevelFileFormat::LoadBoolMap(std::string fileName)
 				{
 
 					glm::mat4 TempMat(1.0f);
-					TempMat = glm::translate(TempMat, fileEntitys.myEntitys.at(i).myTransform.Position);
+
+					glm::vec3 Offset(150.0f, 0.0f, 150.0f);
+					TempMat = glm::translate(TempMat, fileEntitys.myEntitys.at(i).myTransform.Position + Offset);
 					TempMat = glm::rotate(TempMat, glm::radians(fileEntitys.myEntitys.at(i).myTransform.Rotation.y), glm::vec3(0.0f, 1.0f, 0.0f));
 					TempMat = glm::scale(TempMat, fileEntitys.myEntitys.at(i).myTransform.Scale);
 
@@ -648,6 +651,29 @@ void LevelFileFormat::LoadBoolMap(std::string fileName)
 
 
 
+
+	std::unordered_map<std::string, Frosty::VABatch>::iterator it = TestMap.begin();
+	while (it != TestMap.end())
+	{
+		Frosty::BoolMapGenerator::AddBatch(it->second);
+		it++;
+	}
+
+	std::shared_ptr<BoolMap> ABoolMap = Frosty::BoolMapGenerator::RenderBoolMap();
+	//for (int i = 0; i < 300; i++)
+	//{
+	//	for (int j = 0; j < 300; j++)
+	//	{
+	//		bool k = ABoolMap->CheckCollition(glm::vec3((float)i, 10.0f, (float)j));
+	//		if (k)
+	//		{
+	//			int yay = 0;
+	//		}
+	//	}
+	//}
+
+	ABoolMap->SaveMap("", "BoolMap");
+	ABoolMap->LoadMap("BoolMap.bmap");
 
 
 
