@@ -137,7 +137,7 @@ namespace Frosty
 
 					auto& meshData = materialData->MeshMap.at(MeshIt.first);
 					meshData->VertexArray->Bind();
-
+					 
 					//For all Transforms
 					for (auto& TransformIt : meshData->TransformMap)
 					{

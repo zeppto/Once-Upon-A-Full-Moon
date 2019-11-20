@@ -261,10 +261,15 @@ namespace MCS
 
 
 									//Updates the renderer
-									Frosty::Renderer::ChangeEntity(m_SelectedEntity->Id, &world->GetComponent<Frosty::ECS::CMaterial>(m_SelectedEntity),
-										oldMeshName, world->GetComponent<Frosty::ECS::CMesh>(m_SelectedEntity).Mesh,
-										m_SelectedEntity->Id, &world->GetComponent<Frosty::ECS::CTransform>(m_SelectedEntity));
 
+									if (world->HasComponent<Frosty::ECS::CMaterial>(m_SelectedEntity))
+									{
+										Frosty::Renderer::ChangeEntity(m_SelectedEntity->Id, &world->GetComponent<Frosty::ECS::CMaterial>(m_SelectedEntity),
+											oldMeshName, world->GetComponent<Frosty::ECS::CMesh>(m_SelectedEntity).Mesh,
+											m_SelectedEntity->Id, &world->GetComponent<Frosty::ECS::CTransform>(m_SelectedEntity));
+
+									}
+								
 								}
 							}
 
@@ -330,10 +335,12 @@ namespace MCS
 									comp.UseShader = shader.second;
 
 									//Updates the renderer
-									Frosty::Renderer::ChangeEntity(m_SelectedEntity->Id, &world->GetComponent<Frosty::ECS::CMaterial>(m_SelectedEntity),
-										world->GetComponent<Frosty::ECS::CMesh>(m_SelectedEntity).Mesh->GetName(), world->GetComponent<Frosty::ECS::CMesh>(m_SelectedEntity).Mesh,
-										m_SelectedEntity->Id, &world->GetComponent<Frosty::ECS::CTransform>(m_SelectedEntity));
-
+									if (world->HasComponent<Frosty::ECS::CMesh>(m_SelectedEntity))
+									{
+										Frosty::Renderer::ChangeEntity(m_SelectedEntity->Id, &world->GetComponent<Frosty::ECS::CMaterial>(m_SelectedEntity),
+											world->GetComponent<Frosty::ECS::CMesh>(m_SelectedEntity).Mesh->GetName(), world->GetComponent<Frosty::ECS::CMesh>(m_SelectedEntity).Mesh,
+											m_SelectedEntity->Id, &world->GetComponent<Frosty::ECS::CTransform>(m_SelectedEntity));
+									}
 								}
 							}
 							ImGui::EndPopup();
