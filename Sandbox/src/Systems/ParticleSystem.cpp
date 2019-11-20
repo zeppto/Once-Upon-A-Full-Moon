@@ -52,7 +52,6 @@ namespace MCS
 
 			auto& world = Frosty::Application::Get().GetWorld();
 			m_Transform[p_Total] = &world->GetComponent<Frosty::ECS::CTransform>(entity);
-			//m_Transform[p_Total]->Position = glm::vec3(0.0f, 7.0f, 0.0f); //Debug
 			m_ParticleSystem[p_Total] = &world->GetComponent<Frosty::ECS::CParticleSystem>(entity);
 
 			m_ParticleSystem[p_Total]->ParticleVertArray.reset(Frosty::VertexArray::Create());
@@ -72,7 +71,12 @@ namespace MCS
 			m_ParticleSystem[p_Total]->ParticleVertArray->AddVertexBuffer(vertBuffer); //Add to array
 
 			m_ParticleSystem[p_Total]->UseShader = Frosty::AssetManager::GetShader(m_ParticleSystem[p_Total]->ShaderName);
-			m_ParticleSystem[p_Total]->Texture = Frosty::AssetManager::GetTexture2D("particle");
+			m_ParticleSystem[p_Total]->Texture = Frosty::AssetManager::GetTexture2D(m_ParticleSystem[p_Total]->TextureName);
+
+			if (m_ParticleSystem[p_Total]->ShaderName == "ParticlesHorizontal")
+			{
+				m_ParticleSystem[p_Total]->AlwaysFaceCamera = false;
+			}
 
 			m_ParticleSystem[p_Total]->Particles.resize(m_ParticleSystem[p_Total]->MaxParticles);
 
@@ -301,7 +305,9 @@ namespace MCS
 		p.Position = m_ParticleSystem[systemIndex]->Particles[index].StartPos;
 		p.Size = p.StartSize;
 		p.Color.a = 1.0f; //TODO: set to startColor/startAlpha
-		//TODO: Start Direction?
+		//p.Direction.x = m_ParticleSystem[systemIndex]->ParticleSystemDirection.x;
+		//p.Direction.y = m_ParticleSystem[systemIndex]->ParticleSystemDirection.y;
+		//p.Direction.z = m_ParticleSystem[systemIndex]->ParticleSystemDirection.z;
 		//TODO: Start Color?
 	}
 

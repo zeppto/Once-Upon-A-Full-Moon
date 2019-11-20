@@ -109,7 +109,8 @@ namespace MCS
 		//Particle System Test
 		auto& ParticleSystem1 = world->CreateEntity();
 		auto& particleSystem1Transform = world->GetComponent<Frosty::ECS::CTransform>(ParticleSystem1);
-		world->AddComponent<Frosty::ECS::CParticleSystem>(ParticleSystem1);
+		auto& particleSystemComp = world->AddComponent<Frosty::ECS::CParticleSystem>(ParticleSystem1, "ParticlesHorizontal", "particle", 50, glm::vec3(1.0f, 0.0f, 0.0f), 0.0f, 2.0f);
+		particleSystemComp.ParticleSystemDirection = glm::vec3(1.0f, 0.0f, 0.0f);
 
 //ifdef FY_DEBUG
 	PushLayer(FY_NEW InspectorLayer());
