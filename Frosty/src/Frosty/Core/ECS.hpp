@@ -1028,6 +1028,7 @@ namespace Frosty
 			float Speed{ 1.0f };
 			float MaxLifetime{ 3.0f }; //All particles
 			float FadeTreshold{ 0.0f }; //No fade
+			bool RandomDirection{ false };
 			bool AlwaysFaceCamera{ true };
 			bool Preview{ false };
 			float Timer{ 0.0f };
@@ -1070,6 +1071,7 @@ namespace Frosty
 					Speed = org.Speed;
 					MaxLifetime = org.MaxLifetime;
 					FadeTreshold = org.FadeTreshold;
+					RandomDirection = org.RandomDirection;
 					Preview = org.Preview;
 					Timer = org.Timer;
 					LastUsedParticle = org.LastUsedParticle;
