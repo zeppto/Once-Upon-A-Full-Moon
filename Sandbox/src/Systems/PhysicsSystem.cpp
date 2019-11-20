@@ -2,6 +2,7 @@
 #include "PhysicsSystem.hpp"
 #include "Frosty/Events/AbilityEvent.hpp"
 #include "Frosty/API/AssetManager/AssetManager.hpp"
+#include"Frosty/Core/BoolMap/BoolMap.hpp"
 
 namespace MCS
 {
@@ -21,6 +22,17 @@ namespace MCS
 		{
 			m_Transform[i]->Position += m_Physics[i]->Velocity * Frosty::Time::DeltaTime();
 			CheckCollision(i);
+		}
+	}
+
+	void PhysicsSystem::OnEvent(Frosty::BaseEvent& e)
+	{
+
+		switch (e.GetEventType())
+		{
+		case Frosty::EventType::LoadBoolMap:
+			OnLoadBoolMapEvent(static_cast<Frosty::BoolMapLoadedEvent&>(e));
+			break;
 		}
 	}
 
@@ -96,6 +108,11 @@ namespace MCS
 		retInfo << "\t----------------Done----------------\n\n";
 
 		return retInfo.str();
+	}
+
+	void PhysicsSystem::OnLoadBoolMapEvent(Frosty::BoolMapLoadedEvent& e)
+	{
+		int o = 0;
 	}
 
 	void PhysicsSystem::CheckCollision(size_t index)
