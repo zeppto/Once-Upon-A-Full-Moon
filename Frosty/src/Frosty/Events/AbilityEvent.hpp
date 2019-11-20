@@ -146,6 +146,19 @@ namespace Frosty
 	private:
 		unsigned int m_EntityType;
 	};
+
+	class InitiateGridEvent : public BaseEvent
+	{
+	public:
+		InitiateGridEvent(Frosty::ECS::CTransform* planeTransform) : m_Transform(planeTransform) {}
+
+		Frosty::ECS::CTransform* GetTransform() { return m_Transform; }
+
+		EVENT_TYPE(InitiateGridMap)
+
+	private:
+		Frosty::ECS::CTransform* m_Transform;
+	};
 }
 
 #endif // !ABILITY_EVENT_HPP

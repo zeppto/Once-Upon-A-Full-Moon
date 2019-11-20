@@ -1,5 +1,6 @@
 #include <mcspch.hpp>
 #include "NavigationSystem.hpp"
+#include "Frosty/Events/AbilityEvent.hpp"
 
 namespace MCS
 {
@@ -38,16 +39,19 @@ namespace MCS
 		{
 			m_Grid->DrawSeekerCell(m_Transform[i]);
 
-			if (glm::distance(glm::vec2(m_Transform[i]->Position.x, m_Transform[i]->Position.z), glm::vec2(m_Enemy[i]->Target->Position.x, m_Enemy[i]->Target->Position.z)) > m_Enemy[i]->AttackRange &&
-				glm::distance(glm::vec2(m_Transform[i]->Position.x, m_Transform[i]->Position.z), glm::vec2(m_Enemy[i]->Target->Position.x, m_Enemy[i]->Target->Position.z)) <= m_Enemy[i]->SightRange)
+			if (m_Enemy[i]->Target != nullptr)
 			{
-				glm::vec3 cellTarget = m_Pathfinding->FindPath(m_Transform[i]->Position, m_Enemy[i]->Target->Position);
-				m_Enemy[i]->CellTarget = cellTarget;
-				m_Physics[i]->Velocity = glm::normalize(m_Enemy[i]->CellTarget - glm::vec3(m_Transform[i]->Position.x, 0.0f, m_Transform[i]->Position.z)) * m_Physics[i]->Speed;
-			}
-			else
-			{
-				m_Physics[i]->Velocity = glm::vec3(0.0f);
+				if (glm::distance(glm::vec2(m_Transform[i]->Position.x, m_Transform[i]->Position.z), glm::vec2(m_Enemy[i]->Target->Position.x, m_Enemy[i]->Target->Position.z)) > m_Enemy[i]->AttackRange &&
+					glm::distance(glm::vec2(m_Transform[i]->Position.x, m_Transform[i]->Position.z), glm::vec2(m_Enemy[i]->Target->Position.x, m_Enemy[i]->Target->Position.z)) <= m_Enemy[i]->SightRange)
+				{
+					glm::vec3 cellTarget = m_Pathfinding->FindPath(m_Transform[i]->Position, m_Enemy[i]->Target->Position);
+					m_Enemy[i]->CellTarget = cellTarget;
+					m_Physics[i]->Velocity = glm::normalize(m_Enemy[i]->CellTarget - glm::vec3(m_Transform[i]->Position.x, 0.0f, m_Transform[i]->Position.z)) * m_Physics[i]->Speed;
+				}
+				else
+				{
+					m_Physics[i]->Velocity = glm::vec3(0.0f);
+				}
 			}
 		}
 		if (printTime) { Frosty::Time::EndTimer("Find path and draw enemy path - ALL"); std::cout << "\n"; printTime = false; }
@@ -88,6 +92,18 @@ namespace MCS
 				}
 			}
 		}*/
+	}
+
+	void NavigationSystem::OnEvent(Frosty::BaseEvent& e)
+	{
+		switch (e.GetEventType())
+		{
+		case Frosty::EventType::InitiateGridMap:
+			OnInitiateGridMap(static_cast<Frosty::InitiateGridEvent&>(e));
+			break;
+		default:
+			break;
+		}
 	}
 
 	void NavigationSystem::AddComponent(const std::shared_ptr<Frosty::ECS::Entity>& entity)
@@ -169,11 +185,22 @@ namespace MCS
 		return retInfo.str();
 	}
 
-	void NavigationSystem::InitiateGridMap(const Frosty::ECS::CTransform& mapTransform)
+	void NavigationSystem::InitiateGridMap(const Frosty::ECS::CTransform& planeTransform)
 	{
 		m_Grid.reset(FY_NEW Grid());
 		Frosty::Time::StartTimer("Grid::Init()");
-		m_Grid->Init(mapTransform);
+		m_Grid->Init(planeTransform);
+		Frosty::Time::EndTimer("Grid::Init()");
+
+		m_Pathfinding.reset(FY_NEW Pathfinding());
+		m_Pathfinding->Init(m_Grid.get());
+	}
+
+	void NavigationSystem::OnInitiateGridMap(Frosty::InitiateGridEvent& e)
+	{
+		m_Grid.reset(FY_NEW Grid());
+		Frosty::Time::StartTimer("Grid::Init()");
+		m_Grid->Init(*e.GetTransform());
 		Frosty::Time::EndTimer("Grid::Init()");
 
 		m_Pathfinding.reset(FY_NEW Pathfinding());

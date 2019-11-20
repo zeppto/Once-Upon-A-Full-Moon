@@ -94,7 +94,7 @@ namespace Frosty
 
 		// Let's define a maximum number of entities that
 		// can have the same component type:
-		constexpr std::size_t MAX_ENTITIES_PER_COMPONENT{ 4024 };
+		constexpr std::size_t MAX_ENTITIES_PER_COMPONENT{ 30024 };
 
 		// Defining the maximum nr of systems
 		constexpr std::size_t MAX_SYSTEMS{ 20 };
@@ -150,6 +150,7 @@ namespace Frosty
 			EntityID Id{ 0 };
 			ComponentBitset Bitset;
 			bool ShowInEditor{ true };
+			int32_t GroupId{ -1 };
 
 			Entity() : Id(s_LastId++) { FY_CORE_INFO("An entity({0}) was successfully created.", Id); }
 			Entity(const Entity& obj) { FY_CORE_ASSERT(false, "Copy constructor in Entity called."); }
@@ -181,7 +182,7 @@ namespace Frosty
 		class EntityManager
 		{
 		public:
-			EntityManager() { m_Entities.reserve(MAX_ENTITIES_PER_COMPONENT); }
+			EntityManager() { m_Entities.reserve(MAX_ENTITIES_PER_COMPONENT); m_EntityGroups[0].reserve(MAX_ENTITIES_PER_COMPONENT); m_EntityGroups[1].reserve(MAX_ENTITIES_PER_COMPONENT); }
 			EntityManager(const EntityManager& obj) { FY_CORE_ASSERT(false, "Copy constructor in EntityManager called."); }
 			virtual ~EntityManager() { }
 
@@ -189,6 +190,7 @@ namespace Frosty
 			EntityManager& operator=(const EntityManager& e) { FY_CORE_ASSERT(false, "Assignment operator in EntityManager called."); return *this; }
 
 			inline std::vector<std::shared_ptr<Entity>>& GetEntities() { return m_Entities; }
+			inline std::vector<std::shared_ptr<Entity>>& GetEntityGroup(int32_t groupID) { return m_EntityGroups[groupID]; }
 			inline std::shared_ptr<Entity>& GetEntityById(EntityID eid)
 			{
 				int index = utils::BinarySearch(m_Entities, eid);
@@ -211,16 +213,23 @@ namespace Frosty
 				FY_CORE_INFO("Removing an entity..");
 
 				int index = utils::BinarySearch(m_Entities, entity->Id);
+				int groupIndex = -1;
+				if (entity->GroupId != -1)
+				{
+					groupIndex = utils::BinarySearch(m_EntityGroups[entity->GroupId], entity->Id);
+				}
 
 				FY_CORE_ASSERT(index >= 0, "Entity doesn't exist in the manager.");
-				//if (index == -1)
-				//{
-				//	return false;
-				//}
 
 				m_Entities.erase(m_Entities.begin() + index);
+				if (groupIndex >= 0) m_EntityGroups[entity->GroupId].erase(m_EntityGroups[entity->GroupId].begin() + groupIndex);
 
 				return true;
+			}
+
+			inline void AddToGroup(uint64_t groupId, const std::shared_ptr<Entity>& entity)
+			{
+				m_EntityGroups[groupId].emplace_back(entity);
 			}
 
 			std::vector<std::shared_ptr<Entity>>::iterator begin() { return m_Entities.begin(); }
@@ -241,6 +250,7 @@ namespace Frosty
 
 		private:
 			std::vector<std::shared_ptr<Entity>> m_Entities;
+			std::array<std::vector<std::shared_ptr<Entity>>, 2> m_EntityGroups;
 
 		};
 
@@ -407,8 +417,6 @@ namespace Frosty
 			CTransform(const CTransform& org) { FY_CORE_ASSERT(false, "Copy constructor in CTransform called."); }
 			CTransform& operator=(const CTransform& org)
 			{
-				FY_WARN("Assignment operator in CTransform called.");
-
 				if (this != &org)
 				{
 					Position = org.Position;
@@ -445,8 +453,6 @@ namespace Frosty
 			CMesh(const CMesh& org) { FY_CORE_ASSERT(false, "Copy constructor in CMesh called."); }
 			CMesh& operator=(const CMesh& org)
 			{
-				FY_WARN("Assignment operator in CMesh called.");
-
 				if (this != &org)
 				{
 					Mesh = org.Mesh;
@@ -475,14 +481,10 @@ namespace Frosty
 
 			CCamera() = default;
 			CCamera(float fov, float aspect, float zNear, float zFar)
-				: FieldOfView(fov), Near(zNear), Far(zFar), ProjectionMatrix(glm::perspective(glm::radians(fov), aspect, zNear, zFar))
-			{
-			}
+				: FieldOfView(fov), Near(zNear), Far(zFar), ProjectionMatrix(glm::perspective(glm::radians(fov), aspect, zNear, zFar)) { }
 			CCamera(const CCamera& org) { FY_CORE_ASSERT(false, "Copy constructor in CCamera called."); }
 			CCamera& operator=(const CCamera& org)
 			{
-				FY_WARN("Assignment operator in CCamera called.");
-
 				if (this != &org)
 				{
 					Target = org.Target;
@@ -525,8 +527,6 @@ namespace Frosty
 			CMaterial(const CMaterial& org) { FY_CORE_ASSERT(false, "Copy constructor in CMaterial called."); }
 			CMaterial& operator=(const CMaterial& org)
 			{
-				FY_WARN("Assignment operator in CMaterial called.");
-
 				if (this != &org)
 				{
 					UseShader = org.UseShader;
@@ -579,8 +579,6 @@ namespace Frosty
 			CLight(const CLight& org) { FY_CORE_ASSERT(false, "Copy constructor in CLight called."); }
 			CLight& operator=(const CLight& org)
 			{
-				FY_WARN("Assignment operator in CLight called.");
-
 				if (this != &org)
 				{
 					Type = org.Type;
@@ -609,8 +607,6 @@ namespace Frosty
 			CPhysics(const CPhysics& org) { FY_CORE_ASSERT(false, "Copy constructor in CPhysics called."); }
 			CPhysics& operator=(const CPhysics& org)
 			{
-				FY_WARN("Assignment operator in CPhysics called.");
-
 				if (this != &org)
 				{
 					BoundingBox = org.BoundingBox;
@@ -663,8 +659,6 @@ namespace Frosty
 			CWeapon(const CWeapon& org) { FY_CORE_ASSERT(false, "Copy constructor in CWeapon called."); }
 			CWeapon& operator=(const CWeapon& org)
 			{
-				FY_WARN("Assignment operator in CWeapon called.");
-
 				if (this != &org)
 				{
 					Type = org.Type;
@@ -702,8 +696,6 @@ namespace Frosty
 			CAttack(const CAttack& org) { FY_CORE_ASSERT(false, "Copy constructor in CAttack called."); }
 			CAttack& operator=(const CAttack& org)
 			{
-				FY_WARN("Assignment operator in CAttack called.");
-
 				if (this != &org)
 				{
 					Type = org.Type;
@@ -743,8 +735,6 @@ namespace Frosty
 			CPlayer(const CPlayer& org) { FY_CORE_ASSERT(false, "Copy constructor in CPlayer called."); }
 			CPlayer& operator=(const CPlayer& org)
 			{
-				FY_WARN("Assignment operator in CPlayer called.");
-
 				if (this != &org)
 				{
 					Weapon = org.Weapon;
@@ -784,6 +774,19 @@ namespace Frosty
 			CEnemy(CTransform* target) : Target(target) { }
 			CEnemy(const CEnemy& org) { FY_CORE_ASSERT(false, "Copy constructor in CEnemy called."); }
 
+			CEnemy& operator=(const CEnemy& org)
+			{
+				if (this != &org)
+				{
+					Weapon = org.Weapon;
+					Target = org.Target;
+					CellTarget = org.CellTarget;
+					AttackRange = org.AttackRange;
+					SightRange = org.SightRange;
+				}
+				return *this;
+			}
+
 			virtual std::string GetName() const { return NAME; }
 		};
 
@@ -799,8 +802,6 @@ namespace Frosty
 			CHealth(const CHealth& org) { FY_CORE_ASSERT(false, "Copy constructor in CHealth called."); }
 			CHealth& operator=(const CHealth& org)
 			{
-				FY_WARN("Assignment operator in CHealth called.");
-
 				if (this != &org)
 				{
 					MaxPossibleHealth = org.MaxPossibleHealth;
@@ -856,8 +857,6 @@ namespace Frosty
 			CInventory(const CInventory& org) { FY_CORE_ASSERT(false, "Copy constructor in CInventory called."); }
 			CInventory& operator=(const CInventory& org)
 			{
-				FY_WARN("Assignment operator in CInventory called.");
-
 				if (this != &org)
 				{
 					MaxHealingPotions = org.MaxHealingPotions;
@@ -911,8 +910,6 @@ namespace Frosty
 			CHealthBar(const CHealthBar& org) { FY_CORE_ASSERT(false, "Copy constructor in CHealthBar called."); }
 			CHealthBar& operator=(const CHealthBar& org)
 			{
-				FY_WARN("Assignment operator in CHealthBar called.");
-
 				if (this != &org)
 				{
 					BarOffset = org.BarOffset;
@@ -943,8 +940,6 @@ namespace Frosty
 			CDash(const CDash& org) { FY_CORE_ASSERT(false, "Copy constructor in CDash called."); }
 			CDash& operator=(const CDash& org)
 			{
-				FY_WARN("Assignment operator in CDash called.");
-
 				if (this != &org)
 				{
 					Active = org.Active;
@@ -974,24 +969,23 @@ namespace Frosty
 			
 			struct Particle
 			{
-				glm::vec4 Position = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
-				glm::vec4 Color = glm::vec4(1.0f);
-				float Size = 1.0f; //The current size
+				glm::vec4 Position{ 0.0f, 0.0f, 0.0f, 1.0f };
+				glm::vec4 Color{ 1.0f };
+				float Size{ 1.0f }; //The current size
 
-				glm::vec4 Direction = glm::vec4(0.0f, 1.0f, 0.0f, 1.0f);
-				glm::vec4 StartPos = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
-				float Lifetime = -1.0f;
-				float Speed = 2.0f;
-				float StartSize = 1.0f;
-				float EndSize = 1.0f;
+				glm::vec4 Direction{ 0.0f, 1.0f, 0.0f, 1.0f };
+				glm::vec4 StartPos{ 0.0f, 0.0f, 0.0f, 1.0f };
+				float Lifetime{ -1.0f };
+				float Speed{ 2.0f };
+				float StartSize{ 1.0f };
+				float EndSize{ 1.0f };
 
-				float CamDistance = -1.0f; //For sorting
+				float CamDistance{ -1.0f }; //For sorting
 
 				Particle() = default;
-				Particle(glm::vec4 color)
-					: Color(color) {};
+				Particle(const glm::vec4& color) : Color(color) { }
 
-				bool operator<(Particle& that) // Sort in reverse order, far particles drawn first
+				bool operator<(const Particle& that) const // Sort in reverse order, far particles drawn first
 				{
 					return this->CamDistance > that.CamDistance;
 				}
@@ -999,27 +993,27 @@ namespace Frosty
 
 			struct GPUParticle
 			{
-				glm::vec4 Position = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
-				glm::vec4 Color = glm::vec4(1.0f);
-				float Size = 1.0f;
+				glm::vec4 Position{ 0.0f, 0.0f, 0.0f, 1.0f };
+				glm::vec4 Color{ 1.0f };
+				float Size{ 1.0f };
 			};
 
 			static const uint32_t MAX_PARTICLE_COUNT = 100;
 			//uint32_t maxParticles = 0;
-			float StartParticleSize = 1.0f;
-			float EndParticleSize = 0.0f;
-			float ParticleSize = 1.0f; //For a constant size
+			float StartParticleSize{ 1.0f };
+			float EndParticleSize{ 0.0f };
+			float ParticleSize{ 1.0f }; //For a constant size
 
-			uint32_t ParticleCount = 0;
-			glm::vec3 ParticleSystemColor = glm::vec3(1.0f);
-			float EmitRate = 0.1f;
-			uint32_t EmitCount = 1;
-			float MaxLifetime = 3.0f; //All particles
-			float FadeTreshold = 0.0f; //No fade
-			bool Preview = false;
-			float Timer = 0.0f;
+			uint32_t ParticleCount{ 0 };
+			glm::vec3 ParticleSystemColor{ 1.0f };
+			float EmitRate{ 0.1f };
+			uint32_t EmitCount{ 1 };
+			float MaxLifetime{ 3.0f }; //All particles
+			float FadeTreshold{ 0.0f }; //No fade
+			bool Preview{ false };
+			float Timer{ 0.0f };
 
-			uint32_t LastUsedParticle = 0;
+			uint32_t LastUsedParticle{ 0 };
 
 			Particle Particles[MAX_PARTICLE_COUNT]; //The complete data
 			GPUParticle GpuParticles[MAX_PARTICLE_COUNT]; //The data we send to the gpu
@@ -1029,9 +1023,9 @@ namespace Frosty
 			std::shared_ptr<Texture2D> Texture;
 
 			CParticleSystem() = default;
-			CParticleSystem(std::shared_ptr<VertexArray> verts, std::shared_ptr<Shader> shader, std::shared_ptr<Texture2D> tex)
+			CParticleSystem(const std::shared_ptr<VertexArray>& verts, const std::shared_ptr<Shader>& shader, const std::shared_ptr<Texture2D>& tex)
 				: ParticleVertArray(verts), UseShader(shader), Texture(tex) {}
-			CParticleSystem(std::shared_ptr<VertexArray> verts, std::shared_ptr<Shader> shader, std::shared_ptr<Texture2D> tex, glm::vec4 color = glm::vec4(1.0f), float particleSize = 1.0f)
+			CParticleSystem(const std::shared_ptr<VertexArray>& verts, const std::shared_ptr<Shader>& shader, const std::shared_ptr<Texture2D>& tex, const glm::vec4& color = glm::vec4(1.0f), float particleSize = 1.0f)
 				: ParticleVertArray(verts), UseShader(shader), Texture(tex), ParticleSystemColor(color), ParticleSize(particleSize)
 			{
 				for (uint32_t i = 0; i < MAX_PARTICLE_COUNT; i++)
@@ -1089,8 +1083,6 @@ namespace Frosty
 			CBoss(const CBoss& org) { FY_CORE_ASSERT(false, "Copy constructor in CBoss called."); }
 			CBoss& operator=(const CBoss& org)
 			{
-				FY_WARN("Assignment operator in CBoss called.");
-
 				if (this != &org)
 				{
 					DistractionTime = org.DistractionTime;
@@ -1118,8 +1110,6 @@ namespace Frosty
 			CLevelExit(const CLevelExit& org) { FY_CORE_ASSERT(false, "Copy constructor in CLevelExit called."); }
 			CLevelExit& operator=(const CLevelExit& org)
 			{
-				FY_WARN("Assignment operator in CLevelExit called.");
-
 				if (this != &org)
 				{
 					ExitDirection = org.ExitDirection;

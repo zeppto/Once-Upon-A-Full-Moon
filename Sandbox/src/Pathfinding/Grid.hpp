@@ -34,7 +34,7 @@ namespace MCS
 	class Grid
 	{
 	public:
-		static const int CELL_SIZE = 2;
+		static const int CELL_SIZE = 4;
 
 	public:
 		Grid() = default;
@@ -69,7 +69,7 @@ namespace MCS
 		std::vector<CellNode*> m_DynamicOccupiedNodes;
 
 		// TEMPORARY FOR DEUGGING
-		bool m_DrawGizmos{ true };
+		bool m_DrawGizmos{ false };
 		std::vector<CellNode> m_PathNodes;
 	};
 }

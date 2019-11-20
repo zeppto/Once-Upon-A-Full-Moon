@@ -3,6 +3,7 @@
 #include "LevelFileFormat.hpp"
 #include "Frosty/API/AssetManager/AssetManager.hpp"
 #include <glm/gtx/matrix_decompose.hpp>
+#include "Frosty/Events/AbilityEvent.hpp"
 
 
 LevelFileFormat::LevelFileFormat()
@@ -253,6 +254,8 @@ void LevelFileFormat::SaveToFile(std::string fileName)
 
 void LevelFileFormat::OpenFromFile(std::string fileName, Frosty::ECS::CTransform* playerTransform, int rotation, glm::vec3 move)
 {
+	int physCounter = 0;
+	Frosty::ECS::CTransform* planeTransform = nullptr;
 	std::ifstream existingFile;
 	existingFile.open("../../../assets/levels/" + fileName + ".lvl", std::ios::binary);
 	Level_Header testHeder;
@@ -351,6 +354,10 @@ void LevelFileFormat::OpenFromFile(std::string fileName, Frosty::ECS::CTransform
 						glm::quat tempRot;
 						glm::vec3 skew;
 						glm::vec4 perspective;
+						if (tranform.Scale == glm::vec3(300.0f, 1.0f, 300.0f))
+						{
+							planeTransform = &tranform;
+						}
 						//glm::decompose(matrix, tranform.Scale, tempRot, tranform.Position, skew, perspective);
 					}
 					//1 = Mesh
@@ -408,6 +415,7 @@ void LevelFileFormat::OpenFromFile(std::string fileName, Frosty::ECS::CTransform
 					//5 = Physics
 					if (j == 5)
 					{
+						physCounter++;
 						existingFile.read((char*)& fileEntitys.myEntitys.at(i).myPhysics, sizeof(Level_Physics));
 						auto& physics = m_World->AddComponent<Frosty::ECS::CPhysics>(entity);
 						if (fileEntitys.myEntitys.at(i).MyComponents.at(1).HaveComponent)
@@ -496,8 +504,8 @@ void LevelFileFormat::OpenFromFile(std::string fileName, Frosty::ECS::CTransform
 			}
 		}
 		existingFile.close();
+
+		FY_INFO("{0} total entities with physics component.", physCounter);
+		Frosty::EventBus::GetEventBus()->Publish<Frosty::InitiateGridEvent>(Frosty::InitiateGridEvent(planeTransform));
 	}
 }
-
-
-

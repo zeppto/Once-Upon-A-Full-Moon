@@ -18,7 +18,8 @@ namespace Frosty
 		ArrowHit, Dash, CheckCollision, Collision, BasicAttack, 
 		PickUpAttempt, PickUp,
 		BaitPlaced, ExitCurrentLevel,
-		SaveLevel, CreateLevel, OpenLevel, CreatEntity
+		SaveLevel, CreateLevel, OpenLevel, CreatEntity,
+		InitiateGridMap
 	};
 
 #define EVENT_TYPE(type) static EventType GetStaticType() { return EventType::##type; }\

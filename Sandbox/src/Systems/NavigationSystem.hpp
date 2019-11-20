@@ -7,6 +7,8 @@
 //#include "Pathfinding/Grid.hpp"
 #include "Pathfinding/Pathfinding.hpp"
 
+namespace Frosty { class InitiateGridEvent; }
+
 namespace MCS
 {
 	class NavigationSystem : public Frosty::ECS::BaseSystem
@@ -20,13 +22,17 @@ namespace MCS
 
 		virtual void Init() override;
 		virtual void OnUpdate() override;
+		void OnEvent(Frosty::BaseEvent& e);
 
 		virtual void AddComponent(const std::shared_ptr<Frosty::ECS::Entity>& entity) override;
 		virtual void RemoveEntity(const std::shared_ptr<Frosty::ECS::Entity>& entity) override;
 		virtual void UpdateEntityComponent(const std::shared_ptr<Frosty::ECS::Entity>& entity) override;
 		virtual std::string GetInfo() const override;
 
-		void InitiateGridMap(const Frosty::ECS::CTransform& mapTransform);
+		void InitiateGridMap(const Frosty::ECS::CTransform& planeTransform);
+
+	private:
+		void OnInitiateGridMap(Frosty::InitiateGridEvent& e);
 
 	private:
 		std::array<Frosty::ECS::CTransform*, Frosty::ECS::MAX_ENTITIES_PER_COMPONENT> m_Transform;

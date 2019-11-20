@@ -161,7 +161,8 @@ namespace MCS
 		for (size_t i = 1; i < totalData; i++)
 		{
 			auto& tempTransform = m_World->GetComponent<Frosty::ECS::CTransform>(physicsCompData[i].EntityPtr);
-			if (tempTransform.IsStatic)
+			//if (tempTransform.IsStatic)
+			if (!m_World->HasComponent<Frosty::ECS::CEnemy>(tempTransform.EntityPtr) && !m_World->HasComponent<Frosty::ECS::CPlayer>(tempTransform.EntityPtr))
 			{
 				// This means that the entity is static and has a CPhysics component
 				auto& tempPhysics = m_World->GetComponent<Frosty::ECS::CPhysics>(tempTransform.EntityPtr);
