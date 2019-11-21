@@ -89,7 +89,7 @@ namespace MCS
 		playerMat.NormalTexture = Frosty::AssetManager::GetTexture2D("Scarlet_normal");
 		playerMat.SpecularTexture = Frosty::AssetManager::GetTexture2D("Scarlet_specular");
 		world->AddComponent<Frosty::ECS::CPlayer>(player, &weaponComp);	// <-- Give player a weapon
-		world->AddComponent<Frosty::ECS::CPhysics>(player, Frosty::AssetManager::GetBoundingBox("scarlet"), 10.0f);
+		world->AddComponent<Frosty::ECS::CPhysics>(player, Frosty::AssetManager::GetBoundingBox("scarlet"), 100.0f);
 		world->AddComponent<Frosty::ECS::CDash>(player);
 		world->AddComponent<Frosty::ECS::CHealth>(player);
 		world->AddComponent<Frosty::ECS::CInventory>(player);
@@ -107,11 +107,11 @@ namespace MCS
 		world->AddComponent<Frosty::ECS::CGUI>(GUI, uiLayout);
 
 		//Particle System Test
-		auto& ParticleSystem1 = world->CreateEntity();
-		auto& particleSystem1Transform = world->GetComponent<Frosty::ECS::CTransform>(ParticleSystem1);
-		auto& particleSystemComp = world->AddComponent<Frosty::ECS::CParticleSystem>(ParticleSystem1, "ParticlesHorizontal", "particle", 50, glm::vec3(0.8f, 0.3f, 1.0f), 0.0f, 2.0f);
-		//particleSystemComp.ParticleSystemDirection = glm::vec3(1.0f, 0.0f, 0.0f);
-		particleSystemComp.RandomDirection = true;
+		//auto& ParticleSystem1 = world->CreateEntity();
+		//auto& particleSystem1Transform = world->GetComponent<Frosty::ECS::CTransform>(ParticleSystem1);
+		//auto& particleSystemComp = world->AddComponent<Frosty::ECS::CParticleSystem>(ParticleSystem1, "ParticlesHorizontal", "particle", 50, glm::vec3(0.8f, 0.3f, 1.0f), 0.0f, 2.0f);
+		////particleSystemComp.ParticleSystemDirection = glm::vec3(1.0f, 0.0f, 0.0f);
+		//particleSystemComp.RandomDirection = true;
 
 //ifdef FY_DEBUG
 	PushLayer(FY_NEW InspectorLayer());

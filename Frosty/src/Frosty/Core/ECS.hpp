@@ -738,7 +738,7 @@ namespace Frosty
 			int MoveBackKey{ FY_KEY_S };
 			int DashKey{ FY_KEY_LEFT_SHIFT };
 			//temp for creation of level (I dont want arrows to spwan when i save a level)
-			int LVL1Attack{ FY_MOUSE_BUTTON_LEFT };
+			int LVL1Attack{ FY_MOUSE_BUTTON_RIGHT };
 			int LVL2Attack{ FY_MOUSE_BUTTON_RIGHT };
 			int LVL3Attack{ FY_KEY_SPACE };
 
