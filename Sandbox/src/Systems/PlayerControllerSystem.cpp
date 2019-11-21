@@ -48,6 +48,10 @@ namespace MCS
 		for (size_t i = 1; i < p_Total; i++)
 		{
 			if (m_Dash[i]->CurrentCooldown > 0.0) m_Dash[i]->CurrentCooldown -= Frosty::Time::DeltaTime();
+			if (Frosty::Time::CurrentTime() - m_Inventory[i]->SpeedTimer >= m_Inventory[i]->SpeedCooldown)
+			{
+				m_Physics[i]->SpeedMultiplier = 1.f;
+			}
 
 			if (m_Dash[i]->Active)
 			{
@@ -746,13 +750,10 @@ namespace MCS
 					world->AddComponent<Frosty::ECS::CDestroy>(e.GetEntity());
 				}
 			}
-			else if (type == Frosty::ECS::CLootable::LootType::Sword1)
+			else if (world->HasComponent<Frosty::ECS::CWeapon>(e.GetEntity()))
 			{
-				FY_INFO("Sword1");
-			}
-			else if (type == Frosty::ECS::CLootable::LootType::Arrow1)
-			{
-				FY_INFO("Arrow1");
+				FY_INFO("Weapon");
+				SwapWeapon(m_Player[i]->Weapon->EntityPtr, e.GetEntity());
 			}
 		}
 	}
