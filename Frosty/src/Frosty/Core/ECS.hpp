@@ -1048,6 +1048,7 @@ namespace Frosty
 			float MinLifetime{ 3.0f };
 			float MaxLifetime{ 3.0f };
 			float FadeTreshold{ 0.0f }; //No fade
+			bool RotateOverLifetime{ false };
 			bool StaticColor{ true };
 			bool RandomLifetimes{ false };
 			bool RandomStartPos{ false };
@@ -1100,6 +1101,7 @@ namespace Frosty
 					MinLifetime = org.MinLifetime;
 					MaxLifetime = org.MaxLifetime;
 					FadeTreshold = org.FadeTreshold;
+					RotateOverLifetime = org.RotateOverLifetime;
 					StaticColor = org.StaticColor;
 					RandomStartPos = org.RandomStartPos;
 					RandomLifetimes = org.RandomLifetimes;

@@ -186,6 +186,10 @@ namespace MCS
 
 		SortParticles(systemIndex);
 		UpdateBuffer(systemIndex);
+		if (m_ParticleSystem[systemIndex]->RotateOverLifetime == true)
+		{
+			m_ParticleSystem[systemIndex]->SystemRotation.y += 10 * Frosty::Time::DeltaTime();
+		}
 	}
 
 	void ParticleSystem::EditorUpdateParticleSystem(size_t systemIndex)
@@ -260,6 +264,10 @@ namespace MCS
 
 			SortParticles(systemIndex);
 			UpdateBuffer(systemIndex);
+		}
+		if (m_ParticleSystem[systemIndex]->RotateOverLifetime == true)
+		{
+			m_ParticleSystem[systemIndex]->SystemRotation.y += 10 * Frosty::Time::DeltaTime();
 		}
 	}
 

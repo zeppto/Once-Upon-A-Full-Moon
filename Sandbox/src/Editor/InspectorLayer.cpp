@@ -938,6 +938,7 @@ namespace MCS
 							ImGui::InputFloat("Max lifetime", &comp.MaxLifetime);
 							ImGui::InputFloat("Min lifetime", &comp.MinLifetime);
 						}
+						ImGui::Checkbox("Rotate over lifetime", &comp.RotateOverLifetime);
 						ImGui::InputFloat("Speed", &comp.Speed);
 						ImGui::InputFloat("Start size", &comp.StartParticleSize);
 						ImGui::InputFloat("End size", &comp.EndParticleSize);
