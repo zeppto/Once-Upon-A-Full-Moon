@@ -409,9 +409,11 @@ namespace MCS
 		m_World->AddComponent<Frosty::ECS::CPhysics>(sword, Frosty::AssetManager::GetBoundingBox("pCube1"));
 
 		float criticalHit = 0;
-		criticalHit = GenerateCriticalHit(weaponComp.Damage, weaponComp.CriticalHit);
+		criticalHit = GenerateCriticalHit(weaponComp.CriticalHit, weaponComp.CriticalHitChance);
 
-		m_World->AddComponent<Frosty::ECS::CAttack>(sword, Frosty::ECS::CAttack::AttackType::Melee, weaponComp.Damage + criticalHit, true); // <-- true in the end because it's a friendly attack
+		int totalDamage = int(glm::round(weaponComp.Damage + criticalHit));
+
+		m_World->AddComponent<Frosty::ECS::CAttack>(sword, Frosty::ECS::CAttack::AttackType::Melee, totalDamage, true); // <-- true in the end because it's a friendly attack
 	}
 
 	void PlayerControllerSystem::CreateLVL2BoundingBox(const std::shared_ptr<Frosty::ECS::Entity>& weaponCarrier, const std::shared_ptr<Frosty::ECS::Entity>& weapon)
@@ -431,9 +433,11 @@ namespace MCS
 		m_World->AddComponent<Frosty::ECS::CPhysics>(sword, Frosty::AssetManager::GetBoundingBox("pCube1"));
 
 		float criticalHit = 0;
-		criticalHit = GenerateCriticalHit(weaponComp.Damage, weaponComp.CriticalHit);
+		criticalHit = GenerateCriticalHit(weaponComp.CriticalHit, weaponComp.CriticalHitChance);
 
-		m_World->AddComponent<Frosty::ECS::CAttack>(sword, Frosty::ECS::CAttack::AttackType::Melee, weaponComp.Damage + criticalHit, true); // <-- true in the end because it's a friendly attack
+		int totalDamage = int(glm::round(weaponComp.Damage + criticalHit));
+
+		m_World->AddComponent<Frosty::ECS::CAttack>(sword, Frosty::ECS::CAttack::AttackType::Melee, totalDamage, true); // <-- true in the end because it's a friendly attack
 	}
 
 	void PlayerControllerSystem::CreateLVL3BoundingBox(const std::shared_ptr<Frosty::ECS::Entity>& weaponCarrier, const std::shared_ptr<Frosty::ECS::Entity>& weapon)
@@ -459,9 +463,11 @@ namespace MCS
 		m_World->AddComponent<Frosty::ECS::CPhysics>(sword, Frosty::AssetManager::GetBoundingBox("pCube1"));
 
 		float criticalHit = 0;
-		criticalHit = GenerateCriticalHit(weaponComp.Damage, weaponComp.CriticalHit);
+		criticalHit = GenerateCriticalHit(weaponComp.CriticalHit, weaponComp.CriticalHitChance);
 
-		m_World->AddComponent<Frosty::ECS::CAttack>(sword, Frosty::ECS::CAttack::AttackType::Melee, weaponComp.Damage + criticalHit, true); // <-- true in the end because it's a friendly attack
+		int totalDamage = int(glm::round(weaponComp.Damage + criticalHit));
+
+		m_World->AddComponent<Frosty::ECS::CAttack>(sword, Frosty::ECS::CAttack::AttackType::Melee, totalDamage, true); // <-- true in the end because it's a friendly attack
 	}
 
 	void PlayerControllerSystem::CreateLVL1Projectile(const std::shared_ptr<Frosty::ECS::Entity>& weaponCarrier, const std::shared_ptr<Frosty::ECS::Entity>& weapon)
@@ -486,8 +492,11 @@ namespace MCS
 		projectilePhysics.Velocity = direction * projectilePhysics.Speed;
 
 		float criticalHit = 0;
-		criticalHit = GenerateCriticalHit(weaponComp.Damage, weaponComp.CriticalHit);
-		m_World->AddComponent<Frosty::ECS::CAttack>(projectile, Frosty::ECS::CAttack::AttackType::Range, weaponComp.Damage + criticalHit, true, weaponComp.Lifetime);
+		criticalHit = GenerateCriticalHit(weaponComp.CriticalHit, weaponComp.CriticalHitChance);
+
+		int totalDamage = int(glm::round(weaponComp.Damage + criticalHit));
+
+		m_World->AddComponent<Frosty::ECS::CAttack>(projectile, Frosty::ECS::CAttack::AttackType::Range, totalDamage, true, weaponComp.Lifetime);
 	}
 
 	void PlayerControllerSystem::CreateLVL2Projectile(const std::shared_ptr<Frosty::ECS::Entity>& weaponCarrier, const std::shared_ptr<Frosty::ECS::Entity>& weapon)
@@ -501,7 +510,6 @@ namespace MCS
 		mat = glm::rotate(mat, glm::radians(attackerTransform.Rotation.y), { 0.0f, 1.0f, 0.0f });
 		mat = glm::rotate(mat, glm::radians(attackerTransform.Rotation.z), { 0.0f, 0.0f, 1.0f });
 		glm::vec4 direction = mat * glm::vec4(0.0f, 0.0f, 1.0f, 0.0);
-		float criticalHit = 0;
 		for (int i = 0; i < 3; i++)
 		{
 			if (i == 1)
@@ -522,8 +530,12 @@ namespace MCS
 			auto& projectilePhysics = m_World->AddComponent<Frosty::ECS::CPhysics>(projectile, Frosty::AssetManager::GetBoundingBox("pSphere1"), 20.0f);
 			projectilePhysics.Velocity = direction * projectilePhysics.Speed;
 
-			criticalHit = GenerateCriticalHit(weaponComp.Damage, weaponComp.CriticalHit);
-			m_World->AddComponent<Frosty::ECS::CAttack>(projectile, Frosty::ECS::CAttack::AttackType::Range, weaponComp.Damage + criticalHit, true, weaponComp.Lifetime);
+			float criticalHit = 0;
+			criticalHit = GenerateCriticalHit(weaponComp.CriticalHit, weaponComp.CriticalHitChance);
+
+			int totalDamage = int(glm::round(weaponComp.Damage + criticalHit));
+
+			m_World->AddComponent<Frosty::ECS::CAttack>(projectile, Frosty::ECS::CAttack::AttackType::Range, totalDamage, true, weaponComp.Lifetime);
 		}
 	}
 
@@ -549,8 +561,11 @@ namespace MCS
 		projectilePhysics.Velocity = direction * projectilePhysics.Speed;
 
 		float criticalHit = 0;
-		criticalHit = GenerateCriticalHit(weaponComp.Damage, weaponComp.CriticalHit);
-		m_World->AddComponent<Frosty::ECS::CAttack>(projectile, Frosty::ECS::CAttack::AttackType::Range, weaponComp.Damage + criticalHit, true, weaponComp.Lifetime, false);
+		criticalHit = GenerateCriticalHit(weaponComp.CriticalHit, weaponComp.CriticalHitChance);
+
+		int totalDamage = int(glm::round(weaponComp.Damage + criticalHit));
+
+		m_World->AddComponent<Frosty::ECS::CAttack>(projectile, Frosty::ECS::CAttack::AttackType::Range, totalDamage, true, weaponComp.Lifetime, false);
 	}
 
 	float PlayerControllerSystem::GenerateCriticalHit(float criticalHit, float criticalHitChance)
@@ -773,6 +788,9 @@ namespace MCS
 				// Only switch CMesh and CMaterial when weapon stats have been swapped
 				SwapMesh(playerWeapon, lootWeapon);
 				SwapMaterial(playerWeapon, lootWeapon);
+
+				// Swap loot type in lootWeapon depending on playerWeapon
+				SwapLootType(playerWeapon, lootWeapon);
 			}
 		}
 	}
@@ -805,6 +823,32 @@ namespace MCS
 				m_World->GetComponent<Frosty::ECS::CMaterial>(playerWeapon) = m_World->GetComponent<Frosty::ECS::CMaterial>(lootWeapon);
 				m_World->GetComponent<Frosty::ECS::CMaterial>(lootWeapon) = tempMaterial;
 			}
+		}
+	}
+	
+	void PlayerControllerSystem::SwapLootType(const std::shared_ptr<Frosty::ECS::Entity>& playerWeapon, const std::shared_ptr<Frosty::ECS::Entity>& lootWeapon)
+	{
+		auto& playerWeaponComp = m_World->GetComponent<Frosty::ECS::CWeapon>(playerWeapon);
+		auto& lootComp = m_World->GetComponent<Frosty::ECS::CLootable>(lootWeapon);
+		int level = playerWeaponComp.Level;
+
+		if (playerWeaponComp.Type == Frosty::ECS::CWeapon::WeaponType::Sword)
+		{
+			if (level == 1)
+				lootComp.Type = Frosty::ECS::CLootable::LootType::Sword1;
+			else if(level == 2)
+				lootComp.Type = Frosty::ECS::CLootable::LootType::Sword2;
+			else if(level == 3)
+				lootComp.Type = Frosty::ECS::CLootable::LootType::Sword3;
+		}
+		else if (playerWeaponComp.Type == Frosty::ECS::CWeapon::WeaponType::Bow)
+		{
+			if (level == 1)
+				lootComp.Type = Frosty::ECS::CLootable::LootType::Bow1;
+			else if (level == 2)
+				lootComp.Type = Frosty::ECS::CLootable::LootType::Bow2;
+			else if (level == 3)
+				lootComp.Type = Frosty::ECS::CLootable::LootType::Bow3;
 		}
 	}
 }

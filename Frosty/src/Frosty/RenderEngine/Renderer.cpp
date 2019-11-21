@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 #include "fypch.hpp"
 #include "Renderer.hpp"
 #include "Frosty/Core/ECS.hpp"

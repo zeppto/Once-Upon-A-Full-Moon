@@ -60,12 +60,8 @@ namespace MCS
 
 		// LIGHT 1
 		auto& light = world->CreateEntity({ 0.0f, 0.0f, 0.0f }, { 120.0f, 8.0f, -10.0f });
-		auto& DLight = world->AddComponent<Frosty::ECS::CLight>(light, Frosty::ECS::CLight::LightType::Directional, 0.9f, glm::vec3(0.6f, 0.7f, 1.f));
-		DLight.Direction = glm::vec3(-1.0f, -1.0, 1.0);
-		//LIGHT 2
-		auto& light2 = world->CreateEntity({ 0.0f, 0.0f, 0.0f }, { -190.0f, 8.0f, -10.0f });
-		auto& DLight2 = world->AddComponent<Frosty::ECS::CLight>(light2, Frosty::ECS::CLight::LightType::Directional, 0.3f, glm::vec3(0.6f, 0.7f, 1.f));
-		DLight2.Direction = glm::vec3(-1.0f, -1.0, 1.0);
+		auto& DLight = world->AddComponent<Frosty::ECS::CLight>(light, Frosty::ECS::CLight::LightType::Directional, 0.9f, glm::vec3(0.5f, 0.6f, 1.f));
+		DLight.Direction = glm::vec3(-1.0f, -0.8, -1.0);
 
 		// WEAPON 1
 		auto& weapon = world->CreateEntity({ 0.f, 0.f, 0.f }, { 0.0f, 0.0f, 0.0f }, { 1.f, 1.f, 1.f });
@@ -79,13 +75,15 @@ namespace MCS
 		auto& player = world->CreateEntity({ 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 2.0f, 2.0f, 2.0f } );
 		auto& playerTransform = world->GetComponent<Frosty::ECS::CTransform>(player);
 		world->AddComponent<Frosty::ECS::CAnimController>(player).currAnim = Frosty::AssetManager::GetAnimation("NewRun");
+		auto& animation = world->GetComponent<Frosty::ECS::CAnimController>(player);
+		animation.animSpeed = 0.7;
 		world->AddComponent<Frosty::ECS::CMesh>(player, Frosty::AssetManager::GetMesh("ScarRun:model:scarlet"));
 		auto& playerMat = world->AddComponent<Frosty::ECS::CMaterial>(player, Frosty::AssetManager::GetShader("Animation"));
 		playerMat.DiffuseTexture = Frosty::AssetManager::GetTexture2D("Scarlet_diffuse");
 		playerMat.NormalTexture = Frosty::AssetManager::GetTexture2D("Scarlet_normal");
 		playerMat.SpecularTexture = Frosty::AssetManager::GetTexture2D("Scarlet_specular");
 		world->AddComponent<Frosty::ECS::CPlayer>(player, &weaponComp);	// <-- Give player a weapon
-		world->AddComponent<Frosty::ECS::CPhysics>(player, Frosty::AssetManager::GetBoundingBox("scarlet"), 10.0f);
+		world->AddComponent<Frosty::ECS::CPhysics>(player, Frosty::AssetManager::GetBoundingBox("scarlet"), 13.0f);
 		world->AddComponent<Frosty::ECS::CDash>(player);
 		world->AddComponent<Frosty::ECS::CHealth>(player);
 		world->AddComponent<Frosty::ECS::CInventory>(player);

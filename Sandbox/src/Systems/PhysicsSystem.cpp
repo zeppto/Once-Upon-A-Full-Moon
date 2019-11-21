@@ -127,7 +127,7 @@ namespace MCS
 				glm::vec3 finalLengthB = glm::vec3(m_Physics[i]->BoundingBox->halfSize[0], m_Physics[i]->BoundingBox->halfSize[1], m_Physics[i]->BoundingBox->halfSize[2]) * m_Transform[i]->Scale;
 				bool intersect = Frosty::CollisionDetection::AABBIntersect(finalLengthA, finalCenterA, finalLengthB, finalCenterB);
 
-				if (intersect == true)
+				if (intersect)
 				{
 					// If collison is an attack...
 					if (m_World->HasComponent<Frosty::ECS::CAttack>(m_Transform[index]->EntityPtr))
@@ -237,7 +237,7 @@ namespace MCS
 			m_World->AddComponent<Frosty::ECS::CWeapon>(item, Frosty::ECS::CWeapon::WeaponType::Sword, 1, 1.f);
 			break;
 		case 6:
-			m_World->AddComponent<Frosty::ECS::CLootable>(item, Frosty::ECS::CLootable::LootType::Arrow1);
+			m_World->AddComponent<Frosty::ECS::CLootable>(item, Frosty::ECS::CLootable::LootType::Bow1);
 			m_World->AddComponent<Frosty::ECS::CWeapon>(item, Frosty::ECS::CWeapon::WeaponType::Bow, 1, 1.f);
 			break;
 		default:

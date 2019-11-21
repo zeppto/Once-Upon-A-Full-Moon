@@ -6,7 +6,7 @@
 #include "Frosty/Core/KeyCodes.h"
 #include "Frosty/Core/MouseButtonCodes.h"
 #include "Frosty/API/AssetManager/AssetFiles/Animation.hpp"
-
+#include "Frosty/API/AssetManager/AssetManager.hpp"
 #include "Frosty/UI/UIText.h"
 #include "Frosty/UI/UISprite.h"
 #include "Frosty/UI/UILayout.hpp"
@@ -390,7 +390,8 @@ namespace Frosty
 
 		// List of all Components //
 
-		struct CTransform : public BaseComponent
+		struct CTransform
+			: public BaseComponent
 		{
 			static std::string NAME;
 
@@ -525,7 +526,7 @@ namespace Frosty
 			bool HasTransparency = false;
 
 			CMaterial() = default;
-			CMaterial(const std::shared_ptr<Shader>& shader) : UseShader(shader) { }
+			CMaterial(const std::shared_ptr<Shader>& shader) : UseShader(shader) { NormalTexture = AssetManager::GetTexture2D("FlatNormal"); }
 			CMaterial(const CMaterial& org) { FY_CORE_ASSERT(false, "Copy constructor in CMaterial called."); }
 			CMaterial& operator=(const CMaterial& org)
 			{
@@ -568,6 +569,7 @@ namespace Frosty
 			enum class LightType { Point, Directional };
 
 			static std::string NAME;
+
 			LightType Type{ LightType::Point };
 			glm::vec3 Color{ 1.0f, 0.96f, 0.84f };
 			glm::vec3 Direction{ 1.0f, 0.0f, 1.0f };
@@ -709,7 +711,7 @@ namespace Frosty
 			enum class AttackType { Melee, Range };
 			AttackType Type{ AttackType::Melee };
 
-			float Damage{ 10.0f };
+			int Damage{ 10 };
 			bool Friendly{ false };			// A friendly attack effects neither the Player or the attack. 1 = friendly attack, 0 = enemy attack
 
 			float Lifetime{ 0.1f };
@@ -718,7 +720,7 @@ namespace Frosty
 			bool Destroyable{ true };	// Cannot be destr0yed in collision with other enemies
 
 			CAttack() = default;
-			CAttack(AttackType type, float damage, bool friendly = false, float lifeTime = 0.1f, bool destroyable = true) : Type(type), Damage(damage), Friendly(friendly), Lifetime(lifeTime), Destroyable(destroyable) { }
+			CAttack(AttackType type, int damage, bool friendly = false, float lifeTime = 0.1f, bool destroyable = true) : Type(type), Damage(damage), Friendly(friendly), Lifetime(lifeTime), Destroyable(destroyable) { }
 			CAttack(const CAttack& org) { FY_CORE_ASSERT(false, "Copy constructor in CAttack called."); }
 			CAttack& operator=(const CAttack& org)
 			{
@@ -1102,7 +1104,7 @@ namespace Frosty
 			{
 				HealingPotion, IncHealthPotion, SpeedPotion, SpeedBoot,
 				Sword1, Sword2, Sword3,
-				Arrow1, Arrow2, Arrow3
+				Bow1, Bow2, Bow3
 			};
 			LootType Type{ LootType::HealingPotion };
 
