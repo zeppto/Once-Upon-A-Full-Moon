@@ -30,11 +30,18 @@ namespace MCS
 				EditorUpdateParticleSystem(i);
 			}
 
-			glm::mat4 transform = glm::translate(glm::mat4(1.0f), m_Transform[i]->Position);
-			transform = glm::rotate(transform, glm::radians(m_Transform[i]->Rotation.x), { 1.0f, 0.0f, 0.0f });
-			transform = glm::rotate(transform, glm::radians(m_Transform[i]->Rotation.y), { 0.0f, 1.0f, 0.0f });
-			transform = glm::rotate(transform, glm::radians(m_Transform[i]->Rotation.z), { 0.0f, 0.0f, 1.0f });
-			transform = glm::scale(transform, m_Transform[i]->Scale);
+			glm::mat4 transform = glm::mat4(1.0f);
+			transform = glm::rotate(transform, glm::radians(m_ParticleSystem[i]->SystemRotation.x), { 1.0f, 0.0f, 0.0f });
+			transform = glm::rotate(transform, glm::radians(m_ParticleSystem[i]->SystemRotation.y), { 0.0f, 1.0f, 0.0f });
+			transform = glm::rotate(transform, glm::radians(m_ParticleSystem[i]->SystemRotation.z), { 0.0f, 0.0f, 1.0f });
+
+			glm::mat4 parentTransform = glm::translate(glm::mat4(1.0f), m_Transform[i]->Position);
+			parentTransform = glm::rotate(parentTransform, glm::radians(m_Transform[i]->Rotation.x), { 1.0f, 0.0f, 0.0f });
+			parentTransform = glm::rotate(parentTransform, glm::radians(m_Transform[i]->Rotation.y), { 0.0f, 1.0f, 0.0f });
+			parentTransform = glm::rotate(parentTransform, glm::radians(m_Transform[i]->Rotation.z), { 0.0f, 0.0f, 1.0f });
+			parentTransform = glm::scale(parentTransform, m_Transform[i]->Scale);
+
+			transform = parentTransform * transform;
 
 			m_ParticleSystem[i]->Texture->Bind();
 

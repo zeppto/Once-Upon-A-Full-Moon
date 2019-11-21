@@ -880,6 +880,7 @@ namespace MCS
 							ImGui::ColorEdit4("Start color", glm::value_ptr(comp.SystemStartColor));
 							ImGui::ColorEdit4("End color", glm::value_ptr(comp.SystemEndColor));
 						}
+						ImGui::DragFloat3("Rotation", glm::value_ptr(comp.SystemRotation), 0.1f, 0.0f, 0.0f, "%.2f");
 						ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(10, 10));
 						ImGui::Image(comp.Texture ? comp.Texture->GetRenderID() : Frosty::AssetManager::GetTexture2D("Checkerboard")->GetRenderID(), ImVec2(64, 64));
 						ImGui::PopStyleVar();

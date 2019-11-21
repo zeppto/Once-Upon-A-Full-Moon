@@ -991,7 +991,6 @@ namespace Frosty
 				glm::vec4 Direction{ 0.0f, 1.0f, 0.0f, 1.0f };
 				glm::vec4 StartPos{ 0.0f, 0.0f, 0.0f, 1.0f };
 				glm::vec4 StartColor{ 1.0f };
-				//glm::vec4 EndColor{ 1.0f };
 				float Lifetime{ -1.0f };
 				float MaxLifetime{ 3.0f };
 				float Speed{ 2.0f };
@@ -1023,8 +1022,9 @@ namespace Frosty
 			float EndParticleSize{ 0.0f };
 			float ParticleSize{ 1.0f }; //For a constant size
 
+			glm::vec3 SystemRotation{ 0.0f };
+
 			uint32_t ParticleCount{ 0 };
-			//glm::vec3 ParticleSystemColor{ 1.0f };
 			glm::vec3 SystemStartColor{ 1.0f };
 			glm::vec3 SystemEndColor{ 1.0f };
 			glm::vec3 ParticleSystemDirection{ 0.0f, 1.0f, 0.0f };
@@ -1075,8 +1075,8 @@ namespace Frosty
 					StartParticleSize = org.StartParticleSize;
 					EndParticleSize = org.EndParticleSize;
 					ParticleSize = org.ParticleSize;
+					SystemRotation = org.SystemRotation;
 					ParticleCount = org.ParticleCount;
-					//ParticleSystemColor = org.ParticleSystemColor;
 					SystemStartColor = org.SystemStartColor;
 					SystemEndColor = org.SystemEndColor;
 					ParticleSystemDirection = org.ParticleSystemDirection;
