@@ -296,7 +296,15 @@ namespace MCS
 	void ParticleSystem::ResetParticle(size_t systemIndex, size_t index)
 	{
 		Frosty::ECS::CParticleSystem::Particle& p = m_ParticleSystem[systemIndex]->Particles[index];
-		p.Lifetime = m_ParticleSystem[systemIndex]->MaxLifetime;
+		if(m_ParticleSystem[systemIndex]->RandomLifetimes == false)
+		{
+			p.MaxLifetime = m_ParticleSystem[systemIndex]->MaxLifetime;
+		}
+		else
+		{
+			float randLifetime = RandomFloat(m_ParticleSystem[systemIndex]->MaxLifetime, m_ParticleSystem[systemIndex]->MinLifetime);
+			p.MaxLifetime = randLifetime;
+		}
 		if (m_ParticleSystem[systemIndex]->RandomStartPos == false)
 		{
 			p.StartPos = glm::vec4(m_ParticleSystem[systemIndex]->ParticleSystemStartPos, 1.0f);
@@ -310,6 +318,7 @@ namespace MCS
 			p.StartPos.y = randomNumY;
 			p.StartPos.z = randomNumZ;
 		}
+		p.Lifetime = p.MaxLifetime;
 		p.Position = p.StartPos;
 		p.Size = p.StartSize;
 		p.Color.a = 1.0f; //TODO: set to startColor/startAlpha
@@ -388,5 +397,13 @@ namespace MCS
 	float ParticleSystem::Lerp(float a, float b, float f) //Lerp can probably be done on the gpu which would be a good optimization
 	{
 		return (a * (1.0f - f)) + (b * f);
+	}
+
+	float ParticleSystem::RandomFloat(float min, float max)
+	{
+		float random = ((float) rand()) / (float)RAND_MAX;
+		float range = max - min;
+		float r = random * range;
+		return min + r;
 	}
 }

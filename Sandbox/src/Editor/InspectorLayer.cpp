@@ -921,6 +921,12 @@ namespace MCS
 						{
 							ImGui::DragFloat3("Start position", glm::value_ptr(comp.ParticleSystemStartPos), 0.1f, 0.0f, 0.0f, "%.2f");
 						}
+						ImGui::Checkbox("Random lifetimes", &comp.RandomLifetimes);
+						if (comp.RandomLifetimes == true)
+						{
+							ImGui::InputFloat("Max lifetime", &comp.MaxLifetime);
+							ImGui::InputFloat("Min lifetime", &comp.MinLifetime);
+						}
 						ImGui::InputFloat("Speed", &comp.Speed);
 						ImGui::InputFloat("Start size", &comp.StartParticleSize);
 						ImGui::InputFloat("End size", &comp.EndParticleSize);

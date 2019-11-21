@@ -991,6 +991,7 @@ namespace Frosty
 				glm::vec4 Direction{ 0.0f, 1.0f, 0.0f, 1.0f };
 				glm::vec4 StartPos{ 0.0f, 0.0f, 0.0f, 1.0f };
 				float Lifetime{ -1.0f };
+				float MaxLifetime{ 3.0f };
 				float Speed{ 2.0f };
 				float StartSize{ 1.0f };
 				float EndSize{ 1.0f };
@@ -1027,8 +1028,10 @@ namespace Frosty
 			float EmitRate{ 0.1f };
 			uint32_t EmitCount{ 1 };
 			float Speed{ 1.0f };
-			float MaxLifetime{ 3.0f }; //All particles
+			float MinLifetime{ 3.0f };
+			float MaxLifetime{ 3.0f };
 			float FadeTreshold{ 0.0f }; //No fade
+			bool RandomLifetimes{ false };
 			bool RandomStartPos{ false };
 			bool RandomDirection{ false };
 			bool AlwaysFaceCamera{ true };
@@ -1072,6 +1075,7 @@ namespace Frosty
 					EmitRate = org.EmitRate;
 					EmitCount = org.EmitCount;
 					Speed = org.Speed;
+					MinLifetime = org.MinLifetime;
 					MaxLifetime = org.MaxLifetime;
 					FadeTreshold = org.FadeTreshold;
 					RandomStartPos = org.RandomStartPos;
