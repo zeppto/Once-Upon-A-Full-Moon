@@ -33,7 +33,7 @@ namespace MCS
 	{
 		auto& world = Application::Get().GetWorld();
 		// Add systems
-		world->AddSystem<LevelSystem>();
+		//world->AddSystem<LevelSystem>();
 		world->AddSystem<CameraSystem>();
 		world->AddSystem<LightSystem>();
 		world->AddSystem<RenderSystem>();
@@ -133,7 +133,7 @@ namespace MCS
 		world->GetComponent<Frosty::ECS::CCamera>(camEntity).Target = &playerTransform;
 
 		//Player HUD
-		Frosty::UILayout uiLayout(22, 1);
+		Frosty::UILayout uiLayout(21, 10);
 
 		//Items
 		float padding = 200.0f;
@@ -185,10 +185,9 @@ namespace MCS
 		uiLayout.AddText(glm::vec2(offsetX + 55 + 1 * padding, offsetY + 30), "[2]", glm::vec3(1.0f, 1.0f, 1.0f), controlsInfoSize2); //19
 		uiLayout.AddText(glm::vec2(offsetX + 55 + 2 * padding, offsetY + 30), "[Q]", glm::vec3(1.0f, 1.0f, 1.0f), controlsInfoSize2); //20
 
-		//Picked up
 
-		uiLayout.AddText(glm::vec2(550, 425), "[E]", glm::vec3(1.0f, 1.0f, 1.0f), controlsInfoSize); //21
-
+		uiLayout.AddSprite(glm::vec2(25.0f, 220.0f), glm::vec2(1, 1), "ChernoLogo", glm::vec4(1.0f));
+		
 		world->AddComponent<Frosty::ECS::CGUI>(player, uiLayout);
 
 
@@ -266,7 +265,7 @@ namespace MCS
 		world->AddComponent<Frosty::ECS::CPhysics>(chest5, Frosty::AssetManager::GetBoundingBox("pCube1"), 6.0f);
 		world->AddComponent<Frosty::ECS::CHealth>(chest5, 2.0f);
 		world->AddComponent<Frosty::ECS::CDropItem>(chest5);
-
+		 
 		// TEXT
 	/*	auto& GUI = world->CreateEntity();
 		Frosty::UILayout uiLayout(3, 1);
@@ -275,11 +274,6 @@ namespace MCS
 		uiLayout.AddText(glm::vec2(25.0f, 220.0f), "1234!", glm::vec3(0.5f, 0.1f, 0.9f), 1.5f);
 
 		world->AddComponent<Frosty::ECS::CGUI>(GUI, uiLayout);*/
-
-
-
-
-
 
 		//navSystem->InitiateGridMap(world->GetComponent<Frosty::ECS::CTransform>(plane));
 

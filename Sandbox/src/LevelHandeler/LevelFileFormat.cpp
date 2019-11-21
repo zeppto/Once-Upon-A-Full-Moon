@@ -347,6 +347,10 @@ void LevelFileFormat::OpenFromFile(std::string fileName, glm::ivec2 roomId , Fro
 						tempRotation.y += rotation;
 					}
 				}
+				else if (rotation == 180)
+				{
+					tempRotation.y += rotation;
+				}
 				auto& entity = m_World->CreateEntity(glm::vec3(matrix[3].x, matrix[3].y, matrix[3].z), tempRotation, fileEntitys.myEntitys.at(i).myTransform.Scale, fileEntitys.myEntitys.at(i).myTransform.IsStatic);
 
 				//1 = Mesh
