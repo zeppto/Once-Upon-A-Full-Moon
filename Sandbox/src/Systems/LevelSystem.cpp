@@ -34,6 +34,9 @@ namespace MCS
 		case Frosty::EventType::CreatEntity:
 			OnCreatEntityEvent(static_cast<Frosty::CreatEntityEvent&>(e));
 			break;
+		case Frosty::EventType::UpdatePlayerCoordsPos:
+			OnPlayerUpdateCoordEvent(static_cast<Frosty::UpdatePlayerRoomCoordEvent&>(e));
+			break;
 		default:
 			break;
 		}
@@ -44,16 +47,23 @@ namespace MCS
 		if (m_Start)
 		{
 			m_Map.generateMap();
-			m_CurrentRoome = m_Map.getRoom(m_PlayerPos);
+			m_CurrentRoome = m_Map.getRoom(m_PlayerCoords);
 
 			//int rotation = 0;
 			//std::string texture = m_Map.getRoomTextur(m_PlayerPos, &rotation);
 			//Level::Room(m_CurrentRoome.sideExits[0], m_CurrentRoome.sideExits[1], m_CurrentRoome.sideExits[2], m_CurrentRoome.sideExits[3], texture, rotation);
 			//this is curently the start room
 			int rotate;
-			m_Map.getRoomTextur(m_PlayerPos, &rotate);
+			m_Map.getRoomTextur(m_PlayerCoords, &rotate);
 			Level::MoveToNewRoom(m_CurrentRoome.sideExits[0], m_CurrentRoome.sideExits[1], m_CurrentRoome.sideExits[2], m_CurrentRoome.sideExits[3]);
-			m_LevelFileFormat.OpenFromFile("deadend_chests_IsStatick", 1 , m_PlayerPos, nullptr, rotate);
+			m_CurrentRoomBool = true;
+			//Skiss
+			m_FirstRoom.first = m_PlayerCoords;
+			m_FirstRoom.second = true;
+
+			m_SecondRoom.second = false;
+
+			m_LevelFileFormat.OpenFromFile("deadend_chests_IsStatick", m_CurrentRoomBool, m_PlayerCoords, nullptr, rotate);
 			m_Start = false;
 			m_LevelFileFormat.LoadBoolMap("deadend_chests_IsStatick");
 		}
@@ -134,7 +144,7 @@ namespace MCS
 		//auto& ExitBBox = m_World->GetComponent<Frosty::ECS::CPhysics>(e.GetExitEntity());
 		auto& ExitSide = m_World->GetComponent<Frosty::ECS::CLevelExit>(e.GetExitEntity());
 
-		glm::ivec2 tempCoord = m_PlayerPos;
+		glm::ivec2 tempCoord = m_PlayerCoords;
 		if (ExitSide.ExitDirection == 0)
 			tempCoord += glm::ivec2(0, -1);
 		if (ExitSide.ExitDirection == 1)
@@ -143,6 +153,23 @@ namespace MCS
 			tempCoord += glm::ivec2(-1, 0);
 		if (ExitSide.ExitDirection == 3)
 			tempCoord += glm::ivec2(1, 0);
+
+		//Skiss
+		if (tempCoord != m_SecondRoom.first && tempCoord != m_FirstRoom.first)
+		{
+			if (m_PlayerCoords == m_FirstRoom.first)
+			{
+				m_World->DestroyGroup(0);
+				m_SecondRoom.first = tempCoord;
+			}
+			else
+			{
+				m_World->DestroyGroup(1);
+				m_FirstRoom.first = tempCoord;
+			}
+		}
+
+
 		if (tempCoord != m_OtherRoom)
 		{
 			m_OtherRoom = tempCoord;
@@ -202,7 +229,7 @@ namespace MCS
 			//	m_CurrentRoome.sideExits[2], m_CurrentRoome.sideExits[3], ExitSide.ExitDirection);
 
 
-			m_LevelFileFormat.OpenFromFile(fileName, 1, m_OtherRoom, playerTransform, rotation, glm::vec3(0.0f, 0.0f, 0.0f), ExitSide.ExitDirection);
+			m_LevelFileFormat.OpenFromFile(fileName, 0, m_OtherRoom, playerTransform, rotation, glm::vec3(0.0f, 0.0f, 0.0f), ExitSide.ExitDirection);
 		}
 
 	}
@@ -332,7 +359,7 @@ namespace MCS
 			}
 		}
 		m_RoomType = e.GetFilename();
-		m_LevelFileFormat.OpenFromFile(m_RoomType, 1,m_PlayerPos, playerTransform);
+		m_LevelFileFormat.OpenFromFile(m_RoomType, 1,m_PlayerCoords, playerTransform);
 	}
 	void LevelSystem::OnCreatEntityEvent(Frosty::CreatEntityEvent& e)
 	{
@@ -499,6 +526,15 @@ namespace MCS
 			m_World->AddComponent<Frosty::ECS::CDropItem>(chest);
 		}
 	}
+	void LevelSystem::OnPlayerUpdateCoordEvent(Frosty::UpdatePlayerRoomCoordEvent& e)
+	{
+		if (m_PlayerCoords != e.GetCoords())
+		{
+			m_OtherRoom = m_PlayerCoords;
+		}
+		m_PlayerCoords = e.GetCoords();
+	}
+
 }
 
 

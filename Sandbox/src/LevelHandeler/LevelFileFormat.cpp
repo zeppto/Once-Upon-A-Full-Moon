@@ -176,6 +176,7 @@ void LevelFileFormat::AddEntity(const std::shared_ptr<Frosty::ECS::Entity>& enti
 		}
 		else
 			myComponents.MyComponents.at(11).HaveComponent = false;
+
 		m_Entitys.myEntitys.push_back(myComponents);
 	}
 }
@@ -285,6 +286,7 @@ void LevelFileFormat::OpenFromFile(
 
 	if (existingFile.good())
 	{
+
 		existingFile.read((char*)& heder, sizeof(Level_Header));
 		fileEntitys.myEntitys.resize(heder.NrOfEntitys);
 
@@ -386,7 +388,7 @@ void LevelFileFormat::OpenFromFile(
 					tempRotation.y += rotation;
 				}
 				auto& entity = m_World->CreateEntity((glm::vec3(matrix[3].x, matrix[3].y, matrix[3].z) + startOffset), tempRotation, fileEntitys.myEntitys.at(i).myTransform.Scale, fileEntitys.myEntitys.at(i).myTransform.IsStatic);
-
+				m_World->AddToGroup(entity, CurrentRoom); //Check this
 				auto& newlyTreansform = m_World->GetComponent<Frosty::ECS::CTransform>(entity);
 				if (newlyTreansform.Scale == glm::vec3(300.0f, 1.0f, 300.0f))
 				{
@@ -553,7 +555,7 @@ void LevelFileFormat::OpenFromFile(
 						}
 						else
 						{
-							FY_ASSERT("Translation Fault!",0);
+							FY_ASSERT(0,"Translation Fault!");
 						}
 
 
@@ -582,7 +584,7 @@ void LevelFileFormat::OpenFromFile(
 			}
 		}
 		
-		//to remove "enemys" or chest m.m to control the number and randomize pos
+		//to remove "enemies" or chest m.m to control the number and randomize pos
 		int enteredRoomId = -1;
 		for (int i = 0; i < m_VisitedRooms.size(); i++)
 		{

@@ -18,7 +18,7 @@ namespace Frosty
 		ArrowHit, Dash, CheckCollision, Collision, BasicAttack, 
 		SpawnItem,
 		PickUpAttempt, PickUp,
-		BaitPlaced, ExitCurrentLevel,
+		BaitPlaced, ExitCurrentLevel, UpdatePlayerCoordsPos ,
 		SaveLevel, CreateLevel, OpenLevel, CreatEntity, 
 		LoadBoolMap, InitiateGridMap
 	};

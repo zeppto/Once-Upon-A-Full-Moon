@@ -105,6 +105,22 @@ namespace Frosty
 		std::shared_ptr<ECS::Entity> m_PlayerEntity;
 	};
 
+
+	class UpdatePlayerRoomCoordEvent : public BaseEvent
+	{
+	public:
+		UpdatePlayerRoomCoordEvent(const glm::ivec2& Coords) : m_Coords(Coords){ }
+
+		const glm::ivec2& GetCoords() const { return m_Coords; }
+
+
+		EVENT_TYPE(UpdatePlayerCoordsPos)
+
+	private:
+		glm::ivec2 m_Coords;
+	};
+
+
 	class SaveLevelEvent : public BaseEvent
 	{
 	public:

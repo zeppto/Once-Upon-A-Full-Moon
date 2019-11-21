@@ -110,6 +110,9 @@ namespace Frosty
 	{
 		if (current) m_DestroyRoom = m_CurrentRoom;
 		else m_DestroyRoom = (m_CurrentRoom + 1) % 2;
+
+		
+
 	}
 
 	void World::HandleDestroyedRoom()

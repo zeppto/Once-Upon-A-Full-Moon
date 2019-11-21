@@ -4,12 +4,13 @@
 #include "LevelHandeler/LevelsHardCoded.hpp"
 #include "LevelHandeler/LevelFileFormat.hpp"
 
+namespace Frosty { class BoolMap; }
 namespace Frosty { class ExitLevelEvent; }
 namespace Frosty { class SaveLevelEvent; }
-namespace Frosty { class CreateLevelEvent; }
 namespace Frosty { class OpenLevelEvent; }
 namespace Frosty { class CreatEntityEvent; }
-namespace Frosty { class BoolMap; }
+namespace Frosty { class CreateLevelEvent; }
+namespace Frosty { class UpdatePlayerRoomCoordEvent; }
 
 namespace MCS
 {
@@ -34,6 +35,7 @@ namespace MCS
 		void OnCreateLevelEvent(Frosty::CreateLevelEvent& e);
 		void OnOpenLevelEvent(Frosty::OpenLevelEvent& e);
 		void OnCreatEntityEvent(Frosty::CreatEntityEvent& e);
+		void OnPlayerUpdateCoordEvent(Frosty::UpdatePlayerRoomCoordEvent& e);
 
 
 	private:
@@ -42,10 +44,15 @@ namespace MCS
 		std::array<Frosty::ECS::CTransform*, Frosty::ECS::MAX_ENTITIES_PER_COMPONENT> m_Transform;
 
 		MapGenerator m_Map;
-		glm::ivec2 m_PlayerPos = { 10, 15 };//{ 10, 15 };
+		glm::ivec2 m_PlayerCoords = { 10, 15 };//{ 10, 15 };
 		glm::ivec2 m_OtherRoom = { -1, -1 };
+
+		std::pair<glm::ivec2, bool> m_FirstRoom;
+		std::pair<glm::ivec2, bool> m_SecondRoom;
+
 		//map.generateMap();
 		Room m_CurrentRoome;// = map.getRoom(glm::ivec2(11, 15));
+		bool m_CurrentRoomBool = true;
 		bool m_Start = true;
 
 		//type of room (needed for creation of file)
