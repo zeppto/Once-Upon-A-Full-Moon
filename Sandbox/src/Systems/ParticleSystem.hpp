@@ -44,7 +44,7 @@ namespace MCS
 		bool m_EditMode{ false };
 		bool m_SwitchShader{ false };
 
-		Frosty::ECS::CTransform* m_CameraTransform { nullptr };
+		Frosty::ECS::CTransform* m_CameraTransform{ nullptr };
 	};
 }
 

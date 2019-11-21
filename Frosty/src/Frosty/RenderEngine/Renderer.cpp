@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 #include "fypch.hpp"
 #include "Renderer.hpp"
 #include "Frosty/Core/ECS.hpp"
@@ -696,5 +697,4 @@ namespace Frosty
 		RenderCommand::Draw2D(vertexArray);
 		controller->dt += Frosty::Time::DeltaTime() * controller->animSpeed;
 	}
-
 }

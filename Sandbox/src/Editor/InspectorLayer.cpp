@@ -1171,7 +1171,7 @@ namespace MCS
 		return true;
 	}
 
-	bool InspectorLayer::OnKeyPressedEvent(Frosty::KeyPressedEvent & e)
+	bool InspectorLayer::OnKeyPressedEvent(Frosty::KeyPressedEvent& e)
 	{
 		if (e.GetKeyCode() == FY_KEY_TAB)
 		{
