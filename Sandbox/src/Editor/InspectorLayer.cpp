@@ -853,7 +853,7 @@ namespace MCS
 					if (ImGui::CollapsingHeader("Particle System"))
 					{
 						auto& comp = world->GetComponent<Frosty::ECS::CParticleSystem>(m_SelectedEntity);
-						ImGui::BeginChild("CParticleSystem", ImVec2(EDITOR_INSPECTOR_WIDTH, 445), true);
+						ImGui::BeginChild("CParticleSystem", ImVec2(EDITOR_INSPECTOR_WIDTH, 500), true);
 						ImGui::Text("Active particles: %i", comp.ParticleCount);
 						ImGui::Checkbox("Preview", &comp.Preview);
 						ImGui::Checkbox("Face camera", &comp.AlwaysFaceCamera);
@@ -869,7 +869,17 @@ namespace MCS
 
 							}
 						}
-						ImGui::ColorEdit4("Color", glm::value_ptr(comp.ParticleSystemColor));
+						ImGui::Checkbox("Static color", &comp.StaticColor);
+						if (comp.StaticColor == true)
+						{
+							ImGui::ColorEdit4("Color", glm::value_ptr(comp.SystemStartColor));
+							comp.SystemEndColor = comp.SystemStartColor;
+						}
+						else
+						{
+							ImGui::ColorEdit4("Start color", glm::value_ptr(comp.SystemStartColor));
+							ImGui::ColorEdit4("End color", glm::value_ptr(comp.SystemEndColor));
+						}
 						ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(10, 10));
 						ImGui::Image(comp.Texture ? comp.Texture->GetRenderID() : Frosty::AssetManager::GetTexture2D("Checkerboard")->GetRenderID(), ImVec2(64, 64));
 						ImGui::PopStyleVar();

@@ -192,13 +192,13 @@ namespace MCS
 				UpdateGpuData(systemIndex, i);
 			}
 		}
-		if (glm::vec3(m_ParticleSystem[systemIndex]->Particles[0].Color) != m_ParticleSystem[systemIndex]->ParticleSystemColor) //Workaround
+		if (glm::vec3(m_ParticleSystem[systemIndex]->Particles[0].StartColor) != m_ParticleSystem[systemIndex]->SystemStartColor)
 		{
 			for (uint32_t i = 0; i < m_ParticleSystem[systemIndex]->MaxParticles; i++)
 			{
-				m_ParticleSystem[systemIndex]->Particles[i].Color[0] = m_ParticleSystem[systemIndex]->ParticleSystemColor.r;
-				m_ParticleSystem[systemIndex]->Particles[i].Color[1] = m_ParticleSystem[systemIndex]->ParticleSystemColor.g;
-				m_ParticleSystem[systemIndex]->Particles[i].Color[2] = m_ParticleSystem[systemIndex]->ParticleSystemColor.b;
+				m_ParticleSystem[systemIndex]->Particles[i].StartColor.r = m_ParticleSystem[systemIndex]->SystemStartColor.r;
+				m_ParticleSystem[systemIndex]->Particles[i].StartColor.g = m_ParticleSystem[systemIndex]->SystemStartColor.g;
+				m_ParticleSystem[systemIndex]->Particles[i].StartColor.b = m_ParticleSystem[systemIndex]->SystemStartColor.b;
 				UpdateGpuData(systemIndex, i);
 			}
 
@@ -291,6 +291,14 @@ namespace MCS
 				p.Size = Lerp(m_ParticleSystem[systemIndex]->EndParticleSize, m_ParticleSystem[systemIndex]->StartParticleSize, t);
 			}
 		}
+		if (m_ParticleSystem[systemIndex]->SystemStartColor != m_ParticleSystem[systemIndex]->SystemEndColor)
+		{
+			float t = p.Lifetime / m_ParticleSystem[systemIndex]->MaxLifetime;
+			glm::vec3 interpolatedColor = m_ParticleSystem[systemIndex]->SystemEndColor * (1 - t) + m_ParticleSystem[systemIndex]->SystemStartColor * t; //Interpolation
+			p.Color.r = interpolatedColor.r;
+			p.Color.g = interpolatedColor.g;
+			p.Color.b = interpolatedColor.b;
+		}
 	}
 
 	void ParticleSystem::ResetParticle(size_t systemIndex, size_t index)
@@ -341,10 +349,7 @@ namespace MCS
 			p.Direction.y = randDir.y;
 			p.Direction.z = randDir.z;
 		}
-		p.Color.r = m_ParticleSystem[systemIndex]->ParticleSystemColor.r;
-		p.Color.g = m_ParticleSystem[systemIndex]->ParticleSystemColor.g;
-		p.Color.b = m_ParticleSystem[systemIndex]->ParticleSystemColor.b;
-		//TODO: Start Color?
+		p.Color = p.StartColor;
 	}
 
 	void ParticleSystem::UpdateGpuData(size_t systemIndex, size_t index, uint32_t particleCount)

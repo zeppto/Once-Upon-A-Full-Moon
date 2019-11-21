@@ -990,6 +990,8 @@ namespace Frosty
 
 				glm::vec4 Direction{ 0.0f, 1.0f, 0.0f, 1.0f };
 				glm::vec4 StartPos{ 0.0f, 0.0f, 0.0f, 1.0f };
+				glm::vec4 StartColor{ 1.0f };
+				//glm::vec4 EndColor{ 1.0f };
 				float Lifetime{ -1.0f };
 				float MaxLifetime{ 3.0f };
 				float Speed{ 2.0f };
@@ -1022,7 +1024,9 @@ namespace Frosty
 			float ParticleSize{ 1.0f }; //For a constant size
 
 			uint32_t ParticleCount{ 0 };
-			glm::vec3 ParticleSystemColor{ 1.0f };
+			//glm::vec3 ParticleSystemColor{ 1.0f };
+			glm::vec3 SystemStartColor{ 1.0f };
+			glm::vec3 SystemEndColor{ 1.0f };
 			glm::vec3 ParticleSystemDirection{ 0.0f, 1.0f, 0.0f };
 			glm::vec3 ParticleSystemStartPos{ 0.0f, 0.0f, 0.0f };
 			float EmitRate{ 0.1f };
@@ -1031,6 +1035,7 @@ namespace Frosty
 			float MinLifetime{ 3.0f };
 			float MaxLifetime{ 3.0f };
 			float FadeTreshold{ 0.0f }; //No fade
+			bool StaticColor{ true };
 			bool RandomLifetimes{ false };
 			bool RandomStartPos{ false };
 			bool RandomDirection{ false };
@@ -1052,7 +1057,9 @@ namespace Frosty
 
 			CParticleSystem() = default;
 			CParticleSystem(const std::string shaderName, const std::string texName, unsigned int maxParticles, const glm::vec3& color, float particleStartSize, float particleEndSize)
-				: ShaderName(shaderName), TextureName(texName), MaxParticles(maxParticles), ParticleSystemColor(color), StartParticleSize(particleStartSize), EndParticleSize(particleEndSize) {}
+				: ShaderName(shaderName), TextureName(texName), MaxParticles(maxParticles), SystemStartColor(color), SystemEndColor(color), StartParticleSize(particleStartSize), EndParticleSize(particleEndSize) {}
+			CParticleSystem(const std::string shaderName, const std::string texName, unsigned int maxParticles, const glm::vec3& startColor, const glm::vec3& endColor, float particleStartSize, float particleEndSize)
+				: ShaderName(shaderName), TextureName(texName), MaxParticles(maxParticles), SystemStartColor(startColor), SystemEndColor(endColor), StartParticleSize(particleStartSize), EndParticleSize(particleEndSize) {}
 			CParticleSystem(const CParticleSystem& org) { FY_CORE_ASSERT(false, "Copy constructor in CParticleSystem called."); }
 
 			CParticleSystem& operator=(const CParticleSystem& org)
@@ -1069,7 +1076,9 @@ namespace Frosty
 					EndParticleSize = org.EndParticleSize;
 					ParticleSize = org.ParticleSize;
 					ParticleCount = org.ParticleCount;
-					ParticleSystemColor = org.ParticleSystemColor;
+					//ParticleSystemColor = org.ParticleSystemColor;
+					SystemStartColor = org.SystemStartColor;
+					SystemEndColor = org.SystemEndColor;
 					ParticleSystemDirection = org.ParticleSystemDirection;
 					ParticleSystemStartPos = org.ParticleSystemStartPos;
 					EmitRate = org.EmitRate;
@@ -1078,7 +1087,9 @@ namespace Frosty
 					MinLifetime = org.MinLifetime;
 					MaxLifetime = org.MaxLifetime;
 					FadeTreshold = org.FadeTreshold;
+					StaticColor = org.StaticColor;
 					RandomStartPos = org.RandomStartPos;
+					RandomLifetimes = org.RandomLifetimes;
 					RandomDirection = org.RandomDirection;
 					Preview = org.Preview;
 					Timer = org.Timer;
