@@ -37,6 +37,7 @@ namespace MCS
 		void SortParticles(size_t systemIndex);
 
 		float Lerp(float a, float b, float f);
+		float RandomFloat(float min, float max);
 
 	private:
 		std::array<Frosty::ECS::CTransform*, Frosty::ECS::MAX_ENTITIES_PER_COMPONENT> m_Transform;
