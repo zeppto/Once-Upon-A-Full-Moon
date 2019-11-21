@@ -33,7 +33,7 @@ namespace MCS
 	{
 		auto& world = Application::Get().GetWorld();
 		// Add systems
-		//world->AddSystem<LevelSystem>();
+		world->AddSystem<LevelSystem>();
 		world->AddSystem<CameraSystem>();
 		world->AddSystem<LightSystem>();
 		world->AddSystem<RenderSystem>();
@@ -62,12 +62,12 @@ namespace MCS
 
 		// SCENE 1
 		// PLANE
-		auto& plane = world->CreateEntity({ 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 100.0f, 1.0f, 100.0f }, true);
-		auto& planeTransform = world->GetComponent<Frosty::ECS::CTransform>(plane);
-		world->AddComponent<Frosty::ECS::CMesh>(plane, Frosty::AssetManager::GetMesh("pPlane1"));
-		auto& planeMat = world->AddComponent<Frosty::ECS::CMaterial>(plane, Frosty::AssetManager::GetShader("FlatColor"));
-		planeMat.Albedo = glm::vec4(0.2f, 0.3f, 0.8f, 1.0f);
-		world->AddToGroup(plane);
+		//auto& plane = world->CreateEntity({ 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 100.0f, 1.0f, 100.0f }, true);
+		//auto& planeTransform = world->GetComponent<Frosty::ECS::CTransform>(plane);
+		//world->AddComponent<Frosty::ECS::CMesh>(plane, Frosty::AssetManager::GetMesh("pPlane1"));
+		//auto& planeMat = world->AddComponent<Frosty::ECS::CMaterial>(plane, Frosty::AssetManager::GetShader("FlatColor"));
+		//planeMat.Albedo = glm::vec4(0.2f, 0.3f, 0.8f, 1.0f);
+		//world->AddToGroup(plane);
 		
 		// LIGHT 1
 		auto& light = world->CreateEntity({ 0.0f, 0.0f, 0.0f }, { 120.0f, 8.0f, -10.0f });
@@ -102,30 +102,8 @@ namespace MCS
 		world->AddComponent<Frosty::ECS::CHealthBar>(player, glm::vec3(0.0f, 10.0f, 0.0f));
 		auto& camEntity = world->GetSceneCamera();
 		world->GetComponent<Frosty::ECS::CCamera>(camEntity).Target = &playerTransform;
-		
-		auto& tree = world->CreateEntity({ 10.0f, 0.0f, 10.0f }, { 0.0f, 0.0f, 0.0f }, { 1.0f, 1.0f, 1.0f });
-		world->AddComponent<Frosty::ECS::CMesh>(tree, Frosty::AssetManager::GetMesh("tree1"));
-		world->AddComponent<Frosty::ECS::CMaterial>(tree, Frosty::AssetManager::GetShader("FlatColor"));
-		world->AddComponent<Frosty::ECS::CPhysics>(tree, Frosty::AssetManager::GetBoundingBox("tree1"));
-		world->AddToGroup(tree);
 
 		navSystem->InitiateGridMap(planeTransform);
-		
-
-		// Scene 2
-		// PLANE
-		auto& plane2 = world->CreateEntity({ 100.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 100.0f, 1.0f, 100.0f }, true);
-		//auto& plane2Transform = world->GetComponent<Frosty::ECS::CTransform>(plane2);
-		world->AddComponent<Frosty::ECS::CMesh>(plane2, Frosty::AssetManager::GetMesh("pPlane1"));
-		auto& plane2Mat = world->AddComponent<Frosty::ECS::CMaterial>(plane2, Frosty::AssetManager::GetShader("FlatColor"));
-		plane2Mat.Albedo = glm::vec4(0.2f, 0.8f, 0.3f, 1.0f);
-		world->AddToGroup(plane2, false);
-
-		auto& tree2 = world->CreateEntity({ 110.0f, 0.0f, 10.0f }, { 0.0f, 0.0f, 0.0f }, { 1.0f, 1.0f, 1.0f });
-		world->AddComponent<Frosty::ECS::CMesh>(tree2, Frosty::AssetManager::GetMesh("tree1"));
-		world->AddComponent<Frosty::ECS::CMaterial>(tree2, Frosty::AssetManager::GetShader("FlatColor"));
-		world->AddComponent<Frosty::ECS::CPhysics>(tree2, Frosty::AssetManager::GetBoundingBox("tree1"));
-		world->AddToGroup(tree2, false);
 
 
 //ifdef FY_DEBUG
