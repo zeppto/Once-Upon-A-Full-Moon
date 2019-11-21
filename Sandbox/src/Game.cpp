@@ -204,15 +204,21 @@ namespace MCS
 		world->AddComponent<Frosty::ECS::CPhysics>(chest5, Frosty::AssetManager::GetBoundingBox("pCube1"), 6.0f);
 		world->AddComponent<Frosty::ECS::CHealth>(chest5, 2.0f);
 		world->AddComponent<Frosty::ECS::CDropItem>(chest5);
-
+		 
 		// TEXT
 		auto& GUI = world->CreateEntity();
-		Frosty::UILayout uiLayout(3, 1);
+		Frosty::UILayout uiLayout(3, 2);
 		uiLayout.AddText(glm::vec2(25.0f, 20.0f), "Hello team");
 		uiLayout.AddText(glm::vec2(20.0f, 700.0f), "uwu", glm::vec3(1.0f, 0.0f, 1.0f), 0.25f);
 		uiLayout.AddText(glm::vec2(25.0f, 220.0f), "1234!", glm::vec3(0.5f, 0.1f, 0.9f), 1.5f);
+		uiLayout.AddSprite(glm::vec2(20.0f, 700.0f), glm::vec2(1, 1), "ChernoLogo", glm::vec4(1.0f));
+		uiLayout.AddSprite(glm::vec2(25.0f, 220.0f), glm::vec2(1, 1), "red", glm::vec4(1.0f));
 		
 		world->AddComponent<Frosty::ECS::CGUI>(GUI, uiLayout);
+
+
+		//test.Layout.AddText
+			///FIX!!  
 		
 		//navSystem->InitiateGridMap(world->GetComponent<Frosty::ECS::CTransform>(plane));
 		

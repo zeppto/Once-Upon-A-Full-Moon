@@ -311,6 +311,8 @@ namespace Frosty
 	{
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		glEnable(GL_DEPTH_TEST);
+
 		shader->Bind();
 		vertexArray->Bind();
 
@@ -346,7 +348,6 @@ namespace Frosty
 			vertexArray->GetVertexBuffer().front()->Bind();
 			vertexArray->GetVertexBuffer().front()->SetData(*verts, sizeof(verts), Frosty::BufferType::DYNAMIC);
 
-
 			glActiveTexture(GL_TEXTURE0);
 			glBindTexture(GL_TEXTURE_2D, ch.textureID);
 
@@ -355,6 +356,38 @@ namespace Frosty
 			x += (ch.advance >> 6)* scale;
 		}
 		glBindTexture(GL_TEXTURE_2D, 0);
+
+		shader->UnBind();
+		vertexArray->Unbind();
+		glDisable(GL_BLEND);
+		glDisable(GL_DEPTH_TEST);
+	}
+
+	void Renderer::SubmitSprite(const std::shared_ptr<Shader>& shader, const std::shared_ptr<VertexArray>& vertexArray, const uint32_t textureID, glm::vec4 color, glm::mat4 transform)
+	{
+		shader->Bind();
+		vertexArray->Bind();
+
+		float width = 1280.0f;
+		float height = 720.0f;
+		glm::mat4 projection = glm::ortho(0.0f, width, 0.0f, height);
+		shader->UploadUniformMat4("projection", projection);
+		shader->UploadUniformMat4("transform", transform);
+		shader->UploadUniformFloat4("color", color); //Make sure this number matches the active and sampled texture
+
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+		vertexArray->GetVertexBuffer().front()->Bind();
+
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, textureID);
+		RenderCommand::DisableBackfaceCulling();
+		RenderCommand::Draw2D(vertexArray); //Will probably change later
+		RenderCommand::EnableBackfaceCulling();
+		glBindTexture(GL_TEXTURE_2D, 0);
+
+		glDisable(GL_BLEND);
 
 		shader->UnBind();
 		vertexArray->Unbind();
@@ -438,6 +471,11 @@ namespace Frosty
 	//For 2D, might be temp
 	void Renderer::Submit2d(const std::shared_ptr<Shader>& shader, const std::shared_ptr<VertexArray>& vertexArray, const glm::mat4& transform)
 	{
+		float width = 1280.0f;
+		float height = 720.0f;
+		glm::mat4 projection = glm::ortho(0.0f, width, 0.0f, height);
+
+		shader->UploadUniformMat4("projection", projection);
 
 		shader->Bind();
 		vertexArray->Bind();
