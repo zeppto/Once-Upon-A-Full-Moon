@@ -53,7 +53,7 @@ namespace MCS
 			int rotate;
 			m_Map.getRoomTextur(m_PlayerPos, &rotate);
 			Level::MoveToNewRoom(m_CurrentRoome.sideExits[0], m_CurrentRoome.sideExits[1], m_CurrentRoome.sideExits[2], m_CurrentRoome.sideExits[3]);
-			m_LevelFileFormat.OpenFromFile("deadend_chests_IsStatick", m_PlayerPos, nullptr, rotate);
+			m_LevelFileFormat.OpenFromFile("deadend_chests_IsStatick", 1 , m_PlayerPos, nullptr, rotate);
 			m_Start = false;
 			m_LevelFileFormat.LoadBoolMap("deadend_chests_IsStatick");
 		}
@@ -134,74 +134,76 @@ namespace MCS
 		//auto& ExitBBox = m_World->GetComponent<Frosty::ECS::CPhysics>(e.GetExitEntity());
 		auto& ExitSide = m_World->GetComponent<Frosty::ECS::CLevelExit>(e.GetExitEntity());
 
-		auto& PlayerTranform = m_World->GetComponent<Frosty::ECS::CTransform>(e.GetPlayerEntity());
-		Frosty::ECS::CTransform* playerTransform;
-
-		//	temp level swap
-		for (size_t i = 1; i < p_Total; i++)
+		glm::ivec2 tempCoord = m_PlayerPos;
+		if (ExitSide.ExitDirection == 0)
+			tempCoord += glm::ivec2(0, -1);
+		if (ExitSide.ExitDirection == 1)
+			tempCoord += glm::ivec2(0, 1);
+		if (ExitSide.ExitDirection == 2)
+			tempCoord += glm::ivec2(-1, 0);
+		if (ExitSide.ExitDirection == 3)
+			tempCoord += glm::ivec2(1, 0);
+		if (tempCoord != m_OtherRoom)
 		{
-			if (m_Transform[i]->EntityPtr != nullptr)
+			m_OtherRoom = tempCoord;
+			auto& PlayerTranform = m_World->GetComponent<Frosty::ECS::CTransform>(e.GetPlayerEntity());
+			Frosty::ECS::CTransform* playerTransform;
+
+			//	temp level swap
+			for (size_t i = 1; i < p_Total; i++)
 			{
-				if (!m_World->HasComponent<Frosty::ECS::CCamera>(m_Transform[i]->EntityPtr))
+				if (m_Transform[i]->EntityPtr != nullptr)
 				{
-					if (!m_World->HasComponent<Frosty::ECS::CPlayer>(m_Transform[i]->EntityPtr))
+					if (!m_World->HasComponent<Frosty::ECS::CCamera>(m_Transform[i]->EntityPtr))
 					{
-						//if (m_World->HasComponent<Frosty::ECS::CPhysics>(m_Transform[i]->EntityPtr))
-						//{
-						//	if (!m_World->HasComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr))
-						//	{
-						//		m_World->AddComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr);
-						//	}
-						//}
-						//else if (m_World->HasComponent<Frosty::ECS::CMesh>(m_Transform[i]->EntityPtr))
-						//{
-						//	if (!m_World->HasComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr))
-						//	{
-						//		m_World->AddComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr);
-						//	}
-						//}
-						//else if (m_World->HasComponent<Frosty::ECS::CLight>(m_Transform[i]->EntityPtr))
-						//{
-						//	auto& light = m_World->GetComponent<Frosty::ECS::CLight>(m_Transform[i]->EntityPtr);
-						//	if (light.Type == Frosty::ECS::CLight::LightType::Point)
-						//		if (!m_World->HasComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr))
-						//		{
-						//			m_World->AddComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr);
-						//		}
-						//}
-					}
-					else
-					{
-						playerTransform = m_Transform[i];
+						if (!m_World->HasComponent<Frosty::ECS::CPlayer>(m_Transform[i]->EntityPtr))
+						{
+							//if (m_World->HasComponent<Frosty::ECS::CPhysics>(m_Transform[i]->EntityPtr))
+							//{
+							//	if (!m_World->HasComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr))
+							//	{
+							//		m_World->AddComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr);
+							//	}
+							//}
+							//else if (m_World->HasComponent<Frosty::ECS::CMesh>(m_Transform[i]->EntityPtr))
+							//{
+							//	if (!m_World->HasComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr))
+							//	{
+							//		m_World->AddComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr);
+							//	}
+							//}
+							//else if (m_World->HasComponent<Frosty::ECS::CLight>(m_Transform[i]->EntityPtr))
+							//{
+							//	auto& light = m_World->GetComponent<Frosty::ECS::CLight>(m_Transform[i]->EntityPtr);
+							//	if (light.Type == Frosty::ECS::CLight::LightType::Point)
+							//		if (!m_World->HasComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr))
+							//		{
+							//			m_World->AddComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr);
+							//		}
+							//}
+						}
+						else
+						{
+							playerTransform = m_Transform[i];
+						}
 					}
 				}
 			}
+
+			m_CurrentRoome = m_Map.getRoom(m_OtherRoom);
+			//m_EntrensSide = ExitSide.ExitDirection;
+			//m_NextLevel = true;
+			//m_TempTimer = 0;
+
+			int rotation = 0;
+			std::string fileName = m_Map.getRoomTextur(m_OtherRoom, &rotation);
+
+			//PlayerTranform.Position = Level::MoveToNewRoom(m_CurrentRoome.sideExits[0], m_CurrentRoome.sideExits[1],
+			//	m_CurrentRoome.sideExits[2], m_CurrentRoome.sideExits[3], ExitSide.ExitDirection);
+
+
+			m_LevelFileFormat.OpenFromFile(fileName, 1, m_OtherRoom, playerTransform, rotation, glm::vec3(0.0f, 0.0f, 0.0f), ExitSide.ExitDirection);
 		}
-
-
-
-		if (ExitSide.ExitDirection == 0)
-			m_PlayerPos += glm::ivec2(0, -1);
-		if (ExitSide.ExitDirection == 1)
-			m_PlayerPos += glm::ivec2(0, 1);
-		if (ExitSide.ExitDirection == 2)
-			m_PlayerPos += glm::ivec2(-1, 0);
-		if (ExitSide.ExitDirection == 3)
-			m_PlayerPos += glm::ivec2(1, 0);
-
-		m_CurrentRoome = m_Map.getRoom(m_PlayerPos);
-		//m_EntrensSide = ExitSide.ExitDirection;
-		//m_NextLevel = true;
-		//m_TempTimer = 0;
-
-		int rotation = 0;
-		std::string fileName = m_Map.getRoomTextur(m_PlayerPos, &rotation);
-
-		//PlayerTranform.Position = Level::MoveToNewRoom(m_CurrentRoome.sideExits[0], m_CurrentRoome.sideExits[1],
-		//	m_CurrentRoome.sideExits[2], m_CurrentRoome.sideExits[3], ExitSide.ExitDirection);
-
-
-		m_LevelFileFormat.OpenFromFile(fileName, m_PlayerPos, playerTransform, rotation,glm::vec3(0.0f,0.0f,0.0f),ExitSide.ExitDirection);
 
 	}
 	void LevelSystem::OnSaveLevelEvent(Frosty::SaveLevelEvent& e)
@@ -330,7 +332,7 @@ namespace MCS
 			}
 		}
 		m_RoomType = e.GetFilename();
-		m_LevelFileFormat.OpenFromFile(m_RoomType, m_PlayerPos, playerTransform);
+		m_LevelFileFormat.OpenFromFile(m_RoomType, 1,m_PlayerPos, playerTransform);
 	}
 	void LevelSystem::OnCreatEntityEvent(Frosty::CreatEntityEvent& e)
 	{

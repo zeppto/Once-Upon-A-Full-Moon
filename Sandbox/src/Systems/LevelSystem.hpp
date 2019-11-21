@@ -43,6 +43,7 @@ namespace MCS
 
 		MapGenerator m_Map;
 		glm::ivec2 m_PlayerPos = { 10, 15 };//{ 10, 15 };
+		glm::ivec2 m_OtherRoom = { -1, -1 };
 		//map.generateMap();
 		Room m_CurrentRoome;// = map.getRoom(glm::ivec2(11, 15));
 		bool m_Start = true;

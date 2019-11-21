@@ -106,11 +106,10 @@ namespace Frosty
 		m_Scene->AddCamera(entity);
 	}
 
-	void World::DestroyGroup(int32_t groupId)
+	void World::DestroyGroup(bool current)
 	{
-		FY_CORE_ASSERT(groupId == 0 || groupId == 1, "That groupId doesn't exist!");
-
-		m_DestroyRoom = groupId;
+		if (current) m_DestroyRoom = m_CurrentRoom;
+		else m_DestroyRoom = (m_CurrentRoom + 1) % 2;
 	}
 
 	void World::HandleDestroyedRoom()

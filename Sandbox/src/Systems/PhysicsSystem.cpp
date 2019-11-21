@@ -193,11 +193,16 @@ namespace MCS
 					{
 						//to go to next room
 						auto& Exit = m_World->GetComponent<Frosty::ECS::CLevelExit>(m_Transform[i]->EntityPtr);
-
+						// GetCurrentRoom 
+						//Load To other
 						if (!Exit.IsTriggered)
 						{
 							Exit.IsTriggered = true;
 							Frosty::EventBus::GetEventBus()->Publish<Frosty::ExitLevelEvent>(Frosty::ExitLevelEvent(m_Transform[i]->EntityPtr, m_Transform[index]->EntityPtr));
+						}
+						else
+						{
+							//Set Player Pos?
 						}
 					}
 					// If the one colliding is an enemy or a player...
@@ -209,6 +214,13 @@ namespace MCS
 							m_Transform[index]->Position -= Frosty::CollisionDetection::AABBIntersecPushback(finalLengthA, finalCenterA, finalLengthB, finalCenterB);
 						}
 					}
+				
+					
+				}
+				else if (m_World->HasComponent<Frosty::ECS::CPlayer>(m_Transform[index]->EntityPtr) && m_World->HasComponent<Frosty::ECS::CLevelExit>(m_Transform[i]->EntityPtr))
+				{
+					auto& Exit = m_World->GetComponent<Frosty::ECS::CLevelExit>(m_Transform[i]->EntityPtr);
+					Exit.IsTriggered = false;
 				}
 			}
 		}

@@ -265,7 +265,14 @@ void LevelFileFormat::SaveToFile(std::string fileName)
 
 }
 
-void LevelFileFormat::OpenFromFile(std::string fileName, glm::ivec2 roomId , Frosty::ECS::CTransform* playerTransform, int rotation, glm::vec3 move,  const int& RoomExitDir)
+void LevelFileFormat::OpenFromFile(
+	std::string fileName, 
+	const bool& CurrentRoom,
+	glm::ivec2 roomId ,
+	Frosty::ECS::CTransform* playerTransform,
+	int rotation, 
+	glm::vec3 move,  
+	const int& RoomExitDir)
 {
 	int physCounter = 0;
 	Frosty::ECS::CTransform* planeTransform = nullptr;
@@ -284,17 +291,21 @@ void LevelFileFormat::OpenFromFile(std::string fileName, glm::ivec2 roomId , Fro
 
 		float xOffset = 0.0f;
 		float zOffset = 0.0f;
-		glm::vec3 startOffset(150.0f, 0.0f, 150.0f);
 
-		if (playerTransform != nullptr)
-		{
-			glm::vec3 playerCalc = playerTransform->Position;//+ startOffset;
-			xOffset = std::ceil(playerCalc.x / 300.0f);
-			zOffset = std::ceil(playerCalc.z / 300.0f);
-		}
+		int RoomX = roomId.x - 10;
+		int RoomY = roomId.y - 15;
 
-		startOffset.x = xOffset * 300.0f;
-		startOffset.z = zOffset * 300.0f;
+		glm::vec3 startOffset(RoomX * 300.0f, 0.0f,RoomY * 300.0f);
+
+		//if (playerTransform != nullptr)
+		//{
+		//	glm::vec3 playerCalc = playerTransform->Position;//+ startOffset;
+		//	xOffset = std::ceil(playerCalc.x / 300.0f);
+		//	zOffset = std::ceil(playerCalc.z / 300.0f);
+		//}
+
+		//startOffset.x = xOffset * 300.0f;
+		//startOffset.z = zOffset * 300.0f;
 
 
 
@@ -555,6 +566,7 @@ void LevelFileFormat::OpenFromFile(std::string fileName, glm::ivec2 roomId , Fro
 
 
 					auto& exit =  m_World->AddComponent<Frosty::ECS::CLevelExit>(entity, newExit);
+					exit.RoomCoords = roomId;
 					if (RoomExitDir == translatedExitDir)
 					{
 						exit.IsTriggered = true;

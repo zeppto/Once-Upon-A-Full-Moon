@@ -45,10 +45,15 @@ namespace Frosty
 		// Returns the camera entity for the scene (later change this when having multiple scenes)
 		const std::shared_ptr<ECS::Entity>& GetSceneCamera() const { return m_Scene->GetCamera(); }
 		void SetSceneCamera(const std::shared_ptr<ECS::Entity>& entity);
-		void DestroyGroup(int32_t groupId);
+		
+		//Rooms / Groups
+		void DestroyGroup(bool current = true);
 		void HandleDestroyedRoom();
 		size_t GetCurrentRoom() const;
 		void ChangeCurrentRoom();
+
+		// Entity Functions (Room/Groups)
+		void AddToGroup(const std::shared_ptr<ECS::Entity>& entity, bool current = true);
 
 		// Entity Functions
 		std::shared_ptr<ECS::Entity>& CreateEntity(const glm::vec3& position = glm::vec3(0.0f), const glm::vec3& rotation = glm::vec3(0.0f), const glm::vec3& scale = glm::vec3(1.0f), bool isStatic = false);
@@ -60,7 +65,6 @@ namespace Frosty
 			return m_Scene->HasComponent<ComponentType>(entity);
 		}
 		void AddToDestroyList(const std::shared_ptr<ECS::Entity>& entity);
-		void AddToGroup(const std::shared_ptr<ECS::Entity>& entity, bool current = true);
 		
 		// Component Functions
 		template<typename ComponentType>

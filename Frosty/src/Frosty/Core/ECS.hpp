@@ -1165,6 +1165,7 @@ namespace Frosty
 			static std::string NAME;
 			//up = 0, down = 1, right = 2, left = 3
 			int ExitDirection{ 0 };
+			glm::ivec2 RoomCoords = { -1, -1 };
 			bool IsTriggered = false;
 
 			CLevelExit() = default;
