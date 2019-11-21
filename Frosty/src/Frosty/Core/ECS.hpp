@@ -1023,6 +1023,7 @@ namespace Frosty
 			uint32_t ParticleCount{ 0 };
 			glm::vec3 ParticleSystemColor{ 1.0f };
 			glm::vec3 ParticleSystemDirection{ 0.0f, 1.0f, 0.0f };
+			glm::vec3 ParticleSystemStartPos{ 0.0f, 0.0f, 0.0f };
 			float EmitRate{ 0.1f };
 			uint32_t EmitCount{ 1 };
 			float Speed{ 1.0f };
@@ -1067,6 +1068,7 @@ namespace Frosty
 					ParticleCount = org.ParticleCount;
 					ParticleSystemColor = org.ParticleSystemColor;
 					ParticleSystemDirection = org.ParticleSystemDirection;
+					ParticleSystemStartPos = org.ParticleSystemStartPos;
 					EmitRate = org.EmitRate;
 					EmitCount = org.EmitCount;
 					Speed = org.Speed;

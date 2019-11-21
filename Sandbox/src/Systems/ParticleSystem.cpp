@@ -297,14 +297,25 @@ namespace MCS
 	{
 		Frosty::ECS::CParticleSystem::Particle& p = m_ParticleSystem[systemIndex]->Particles[index];
 		p.Lifetime = m_ParticleSystem[systemIndex]->MaxLifetime;
-		p.Position = m_ParticleSystem[systemIndex]->Particles[index].StartPos;
+		if (m_ParticleSystem[systemIndex]->RandomStartPos == false)
+		{
+			p.StartPos = glm::vec4(m_ParticleSystem[systemIndex]->ParticleSystemStartPos, 1.0f);
+		}
+		else
+		{
+			float randomNumX = ((rand() % 100) - 50) / 10.0f;
+			float randomNumY = ((rand() % 100) - 50) / 10.0f;
+			float randomNumZ = ((rand() % 100) - 50) / 10.0f;
+			p.StartPos.x = randomNumX;
+			p.StartPos.y = randomNumY;
+			p.StartPos.z = randomNumZ;
+		}
+		p.Position = p.StartPos;
 		p.Size = p.StartSize;
 		p.Color.a = 1.0f; //TODO: set to startColor/startAlpha
 		if (m_ParticleSystem[systemIndex]->RandomDirection == false)
 		{
-			p.Direction.x = m_ParticleSystem[systemIndex]->ParticleSystemDirection.x;
-			p.Direction.y = m_ParticleSystem[systemIndex]->ParticleSystemDirection.y;
-			p.Direction.z = m_ParticleSystem[systemIndex]->ParticleSystemDirection.z;
+			p.Direction = glm::vec4(m_ParticleSystem[systemIndex]->ParticleSystemDirection, 1.0f);
 			//TODO: Start Direction?
 		}
 		else

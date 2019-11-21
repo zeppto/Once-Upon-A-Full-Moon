@@ -911,10 +911,15 @@ namespace MCS
 						{
 							ImGui::SliderInt("Particle count", (int*)&comp.MaxParticles, 1, comp.MAX_PARTICLE_COUNT);
 						}
-						ImGui::Checkbox("Random Direction", &comp.RandomDirection);
+						ImGui::Checkbox("Random direction", &comp.RandomDirection);
 						if (comp.RandomDirection == false)
 						{
 							ImGui::DragFloat3("Direction", glm::value_ptr(comp.ParticleSystemDirection), 0.1f, 0.0f, 0.0f, "%.2f");
+						}
+						ImGui::Checkbox("Random start position", &comp.RandomStartPos);
+						if (comp.RandomStartPos == false)
+						{
+							ImGui::DragFloat3("Start position", glm::value_ptr(comp.ParticleSystemStartPos), 0.1f, 0.0f, 0.0f, "%.2f");
 						}
 						ImGui::InputFloat("Speed", &comp.Speed);
 						ImGui::InputFloat("Start size", &comp.StartParticleSize);
