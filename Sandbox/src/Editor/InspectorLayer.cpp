@@ -51,15 +51,18 @@ namespace MCS
 			unsigned int counter = 0;
 			for (auto& entity : *world->GetEntityManager())
 			{
-				ImGuiTreeNodeFlags node_flags = ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen | ((selection_mask & (1 << counter)) ? ImGuiTreeNodeFlags_Selected : 0); // ImGuiTreeNodeFlags_Bullet
-				Frosty::ECS::EntityID eid = entity->Id;
-				ImGui::TreeNodeEx((void*)(intptr_t)counter, node_flags, "Entity (%d)", eid);
-				if (ImGui::IsItemClicked())
+				if (entity->ShowInEditor)
 				{
-					node_clicked = (int)counter;
-					m_SelectedEntity = entity;
+					ImGuiTreeNodeFlags node_flags = ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen | ((selection_mask & (1 << counter)) ? ImGuiTreeNodeFlags_Selected : 0); // ImGuiTreeNodeFlags_Bullet
+					Frosty::ECS::EntityID eid = entity->Id;
+					ImGui::TreeNodeEx((void*)(intptr_t)counter, node_flags, "Entity (%d)", eid);
+					if (ImGui::IsItemClicked())
+					{
+						node_clicked = (int)counter;
+						m_SelectedEntity = entity;
+					}
+					counter++;
 				}
-				counter++;
 			}
 			if (node_clicked != -1)
 			{
@@ -850,7 +853,7 @@ namespace MCS
 					if (ImGui::CollapsingHeader("Particle System"))
 					{
 						auto& comp = world->GetComponent<Frosty::ECS::CParticleSystem>(m_SelectedEntity);
-						ImGui::BeginChild("CParticleSystem", ImVec2(EDITOR_INSPECTOR_WIDTH, 345), true);
+						ImGui::BeginChild("CParticleSystem", ImVec2(EDITOR_INSPECTOR_WIDTH, 445), true);
 						ImGui::Text("Active particles: %i", comp.ParticleCount);
 						ImGui::Checkbox("Preview", &comp.Preview);
 						ImGui::Checkbox("Face camera", &comp.AlwaysFaceCamera);
@@ -908,11 +911,16 @@ namespace MCS
 						{
 							ImGui::SliderInt("Particle count", (int*)&comp.MaxParticles, 1, comp.MAX_PARTICLE_COUNT);
 						}
-						ImGui::DragFloat3("Direction", glm::value_ptr(comp.ParticleSystemDirection), 0.1f, 0.0f, 0.0f, "%.2f");
+						ImGui::Checkbox("Random Direction", &comp.RandomDirection);
+						if (comp.RandomDirection == false)
+						{
+							ImGui::DragFloat3("Direction", glm::value_ptr(comp.ParticleSystemDirection), 0.1f, 0.0f, 0.0f, "%.2f");
+						}
 						ImGui::InputFloat("Speed", &comp.Speed);
 						ImGui::InputFloat("Start size", &comp.StartParticleSize);
 						ImGui::InputFloat("End size", &comp.EndParticleSize);
 						ImGui::InputFloat("Emit rate", &comp.EmitRate);
+						ImGui::DragInt("Emit count", (int*)&comp.EmitCount, 1, 1, comp.MaxParticles);
 						ImGui::InputFloat("Lifetime", &comp.MaxLifetime);
 						ImGui::SliderFloat("Fade", &comp.FadeTreshold, 0.0f, comp.MaxLifetime);
 						ImGui::EndChild();
@@ -1163,7 +1171,7 @@ namespace MCS
 		return true;
 	}
 
-	bool InspectorLayer::OnKeyPressedEvent(Frosty::KeyPressedEvent & e)
+	bool InspectorLayer::OnKeyPressedEvent(Frosty::KeyPressedEvent& e)
 	{
 		if (e.GetKeyCode() == FY_KEY_TAB)
 		{

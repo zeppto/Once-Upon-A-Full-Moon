@@ -4,6 +4,7 @@
 #include "Frosty/API/AssetManager/AssetManager.hpp"
 #include <glm/gtx/matrix_decompose.hpp>
 #include "Frosty/Core/BoolMap/BoolMapGenerator.hpp"
+#include "Frosty/Events/AbilityEvent.hpp"
 
 
 LevelFileFormat::LevelFileFormat()
@@ -266,6 +267,8 @@ void LevelFileFormat::SaveToFile(std::string fileName)
 
 void LevelFileFormat::OpenFromFile(std::string fileName, glm::ivec2 roomId , Frosty::ECS::CTransform* playerTransform, int rotation, glm::vec3 move,  const int& RoomExitDir)
 {
+	int physCounter = 0;
+	Frosty::ECS::CTransform* planeTransform = nullptr;
 	std::ifstream existingFile;
 	existingFile.open("../../../assets/levels/" + fileName + ".lvl", std::ios::binary);
 	Level_Header heder;
@@ -309,7 +312,7 @@ void LevelFileFormat::OpenFromFile(std::string fileName, glm::ivec2 roomId , Fro
 			//	{
 			//		if (fileEntitys.myEntitys.at(i).MyComponents.at(j).HaveComponent)
 			//		{
-
+			//
 			//			if (j == 0)
 			//				existingFile.read((char*)& fileEntitys.myEntitys.at(i).myTransform, sizeof(Level_Transform));
 			//			if (j == 1)
@@ -343,7 +346,6 @@ void LevelFileFormat::OpenFromFile(std::string fileName, glm::ivec2 roomId , Fro
 			//create entity
 			if (fileEntitys.myEntitys.at(i).MyComponents.at(0).HaveComponent)
 			{
-
 				//0 = Transform
 				existingFile.read((char*)& fileEntitys.myEntitys.at(i).myTransform, sizeof(Level_Transform));
 				glm::mat4 matrix(1.0f);
@@ -374,6 +376,11 @@ void LevelFileFormat::OpenFromFile(std::string fileName, glm::ivec2 roomId , Fro
 				}
 				auto& entity = m_World->CreateEntity((glm::vec3(matrix[3].x, matrix[3].y, matrix[3].z) + startOffset), tempRotation, fileEntitys.myEntitys.at(i).myTransform.Scale, fileEntitys.myEntitys.at(i).myTransform.IsStatic);
 
+				auto& newlyTreansform = m_World->GetComponent<Frosty::ECS::CTransform>(entity);
+				if (newlyTreansform.Scale == glm::vec3(300.0f, 1.0f, 300.0f))
+				{
+					planeTransform = &newlyTreansform;
+				}
 				//1 = Mesh
 				if (fileEntitys.myEntitys.at(i).MyComponents.at(1).HaveComponent)
 				{
@@ -429,6 +436,7 @@ void LevelFileFormat::OpenFromFile(std::string fileName, glm::ivec2 roomId , Fro
 				//5 = Physics
 				if (fileEntitys.myEntitys.at(i).MyComponents.at(5).HaveComponent)
 				{
+					physCounter++;
 					existingFile.read((char*)& fileEntitys.myEntitys.at(i).myPhysics, sizeof(Level_Physics));
 					auto& physics = m_World->AddComponent<Frosty::ECS::CPhysics>(entity);
 					if (fileEntitys.myEntitys.at(i).MyComponents.at(1).HaveComponent)
@@ -609,6 +617,9 @@ void LevelFileFormat::OpenFromFile(std::string fileName, glm::ivec2 roomId , Fro
 		}
 	}
 	existingFile.close();
+
+
+	Frosty::EventBus::GetEventBus()->Publish<Frosty::InitiateGridEvent>(Frosty::InitiateGridEvent(planeTransform));
 }
 
 
@@ -717,6 +728,7 @@ void LevelFileFormat::LoadBoolMap(std::string fileName)
 			}
 		}
 		existingFile.close();
+
 	}
 
 
@@ -744,12 +756,4 @@ void LevelFileFormat::LoadBoolMap(std::string fileName)
 	bool k = ABoolMap->CheckCollition(glm::vec3(1.0f, 0.0f, 1.0f));
 	ABoolMap->SaveMap("", "BoolMap");
 	ABoolMap->LoadMap("BoolMap.bmap");
-
-
-
-
 }
-
-
-
-
