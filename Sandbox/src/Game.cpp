@@ -112,6 +112,8 @@ namespace MCS
 		world->AddComponent<Frosty::ECS::CWeapon>(weapon, Frosty::ECS::CWeapon::WeaponType::Arrow, 3, 10.f);
 		auto& weaponComp = world->GetComponent<Frosty::ECS::CWeapon>(weapon);
 
+
+
 		// PLAYER
 		auto& player = world->CreateEntity({ -104.0f, 0.0f, -15.4f }, { 0.0f, 0.0f, 0.0f }, { 2.0f, 2.0f, 2.0f });
 		auto& playerTransform = world->GetComponent<Frosty::ECS::CTransform>(player);
@@ -131,39 +133,63 @@ namespace MCS
 		world->GetComponent<Frosty::ECS::CCamera>(camEntity).Target = &playerTransform;
 
 		//Player HUD
-		Frosty::UILayout uiLayout(10, 1);
+		Frosty::UILayout uiLayout(22, 1);
 
 		//Items
 		float padding = 200.0f;
 		float offsetX = 500.0f;
 		float offsetY = 30.0f;
 
-		uiLayout.AddText(glm::vec2(offsetX + 0 * padding, offsetY), "1/1", glm::vec3(1.0f, 1.0f, 1.0f));
-		uiLayout.AddText(glm::vec2(offsetX + 1 * padding, offsetY), "1/1", glm::vec3(1.0f, 1.0f, 1.0f));
-		uiLayout.AddText(glm::vec2(offsetX + 2 * padding, offsetY), "1/1", glm::vec3(1.0f, 1.0f, 1.0f));
-		uiLayout.AddText(glm::vec2(offsetX + 3 * padding, offsetY), "1x", glm::vec3(1.0f, 1.0f, 1.0f));
-		
+		uiLayout.AddText(glm::vec2(offsetX + 0 * padding, offsetY), "1/1", glm::vec3(1.0f, 1.0f, 1.0f), 0.75); //0
+		uiLayout.AddText(glm::vec2(offsetX + 1 * padding, offsetY), "1/1", glm::vec3(1.0f, 1.0f, 1.0f), 0.75); //1
+		uiLayout.AddText(glm::vec2(offsetX + 2 * padding, offsetY), "1/1", glm::vec3(1.0f, 1.0f, 1.0f), 0.75); //2
+		uiLayout.AddText(glm::vec2(offsetX + 3 * padding, offsetY), "1x", glm::vec3(1.0f, 1.0f, 1.0f), 0.75); //3
+
 		//Points
-		uiLayout.AddText(glm::vec2(1100,675), "Points: 100", glm::vec3(1.0f, 1.0f, 1.0f), 0.75f);
+		uiLayout.AddText(glm::vec2(1100, 675), "Points: 100", glm::vec3(1.0f, 1.0f, 1.0f), 0.75f); //4
 
 		//TempHealth
-		uiLayout.AddText(glm::vec2(25,675), "100/100", glm::vec3(1.0f, 1.0f, 1.0f));
+		uiLayout.AddText(glm::vec2(25, 675), "100/100", glm::vec3(1.0f, 1.0f, 1.0f)); //5
 
 		//Picked up
 		//uiLayout.AddText(glm::vec2(550, 425), "+ 1 Health Potion", glm::vec3(1.0f, 1.0f, 1.0f), 0.75f);
-		uiLayout.AddText(glm::vec2(550, 425), "", glm::vec3(1.0f, 1.0f, 1.0f), 0.75f);
+		uiLayout.AddText(glm::vec2(550, 425), "", glm::vec3(1.0f, 1.0f, 1.0f), 0.75f); //6
 
-		uiLayout.AddText(glm::vec2(50,150), "3.0", glm::vec3(1.0f, 1.0f, 1.0f));
-		uiLayout.AddText(glm::vec2(100,100), "2.0", glm::vec3(1.0f, 1.0f, 1.0f));
-		uiLayout.AddText(glm::vec2(125,40), "1.0", glm::vec3(1.0f, 1.0f, 1.0f));
+		//Attack cooldown
+		uiLayout.AddText(glm::vec2(50, 150), "3.0", glm::vec3(1.0f, 1.0f, 1.0f), 0.75); //7
+		uiLayout.AddText(glm::vec2(100, 100), "2.0", glm::vec3(1.0f, 1.0f, 1.0f), 0.75); //8
+		uiLayout.AddText(glm::vec2(125, 40), "1.0", glm::vec3(1.0f, 1.0f, 1.0f), 0.75); //9
 
-		
-		
+		//Dash cooldown
+		uiLayout.AddText(glm::vec2(200, 40), "0.0", glm::vec3(1.0f, 1.0f, 1.0f), 0.75); //10
 
+		//Item cooldown
+		float offsetx2 = 50;
+		uiLayout.AddText(glm::vec2(offsetX + offsetx2 + 0 * padding, offsetY), "1.0", glm::vec3(1.0f, 1.0f, 1.0f), 0.75); //11
+		uiLayout.AddText(glm::vec2(offsetX + offsetx2 + 1 * padding, offsetY), "2.0", glm::vec3(1.0f, 1.0f, 1.0f), 0.75); //12
+		uiLayout.AddText(glm::vec2(offsetX + offsetx2 + 2 * padding, offsetY), "3.0", glm::vec3(1.0f, 1.0f, 1.0f), 0.75); //13
 
+		//Controls info
+		float controlsInfoSize = 0.5;
+		float controlsInfoSize2 = 0.35;
+		//Attacks
+		uiLayout.AddText(glm::vec2(50, 150 + 30), "[SPACE]", glm::vec3(1.0f, 1.0f, 1.0f), controlsInfoSize2); //14
+		uiLayout.AddText(glm::vec2(100, 100 + 30), "[R-MOUSE]", glm::vec3(1.0f, 1.0f, 1.0f), controlsInfoSize2); //15
+		uiLayout.AddText(glm::vec2(125, 40 + 30), "[L-MOUSE]", glm::vec3(1.0f, 1.0f, 1.0f), controlsInfoSize2); //16
+
+		//Dash
+		uiLayout.AddText(glm::vec2(200+30, 40), "[SHIFT]", glm::vec3(1.0f, 1.0f, 1.0f), controlsInfoSize2); //17
+
+		//Items
+		uiLayout.AddText(glm::vec2(offsetX + 55 + 0 * padding, offsetY + 30), "[1]", glm::vec3(1.0f, 1.0f, 1.0f), controlsInfoSize2); //18
+		uiLayout.AddText(glm::vec2(offsetX + 55 + 1 * padding, offsetY + 30), "[2]", glm::vec3(1.0f, 1.0f, 1.0f), controlsInfoSize2); //19
+		uiLayout.AddText(glm::vec2(offsetX + 55 + 2 * padding, offsetY + 30), "[Q]", glm::vec3(1.0f, 1.0f, 1.0f), controlsInfoSize2); //20
+
+		//Picked up
+
+		uiLayout.AddText(glm::vec2(550, 425), "[E]", glm::vec3(1.0f, 1.0f, 1.0f), controlsInfoSize); //21
 
 		world->AddComponent<Frosty::ECS::CGUI>(player, uiLayout);
-
 
 
 		//// WALL

@@ -262,6 +262,7 @@ namespace MCS
 				// Check if entity has CDash component before publishing
 				if (m_Dash[index]->CurrentCooldown <= 0.0f)
 				{
+
 					m_Dash[index]->Active = true;
 					//ASDF
 					Frosty::EventBus::GetEventBus()->Publish<Frosty::DashEvent>(Frosty::DashEvent(m_Player[index]->EntityPtr));
@@ -727,7 +728,7 @@ namespace MCS
 			}
 			else if (type == Frosty::ECS::CLootable::LootType::IncHealthPotion)
 			{
-				if (m_Inventory[i]->CurrentHealingPotions < m_Inventory[i]->MaxHealingPotions)
+				if (m_Inventory[i]->CurrentIncreaseHPPotions < m_Inventory[i]->MaxIncreaseHPPotions)
 				{
 					m_Health[i]->MaxHealth += 3;
 					SetPickUpText(i, "Health Increased");
@@ -787,10 +788,53 @@ namespace MCS
 			else if (type == Frosty::ECS::CLootable::LootType::Sword1)
 			{
 				FY_INFO("Sword1");
+				SetPickUpText(i, "Picked Up Sword Level 1");
+				SwapWeapon(m_Player[i]->Weapon->EntityPtr, e.GetEntity());
+
+				ResetAllHUDWeaponInfo(i);
+
+			}
+			else if (type == Frosty::ECS::CLootable::LootType::Sword2)
+			{
+				FY_INFO("Sword2");
+				SetPickUpText(i, "Picked Up Sword Level 2");
+				SwapWeapon(m_Player[i]->Weapon->EntityPtr, e.GetEntity());
+
+				ResetAllHUDWeaponInfo(i);
+
+			}
+			else if (type == Frosty::ECS::CLootable::LootType::Sword3)
+			{
+				FY_INFO("Sword3");
+				SetPickUpText(i, "Picked Up Sword Level 3");
+				SwapWeapon(m_Player[i]->Weapon->EntityPtr, e.GetEntity());
+
+				ResetAllHUDWeaponInfo(i);
+
 			}
 			else if (type == Frosty::ECS::CLootable::LootType::Arrow1)
 			{
 				FY_INFO("Arrow1");
+				SetPickUpText(i, "Picked Up Bow Level 1");
+				SwapWeapon(m_Player[i]->Weapon->EntityPtr, e.GetEntity());
+
+				ResetAllHUDWeaponInfo(i);
+			}
+			else if (type == Frosty::ECS::CLootable::LootType::Arrow2)
+			{
+				FY_INFO("Arrow2");
+				SetPickUpText(i, "Picked Up Bow Level 2");
+				SwapWeapon(m_Player[i]->Weapon->EntityPtr, e.GetEntity());
+
+				ResetAllHUDWeaponInfo(i);
+			}
+			else if (type == Frosty::ECS::CLootable::LootType::Arrow3)
+			{
+				FY_INFO("Arrow3");
+				SetPickUpText(i, "Picked Up Bow Level 3");
+				SwapWeapon(m_Player[i]->Weapon->EntityPtr, e.GetEntity());
+
+				ResetAllHUDWeaponInfo(i);
 			}
 		}
 	}
@@ -810,7 +854,9 @@ namespace MCS
 				// Only switch CMesh and CMaterial when weapon stats have been swapped
 				SwapMesh(playerWeapon, lootWeapon);
 				SwapMaterial(playerWeapon, lootWeapon);
+
 			}
+
 		}
 	}
 
@@ -867,13 +913,11 @@ namespace MCS
 				HUD.Layout.texts.at(6).SetText("");
 			}
 
-			//Attack cooldowns
-
-
+			//Attack cooldown
 			auto& weapon = m_Player[index]->Weapon;
 			if (weapon->ItemID == 3)
 			{
-				
+				HUD.Layout.texts.at(14).SetText(std::string("[SPACE]"));
 
 				float timer = weapon->LVL3AttackCooldownTimer;
 				float time = Frosty::Time::CurrentTime();
@@ -891,9 +935,15 @@ namespace MCS
 					HUD.Layout.texts.at(7).SetText(std::string(""));
 				}
 			}
+			else
+			{
+				HUD.Layout.texts.at(14).SetText(std::string(""));
+			}
+
 			if (weapon->ItemID >= 2)
 			{
-			
+				HUD.Layout.texts.at(15).SetText(std::string("[R-MOUSE]"));
+
 				float timer = weapon->LVL2AttackCooldownTimer;
 				float time = Frosty::Time::CurrentTime();
 				float dif = (time - timer);
@@ -907,12 +957,18 @@ namespace MCS
 				}
 				else
 				{
-					HUD.Layout.texts.at(8).SetText(std::string(""));
+					HUD.Layout.texts.at(8).SetText(std::string(""));	
 				}
-
 			}
+			else
+			{
+				HUD.Layout.texts.at(15).SetText(std::string(""));
+			}
+
 			if (weapon->ItemID >= 1)
 			{
+				HUD.Layout.texts.at(16).SetText(std::string("[L-MOUSE]"));
+
 				float timer = weapon->LVL1AttackCooldownTimer;
 				float time = Frosty::Time::CurrentTime();
 				float dif = (time - timer);
@@ -921,7 +977,7 @@ namespace MCS
 				{
 					int cooldown1 = (int)cooldown;
 					int cooldown2 = (int)((cooldown - cooldown1) * 10);
-					HUD.Layout.texts.at(9).SetText(std::string(std::to_string(cooldown1) + "." +std::to_string( cooldown2)));
+					HUD.Layout.texts.at(9).SetText(std::string(std::to_string(cooldown1) + "." + std::to_string(cooldown2)));
 
 				}
 				else
@@ -930,8 +986,81 @@ namespace MCS
 				}
 
 			}
+			else
+			{
+				HUD.Layout.texts.at(16).SetText(std::string(""));
+			}
+			
+
+			//Dash cooldown
+			if (m_Dash[index]->CurrentCooldown > 0)
+			{
+				int cooldown1 = (int)(m_Dash[index]->CurrentCooldown);
+				int cooldown2 = (int)(((m_Dash[index]->CurrentCooldown - cooldown1) * 10));
+
+				HUD.Layout.texts.at(10).SetText(std::string(std::to_string(cooldown1) + "." + std::to_string(cooldown2)));
+			}
+			else
+			{
+				HUD.Layout.texts.at(10).SetText(std::string(""));
+			}
 
 
+			m_Inventory[index]->HealingTimer;
+
+			//Item Cooldowns
+			float CurrentTime = Frosty::Time::CurrentTime();
+
+				//Health
+			float timer = m_Inventory[index]->HealingTimer;
+			float dif = (CurrentTime - timer);
+			float cooldown = m_Inventory[index]->HealingCooldown - dif;
+
+			if (cooldown > 0)
+			{
+				int cooldown1 = (int)cooldown;
+				int cooldown2 = (int)((cooldown - cooldown1) * 10);
+				HUD.Layout.texts.at(11).SetText(std::string(std::to_string(cooldown1) + "." + std::to_string(cooldown2)));
+
+			}
+			else
+			{
+				HUD.Layout.texts.at(11).SetText(std::string(""));
+			}
+
+				//Speed
+			timer = m_Inventory[index]->SpeedTimer;
+			dif = (CurrentTime - timer);
+			cooldown = m_Inventory[index]->SpeedCooldown - dif;
+
+			if (cooldown > 0)
+			{
+				int cooldown1 = (int)cooldown;
+				int cooldown2 = (int)((cooldown - cooldown1) * 10);
+				HUD.Layout.texts.at(12).SetText(std::string(std::to_string(cooldown1) + "." + std::to_string(cooldown2)));
+
+			}
+			else
+			{
+				HUD.Layout.texts.at(12).SetText(std::string(""));
+			}
+
+				//Bait
+			timer = m_Inventory[index]->BaitTimer;
+			dif = (CurrentTime - timer);
+			cooldown = m_Inventory[index]->BaitCooldown - dif;
+
+			if (cooldown > 0)
+			{
+				int cooldown1 = (int)cooldown;
+				int cooldown2 = (int)((cooldown - cooldown1) * 10);
+				HUD.Layout.texts.at(13).SetText(std::string(std::to_string(cooldown1) + "." + std::to_string(cooldown2)));
+
+			}
+			else
+			{
+				HUD.Layout.texts.at(13).SetText(std::string(""));
+			}
 
 
 		}
@@ -947,6 +1076,14 @@ namespace MCS
 			m_Player[index]->PickUpTextTimer = Frosty::Time::CurrentTime();
 
 		}
+	}
+
+	void PlayerControllerSystem::ResetAllHUDWeaponInfo(size_t index)
+	{
+		auto& HUD = m_World->GetComponent<Frosty::ECS::CGUI>(m_Transform[index]->EntityPtr);
+		HUD.Layout.texts.at(7).SetText(std::string(""));
+		HUD.Layout.texts.at(8).SetText(std::string(""));
+		HUD.Layout.texts.at(9).SetText(std::string(""));
 	}
 
 

@@ -52,6 +52,7 @@ namespace MCS
 
 		void UpdateHUD(size_t index);
 		void SetPickUpText(size_t index, std::string text);
+		void ResetAllHUDWeaponInfo(size_t index);
 
 	private:
 		std::array<Frosty::ECS::CTransform*, Frosty::ECS::MAX_ENTITIES_PER_COMPONENT> m_Transform;
