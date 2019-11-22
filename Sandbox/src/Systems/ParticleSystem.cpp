@@ -186,6 +186,10 @@ namespace MCS
 
 		SortParticles(systemIndex);
 		UpdateBuffer(systemIndex);
+		if (m_ParticleSystem[systemIndex]->RotateOverLifetime == true)
+		{
+			m_ParticleSystem[systemIndex]->SystemRotation.y += 10 * Frosty::Time::DeltaTime();
+		}
 	}
 
 	void ParticleSystem::EditorUpdateParticleSystem(size_t systemIndex)
@@ -261,6 +265,10 @@ namespace MCS
 			SortParticles(systemIndex);
 			UpdateBuffer(systemIndex);
 		}
+		if (m_ParticleSystem[systemIndex]->RotateOverLifetime == true)
+		{
+			m_ParticleSystem[systemIndex]->SystemRotation.y += 10 * Frosty::Time::DeltaTime();
+		}
 	}
 
 	void ParticleSystem::UpdateParticle(size_t systemIndex, size_t index)
@@ -271,32 +279,27 @@ namespace MCS
 		p.Position += (p.Direction * p.Speed) * Frosty::Time::DeltaTime();
 
 		//Fade in
-		//if (p.color.a < 1.0 && p.lifetime > 1.0) { //TODO: Fix this temporary code
-		//	p.color.a += 2.0 * Frosty::Time::DeltaTime();
-		//}
-
+		if (m_ParticleSystem[systemIndex]->FadeInTreshold < p.MaxLifetime) {
+			if (p.Lifetime > m_ParticleSystem[systemIndex]->FadeInTreshold)
+			{
+				float t = (p.Lifetime - m_ParticleSystem[systemIndex]->FadeInTreshold) / (p.MaxLifetime - m_ParticleSystem[systemIndex]->FadeInTreshold);
+				p.Color.a = Lerp(1.0f, 0.0f, t);
+			}
+		}
 		//Fade out
 		if (m_ParticleSystem[systemIndex]->FadeTreshold > 0.0f)
 		{
 			if (p.Lifetime < m_ParticleSystem[systemIndex]->FadeTreshold)
 			{
 				float t = p.Lifetime / m_ParticleSystem[systemIndex]->FadeTreshold;
-				p.Color.a = Lerp(0.0f, 1.0f, t); //TODO: use endAlpha and startAlpha perhaps
+				p.Color.a = Lerp(0.0f, 1.0f, t);
 			}
 		}
 		if (m_ParticleSystem[systemIndex]->StartParticleSize != m_ParticleSystem[systemIndex]->EndParticleSize)
 		{
 			//Update particle size
 			float t = p.Lifetime / m_ParticleSystem[systemIndex]->MaxLifetime;
-
-			if (p.Size > m_ParticleSystem[systemIndex]->EndParticleSize)
-			{
-				p.Size = Lerp(m_ParticleSystem[systemIndex]->EndParticleSize, m_ParticleSystem[systemIndex]->StartParticleSize, t);
-			}
-			else if (p.Size < m_ParticleSystem[systemIndex]->EndParticleSize)
-			{
-				p.Size = Lerp(m_ParticleSystem[systemIndex]->EndParticleSize, m_ParticleSystem[systemIndex]->StartParticleSize, t);
-			}
+			p.Size = Lerp(m_ParticleSystem[systemIndex]->EndParticleSize, m_ParticleSystem[systemIndex]->StartParticleSize, t);
 		}
 		if (m_ParticleSystem[systemIndex]->SystemStartColor != m_ParticleSystem[systemIndex]->SystemEndColor)
 		{
@@ -336,7 +339,6 @@ namespace MCS
 		p.Lifetime = p.MaxLifetime;
 		p.Position = p.StartPos;
 		p.Size = p.StartSize;
-		p.Color.a = 1.0f; //TODO: set to startColor/startAlpha
 		if (m_ParticleSystem[systemIndex]->RandomDirection == false)
 		{
 			p.Direction = glm::vec4(m_ParticleSystem[systemIndex]->ParticleSystemDirection, 1.0f);
