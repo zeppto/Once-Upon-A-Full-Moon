@@ -28,8 +28,6 @@ namespace MCS
 		bool m_IsInitialized = false;
 
 		std::shared_ptr<Frosty::ECS::Entity> m_LoadGui;
-		//std::shared_ptr<Frosty::ECS::Entity> m_TempMenuGui;
-		//std::shared_ptr<Frosty::ECS::Entity> m_MenuGui;
 	};
 }
 #endif
