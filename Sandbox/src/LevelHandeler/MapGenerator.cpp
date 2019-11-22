@@ -260,7 +260,7 @@ std::string MapGenerator::getRoomTextur(glm::ivec2 pos, int* rotation)
 	{
 		*rotation = 0;
 		//return "RoomTempStraght";
-		return "straightRoad_chest_IsStatick_t";
+		return "straightRoad_chests_IsStatick_t";
 	}
 	if (m_TileMap[pos.x][pos.y].sideExits[0] && !m_TileMap[pos.x][pos.y].sideExits[1] && m_TileMap[pos.x][pos.y].sideExits[2] && !m_TileMap[pos.x][pos.y].sideExits[3])
 	{
