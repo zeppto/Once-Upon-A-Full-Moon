@@ -22,6 +22,21 @@ namespace Frosty
 		{
 			unsigned int first = 0;
 			unsigned int last = (unsigned int)(v.size() - 1);
+
+			if (last == 4294967295)
+			{
+				int o = 0;
+			}
+			if (last == -1)
+			{
+				int o = 0;
+			}
+
+
+			if (last == (unsigned int)-1)
+			{
+				int o = 0;
+			}
 			unsigned int middle = 0;
 			int index = -1;
 			unsigned int bSearchLimit = 5;
@@ -1180,6 +1195,8 @@ namespace Frosty
 				if (this != &org)
 				{
 					ExitDirection = org.ExitDirection;
+					RoomCoords = org.RoomCoords;
+					IsTriggered = org.IsTriggered;
 				}
 				return *this;
 			}
