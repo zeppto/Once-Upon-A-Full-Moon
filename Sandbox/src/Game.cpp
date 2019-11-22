@@ -133,102 +133,139 @@ namespace MCS
 		world->GetComponent<Frosty::ECS::CCamera>(camEntity).Target = &playerTransform;
 
 		//Player HUD
-		Frosty::UILayout uiLayout(21, 18);
-
+		Frosty::UILayout uiLayout(21, 13);
+		 
 		//Items
 		float padding = 200.0f;
 		float offsetX = 700.0f;
 		float offsetY = 30.0f;
 
-		int itemSpriteXOffset = 800;
+		//Sprites
+		int itemSpriteXOffset = 920;
+		int itemSpriteYOffset = 40;
+		int itemSpritePadding = 110;
 
-		glm::vec2 hpPotionSprite = glm::vec2(itemSpriteXOffset + 150 * 0, 50.0f);
-		glm::vec2 spPotionSprite = glm::vec2(itemSpriteXOffset + 150 * 1, 50.0f);
-		glm::vec2 baitSprite = glm::vec2(itemSpriteXOffset + 150 * 2, 50.0f);
-		glm::vec2 wolfsbainSprite = glm::vec2(itemSpriteXOffset + 150 * 3, 50.0f);
-		
+		glm::vec2 hpPotionSprite = glm::vec2(itemSpriteXOffset + itemSpritePadding * 0, itemSpriteYOffset);
+		glm::vec2 spPotionSprite = glm::vec2(itemSpriteXOffset + itemSpritePadding * 1, itemSpriteYOffset);
+		glm::vec2 baitSprite = glm::vec2(itemSpriteXOffset + itemSpritePadding * 2, itemSpriteYOffset);
+		glm::vec2 wolfsbainSprite = glm::vec2(itemSpriteXOffset + itemSpritePadding * 3, itemSpriteYOffset);
+
+		//Amount info
 		int itemNrOfXOffset = itemSpriteXOffset - 60;
 
-		glm::vec2 hpPotionNrOf = glm::vec2(itemNrOfXOffset + 150 * 0, 30.0f);
-		glm::vec2 spPotionNrOf = glm::vec2(itemNrOfXOffset + 150 * 1, 30.0f);
-		glm::vec2 baitNrOf = glm::vec2(itemNrOfXOffset + 150 * 2, 30.0f);
-		glm::vec2 wolfsbainNrOf = glm::vec2(itemNrOfXOffset + 150 * 3, 30.0f);
+		glm::vec2 hpPotionNrOf = glm::vec2(itemNrOfXOffset + itemSpritePadding * 0, 30.0f);
+		glm::vec2 spPotionNrOf = glm::vec2(itemNrOfXOffset + itemSpritePadding * 1, 30.0f);
+		glm::vec2 baitNrOf = glm::vec2(itemNrOfXOffset + itemSpritePadding * 2, 30.0f);
+		glm::vec2 wolfsbainNrOf = glm::vec2(itemNrOfXOffset + 10 + itemSpritePadding * 3, 30.0f);
+
+		//Cooldown
+		int itemCoolDownXOffset = itemSpriteXOffset - 15;
+		int itemCoolDownYOffset = itemSpriteYOffset - 10;
+
+		glm::vec2 hpPotionCooldown = glm::vec2(itemCoolDownXOffset + itemSpritePadding * 0, itemCoolDownYOffset);
+		glm::vec2 spPotionCooldown = glm::vec2(itemCoolDownXOffset + itemSpritePadding * 1, itemCoolDownYOffset);
+		glm::vec2 baitCooldown = glm::vec2(itemCoolDownXOffset + itemSpritePadding * 2, itemCoolDownYOffset);
+
+		//Controls
+		int itemControllXOffset = itemCoolDownXOffset + 8;
+		int itemControllYOffset = itemSpriteYOffset + 40;
+
+		glm::vec2 hpPotionControl = glm::vec2(itemControllXOffset + itemSpritePadding * 0, itemControllYOffset);
+		glm::vec2 spPotionControl = glm::vec2(itemControllXOffset + itemSpritePadding * 1, itemControllYOffset);
+		glm::vec2 baitControl = glm::vec2(itemControllXOffset + itemSpritePadding * 2, itemControllYOffset);
 
 
-
-
-		uiLayout.AddText(hpPotionNrOf, "1/1", glm::vec3(1.0f, 1.0f, 1.0f), 0.75); //0
-		uiLayout.AddText(spPotionNrOf, "1/1", glm::vec3(1.0f, 1.0f, 1.0f), 0.75); //1
-		uiLayout.AddText(baitNrOf, "1/1", glm::vec3(1.0f, 1.0f, 1.0f), 0.75); //2
-		uiLayout.AddText(wolfsbainNrOf, "1", glm::vec3(1.0f, 1.0f, 1.0f), 0.75); //3
+		uiLayout.AddText(hpPotionNrOf, "1/1", glm::vec3(1.0f, 1.0f, 0.75f), 0.75); //0
+		uiLayout.AddText(spPotionNrOf, "1/1", glm::vec3(1.0f, 1.0f, 0.75f), 0.75); //1
+		uiLayout.AddText(baitNrOf, "1/1", glm::vec3(1.0f, 1.0f, 0.75f), 0.75); //2
+		uiLayout.AddText(wolfsbainNrOf, "1", glm::vec3(1.0f, 1.0f, 0.75f), 0.75); //3
 
 		//Points
-		uiLayout.AddText(glm::vec2(1100, 675), "Points: 100", glm::vec3(1.0f, 1.0f, 1.0f), 0.75f); //4
+		uiLayout.AddText(glm::vec2(1100, 675), "Points: 100", glm::vec3(1.0f, 1.0f, 0.75f), 0.75f); //4
 
 		//TempHealth
-		uiLayout.AddText(glm::vec2(25, 675), "100/100", glm::vec3(1.0f, 1.0f, 1.0f)); //5
+		uiLayout.AddText(glm::vec2(25, 675), "100/100", glm::vec3(1.0f, 1.0f, 0.75f)); //5
 
 		//Picked up
 		//uiLayout.AddText(glm::vec2(550, 425), "+ 1 Health Potion", glm::vec3(1.0f, 1.0f, 1.0f), 0.75f);
-		uiLayout.AddText(glm::vec2(550, 425), "", glm::vec3(1.0f, 1.0f, 1.0f), 0.75f); //6
+		uiLayout.AddText(glm::vec2(550, 425), "", glm::vec3(1.0f, 1.0f, 0.75f), 0.75f); //6
 
 		//Attack cooldown
-		uiLayout.AddText(glm::vec2(50, 150), "3.0", glm::vec3(1.0f, 1.0f, 1.0f), 0.75); //7
-		uiLayout.AddText(glm::vec2(100, 100), "2.0", glm::vec3(1.0f, 1.0f, 1.0f), 0.75); //8
-		uiLayout.AddText(glm::vec2(125, 40), "1.0", glm::vec3(1.0f, 1.0f, 1.0f), 0.75); //9
+		uiLayout.AddText(glm::vec2(35, 134), "3.0", glm::vec3(1.0f, 1.0f, 1.0f), 0.65); //7
+		uiLayout.AddText(glm::vec2(90, 105), "2.0", glm::vec3(1.0f, 1.0f, 1.0f), 0.65); //8
+		uiLayout.AddText(glm::vec2(115, 45), "1.0", glm::vec3(1.0f, 1.0f, 1.0f), 0.65); //9
 
 		//Dash cooldown
 		uiLayout.AddText(glm::vec2(200, 40), "0.0", glm::vec3(1.0f, 1.0f, 1.0f), 0.75); //10
 
 		//Item cooldown
 		float offsetx2 = 50;
-		uiLayout.AddText(glm::vec2(offsetX + offsetx2 + 0 * padding, offsetY), "1.0", glm::vec3(1.0f, 1.0f, 1.0f), 0.75); //11
-		uiLayout.AddText(glm::vec2(offsetX + offsetx2 + 1 * padding, offsetY), "2.0", glm::vec3(1.0f, 1.0f, 1.0f), 0.75); //12
-		uiLayout.AddText(glm::vec2(offsetX + offsetx2 + 2 * padding, offsetY), "3.0", glm::vec3(1.0f, 1.0f, 1.0f), 0.75); //13
+		uiLayout.AddText(hpPotionCooldown, "1.0", glm::vec3(1.0f, 1.0f, 1.0f), 0.75); //11
+		uiLayout.AddText(spPotionCooldown, "2.0", glm::vec3(1.0f, 1.0f, 1.0f), 0.75); //12
+		uiLayout.AddText(baitCooldown, "3.0", glm::vec3(1.0f, 1.0f, 1.0f), 0.75); //13
 
 		//Controls info
-		float controlsInfoSize = 0.5;
-		float controlsInfoSize2 = 0.35;
-		//Attacks
-		uiLayout.AddText(glm::vec2(50, 150 + 30), "[SPACE]", glm::vec3(1.0f, 1.0f, 1.0f), controlsInfoSize2); //14
-		uiLayout.AddText(glm::vec2(100, 100 + 30), "[R-MOUSE]", glm::vec3(1.0f, 1.0f, 1.0f), controlsInfoSize2); //15
-		uiLayout.AddText(glm::vec2(125, 40 + 30), "[L-MOUSE]", glm::vec3(1.0f, 1.0f, 1.0f), controlsInfoSize2); //16
+		float controlsInfoSize = 0.5; 
+		float controlsInfoSize2 = 0.30;
+		//Attacks															
+		uiLayout.AddText(glm::vec2(30, 150 +15), "[SPACE]", glm::vec3(1.0f, 1.0f, 0.75f), controlsInfoSize2); //14
+		uiLayout.AddText(glm::vec2(80, 100 + 35), "[R-MOUSE]", glm::vec3(1.0f, 1.0f, 0.75f), controlsInfoSize2); //15
+		uiLayout.AddText(glm::vec2(105, 40 + 35), "[L-MOUSE]", glm::vec3(1.0f, 1.0f, 0.75f), controlsInfoSize2); //16
 
 		//Dash
-		uiLayout.AddText(glm::vec2(200 + 30, 40), "[SHIFT]", glm::vec3(1.0f, 1.0f, 1.0f), controlsInfoSize2); //17
+		uiLayout.AddText(glm::vec2(200 + 30, 40), "[SHIFT]", glm::vec3(1.0f, 1.0f, 0.75f), controlsInfoSize2); //17
 
 		//Items
-		uiLayout.AddText(glm::vec2(offsetX + 55 + 0 * padding, offsetY + 30), "[1]", glm::vec3(1.0f, 1.0f, 1.0f), controlsInfoSize2); //18
-		uiLayout.AddText(glm::vec2(offsetX + 55 + 1 * padding, offsetY + 30), "[2]", glm::vec3(1.0f, 1.0f, 1.0f), controlsInfoSize2); //19
-		uiLayout.AddText(glm::vec2(offsetX + 55 + 2 * padding, offsetY + 30), "[Q]", glm::vec3(1.0f, 1.0f, 1.0f), controlsInfoSize2); //20
+		uiLayout.AddText(hpPotionControl, "[1]", glm::vec3(1.0f, 1.0f, 0.75f), controlsInfoSize2); //18
+		uiLayout.AddText(spPotionControl, "[2]", glm::vec3(1.0f, 1.0f, 0.75f), controlsInfoSize2); //19
+		uiLayout.AddText(baitControl, "[Q]", glm::vec3(1.0f, 1.0f, 0.75f), controlsInfoSize2); //20
 
 		int testOffset = 100;
 
-		uiLayout.AddSprite(glm::vec2(960/1.5 ,540/1.5 ), glm::vec2(16*1.6, 9*1.6), "feerEffekt", glm::vec4(0.0f, 0.0f, 0.0f,  0.75f ));
+		uiLayout.AddSprite(glm::vec2(960 / 1.5, 540 / 1.5), glm::vec2(16 * 1.6, 9 * 1.6), "feerEffekt", glm::vec4(0.0f, 0.0f, 0.0f, 0.75f)); // 0
 
-		uiLayout.AddSprite(glm::vec2(25.0f + testOffset * 0, 220.0f), glm::vec2(1, 1), "attackMelle", glm::vec4(1.0f));
-		uiLayout.AddSprite(glm::vec2(25.0f + testOffset * 1, 220.0f), glm::vec2(1, 1), "attack1", glm::vec4(1.0f));
-		uiLayout.AddSprite(glm::vec2(25.0f + testOffset * 2, 220.0f), glm::vec2(1, 1), "attackMelle2", glm::vec4(1.0f));
-		uiLayout.AddSprite(glm::vec2(25.0f + testOffset * 3, 220.0f), glm::vec2(1, 1), "attackMelle3", glm::vec4(1.0f));
+		//Weapon
+		uiLayout.AddSprite(glm::vec2(55.0f, 75.0f), glm::vec2(1, 1), "attackRange", glm::vec4(1.0f));// 1
 
-		uiLayout.AddSprite(glm::vec2(25.0f + testOffset * 0, 320.0f), glm::vec2(1, 1), "attackRange", glm::vec4(1.0f));
-		uiLayout.AddSprite(glm::vec2(25.0f + testOffset * 1, 320.0f), glm::vec2(1, 1), "attackRange1", glm::vec4(1.0f));
-		uiLayout.AddSprite(glm::vec2(25.0f + testOffset * 2, 320.0f), glm::vec2(1, 1), "attackRange2", glm::vec4(1.0f));
-		uiLayout.AddSprite(glm::vec2(25.0f + testOffset * 3, 320.0f), glm::vec2(1, 1), "attackRange3", glm::vec4(1.0f));
+		glm::vec2 attackScale = glm::vec2(0.75, 0.75);
 
-		uiLayout.AddSprite(glm::vec2(25.0f + testOffset * 0, 420.0f), glm::vec2(1, 1), "elementEart", glm::vec4(1.0f));
-		uiLayout.AddSprite(glm::vec2(25.0f + testOffset * 1, 420.0f), glm::vec2(1, 1), "elementFire", glm::vec4(1.0f));
-		uiLayout.AddSprite(glm::vec2(25.0f + testOffset * 2, 420.0f), glm::vec2(1, 1), "elementWater", glm::vec4(1.0f));
-		uiLayout.AddSprite(glm::vec2(25.0f + testOffset * 3, 420.0f), glm::vec2(1, 1), "elementWind", glm::vec4(1.0f));
+		//Unlocked = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f)
+		//Cooldown =  glm::vec4(0.1f, 0.1f, 0.1f, 0.90f)
+		//Locked glm::vec4(0.1f, 0.1f, 0.1f, 0.50f)
 
+		uiLayout.AddSprite(glm::vec2(130 , 50.0f), attackScale, "attackRange1", glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));// 2
+		uiLayout.AddSprite(glm::vec2(105 , 110.0f), attackScale, "attackRange2", glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));// 3
+		uiLayout.AddSprite(glm::vec2(50.0f  , 140.0f), attackScale, "attackRange3", glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));// 4
+
+		int elementXOffset = 30;
+		int elementyOffset = 30;
+		int elementPadding = 20;
+
+		glm::vec2 elementScale = glm::vec2(0.5, 0.5);
+
+	 
+		//Normal
+		uiLayout.AddSprite(glm::vec2(elementXOffset + elementPadding * 0, elementyOffset), elementScale, "elementEart", glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));// 5
+		//uiLayout.AddSprite(glm::vec2(elementXOffset + elementPadding * 1, elementyOffset), elementScale, "elementFire", glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));// 6
+		//uiLayout.AddSprite(glm::vec2(elementXOffset + elementPadding * 2, elementyOffset), elementScale, "elementWater", glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));// 7
+		//uiLayout.AddSprite(glm::vec2(elementXOffset + elementPadding * 3, elementyOffset), elementScale, "elementWind", glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));// 8
+
+		//Empty
+	//	uiLayout.AddSprite(glm::vec2(elementXOffset + elementPadding * 0, elementyOffset), elementScale, "elementEartEmty", glm::vec4(0.1f, 0.1f, 0.1f, 0.50f));// 5
+		uiLayout.AddSprite(glm::vec2(elementXOffset + elementPadding * 1, elementyOffset), elementScale, "elementFireEmty", glm::vec4(0.1f, 0.1f, 0.1f, 0.50f));// 6
+		uiLayout.AddSprite(glm::vec2(elementXOffset + elementPadding * 2, elementyOffset), elementScale, "elementWaterEmty", glm::vec4(0.1f, 0.1f, 0.1f, 0.50f));// 7
+		uiLayout.AddSprite(glm::vec2(elementXOffset + elementPadding * 3, elementyOffset), elementScale, "elementWindEmty", glm::vec4(0.1f, 0.1f, 0.1f, 0.50f));// 8
+		
 		
 
-		uiLayout.AddSprite(hpPotionSprite, glm::vec2(1, 1), "hpPotion", glm::vec4(1.0f));
-		uiLayout.AddSprite(spPotionSprite, glm::vec2(1, 1), "spPotion", glm::vec4(1.0f));
-		uiLayout.AddSprite(baitSprite, glm::vec2(1, 1), "bait2", glm::vec4(1.0f));
-		uiLayout.AddSprite(wolfsbainSprite, glm::vec2(1, 1), "wolfsbain", glm::vec4(1.0f));
 
-		uiLayout.AddSprite(glm::vec2(25.0f + testOffset * 0, 620.0f), glm::vec2(1, 1), "higlightHart", glm::vec4(1.0f));
+
+		uiLayout.AddSprite(hpPotionSprite, glm::vec2(1, 1), "hpPotion", glm::vec4(1.0f));// 9
+		uiLayout.AddSprite(spPotionSprite, glm::vec2(1, 1), "spPotion", glm::vec4(1.0f));// 10
+		uiLayout.AddSprite(baitSprite, glm::vec2(1, 1), "bait2", glm::vec4(1.0f));// 11
+		uiLayout.AddSprite(wolfsbainSprite, glm::vec2(1, 1), "wolfsbain", glm::vec4(1.0f));// 12
+
+		//uiLayout.AddSprite(glm::vec2(25.0f + testOffset * 0, 620.0f), glm::vec2(1, 1), "higlightHart", glm::vec4(1.0f));
 		world->AddComponent<Frosty::ECS::CGUI>(player, uiLayout);
 
 
@@ -239,7 +276,7 @@ namespace MCS
 		//world->AddComponent<Frosty::ECS::CPhysics>(wall, Frosty::AssetManager::GetBoundingBox("pCube1"));
 
 		//// ENEMY 1
-		auto& enemy = world->CreateEntity({ 27.0f, 1.0f, 25.0f }, { 0.0f, 0.0f, 0.0f }, { 2.0f, 2.0f, 2.0f });
+		auto & enemy = world->CreateEntity({ 27.0f, 1.0f, 25.0f }, { 0.0f, 0.0f, 0.0f }, { 2.0f, 2.0f, 2.0f });
 		world->AddComponent<Frosty::ECS::CMesh>(enemy, Frosty::AssetManager::GetMesh("pCube1"));
 		world->AddComponent<Frosty::ECS::CMaterial>(enemy, Frosty::AssetManager::GetShader("FlatColor"));
 		world->AddComponent<Frosty::ECS::CPhysics>(enemy, Frosty::AssetManager::GetBoundingBox("pCube1"), 6.0f);
@@ -247,11 +284,11 @@ namespace MCS
 		world->AddComponent<Frosty::ECS::CFollow>(enemy, &playerTransform);
 		world->AddComponent<Frosty::ECS::CHealth>(enemy);
 
-		auto& bossComponent = world->AddComponent<Frosty::ECS::CBoss>(enemy);
+		auto & bossComponent = world->AddComponent<Frosty::ECS::CBoss>(enemy);
 		bossComponent.TargetList.emplace_back(player);
 
 		// ENEMY 2
-		auto& enemy2 = world->CreateEntity({ -27.0f, 1.0f, 25.0f }, { 0.0f, 0.0f, 0.0f }, { 2.0f, 2.0f, 2.0f });
+		auto & enemy2 = world->CreateEntity({ -27.0f, 1.0f, 25.0f }, { 0.0f, 0.0f, 0.0f }, { 2.0f, 2.0f, 2.0f });
 		world->AddComponent<Frosty::ECS::CMesh>(enemy2, Frosty::AssetManager::GetMesh("pCube1"));
 		world->AddComponent<Frosty::ECS::CMaterial>(enemy2, Frosty::AssetManager::GetShader("FlatColor"));
 		world->AddComponent<Frosty::ECS::CPhysics>(enemy2, Frosty::AssetManager::GetBoundingBox("pCube1"), 6.0f);
@@ -268,7 +305,7 @@ namespace MCS
 		//world->AddComponent<Frosty::ECS::CPhysics>(tree, Frosty::AssetManager::GetBoundingBox("tree1"));
 
 		// CHEST 1
-		auto& chest = world->CreateEntity({ 0.0f, 1.0f, 25.0f }, { 0.0f, 0.0f, 0.0f }, { 2.0f, 2.0f, 2.0f });
+		auto & chest = world->CreateEntity({ 0.0f, 1.0f, 25.0f }, { 0.0f, 0.0f, 0.0f }, { 2.0f, 2.0f, 2.0f });
 		world->AddComponent<Frosty::ECS::CMesh>(chest, Frosty::AssetManager::GetMesh("pCube1"));
 		world->AddComponent<Frosty::ECS::CMaterial>(chest, Frosty::AssetManager::GetShader("FlatColor"));
 		world->AddComponent<Frosty::ECS::CPhysics>(chest, Frosty::AssetManager::GetBoundingBox("pCube1"), 6.0f);
@@ -276,7 +313,7 @@ namespace MCS
 		world->AddComponent<Frosty::ECS::CDropItem>(chest);
 
 		// CHEST 2
-		auto& chest2 = world->CreateEntity({ 5.0f, 1.0f, 25.0f }, { 0.0f, 0.0f, 0.0f }, { 2.0f, 2.0f, 2.0f });
+		auto & chest2 = world->CreateEntity({ 5.0f, 1.0f, 25.0f }, { 0.0f, 0.0f, 0.0f }, { 2.0f, 2.0f, 2.0f });
 		world->AddComponent<Frosty::ECS::CMesh>(chest2, Frosty::AssetManager::GetMesh("pCube1"));
 		world->AddComponent<Frosty::ECS::CMaterial>(chest2, Frosty::AssetManager::GetShader("FlatColor"));
 		world->AddComponent<Frosty::ECS::CPhysics>(chest2, Frosty::AssetManager::GetBoundingBox("pCube1"), 6.0f);
@@ -284,7 +321,7 @@ namespace MCS
 		world->AddComponent<Frosty::ECS::CDropItem>(chest2);
 
 		// CHEST 3
-		auto& chest3 = world->CreateEntity({ 10.0f, 1.0f, 25.0f }, { 0.0f, 0.0f, 0.0f }, { 2.0f, 2.0f, 2.0f });
+		auto & chest3 = world->CreateEntity({ 10.0f, 1.0f, 25.0f }, { 0.0f, 0.0f, 0.0f }, { 2.0f, 2.0f, 2.0f });
 		world->AddComponent<Frosty::ECS::CMesh>(chest3, Frosty::AssetManager::GetMesh("pCube1"));
 		world->AddComponent<Frosty::ECS::CMaterial>(chest3, Frosty::AssetManager::GetShader("FlatColor"));
 		world->AddComponent<Frosty::ECS::CPhysics>(chest3, Frosty::AssetManager::GetBoundingBox("pCube1"), 6.0f);
@@ -292,7 +329,7 @@ namespace MCS
 		world->AddComponent<Frosty::ECS::CDropItem>(chest3);
 
 		// CHEST 4
-		auto& chest4 = world->CreateEntity({ 15.0f, 1.0f, 25.0f }, { 0.0f, 0.0f, 0.0f }, { 2.0f, 2.0f, 2.0f });
+		auto & chest4 = world->CreateEntity({ 15.0f, 1.0f, 25.0f }, { 0.0f, 0.0f, 0.0f }, { 2.0f, 2.0f, 2.0f });
 		world->AddComponent<Frosty::ECS::CMesh>(chest4, Frosty::AssetManager::GetMesh("pCube1"));
 		world->AddComponent<Frosty::ECS::CMaterial>(chest4, Frosty::AssetManager::GetShader("FlatColor"));
 		world->AddComponent<Frosty::ECS::CPhysics>(chest4, Frosty::AssetManager::GetBoundingBox("pCube1"), 6.0f);
@@ -300,7 +337,7 @@ namespace MCS
 		world->AddComponent<Frosty::ECS::CDropItem>(chest4);
 
 		// CHEST 5
-		auto& chest5 = world->CreateEntity({ 20.0f, 1.0f, 25.0f }, { 0.0f, 0.0f, 0.0f }, { 2.0f, 2.0f, 2.0f });
+		auto & chest5 = world->CreateEntity({ 20.0f, 1.0f, 25.0f }, { 0.0f, 0.0f, 0.0f }, { 2.0f, 2.0f, 2.0f });
 		world->AddComponent<Frosty::ECS::CMesh>(chest5, Frosty::AssetManager::GetMesh("pCube1"));
 		world->AddComponent<Frosty::ECS::CMaterial>(chest5, Frosty::AssetManager::GetShader("FlatColor"));
 		world->AddComponent<Frosty::ECS::CPhysics>(chest5, Frosty::AssetManager::GetBoundingBox("pCube1"), 6.0f);
