@@ -32,15 +32,31 @@ namespace Frosty
 		{
 			type = w.attribute("type").as_string();
 			if (type == "sword")
+			{
 				weapon.Type = Weapon::WeaponType::Sword;
+				pugi::xml_node hitbox = weapons.child("hitboxScale");
+				hitbox = hitbox.child("swordHitbox");
+				weapon.AttackHitboxScale = glm::vec3(hitbox.attribute("x").as_float(), hitbox.attribute("y").as_float(), hitbox.attribute("z").as_float());
+			}
 			else if (type == "bow")
+			{
 				weapon.Type = Weapon::WeaponType::Bow;
-			else if (type == "fangs")
+				pugi::xml_node hitbox = weapons.child("hitboxScale");
+				hitbox = hitbox.child("bowHitbox");
+				weapon.AttackHitboxScale = glm::vec3(hitbox.attribute("x").as_float(), hitbox.attribute("y").as_float(), hitbox.attribute("z").as_float());
+			}
+			else if (type == "bite")
+			{
 				weapon.Type = Weapon::WeaponType::Bite;
+				pugi::xml_node hitbox = weapons.child("hitboxScale");
+				hitbox = hitbox.child("biteHitbox");
+				weapon.AttackHitboxScale = glm::vec3(hitbox.attribute("x").as_float(), hitbox.attribute("y").as_float(), hitbox.attribute("z").as_float());
+			}
 
 			weapon.Speciality = w.attribute("speciality").as_string();
 			weapon.Level = w.attribute("level").as_uint();
-			weapon.AttackRange = w.attribute("attackRange").as_float();
+			weapon.MaxAttackRange = w.attribute("maxAttackRange").as_float();
+			weapon.MinAttackRange = w.attribute("minAttackRange").as_float();
 			weapon.Damage = w.attribute("damage").as_float();
 			weapon.CriticalHit = w.attribute("criticalHit").as_float();
 			weapon.CriticalHitChance = w.attribute("criticalHitChance").as_float();
@@ -48,8 +64,10 @@ namespace Frosty
 			weapon.LVL2AttackCooldown = w.attribute("lvl2AttackCooldown").as_float();
 			weapon.LVL3AttackCooldown = w.attribute("lvl3AttackCooldown").as_float();
 			weapon.Lifetime = w.attribute("lifetime").as_float();
+			weapon.ProjectileSpeed = w.attribute("projectileSpeed").as_float();
 
-			m_Weapons.emplace_back(weapon.Type, weapon.Speciality, weapon.Level, weapon.AttackRange, weapon.Damage, weapon.CriticalHit, weapon.CriticalHitChance, weapon.LVL1AttackCooldown, weapon.LVL2AttackCooldown, weapon.LVL3AttackCooldown, weapon.Lifetime);
+
+			m_Weapons.emplace_back(weapon.Type, weapon.Speciality, weapon.Level, weapon.MaxAttackRange, weapon.MaxAttackRange, weapon.Damage, weapon.CriticalHit, weapon.CriticalHitChance, weapon.LVL1AttackCooldown, weapon.LVL2AttackCooldown, weapon.LVL3AttackCooldown, weapon.Lifetime, weapon.AttackHitboxScale, weapon.ProjectileSpeed);
 		
 			unsigned int level = w.attribute("level").as_uint();
 			if (level > m_HighestWeaponLevel)

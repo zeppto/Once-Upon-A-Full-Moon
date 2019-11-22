@@ -11,23 +11,27 @@ namespace Frosty
 		inline Weapon(
 			WeaponType type,
 			std::string speciality,
-			unsigned int level,
-			float attackRange,
+			uint8_t level,
+			float maxAttackRange,
+			float minAttackRange,
 			float damage,
 			float criticalHit,
 			float criticalHitChance,
 			float lvl1AttackCooldown, 
 			float lvl2AttackCooldown, 
 			float lvl3AttackCooldown,
-			float lifetime)
-		: Type(type), Speciality(speciality), Level(level), AttackRange(attackRange), Damage(damage), CriticalHit(criticalHit), CriticalHitChance(criticalHitChance), LVL1AttackCooldown(lvl1AttackCooldown), LVL2AttackCooldown(lvl2AttackCooldown), LVL3AttackCooldown(lvl3AttackCooldown), Lifetime(lifetime) {}
+			float lifetime,
+			const glm::vec3 attackHitboxScale,
+			float projectileSpeed)
+		: Type(type), Speciality(speciality), Level(level), MaxAttackRange(maxAttackRange), MinAttackRange(minAttackRange), Damage(damage), CriticalHit(criticalHit), CriticalHitChance(criticalHitChance), LVL1AttackCooldown(lvl1AttackCooldown), LVL2AttackCooldown(lvl2AttackCooldown), LVL3AttackCooldown(lvl3AttackCooldown), Lifetime(lifetime), AttackHitboxScale(attackHitboxScale), ProjectileSpeed(projectileSpeed) {}
 		inline virtual ~Weapon() {}
 
 		
 		WeaponType Type{ WeaponType::Sword };
 		std::string Speciality{ "" };
 		uint8_t Level{ 1 };
-		float AttackRange{ 0.f };
+		float MaxAttackRange{ 0.f };
+		float MinAttackRange{ 0.f };
 		float Damage{ 0.f };
 		float CriticalHit{ 0.f };
 		float CriticalHitChance{ 0.f };
@@ -35,6 +39,8 @@ namespace Frosty
 		float LVL2AttackCooldown{ 0.f };
 		float LVL3AttackCooldown{ 0.f };
 		float Lifetime{ 0.f };
+		glm::vec3 AttackHitboxScale{ 0.f };
+		float ProjectileSpeed{ 0.f };
 	};
 
 
