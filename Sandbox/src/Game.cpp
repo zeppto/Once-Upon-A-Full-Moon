@@ -36,9 +36,8 @@ namespace MCS
 		auto& state = Application::Get().GetStateMachine();
 		state.AddState(Frosty::StateRef(new LoadingState));
 
-		PushLayer(FY_NEW InspectorLayer());
-
-
+		//PushLayer(FY_NEW InspectorLayer());
+		Application::Get().StartGame(true);
 
 
 
