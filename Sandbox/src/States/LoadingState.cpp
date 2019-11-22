@@ -44,10 +44,6 @@
 #include "Systems/GUISystem.hpp"
 #include "Systems/AnimationSystem.hpp"
 
-
-
-
-
 namespace MCS
 {
 	LoadingState::LoadingState()
@@ -57,85 +53,81 @@ namespace MCS
 
 	LoadingState::~LoadingState()
 	{
+		/*if (!m_World->HasComponent<Frosty::ECS::CDestroy>(m_TempMenuGui))
+		{
+			m_World->AddComponent<Frosty::ECS::CDestroy>(m_TempMenuGui);
+			m_App->GetWorld()->RemoveEntity(m_TempMenuGui);
+		}
+		if (!m_World->HasComponent<Frosty::ECS::CDestroy>(m_MenuGui))
+		{
+			m_World->AddComponent<Frosty::ECS::CDestroy>(m_MenuGui);
+			m_App->GetWorld()->RemoveEntity(m_MenuGui);
+		}*/
+
+
+
+		if (!m_World->HasComponent<Frosty::ECS::CDestroy>(m_LoadGui))
+		{
+			m_World->AddComponent<Frosty::ECS::CDestroy>(m_LoadGui);
+			m_World->RemoveEntity(m_LoadGui);
+		}
 	}
 
 	void LoadingState::Initiate()
 	{
 		FY_INFO("Initializing");
-		
-
 
 		auto& world = Frosty::Application::Get().GetWorld();
 		// Add systems
-		world->AddSystem<LevelSystem>();
-		world->AddSystem<CameraSystem>();
-		world->AddSystem<LightSystem>();
-		world->AddSystem<RenderSystem>();
-		world->AddSystem<PlayerControllerSystem>();
-		world->AddSystem<PhysicsSystem>();
-		world->AddSystem<FollowSystem>();
-		world->AddSystem<AttackSystem>();
-		world->AddSystem<CombatSystem>();
-		world->AddSystem<DestroySystem>();
-		world->AddSystem<AnimationSystem>();
-		world->AddSystem<HealthBarSystem>();
-		Frosty::ECS::BaseSystem* retSystem = world->AddSystem<NavigationSystem>();
-		NavigationSystem* navSystem = dynamic_cast<NavigationSystem*>(retSystem);
-		retSystem = world->AddSystem<ParticleSystem>();
-
-		ParticleSystem* particleSystem = dynamic_cast<ParticleSystem*>(retSystem);
-
-		world->AddSystem<BossBehaviorSystem>();
-		world->AddSystem<GUISystem>();
-		world->AddSystem<LootingSystem>();
+		InitiateSystems();
 
 		world->Awake();
-		particleSystem->AttachGameCamera(&world->GetComponent<Frosty::ECS::CTransform>(world->GetSceneCamera()));
+		//particleSystem->AttachGameCamera(&world->GetComponent<Frosty::ECS::CTransform>(world->GetSceneCamera()));
 
-		// LIGHT 1
-		auto& light = world->CreateEntity({ 0.0f, 0.0f, 0.0f }, { 120.0f, 8.0f, -10.0f });
-		auto& DLight = world->AddComponent<Frosty::ECS::CLight>(light, Frosty::ECS::CLight::LightType::Directional, 0.9f, glm::vec3(0.5f, 0.6f, 1.f));
-		DLight.Direction = glm::vec3(-1.0f, -0.8, -1.0);
+		//// LIGHT 1
+		//auto& light = world->CreateEntity({ 0.0f, 0.0f, 0.0f }, { 120.0f, 8.0f, -10.0f });
+		//auto& DLight = world->AddComponent<Frosty::ECS::CLight>(light, Frosty::ECS::CLight::LightType::Directional, 0.9f, glm::vec3(0.5f, 0.6f, 1.f));
+		//DLight.Direction = glm::vec3(-1.0f, -0.8, -1.0);
 
-		// WEAPON 1
-		auto& weapon = world->CreateEntity({ 0.f, 0.f, 0.f }, { 0.0f, 0.0f, 0.0f }, { 1.f, 1.f, 1.f });
-		auto& weaponHandler = Frosty::AssetManager::GetWeaponHandler("Weapons");
-		Frosty::Weapon loadedWeapon = weaponHandler->GetWeaponByType(Frosty::Weapon::WeaponType::Bow);
-		world->AddComponent<Frosty::ECS::CWeapon>(weapon, loadedWeapon, true);
-		auto& weaponComp = world->GetComponent<Frosty::ECS::CWeapon>(weapon);
+		//// WEAPON 1
+		//auto& weapon = world->CreateEntity({ 0.f, 0.f, 0.f }, { 0.0f, 0.0f, 0.0f }, { 1.f, 1.f, 1.f });
+		//auto& weaponHandler = Frosty::AssetManager::GetWeaponHandler("Weapons");
+		//Frosty::Weapon loadedWeapon = weaponHandler->GetWeaponByType(Frosty::Weapon::WeaponType::Bow);
+		//world->AddComponent<Frosty::ECS::CWeapon>(weapon, loadedWeapon, true);
+		//auto& weaponComp = world->GetComponent<Frosty::ECS::CWeapon>(weapon);
 
-		// PLAYER
-		auto& player = world->CreateEntity({ -104.0f, 0.0f, -15.4f }, { 0.0f, 0.0f, 0.0f }, { 2.0f, 2.0f, 2.0f });
-		auto& playerTransform = world->GetComponent<Frosty::ECS::CTransform>(player);
-		world->AddComponent<Frosty::ECS::CAnimController>(player).currAnim = Frosty::AssetManager::GetAnimation("NewRun");
-		auto& animation = world->GetComponent<Frosty::ECS::CAnimController>(player);
-		animation.animSpeed = 0.7;
-		world->AddComponent<Frosty::ECS::CMesh>(player, Frosty::AssetManager::GetMesh("ScarRun:model:scarlet"));
-		auto& playerMat = world->AddComponent<Frosty::ECS::CMaterial>(player, Frosty::AssetManager::GetShader("Animation"));
-		playerMat.DiffuseTexture = Frosty::AssetManager::GetTexture2D("Scarlet_diffuse");
-		playerMat.NormalTexture = Frosty::AssetManager::GetTexture2D("Scarlet_normal");
-		playerMat.SpecularTexture = Frosty::AssetManager::GetTexture2D("Scarlet_specular");
-		world->AddComponent<Frosty::ECS::CPlayer>(player, &weaponComp);	// <-- Give player a weapon
-		world->AddComponent<Frosty::ECS::CPhysics>(player, Frosty::AssetManager::GetBoundingBox("scarlet"), 13.0f);
-		world->AddComponent<Frosty::ECS::CDash>(player);
-		world->AddComponent<Frosty::ECS::CHealth>(player);
-		world->AddComponent<Frosty::ECS::CInventory>(player);
-		world->AddComponent<Frosty::ECS::CHealthBar>(player, glm::vec3(0.0f, 10.0f, 0.0f));
-		auto& camEntity = world->GetSceneCamera();
-		world->GetComponent<Frosty::ECS::CCamera>(camEntity).Target = &playerTransform;
+		//// PLAYER
+		//auto& player = world->CreateEntity({ -104.0f, 0.0f, -15.4f }, { 0.0f, 0.0f, 0.0f }, { 2.0f, 2.0f, 2.0f });
+		//auto& playerTransform = world->GetComponent<Frosty::ECS::CTransform>(player);
+		//world->AddComponent<Frosty::ECS::CAnimController>(player).currAnim = Frosty::AssetManager::GetAnimation("NewRun");
+		//auto& animation = world->GetComponent<Frosty::ECS::CAnimController>(player);
+		//animation.animSpeed = 0.7;
+		//world->AddComponent<Frosty::ECS::CMesh>(player, Frosty::AssetManager::GetMesh("ScarRun:model:scarlet"));
+		//auto& playerMat = world->AddComponent<Frosty::ECS::CMaterial>(player, Frosty::AssetManager::GetShader("Animation"));
+		//playerMat.DiffuseTexture = Frosty::AssetManager::GetTexture2D("Scarlet_diffuse");
+		//playerMat.NormalTexture = Frosty::AssetManager::GetTexture2D("Scarlet_normal");
+		//playerMat.SpecularTexture = Frosty::AssetManager::GetTexture2D("Scarlet_specular");
+		//world->AddComponent<Frosty::ECS::CPlayer>(player, &weaponComp);	// <-- Give player a weapon
+		//world->AddComponent<Frosty::ECS::CPhysics>(player, Frosty::AssetManager::GetBoundingBox("scarlet"), 13.0f);
+		//world->AddComponent<Frosty::ECS::CDash>(player);
+		//world->AddComponent<Frosty::ECS::CHealth>(player);
+		//world->AddComponent<Frosty::ECS::CInventory>(player);
+		//world->AddComponent<Frosty::ECS::CHealthBar>(player, glm::vec3(0.0f, 10.0f, 0.0f));
+		//auto& camEntity = world->GetSceneCamera();
+		//world->GetComponent<Frosty::ECS::CCamera>(camEntity).Target = &playerTransform;
 
-		// TORCH
-		auto& torch = world->CreateEntity({ 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f });
-		world->AddComponent<Frosty::ECS::CLight>(torch, Frosty::ECS::CLight::LightType::Point, 1.f, glm::vec3(0.99f, 0.9f, 0.8f), &playerTransform, glm::vec3(0.f, 5.f, 0.f));
+		//// TORCH
+		//auto& torch = world->CreateEntity({ 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f });
+		//world->AddComponent<Frosty::ECS::CLight>(torch, Frosty::ECS::CLight::LightType::Point, 1.f, glm::vec3(0.99f, 0.9f, 0.8f), &playerTransform, glm::vec3(0.f, 5.f, 0.f));
 
-		// TEXT
-		auto& GUI = world->CreateEntity();
-		Frosty::UILayout uiLayout(3, 1);
-		uiLayout.AddText(glm::vec2(25.0f, 20.0f), "Hello team");
-		uiLayout.AddText(glm::vec2(20.0f, 700.0f), "uwu", glm::vec3(1.0f, 0.0f, 1.0f), 0.25f);
-		uiLayout.AddText(glm::vec2(25.0f, 220.0f), "1234!", glm::vec3(0.5f, 0.1f, 0.9f), 1.5f);
+		//// TEXT
+		//auto& GUI = world->CreateEntity();
+		//Frosty::UILayout uiLayout(3, 1);
+		//uiLayout.AddText(glm::vec2(25.0f, 20.0f), "Hello team");
+		//uiLayout.AddText(glm::vec2(20.0f, 700.0f), "uwu", glm::vec3(1.0f, 0.0f, 1.0f), 0.25f);
+		//uiLayout.AddText(glm::vec2(25.0f, 220.0f), "1234!", glm::vec3(0.5f, 0.1f, 0.9f), 1.5f);
 
-		world->AddComponent<Frosty::ECS::CGUI>(GUI, uiLayout);
+		//world->AddComponent<Frosty::ECS::CGUI>(GUI, uiLayout);
 
 		//Particle System Test
 		//auto& ParticleSystem1 = world->CreateEntity();
@@ -144,9 +136,10 @@ namespace MCS
 		////particleSystemComp.ParticleSystemDirection = glm::vec3(1.0f, 0.0f, 0.0f);
 		//particleSystemComp.RandomDirection = true;
 
-		//PushLayer(FY_NEW InspectorLayer());
-		
+
 		FY_INFO("Initialization completed");
+		m_IsInitialized = true;
+		InitiateGui();
 	}
 
 	void LoadingState::OnInput()
@@ -157,6 +150,7 @@ namespace MCS
 	{
 		if (m_IsInitialized)
 		{
+			FY_INFO("READY FOR MENU STAGE");
 			//m_App->GetStateMachine().AddState(Frosty::StateRef(new MenuState()));
 		}
 		else
@@ -177,29 +171,56 @@ namespace MCS
 	{
 	}
 
+	void LoadingState::InitiateSystems()
+	{
+		auto& world = Frosty::Application::Get().GetWorld();
+		world->AddSystem<LevelSystem>();
+		world->AddSystem<CameraSystem>();
+		world->AddSystem<LightSystem>();
+		world->AddSystem<RenderSystem>();
+		world->AddSystem<PlayerControllerSystem>();
+		world->AddSystem<PhysicsSystem>();
+		world->AddSystem<FollowSystem>();
+		world->AddSystem<AttackSystem>();
+		world->AddSystem<CombatSystem>();
+		world->AddSystem<DestroySystem>();
+		world->AddSystem<AnimationSystem>();
+		world->AddSystem<HealthBarSystem>();
+
+		Frosty::ECS::BaseSystem* retSystem = world->AddSystem<NavigationSystem>();
+		NavigationSystem* navSystem = dynamic_cast<NavigationSystem*>(retSystem);
+		retSystem = world->AddSystem<ParticleSystem>();
+
+		ParticleSystem* particleSystem = dynamic_cast<ParticleSystem*>(retSystem);
+
+		world->AddSystem<BossBehaviorSystem>();
+		world->AddSystem<GUISystem>();
+		world->AddSystem<LootingSystem>();
+	}
+
 	void LoadingState::InitiateLoadingScreen()
 	{
 	}
 
+	void LoadingState::InitiateGui()
+	{
+		/*m_MenuGui = m_App->Get().GetWorld()->CreateEntity();
+
+		Frosty::UILayout UILayout(4, 1);
+		UILayout.AddText(glm::vec2(550.0f, 525.f), "Main Menu");
+		UILayout.AddText(glm::vec2(610.0f, 400.0f), "Play");
+		UILayout.AddText(glm::vec2(575.0f, 325.0f), "Settings");
+		UILayout.AddText(glm::vec2(610.0f, 250.0f), "Exit");
+		m_World->AddComponent<Frosty::ECS::CGUI>(m_MenuGui, UILayout);*/
+
+		// TEMP
+		m_LoadGui = m_World->CreateEntity();
+		Frosty::UILayout UILayout2(1, 0);
+		UILayout2.AddText(glm::vec2(25.0f, 220.0f), "LoadingState", glm::vec3(1.0f, 0.0f, 0.0f), 1.5f);
+		m_World->AddComponent<Frosty::ECS::CGUI>(m_LoadGui, UILayout2);
+	}
+
 	void LoadingState::InitiateMedia()
-	{
-	}
-
-	void LoadingState::InitiateNavigationSystem()
-	{
-		Frosty::ECS::BaseSystem* retSystem = m_World->AddSystem<NavigationSystem>();
-		NavigationSystem* navSystem = dynamic_cast<NavigationSystem*>(retSystem);
-	}
-
-	void LoadingState::InitiateParticleSystem()
-	{
-		Frosty::ECS::BaseSystem* retSystem = m_World->AddSystem<ParticleSystem>();
-		ParticleSystem* particleSystem = dynamic_cast<ParticleSystem*>(retSystem);
-
-		//particleSystem->AttachGameCamera(&m_World->GetComponent<Frosty::ECS::CTransform>(m_World->GetSceneCamera()));
-	}
-
-	void LoadingState::InitiateMapGenerator()
 	{
 	}
 }

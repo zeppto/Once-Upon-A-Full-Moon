@@ -36,6 +36,7 @@ namespace MCS
 		auto& state = Application::Get().GetStateMachine();
 		state.AddState(Frosty::StateRef(new LoadingState));
 
+		PushLayer(FY_NEW InspectorLayer());
 
 
 
@@ -45,6 +46,26 @@ namespace MCS
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*#ifdef FY_DEBUG
+	PushLayer(FY_NEW InspectorLayer());
+#else
+	Application::Get().StartGame(true);
+#endif*/
 
 //		auto& world = Application::Get().GetWorld();
 //		// Add systems
