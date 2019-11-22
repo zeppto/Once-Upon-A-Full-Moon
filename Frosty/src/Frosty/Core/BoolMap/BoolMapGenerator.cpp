@@ -225,7 +225,7 @@ namespace Frosty
 		//bitmap
 		uint64_t currentInt = 0;
 
-		for (unsigned int i = 0; i < texSize; i++)
+		for (unsigned int i = 0; i < unsigned int(texSize); i++)
 		{
 			if (i % 64 == 0 || bitmapCount == -1 || i == texSize-1)
 			{

@@ -9,7 +9,7 @@ namespace Frosty
 	{
 
 	public:
-		const float SMALL_NUM = 10e-8;
+		const float SMALL_NUM = 10e-8f;
 
 		glm::vec3 m_Position;
 		glm::vec3 m_Direction;
