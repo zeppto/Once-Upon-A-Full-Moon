@@ -899,7 +899,7 @@ namespace MCS
 			HUD.Layout.texts.at(0).SetText(std::string(std::to_string(m_Inventory[index]->CurrentHealingPotions) + "/" + std::string(std::to_string(m_Inventory[index]->MaxHealingPotions))));
 			HUD.Layout.texts.at(1).SetText(std::string(std::to_string(m_Inventory[index]->CurrentSpeedPotions) + "/" + std::string(std::to_string(m_Inventory[index]->MaxSpeedBoots))));
 			HUD.Layout.texts.at(2).SetText(std::string(std::to_string(m_Inventory[index]->CurrentBaitAmount) + "/" + std::string(std::to_string(m_Inventory[index]->MaxBaitAmount))));
-			HUD.Layout.texts.at(3).SetText(std::string(std::to_string(m_Inventory[index]->CurrentWolfsbane) + "x"));
+			HUD.Layout.texts.at(3).SetText(std::string(std::to_string(m_Inventory[index]->CurrentWolfsbane)));
 
 			//Points
 			HUD.Layout.texts.at(4).SetText(std::string("Points: " + std::to_string(m_Player[index]->Score)));
@@ -957,7 +957,7 @@ namespace MCS
 				}
 				else
 				{
-					HUD.Layout.texts.at(8).SetText(std::string(""));	
+					HUD.Layout.texts.at(8).SetText(std::string(""));
 				}
 			}
 			else
@@ -990,7 +990,7 @@ namespace MCS
 			{
 				HUD.Layout.texts.at(16).SetText(std::string(""));
 			}
-			
+
 
 			//Dash cooldown
 			if (m_Dash[index]->CurrentCooldown > 0)
@@ -1011,7 +1011,7 @@ namespace MCS
 			//Item Cooldowns
 			float CurrentTime = Frosty::Time::CurrentTime();
 
-				//Health
+			//Health
 			float timer = m_Inventory[index]->HealingTimer;
 			float dif = (CurrentTime - timer);
 			float cooldown = m_Inventory[index]->HealingCooldown - dif;
@@ -1028,7 +1028,7 @@ namespace MCS
 				HUD.Layout.texts.at(11).SetText(std::string(""));
 			}
 
-				//Speed
+			//Speed
 			timer = m_Inventory[index]->SpeedTimer;
 			dif = (CurrentTime - timer);
 			cooldown = m_Inventory[index]->SpeedCooldown - dif;
@@ -1045,7 +1045,7 @@ namespace MCS
 				HUD.Layout.texts.at(12).SetText(std::string(""));
 			}
 
-				//Bait
+			//Bait
 			timer = m_Inventory[index]->BaitTimer;
 			dif = (CurrentTime - timer);
 			cooldown = m_Inventory[index]->BaitCooldown - dif;

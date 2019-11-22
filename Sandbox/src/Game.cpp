@@ -33,7 +33,7 @@ namespace MCS
 	{
 		auto& world = Application::Get().GetWorld();
 		// Add systems
-		//world->AddSystem<LevelSystem>();
+		world->AddSystem<LevelSystem>();
 		world->AddSystem<CameraSystem>();
 		world->AddSystem<LightSystem>();
 		world->AddSystem<RenderSystem>();
@@ -133,17 +133,34 @@ namespace MCS
 		world->GetComponent<Frosty::ECS::CCamera>(camEntity).Target = &playerTransform;
 
 		//Player HUD
-		Frosty::UILayout uiLayout(21, 10);
+		Frosty::UILayout uiLayout(21, 18);
 
 		//Items
 		float padding = 200.0f;
-		float offsetX = 500.0f;
+		float offsetX = 700.0f;
 		float offsetY = 30.0f;
 
-		uiLayout.AddText(glm::vec2(offsetX + 0 * padding, offsetY), "1/1", glm::vec3(1.0f, 1.0f, 1.0f), 0.75); //0
-		uiLayout.AddText(glm::vec2(offsetX + 1 * padding, offsetY), "1/1", glm::vec3(1.0f, 1.0f, 1.0f), 0.75); //1
-		uiLayout.AddText(glm::vec2(offsetX + 2 * padding, offsetY), "1/1", glm::vec3(1.0f, 1.0f, 1.0f), 0.75); //2
-		uiLayout.AddText(glm::vec2(offsetX + 3 * padding, offsetY), "1x", glm::vec3(1.0f, 1.0f, 1.0f), 0.75); //3
+		int itemSpriteXOffset = 800;
+
+		glm::vec2 hpPotionSprite = glm::vec2(itemSpriteXOffset + 150 * 0, 50.0f);
+		glm::vec2 spPotionSprite = glm::vec2(itemSpriteXOffset + 150 * 1, 50.0f);
+		glm::vec2 baitSprite = glm::vec2(itemSpriteXOffset + 150 * 2, 50.0f);
+		glm::vec2 wolfsbainSprite = glm::vec2(itemSpriteXOffset + 150 * 3, 50.0f);
+		
+		int itemNrOfXOffset = itemSpriteXOffset - 60;
+
+		glm::vec2 hpPotionNrOf = glm::vec2(itemNrOfXOffset + 150 * 0, 30.0f);
+		glm::vec2 spPotionNrOf = glm::vec2(itemNrOfXOffset + 150 * 1, 30.0f);
+		glm::vec2 baitNrOf = glm::vec2(itemNrOfXOffset + 150 * 2, 30.0f);
+		glm::vec2 wolfsbainNrOf = glm::vec2(itemNrOfXOffset + 150 * 3, 30.0f);
+
+
+
+
+		uiLayout.AddText(hpPotionNrOf, "1/1", glm::vec3(1.0f, 1.0f, 1.0f), 0.75); //0
+		uiLayout.AddText(spPotionNrOf, "1/1", glm::vec3(1.0f, 1.0f, 1.0f), 0.75); //1
+		uiLayout.AddText(baitNrOf, "1/1", glm::vec3(1.0f, 1.0f, 1.0f), 0.75); //2
+		uiLayout.AddText(wolfsbainNrOf, "1", glm::vec3(1.0f, 1.0f, 1.0f), 0.75); //3
 
 		//Points
 		uiLayout.AddText(glm::vec2(1100, 675), "Points: 100", glm::vec3(1.0f, 1.0f, 1.0f), 0.75f); //4
@@ -178,16 +195,40 @@ namespace MCS
 		uiLayout.AddText(glm::vec2(125, 40 + 30), "[L-MOUSE]", glm::vec3(1.0f, 1.0f, 1.0f), controlsInfoSize2); //16
 
 		//Dash
-		uiLayout.AddText(glm::vec2(200+30, 40), "[SHIFT]", glm::vec3(1.0f, 1.0f, 1.0f), controlsInfoSize2); //17
+		uiLayout.AddText(glm::vec2(200 + 30, 40), "[SHIFT]", glm::vec3(1.0f, 1.0f, 1.0f), controlsInfoSize2); //17
 
 		//Items
 		uiLayout.AddText(glm::vec2(offsetX + 55 + 0 * padding, offsetY + 30), "[1]", glm::vec3(1.0f, 1.0f, 1.0f), controlsInfoSize2); //18
 		uiLayout.AddText(glm::vec2(offsetX + 55 + 1 * padding, offsetY + 30), "[2]", glm::vec3(1.0f, 1.0f, 1.0f), controlsInfoSize2); //19
 		uiLayout.AddText(glm::vec2(offsetX + 55 + 2 * padding, offsetY + 30), "[Q]", glm::vec3(1.0f, 1.0f, 1.0f), controlsInfoSize2); //20
 
+		int testOffset = 100;
 
-		uiLayout.AddSprite(glm::vec2(25.0f, 220.0f), glm::vec2(1, 1), "ChernoLogo", glm::vec4(1.0f));
+		uiLayout.AddSprite(glm::vec2(960/1.5 ,540/1.5 ), glm::vec2(16*1.6, 9*1.6), "feerEffekt", glm::vec4(0.0f, 0.0f, 0.0f,  0.75f ));
+
+		uiLayout.AddSprite(glm::vec2(25.0f + testOffset * 0, 220.0f), glm::vec2(1, 1), "attackMelle", glm::vec4(1.0f));
+		uiLayout.AddSprite(glm::vec2(25.0f + testOffset * 1, 220.0f), glm::vec2(1, 1), "attack1", glm::vec4(1.0f));
+		uiLayout.AddSprite(glm::vec2(25.0f + testOffset * 2, 220.0f), glm::vec2(1, 1), "attackMelle2", glm::vec4(1.0f));
+		uiLayout.AddSprite(glm::vec2(25.0f + testOffset * 3, 220.0f), glm::vec2(1, 1), "attackMelle3", glm::vec4(1.0f));
+
+		uiLayout.AddSprite(glm::vec2(25.0f + testOffset * 0, 320.0f), glm::vec2(1, 1), "attackRange", glm::vec4(1.0f));
+		uiLayout.AddSprite(glm::vec2(25.0f + testOffset * 1, 320.0f), glm::vec2(1, 1), "attackRange1", glm::vec4(1.0f));
+		uiLayout.AddSprite(glm::vec2(25.0f + testOffset * 2, 320.0f), glm::vec2(1, 1), "attackRange2", glm::vec4(1.0f));
+		uiLayout.AddSprite(glm::vec2(25.0f + testOffset * 3, 320.0f), glm::vec2(1, 1), "attackRange3", glm::vec4(1.0f));
+
+		uiLayout.AddSprite(glm::vec2(25.0f + testOffset * 0, 420.0f), glm::vec2(1, 1), "elementEart", glm::vec4(1.0f));
+		uiLayout.AddSprite(glm::vec2(25.0f + testOffset * 1, 420.0f), glm::vec2(1, 1), "elementFire", glm::vec4(1.0f));
+		uiLayout.AddSprite(glm::vec2(25.0f + testOffset * 2, 420.0f), glm::vec2(1, 1), "elementWater", glm::vec4(1.0f));
+		uiLayout.AddSprite(glm::vec2(25.0f + testOffset * 3, 420.0f), glm::vec2(1, 1), "elementWind", glm::vec4(1.0f));
+
 		
+
+		uiLayout.AddSprite(hpPotionSprite, glm::vec2(1, 1), "hpPotion", glm::vec4(1.0f));
+		uiLayout.AddSprite(spPotionSprite, glm::vec2(1, 1), "spPotion", glm::vec4(1.0f));
+		uiLayout.AddSprite(baitSprite, glm::vec2(1, 1), "bait2", glm::vec4(1.0f));
+		uiLayout.AddSprite(wolfsbainSprite, glm::vec2(1, 1), "wolfsbain", glm::vec4(1.0f));
+
+		uiLayout.AddSprite(glm::vec2(25.0f + testOffset * 0, 620.0f), glm::vec2(1, 1), "higlightHart", glm::vec4(1.0f));
 		world->AddComponent<Frosty::ECS::CGUI>(player, uiLayout);
 
 
@@ -265,7 +306,7 @@ namespace MCS
 		world->AddComponent<Frosty::ECS::CPhysics>(chest5, Frosty::AssetManager::GetBoundingBox("pCube1"), 6.0f);
 		world->AddComponent<Frosty::ECS::CHealth>(chest5, 2.0f);
 		world->AddComponent<Frosty::ECS::CDropItem>(chest5);
-		 
+
 		// TEXT
 	/*	auto& GUI = world->CreateEntity();
 		Frosty::UILayout uiLayout(3, 1);

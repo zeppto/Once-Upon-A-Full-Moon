@@ -8,8 +8,8 @@ namespace Frosty
 		m_TextsCount = 1;
 		m_SpritesCount = 1;
 
-		texts.resize(m_TextsCount);
-		sprites.resize(m_SpritesCount);
+		texts.reserve(m_TextsCount);
+		sprites.reserve(m_SpritesCount);
 	}
 
 	UILayout::UILayout(const UILayout& p)

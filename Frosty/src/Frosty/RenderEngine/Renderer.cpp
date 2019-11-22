@@ -376,15 +376,15 @@ namespace Frosty
 
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-		//glDisable(GL_DEPTH_TEST);
+		glDisable(GL_DEPTH_TEST);
 
 		vertexArray->GetVertexBuffer().front()->Bind();
 
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, textureID);
-		RenderCommand::DisableBackfaceCulling();
-		RenderCommand::Draw2D(vertexArray); //Will probably change later
 		RenderCommand::EnableBackfaceCulling();
+		RenderCommand::Draw2D(vertexArray); //Will probably change later
+		RenderCommand::DisableBackfaceCulling();
 		glBindTexture(GL_TEXTURE_2D, 0);
 
 		glDisable(GL_BLEND);
