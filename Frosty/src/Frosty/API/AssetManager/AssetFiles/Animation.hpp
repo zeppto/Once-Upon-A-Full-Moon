@@ -30,6 +30,7 @@ namespace Frosty
 		std::vector<Luna::Joint> m_Joints;
 		std::vector<Luna::Weights> m_Weights;
 		std::map<uint16_t, std::vector<Luna::Keyframe>> m_KeyframeMap;
+		unsigned int* m_holdingJoint;
 
 		JointTransforms m_SkinData;
 
@@ -41,8 +42,9 @@ namespace Frosty
 		{
 			for (int i = 0; i < MAX_BONES ; i++)
 			{
-				m_SkinData.jTrans[i] = glm::mat4(0.0f);
+				m_SkinData.jTrans[i] = glm::mat4(1.0f);
 			}
+			m_holdingJoint = nullptr;
 		}
 		virtual ~Animation();
 
@@ -53,6 +55,7 @@ namespace Frosty
 		const std::vector<Luna::Weights>& GetWeights()const;
 		const std::map<uint16_t, std::vector<Luna::Keyframe>>& GetKeyFrameMap()const;
 		const std::vector<Luna::Keyframe>& GetKeyFrameVec(const uint16_t& jointId)const;
+		const glm::mat4* getHoldingJoint();
 
 		void GetSkinData(void*& data, int &nrOfJoints);
 		void CalculateAnimMatrix(float* currentAnimTime);

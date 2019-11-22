@@ -106,22 +106,26 @@ namespace MCS
 		DLight2.Direction = glm::vec3(-1.0f, -1.0, 1.0);
 
 		// WEAPON 1
-		auto& weapon = world->CreateEntity({ 0.f, 0.f, 0.f }, { 0.0f, 0.0f, 0.0f }, { 1.f, 1.f, 1.f });
+		auto& weapon = world->CreateEntity({ -0.7f, 2.f, 0.8f }, { 0.0f, 0.0f, 0.0f }, { 1.f, 1.f, 1.f });
 		//world->AddComponent<Frosty::ECS::CMesh>(weapon, Frosty::AssetManager::GetMesh("pCube1"));
 		//world->AddComponent<Frosty::ECS::CMaterial>(weapon, Frosty::AssetManager::GetShader("FlatColor"));
+		auto& weaponTransform = world->GetComponent<Frosty::ECS::CTransform>(weapon);
 		world->AddComponent<Frosty::ECS::CWeapon>(weapon, Frosty::ECS::CWeapon::WeaponType::Arrow, 3, 10.f);
 		auto& weaponComp = world->GetComponent<Frosty::ECS::CWeapon>(weapon);
+		world->AddComponent<Frosty::ECS::CMesh>(weapon, Frosty::AssetManager::GetMesh("sword2"));
+		world->AddComponent<Frosty::ECS::CMaterial>(weapon, Frosty::AssetManager::GetShader("Texture2D"));
 
 		// PLAYER
-		auto& player = world->CreateEntity({ -104.0f, 0.0f, -15.4f }, { 0.0f, 0.0f, 0.0f }, { 2.0f, 2.0f, 2.0f } );
+		auto& player = world->CreateEntity({ 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 2.0f, 2.0f, 2.0f } );
 		auto& playerTransform = world->GetComponent<Frosty::ECS::CTransform>(player);
-		world->AddComponent<Frosty::ECS::CAnimController>(player).currAnim = Frosty::AssetManager::GetAnimation("NewRun");
+		world->AddComponent<Frosty::ECS::CAnimController>(player).currAnim = Frosty::AssetManager::GetAnimation("testSlash");
 		world->AddComponent<Frosty::ECS::CMesh>(player, Frosty::AssetManager::GetMesh("ScarRun:model:scarlet"));
 		auto& playerMat = world->AddComponent<Frosty::ECS::CMaterial>(player, Frosty::AssetManager::GetShader("Animation"));
 		playerMat.DiffuseTexture = Frosty::AssetManager::GetTexture2D("Scarlet_diffuse");
 		playerMat.NormalTexture = Frosty::AssetManager::GetTexture2D("Scarlet_normal");
 		playerMat.SpecularTexture = Frosty::AssetManager::GetTexture2D("Scarlet_specular");
 		world->AddComponent<Frosty::ECS::CPlayer>(player, &weaponComp);	// <-- Give player a weapon
+		weaponTransform.Position += playerTransform.Position;
 		world->AddComponent<Frosty::ECS::CPhysics>(player, Frosty::AssetManager::GetBoundingBox("scarlet"), 40.0f);
 		world->AddComponent<Frosty::ECS::CDash>(player);
 		world->AddComponent<Frosty::ECS::CHealth>(player);

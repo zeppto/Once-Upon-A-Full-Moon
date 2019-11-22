@@ -71,6 +71,18 @@ namespace MCS
 				}
 				else
 				{
+					if (m_Meshes[i]->parentMatrix != nullptr)
+					{
+						
+						if (m_Meshes[i]->animOffset != nullptr)
+						{
+							m_Transform[i]->ModelMatrix = (*m_Meshes[i]->parentMatrix * *m_Meshes[i]->animOffset * *m_Transform[i]->GetModelMatrix());
+						}
+						else
+						{
+							m_Transform[i]->ModelMatrix = *m_Meshes[i]->parentMatrix * m_Transform[i]->ModelMatrix;
+						}
+					} 
 					Frosty::Renderer::Submit(m_Materials[i], m_Meshes[i]->Mesh, m_Transform[i]->ModelMatrix);
 				}
 

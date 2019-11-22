@@ -749,6 +749,7 @@ namespace MCS
 			else if (type == Frosty::ECS::CLootable::LootType::Sword1)
 			{
 				FY_INFO("Sword1");
+				SwapWeapon(m_Player[i]->Weapon->EntityPtr, e.GetEntity());
 			}
 			else if (type == Frosty::ECS::CLootable::LootType::Arrow1)
 			{
