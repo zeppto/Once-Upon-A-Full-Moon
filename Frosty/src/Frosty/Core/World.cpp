@@ -176,7 +176,7 @@ namespace Frosty
 
 	void World::HandleDestroyedEntities()
 	{
-		size_t entitySize = m_DestroyedEntities.size() - 1;
+		size_t entitySize = m_DestroyedEntities.size();
 		for (size_t i = entitySize; i-- > 0; i)
 		{
 			RemoveEntity(m_DestroyedEntities[i]);

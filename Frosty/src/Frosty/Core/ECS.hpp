@@ -6,7 +6,7 @@
 #include "Frosty/Core/KeyCodes.h"
 #include "Frosty/Core/MouseButtonCodes.h"
 #include "Frosty/API/AssetManager/AssetFiles/Animation.hpp"
-
+#include "Frosty/API/AssetManager/AssetManager.hpp"
 #include "Frosty/UI/UIText.h"
 #include "Frosty/UI/UISprite.h"
 #include "Frosty/UI/UILayout.hpp"
@@ -390,10 +390,11 @@ namespace Frosty
 
 		// List of all Components //
 
-		struct CTransform : public BaseComponent
+		struct CTransform
+			: public BaseComponent
 		{
 			static std::string NAME;
-			
+
 			glm::vec3 Position{ 0.0f };
 			glm::vec3 Rotation{ 0.0f };
 			glm::vec3 Scale{ 1.0f };
@@ -404,7 +405,7 @@ namespace Frosty
 			CTransform(const glm::vec3& position, const glm::vec3& rotation, const glm::vec3& scale, bool isStatic = false)
 				: Position(position), Rotation(rotation), Scale(scale), IsStatic(isStatic)
 			{
-			
+
 				if (isStatic)
 				{
 					ModelMatrix = glm::translate(glm::mat4(1.0f), Position);
@@ -525,7 +526,7 @@ namespace Frosty
 			bool HasTransparency = false;
 
 			CMaterial() = default;
-			CMaterial(const std::shared_ptr<Shader>& shader) : UseShader(shader) { }
+			CMaterial(const std::shared_ptr<Shader>& shader) : UseShader(shader) { NormalTexture = AssetManager::GetTexture2D("FlatNormal"); }
 			CMaterial(const CMaterial& org) { FY_CORE_ASSERT(false, "Copy constructor in CMaterial called."); }
 			CMaterial& operator=(const CMaterial& org)
 			{
@@ -568,6 +569,10 @@ namespace Frosty
 			enum class LightType { Point, Directional };
 
 			static std::string NAME;
+
+			CTransform* Origin{ nullptr };
+			glm::vec3 Offset{ 0.f };
+
 			LightType Type{ LightType::Point };
 			glm::vec3 Color{ 1.0f, 0.96f, 0.84f };
 			glm::vec3 Direction{ 1.0f, 0.0f, 1.0f };
@@ -576,15 +581,18 @@ namespace Frosty
 
 			CLight() = default;
 			CLight(LightType lightType) : Type(lightType) { }
-			CLight(LightType lightType, float strength, glm::vec3 color, float radius, glm::vec3 direction) : Type(lightType), Strength(strength), Color(color), Radius(radius),Direction(direction) { }
-			CLight(LightType lightType, float strength, glm::vec3 color) : Type(lightType), Strength(strength), Color(color) { }
+			CLight(LightType lightType, float strength, glm::vec3 color, float radius, glm::vec3 direction) : Type(lightType), Strength(strength), Color(color), Radius(radius), Direction(direction) { }
+			CLight(LightType lightType, float strength, glm::vec3 color, CTransform* origin = nullptr, const glm::vec3& offset = glm::vec3(0.f)) : Type(lightType), Strength(strength), Color(color), Origin(origin), Offset(offset) { }
 			CLight(const CLight& org) { FY_CORE_ASSERT(false, "Copy constructor in CLight called."); }
 			CLight& operator=(const CLight& org)
 			{
 				if (this != &org)
 				{
+					Origin = org.Origin;
+					Offset = org.Offset;
 					Type = org.Type;
 					Color = org.Color;
+					Direction = org.Direction;
 					Radius = org.Radius;
 					Strength = org.Strength;
 				}
@@ -628,20 +636,21 @@ namespace Frosty
 		{
 			static std::string NAME;
 
-			enum class WeaponType { Sword, Arrow };
+			enum class WeaponType { Sword, Bow, Bite };
 			WeaponType Type{ WeaponType::Sword };
 
-			unsigned int ItemID{ 1 };
-			bool IsPlayerWeapon{ false };
+			uint8_t Level{ 1 };
+			std::string Speciality{ "Default" };
 
 			// Range
-			float AttackRange{ 15.f };						// 6.f if melee and 25.f if bow
+			float MaxAttackRange{ 0.f };	
+			float MinAttackRange{ 0.f };
 
 			// Damage
-			float Damage{ 1.0f };
+			float Damage{ 1.f };
 
 			// Critical Hit
-			float CriticalHit{ 0.5f };						// Adds upp with damage for total damage
+			float CriticalHit{ 1.f };						// Adds upp with damage for total damage
 			float CriticalHitChance{ 0.1f };				// 10 % chanse of performing a critical hit
 
 			// Speed
@@ -654,23 +663,49 @@ namespace Frosty
 			float LVL3AttackCooldownTimer{ Frosty::Time::CurrentTime() };
 
 			float Lifetime{ 2.f };
+			glm::vec3 AttackHittBoxScale{ 0.f };
 
+			bool IsPlayerWeapon{ false };
+			
 			// Special Effect / Elemental Abilities
-			// Fire (+ CriticalChance)
-			// Earth (+ Damage)
-			// Wind (+ Speed)
-			// Water (+ Heal)
+			float FireCriticalHitChance{ 0 };				// Fire (+ CriticalChance)
+			float EarthDamage{ 0 };							// Earth (+ Damage)
+			float WindSpeed{ 0 };							// Wind (+ Speed)
+			float WaterHealing{ 0 };						// Water (+ Heal)
+
+			// Special Attribute for Bow
+			float ProjectileSpeed{ 0.f };
 
 			CWeapon() = default;
-			CWeapon(WeaponType type, unsigned int itemID, float damage, bool isPlayerWeapon = false) : Type(type), ItemID(itemID), Damage(damage), IsPlayerWeapon(isPlayerWeapon) { }
+			CWeapon(WeaponType type, unsigned int level, float damage, bool isPlayerWeapon = false) : Type(type), Level(level), Damage(damage), IsPlayerWeapon(isPlayerWeapon) { }
+			CWeapon(Frosty::Weapon weapon, bool isPlayerWeapon = false) : Level(weapon.Level), Speciality(weapon.Speciality), MaxAttackRange(weapon.MaxAttackRange), MinAttackRange(weapon.MinAttackRange),
+				Damage(weapon.Damage), CriticalHit(weapon.CriticalHit), CriticalHitChance(weapon.CriticalHitChance), LVL1AttackCooldown(weapon.LVL1AttackCooldown), 
+				LVL2AttackCooldown(weapon.LVL2AttackCooldown), LVL3AttackCooldown(weapon.LVL3AttackCooldown), Lifetime(weapon.Lifetime), AttackHittBoxScale(weapon.AttackHitboxScale), IsPlayerWeapon(isPlayerWeapon), ProjectileSpeed(weapon.ProjectileSpeed)
+			{  
+				switch (weapon.Type)
+				{
+				case Frosty::Weapon::WeaponType::Sword:
+						Type = WeaponType::Sword;
+					break;
+				case Frosty::Weapon::WeaponType::Bow:
+					Type = WeaponType::Bow;
+					break;
+				case Frosty::Weapon::WeaponType::Bite:
+					Type = WeaponType::Bite;
+					break;
+				default:
+					break;
+				}
+			}
 			CWeapon(const CWeapon& org) { FY_CORE_ASSERT(false, "Copy constructor in CWeapon called."); }
 			CWeapon& operator=(const CWeapon& org)
 			{
 				if (this != &org)
 				{
 					Type = org.Type;
-					ItemID = org.ItemID;
-					AttackRange = org.AttackRange;
+					Level = org.Level;
+					MaxAttackRange = org.MaxAttackRange;
+					MinAttackRange = org.MinAttackRange;
 					Damage = org.Damage;
 					CriticalHit = org.CriticalHit;
 					CriticalHitChance = org.CriticalHitChance;
@@ -681,12 +716,18 @@ namespace Frosty
 					LVL2AttackCooldownTimer = org.LVL2AttackCooldownTimer;
 					LVL3AttackCooldownTimer = org.LVL3AttackCooldownTimer;
 					Lifetime = org.Lifetime;
+					AttackHittBoxScale = org.AttackHittBoxScale;
+					FireCriticalHitChance = org.FireCriticalHitChance;
+					EarthDamage = org.EarthDamage;
+					WindSpeed = org.WindSpeed;
+					WaterHealing = org.WaterHealing;
+					ProjectileSpeed = org.ProjectileSpeed;
 				}
 
 
 				return *this;
 			}
-			bool operator!=(const CWeapon& org) { return ItemID != org.ItemID; }
+			bool operator!=(const CWeapon& org) { return Level != org.Level; }
 			virtual std::string GetName() const { return NAME; }
 		};
 
@@ -697,16 +738,16 @@ namespace Frosty
 			enum class AttackType { Melee, Range };
 			AttackType Type{ AttackType::Melee };
 
-			float Damage{ 10.0f };
-			bool Friendly{ 0 };			// A friendly attack effects neither the Player or the attack. 1 = friendly attack, 0 = enemy attack
+			int Damage{ 10 };
+			bool Friendly{ false };			// A friendly attack effects neither the Player or the attack. 1 = friendly attack, 0 = enemy attack
 
-			float Lifetime{ 0.5f };
+			float Lifetime{ 0.1f };
 			float LifetimeTimer{ Frosty::Time::CurrentTime() };
 
 			bool Destroyable{ true };	// Cannot be destr0yed in collision with other enemies
 
 			CAttack() = default;
-			CAttack(AttackType type, float damage, bool friendly = 0, float lifeTime = 0.5f, bool destroyable = true) : Type(type), Damage(damage), Friendly(friendly), Lifetime(lifeTime), Destroyable(destroyable) { }
+			CAttack(AttackType type, int damage, bool friendly = false, float lifeTime = 0.1f, bool destroyable = true) : Type(type), Damage(damage), Friendly(friendly), Lifetime(lifeTime), Destroyable(destroyable) { }
 			CAttack(const CAttack& org) { FY_CORE_ASSERT(false, "Copy constructor in CAttack called."); }
 			CAttack& operator=(const CAttack& org)
 			{
@@ -737,7 +778,6 @@ namespace Frosty
 			int MoveRightKey{ FY_KEY_D };
 			int MoveBackKey{ FY_KEY_S };
 			int DashKey{ FY_KEY_LEFT_SHIFT };
-			//temp for creation of level (I dont want arrows to spwan when i save a level)
 			int LVL1Attack{ FY_MOUSE_BUTTON_LEFT };
 			int LVL2Attack{ FY_MOUSE_BUTTON_RIGHT };
 			int LVL3Attack{ FY_KEY_SPACE };
@@ -780,7 +820,7 @@ namespace Frosty
 
 			CWeapon* Weapon{ nullptr };
 			CTransform* Target{ nullptr };
-			
+
 			glm::vec3 CellTarget{ 0.0f };
 			float AttackRange{ 2.5f };
 			float SightRange{ 40.0f };
@@ -990,7 +1030,9 @@ namespace Frosty
 
 				glm::vec4 Direction{ 0.0f, 1.0f, 0.0f, 1.0f };
 				glm::vec4 StartPos{ 0.0f, 0.0f, 0.0f, 1.0f };
+				glm::vec4 StartColor{ 1.0f };
 				float Lifetime{ -1.0f };
+				float MaxLifetime{ 3.0f };
 				float Speed{ 2.0f };
 				float StartSize{ 1.0f };
 				float EndSize{ 1.0f };
@@ -1020,14 +1062,22 @@ namespace Frosty
 			float EndParticleSize{ 0.0f };
 			float ParticleSize{ 1.0f }; //For a constant size
 
+			glm::vec3 SystemRotation{ 0.0f };
+
 			uint32_t ParticleCount{ 0 };
-			glm::vec3 ParticleSystemColor{ 1.0f };
+			glm::vec3 SystemStartColor{ 1.0f };
+			glm::vec3 SystemEndColor{ 1.0f };
 			glm::vec3 ParticleSystemDirection{ 0.0f, 1.0f, 0.0f };
+			glm::vec3 ParticleSystemStartPos{ 0.0f, 0.0f, 0.0f };
 			float EmitRate{ 0.1f };
 			uint32_t EmitCount{ 1 };
 			float Speed{ 1.0f };
-			float MaxLifetime{ 3.0f }; //All particles
+			float MinLifetime{ 3.0f };
+			float MaxLifetime{ 3.0f };
 			float FadeTreshold{ 0.0f }; //No fade
+			bool StaticColor{ true };
+			bool RandomLifetimes{ false };
+			bool RandomStartPos{ false };
 			bool RandomDirection{ false };
 			bool AlwaysFaceCamera{ true };
 			bool Preview{ false };
@@ -1047,7 +1097,9 @@ namespace Frosty
 
 			CParticleSystem() = default;
 			CParticleSystem(const std::string shaderName, const std::string texName, unsigned int maxParticles, const glm::vec3& color, float particleStartSize, float particleEndSize)
-				: ShaderName(shaderName), TextureName(texName), MaxParticles(maxParticles), ParticleSystemColor(color), StartParticleSize(particleStartSize), EndParticleSize(particleEndSize) {}
+				: ShaderName(shaderName), TextureName(texName), MaxParticles(maxParticles), SystemStartColor(color), SystemEndColor(color), StartParticleSize(particleStartSize), EndParticleSize(particleEndSize) {}
+			CParticleSystem(const std::string shaderName, const std::string texName, unsigned int maxParticles, const glm::vec3& startColor, const glm::vec3& endColor, float particleStartSize, float particleEndSize)
+				: ShaderName(shaderName), TextureName(texName), MaxParticles(maxParticles), SystemStartColor(startColor), SystemEndColor(endColor), StartParticleSize(particleStartSize), EndParticleSize(particleEndSize) {}
 			CParticleSystem(const CParticleSystem& org) { FY_CORE_ASSERT(false, "Copy constructor in CParticleSystem called."); }
 
 			CParticleSystem& operator=(const CParticleSystem& org)
@@ -1063,14 +1115,21 @@ namespace Frosty
 					StartParticleSize = org.StartParticleSize;
 					EndParticleSize = org.EndParticleSize;
 					ParticleSize = org.ParticleSize;
+					SystemRotation = org.SystemRotation;
 					ParticleCount = org.ParticleCount;
-					ParticleSystemColor = org.ParticleSystemColor;
+					SystemStartColor = org.SystemStartColor;
+					SystemEndColor = org.SystemEndColor;
 					ParticleSystemDirection = org.ParticleSystemDirection;
+					ParticleSystemStartPos = org.ParticleSystemStartPos;
 					EmitRate = org.EmitRate;
 					EmitCount = org.EmitCount;
 					Speed = org.Speed;
+					MinLifetime = org.MinLifetime;
 					MaxLifetime = org.MaxLifetime;
 					FadeTreshold = org.FadeTreshold;
+					StaticColor = org.StaticColor;
+					RandomStartPos = org.RandomStartPos;
+					RandomLifetimes = org.RandomLifetimes;
 					RandomDirection = org.RandomDirection;
 					Preview = org.Preview;
 					Timer = org.Timer;
@@ -1087,18 +1146,18 @@ namespace Frosty
 		struct CLootable : public BaseComponent
 		{
 			static std::string NAME;
-			enum class LootType 
-			{ 
-				HealingPotion, IncHealthPotion, SpeedPotion, SpeedBoot, 
+			enum class LootType
+			{
+				HealingPotion, IncHealthPotion, SpeedPotion, SpeedBoot,
 				Sword1, Sword2, Sword3,
-				Arrow1, Arrow2, Arrow3
+				Bow1, Bow2, Bow3
 			};
 			LootType Type{ LootType::HealingPotion };
 
 			CLootable() = default;
 			CLootable(LootType type) : Type(type) {}
 			CLootable(const CLootable& org) { FY_CORE_ASSERT(false, "Copy constructor in CLootable called."); }
-			CLootable& operator=(const CLootable& org) 
+			CLootable& operator=(const CLootable& org)
 			{
 				if (this != &org)
 				{
@@ -1149,18 +1208,6 @@ namespace Frosty
 
 		};
 
-		struct CAnimController :public BaseComponent
-		{
-			static std::string NAME;
-
-			bool isSliderControlled = false;
-			float animSpeed = 1;
-			Animation* currAnim;
-			float dt = 0;
-
-			virtual std::string GetName() const { return NAME; }
-		};
-
 		struct CLevelExit : public BaseComponent
 		{
 			static std::string NAME;
@@ -1207,6 +1254,18 @@ namespace Frosty
 			virtual std::string GetName() const { return NAME; }
 		};
 
+		struct CAnimController :public BaseComponent
+		{
+			static std::string NAME;
+
+			bool isSliderControlled = false;
+			float animSpeed = 1;
+			Animation* currAnim;
+			float dt = 0;
+
+			virtual std::string GetName() const { return NAME; }
+		};
+
 		static std::string GetComponentName(size_t i)
 		{
 			switch (i)
@@ -1228,8 +1287,8 @@ namespace Frosty
 			case 14:	return "Dash";
 			case 15:	return "Destroy";
 			case 16:	return "ParticleSystem";
-			case 17:	return "Chest";
-			case 18:	return "Lootable";
+			case 17:	return "Lootable";
+			case 18:	return "DropItem";
 			case 19:	return "Boss";
 			case 20:	return "LevelExit";
 			case 21:	return "GUI";

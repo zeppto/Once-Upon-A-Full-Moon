@@ -14,6 +14,13 @@ namespace MCS
 
 	void LightSystem::OnUpdate()
 	{
+		for (size_t i = 1; i < p_Total; i++)
+		{
+			if (m_Light[i]->Origin != nullptr)
+			{
+				m_Transform[i]->Position = m_Light[i]->Origin->Position + m_Light[i]->Offset;
+			}
+		}
 	}
 
 	void LightSystem::Render()
@@ -44,7 +51,6 @@ namespace MCS
 			m_Transform[p_Total] = &world->GetComponent<Frosty::ECS::CTransform>(entity);
 			m_Light[p_Total] = &world->GetComponent<Frosty::ECS::CLight>(entity);
 
-			
 			Frosty::Renderer::AddLight(m_Light[p_Total], m_Transform[p_Total]);
 
 
