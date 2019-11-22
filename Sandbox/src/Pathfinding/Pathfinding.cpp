@@ -84,6 +84,8 @@ namespace MCS
 
 	glm::vec3 Pathfinding::RetracePath(CellNode* startNode, CellNode* targetNode)
 	{
+		if (*startNode == *targetNode) return targetNode->WorldPosition;
+
 		std::vector<CellNode*> path;
 		CellNode* currentNode = targetNode;
 

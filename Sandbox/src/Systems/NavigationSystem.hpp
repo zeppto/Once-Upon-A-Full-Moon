@@ -33,6 +33,12 @@ namespace MCS
 
 	private:
 		void OnInitiateGridMap(Frosty::InitiateGridEvent& e);
+		void LookAtPoint(const glm::vec3& point, size_t index);
+
+		void HandlePathfinding(size_t index);
+		void HandleDistance(size_t index);
+		void HandleEscape(size_t index);
+		void HandleReset(size_t index);
 
 	private:
 		std::array<Frosty::ECS::CTransform*, Frosty::ECS::MAX_ENTITIES_PER_COMPONENT> m_Transform;

@@ -69,7 +69,7 @@ namespace MCS
 		std::vector<CellNode*> m_DynamicOccupiedNodes;
 
 		// TEMPORARY FOR DEUGGING
-		bool m_DrawGizmos{ false };
+		bool m_DrawGizmos{ true };
 		std::vector<CellNode> m_PathNodes;
 	};
 }

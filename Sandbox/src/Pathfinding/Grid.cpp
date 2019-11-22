@@ -73,7 +73,7 @@ namespace MCS
 
 		uint32_t col = (int)glm::floor(m_GridSize.x * percentage.x);
 		uint32_t row = (int)glm::floor(m_GridSize.y - m_GridSize.y * percentage.y);
-		uint32_t index = (int)(row * m_GridSize.y) + col;
+		uint32_t index = (int)(row * m_GridSize.x) + col;
 
 		return m_CellNodes[index];
 	}
@@ -133,7 +133,7 @@ namespace MCS
 			for (int32_t x = 0; x < m_GridSize.x; x++)
 			{
 				worldPoint = worldBottomLeft + glm::vec3(1.0f, 0.0f, 0.0f) * (x * CELL_SIZE + CELL_SIZE * 0.5f) - glm::vec3(0.0f, 0.0f, 1.0f) * (y * CELL_SIZE + CELL_SIZE * 0.5f);
-				walkable = !CheckCollision(worldPoint, CELL_SIZE * 0.5f);
+				walkable = !CheckCollision(worldPoint, CELL_SIZE * 0.25f);
 				m_CellNodes.emplace_back(worldPoint, walkable, x, y);
 			}
 		}

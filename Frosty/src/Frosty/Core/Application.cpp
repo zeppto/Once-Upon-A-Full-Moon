@@ -73,7 +73,6 @@ namespace Frosty
 				m_World->OnUpdate();
 				m_World->BeginScene();
 			}
-
 			Renderer::RenderScene();
 
 			m_World->Render();

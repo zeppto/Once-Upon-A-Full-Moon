@@ -2,16 +2,18 @@
 #define ABILITY_EVENT_HPP
 
 #include "EventSystem.hpp"
+#include "Frosty/Core/BoolMap/BoolMap.hpp"
 
 namespace Frosty
 {
+	class BoolMap; 
 	namespace ECS { struct Entity; }
 
 	class CollisionEvent : public BaseEvent
 	{
 	public:
-		CollisionEvent(const std::shared_ptr<ECS::Entity>& entityA, const std::shared_ptr<ECS::Entity>& entityB, const glm::vec3& offset)
-			: m_EntityA(entityA), m_EntityB(entityB), m_Offset(offset) { }
+		CollisionEvent(const std::shared_ptr<ECS::Entity>& entityA, const std::shared_ptr<ECS::Entity>& entityB)
+			: m_EntityA(entityA), m_EntityB(entityB) { }
 
 		const std::shared_ptr<ECS::Entity>& GetEntityA() const { return m_EntityA; }
 		const std::shared_ptr<ECS::Entity>& GetEntityB() const { return m_EntityB; }
@@ -35,6 +37,19 @@ namespace Frosty
 		const std::shared_ptr<ECS::Entity>& GetEntity() const { return m_Entity; }
 
 		EVENT_TYPE(BasicAttack)
+
+	private:
+		std::shared_ptr<ECS::Entity> m_Entity;
+	};
+
+	class DashEvent : public BaseEvent
+	{
+	public:
+		DashEvent(const std::shared_ptr<ECS::Entity>& entity) : m_Entity(entity) { }
+
+		const std::shared_ptr<ECS::Entity>& GetEntity() const { return m_Entity; }
+
+		EVENT_TYPE(Dash)
 
 	private:
 		std::shared_ptr<ECS::Entity> m_Entity;
@@ -99,6 +114,21 @@ namespace Frosty
 
 	private:
 	};
+
+
+	class BoolMapLoadedEvent : public BaseEvent
+	{
+	public:
+		BoolMapLoadedEvent(const std::shared_ptr<BoolMap>& BoolMap) :  m_BoolMap(BoolMap){}
+
+		inline const std::shared_ptr<BoolMap>& GetBoolMap() { return m_BoolMap; }
+
+		EVENT_TYPE(LoadBoolMap)
+
+	private:
+		std::shared_ptr <BoolMap> m_BoolMap;
+	};
+
 
 	class CreateLevelEvent : public BaseEvent
 	{
