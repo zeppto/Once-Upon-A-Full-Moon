@@ -5,6 +5,7 @@
 #include "Frosty/Core/LayerHandler.hpp"
 #include "Frosty/Events/ApplicationEvent.hpp"
 #include "Frosty/Events/KeyEvent.hpp"
+#include "Frosty/Events/MouseEvent.hpp"
 #include "Frosty/ImGui/ImGuiLayer.hpp"
 #include "Frosty/RenderEngine/EditorCamera.hpp"
 #include "Frosty/Core/World.hpp"
@@ -47,11 +48,14 @@ namespace Frosty
 		void StartGame(bool maximize);
 		void StopGame(bool maximize);
 
+		inline StateMachine &GetStateMachine() { return m_StateMachine; }
 	private:
 		void OnWindowCloseEvent(WindowCloseEvent& e);
 		void OnKeyPressedEvent(KeyPressedEvent& e);	
 		void OnKeyReleasedEvent(KeyReleasedEvent& e);
 
+		void OnMousePressedEvent(MouseButtonPressedEvent & e);
+		void OnMouseReleasedEvent(MouseButtonReleasedEvent & e);
 	private:
 		InputManager m_InputManager;
 		bool m_Running = true;
@@ -66,6 +70,9 @@ namespace Frosty
 		static Application* s_Instance;
 
 		EditorCamera m_EditorCamera;
+		StateMachine m_StateMachine;
+
+		bool m_CallInput = false;
 
 		// Only for Debug
 		bool m_CanPrintInfo = true;
