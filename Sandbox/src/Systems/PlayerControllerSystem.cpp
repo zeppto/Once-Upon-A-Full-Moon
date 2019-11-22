@@ -48,6 +48,10 @@ namespace MCS
 		for (size_t i = 1; i < p_Total; i++)
 		{
 			if (m_Dash[i]->CurrentCooldown > 0.0) m_Dash[i]->CurrentCooldown -= Frosty::Time::DeltaTime();
+			if (Frosty::Time::CurrentTime() - m_Inventory[i]->SpeedTimer >= m_Inventory[i]->SpeedCooldown)
+			{
+				m_Physics[i]->SpeedMultiplier = 1.f;
+			}
 
 			if (m_Dash[i]->Active)
 			{
@@ -269,7 +273,7 @@ namespace MCS
 			}
 		}
 	}
-	
+
 	void PlayerControllerSystem::HandleAttack(const glm::vec3& point, size_t index)
 	{
 		// The entity pointing to a CWeapon component (player / enemy)
@@ -281,7 +285,7 @@ namespace MCS
 		if (Frosty::InputManager::IsMouseButtonPressed(m_Player[index]->LVL1Attack))
 		{
 			// LVL: 1, 2, 3
-			if (weaponComp.ItemID == 1 || weaponComp.ItemID == 2 || weaponComp.ItemID == 3)
+			if (weaponComp.Level == 1 || weaponComp.Level == 2 || weaponComp.Level == 3)
 			{
 				LVL1Attack(index);
 			}
@@ -289,7 +293,7 @@ namespace MCS
 		else if (Frosty::InputManager::IsMouseButtonPressed(m_Player[index]->LVL2Attack))
 		{
 			// LVL: 1, 2
-			if (weaponComp.ItemID == 2 || weaponComp.ItemID == 3)
+			if (weaponComp.Level == 2 || weaponComp.Level == 3)
 			{
 				LVL2Attack(index);
 			}
@@ -297,7 +301,7 @@ namespace MCS
 		else if (Frosty::InputManager::IsKeyPressed(m_Player[index]->LVL3Attack))
 		{
 			// LVL: 1, 2, 3
-			if (weaponComp.ItemID == 3)
+			if (weaponComp.Level == 3)
 			{
 				LVL3Attack(index);
 			}
@@ -319,7 +323,7 @@ namespace MCS
 			case Frosty::ECS::CWeapon::WeaponType::Sword:
 				CreateLVL1BoundingBox(weaponCarrier, weaponComp.EntityPtr);
 				break;
-			case Frosty::ECS::CWeapon::WeaponType::Arrow:
+			case Frosty::ECS::CWeapon::WeaponType::Bow:
 				CreateLVL1Projectile(weaponCarrier, weaponComp.EntityPtr);
 				break;
 			default:
@@ -345,7 +349,7 @@ namespace MCS
 			case Frosty::ECS::CWeapon::WeaponType::Sword:
 				CreateLVL2BoundingBox(weaponCarrier, weaponComp.EntityPtr);
 				break;
-			case Frosty::ECS::CWeapon::WeaponType::Arrow:
+			case Frosty::ECS::CWeapon::WeaponType::Bow:
 				CreateLVL2Projectile(weaponCarrier, weaponComp.EntityPtr);
 				break;
 			default:
@@ -371,7 +375,7 @@ namespace MCS
 			case Frosty::ECS::CWeapon::WeaponType::Sword:
 				CreateLVL3BoundingBox(weaponCarrier, weaponComp.EntityPtr);
 				break;
-			case Frosty::ECS::CWeapon::WeaponType::Arrow:
+			case Frosty::ECS::CWeapon::WeaponType::Bow:
 				CreateLVL3Projectile(weaponCarrier, weaponComp.EntityPtr);
 				break;
 			default:
@@ -405,9 +409,11 @@ namespace MCS
 		m_World->AddComponent<Frosty::ECS::CPhysics>(sword, Frosty::AssetManager::GetBoundingBox("pCube1"));
 
 		float criticalHit = 0;
-		criticalHit = GenerateCriticalHit(weaponComp.Damage, weaponComp.CriticalHit);
+		criticalHit = GenerateCriticalHit(weaponComp.CriticalHit, weaponComp.CriticalHitChance);
 
-		m_World->AddComponent<Frosty::ECS::CAttack>(sword, Frosty::ECS::CAttack::AttackType::Melee, weaponComp.Damage + criticalHit, true); // <-- true in the end because it's a friendly attack
+		int totalDamage = int(glm::round(weaponComp.Damage + criticalHit));
+
+		m_World->AddComponent<Frosty::ECS::CAttack>(sword, Frosty::ECS::CAttack::AttackType::Melee, totalDamage, true); // <-- true in the end because it's a friendly attack
 	}
 
 	void PlayerControllerSystem::CreateLVL2BoundingBox(const std::shared_ptr<Frosty::ECS::Entity>& weaponCarrier, const std::shared_ptr<Frosty::ECS::Entity>& weapon)
@@ -427,9 +433,11 @@ namespace MCS
 		m_World->AddComponent<Frosty::ECS::CPhysics>(sword, Frosty::AssetManager::GetBoundingBox("pCube1"));
 
 		float criticalHit = 0;
-		criticalHit = GenerateCriticalHit(weaponComp.Damage, weaponComp.CriticalHit);
+		criticalHit = GenerateCriticalHit(weaponComp.CriticalHit, weaponComp.CriticalHitChance);
 
-		m_World->AddComponent<Frosty::ECS::CAttack>(sword, Frosty::ECS::CAttack::AttackType::Melee, weaponComp.Damage + criticalHit, true); // <-- true in the end because it's a friendly attack
+		int totalDamage = int(glm::round(weaponComp.Damage + criticalHit));
+
+		m_World->AddComponent<Frosty::ECS::CAttack>(sword, Frosty::ECS::CAttack::AttackType::Melee, totalDamage, true); // <-- true in the end because it's a friendly attack
 	}
 
 	void PlayerControllerSystem::CreateLVL3BoundingBox(const std::shared_ptr<Frosty::ECS::Entity>& weaponCarrier, const std::shared_ptr<Frosty::ECS::Entity>& weapon)
@@ -455,9 +463,11 @@ namespace MCS
 		m_World->AddComponent<Frosty::ECS::CPhysics>(sword, Frosty::AssetManager::GetBoundingBox("pCube1"));
 
 		float criticalHit = 0;
-		criticalHit = GenerateCriticalHit(weaponComp.Damage, weaponComp.CriticalHit);
+		criticalHit = GenerateCriticalHit(weaponComp.CriticalHit, weaponComp.CriticalHitChance);
 
-		m_World->AddComponent<Frosty::ECS::CAttack>(sword, Frosty::ECS::CAttack::AttackType::Melee, weaponComp.Damage + criticalHit, true); // <-- true in the end because it's a friendly attack
+		int totalDamage = int(glm::round(weaponComp.Damage + criticalHit));
+
+		m_World->AddComponent<Frosty::ECS::CAttack>(sword, Frosty::ECS::CAttack::AttackType::Melee, totalDamage, true); // <-- true in the end because it's a friendly attack
 	}
 
 	void PlayerControllerSystem::CreateLVL1Projectile(const std::shared_ptr<Frosty::ECS::Entity>& weaponCarrier, const std::shared_ptr<Frosty::ECS::Entity>& weapon)
@@ -482,8 +492,11 @@ namespace MCS
 		projectilePhysics.Velocity = direction * projectilePhysics.Speed;
 
 		float criticalHit = 0;
-		criticalHit = GenerateCriticalHit(weaponComp.Damage, weaponComp.CriticalHit);
-		m_World->AddComponent<Frosty::ECS::CAttack>(projectile, Frosty::ECS::CAttack::AttackType::Range, weaponComp.Damage + criticalHit, true, weaponComp.Lifetime);
+		criticalHit = GenerateCriticalHit(weaponComp.CriticalHit, weaponComp.CriticalHitChance);
+
+		int totalDamage = int(glm::round(weaponComp.Damage + criticalHit));
+
+		m_World->AddComponent<Frosty::ECS::CAttack>(projectile, Frosty::ECS::CAttack::AttackType::Range, totalDamage, true, weaponComp.Lifetime);
 	}
 
 	void PlayerControllerSystem::CreateLVL2Projectile(const std::shared_ptr<Frosty::ECS::Entity>& weaponCarrier, const std::shared_ptr<Frosty::ECS::Entity>& weapon)
@@ -497,7 +510,6 @@ namespace MCS
 		mat = glm::rotate(mat, glm::radians(attackerTransform.Rotation.y), { 0.0f, 1.0f, 0.0f });
 		mat = glm::rotate(mat, glm::radians(attackerTransform.Rotation.z), { 0.0f, 0.0f, 1.0f });
 		glm::vec4 direction = mat * glm::vec4(0.0f, 0.0f, 1.0f, 0.0);
-		float criticalHit = 0;
 		for (int i = 0; i < 3; i++)
 		{
 			if (i == 1)
@@ -518,8 +530,12 @@ namespace MCS
 			auto& projectilePhysics = m_World->AddComponent<Frosty::ECS::CPhysics>(projectile, Frosty::AssetManager::GetBoundingBox("pSphere1"), 20.0f);
 			projectilePhysics.Velocity = direction * projectilePhysics.Speed;
 
-			criticalHit = GenerateCriticalHit(weaponComp.Damage, weaponComp.CriticalHit);
-			m_World->AddComponent<Frosty::ECS::CAttack>(projectile, Frosty::ECS::CAttack::AttackType::Range, weaponComp.Damage + criticalHit, true, weaponComp.Lifetime);
+			float criticalHit = 0;
+			criticalHit = GenerateCriticalHit(weaponComp.CriticalHit, weaponComp.CriticalHitChance);
+
+			int totalDamage = int(glm::round(weaponComp.Damage + criticalHit));
+
+			m_World->AddComponent<Frosty::ECS::CAttack>(projectile, Frosty::ECS::CAttack::AttackType::Range, totalDamage, true, weaponComp.Lifetime);
 		}
 	}
 
@@ -545,8 +561,11 @@ namespace MCS
 		projectilePhysics.Velocity = direction * projectilePhysics.Speed;
 
 		float criticalHit = 0;
-		criticalHit = GenerateCriticalHit(weaponComp.Damage, weaponComp.CriticalHit);
-		m_World->AddComponent<Frosty::ECS::CAttack>(projectile, Frosty::ECS::CAttack::AttackType::Range, weaponComp.Damage + criticalHit, true, weaponComp.Lifetime, false);
+		criticalHit = GenerateCriticalHit(weaponComp.CriticalHit, weaponComp.CriticalHitChance);
+
+		int totalDamage = int(glm::round(weaponComp.Damage + criticalHit));
+
+		m_World->AddComponent<Frosty::ECS::CAttack>(projectile, Frosty::ECS::CAttack::AttackType::Range, totalDamage, true, weaponComp.Lifetime, false);
 	}
 
 	float PlayerControllerSystem::GenerateCriticalHit(float criticalHit, float criticalHitChance)
@@ -586,29 +605,29 @@ namespace MCS
 		}
 #pragma endregion Healing Potion
 
-//#pragma region Increase Health Potion
-//		else if (Frosty::InputManager::IsKeyPressed(m_Player[index]->IncreaseHPPotionKey))
-//		{
-//			// If consumer has increase HP potion AND comsumer can increse health AND increase HP timer is bigger than cooldown--> drink increase HP potion
-//			if ((m_Inventory[index]->CurrentIncreaseHPPotions > 0) && (m_Health[index]->MaxHealth < m_Health[index]->MaxPossibleHealth) && (Frosty::Time::CurrentTime() - m_Inventory[index]->IncreaseHPTimer >= m_Inventory[index]->IncreaseHPCooldown))
-//			{
-//				// If increse HP won't exceed maximum health capacity --> directly increase health capacity 
-//				if (m_Inventory[index]->IncreaseHP <= (m_Health[index]->MaxPossibleHealth - m_Health[index]->MaxHealth))
-//				{
-//					m_Health[index]->MaxHealth += m_Inventory[index]->IncreaseHP;
-//				}
-//				// But if increase HP exceeds maximum health capacity --> max possible health achieved
-//				else
-//				{
-//					m_Health[index]->MaxHealth = m_Health[index]->MaxPossibleHealth;
-//				}
-//
-//				// Decrease number of potions in inventory and activate the timer for cooldown
-//				m_Inventory[index]->CurrentIncreaseHPPotions--;
-//				m_Inventory[index]->IncreaseHPTimer = Frosty::Time::CurrentTime();
-//			}
-//		}
-//#pragma endregion Increase Health Potion
+		//#pragma region Increase Health Potion
+		//		else if (Frosty::InputManager::IsKeyPressed(m_Player[index]->IncreaseHPPotionKey))
+		//		{
+		//			// If consumer has increase HP potion AND comsumer can increse health AND increase HP timer is bigger than cooldown--> drink increase HP potion
+		//			if ((m_Inventory[index]->CurrentIncreaseHPPotions > 0) && (m_Health[index]->MaxHealth < m_Health[index]->MaxPossibleHealth) && (Frosty::Time::CurrentTime() - m_Inventory[index]->IncreaseHPTimer >= m_Inventory[index]->IncreaseHPCooldown))
+		//			{
+		//				// If increse HP won't exceed maximum health capacity --> directly increase health capacity 
+		//				if (m_Inventory[index]->IncreaseHP <= (m_Health[index]->MaxPossibleHealth - m_Health[index]->MaxHealth))
+		//				{
+		//					m_Health[index]->MaxHealth += m_Inventory[index]->IncreaseHP;
+		//				}
+		//				// But if increase HP exceeds maximum health capacity --> max possible health achieved
+		//				else
+		//				{
+		//					m_Health[index]->MaxHealth = m_Health[index]->MaxPossibleHealth;
+		//				}
+		//
+		//				// Decrease number of potions in inventory and activate the timer for cooldown
+		//				m_Inventory[index]->CurrentIncreaseHPPotions--;
+		//				m_Inventory[index]->IncreaseHPTimer = Frosty::Time::CurrentTime();
+		//			}
+		//		}
+		//#pragma endregion Increase Health Potion
 
 #pragma region Speed Potion
 		else if (Frosty::InputManager::IsKeyPressed(m_Player[index]->SpeedPotionKey))
@@ -634,28 +653,28 @@ namespace MCS
 		}
 #pragma endregion Speed Potion
 
-//#pragma region Speed Boots
-//		else if (Frosty::InputManager::IsKeyPressed(m_Player[index]->SpeedBootsKey))		// Appearently a temporary thing. Player picks this up automatically so onimput is unnecessary	~ W-_-W ~
-//		{
-//			// If consumer has speed potion AND comsumer has not full speed capacity
-//			if ((m_Inventory[index]->CurrentSpeedBoots < m_Inventory[index]->MaxSpeedBoots) && (m_Physics[index]->Speed < m_Physics[index]->MaxSpeed))
-//			{
-//				// If speed boots won't exceed maximum possible speed capacity --> directly add value to speed
-//				if (m_Inventory[index]->IncreaseSpeed <= (m_Physics[index]->MaxSpeed - m_Physics[index]->Speed))
-//				{
-//					m_Physics[index]->Speed += m_Inventory[index]->IncreaseSpeed;
-//				}
-//				// But if speed boots exceeds maximum possible speed capacity --> max speed achieved
-//				else
-//				{
-//					m_Physics[index]->Speed += m_Physics[index]->MaxSpeed - m_Physics[index]->Speed;
-//				}
-//
-//				// Add number of boots in inventory since boots are something the entity is wearing
-//				m_Inventory[index]->CurrentSpeedBoots++;
-//			}
-//		}
-//#pragma endregion Speed Boots
+		//#pragma region Speed Boots
+		//		else if (Frosty::InputManager::IsKeyPressed(m_Player[index]->SpeedBootsKey))		// Appearently a temporary thing. Player picks this up automatically so onimput is unnecessary	~ W-_-W ~
+		//		{
+		//			// If consumer has speed potion AND comsumer has not full speed capacity
+		//			if ((m_Inventory[index]->CurrentSpeedBoots < m_Inventory[index]->MaxSpeedBoots) && (m_Physics[index]->Speed < m_Physics[index]->MaxSpeed))
+		//			{
+		//				// If speed boots won't exceed maximum possible speed capacity --> directly add value to speed
+		//				if (m_Inventory[index]->IncreaseSpeed <= (m_Physics[index]->MaxSpeed - m_Physics[index]->Speed))
+		//				{
+		//					m_Physics[index]->Speed += m_Inventory[index]->IncreaseSpeed;
+		//				}
+		//				// But if speed boots exceeds maximum possible speed capacity --> max speed achieved
+		//				else
+		//				{
+		//					m_Physics[index]->Speed += m_Physics[index]->MaxSpeed - m_Physics[index]->Speed;
+		//				}
+		//
+		//				// Add number of boots in inventory since boots are something the entity is wearing
+		//				m_Inventory[index]->CurrentSpeedBoots++;
+		//			}
+		//		}
+		//#pragma endregion Speed Boots
 
 #pragma region Pick Up
 		if (Frosty::InputManager::IsKeyPressed(FY_KEY_E))
@@ -746,17 +765,14 @@ namespace MCS
 					world->AddComponent<Frosty::ECS::CDestroy>(e.GetEntity());
 				}
 			}
-			else if (type == Frosty::ECS::CLootable::LootType::Sword1)
+			else if (world->HasComponent<Frosty::ECS::CWeapon>(e.GetEntity()))
 			{
-				FY_INFO("Sword1");
-			}
-			else if (type == Frosty::ECS::CLootable::LootType::Arrow1)
-			{
-				FY_INFO("Arrow1");
+				FY_INFO("Weapon");
+				SwapWeapon(m_Player[i]->Weapon->EntityPtr, e.GetEntity());
 			}
 		}
 	}
-	
+
 	void PlayerControllerSystem::SwapWeapon(const std::shared_ptr<Frosty::ECS::Entity>& playerWeapon, const std::shared_ptr<Frosty::ECS::Entity>& lootWeapon)
 	{
 		// Swap CWeapon
@@ -772,6 +788,9 @@ namespace MCS
 				// Only switch CMesh and CMaterial when weapon stats have been swapped
 				SwapMesh(playerWeapon, lootWeapon);
 				SwapMaterial(playerWeapon, lootWeapon);
+
+				// Swap loot type in lootWeapon depending on playerWeapon
+				SwapLootType(playerWeapon, lootWeapon);
 			}
 		}
 	}
@@ -804,6 +823,32 @@ namespace MCS
 				m_World->GetComponent<Frosty::ECS::CMaterial>(playerWeapon) = m_World->GetComponent<Frosty::ECS::CMaterial>(lootWeapon);
 				m_World->GetComponent<Frosty::ECS::CMaterial>(lootWeapon) = tempMaterial;
 			}
+		}
+	}
+	
+	void PlayerControllerSystem::SwapLootType(const std::shared_ptr<Frosty::ECS::Entity>& playerWeapon, const std::shared_ptr<Frosty::ECS::Entity>& lootWeapon)
+	{
+		auto& playerWeaponComp = m_World->GetComponent<Frosty::ECS::CWeapon>(playerWeapon);
+		auto& lootComp = m_World->GetComponent<Frosty::ECS::CLootable>(lootWeapon);
+		int level = playerWeaponComp.Level;
+
+		if (playerWeaponComp.Type == Frosty::ECS::CWeapon::WeaponType::Sword)
+		{
+			if (level == 1)
+				lootComp.Type = Frosty::ECS::CLootable::LootType::Sword1;
+			else if(level == 2)
+				lootComp.Type = Frosty::ECS::CLootable::LootType::Sword2;
+			else if(level == 3)
+				lootComp.Type = Frosty::ECS::CLootable::LootType::Sword3;
+		}
+		else if (playerWeaponComp.Type == Frosty::ECS::CWeapon::WeaponType::Bow)
+		{
+			if (level == 1)
+				lootComp.Type = Frosty::ECS::CLootable::LootType::Bow1;
+			else if (level == 2)
+				lootComp.Type = Frosty::ECS::CLootable::LootType::Bow2;
+			else if (level == 3)
+				lootComp.Type = Frosty::ECS::CLootable::LootType::Bow3;
 		}
 	}
 }

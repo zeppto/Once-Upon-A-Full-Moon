@@ -696,5 +696,4 @@ namespace Frosty
 		RenderCommand::Draw2D(vertexArray);
 		controller->dt += Frosty::Time::DeltaTime() * controller->animSpeed;
 	}
-
 }
