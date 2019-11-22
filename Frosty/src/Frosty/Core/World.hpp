@@ -45,7 +45,7 @@ namespace Frosty
 		// Returns the camera entity for the scene (later change this when having multiple scenes)
 		const std::shared_ptr<ECS::Entity>& GetSceneCamera() const { return m_Scene->GetCamera(); }
 		void SetSceneCamera(const std::shared_ptr<ECS::Entity>& entity);
-		void DestroyGroup(int32_t groupId);
+		void DestroyGroup(bool current = true);
 		void HandleDestroyedRoom();
 		size_t GetCurrentRoom() const;
 		void ChangeCurrentRoom();

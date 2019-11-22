@@ -12,8 +12,8 @@ namespace Frosty
 	class CollisionEvent : public BaseEvent
 	{
 	public:
-		CollisionEvent(const std::shared_ptr<ECS::Entity>& entityA, const std::shared_ptr<ECS::Entity>& entityB, const glm::vec3& offset)
-			: m_EntityA(entityA), m_EntityB(entityB), m_Offset(offset) { }
+		CollisionEvent(const std::shared_ptr<ECS::Entity>& entityA, const std::shared_ptr<ECS::Entity>& entityB)
+			: m_EntityA(entityA), m_EntityB(entityB) { }
 
 		const std::shared_ptr<ECS::Entity>& GetEntityA() const { return m_EntityA; }
 		const std::shared_ptr<ECS::Entity>& GetEntityB() const { return m_EntityB; }

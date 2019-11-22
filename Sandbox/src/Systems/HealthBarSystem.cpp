@@ -23,8 +23,8 @@ namespace MCS
 		for (size_t i = 1; i < p_Total; i++)
 		{
 
-			float TmaxHP = m_Health[i]->MaxHealth;
-			float TcurrHP = m_Health[i]->CurrentHealth;
+			float TmaxHP = (float)m_Health[i]->MaxHealth;
+			float TcurrHP = (float)m_Health[i]->CurrentHealth;
 
 			float sizeFact = 0.05f * TmaxHP;
 

@@ -56,11 +56,10 @@ namespace Frosty
 		static void Submit2d(const std::shared_ptr<Shader>& shader, const std::shared_ptr<VertexArray>& vertexArray, const glm::mat4& transform);
 		static void SubmitHealthBar(const std::shared_ptr<Shader>& shader, const std::shared_ptr<VertexArray>& vertexArray, const glm::vec3& translate, const glm::vec3& scale, const glm::vec3& HealthBarSpace);
 		static void AddToRenderer(ECS::CMaterial* mat, ECS::CMesh * mesh, ECS::CTransform* transform, ECS::CAnimController* anim);
-		static void RemoveFromRenderer( const int& matID ,const std::string& meshName,const int& transformID);
-		static void UppdateEntity (const int& matID,ECS::CMaterial* mat, const std::string& meshName, std::shared_ptr<VertexArray> vertexArray, const int& transformID, ECS::CTransform* transform);
+		static void RemoveFromRenderer( const size_t& matID ,const std::string& meshName, const size_t& transformID);
+		static void UppdateEntity (const size_t& matID,ECS::CMaterial* mat, const std::string& meshName, std::shared_ptr<VertexArray> vertexArray, const size_t& transformID, ECS::CTransform* transform);
 		
-		static void ChangeEntity (const int& OldMatID,ECS::CMaterial* mat, const std::string& OldMeshName, ECS::CMesh* mesh, const int& transformID, ECS::CTransform* transform);
-
+		static void ChangeEntity (const size_t& OldMatID,ECS::CMaterial* mat, const std::string& OldMeshName, ECS::CMesh* vertexArray, const size_t& transformID, ECS::CTransform* transform);
 
 		inline static void Shutdown() { delete s_SceneData; }
 
@@ -74,7 +73,7 @@ namespace Frosty
 		struct MeshData
 		{
 			std::shared_ptr<VertexArray> VertexArray;
-			std::unordered_map<int, Frosty::ECS::CTransform*> TransformMap;
+			std::unordered_map<size_t, Frosty::ECS::CTransform*> TransformMap;
 
 			glm::mat4* parentMatrix = nullptr;
 			const glm::mat4* holdJointTransform = nullptr;
@@ -90,21 +89,21 @@ namespace Frosty
 		struct ShaderData
 		{
 			std::shared_ptr < Shader> Shader;
-			std::unordered_map<int, std::shared_ptr<MaterialData>> MaterialMap;
+			std::unordered_map<size_t, std::shared_ptr<MaterialData>> MaterialMap;
 		};
 
 		struct RenderPassData
 		{
 			static std::unordered_map<std::string, std::shared_ptr<ShaderData>> ShaderMap;
-			static std::unordered_map<int, std::unordered_map<int, Frosty::ECS::CTransform*>*> TransformLookUpMap;
-			static std::unordered_map<int, std::unordered_map<std::string, std::shared_ptr<MeshData>>*> MeshLookUpMap;
-			static std::unordered_map<int, std::unordered_map<int, std::shared_ptr<MaterialData>>*> MaterialLookUpMap;
+			static std::unordered_map<size_t, std::unordered_map<size_t, Frosty::ECS::CTransform*>*> TransformLookUpMap;
+			static std::unordered_map<size_t, std::unordered_map<std::string, std::shared_ptr<MeshData>>*> MeshLookUpMap;
+			static std::unordered_map<size_t, std::unordered_map<size_t, std::shared_ptr<MaterialData>>*> MaterialLookUpMap;
 		};
 
 		static std::unordered_map<std::string, std::shared_ptr<ShaderData>> s_ShaderMap;
-		static std::unordered_map<int, std::unordered_map<int, Frosty::ECS::CTransform*>*> s_TransformLookUpMap;
-		static std::unordered_map<int, std::unordered_map<std::string, std::shared_ptr<MeshData>>*> s_MeshLookUpMap;
-		static std::unordered_map<int, std::unordered_map<int, std::shared_ptr<MaterialData>>*> s_MaterialLookUpMap;
+		static std::unordered_map<size_t, std::unordered_map<size_t, Frosty::ECS::CTransform*>*> s_TransformLookUpMap;
+		static std::unordered_map<size_t, std::unordered_map<std::string, std::shared_ptr<MeshData>>*> s_MeshLookUpMap;
+		static std::unordered_map<size_t, std::unordered_map<size_t, std::shared_ptr<MaterialData>>*> s_MaterialLookUpMap;
 		static std::vector<RenderPassData> s_RenderPas;
 
 		struct PointLight
@@ -132,10 +131,10 @@ namespace Frosty
 		{
 			GameCameraProps GameCamera;
 			//std::vector<PointLight> PointLights;
-			std::unordered_map<int, PointLight>PointLights;
+			std::unordered_map<size_t, PointLight>PointLights;
 
 			//std::vector<DirectionalLight> DirectionalLights;
-			std::unordered_map<int, DirectionalLight>DirectionalLights;
+			std::unordered_map<size_t, DirectionalLight>DirectionalLights;
 		};
 		static SceneData* s_SceneData;
 

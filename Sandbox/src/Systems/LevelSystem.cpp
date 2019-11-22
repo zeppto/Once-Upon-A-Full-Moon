@@ -135,7 +135,7 @@ namespace MCS
 		auto& ExitSide = m_World->GetComponent<Frosty::ECS::CLevelExit>(e.GetExitEntity());
 
 		auto& PlayerTranform = m_World->GetComponent<Frosty::ECS::CTransform>(e.GetPlayerEntity());
-		Frosty::ECS::CTransform* playerTransform;
+		Frosty::ECS::CTransform* playerTransform = nullptr;
 
 		//temp level swap
 		for (size_t i = 1; i < p_Total; i++)
@@ -489,7 +489,7 @@ namespace MCS
 			auto& material = m_World->AddComponent<Frosty::ECS::CMaterial>(chest, Frosty::AssetManager::GetShader("Texture2D"));
 			material.DiffuseTexture = Frosty::AssetManager::GetTexture2D("chest");
 			m_World->AddComponent<Frosty::ECS::CPhysics>(chest, Frosty::AssetManager::GetBoundingBox("chest"), 6.0f);
-			m_World->AddComponent<Frosty::ECS::CHealth>(chest, 2.0f);
+			m_World->AddComponent<Frosty::ECS::CHealth>(chest, 2);
 			m_World->AddComponent<Frosty::ECS::CDropItem>(chest);
 		}
 	}

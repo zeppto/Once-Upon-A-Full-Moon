@@ -10,9 +10,9 @@ namespace Frosty
 {
 	Renderer::SceneData* Renderer::s_SceneData = FY_NEW Renderer::SceneData;
 	std::unordered_map<std::string, std::shared_ptr<Renderer::ShaderData>> Renderer::s_ShaderMap;
-	std::unordered_map<int, std::unordered_map<int, Frosty::ECS::CTransform*>*> Renderer::s_TransformLookUpMap;
-	std::unordered_map<int, std::unordered_map<std::string, std::shared_ptr<Renderer::MeshData>>*> Renderer::s_MeshLookUpMap;
-	std::unordered_map<int, std::unordered_map<int, std::shared_ptr<Renderer::MaterialData>>*> Renderer::s_MaterialLookUpMap;
+	std::unordered_map<size_t, std::unordered_map<size_t, Frosty::ECS::CTransform*>*> Renderer::s_TransformLookUpMap;
+	std::unordered_map<size_t, std::unordered_map<std::string, std::shared_ptr<Renderer::MeshData>>*> Renderer::s_MeshLookUpMap;
+	std::unordered_map<size_t, std::unordered_map<size_t, std::shared_ptr<Renderer::MaterialData>>*> Renderer::s_MaterialLookUpMap;
 	std::vector<Renderer::RenderPassData>  Renderer::s_RenderPas;
 
 	int Renderer::s_TotalNrOfFrames;
@@ -153,7 +153,7 @@ namespace Frosty
 						}
 
 						float distance = 0;																	//The scale check is so the plane is not culled
-						if (culling && Time::GetFrameCount /*&& s_TotalNrOfFrames % 2 == 0*/ && meshData->TransformMap.at(TransformIt.first)->Scale.x < 100 && s_DistanceCulling)
+						if (culling && Time::GetFrameCount() /*&& s_TotalNrOfFrames % 2 == 0*/ && meshData->TransformMap.at(TransformIt.first)->Scale.x < 100 && s_DistanceCulling)
 						{
 							distance = glm::distance(meshData->TransformMap.at(TransformIt.first)->Position, s_SceneData->GameCamera.CameraPosition);
 						}
@@ -513,9 +513,9 @@ namespace Frosty
 
 			counter++;
 			//Set up IDs
-			int matID = transform->EntityPtr->Id; //Works but can be improved whith a real material ID
+			size_t matID = transform->EntityPtr->Id; //Works but can be improved whith a real material ID
 			std::string meshID = mesh->Mesh->GetName();
-			int transformID = transform->EntityPtr->Id;
+			size_t transformID = transform->EntityPtr->Id;
 
 
 			//Check if the shader key is already in the map, if not add it.
@@ -566,14 +566,14 @@ namespace Frosty
 		}
 	}
 
-	void Renderer::RemoveFromRenderer(const int& matID, const std::string& meshName, const int& transformID)
+	void Renderer::RemoveFromRenderer(const size_t& matID, const std::string& meshName, const size_t& transformID)
 	{
 		if (s_TransformLookUpMap.find(transformID) != s_TransformLookUpMap.end())
 		{
 			s_ShaderMap;
 
-			int nrOfTransforms = 0;
-			int nrOfMeshes = 0;
+			size_t nrOfTransforms = 0;
+			size_t nrOfMeshes = 0;
 
 			s_TransformLookUpMap.at(transformID)->at(transformID) = nullptr;
 			s_TransformLookUpMap.at(transformID)->erase(transformID);
@@ -610,7 +610,7 @@ namespace Frosty
 
 	}
 
-	void Renderer::UppdateEntity(const int& matID, ECS::CMaterial* mat, const std::string& meshName, std::shared_ptr<VertexArray> vertexArray, const int& transformID, ECS::CTransform* transform)
+	void Renderer::UppdateEntity(const size_t& matID, ECS::CMaterial* mat, const std::string& meshName, std::shared_ptr<VertexArray> vertexArray, const size_t& transformID, ECS::CTransform* transform)
 	{
 		if (s_TransformLookUpMap.find(transformID) != s_TransformLookUpMap.end())
 		{
@@ -622,7 +622,7 @@ namespace Frosty
 		}
 	}
 
-	void Renderer::ChangeEntity(const int& OldMatID, ECS::CMaterial* mat, const std::string& OldMeshName, ECS::CMesh* mesh, const int& transformID, ECS::CTransform* transform)
+	void Renderer::ChangeEntity(const size_t& OldMatID, ECS::CMaterial* mat, const std::string& OldMeshName, ECS::CMesh * mesh, const size_t& transformID, ECS::CTransform* transform)
 	{
 		//Not the best but it works
 

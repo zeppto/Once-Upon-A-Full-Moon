@@ -122,9 +122,9 @@ struct Level_Enemy
 //7 = Health
 struct Level_Health
 {
-	float MaxPossibleHealth = 20;						
-	float MaxHealth = 5;								
-	float CurrentHealth = 5;
+	int MaxPossibleHealth = 20;						
+	int MaxHealth = 5;								
+	int CurrentHealth = 5;
 };
 
 //8 = HealthBar
