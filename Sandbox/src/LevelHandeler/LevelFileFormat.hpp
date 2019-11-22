@@ -2,6 +2,7 @@
 #define LEVEL_FILE_FORMAT_HPP
 
 namespace ECS { struct Entity; }
+//namespace ECS { struct BoolMap; }
 
 //shuled switch string to const char sizes and maybi glm to flot arrays
 
@@ -53,6 +54,21 @@ struct Level_Mesh
 };
 
 //2 = Material
+struct Level_Material_old
+{
+	char UseShaderName[50] = "";
+	glm::vec4 Albedo{ 1.0f, 0.0f, 1.0f, 1.0f };
+	char DiffuseTextureName[50] = "";
+	char SpecularTextureName[50] = "";
+	char NormalTextureName[50] = "";
+	char BlendMapTextureName[50] = "";
+	char BlendTexture1Name[50] = "";
+	char BlendTexture2Name[50] = "";
+
+	float SpecularStrength{ 0.5f };
+	int Shininess{ 16 };
+	glm::vec2 TextureScale{ 1.0f };
+};
 struct Level_Material
 {
 	char UseShaderName[50] = "";
@@ -67,6 +83,7 @@ struct Level_Material
 	float SpecularStrength{ 0.5f };
 	int Shininess{ 16 };
 	glm::vec2 TextureScale{ 1.0f };
+	bool HasTransparency = false;
 };
 
 //3 = Follow
@@ -199,6 +216,7 @@ public:
 	void SaveToFile(std::string fileName);
 	void OpenFromFile(std::string fileName, glm::ivec2 roomId = glm::ivec2(0, 0), Frosty::ECS::CTransform* playerTransform = nullptr,
 		int rotation = 0, glm::vec3 move = glm::vec3(0,0,0));
+	void LoadBoolMap(std::string fileName);
 
 private:
 	//std::shared_ptr<ECS::Entity> m_ExitEntity;

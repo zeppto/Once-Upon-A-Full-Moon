@@ -9,6 +9,7 @@
 #include "Frosty/RenderEngine/Shader.hpp"
 #include "Frosty/RenderEngine/Texture.hpp"
 #include "AssetFiles/TrueTypeFile.hpp"
+#include"AssetFiles/WeaponHandler.hpp"
 
 #include <Luna/include/Reader.h>
 
@@ -22,6 +23,7 @@
 #define FILE_TYPE_TTF "ttf"
 #define FILE_TYPE_TGA "tga"
 #define FILE_TYPE_GLSL "glsl"
+#define FILE_TYPE_XML "xml"
 
 #define MAT_NAME "Mat_" //(followed by a number)
 #define MAT_NAME_FOLLOW ":"
@@ -37,7 +39,8 @@ namespace Frosty
 		LUNA,
 		TTF,
 		TGA,
-		GLSL
+		GLSL,
+		XML
 	};
 
 	// For storing animation data per vertex!
@@ -75,6 +78,7 @@ namespace Frosty
 		static std::map<std::string, std::shared_ptr<Texture2D>> s_Textures2D;
 		static std::map<std::string, std::shared_ptr<Luna::BoundingBox>> s_BoundingBoxes;
 		static std::map<std::string, std::shared_ptr<TrueTypeFile>> s_TruefontTypes;
+		static std::map<std::string, std::shared_ptr<WeaponHandler>> s_WeaponHandler;
 
 		static std::unordered_map <std::string, std::list<TextureFile**>> s_TextureWatchList;
 
@@ -126,6 +130,11 @@ namespace Frosty
 		inline static std::shared_ptr<Luna::BoundingBox>& GetBoundingBox(const std::string& MeshName) { FY_CORE_ASSERT(s_BoundingBoxes.count(MeshName), "Texture2D error!\n{0} doesn't exist!", MeshName); return s_BoundingBoxes[MeshName]; }
 		inline static std::map<std::string, std::shared_ptr<Luna::BoundingBox>>& GetBoundingBoxes() { return s_BoundingBoxes; }
 
+
+		//Use File Name
+		inline static std::shared_ptr<WeaponHandler>& GetWeaponHandler(const std::string& FileName) { FY_CORE_ASSERT(s_WeaponHandler.count(FileName), "WeaponHandler error!\n{0} doesn't exist!", FileName); return s_WeaponHandler[FileName]; }
+		inline static std::map<std::string, std::shared_ptr<WeaponHandler>>& GetWeaponHandlers() { return s_WeaponHandler; }
+
 		static std::vector<std::string> GetMeshNames();
 		static std::vector<std::string> GetShaderNames();
 		static std::vector<std::string> GetTexturesNames();
@@ -142,6 +151,7 @@ namespace Frosty
 
 		static bool MaterialLoaded(const std::string& FileName);
 		static bool TTFLoaded(const std::string& FileName);
+		static bool XMLLoaded(const std::string& FileName);
 		static bool TextureLoaded(const std::string& FileName);
 		static bool AnimationLoaded(const std::string& AssetName);
 		static bool MeshLoaded(const std::string& AssetName);
@@ -151,6 +161,7 @@ namespace Frosty
 		static 	bool LoadLunaFile(const FileMetaData& FileNameInformation, const bool& Reload = false);
 		static 	bool LoadTTF_File(const FileMetaData& FileNameInformation, const bool& Reload = false);
 		static 	bool LoadGraphicFile(const FileMetaData& FileNameInformation, const bool& Reload = false);
+		static bool LoadXML(const FileMetaData& FileNameInformation, const bool& Reload = false);
 		static 	bool GetFileInformation(FileMetaData& FileNameInformation);
 		static 	int8_t GetFileType(const std::string& fileType);
 
@@ -170,6 +181,7 @@ namespace Frosty
 
 		static bool AddTexture(const FileMetaData& MetaData);
 		static bool AddTTF(const FileMetaData& MetaData);
+		static bool AddXML(const FileMetaData& MetaData);
 
 		static bool AddMaterial(LinkedMaterial& LnkMat);
 		static bool AddMaterial(const FileMetaData& MetaData, const Luna::Material& LunMat);

@@ -10,7 +10,7 @@ namespace Frosty
 	public:
 		virtual ~Saver() = default;
 
-		static void SaveAll();
+		void SaveAll();
 
 	private:
 

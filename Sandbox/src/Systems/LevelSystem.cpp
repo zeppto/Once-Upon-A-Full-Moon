@@ -2,6 +2,7 @@
 #include "LevelSystem.hpp"
 #include "Frosty/API/AssetManager/AssetManager.hpp"
 #include "Frosty/Events/AbilityEvent.hpp"
+#include "Frosty/Core/BoolMap/BoolMapGenerator.hpp"
 
 namespace MCS
 {
@@ -11,6 +12,7 @@ namespace MCS
 	{
 		m_World = Frosty::Application::Get().GetWorld().get();
 		p_Signature.set(Frosty::ECS::getComponentTypeID<Frosty::ECS::CTransform>(), true);
+
 	}
 
 	void LevelSystem::OnEvent(Frosty::BaseEvent& e)
@@ -51,8 +53,9 @@ namespace MCS
 			int rotate;
 			m_Map.getRoomTextur(m_PlayerPos, &rotate);
 			Level::MoveToNewRoom(m_CurrentRoome.sideExits[0], m_CurrentRoome.sideExits[1], m_CurrentRoome.sideExits[2], m_CurrentRoome.sideExits[3]);
-			m_LevelFileFormat.OpenFromFile("deadend_chests", m_PlayerPos, nullptr, rotate);
+			m_LevelFileFormat.OpenFromFile("deadend_chests_IsStatick_t", m_PlayerPos, nullptr, rotate);
 			m_Start = false;
+			m_LevelFileFormat.LoadBoolMap("deadend_chests_IsStatick_t");
 		}
 	}
 
@@ -481,11 +484,11 @@ namespace MCS
 		//chest
 		if (e.GetEntityType() == 17)
 		{
-			auto& chest = m_World->CreateEntity({ 0.0f, 1.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 4.0f, 2.0f, 2.0f });
-			m_World->AddComponent<Frosty::ECS::CMesh>(chest, Frosty::AssetManager::GetMesh("pCube1"));
-			auto& material = m_World->AddComponent<Frosty::ECS::CMaterial>(chest, Frosty::AssetManager::GetShader("FlatColor"));
-			material.Albedo = glm::vec4(1.0f, 0.56f, 0.09f, 1.0f);
-			m_World->AddComponent<Frosty::ECS::CPhysics>(chest, Frosty::AssetManager::GetBoundingBox("pCube1"), 6.0f);
+			auto& chest = m_World->CreateEntity({ 0.0f, 1.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 1.0f, 1.0f, 1.0f });
+			m_World->AddComponent<Frosty::ECS::CMesh>(chest, Frosty::AssetManager::GetMesh("chest"));
+			auto& material = m_World->AddComponent<Frosty::ECS::CMaterial>(chest, Frosty::AssetManager::GetShader("Texture2D"));
+			material.DiffuseTexture = Frosty::AssetManager::GetTexture2D("chest");
+			m_World->AddComponent<Frosty::ECS::CPhysics>(chest, Frosty::AssetManager::GetBoundingBox("chest"), 6.0f);
 			m_World->AddComponent<Frosty::ECS::CHealth>(chest, 2.0f);
 			m_World->AddComponent<Frosty::ECS::CDropItem>(chest);
 		}

@@ -30,11 +30,18 @@ namespace MCS
 				EditorUpdateParticleSystem(i);
 			}
 
-			glm::mat4 transform = glm::translate(glm::mat4(1.0f), m_Transform[i]->Position);
-			transform = glm::rotate(transform, glm::radians(m_Transform[i]->Rotation.x), { 1.0f, 0.0f, 0.0f });
-			transform = glm::rotate(transform, glm::radians(m_Transform[i]->Rotation.y), { 0.0f, 1.0f, 0.0f });
-			transform = glm::rotate(transform, glm::radians(m_Transform[i]->Rotation.z), { 0.0f, 0.0f, 1.0f });
-			transform = glm::scale(transform, m_Transform[i]->Scale);
+			glm::mat4 transform = glm::mat4(1.0f);
+			transform = glm::rotate(transform, glm::radians(m_ParticleSystem[i]->SystemRotation.x), { 1.0f, 0.0f, 0.0f });
+			transform = glm::rotate(transform, glm::radians(m_ParticleSystem[i]->SystemRotation.y), { 0.0f, 1.0f, 0.0f });
+			transform = glm::rotate(transform, glm::radians(m_ParticleSystem[i]->SystemRotation.z), { 0.0f, 0.0f, 1.0f });
+
+			glm::mat4 parentTransform = glm::translate(glm::mat4(1.0f), m_Transform[i]->Position);
+			parentTransform = glm::rotate(parentTransform, glm::radians(m_Transform[i]->Rotation.x), { 1.0f, 0.0f, 0.0f });
+			parentTransform = glm::rotate(parentTransform, glm::radians(m_Transform[i]->Rotation.y), { 0.0f, 1.0f, 0.0f });
+			parentTransform = glm::rotate(parentTransform, glm::radians(m_Transform[i]->Rotation.z), { 0.0f, 0.0f, 1.0f });
+			parentTransform = glm::scale(parentTransform, m_Transform[i]->Scale);
+
+			transform = parentTransform * transform;
 
 			m_ParticleSystem[i]->Texture->Bind();
 
@@ -52,7 +59,6 @@ namespace MCS
 
 			auto& world = Frosty::Application::Get().GetWorld();
 			m_Transform[p_Total] = &world->GetComponent<Frosty::ECS::CTransform>(entity);
-			//m_Transform[p_Total]->Position = glm::vec3(0.0f, 7.0f, 0.0f); //Debug
 			m_ParticleSystem[p_Total] = &world->GetComponent<Frosty::ECS::CParticleSystem>(entity);
 
 			m_ParticleSystem[p_Total]->ParticleVertArray.reset(Frosty::VertexArray::Create());
@@ -71,8 +77,13 @@ namespace MCS
 			vertBuffer->SetNrOfVertices(m_ParticleSystem[p_Total]->ParticleCount);
 			m_ParticleSystem[p_Total]->ParticleVertArray->AddVertexBuffer(vertBuffer); //Add to array
 
-			m_ParticleSystem[p_Total]->UseShader = Frosty::AssetManager::GetShader("Particles");
-			m_ParticleSystem[p_Total]->Texture = Frosty::AssetManager::GetTexture2D("particle");
+			m_ParticleSystem[p_Total]->UseShader = Frosty::AssetManager::GetShader(m_ParticleSystem[p_Total]->ShaderName);
+			m_ParticleSystem[p_Total]->Texture = Frosty::AssetManager::GetTexture2D(m_ParticleSystem[p_Total]->TextureName);
+
+			if (m_ParticleSystem[p_Total]->ShaderName == "ParticlesHorizontal")
+			{
+				m_ParticleSystem[p_Total]->AlwaysFaceCamera = false;
+			}
 
 			m_ParticleSystem[p_Total]->Particles.resize(m_ParticleSystem[p_Total]->MaxParticles);
 
@@ -183,14 +194,18 @@ namespace MCS
 		{
 			m_ParticleSystem[systemIndex]->Particles.resize(m_ParticleSystem[systemIndex]->MaxParticles);
 			m_ParticleSystem[systemIndex]->LastUsedParticle = m_ParticleSystem[systemIndex]->MaxParticles; //To avoid searching for a used particle that shouldn't exist any more
+			for (uint32_t i = 0; i < m_ParticleSystem[systemIndex]->MaxParticles; i++)
+			{
+				UpdateGpuData(systemIndex, i);
+			}
 		}
-		if (glm::vec3(m_ParticleSystem[systemIndex]->Particles[0].Color) != m_ParticleSystem[systemIndex]->ParticleSystemColor) //Workaround
+		if (glm::vec3(m_ParticleSystem[systemIndex]->Particles[0].StartColor) != m_ParticleSystem[systemIndex]->SystemStartColor)
 		{
 			for (uint32_t i = 0; i < m_ParticleSystem[systemIndex]->MaxParticles; i++)
 			{
-				m_ParticleSystem[systemIndex]->Particles[i].Color[0] = m_ParticleSystem[systemIndex]->ParticleSystemColor.r;
-				m_ParticleSystem[systemIndex]->Particles[i].Color[1] = m_ParticleSystem[systemIndex]->ParticleSystemColor.g;
-				m_ParticleSystem[systemIndex]->Particles[i].Color[2] = m_ParticleSystem[systemIndex]->ParticleSystemColor.b;
+				m_ParticleSystem[systemIndex]->Particles[i].StartColor.r = m_ParticleSystem[systemIndex]->SystemStartColor.r;
+				m_ParticleSystem[systemIndex]->Particles[i].StartColor.g = m_ParticleSystem[systemIndex]->SystemStartColor.g;
+				m_ParticleSystem[systemIndex]->Particles[i].StartColor.b = m_ParticleSystem[systemIndex]->SystemStartColor.b;
 				UpdateGpuData(systemIndex, i);
 			}
 
@@ -202,13 +217,11 @@ namespace MCS
 				m_ParticleSystem[systemIndex]->Particles[i].StartSize = m_ParticleSystem[systemIndex]->StartParticleSize;
 			}
 		}
-		if (glm::vec3(m_ParticleSystem[systemIndex]->Particles[0].Direction) != m_ParticleSystem[systemIndex]->ParticleSystemDirection) //Temporary if we're gonna have gravity. Needs to be startrDir otherwise.
+		if (m_ParticleSystem[systemIndex]->Particles[0].Speed != m_ParticleSystem[systemIndex]->Speed) //Temporary if we're gonna have physics, drag or random speeds
 		{
 			for (uint32_t i = 0; i < m_ParticleSystem[systemIndex]->MaxParticles; i++)
 			{
-				m_ParticleSystem[systemIndex]->Particles[i].Direction.x = m_ParticleSystem[systemIndex]->ParticleSystemDirection.x;
-				m_ParticleSystem[systemIndex]->Particles[i].Direction.y = m_ParticleSystem[systemIndex]->ParticleSystemDirection.y;
-				m_ParticleSystem[systemIndex]->Particles[i].Direction.z = m_ParticleSystem[systemIndex]->ParticleSystemDirection.z;
+				m_ParticleSystem[systemIndex]->Particles[i].Speed = m_ParticleSystem[systemIndex]->Speed;
 			}
 		}
 
@@ -285,17 +298,65 @@ namespace MCS
 				p.Size = Lerp(m_ParticleSystem[systemIndex]->EndParticleSize, m_ParticleSystem[systemIndex]->StartParticleSize, t);
 			}
 		}
+		if (m_ParticleSystem[systemIndex]->SystemStartColor != m_ParticleSystem[systemIndex]->SystemEndColor)
+		{
+			float t = p.Lifetime / m_ParticleSystem[systemIndex]->MaxLifetime;
+			glm::vec3 interpolatedColor = m_ParticleSystem[systemIndex]->SystemEndColor * (1 - t) + m_ParticleSystem[systemIndex]->SystemStartColor * t; //Interpolation
+			p.Color.r = interpolatedColor.r;
+			p.Color.g = interpolatedColor.g;
+			p.Color.b = interpolatedColor.b;
+		}
 	}
 
 	void ParticleSystem::ResetParticle(size_t systemIndex, size_t index)
 	{
 		Frosty::ECS::CParticleSystem::Particle& p = m_ParticleSystem[systemIndex]->Particles[index];
-		p.Lifetime = m_ParticleSystem[systemIndex]->MaxLifetime;
-		p.Position = m_ParticleSystem[systemIndex]->Particles[index].StartPos;
+		if(m_ParticleSystem[systemIndex]->RandomLifetimes == false)
+		{
+			p.MaxLifetime = m_ParticleSystem[systemIndex]->MaxLifetime;
+		}
+		else
+		{
+			float randLifetime = RandomFloat(m_ParticleSystem[systemIndex]->MaxLifetime, m_ParticleSystem[systemIndex]->MinLifetime);
+			p.MaxLifetime = randLifetime;
+		}
+		if (m_ParticleSystem[systemIndex]->RandomStartPos == false)
+		{
+			p.StartPos = glm::vec4(m_ParticleSystem[systemIndex]->ParticleSystemStartPos, 1.0f);
+		}
+		else
+		{
+			float randomNumX = ((rand() % 100) - 50) / 10.0f;
+			float randomNumY = ((rand() % 100) - 50) / 10.0f;
+			float randomNumZ = ((rand() % 100) - 50) / 10.0f;
+			p.StartPos.x = randomNumX;
+			p.StartPos.y = randomNumY;
+			p.StartPos.z = randomNumZ;
+		}
+		p.Lifetime = p.MaxLifetime;
+		p.Position = p.StartPos;
 		p.Size = p.StartSize;
 		p.Color.a = 1.0f; //TODO: set to startColor/startAlpha
-		//TODO: Start Direction?
-		//TODO: Start Color?
+		if (m_ParticleSystem[systemIndex]->RandomDirection == false)
+		{
+			p.Direction = glm::vec4(m_ParticleSystem[systemIndex]->ParticleSystemDirection, 1.0f);
+			//TODO: Start Direction?
+		}
+		else
+		{
+			//Not the best way to randomize direction but good enough for now
+			glm::vec3 randDir;
+			randDir.x = (rand()% 2000 - 1000.0f) / 1000.0f;
+			randDir.y = (rand() % 2000 - 1000.0f) / 1000.0f;
+			randDir.z = (rand() % 2000 - 1000.0f) / 1000.0f;
+
+			glm::normalize(randDir);
+
+			p.Direction.x = randDir.x;
+			p.Direction.y = randDir.y;
+			p.Direction.z = randDir.z;
+		}
+		p.Color = p.StartColor;
 	}
 
 	void ParticleSystem::UpdateGpuData(size_t systemIndex, size_t index, uint32_t particleCount)
@@ -345,8 +406,16 @@ namespace MCS
 		std::sort(&m_ParticleSystem[systemIndex]->Particles[0], &m_ParticleSystem[systemIndex]->Particles[m_ParticleSystem[systemIndex]->MaxParticles - 1]);
 	}
 
-	float ParticleSystem::Lerp(float a, float b, float f)
+	float ParticleSystem::Lerp(float a, float b, float f) //Lerp can probably be done on the gpu which would be a good optimization
 	{
 		return (a * (1.0f - f)) + (b * f);
+	}
+
+	float ParticleSystem::RandomFloat(float min, float max)
+	{
+		float random = ((float) rand()) / (float)RAND_MAX;
+		float range = max - min;
+		float r = random * range;
+		return min + r;
 	}
 }

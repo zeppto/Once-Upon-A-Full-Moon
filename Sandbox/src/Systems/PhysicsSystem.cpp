@@ -2,6 +2,7 @@
 #include "PhysicsSystem.hpp"
 #include "Frosty/Events/AbilityEvent.hpp"
 #include "Frosty/API/AssetManager/AssetManager.hpp"
+#include"Frosty/Core/BoolMap/BoolMap.hpp"
 
 namespace MCS
 {
@@ -21,6 +22,17 @@ namespace MCS
 		{
 			m_Transform[i]->Position += m_Physics[i]->Velocity * Frosty::Time::DeltaTime();
 			CheckCollision(i);
+		}
+	}
+
+	void PhysicsSystem::OnEvent(Frosty::BaseEvent& e)
+	{
+
+		switch (e.GetEventType())
+		{
+		case Frosty::EventType::LoadBoolMap:
+			OnLoadBoolMapEvent(static_cast<Frosty::BoolMapLoadedEvent&>(e));
+			break;
 		}
 	}
 
@@ -98,6 +110,11 @@ namespace MCS
 		return retInfo.str();
 	}
 
+	void PhysicsSystem::OnLoadBoolMapEvent(Frosty::BoolMapLoadedEvent& e)
+	{
+		int o = 0;
+	}
+
 	void PhysicsSystem::CheckCollision(size_t index)
 	{
 		for (size_t i = 1; i < p_Total; i++)
@@ -109,8 +126,8 @@ namespace MCS
 				glm::vec3 finalLengthA = glm::vec3(m_Physics[index]->BoundingBox->halfSize[0], m_Physics[index]->BoundingBox->halfSize[1], m_Physics[index]->BoundingBox->halfSize[2]) * m_Transform[index]->Scale;
 				glm::vec3 finalLengthB = glm::vec3(m_Physics[i]->BoundingBox->halfSize[0], m_Physics[i]->BoundingBox->halfSize[1], m_Physics[i]->BoundingBox->halfSize[2]) * m_Transform[i]->Scale;
 				bool intersect = Frosty::CollisionDetection::AABBIntersect(finalLengthA, finalCenterA, finalLengthB, finalCenterB);
-				
-				if (intersect == true)
+
+				if (intersect)
 				{
 					// If collison is an attack...
 					if (m_World->HasComponent<Frosty::ECS::CAttack>(m_Transform[index]->EntityPtr))
@@ -200,6 +217,7 @@ namespace MCS
 		m_World->AddComponent<Frosty::ECS::CMaterial>(item, Frosty::AssetManager::GetShader("FlatColor"));
 		m_World->AddComponent<Frosty::ECS::CPhysics>(item, Frosty::AssetManager::GetBoundingBox("pCube1"), 6.0f);
 
+		//add wolfsbain and bait as items to be dropt by chest!
 		switch (m_RandItem)
 		{
 		case 1:
@@ -216,11 +234,11 @@ namespace MCS
 			break;
 		case 5:
 			m_World->AddComponent<Frosty::ECS::CLootable>(item, Frosty::ECS::CLootable::LootType::Sword1);
-			m_World->AddComponent<Frosty::ECS::CWeapon>(item, Frosty::ECS::CWeapon::WeaponType::Sword, 1, 1);
+			m_World->AddComponent<Frosty::ECS::CWeapon>(item, Frosty::ECS::CWeapon::WeaponType::Sword, 1, 1.f);
 			break;
 		case 6:
-			m_World->AddComponent<Frosty::ECS::CLootable>(item, Frosty::ECS::CLootable::LootType::Arrow1);
-			m_World->AddComponent<Frosty::ECS::CWeapon>(item, Frosty::ECS::CWeapon::WeaponType::Arrow, 1, 1);
+			m_World->AddComponent<Frosty::ECS::CLootable>(item, Frosty::ECS::CLootable::LootType::Bow1);
+			m_World->AddComponent<Frosty::ECS::CWeapon>(item, Frosty::ECS::CWeapon::WeaponType::Bow, 1, 1.f);
 			break;
 		default:
 			break;

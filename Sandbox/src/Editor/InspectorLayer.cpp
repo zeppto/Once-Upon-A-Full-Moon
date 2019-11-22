@@ -9,6 +9,7 @@
 namespace MCS
 {
 	bool InspectorLayer::s_VSync = false;
+	bool InspectorLayer::s_DistanceCulling = false;
 
 	void InspectorLayer::OnAttach()
 	{
@@ -42,6 +43,7 @@ namespace MCS
 			ImGui::Text("Delta Time: %f", Frosty::Time::DeltaTime());
 			ImGui::Text("FPS: %i", Frosty::Time::FPS());
 			if (ImGui::Checkbox("VSync: ", &s_VSync)) m_App->GetWindow().SetVSync(s_VSync);
+			if (ImGui::Checkbox("Distance Culling: ", &s_DistanceCulling))Frosty::Renderer::SetDistanceCulling(s_DistanceCulling);
 			if (ImGui::Button("Create Entity", ImVec2(100.0f, 20.0f))) world->CreateEntity();
 
 			static int selection_mask = 0;
@@ -49,15 +51,18 @@ namespace MCS
 			unsigned int counter = 0;
 			for (auto& entity : *world->GetEntityManager())
 			{
-				ImGuiTreeNodeFlags node_flags = ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen | ((selection_mask & (1 << counter)) ? ImGuiTreeNodeFlags_Selected : 0); // ImGuiTreeNodeFlags_Bullet
-				Frosty::ECS::EntityID eid = entity->Id;
-				ImGui::TreeNodeEx((void*)(intptr_t)counter, node_flags, "Entity (%d)", eid);
-				if (ImGui::IsItemClicked())
+				if (entity->ShowInEditor)
 				{
-					node_clicked = (int)counter;
-					m_SelectedEntity = entity;
+					ImGuiTreeNodeFlags node_flags = ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen | ((selection_mask & (1 << counter)) ? ImGuiTreeNodeFlags_Selected : 0); // ImGuiTreeNodeFlags_Bullet
+					Frosty::ECS::EntityID eid = entity->Id;
+					ImGui::TreeNodeEx((void*)(intptr_t)counter, node_flags, "Entity (%d)", eid);
+					if (ImGui::IsItemClicked())
+					{
+						node_clicked = (int)counter;
+						m_SelectedEntity = entity;
+					}
+					counter++;
 				}
-				counter++;
 			}
 			if (node_clicked != -1)
 			{
@@ -226,10 +231,11 @@ namespace MCS
 					if (ImGui::CollapsingHeader("Transform"))
 					{
 						auto& comp = world->GetComponent<Frosty::ECS::CTransform>(m_SelectedEntity);
-						ImGui::BeginChild("CTransform", ImVec2(EDITOR_INSPECTOR_WIDTH, 85), true);
+						ImGui::BeginChild("CTransform", ImVec2(EDITOR_INSPECTOR_WIDTH, 100), true);
 						ImGui::DragFloat3("Position", glm::value_ptr(comp.Position), 0.1f, 0.0f, 0.0f, "%.2f");
 						ImGui::DragFloat3("Rotation", glm::value_ptr(comp.Rotation), 0.1f, 0.0f, 0.0f, "%.2f");
 						ImGui::DragFloat3("Scale", glm::value_ptr(comp.Scale), 0.1f, 0.0f, 0.0f, "%.2f");
+						ImGui::Checkbox("IsStatic", &comp.IsStatic);
 						ImGui::EndChild();
 					}
 				}
@@ -252,7 +258,21 @@ namespace MCS
 								ImGui::TreeNodeEx((void*)(intptr_t)index, node_flags, "%s", mesh.first.c_str());
 								if (ImGui::IsItemClicked())
 								{
-									world->GetComponent<Frosty::ECS::CMesh>(m_SelectedEntity).Mesh = mesh.second;
+									auto& currentMesh = world->GetComponent<Frosty::ECS::CMesh>(m_SelectedEntity).Mesh;
+									std::string oldMeshName = currentMesh->GetName();
+									currentMesh = mesh.second;
+
+
+									//Updates the renderer
+
+									if (world->HasComponent<Frosty::ECS::CMaterial>(m_SelectedEntity))
+									{
+										Frosty::Renderer::ChangeEntity(m_SelectedEntity->Id, &world->GetComponent<Frosty::ECS::CMaterial>(m_SelectedEntity),
+											oldMeshName, world->GetComponent<Frosty::ECS::CMesh>(m_SelectedEntity).Mesh,
+											m_SelectedEntity->Id, &world->GetComponent<Frosty::ECS::CTransform>(m_SelectedEntity));
+
+									}
+								
 								}
 							}
 
@@ -316,6 +336,14 @@ namespace MCS
 								if (ImGui::Selectable(shader.first.c_str()))
 								{
 									comp.UseShader = shader.second;
+
+									//Updates the renderer
+									if (world->HasComponent<Frosty::ECS::CMesh>(m_SelectedEntity))
+									{
+										Frosty::Renderer::ChangeEntity(m_SelectedEntity->Id, &world->GetComponent<Frosty::ECS::CMaterial>(m_SelectedEntity),
+											world->GetComponent<Frosty::ECS::CMesh>(m_SelectedEntity).Mesh->GetName(), world->GetComponent<Frosty::ECS::CMesh>(m_SelectedEntity).Mesh,
+											m_SelectedEntity->Id, &world->GetComponent<Frosty::ECS::CTransform>(m_SelectedEntity));
+									}
 								}
 							}
 							ImGui::EndPopup();
@@ -726,10 +754,12 @@ namespace MCS
 							if (ImGui::MenuItem("Point", "", comp.Type == Frosty::ECS::CLight::LightType::Point ? true : false))
 							{
 								comp.Type = Frosty::ECS::CLight::LightType::Point;
+								Frosty::Renderer::ChangeLight(m_SelectedEntity);
 							}
 							if (ImGui::MenuItem("Directional", "", comp.Type == Frosty::ECS::CLight::LightType::Directional ? true : false))
 							{
 								comp.Type = Frosty::ECS::CLight::LightType::Directional;
+								Frosty::Renderer::ChangeLight(m_SelectedEntity);
 							}
 							ImGui::EndPopup();
 						}
@@ -823,10 +853,34 @@ namespace MCS
 					if (ImGui::CollapsingHeader("Particle System"))
 					{
 						auto& comp = world->GetComponent<Frosty::ECS::CParticleSystem>(m_SelectedEntity);
-						ImGui::BeginChild("CParticleSystem", ImVec2(EDITOR_INSPECTOR_WIDTH, 345), true);
+						ImGui::BeginChild("CParticleSystem", ImVec2(EDITOR_INSPECTOR_WIDTH, 500), true);
 						ImGui::Text("Active particles: %i", comp.ParticleCount);
 						ImGui::Checkbox("Preview", &comp.Preview);
-						ImGui::ColorEdit4("Color", glm::value_ptr(comp.ParticleSystemColor));
+						ImGui::Checkbox("Face camera", &comp.AlwaysFaceCamera);
+						if (ImGui::IsItemClicked())
+						{
+							if (comp.AlwaysFaceCamera == false) //Was false, changed to true
+							{
+								comp.UseShader = Frosty::AssetManager::GetShader("Particles");
+							}
+							else if(comp.AlwaysFaceCamera == true) //Was true, changed to false
+							{
+								comp.UseShader = Frosty::AssetManager::GetShader("ParticlesHorizontal");
+
+							}
+						}
+						ImGui::Checkbox("Static color", &comp.StaticColor);
+						if (comp.StaticColor == true)
+						{
+							ImGui::ColorEdit4("Color", glm::value_ptr(comp.SystemStartColor));
+							comp.SystemEndColor = comp.SystemStartColor;
+						}
+						else
+						{
+							ImGui::ColorEdit4("Start color", glm::value_ptr(comp.SystemStartColor));
+							ImGui::ColorEdit4("End color", glm::value_ptr(comp.SystemEndColor));
+						}
+						ImGui::DragFloat3("Rotation", glm::value_ptr(comp.SystemRotation), 0.1f, 0.0f, 0.0f, "%.2f");
 						ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(10, 10));
 						ImGui::Image(comp.Texture ? comp.Texture->GetRenderID() : Frosty::AssetManager::GetTexture2D("Checkerboard")->GetRenderID(), ImVec2(64, 64));
 						ImGui::PopStyleVar();
@@ -868,10 +922,27 @@ namespace MCS
 						{
 							ImGui::SliderInt("Particle count", (int*)&comp.MaxParticles, 1, comp.MAX_PARTICLE_COUNT);
 						}
-						ImGui::DragFloat3("Direction", glm::value_ptr(comp.ParticleSystemDirection), 0.1f, 0.0f, 0.0f, "%.2f");
+						ImGui::Checkbox("Random direction", &comp.RandomDirection);
+						if (comp.RandomDirection == false)
+						{
+							ImGui::DragFloat3("Direction", glm::value_ptr(comp.ParticleSystemDirection), 0.1f, 0.0f, 0.0f, "%.2f");
+						}
+						ImGui::Checkbox("Random start position", &comp.RandomStartPos);
+						if (comp.RandomStartPos == false)
+						{
+							ImGui::DragFloat3("Start position", glm::value_ptr(comp.ParticleSystemStartPos), 0.1f, 0.0f, 0.0f, "%.2f");
+						}
+						ImGui::Checkbox("Random lifetimes", &comp.RandomLifetimes);
+						if (comp.RandomLifetimes == true)
+						{
+							ImGui::InputFloat("Max lifetime", &comp.MaxLifetime);
+							ImGui::InputFloat("Min lifetime", &comp.MinLifetime);
+						}
+						ImGui::InputFloat("Speed", &comp.Speed);
 						ImGui::InputFloat("Start size", &comp.StartParticleSize);
 						ImGui::InputFloat("End size", &comp.EndParticleSize);
 						ImGui::InputFloat("Emit rate", &comp.EmitRate);
+						ImGui::DragInt("Emit count", (int*)&comp.EmitCount, 1, 1, comp.MaxParticles);
 						ImGui::InputFloat("Lifetime", &comp.MaxLifetime);
 						ImGui::SliderFloat("Fade", &comp.FadeTreshold, 0.0f, comp.MaxLifetime);
 						ImGui::EndChild();
@@ -1122,7 +1193,7 @@ namespace MCS
 		return true;
 	}
 
-	bool InspectorLayer::OnKeyPressedEvent(Frosty::KeyPressedEvent & e)
+	bool InspectorLayer::OnKeyPressedEvent(Frosty::KeyPressedEvent& e)
 	{
 		if (e.GetKeyCode() == FY_KEY_TAB)
 		{
