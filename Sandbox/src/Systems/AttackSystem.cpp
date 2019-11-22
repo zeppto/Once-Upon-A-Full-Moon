@@ -21,6 +21,7 @@ namespace MCS
 				if (!world->HasComponent<Frosty::ECS::CDestroy>(m_Attack[i]->EntityPtr))
 				{
 					world->AddComponent<Frosty::ECS::CDestroy>(m_Attack[i]->EntityPtr);
+					m_Attack[i]->LifetimeTimer = Frosty::Time::CurrentTime();
 				}
 			}
 		}

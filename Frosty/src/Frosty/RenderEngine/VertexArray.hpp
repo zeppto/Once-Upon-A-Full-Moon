@@ -10,8 +10,6 @@ namespace Frosty
 	public:
 		VertexArray();
 		virtual ~VertexArray();
-		bool operator==(const VertexArray& org) { return m_RendererID == org.m_RendererID; }
-
 
 		void Bind() const;
 		void Unbind() const;
@@ -37,7 +35,6 @@ namespace Frosty
 		Luna::Animation GetCurrentAnim();
 		//TEMP FUNCS END
 		static VertexArray* Create();
-
 	private:
 		//temp
 		std::string m_LoadName;

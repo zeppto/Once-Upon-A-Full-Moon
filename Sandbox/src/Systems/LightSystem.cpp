@@ -44,6 +44,7 @@ namespace MCS
 			m_Transform[p_Total] = &world->GetComponent<Frosty::ECS::CTransform>(entity);
 			m_Light[p_Total] = &world->GetComponent<Frosty::ECS::CLight>(entity);
 
+			
 			Frosty::Renderer::AddLight(m_Light[p_Total], m_Transform[p_Total]);
 
 

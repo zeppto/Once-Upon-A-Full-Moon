@@ -60,14 +60,13 @@ namespace Frosty
 		
 		static void ChangeEntity (const int& OldMatID,ECS::CMaterial* mat, const std::string& OldMeshName, std::shared_ptr<VertexArray> vertexArray, const int& transformID, ECS::CTransform* transform);
 
-
 		inline static void Shutdown() { delete s_SceneData; }
 
 		inline static void SetDistanceCulling(bool& distanceCulling) { s_DistanceCulling = distanceCulling; }
 
 
 	private:
-
+	
 
 
 		struct MeshData

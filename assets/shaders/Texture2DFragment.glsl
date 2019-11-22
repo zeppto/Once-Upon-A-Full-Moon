@@ -43,8 +43,8 @@ void main()
 	vec4 diffuseTexture = texture(u_DiffuseTexture, v_TextureCoords);
 	vec4 normalTexture = texture(u_NormalTexture, v_TextureCoords);
 
-	vec3 normal = (normalTexture.rgb * 2.0 - 1.0);
-	normal = normalize(v_TBN * normal);
+	vec3 normal = normalize(normalTexture.rgb * 2.0 - 1.0);
+	normal = normalize(v_TBN * normalTexture.rgb);
 
 	normal = max(normal, normalize(v_Normal));
 	

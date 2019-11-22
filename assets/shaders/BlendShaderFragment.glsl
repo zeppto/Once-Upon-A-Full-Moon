@@ -30,7 +30,6 @@ uniform sampler2D u_BlendTexture2;
 
 uniform vec3 u_CameraPosition;
 uniform int u_Shininess;
-uniform float u_RepeatableTextureSize;	// Size of each "tile" on the terrain 
 
 
 in vec3 v_FragPosition;
@@ -46,12 +45,13 @@ void main()
 	// Textures
 	vec4 normalTexture = texture(u_NormalTexture, v_TextureCoords);
 	vec4 blendMap = texture(u_BlendMapTexture, v_TextureCoords);
-	float diffuseTextureAmount = 1.f - (blendMap.r + blendMap.g + blendMap.b);						// How black is the fragment in blendMap
-	vec4 diffuseTexture = texture(u_DiffuseTexture, v_TextureCoords) * diffuseTextureAmount;		// Extract diffuse color according to the amount of blackness
+	float diffuseTextureAmount = 1.f - (blendMap.r + blendMap.g + blendMap.b);					// How black is the fragment in blendMap
+	vec4 diffuseTexture = texture(u_DiffuseTexture, v_TextureCoords) * diffuseTextureAmount;	// Extract diffuse color according to the amount of blackness
 	vec4 blendTexture1 = texture(u_BlendTexture1, v_TextureCoords) * blendMap.r;					// Extract color depending on how much red there is in blendmap
 	vec4 blendtexture2 = texture(u_BlendTexture2, v_TextureCoords) * blendMap.g;					// Extract color depending on how much green there is in blendmap
 
 	vec4 finalTexture = diffuseTexture + blendTexture1 + blendtexture2;
+
 
 	// Normal Map
 	vec3 normal = normalize(normalTexture.rgb * 2.0 - 1.0);

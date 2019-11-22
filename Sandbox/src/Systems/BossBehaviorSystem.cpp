@@ -25,32 +25,32 @@ namespace MCS
 				//Set new target
 				/*if (m_Boss[i]->Hunting == false)
 				{*/
-				if (m_Boss[i]->TargetList.size() == 1)
-				{
-					//Follow player
-					m_Enemy[i]->Target = &world->GetComponent<Frosty::ECS::CTransform>(m_Boss[i]->TargetList.at(m_Boss[i]->TargetList.size() - 1));
-					//m_Enemy[i]->StopDistance = 1.0f;
-				}
-				else
-				{
-					//Follow the nearest bait
-					if (m_Boss[i]->TargetList.size() > 2)
+					if (m_Boss[i]->TargetList.size() == 1)
 					{
-						int ShortestID = FindClosestBait(m_Transform[i]->Position, m_Boss[i]->TargetList);
-
-						std::swap(m_Boss[i]->TargetList.at(0), m_Boss[i]->TargetList.at(ShortestID));
+						//Follow player
+						m_Enemy[i]->Target = &world->GetComponent<Frosty::ECS::CTransform>(m_Boss[i]->TargetList.at(m_Boss[i]->TargetList.size() - 1));
+						//m_Enemy[i]->StopDistance = 1.0f;
 					}
-					m_Enemy[i]->Target = &world->GetComponent<Frosty::ECS::CTransform>(m_Boss[i]->TargetList.at(0));
-					m_Boss[i]->Hunting = true;
-					//m_Enemy[i]->StopDistance = 0.1f;
-				}
-				//	}
+					else
+					{
+						//Follow the nearest bait
+						if (m_Boss[i]->TargetList.size() > 2)
+						{
+							int ShortestID = FindClosestBait(m_Transform[i]->Position, m_Boss[i]->TargetList);
+
+							std::swap(m_Boss[i]->TargetList.at(0), m_Boss[i]->TargetList.at(ShortestID));
+						}
+						m_Enemy[i]->Target = &world->GetComponent<Frosty::ECS::CTransform>(m_Boss[i]->TargetList.at(0));
+						m_Boss[i]->Hunting = true;
+						//m_Enemy[i]->StopDistance = 0.1f;
+					}
+			//	}
 
 				float distance = CalcDistance2D(m_Transform[i]->Position, world->GetComponent<Frosty::ECS::CTransform>(m_Boss[i]->TargetList.at(0)).Position);
 
-				if (distance < 5.0 && m_Boss[i]->TargetList.size() > 1)
+				if (distance <5.0 && m_Boss[i]->TargetList.size() > 1)
 				{
-					m_Boss[i]->Distracted = true;
+				    m_Boss[i]->Distracted = true;
 					m_Boss[i]->DistractionTimer = Frosty::Time::CurrentTime();
 				}
 			}
@@ -171,7 +171,7 @@ namespace MCS
 			auto& entity = e.GetEntity();
 
 			auto& world = Frosty::Application::Get().GetWorld();
-
+			
 			m_Boss[i]->TargetList.emplace(m_Boss[i]->TargetList.end() - 1, entity);
 
 			//Follow the nearest bait
@@ -218,4 +218,6 @@ namespace MCS
 
 		return glm::distance(p1, p2);
 	}
+
 }
+
