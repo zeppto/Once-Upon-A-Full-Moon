@@ -853,9 +853,10 @@ namespace MCS
 					if (ImGui::CollapsingHeader("Particle System"))
 					{
 						auto& comp = world->GetComponent<Frosty::ECS::CParticleSystem>(m_SelectedEntity);
-						ImGui::BeginChild("CParticleSystem", ImVec2(EDITOR_INSPECTOR_WIDTH, 500), true);
+						ImGui::BeginChild("CParticleSystem", ImVec2(EDITOR_INSPECTOR_WIDTH, 560), true);
 						ImGui::Text("Active particles: %i", comp.ParticleCount);
 						ImGui::Checkbox("Preview", &comp.Preview);
+						ImGui::SameLine();
 						ImGui::Checkbox("Face camera", &comp.AlwaysFaceCamera);
 						if (ImGui::IsItemClicked())
 						{
@@ -880,7 +881,6 @@ namespace MCS
 							ImGui::ColorEdit4("Start color", glm::value_ptr(comp.SystemStartColor));
 							ImGui::ColorEdit4("End color", glm::value_ptr(comp.SystemEndColor));
 						}
-						ImGui::DragFloat3("Rotation", glm::value_ptr(comp.SystemRotation), 0.1f, 0.0f, 0.0f, "%.2f");
 						ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(10, 10));
 						ImGui::Image(comp.Texture ? comp.Texture->GetRenderID() : Frosty::AssetManager::GetTexture2D("Checkerboard")->GetRenderID(), ImVec2(64, 64));
 						ImGui::PopStyleVar();
@@ -922,6 +922,7 @@ namespace MCS
 						{
 							ImGui::SliderInt("Particle count", (int*)&comp.MaxParticles, 1, comp.MAX_PARTICLE_COUNT);
 						}
+						ImGui::DragFloat3("Rotation", glm::value_ptr(comp.SystemRotation), 0.1f, 0.0f, 0.0f, "%.2f");
 						ImGui::Checkbox("Random direction", &comp.RandomDirection);
 						if (comp.RandomDirection == false)
 						{
@@ -935,8 +936,8 @@ namespace MCS
 						ImGui::Checkbox("Random lifetimes", &comp.RandomLifetimes);
 						if (comp.RandomLifetimes == true)
 						{
-							ImGui::InputFloat("Max lifetime", &comp.MaxLifetime);
 							ImGui::InputFloat("Min lifetime", &comp.MinLifetime);
+							ImGui::InputFloat("Max lifetime", &comp.MaxLifetime);
 						}
 						ImGui::Checkbox("Rotate over lifetime", &comp.RotateOverLifetime);
 						ImGui::InputFloat("Speed", &comp.Speed);
@@ -945,7 +946,9 @@ namespace MCS
 						ImGui::InputFloat("Emit rate", &comp.EmitRate);
 						ImGui::DragInt("Emit count", (int*)&comp.EmitCount, 1, 1, comp.MaxParticles);
 						ImGui::InputFloat("Lifetime", &comp.MaxLifetime);
-						ImGui::SliderFloat("Fade", &comp.FadeTreshold, 0.0f, comp.MaxLifetime);
+						ImGui::SliderFloat("Fade in", &comp.FadeInTreshold, comp.MaxLifetime, 0.0f);
+						ImGui::SliderFloat("Fade out", &comp.FadeTreshold, 0.0f, comp.MaxLifetime);
+
 						ImGui::EndChild();
 					}
 				}
