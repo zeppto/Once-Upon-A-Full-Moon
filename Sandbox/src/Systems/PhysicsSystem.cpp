@@ -197,6 +197,8 @@ namespace MCS
 						//Load To other
 						if (!Exit.IsTriggered)
 						{
+							glm::ivec2 CoordsTest = m_World->GetComponent<Frosty::ECS::CLevelExit>(m_Transform[i]->EntityPtr).RoomCoords;
+
 							Exit.IsTriggered = true;
 							Frosty::EventBus::GetEventBus()->Publish
 							<Frosty::UpdatePlayerRoomCoordEvent>(Frosty::UpdatePlayerRoomCoordEvent

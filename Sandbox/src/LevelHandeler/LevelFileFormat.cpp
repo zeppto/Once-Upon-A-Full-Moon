@@ -297,7 +297,7 @@ void LevelFileFormat::OpenFromFile(
 		int RoomX = roomId.x - 10;
 		int RoomY = roomId.y - 15;
 
-		glm::vec3 startOffset(RoomX * 300.0f, 0.0f,-RoomY * 300.0f);
+		glm::vec3 startOffset(RoomX * 300.0f, 0.0f,RoomY * 300.0f);
 
 
 		//if (playerTransform != nullptr)
