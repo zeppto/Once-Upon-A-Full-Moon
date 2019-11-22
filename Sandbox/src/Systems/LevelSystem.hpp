@@ -21,6 +21,7 @@ namespace MCS
 
 	public:
 		virtual void Init() override;
+		virtual void OnStart() override;
 		virtual void OnUpdate() override;
 		virtual void OnEvent(Frosty::BaseEvent& e) override;
 
@@ -51,7 +52,7 @@ namespace MCS
 		std::pair<glm::ivec2, bool> m_SecondRoom;
 
 		//map.generateMap();
-		Room m_CurrentRoome;// = map.getRoom(glm::ivec2(11, 15));
+		//Room m_CurrentRoome;// = map.getRoom(glm::ivec2(11, 15));
 		bool m_CurrentRoomBool = true;
 		bool m_Start = true;
 
@@ -63,6 +64,12 @@ namespace MCS
 		bool m_NextLevel = false;
 		int m_EntrensSide = -1;
 		float m_TempTimer = 0;
+
+		bool m_LoadMapBool = false;
+		Frosty::ECS::CTransform* m_PlayerTransformLoadComponent;
+		int m_LoadExitDir = -1;
+		std::string m_LoadFileName = "";
+		int m_MapRotation = 0;
 
 
 		//int rotation = 0;

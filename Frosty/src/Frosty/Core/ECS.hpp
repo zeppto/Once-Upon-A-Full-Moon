@@ -213,6 +213,9 @@ namespace Frosty
 			{
 				FY_CORE_INFO("Removing an entity..");
 
+
+				if (entity->Id == 97) __debugbreak;
+
 				int index = utils::BinarySearch(m_Entities, entity->Id);
 				int groupIndex = -1;
 				if (entity->GroupId != -1)
@@ -231,6 +234,7 @@ namespace Frosty
 			inline void AddToGroup(uint64_t groupId, const std::shared_ptr<Entity>& entity)
 			{
 				m_EntityGroups[groupId].emplace_back(entity);
+				entity->GroupId = groupId;
 			}
 
 			std::vector<std::shared_ptr<Entity>>::iterator begin() { return m_Entities.begin(); }

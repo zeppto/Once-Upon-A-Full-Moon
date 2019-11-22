@@ -200,7 +200,7 @@ public:
 	void SaveToFile(std::string fileName);
 	void OpenFromFile(
 		std::string fileName,
-		const bool& CurrentRoom,
+		const bool& OtherRoom,
 		glm::ivec2 roomId = glm::ivec2(0, 0)
 		, Frosty::ECS::CTransform* playerTransform = nullptr,
 		int rotation = 0,

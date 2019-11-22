@@ -160,7 +160,7 @@ namespace Frosty
 	void World::AddToGroup(const std::shared_ptr<ECS::Entity>& entity, bool current)
 	{
 		if (current) m_Scene->GetEntityManager()->AddToGroup(m_CurrentRoom, entity);
-		else m_Scene->GetEntityManager()->AddToGroup((m_CurrentRoom + 1) % 2, entity);
+		else m_Scene->GetEntityManager()->AddToGroup((m_CurrentRoom + 1) % 2, entity); 
 	}
 
 	void World::PrintWorld()

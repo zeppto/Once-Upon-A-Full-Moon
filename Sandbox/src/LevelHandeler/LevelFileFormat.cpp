@@ -268,7 +268,7 @@ void LevelFileFormat::SaveToFile(std::string fileName)
 
 void LevelFileFormat::OpenFromFile(
 	std::string fileName, 
-	const bool& CurrentRoom,
+	const bool& OtherRoom,
 	glm::ivec2 roomId ,
 	Frosty::ECS::CTransform* playerTransform,
 	int rotation, 
@@ -297,7 +297,8 @@ void LevelFileFormat::OpenFromFile(
 		int RoomX = roomId.x - 10;
 		int RoomY = roomId.y - 15;
 
-		glm::vec3 startOffset(RoomX * 300.0f, 0.0f,RoomY * 300.0f);
+		glm::vec3 startOffset(RoomX * 300.0f, 0.0f,-RoomY * 300.0f);
+
 
 		//if (playerTransform != nullptr)
 		//{
@@ -308,7 +309,6 @@ void LevelFileFormat::OpenFromFile(
 
 		//startOffset.x = xOffset * 300.0f;
 		//startOffset.z = zOffset * 300.0f;
-
 
 
 		for (int i = 0; i < heder.NrOfEntitys; i++)
@@ -388,7 +388,8 @@ void LevelFileFormat::OpenFromFile(
 					tempRotation.y += rotation;
 				}
 				auto& entity = m_World->CreateEntity((glm::vec3(matrix[3].x, matrix[3].y, matrix[3].z) + startOffset), tempRotation, fileEntitys.myEntitys.at(i).myTransform.Scale, fileEntitys.myEntitys.at(i).myTransform.IsStatic);
-				m_World->AddToGroup(entity, CurrentRoom); //Check this
+		
+				m_World->AddToGroup(entity, OtherRoom); //Check this
 				auto& newlyTreansform = m_World->GetComponent<Frosty::ECS::CTransform>(entity);
 				if (newlyTreansform.Scale == glm::vec3(300.0f, 1.0f, 300.0f))
 				{
@@ -629,6 +630,10 @@ void LevelFileFormat::OpenFromFile(
 			}
 			m_VisitedRooms.push_back(rEntitys);
 		}
+	}
+	else
+	{
+	FY_ASSERT(0, "Could not load map");
 	}
 	existingFile.close();
 

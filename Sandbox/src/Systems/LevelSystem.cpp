@@ -15,6 +15,24 @@ namespace MCS
 
 	}
 
+	void LevelSystem::OnStart()
+	{
+		if (m_LoadMapBool)
+		{
+			m_LevelFileFormat.OpenFromFile(m_LoadFileName,
+				false,
+				m_OtherRoom,
+				m_PlayerTransformLoadComponent,
+				m_MapRotation, 
+				glm::vec3(0.0f, 0.0f, 0.0f),
+				m_LoadExitDir);
+
+			m_PlayerTransformLoadComponent = nullptr;
+			m_LoadMapBool = false;
+		}
+
+	}
+
 	void LevelSystem::OnEvent(Frosty::BaseEvent& e)
 	{
 		switch (e.GetEventType())
@@ -47,7 +65,7 @@ namespace MCS
 		if (m_Start)
 		{
 			m_Map.generateMap();
-			m_CurrentRoome = m_Map.getRoom(m_PlayerCoords);
+		//	m_CurrentRoome = m_Map.getRoom(m_PlayerCoords);
 
 			//int rotation = 0;
 			//std::string texture = m_Map.getRoomTextur(m_PlayerPos, &rotation);
@@ -55,15 +73,19 @@ namespace MCS
 			//this is curently the start room
 			int rotate;
 			m_Map.getRoomTextur(m_PlayerCoords, &rotate);
-			Level::MoveToNewRoom(m_CurrentRoome.sideExits[0], m_CurrentRoome.sideExits[1], m_CurrentRoome.sideExits[2], m_CurrentRoome.sideExits[3]);
-			m_CurrentRoomBool = true;
-			//Skiss
-			m_FirstRoom.first = m_PlayerCoords;
-			m_FirstRoom.second = true;
+			//Level::MoveToNewRoom(m_CurrentRoome.sideExits[0], m_CurrentRoome.sideExits[1], m_CurrentRoome.sideExits[2], m_CurrentRoome.sideExits[3]);
+			m_CurrentRoomBool = m_World->GetCurrentRoom();
+			////Skiss
+			//m_FirstRoom.first = m_PlayerCoords;
+			//m_FirstRoom.second = true;
 
-			m_SecondRoom.second = false;
+			//m_SecondRoom.second = false;
 
-			m_LevelFileFormat.OpenFromFile("deadend_chests_IsStatick", m_CurrentRoomBool, m_PlayerCoords, nullptr, rotate);
+		//	bool TempcurrentRoom = m_World->GetCurrentRoom();
+			
+
+
+			m_LevelFileFormat.OpenFromFile("deadend_chests_IsStatick", true, m_PlayerCoords, nullptr, rotate);
 			m_Start = false;
 			m_LevelFileFormat.LoadBoolMap("deadend_chests_IsStatick");
 		}
@@ -154,25 +176,33 @@ namespace MCS
 		if (ExitSide.ExitDirection == 3)
 			tempCoord += glm::ivec2(1, 0);
 
-		//Skiss
-		if (tempCoord != m_SecondRoom.first && tempCoord != m_FirstRoom.first)
-		{
-			if (m_PlayerCoords == m_FirstRoom.first)
-			{
-				m_World->DestroyGroup(0);
-				m_SecondRoom.first = tempCoord;
-			}
-			else
-			{
-				m_World->DestroyGroup(1);
-				m_FirstRoom.first = tempCoord;
-			}
-		}
+
+	//	if(m_PlayerCoords == )
+
+		////Skiss
+ 	//	if (tempCoord != m_SecondRoom.first && tempCoord != m_FirstRoom.first)
+		//{
+		//	if (m_PlayerCoords == m_FirstRoom.first)
+		//	{
+		//		m_World->DestroyGroup(1);
+		//		m_SecondRoom.first = tempCoord;
+		//	}
+		//	else
+		//	{
+		//		m_World->DestroyGroup(0);
+		//		m_FirstRoom.first = tempCoord;
+		//	}
+		//}
 
 
 		if (tempCoord != m_OtherRoom)
 		{
+	
+
 			m_OtherRoom = tempCoord;
+
+		//	m_CurrentRoomBool = m_World->GetCurrentRoom();
+
 			auto& PlayerTranform = m_World->GetComponent<Frosty::ECS::CTransform>(e.GetPlayerEntity());
 			Frosty::ECS::CTransform* playerTransform;
 
@@ -217,19 +247,21 @@ namespace MCS
 				}
 			}
 
-			m_CurrentRoome = m_Map.getRoom(m_OtherRoom);
 			//m_EntrensSide = ExitSide.ExitDirection;
 			//m_NextLevel = true;
 			//m_TempTimer = 0;
 
-			int rotation = 0;
-			std::string fileName = m_Map.getRoomTextur(m_OtherRoom, &rotation);
+			//int rotation = 0;
 
 			//PlayerTranform.Position = Level::MoveToNewRoom(m_CurrentRoome.sideExits[0], m_CurrentRoome.sideExits[1],
 			//	m_CurrentRoome.sideExits[2], m_CurrentRoome.sideExits[3], ExitSide.ExitDirection);
 
-
-			m_LevelFileFormat.OpenFromFile(fileName, 0, m_OtherRoom, playerTransform, rotation, glm::vec3(0.0f, 0.0f, 0.0f), ExitSide.ExitDirection);
+			m_LoadMapBool = true;
+			m_LoadExitDir = ExitSide.ExitDirection;
+			m_World->DestroyGroup(false);
+		//	m_CurrentRoome = m_Map.getRoom(m_OtherRoom);
+			m_PlayerTransformLoadComponent = playerTransform;
+			m_LoadFileName = m_Map.getRoomTextur(m_OtherRoom, &m_MapRotation);
 		}
 
 	}
@@ -531,6 +563,8 @@ namespace MCS
 		if (m_PlayerCoords != e.GetCoords())
 		{
 			m_OtherRoom = m_PlayerCoords;
+			m_World->ChangeCurrentRoom();
+			m_CurrentRoomBool = m_World->GetCurrentRoom();
 		}
 		m_PlayerCoords = e.GetCoords();
 	}
