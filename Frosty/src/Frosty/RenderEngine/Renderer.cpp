@@ -96,9 +96,6 @@ namespace Frosty
 			}
 
 
-
-
-
 			//For all Materials
 			for (auto& MaterialIt : shaderData->MaterialMap)
 			{
@@ -141,12 +138,25 @@ namespace Frosty
 					//For all Transforms
 					for (auto& TransformIt : meshData->TransformMap)
 					{
+						//If mesh is parented
+						if (meshData->parentMatrix != nullptr)
+						{
+							//If mesh is bound to a specific joint during animations.
+							if (meshData->holdJointTransform != nullptr)
+							{
+								meshData->TransformMap[TransformIt.first]->ModelMatrix = (*meshData->parentMatrix * *meshData->holdJointTransform * *meshData->TransformMap[TransformIt.first]->GetModelMatrix());
+							}
+							else
+							{
+								meshData->TransformMap[TransformIt.first]->ModelMatrix = *meshData->parentMatrix * meshData->TransformMap[TransformIt.first]->ModelMatrix;
+							}
+						}
+
 						float distance = 0;																	//The scale check is so the plane is not culled
 						if (culling && Time::GetFrameCount /*&& s_TotalNrOfFrames % 2 == 0*/ && meshData->TransformMap.at(TransformIt.first)->Scale.x < 100 && s_DistanceCulling)
 						{
 							distance = glm::distance(meshData->TransformMap.at(TransformIt.first)->Position, s_SceneData->GameCamera.CameraPosition);
 						}
-
 
 						if (distance < 110)
 						{
@@ -482,7 +492,7 @@ namespace Frosty
 
 	int counter = 0;
 
-	void Renderer::AddToRenderer(ECS::CMaterial* mat, std::shared_ptr<VertexArray> vertexArray, ECS::CTransform* transform, ECS::CAnimController* anim)
+	void Renderer::AddToRenderer(ECS::CMaterial* mat, ECS::CMesh* mesh, ECS::CTransform* transform, ECS::CAnimController* anim)
 	{
 		if (mat->UseShader->GetName() != "Animation")
 		{
@@ -504,7 +514,7 @@ namespace Frosty
 			counter++;
 			//Set up IDs
 			int matID = transform->EntityPtr->Id; //Works but can be improved whith a real material ID
-			std::string meshID = vertexArray->GetName();
+			std::string meshID = mesh->Mesh->GetName();
 			int transformID = transform->EntityPtr->Id;
 
 
@@ -537,8 +547,13 @@ namespace Frosty
 				materialData->MeshMap.emplace(meshID, FY_NEW  MeshData);
 			}
 			auto& meshData = materialData->MeshMap.at(meshID);
-			meshData->VertexArray = vertexArray;
+			meshData->VertexArray = mesh->Mesh;
 			meshData->TransformMap.emplace(transformID, transform);
+			if (mesh->parentMatrix != nullptr)
+			{
+				meshData->parentMatrix = mesh->parentMatrix;
+				meshData->holdJointTransform = mesh->animOffset;
+			}
 
 			//Add the mesh to the MeshLookUpMap
 			s_MeshLookUpMap.emplace(transformID, &materialData->MeshMap);
@@ -607,7 +622,7 @@ namespace Frosty
 		}
 	}
 
-	void Renderer::ChangeEntity(const int& OldMatID, ECS::CMaterial* mat, const std::string& OldMeshName, std::shared_ptr<VertexArray> vertexArray, const int& transformID, ECS::CTransform* transform)
+	void Renderer::ChangeEntity(const int& OldMatID, ECS::CMaterial* mat, const std::string& OldMeshName, ECS::CMesh* mesh, const int& transformID, ECS::CTransform* transform)
 	{
 		//Not the best but it works
 
@@ -619,17 +634,11 @@ namespace Frosty
 			//Add new
 			if (mat->UseShader->GetName() != "Animation")
 			{
-				AddToRenderer(mat, vertexArray, transform, nullptr);
+				AddToRenderer(mat, mesh, transform, nullptr);
 			}
 
 		}
 	}
-
-
-
-
-
-
 
 	void Renderer::AnimSubmit(ECS::CMaterial* mat, const std::shared_ptr<VertexArray>& vertexArray, const glm::mat4& transform, ECS::CAnimController* controller)
 	{
@@ -671,7 +680,8 @@ namespace Frosty
 		controller->currAnim->CalculateAnimMatrix(&controller->dt);
 		controller->currAnim->GetSkinData(skinDataPtr, nrOfBones);
 
-		const glm::mat4* temp = controller->currAnim->getHoldingJoint();
+		//this shit don't need to go all the way up to animation system if we just do it in RenderScene()
+		glm::mat4* temp = controller->currAnim->getHoldingJoint();
 		if (temp != nullptr)
 		{
 			controller->holdPtr = temp;

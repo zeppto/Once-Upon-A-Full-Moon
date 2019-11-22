@@ -33,54 +33,6 @@ void MCS::AnimationSystem::OnUpdate()
 
 				}
 			}
-			if (m_AControllers[i]->holdPtr != nullptr)
-			{
-				auto& weapPos = m_World->GetComponent<Frosty::ECS::CTransform>(m_Player[i]->Weapon->EntityPtr);
-				auto& playerPos = m_World->GetComponent<Frosty::ECS::CTransform>(m_Player[i]->EntityPtr);
-
-				//glm::vec3 scale;
-				//glm::vec3 translation;
-				//glm::vec3 skew;
-				//glm::vec4 perspective;
-				//glm::decompose(*m_AControllers[i]->holdPtr, scale, rotation, translation, skew, perspective);
-				//glm::mat4 space = *weapPos.GetModelMatrix() * *playerPos.GetModelMatrix();
-
-				//weapPos.Position = glm::vec3(2.0f,0.0f,0.0f);
-
-				//glm::mat4 transform = glm::translate(glm::mat4(1.0f), m_Transform[i]->Position);
-				//transform = glm::rotate(transform, glm::radians(m_Transform[i]->Rotation.x), { 1.0f, 0.0f, 0.0f });
-				//transform = glm::rotate(transform, glm::radians(m_Transform[i]->Rotation.y), { 0.0f, 1.0f, 0.0f });
-				//transform = glm::rotate(transform, glm::radians(m_Transform[i]->Rotation.z), { 0.0f, 0.0f, 1.0f });
-				//transform = glm::scale(transform, m_Transform[i]->Scale);
-				//weapPos.Rotation = glm::eulerAngles(rotation);
-
-				/*weapPos.r*/
-
-				//Parent it.
-				m_World->GetComponent<Frosty::ECS::CMesh>(m_Player[i]->Weapon->EntityPtr).parentMatrix = m_Transform[i]->GetModelMatrix();
-				m_World->GetComponent<Frosty::ECS::CMesh>(m_Player[i]->Weapon->EntityPtr).animOffset = m_AControllers[i]->holdPtr;
-
-		/*		glm::mat4 final = transform * *weapPos.GetModelMatrix();*/
-
-				/*glm::decompose(final, scale, rotation, translation, skew, perspective);*/
-
-			/*	weapPos.Position = translation;
-				weapPos.Rotation = glm::eulerAngles(rotation);
-				weapPos.Scale = scale;*/
-
-			/*	m_Transform[i]->ModelMatrix = final;*/
-				//weapPos.Position = glm::vec3(0.0f, 2.0f, 0.0f);
-				//weapPos.Rotation = glm::vec3(0.0f, 2.0f, 0.0f) * playerPos.Rotation;
-
-			/*	weapPos.Position = translation;
-				weapPos.Rotation = */
-
-				/*glm::vec3 pivot = weapPos.Position * playerPos.Position * glm::vec3(-0.74f, 2.14f, 0.13f);
-				
-				weapPos.Position = ;*/
-				/*weapPos.Rotation = playerPos.Rotation;*/
-				/*weapPos.Scale = playerPos.Scale; */
-			}
 		}
 	}
 }
@@ -110,6 +62,20 @@ void MCS::AnimationSystem::AddComponent(const std::shared_ptr<Frosty::ECS::Entit
 		m_AControllers[p_Total] = &world->GetComponent<Frosty::ECS::CAnimController>(entity);
 		m_Dash[p_Total] = &world->GetComponent<Frosty::ECS::CDash>(entity);
 		m_Player[p_Total] = &world->GetComponent<Frosty::ECS::CPlayer>(entity);
+
+		//if (m_AControllers[p_Total]->holdPtr != nullptr)
+		//{
+		//	auto& weapPos = m_World->GetComponent<Frosty::ECS::CTransform>(m_Player[p_Total]->Weapon->EntityPtr);
+		//	auto& playerPos = m_World->GetComponent<Frosty::ECS::CTransform>(m_Player[p_Total]->EntityPtr);
+
+		//	//NOTE we DO want to change the value of the parent matrix pointer and NOT replace it with another pointer.
+		//	//If we don't Renderer won't be able to catch updates as AddToRenderer is only run once.
+		//	//Parent it.
+		//	m_World->GetComponent<Frosty::ECS::CMesh>(m_Player[p_Total]->Weapon->EntityPtr).parentMatrix = m_Transform[p_Total]->GetModelMatrix();
+		//	//Save the joint translation
+		//	m_World->GetComponent<Frosty::ECS::CMesh>(m_Player[p_Total]->Weapon->EntityPtr).animOffset = m_AControllers[p_Total]->holdPtr;
+
+		//}
 
 		p_Total++;
 	}

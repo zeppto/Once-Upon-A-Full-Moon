@@ -55,7 +55,7 @@ namespace Frosty
 		const std::vector<Luna::Weights>& GetWeights()const;
 		const std::map<uint16_t, std::vector<Luna::Keyframe>>& GetKeyFrameMap()const;
 		const std::vector<Luna::Keyframe>& GetKeyFrameVec(const uint16_t& jointId)const;
-		const glm::mat4* getHoldingJoint();
+		glm::mat4* getHoldingJoint();
 
 		void GetSkinData(void*& data, int &nrOfJoints);
 		void CalculateAnimMatrix(float* currentAnimTime);

@@ -449,7 +449,7 @@ namespace Frosty
 			std::shared_ptr<VertexArray> Mesh;
 			bool RenderMesh{ true };
 			glm::mat4* parentMatrix = nullptr;
-			const glm::mat4* animOffset = nullptr;
+			glm::mat4* animOffset = nullptr;
 
 			CMesh() = default;
 			CMesh(std::shared_ptr<VertexArray> mesh, bool render = true) : Mesh(mesh), RenderMesh(render) { }
@@ -1218,7 +1218,7 @@ namespace Frosty
 			float animSpeed = 0;
 			Animation* currAnim;
 			float dt = 0;
-			const glm::mat4* holdPtr = nullptr;
+			glm::mat4* holdPtr = nullptr;
 
 			virtual std::string GetName() const { return NAME; }
 		};
@@ -1266,18 +1266,6 @@ namespace Frosty
 				}
 				return *this;
 			}
-			virtual std::string GetName() const { return NAME; }
-		};
-
-		struct CAnimController :public BaseComponent
-		{
-			static std::string NAME;
-
-			bool isSliderControlled = false;
-			float animSpeed = 1;
-			Animation* currAnim;
-			float dt = 0;
-
 			virtual std::string GetName() const { return NAME; }
 		};
 

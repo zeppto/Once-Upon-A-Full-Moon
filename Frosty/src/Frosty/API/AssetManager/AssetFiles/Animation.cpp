@@ -42,7 +42,7 @@ namespace Frosty
 		return m_KeyframeMap.at(jointId);
 	}
 
-	const glm::mat4* Animation::getHoldingJoint()
+	glm::mat4* Animation::getHoldingJoint()
 	{
 		if (m_holdingJoint != nullptr)
 		{

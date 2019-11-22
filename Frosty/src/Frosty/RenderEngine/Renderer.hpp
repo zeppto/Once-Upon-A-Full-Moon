@@ -14,6 +14,7 @@ namespace Frosty
 		struct CTransform;
 		struct CLight;
 		struct Entity;
+		struct CMesh;
 	}
 
 	class Renderer
@@ -54,11 +55,11 @@ namespace Frosty
 		static void SubmitParticles(const std::shared_ptr<Shader>& shader, const std::shared_ptr<VertexArray>& vertexArray, glm::mat4& modelMat, size_t particleCount, float maxLifetime);
 		static void Submit2d(const std::shared_ptr<Shader>& shader, const std::shared_ptr<VertexArray>& vertexArray, const glm::mat4& transform);
 		static void SubmitHealthBar(const std::shared_ptr<Shader>& shader, const std::shared_ptr<VertexArray>& vertexArray, const glm::vec3& translate, const glm::vec3& scale, const glm::vec3& HealthBarSpace);
-		static void AddToRenderer(ECS::CMaterial* mat, std::shared_ptr<VertexArray> vertexArray, ECS::CTransform* transform, ECS::CAnimController* anim);
+		static void AddToRenderer(ECS::CMaterial* mat, ECS::CMesh * mesh, ECS::CTransform* transform, ECS::CAnimController* anim);
 		static void RemoveFromRenderer( const int& matID ,const std::string& meshName,const int& transformID);
 		static void UppdateEntity (const int& matID,ECS::CMaterial* mat, const std::string& meshName, std::shared_ptr<VertexArray> vertexArray, const int& transformID, ECS::CTransform* transform);
 		
-		static void ChangeEntity (const int& OldMatID,ECS::CMaterial* mat, const std::string& OldMeshName, std::shared_ptr<VertexArray> vertexArray, const int& transformID, ECS::CTransform* transform);
+		static void ChangeEntity (const int& OldMatID,ECS::CMaterial* mat, const std::string& OldMeshName, ECS::CMesh* mesh, const int& transformID, ECS::CTransform* transform);
 
 
 		inline static void Shutdown() { delete s_SceneData; }
@@ -74,6 +75,9 @@ namespace Frosty
 		{
 			std::shared_ptr<VertexArray> VertexArray;
 			std::unordered_map<int, Frosty::ECS::CTransform*> TransformMap;
+
+			glm::mat4* parentMatrix = nullptr;
+			const glm::mat4* holdJointTransform = nullptr;
 		};
 
 		struct MaterialData

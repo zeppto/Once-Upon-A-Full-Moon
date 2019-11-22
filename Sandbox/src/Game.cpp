@@ -36,6 +36,7 @@ namespace MCS
 		world->AddSystem<LevelSystem>();
 		world->AddSystem<CameraSystem>();
 		world->AddSystem<LightSystem>();
+		world->AddSystem<AnimationSystem>();
 		world->AddSystem<RenderSystem>();
 		world->AddSystem<PlayerControllerSystem>();
 		world->AddSystem<PhysicsSystem>();
@@ -43,7 +44,6 @@ namespace MCS
 		world->AddSystem<AttackSystem>();
 		world->AddSystem<CombatSystem>();
 		world->AddSystem<DestroySystem>();
-		world->AddSystem<AnimationSystem>();
 		world->AddSystem<HealthBarSystem>();
 		Frosty::ECS::BaseSystem* retSystem = world->AddSystem<NavigationSystem>();
 		NavigationSystem* navSystem = dynamic_cast<NavigationSystem*>(retSystem);
@@ -84,7 +84,7 @@ namespace MCS
 		playerMat.NormalTexture = Frosty::AssetManager::GetTexture2D("Scarlet_normal");
 		playerMat.SpecularTexture = Frosty::AssetManager::GetTexture2D("Scarlet_specular");
 		world->AddComponent<Frosty::ECS::CPlayer>(player, &weaponComp);	// <-- Give player a weapon
-		weaponTransform.Position += playerTransform.Position;//Check this
+		//weaponTransform.Position += playerTransform.Position;//Check this
 		world->AddComponent<Frosty::ECS::CPhysics>(player, Frosty::AssetManager::GetBoundingBox("scarlet"), 13.0f);
 		world->AddComponent<Frosty::ECS::CDash>(player);
 		world->AddComponent<Frosty::ECS::CHealth>(player);
