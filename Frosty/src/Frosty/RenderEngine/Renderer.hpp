@@ -59,8 +59,9 @@ namespace Frosty
 		static void RemoveFromRenderer( const int& matID ,const std::string& meshName,const int& transformID);
 		static void UppdateEntity (const int& matID,ECS::CMaterial* mat, const std::string& meshName, std::shared_ptr<VertexArray> vertexArray, const int& transformID, ECS::CTransform* transform);
 		
+		//Suggestion: Overload this for each individual trait. That way we need not replace everything.
 		static void ChangeEntity (const int& OldMatID,ECS::CMaterial* mat, const std::string& OldMeshName, ECS::CMesh* mesh, const int& transformID, ECS::CTransform* transform);
-
+		static void UpdateCMesh(const int& entityID, ECS::CMesh* mesh);
 
 		inline static void Shutdown() { delete s_SceneData; }
 

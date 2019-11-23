@@ -63,7 +63,7 @@ void MCS::AnimationSystem::AddComponent(const std::shared_ptr<Frosty::ECS::Entit
 		m_Dash[p_Total] = &world->GetComponent<Frosty::ECS::CDash>(entity);
 		m_Player[p_Total] = &world->GetComponent<Frosty::ECS::CPlayer>(entity);
 
-		//if (m_AControllers[p_Total]->holdPtr != nullptr)
+		//if (m_AControllers[p_Total]->currAnim->getHoldingJoint() != nullptr)
 		//{
 		//	auto& weapPos = m_World->GetComponent<Frosty::ECS::CTransform>(m_Player[p_Total]->Weapon->EntityPtr);
 		//	auto& playerPos = m_World->GetComponent<Frosty::ECS::CTransform>(m_Player[p_Total]->EntityPtr);
@@ -73,7 +73,7 @@ void MCS::AnimationSystem::AddComponent(const std::shared_ptr<Frosty::ECS::Entit
 		//	//Parent it.
 		//	m_World->GetComponent<Frosty::ECS::CMesh>(m_Player[p_Total]->Weapon->EntityPtr).parentMatrix = m_Transform[p_Total]->GetModelMatrix();
 		//	//Save the joint translation
-		//	m_World->GetComponent<Frosty::ECS::CMesh>(m_Player[p_Total]->Weapon->EntityPtr).animOffset = m_AControllers[p_Total]->holdPtr;
+		//	m_World->GetComponent<Frosty::ECS::CMesh>(m_Player[p_Total]->Weapon->EntityPtr).animOffset = m_AControllers[p_Total]->currAnim->getHoldingJoint();
 
 		//}
 

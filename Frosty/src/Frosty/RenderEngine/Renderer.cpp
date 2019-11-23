@@ -161,7 +161,7 @@ namespace Frosty
 						if (distance < 110)
 						{
 							nrOfDrawnedObjs++;
-							shaderData->Shader->UploadUniformMat4("u_Transform", *meshData->TransformMap.at(TransformIt.first)->GetModelMatrix());
+							shaderData->Shader->UploadUniformMat4("u_Transform", meshData->TransformMap.at(TransformIt.first)->ModelMatrix);
 							RenderCommand::Draw2D(meshData->VertexArray);
 
 						}
@@ -637,6 +637,16 @@ namespace Frosty
 				AddToRenderer(mat, mesh, transform, nullptr);
 			}
 
+		}
+	}
+
+	void Renderer::UpdateCMesh(const int& entityID, ECS::CMesh* mesh)
+	{
+		if (s_TransformLookUpMap.find(entityID) != s_TransformLookUpMap.end())
+		{
+			auto& meshData = s_MeshLookUpMap.at(entityID)->at(mesh->Mesh->GetName());
+			meshData->parentMatrix = mesh->parentMatrix;
+			meshData->holdJointTransform = mesh->animOffset;
 		}
 	}
 
