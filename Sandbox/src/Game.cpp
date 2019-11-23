@@ -82,8 +82,8 @@ namespace MCS
 		//auto& playerWeaponComp = world->GetComponent<Frosty::ECS::CWeapon>(playerWeapon);
 
 		// PLAYER
-		//auto& player = world->CreateEntity({ -104.0f, 0.0f, -15.4f }, { 0.0f, 0.0f, 0.0f }, { 2.0f, 2.0f, 2.0f } );
-		auto& player = world->CreateEntity({ -90.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 2.0f, 2.0f, 2.0f } );
+		auto& player = world->CreateEntity({ -104.0f, 0.0f, -15.4f }, { 0.0f, 0.0f, 0.0f }, { 2.0f, 2.0f, 2.0f } );
+		//auto& player = world->CreateEntity({ -90.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 2.0f, 2.0f, 2.0f } );
 		auto& playerTransform = world->GetComponent<Frosty::ECS::CTransform>(player);
 		world->AddComponent<Frosty::ECS::CAnimController>(player).currAnim = Frosty::AssetManager::GetAnimation("testSlash");
 		auto& animation = world->GetComponent<Frosty::ECS::CAnimController>(player);
@@ -155,16 +155,16 @@ namespace MCS
 		world->AddComponent<Frosty::ECS::CGUI>(GUI, uiLayout);
 
 		//Particle System Example
-		//auto& ParticleSystem1 = world->CreateEntity();
-		//auto& particleSystem1Transform = world->GetComponent<Frosty::ECS::CTransform>(ParticleSystem1);
-		//auto& particleSystemComp = world->AddComponent<Frosty::ECS::CParticleSystem>(ParticleSystem1, "ParticlesHorizontal", "particle", 50, glm::vec3(0.8f, 0.3f, 1.0f), 0.0f, 2.0f);
+		auto& ParticleSystem1 = world->CreateEntity();
+		auto& particleSystem1Transform = world->GetComponent<Frosty::ECS::CTransform>(ParticleSystem1);
+		auto& particleSystemComp = world->AddComponent<Frosty::ECS::CParticleSystem>(ParticleSystem1, "ParticlesHorizontal", "particle", 50, glm::vec3(0.8f, 0.3f, 1.0f), 0.0f, 2.0f);
 		////particleSystemComp.ParticleSystemDirection = glm::vec3(1.0f, 0.0f, 0.0f);
 		//particleSystemComp.RandomDirection = true;
 
 //ifdef FY_DEBUG
 	PushLayer(FY_NEW InspectorLayer());
 //else
-//		Application::Get().StartGame(true);
+		//Application::Get().StartGame(true);
 //endif // FY_DEBUG
 	}
 

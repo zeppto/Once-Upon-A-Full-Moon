@@ -146,7 +146,14 @@ namespace MCS
 				{
 					if (!m_World->HasComponent<Frosty::ECS::CPlayer>(m_Transform[i]->EntityPtr))
 					{
-						if (m_World->HasComponent<Frosty::ECS::CPhysics>(m_Transform[i]->EntityPtr))
+						if (m_World->HasComponent<Frosty::ECS::CParticleSystem>(m_Transform[i]->EntityPtr))
+						{
+							if (!m_World->HasComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr))
+							{
+								m_World->AddComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr);
+							}
+						}
+						else if (m_World->HasComponent<Frosty::ECS::CPhysics>(m_Transform[i]->EntityPtr))
 						{
 							if (!m_World->HasComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr))
 							{
@@ -240,7 +247,14 @@ namespace MCS
 				{
 					if (!m_World->HasComponent<Frosty::ECS::CWeapon>(m_Transform[i]->EntityPtr))
 					{
-						if (m_World->HasComponent<Frosty::ECS::CPhysics>(m_Transform[i]->EntityPtr))
+						if (m_World->HasComponent<Frosty::ECS::CParticleSystem>(m_Transform[i]->EntityPtr))
+						{
+							if (!m_World->HasComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr))
+							{
+								m_World->AddComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr);
+							}
+						}
+						else if (m_World->HasComponent<Frosty::ECS::CPhysics>(m_Transform[i]->EntityPtr))
 						{
 							if (!m_World->HasComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr))
 							{
@@ -293,7 +307,14 @@ namespace MCS
 				{
 					if (!m_World->HasComponent<Frosty::ECS::CWeapon>(m_Transform[i]->EntityPtr))
 					{
-						if (m_World->HasComponent<Frosty::ECS::CPhysics>(m_Transform[i]->EntityPtr))
+						if (m_World->HasComponent<Frosty::ECS::CParticleSystem>(m_Transform[i]->EntityPtr))
+						{
+							if (!m_World->HasComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr))
+							{
+								m_World->AddComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr);
+							}
+						}
+						else if (m_World->HasComponent<Frosty::ECS::CPhysics>(m_Transform[i]->EntityPtr))
 						{
 							if (!m_World->HasComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr))
 							{
