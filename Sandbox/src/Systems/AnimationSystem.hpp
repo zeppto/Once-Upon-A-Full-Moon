@@ -28,6 +28,7 @@ namespace MCS
 	private:
 		void OnBasicAttackEvent(Frosty::BasicAttackEvent& e);
 		void OnDashEvent(Frosty::DashEvent& e);
+		void UpdateAnimOffset(Frosty::ECS::CAnimController* ctrl);
 
 	private:
 		std::array<Frosty::ECS::CTransform*, Frosty::ECS::MAX_ENTITIES_PER_COMPONENT> m_Transform;

@@ -694,7 +694,12 @@ namespace Frosty
 		glm::mat4* temp = controller->currAnim->getHoldingJoint();
 		if (temp != nullptr)
 		{
-			controller->holdPtr = temp;
+			//Will not work since animated is not included.
+			if (s_MaterialLookUpMap.find(mat->EntityPtr->Id) != s_MaterialLookUpMap.end())
+			{
+				auto& meshData = s_MeshLookUpMap.at(mat->EntityPtr->Id)->at(vertexArray->GetName());
+				meshData->holdJointTransform = temp;
+			}
 		}
 
 		vertexArray->GetUniformBuffer()->BindUpdate(skinDataPtr, nrOfBones);
