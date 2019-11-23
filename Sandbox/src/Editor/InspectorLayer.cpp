@@ -863,6 +863,7 @@ namespace MCS
 							if (comp.AlwaysFaceCamera == false) //Was false, changed to true
 							{
 								comp.UseShader = Frosty::AssetManager::GetShader("Particles");
+								comp.RotateOverLifetime = false;
 							}
 							else if(comp.AlwaysFaceCamera == true) //Was true, changed to false
 							{
@@ -945,7 +946,10 @@ namespace MCS
 							ImGui::InputFloat("Min lifetime", &comp.MinLifetime);
 							ImGui::InputFloat("Max lifetime", &comp.MaxLifetime);
 						}
-						ImGui::Checkbox("Rotate over lifetime", &comp.RotateOverLifetime);
+						if (comp.AlwaysFaceCamera == false) //Only relevant if particles aren't billboarded since we won't see any difference
+						{
+							ImGui::Checkbox("Rotate over lifetime", &comp.RotateOverLifetime);
+						}
 						ImGui::InputFloat("Speed", &comp.Speed);
 						ImGui::InputFloat("Start size", &comp.StartParticleSize);
 						ImGui::InputFloat("End size", &comp.EndParticleSize);
