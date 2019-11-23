@@ -928,6 +928,10 @@ namespace MCS
 						{
 							ImGui::DragFloat3("Direction", glm::value_ptr(comp.ParticleSystemDirection), 0.1f, 0.0f, 0.0f, "%.2f");
 						}
+						else
+						{
+							ImGui::InputFloat("Spread", &comp.randSpread);
+						}
 						ImGui::Checkbox("Random start position", &comp.RandomStartPos);
 						if (comp.RandomStartPos == false)
 						{

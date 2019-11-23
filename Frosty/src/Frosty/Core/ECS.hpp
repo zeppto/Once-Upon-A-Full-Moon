@@ -1078,6 +1078,9 @@ namespace Frosty
 			float MaxLifetime{ 3.0f };
 			float FadeTreshold{ 0.0f };
 			float FadeInTreshold{ MaxLifetime };
+
+			float randSpread{ 1.5f };
+
 			bool RotateOverLifetime{ false };
 			bool StaticColor{ true };
 			bool RandomLifetimes{ false };
@@ -1085,6 +1088,7 @@ namespace Frosty
 			bool RandomDirection{ false };
 			bool AlwaysFaceCamera{ true };
 			bool Preview{ false };
+
 			float Timer{ 0.0f };
 
 			uint32_t LastUsedParticle{ 0 };
@@ -1132,6 +1136,7 @@ namespace Frosty
 					MaxLifetime = org.MaxLifetime;
 					FadeTreshold = org.FadeTreshold;
 					FadeInTreshold = org.FadeInTreshold;
+					randSpread = org.randSpread;
 					RotateOverLifetime = org.RotateOverLifetime;
 					StaticColor = org.StaticColor;
 					RandomStartPos = org.RandomStartPos;

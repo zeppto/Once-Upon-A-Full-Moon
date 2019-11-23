@@ -144,7 +144,7 @@ bool BoolMap::LoadMap(const std::string& FilePath)
 	uint8_t status = remove(FilePath.c_str());
 
 
-	for (int i = 0; i < m_BitMapCount; i++)
+	for (unsigned int i = 0; i < m_BitMapCount; i++)
 	{
 		if (bitMap[i] != m_BitMap[i])
 		{

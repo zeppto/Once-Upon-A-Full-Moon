@@ -195,7 +195,7 @@ namespace Frosty
 		float* tempFloatPtr = FY_NEW float[texSize];
 		glReadPixels(0, 0, TmpWidth, TmpHeight, GL_RED, GL_FLOAT, &tempFloatPtr[0]);
 
-		int bitSize = std::ceil((texSize / 64.0f));
+		int bitSize = std::ceil((texSize / 64));
 		std::shared_ptr<uint64_t[]> bitMap(FY_NEW uint64_t[bitSize]);
 
 		//temp
