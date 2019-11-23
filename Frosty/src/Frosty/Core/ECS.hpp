@@ -95,6 +95,15 @@ namespace Frosty
 				FY_CORE_WARN("Binary search attempted on a empty vector.");
 			}
 
+			if (index == -1)
+			{
+				__debugbreak();
+			}
+
+			if (index == -1)
+			{
+				int j = 0;
+			}
 
 			return index;
 		}

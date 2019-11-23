@@ -23,8 +23,14 @@ namespace Frosty
 
 	void World::OnStart()
 	{
-		if (!m_DestroyedEntities.empty()) HandleDestroyedEntities();
-		if (m_DestroyRoom != -1) HandleDestroyedRoom();
+		if (!m_DestroyedEntities.empty())
+		{
+			HandleDestroyedEntities();
+		}
+		if (m_DestroyRoom != -1)
+		{
+			HandleDestroyedRoom();
+		}
 
 		for (size_t i = 1; i < m_TotalSystems; i++)
 		{
@@ -179,7 +185,7 @@ namespace Frosty
 	void World::HandleDestroyedEntities()
 	{
 		size_t entitySize = m_DestroyedEntities.size() - 1;
-		for (size_t i = entitySize; i-- > 0; i)
+		for (size_t i = entitySize; i > 0; i--)
 		{
 			RemoveEntity(m_DestroyedEntities[i]);
 			m_DestroyedEntities.erase(m_DestroyedEntities.begin() + i);
