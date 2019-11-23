@@ -868,6 +868,7 @@ namespace MCS
 
 							}
 						}
+						ImGui::SameLine();
 						ImGui::Checkbox("Static color", &comp.StaticColor);
 						if (comp.StaticColor == true)
 						{
@@ -929,6 +930,7 @@ namespace MCS
 						else
 						{
 							ImGui::InputFloat("Spread", &comp.randSpread);
+							ImGui::DragFloat3("Main direction", glm::value_ptr(comp.randMainDir), 0.1f, 0.0f, 0.0, "%.2f");
 						}
 						ImGui::Checkbox("Random start position", &comp.RandomStartPos);
 						if (comp.RandomStartPos == false)

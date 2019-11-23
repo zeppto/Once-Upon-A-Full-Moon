@@ -348,14 +348,12 @@ namespace MCS
 		{
 			//Not the best way to randomize direction but good enough for now
 
-			glm::vec3 mainDir = glm::vec3(0.0f, 1.0f, 0.0f); //TODO: Make user-controller variable
-
 			glm::vec3 randDir;
 			randDir.x = (rand()% 2000 - 1000.0f) / 1000.0f;
 			randDir.y = (rand() % 2000 - 1000.0f) / 1000.0f;
 			randDir.z = (rand() % 2000 - 1000.0f) / 1000.0f;
 
-			randDir = mainDir + randDir * m_ParticleSystem[systemIndex]->randSpread;
+			randDir = m_ParticleSystem[systemIndex]->randMainDir + randDir * m_ParticleSystem[systemIndex]->randSpread;
 
 			glm::normalize(randDir);
 
