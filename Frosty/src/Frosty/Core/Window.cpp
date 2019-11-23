@@ -82,6 +82,7 @@ namespace Frosty
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 4);
 		glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 		glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GL_TRUE);
+		glfwWindowHint(GLFW_SAMPLES, 4); //Anti-aliasing
 
 		m_Window = glfwCreateWindow((int)props.Width, (int)props.Height, props.Title.c_str(), nullptr, nullptr);
 
@@ -103,6 +104,7 @@ namespace Frosty
 
 		glfwSetWindowUserPointer(m_Window, &m_Data);
 
+		glEnable(GL_MULTISAMPLE); //Anti-aliasing
 		glEnable(GL_DEPTH_TEST);
 		glDisable(GL_CULL_FACE);
 		glDepthFunc(GL_LESS);
