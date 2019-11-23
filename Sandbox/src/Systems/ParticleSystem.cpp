@@ -87,6 +87,8 @@ namespace MCS
 
 			m_ParticleSystem[p_Total]->Particles.resize(m_ParticleSystem[p_Total]->MaxParticles);
 
+
+
 			p_Total++;
 		}
 	}
@@ -197,13 +199,12 @@ namespace MCS
 		if (m_ParticleSystem[systemIndex]->Particles.size() != m_ParticleSystem[systemIndex]->MaxParticles)
 		{
 			m_ParticleSystem[systemIndex]->Particles.resize(m_ParticleSystem[systemIndex]->MaxParticles);
-			m_ParticleSystem[systemIndex]->LastUsedParticle = 0; //To avoid searching for a used particle that shouldn't exist any more
 			for (uint32_t i = 0; i < m_ParticleSystem[systemIndex]->MaxParticles; i++)
 			{
 				UpdateGpuData(systemIndex, i);
 			}
 		}
-		if (glm::vec3(m_ParticleSystem[systemIndex]->Particles[0].StartColor) != m_ParticleSystem[systemIndex]->SystemStartColor)
+		if (glm::vec3(m_ParticleSystem[systemIndex]->Particles[0].StartColor) != m_ParticleSystem[systemIndex]->SystemStartColor) //Still very temporary solution to determine if data needs updating
 		{
 			for (uint32_t i = 0; i < m_ParticleSystem[systemIndex]->MaxParticles; i++)
 			{
@@ -301,10 +302,11 @@ namespace MCS
 			float t = p.Lifetime / m_ParticleSystem[systemIndex]->MaxLifetime;
 			p.Size = Lerp(m_ParticleSystem[systemIndex]->EndParticleSize, m_ParticleSystem[systemIndex]->StartParticleSize, t);
 		}
-		if (m_ParticleSystem[systemIndex]->SystemStartColor != m_ParticleSystem[systemIndex]->SystemEndColor)
+		//Interpolate color
+		if (glm::vec3(p.StartColor) != m_ParticleSystem[systemIndex]->SystemEndColor) //TODO: use an individual endColor for particles and interpolate that
 		{
 			float t = p.Lifetime / m_ParticleSystem[systemIndex]->MaxLifetime;
-			glm::vec3 interpolatedColor = m_ParticleSystem[systemIndex]->SystemEndColor * (1 - t) + m_ParticleSystem[systemIndex]->SystemStartColor * t; //Interpolation
+			glm::vec3 interpolatedColor = m_ParticleSystem[systemIndex]->SystemEndColor * (1 - t) + glm::vec3(p.StartColor) * t; //Interpolation
 			p.Color.r = interpolatedColor.r;
 			p.Color.g = interpolatedColor.g;
 			p.Color.b = interpolatedColor.b;

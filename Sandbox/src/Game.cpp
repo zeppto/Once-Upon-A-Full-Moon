@@ -154,12 +154,18 @@ namespace MCS
 		
 		world->AddComponent<Frosty::ECS::CGUI>(GUI, uiLayout);
 
-		//Particle System Example
-		auto& ParticleSystem1 = world->CreateEntity();
-		auto& particleSystem1Transform = world->GetComponent<Frosty::ECS::CTransform>(ParticleSystem1);
-		auto& particleSystemComp = world->AddComponent<Frosty::ECS::CParticleSystem>(ParticleSystem1, "ParticlesHorizontal", "particle", 50, glm::vec3(0.8f, 0.3f, 1.0f), 0.0f, 2.0f);
-		////particleSystemComp.ParticleSystemDirection = glm::vec3(1.0f, 0.0f, 0.0f);
-		//particleSystemComp.RandomDirection = true;
+		//Particle system example
+		//The constructor is super-important!! Make sure that you don't use an empty constructor. Most variables aren't supposed to be changed after initialization
+		//auto& ParticleSystem2 = world->CreateEntity();
+		//auto& particleSystem2Transform = world->GetComponent<Frosty::ECS::CTransform>(ParticleSystem2);
+		//particleSystem2Transform.Position = glm::vec3(0.0f, 10.0f, 0.0f);
+		//auto& particleSystemComp2 = world->AddComponent<Frosty::ECS::CParticleSystem>(ParticleSystem2, "ParticlesHorizontal", "particleFancy", 50, glm::vec3(1.0f, 0.0f, 0.0f), 4.0f);
+		//particleSystemComp2.RandomDirection = true;
+		//particleSystemComp2.StaticColor = false;
+		//particleSystemComp2.ParticleSystemDirection = glm::vec3(0.0f, -1.0f, 0.0f);
+		//particleSystemComp2.SystemEndColor = glm::vec3(0.0f, 0.0f, 1.0f);
+		//particleSystemComp2.StartParticleSize = 5.0f;
+		//particleSystemComp2.EndParticleSize = 2.0f;
 
 //ifdef FY_DEBUG
 	PushLayer(FY_NEW InspectorLayer());
