@@ -871,17 +871,21 @@ namespace MCS
 
 							}
 						}
-						ImGui::SameLine();
-						ImGui::Checkbox("Static color", &comp.StaticColor);
-						if (comp.StaticColor == true)
+						if (!Frosty::Application::Get().GameIsRunning())
 						{
-							ImGui::ColorEdit4("Color", glm::value_ptr(comp.SystemStartColor));
-							comp.SystemEndColor = comp.SystemStartColor;
-						}
-						else
-						{
-							ImGui::ColorEdit4("Start color", glm::value_ptr(comp.SystemStartColor));
-							ImGui::ColorEdit4("End color", glm::value_ptr(comp.SystemEndColor));
+							ImGui::SameLine();
+							ImGui::Checkbox("Static color", &comp.StaticColor);
+
+							if (comp.StaticColor == true)
+							{
+								ImGui::ColorEdit4("Color", glm::value_ptr(comp.SystemStartColor));
+								comp.SystemEndColor = comp.SystemStartColor;
+							}
+							else
+							{
+								ImGui::ColorEdit4("Start color", glm::value_ptr(comp.SystemStartColor));
+								ImGui::ColorEdit4("End color", glm::value_ptr(comp.SystemEndColor));
+							}
 						}
 						ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(10, 10));
 						ImGui::Image(comp.Texture ? comp.Texture->GetRenderID() : Frosty::AssetManager::GetTexture2D("Checkerboard")->GetRenderID(), ImVec2(64, 64));
@@ -950,7 +954,10 @@ namespace MCS
 						{
 							ImGui::Checkbox("Rotate over lifetime", &comp.RotateOverLifetime);
 						}
-						ImGui::InputFloat("Speed", &comp.Speed);
+						if (!Frosty::Application::Get().GameIsRunning())
+						{
+							ImGui::InputFloat("Speed", &comp.Speed);
+						}
 						ImGui::InputFloat("Start size", &comp.StartParticleSize);
 						ImGui::InputFloat("End size", &comp.EndParticleSize);
 						ImGui::InputFloat("Emit rate", &comp.EmitRate);

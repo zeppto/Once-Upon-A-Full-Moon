@@ -1104,11 +1104,17 @@ namespace Frosty
 			std::shared_ptr<Shader> UseShader;
 			std::shared_ptr<Texture2D> Texture;
 
-			CParticleSystem() = default;
-			CParticleSystem(const std::string shaderName, const std::string texName, unsigned int maxParticles, const glm::vec3& color, float particleStartSize, float particleEndSize)
-				: ShaderName(shaderName), TextureName(texName), MaxParticles(maxParticles), SystemStartColor(color), SystemEndColor(color), StartParticleSize(particleStartSize), EndParticleSize(particleEndSize) {}
-			CParticleSystem(const std::string shaderName, const std::string texName, unsigned int maxParticles, const glm::vec3& startColor, const glm::vec3& endColor, float particleStartSize, float particleEndSize)
-				: ShaderName(shaderName), TextureName(texName), MaxParticles(maxParticles), SystemStartColor(startColor), SystemEndColor(endColor), StartParticleSize(particleStartSize), EndParticleSize(particleEndSize) {}
+			CParticleSystem() = default; //Should never be initialized empty!
+			CParticleSystem(const std::string shaderName, const std::string texName, unsigned int maxParticles, const glm::vec3& color, float particleSpeed)
+				: ShaderName(shaderName), TextureName(texName), MaxParticles(maxParticles), SystemStartColor(color), SystemEndColor(color), Speed(particleSpeed)
+			{
+				Particles.resize(maxParticles);
+				for (unsigned int i = 0; i < maxParticles; i++)
+				{
+					Particles[i].StartColor = glm::vec4(color, 1.0f);
+					Particles[i].Speed = particleSpeed;
+				}
+			}
 			CParticleSystem(const CParticleSystem& org) { FY_CORE_ASSERT(false, "Copy constructor in CParticleSystem called."); }
 
 			CParticleSystem& operator=(const CParticleSystem& org)
@@ -1152,6 +1158,15 @@ namespace Frosty
 				}
 				return *this;
 			}
+
+			//void Init() //For utility reasons. Actually all vital data should just be in the constructor
+			//{
+
+			//	for ()
+			//	{
+
+			//	}
+			//}
 
 			virtual std::string GetName() const { return NAME; }
 		};
