@@ -1080,6 +1080,7 @@ namespace Frosty
 			float FadeInTreshold{ MaxLifetime };
 
 			float randSpread{ 1.5f };
+			glm::vec3 randMainDir{ 0.0f, 1.0f, 0.0f };
 
 			bool RotateOverLifetime{ false };
 			bool StaticColor{ true };
@@ -1137,6 +1138,7 @@ namespace Frosty
 					FadeTreshold = org.FadeTreshold;
 					FadeInTreshold = org.FadeInTreshold;
 					randSpread = org.randSpread;
+					randMainDir = org.randMainDir;
 					RotateOverLifetime = org.RotateOverLifetime;
 					StaticColor = org.StaticColor;
 					RandomStartPos = org.RandomStartPos;
