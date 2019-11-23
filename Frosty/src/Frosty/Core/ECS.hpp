@@ -23,58 +23,78 @@ namespace Frosty
 			unsigned int first = 0;
 			unsigned int last = (unsigned int)(v.size() - 1);
 
-			if (last == 4294967295)
-			{
-				int o = 0;
-			}
-			if (last == -1)
-			{
-				int o = 0;
-			}
-
-
-			if (last == (unsigned int)-1)
-			{
-				int o = 0;
-			}
 			unsigned int middle = 0;
 			int index = -1;
 			unsigned int bSearchLimit = 5;
 
-			while (index == -1 && last >= first)
+			if (v.size() != 0)
 			{
-				middle = (last + first) / 2;
+				while (index == -1 && last >= first)
+				{
+					middle = (last + first) / 2;
 
-				if (*v[middle] == value)
-				{
-					// Value Found
-					index = middle;
-				}
-				else if (*v[middle] > value)
-				{
-					// Value is less. Not found
-					// Move last
-					last = middle - 1;
-				}
-				else if (*v[middle] < value)
-				{
-					// Value is greater. Not found
-					// Move first
-					first = middle + 1;
-				}
-
-				if ((last - first) <= bSearchLimit)
-				{
-					// Start linear search instead
-					for (unsigned int i = first; i <= last && index == -1; i++)
+					if (*v[middle] == value)
 					{
-						if (*v[i] == value)
+						// Value Found
+						index = middle;
+					}
+					else if (*v[middle] > value)
+					{
+						// Value is less. Not found
+						// Move last
+						if (last != middle)
 						{
-							index = i;
+							last = middle - 1;
+						}
+						else
+						{
+							last = middle;
+						}
+					}
+					else if (*v[middle] < value)
+					{
+						// Value is greater. Not found
+						// Move first
+
+
+
+						first = middle + 1;
+
+
+					}
+
+					if ((last - first) <= bSearchLimit)
+					{
+						// Start linear search instead
+						if (last != first)
+						{
+							for (unsigned int i = first; i <= last && index == -1; i++)
+							{
+								if (*v[i] == value)
+								{
+									index = i;
+								}
+							}
+						}
+						else
+						{
+							if (*v[first] == value)
+							{
+								index = first;
+							}
+							else
+							{
+								break;
+							}
 						}
 					}
 				}
 			}
+			else
+			{
+				FY_CORE_WARN("Binary search attempted on a empty vector.");
+			}
+
 
 			return index;
 		}
@@ -227,9 +247,6 @@ namespace Frosty
 			inline bool Remove(const std::shared_ptr<Entity>& entity)
 			{
 				FY_CORE_INFO("Removing an entity..");
-
-
-				if (entity->Id == 97) __debugbreak;
 
 				int index = utils::BinarySearch(m_Entities, entity->Id);
 				int groupIndex = -1;
