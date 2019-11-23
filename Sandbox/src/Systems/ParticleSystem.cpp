@@ -197,7 +197,7 @@ namespace MCS
 		if (m_ParticleSystem[systemIndex]->Particles.size() != m_ParticleSystem[systemIndex]->MaxParticles)
 		{
 			m_ParticleSystem[systemIndex]->Particles.resize(m_ParticleSystem[systemIndex]->MaxParticles);
-			m_ParticleSystem[systemIndex]->LastUsedParticle = m_ParticleSystem[systemIndex]->MaxParticles; //To avoid searching for a used particle that shouldn't exist any more
+			m_ParticleSystem[systemIndex]->LastUsedParticle = 0; //To avoid searching for a used particle that shouldn't exist any more
 			for (uint32_t i = 0; i < m_ParticleSystem[systemIndex]->MaxParticles; i++)
 			{
 				UpdateGpuData(systemIndex, i);
@@ -347,10 +347,15 @@ namespace MCS
 		else
 		{
 			//Not the best way to randomize direction but good enough for now
+
+			glm::vec3 mainDir = glm::vec3(0.0f, 1.0f, 0.0f); //TODO: Make user-controller variable
+
 			glm::vec3 randDir;
 			randDir.x = (rand()% 2000 - 1000.0f) / 1000.0f;
 			randDir.y = (rand() % 2000 - 1000.0f) / 1000.0f;
 			randDir.z = (rand() % 2000 - 1000.0f) / 1000.0f;
+
+			randDir = mainDir + randDir * m_ParticleSystem[systemIndex]->randSpread;
 
 			glm::normalize(randDir);
 
@@ -387,19 +392,20 @@ namespace MCS
 		//Linear search, but since we start at the last used index it will usually return immediately
 
 		for (unsigned int i = m_ParticleSystem[systemIndex]->LastUsedParticle; i < m_ParticleSystem[systemIndex]->MaxParticles; i++) {
-			if (m_ParticleSystem[systemIndex]->Particles[i].Lifetime < 0.0f) {
+			if (m_ParticleSystem[systemIndex]->Particles[i].Lifetime <= 0.0f) {
 				m_ParticleSystem[systemIndex]->LastUsedParticle = i;
 				return i;
 			}
 		}
 
 		for (unsigned int i = 0; i < m_ParticleSystem[systemIndex]->LastUsedParticle; i++) {
-			if (m_ParticleSystem[systemIndex]->Particles[i].Lifetime < 0) {
+			if (m_ParticleSystem[systemIndex]->Particles[i].Lifetime <= 0.0f) {
 				m_ParticleSystem[systemIndex]->LastUsedParticle = i;
 				return i;
 			}
 		}
 
+		//m_ParticleSystem[systemIndex]->LastUsedParticle = 0;
 		return 0; // All particles taken, override the first one
 	}
 
