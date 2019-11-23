@@ -489,9 +489,8 @@ void LevelFileFormat::OpenFromFile(std::string fileName, glm::ivec2 roomId , Fro
 							fileEntitys.myEntitys.at(i).myParticleSystem.TextureName,
 							fileEntitys.myEntitys.at(i).myParticleSystem.MaxParticles,
 							fileEntitys.myEntitys.at(i).myParticleSystem.SystemStartColor,
-							fileEntitys.myEntitys.at(i).myParticleSystem.SystemEndColor, // + glm::vec3(0,0,0.0000001f),
-							fileEntitys.myEntitys.at(i).myParticleSystem.StartParticleSize,
-							fileEntitys.myEntitys.at(i).myParticleSystem.EndParticleSize);
+							fileEntitys.myEntitys.at(i).myParticleSystem.Speed);
+						particleSystem.SystemEndColor = fileEntitys.myEntitys.at(i).myParticleSystem.SystemEndColor;
 						particleSystem.AlwaysFaceCamera = fileEntitys.myEntitys.at(i).myParticleSystem.AlwaysFaceCamera;
 						particleSystem.EmitCount = fileEntitys.myEntitys.at(i).myParticleSystem.EmitCount;
 						particleSystem.EmitRate = fileEntitys.myEntitys.at(i).myParticleSystem.EmitRate;
@@ -509,7 +508,6 @@ void LevelFileFormat::OpenFromFile(std::string fileName, glm::ivec2 roomId , Fro
 						particleSystem.RandomStartPos = fileEntitys.myEntitys.at(i).myParticleSystem.RandomStartPos;
 						particleSystem.randSpread = fileEntitys.myEntitys.at(i).myParticleSystem.randSpread;
 						particleSystem.RotateOverLifetime = fileEntitys.myEntitys.at(i).myParticleSystem.RotateOverLifetime;
-						particleSystem.Speed = fileEntitys.myEntitys.at(i).myParticleSystem.Speed;
 						particleSystem.StaticColor = fileEntitys.myEntitys.at(i).myParticleSystem.StaticColor;
 						particleSystem.SystemRotation = fileEntitys.myEntitys.at(i).myParticleSystem.SystemRotation;
 				}
