@@ -74,12 +74,14 @@ namespace MCS
 		auto& DLight = world->AddComponent<Frosty::ECS::CLight>(light, Frosty::ECS::CLight::LightType::Directional, 0.9f, glm::vec3(0.5f, 0.6f, 1.f));
 		DLight.Direction = glm::vec3(-1.0f, -0.8, -1.0);
 
-		// PLAYER WEAPON 
-		auto& playerWeapon = world->CreateEntity({ 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 1.0f, 1.0f, 1.0f });
-		//world->AddComponent<Frosty::ECS::CMesh>(weapon, Frosty::AssetManager::GetMesh("pCube1"));
-		//world->AddComponent<Frosty::ECS::CMaterial>(weapon, Frosty::AssetManager::GetShader("FlatColor"));
-		auto& playerWeaponComp = world->AddComponent<Frosty::ECS::CWeapon>(playerWeapon, Frosty::ECS::CWeapon::WeaponType::Bow, 1, 9.0f, true);
-		//auto& playerWeaponComp = world->GetComponent<Frosty::ECS::CWeapon>(playerWeapon);
+		// WEAPON 1
+		auto& weapon = world->CreateEntity({ -0.7f, 2.f, 0.8f }, { 0.0f, 0.0f, 0.0f }, { 1.f, 1.f, 1.f });
+		auto& weaponHandler = Frosty::AssetManager::GetWeaponHandler("Weapons");
+		Frosty::Weapon loadedWeapon = weaponHandler->GetWeaponByType(Frosty::Weapon::WeaponType::Sword);
+		world->AddComponent<Frosty::ECS::CWeapon>(weapon, loadedWeapon, true);	
+		auto& weaponComp = world->GetComponent<Frosty::ECS::CWeapon>(weapon);
+		auto& weaponMesh = world->AddComponent<Frosty::ECS::CMesh>(weapon, Frosty::AssetManager::GetMesh("sword2"));
+		auto& weaponMat = world->AddComponent<Frosty::ECS::CMaterial>(weapon, Frosty::AssetManager::GetShader("Texture2D"));
 
 		// PLAYER
 		//auto& player = world->CreateEntity({ -104.0f, 0.0f, -15.4f }, { 0.0f, 0.0f, 0.0f }, { 2.0f, 2.0f, 2.0f } );
@@ -102,6 +104,13 @@ namespace MCS
 		world->AddComponent<Frosty::ECS::CHealthBar>(player, glm::vec3(0.0f, 10.0f, 0.0f));
 		auto& camEntity = world->GetSceneCamera();
 		world->GetComponent<Frosty::ECS::CCamera>(camEntity).Target = &playerTransform;
+
+		//Parent the weapon to player mesh.
+		weaponMesh.parentMatrix = playerTransform.GetModelMatrix();
+		//Make it move according to the player's hand.
+		weaponMesh.animOffset = animation.currAnim->getHoldingJoint();
+		//Update it in renderer.
+		Frosty::Renderer::UpdateCMesh(weapon->Id, &weaponMesh);
 	
 		// TORCH
 		auto& torch = world->CreateEntity({ 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f });

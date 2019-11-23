@@ -106,14 +106,14 @@ namespace MCS
 			{
 				m_Anims[p_Total] = &world->GetComponent<Frosty::ECS::CAnimController>(entity);
 				
-				if (world->HasComponent<Frosty::ECS::CWeapon>(entity))
-				{
-					world->GetComponent <Frosty::ECS::CMesh>(world->GetComponent<Frosty::ECS::CWeapon>(entity).EntityPtr).parentMatrix = m_Transform[p_Total]->GetModelMatrix();
-					if (m_Anims[p_Total]->currAnim->getHoldingJoint() != nullptr)
-					{
-						world->GetComponent <Frosty::ECS::CMesh>(world->GetComponent<Frosty::ECS::CWeapon>(entity).EntityPtr).animOffset = m_Anims[p_Total]->currAnim->getHoldingJoint();
-					}
-				}
+				//if (world->HasComponent<Frosty::ECS::CWeapon>(entity))
+				//{
+				//	world->GetComponent <Frosty::ECS::CMesh>(world->GetComponent<Frosty::ECS::CWeapon>(entity).EntityPtr).parentMatrix = m_Transform[p_Total]->GetModelMatrix();
+				//	if (m_Anims[p_Total]->currAnim->getHoldingJoint() != nullptr)
+				//	{
+				//		world->GetComponent <Frosty::ECS::CMesh>(world->GetComponent<Frosty::ECS::CWeapon>(entity).EntityPtr).animOffset = m_Anims[p_Total]->currAnim->getHoldingJoint();
+				//	}
+				//}
 			}
 			else
 			{
