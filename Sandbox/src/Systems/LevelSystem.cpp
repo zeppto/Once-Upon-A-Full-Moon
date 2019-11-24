@@ -87,7 +87,11 @@ namespace MCS
 
 			m_LevelFileFormat.OpenFromFile("deadend_chests_IsStatick", true, m_PlayerCoords, nullptr, rotate);
 			m_Start = false;
-			m_LevelFileFormat.LoadBoolMap("deadend_chests_IsStatick");
+			//m_LevelFileFormat.LoadBoolMap("deadend_chests_IsStatick");
+			//m_LevelFileFormat.LoadBoolMap("straightRoad_chests_IsStatick");
+			//m_LevelFileFormat.LoadBoolMap("turningRoad_chests_IsStatick");
+			//m_LevelFileFormat.LoadBoolMap("threeWayRoad_chests_IsStatick");
+			//m_LevelFileFormat.LoadBoolMap("crossroad_chests_IsStatick");
 		}
 	}
 

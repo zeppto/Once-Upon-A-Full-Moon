@@ -49,12 +49,12 @@ BoolMap& BoolMap::operator=(const BoolMap& other)
 	return *this;
 }
 
-const bool& BoolMap::CheckCollition(const glm::vec3& LocalPos) const
+const bool& BoolMap::CheckCollision(const glm::vec3& LocalPos) const
 {
 	bool returnValue = false;
 	if (m_CoordWidth >= LocalPos.x && 0 <= LocalPos.x && LocalPos.z >= 0 && LocalPos.z <= m_CoordHeight)
 	{
-
+		//To do: Check offset when bool map is implemented
 		int xx = static_cast<int>((LocalPos.x * m_PixCoordRatio)-1);
 		int zz = static_cast<int>(((LocalPos.z * m_PixCoordRatio)-1) * m_PixWidth);
 
@@ -139,18 +139,18 @@ bool BoolMap::LoadMap(const std::string& FilePath)
 	{
 		returnValue = true;
 	}
-	
-	fclose(File);
-	uint8_t status = remove(FilePath.c_str());
+	//
+	//fclose(File);
+	//uint8_t status = remove(FilePath.c_str());
 
 
-	for (int i = 0; i < m_BitMapCount; i++)
-	{
-		if (bitMap[i] != m_BitMap[i])
-		{
-			int nein = 0;
-		}
-	}
+	//for (int i = 0; i < m_BitMapCount; i++)
+	//{
+	//	if (bitMap[i] != m_BitMap[i])
+	//	{
+	//		int nein = 0;
+	//	}
+	//}
 
 
 	return returnValue;
