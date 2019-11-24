@@ -67,7 +67,15 @@ namespace Frosty
 		float duration = m_Animation.duration;
 		if (*currentAnimTime > m_Animation.duration)
 		{
-			*currentAnimTime = 0;
+			if (isRepeating == true)
+			{
+				*currentAnimTime = 0;
+			}
+			else
+			{
+				isFinished = true;
+				return;
+			}
 		}
 		//Since all animations are baked which joint it is irrelevant for determining last keyframe.
 		std::vector<Luna::Keyframe> keyVec;
@@ -156,6 +164,21 @@ namespace Frosty
 			bone_global_pose[i] = bone_global_pose[m_Joints[i].parentID] * local;
 			m_SkinData.jTrans[i] =  bone_global_pose[i] * invBindPose;
 		}
+	}
+
+	void Animation::SetIsRepeating(bool isRepeat)
+	{
+		this->isRepeating = isRepeat;
+	}
+
+	void Animation::SetIsFinished(bool isFinish)
+	{
+		this->isFinished = isFinish;
+	}
+
+	bool Animation::GetIsFinished()
+	{
+		return isFinished;
 	}
 
 	bool Animation::LoadToMem(const bool& Reload)

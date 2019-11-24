@@ -90,6 +90,24 @@ namespace Frosty
 		std::shared_ptr<ECS::Entity> m_Entity;
 	};
 
+	class PlayAnimEvent : public BaseEvent
+	{
+	public:
+		PlayAnimEvent(const std::shared_ptr<ECS::Entity>& entity, unsigned int animID) : m_Entity(entity), m_AnimID(animID) {}
+		//Anim ID:
+		// 0 is die anim
+		// 1,2,3 is sword attacks
+		// 4 is bow anim
+
+		const std::shared_ptr<ECS::Entity>& GetEntity() const { return m_Entity; }
+		const unsigned int * getAnimID() { return &m_AnimID; }
+
+		EVENT_TYPE(PlayAnim);
+	private:
+		std::shared_ptr<ECS::Entity> m_Entity;
+		unsigned int m_AnimID;
+	};
+
 	class ExitLevelEvent : public BaseEvent
 	{
 	public:

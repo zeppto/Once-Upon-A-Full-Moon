@@ -842,7 +842,7 @@ namespace Frosty
 			int MoveRightKey{ FY_KEY_D };
 			int MoveBackKey{ FY_KEY_S };
 			int DashKey{ FY_KEY_LEFT_SHIFT };
-			int LVL1Attack{ FY_MOUSE_BUTTON_RIGHT };
+			int LVL1Attack{ FY_MOUSE_BUTTON_LEFT };
 			int LVL2Attack{ FY_MOUSE_BUTTON_RIGHT };
 			int LVL3Attack{ FY_KEY_SPACE };
 
@@ -1313,6 +1313,8 @@ namespace Frosty
 			Animation* currAnim;
 			float dt = 0;
 			glm::mat4* holdPtr = nullptr;
+
+			bool isBusy = false;
 
 			virtual std::string GetName() const { return NAME; }
 		};

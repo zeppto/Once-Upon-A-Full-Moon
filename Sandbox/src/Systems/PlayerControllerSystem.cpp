@@ -322,9 +322,11 @@ namespace MCS
 			switch (weaponComp.Type)
 			{
 			case Frosty::ECS::CWeapon::WeaponType::Sword:
+				Frosty::EventBus::GetEventBus()->Publish <Frosty::PlayAnimEvent>(Frosty::PlayAnimEvent(weaponCarrier, 1));
 				CreateLVL1BoundingBox(weaponCarrier, weaponComp.EntityPtr);
 				break;
 			case Frosty::ECS::CWeapon::WeaponType::Bow:
+				Frosty::EventBus::GetEventBus()->Publish <Frosty::PlayAnimEvent>(Frosty::PlayAnimEvent(weaponCarrier, 4));
 				CreateLVL1Projectile(weaponCarrier, weaponComp.EntityPtr);
 				break;
 			default:
@@ -348,9 +350,11 @@ namespace MCS
 			switch (weaponComp.Type)
 			{
 			case Frosty::ECS::CWeapon::WeaponType::Sword:
+				Frosty::EventBus::GetEventBus()->Publish <Frosty::PlayAnimEvent>(Frosty::PlayAnimEvent(weaponCarrier, 2));
 				CreateLVL2BoundingBox(weaponCarrier, weaponComp.EntityPtr);
 				break;
 			case Frosty::ECS::CWeapon::WeaponType::Bow:
+				Frosty::EventBus::GetEventBus()->Publish <Frosty::PlayAnimEvent>(Frosty::PlayAnimEvent(weaponCarrier, 4));
 				CreateLVL2Projectile(weaponCarrier, weaponComp.EntityPtr);
 				break;
 			default:
@@ -374,9 +378,11 @@ namespace MCS
 			switch (weaponComp.Type)
 			{
 			case Frosty::ECS::CWeapon::WeaponType::Sword:
+				Frosty::EventBus::GetEventBus()->Publish <Frosty::PlayAnimEvent>(Frosty::PlayAnimEvent(weaponCarrier, 3));
 				CreateLVL3BoundingBox(weaponCarrier, weaponComp.EntityPtr);
 				break;
 			case Frosty::ECS::CWeapon::WeaponType::Bow:
+				Frosty::EventBus::GetEventBus()->Publish <Frosty::PlayAnimEvent>(Frosty::PlayAnimEvent(weaponCarrier, 4));
 				CreateLVL3Projectile(weaponCarrier, weaponComp.EntityPtr);
 				break;
 			default:
