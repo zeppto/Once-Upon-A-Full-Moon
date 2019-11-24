@@ -1112,6 +1112,25 @@ namespace MCS
 			{
 				Frosty::EventBus::GetEventBus()->Publish<Frosty::CreatEntityEvent>(Frosty::CreatEntityEvent(17));
 			}
+			if (ImGui::Button("sparsFierflis", ImVec2(100.0f, EDITOR_MAIN_MENU_BAR_HEIGHT)))
+			{
+				Frosty::EventBus::GetEventBus()->Publish<Frosty::CreatEntityEvent>(Frosty::CreatEntityEvent(18));
+			}
+			ImGui::SameLine();
+			if (ImGui::Button("fierflis", ImVec2(80.0f, EDITOR_MAIN_MENU_BAR_HEIGHT)))
+			{
+				Frosty::EventBus::GetEventBus()->Publish<Frosty::CreatEntityEvent>(Frosty::CreatEntityEvent(19));
+			}
+			ImGui::SameLine();
+			if (ImGui::Button("fierflisSwarm", ImVec2(100.0f, EDITOR_MAIN_MENU_BAR_HEIGHT)))
+			{
+				Frosty::EventBus::GetEventBus()->Publish<Frosty::CreatEntityEvent>(Frosty::CreatEntityEvent(20));
+			}
+			ImGui::SameLine();
+			if (ImGui::Button("fierflisBlue", ImVec2(100.0f, EDITOR_MAIN_MENU_BAR_HEIGHT)))
+			{
+				Frosty::EventBus::GetEventBus()->Publish<Frosty::CreatEntityEvent>(Frosty::CreatEntityEvent(21));
+			}
 		}
 		ImGui::End();
 

@@ -163,7 +163,7 @@ namespace MCS
 									// Player Attack - Enemy or Chest
 									Frosty::EventBus::GetEventBus()->Publish<Frosty::CollisionEvent>(Frosty::CollisionEvent(m_Transform[index]->EntityPtr, m_Transform[i]->EntityPtr));
 								}
-								else if (!attack.Friendly && m_World->HasComponent<Frosty::ECS::CPlayer>(m_Transform[i]->EntityPtr))
+								 if (!attack.Friendly && m_World->HasComponent<Frosty::ECS::CPlayer>(m_Transform[i]->EntityPtr))
 								{
 									// Enemy Attack - Player
 									Frosty::EventBus::GetEventBus()->Publish<Frosty::CollisionEvent>(Frosty::CollisionEvent(m_Transform[index]->EntityPtr, m_Transform[i]->EntityPtr));
@@ -176,6 +176,7 @@ namespace MCS
 						{
 							m_Transform[index]->Position -= Frosty::CollisionDetection::AABBIntersecPushback(finalLengthA, finalCenterA, finalLengthB, finalCenterB);
 						}
+
 					}
 				}
 

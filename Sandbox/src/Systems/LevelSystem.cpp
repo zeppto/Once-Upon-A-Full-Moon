@@ -53,9 +53,9 @@ namespace MCS
 			int rotate;
 			m_Map.getRoomTextur(m_PlayerPos, &rotate);
 			Level::MoveToNewRoom(m_CurrentRoome.sideExits[0], m_CurrentRoome.sideExits[1], m_CurrentRoome.sideExits[2], m_CurrentRoome.sideExits[3]);
-			m_LevelFileFormat.OpenFromFile("deadend_chests_IsStatick_t", m_PlayerPos, nullptr, rotate);
+			m_LevelFileFormat.OpenFromFile("deadend_chests_IsStatick_t_p", m_PlayerPos, nullptr, rotate);
 			m_Start = false;
-			m_LevelFileFormat.LoadBoolMap("deadend_chests_IsStatick_t");
+			m_LevelFileFormat.LoadBoolMap("deadend_chests_IsStatick_t_p");
 		}
 	}
 
@@ -396,6 +396,15 @@ namespace MCS
 			auto& material = m_World->AddComponent<Frosty::ECS::CMaterial>(mushroom, Frosty::AssetManager::GetShader("Texture2D"));
 			material.DiffuseTexture = Frosty::AssetManager::GetTexture2D("mashRoomCirkel");
 			m_World->AddComponent<Frosty::ECS::CPhysics>(mushroom, Frosty::AssetManager::GetBoundingBox("hexCircle"), 0.0f);
+			auto& particel = m_World->AddComponent<Frosty::ECS::CParticleSystem>(mushroom, "ParticlesHorizontal", "particleRing", 3, glm::vec3(0.1f, 0.5f, 0.58f), 0.0f);
+			particel.SystemEndColor = glm::vec3(0.43f, 0.145f, 0.145f);
+			particel.StartParticleSize = 3.0f;
+			particel.EndParticleSize = 8.0f;
+			particel.EmitRate = 1.0;
+			particel.EmitCount = 1;
+			particel.FadeInTreshold = 1.915;
+			particel.FadeTreshold = 0.902;
+			particel.ParticleSystemStartPos = glm::vec3(0, 0.03, 0);
 		}
 		//mushroomsAndStonesBig
 		if (e.GetEntityType() == 5)
@@ -512,6 +521,82 @@ namespace MCS
 			m_World->AddComponent<Frosty::ECS::CPhysics>(chest, Frosty::AssetManager::GetBoundingBox("chest"), 6.0f);
 			m_World->AddComponent<Frosty::ECS::CHealth>(chest, 2);
 			m_World->AddComponent<Frosty::ECS::CDropItem>(chest);
+			//world->AddComponent<Frosty::ECS::CLight>(torch, Frosty::ECS::CLight::LightType::Point, 1.f, glm::vec3(0.99f, 0.9f, 0.8f), &playerTransform, glm::vec3(0.f, 5.f, 0.f));
+			m_World->AddComponent<Frosty::ECS::CLight>(chest, Frosty::ECS::CLight::LightType::Point, 1.0f, glm::vec3(1.0f, 0.99f, 0.95f), 5, glm::vec3(0.f, 1.0f, 0.f));
+			////CParticleSystem(const std::string shaderName, const std::string texName, unsigned int maxParticles, const glm::vec3& color, float particleSpeed)
+			auto& particel = m_World->AddComponent<Frosty::ECS::CParticleSystem>(chest, "ParticlesHorizontal", "particle", 3, glm::vec3(1.0f, 0.96f, 0.0f), 0);
+			particel.EndParticleSize = 10;
+			particel.FadeInTreshold = 0.94f;
+			particel.FadeTreshold = 1.32f;
+			particel.EmitRate = 1;
+		}
+		//spars fire flises
+		if (e.GetEntityType() == 18)
+		{
+			auto& fireFlise = m_World->CreateEntity({ 0.0f, 1.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 10.0f, 1.0f, 10.0f });
+			auto& particel = m_World->AddComponent<Frosty::ECS::CParticleSystem>(fireFlise, "Particles", "particle", 50, glm::vec3(0.835f, 0.83f, 0.34f), 0.02f);
+			particel.SystemEndColor = glm::vec3(0.78f, 0.5f, 0.09f);
+			particel.RandomDirection = true;
+			particel.randSpread = 3;
+			particel.randMainDir = glm::vec3(0, 0, 1);
+			particel.RandomStartPos = true;
+			particel.StartParticleSize = 0.8f;
+			particel.EmitRate = 0.3;
+			particel.EmitCount = 5;
+			particel.FadeInTreshold = 2.622;
+			particel.FadeTreshold = 2.675;
+		}
+		//fire flises
+		if (e.GetEntityType() == 19)
+		{
+			auto& fireFlise = m_World->CreateEntity({ 0.0f, 1.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 10.0f, 1.0f, 10.0f });
+			m_World->AddComponent<Frosty::ECS::CLight>(fireFlise, Frosty::ECS::CLight::LightType::Point, 0.37f, glm::vec3(1.0f, 0.98f, 0.91f), 23, glm::vec3(0.f, 1.0f, 0.f));
+			auto& particel = m_World->AddComponent<Frosty::ECS::CParticleSystem>(fireFlise, "Particles", "particle", 80, glm::vec3(0.835f, 0.83f, 0.34f), 0.05f);
+			particel.SystemEndColor = glm::vec3(0.78f, 0.5f, 0.09f);
+			particel.RandomDirection = true;
+			particel.randSpread = 3;
+			particel.randMainDir = glm::vec3(0, 0, 1);
+			particel.RandomStartPos = true;
+			particel.StartParticleSize = 0.8f;
+			particel.EmitRate = 0.1;
+			particel.EmitCount = 12;
+			particel.FadeInTreshold = 2.622;
+			particel.FadeTreshold = 2.675;
+		}
+		//swarm fire flises
+		if (e.GetEntityType() == 20)
+		{
+			auto& fireFlise = m_World->CreateEntity({ 0.0f, 1.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 3.0f, 1.0f, 3.0f });
+			m_World->AddComponent<Frosty::ECS::CLight>(fireFlise, Frosty::ECS::CLight::LightType::Point, 0.62f, glm::vec3(1.0f, 0.98f, 0.91f), 23, glm::vec3(0.f, 1.0f, 0.f));
+			auto& particel = m_World->AddComponent<Frosty::ECS::CParticleSystem>(fireFlise, "Particles", "particle", 80, glm::vec3(0.835f, 0.83f, 0.34f), 0.05f);
+			particel.SystemEndColor = glm::vec3(0.78f, 0.5f, 0.09f);
+			particel.RandomDirection = true;
+			particel.randSpread = 3;
+			particel.randMainDir = glm::vec3(0, 0, 1);
+			particel.RandomStartPos = true;
+			particel.StartParticleSize = 0.8f;
+			particel.EmitRate = 0.1;
+			particel.EmitCount = 12;
+			particel.FadeInTreshold = 2.622;
+			particel.FadeTreshold = 2.675;
+		}
+		//fire flises blue
+		if (e.GetEntityType() == 21)
+		{
+			auto& fireFlise = m_World->CreateEntity({ 0.0f, 1.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 3.0f, 1.0f, 3.0f });
+			m_World->AddComponent<Frosty::ECS::CLight>(fireFlise, Frosty::ECS::CLight::LightType::Point, 0.72f, glm::vec3(0.1f, 0.7f, 0.96f), 23, glm::vec3(0.f, 1.0f, 0.f));
+			auto& particel = m_World->AddComponent<Frosty::ECS::CParticleSystem>(fireFlise, "Particles", "particle", 9, glm::vec3(0.34f, 0.835f, 0.82f), 0.3f);
+			particel.SystemEndColor = glm::vec3(0.07f, 0.21f, 0.86f);
+			particel.RandomDirection = true;
+			particel.randSpread = 5;
+			particel.randMainDir = glm::vec3(0, 1, 0);
+			particel.RandomStartPos = true;
+			particel.StartParticleSize = 1.0f;
+			particel.EndParticleSize = 0.3f;
+			particel.EmitRate = 1.0f;
+			particel.EmitCount = 3;
+			particel.FadeInTreshold = 2.589;
+			particel.FadeTreshold = 0.305;
 		}
 	}
 }

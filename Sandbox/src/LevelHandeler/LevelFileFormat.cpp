@@ -394,6 +394,29 @@ void LevelFileFormat::OpenFromFile(std::string fileName, glm::ivec2 roomId , Fro
 					//if(!fileEntitys.myEntitys.at(i).MyComponents.at(10).HaveComponent)
 					m_World->AddComponent<Frosty::ECS::CMesh>(entity,
 						Frosty::AssetManager::GetMesh(fileEntitys.myEntitys.at(i).myMesh.MeshName));
+					//std::string meshName = fileEntitys.myEntitys.at(i).myMesh.MeshName;
+					//if (meshName.find("hexCircle") != std::string::npos)
+					//{
+					//	auto& particel = m_World->AddComponent<Frosty::ECS::CParticleSystem>(entity, "ParticlesHorizontal", "particleRing", 3, glm::vec3(0.1f, 0.5f, 0.58f), 0.0f);
+					//	particel.SystemEndColor = glm::vec3(0.43f, 0.145f, 0.145f);
+					//	particel.StartParticleSize = 3.0f;
+					//	particel.EndParticleSize = 8.0f;
+					//	particel.EmitRate = 1.0;
+					//	particel.EmitCount = 1;
+					//	particel.FadeInTreshold = 1.915;
+					//	particel.FadeTreshold = 0.902;
+					//	particel.ParticleSystemStartPos = glm::vec3(0, 0.03, 0);
+					//}
+					//else if (meshName.find("chest") != std::string::npos)
+					//{
+					//	m_World->AddComponent<Frosty::ECS::CLight>(entity, Frosty::ECS::CLight::LightType::Point, 1.0f, glm::vec3(1.0f, 0.99f, 0.95f), 5, glm::vec3(0.f, 1.0f, 0.f));
+					//	////CParticleSystem(const std::string shaderName, const std::string texName, unsigned int maxParticles, const glm::vec3& color, float particleSpeed)
+					//	auto& particel = m_World->AddComponent<Frosty::ECS::CParticleSystem>(entity, "ParticlesHorizontal", "particle", 3, glm::vec3(1.0f, 0.96f, 0.0f), 0);
+					//	particel.EndParticleSize = 10;
+					//	particel.FadeInTreshold = 0.94f;
+					//	particel.FadeTreshold = 1.32f;
+					//	particel.EmitRate = 1;
+					//}
 				}
 				//2 = Material
 				if (fileEntitys.myEntitys.at(i).MyComponents.at(2).HaveComponent)
@@ -490,6 +513,8 @@ void LevelFileFormat::OpenFromFile(std::string fileName, glm::ivec2 roomId , Fro
 							fileEntitys.myEntitys.at(i).myParticleSystem.MaxParticles,
 							fileEntitys.myEntitys.at(i).myParticleSystem.SystemStartColor,
 							fileEntitys.myEntitys.at(i).myParticleSystem.Speed);
+						particleSystem.StartParticleSize = fileEntitys.myEntitys.at(i).myParticleSystem.StartParticleSize;
+						particleSystem.EndParticleSize = fileEntitys.myEntitys.at(i).myParticleSystem.EndParticleSize;
 						particleSystem.SystemEndColor = fileEntitys.myEntitys.at(i).myParticleSystem.SystemEndColor;
 						particleSystem.AlwaysFaceCamera = fileEntitys.myEntitys.at(i).myParticleSystem.AlwaysFaceCamera;
 						particleSystem.EmitCount = fileEntitys.myEntitys.at(i).myParticleSystem.EmitCount;
