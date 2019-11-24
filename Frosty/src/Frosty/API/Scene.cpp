@@ -13,7 +13,7 @@ namespace Frosty
 		m_EntityManager.reset(FY_NEW ECS::EntityManager());
 	}
 
-	void Scene::AddCamera(std::shared_ptr<ECS::Entity>& camera)
+	void Scene::AddCamera(const std::shared_ptr<ECS::Entity>& camera)
 	{
 		m_GameCamera = camera;
 	}
@@ -41,7 +41,7 @@ namespace Frosty
 
 		m_EntityManager->Remove(entity);
 	}
-	
+
 	void Scene::PrintScene()
 	{
 		FY_CORE_INFO("\t\t=======STARTING TO PRINT WORLD INFO=======\n{0}", *m_EntityManager);

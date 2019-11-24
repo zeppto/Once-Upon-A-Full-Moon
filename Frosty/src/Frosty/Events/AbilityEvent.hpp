@@ -2,16 +2,18 @@
 #define ABILITY_EVENT_HPP
 
 #include "EventSystem.hpp"
+#include "Frosty/Core/BoolMap/BoolMap.hpp"
 
 namespace Frosty
 {
+	class BoolMap; 
 	namespace ECS { struct Entity; }
 
 	class CollisionEvent : public BaseEvent
 	{
 	public:
-		CollisionEvent(const std::shared_ptr<ECS::Entity>& entityA, const std::shared_ptr<ECS::Entity>& entityB, const glm::vec3& offset)
-			: m_EntityA(entityA), m_EntityB(entityB), m_Offset(offset) { }
+		CollisionEvent(const std::shared_ptr<ECS::Entity>& entityA, const std::shared_ptr<ECS::Entity>& entityB)
+			: m_EntityA(entityA), m_EntityB(entityB) { }
 
 		const std::shared_ptr<ECS::Entity>& GetEntityA() const { return m_EntityA; }
 		const std::shared_ptr<ECS::Entity>& GetEntityB() const { return m_EntityB; }
@@ -88,6 +90,24 @@ namespace Frosty
 		std::shared_ptr<ECS::Entity> m_Entity;
 	};
 
+	class PlayAnimEvent : public BaseEvent
+	{
+	public:
+		PlayAnimEvent(const std::shared_ptr<ECS::Entity>& entity, unsigned int animID) : m_Entity(entity), m_AnimID(animID) {}
+		//Anim ID:
+		// 0 is die anim
+		// 1,2,3 is sword attacks
+		// 4 is bow anim
+
+		const std::shared_ptr<ECS::Entity>& GetEntity() const { return m_Entity; }
+		const unsigned int * getAnimID() { return &m_AnimID; }
+
+		EVENT_TYPE(PlayAnim);
+	private:
+		std::shared_ptr<ECS::Entity> m_Entity;
+		unsigned int m_AnimID;
+	};
+
 	class ExitLevelEvent : public BaseEvent
 	{
 	public:
@@ -112,6 +132,21 @@ namespace Frosty
 
 	private:
 	};
+
+
+	class BoolMapLoadedEvent : public BaseEvent
+	{
+	public:
+		BoolMapLoadedEvent(const std::shared_ptr<BoolMap>& BoolMap) :  m_BoolMap(BoolMap){}
+
+		inline const std::shared_ptr<BoolMap>& GetBoolMap() { return m_BoolMap; }
+
+		EVENT_TYPE(LoadBoolMap)
+
+	private:
+		std::shared_ptr <BoolMap> m_BoolMap;
+	};
+
 
 	class CreateLevelEvent : public BaseEvent
 	{
@@ -158,6 +193,19 @@ namespace Frosty
 
 	private:
 		unsigned int m_EntityType;
+	};
+
+	class InitiateGridEvent : public BaseEvent
+	{
+	public:
+		InitiateGridEvent(Frosty::ECS::CTransform* planeTransform) : m_Transform(planeTransform) {}
+
+		Frosty::ECS::CTransform* GetTransform() { return m_Transform; }
+
+		EVENT_TYPE(InitiateGridMap)
+
+	private:
+		Frosty::ECS::CTransform* m_Transform;
 	};
 }
 

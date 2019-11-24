@@ -44,9 +44,14 @@ namespace Frosty
 		void DestroyScene();
 		// Returns the camera entity for the scene (later change this when having multiple scenes)
 		const std::shared_ptr<ECS::Entity>& GetSceneCamera() const { return m_Scene->GetCamera(); }
+		void SetSceneCamera(const std::shared_ptr<ECS::Entity>& entity);
+		void DestroyGroup(bool current = true);
+		void HandleDestroyedRoom();
+		size_t GetCurrentRoom() const;
+		void ChangeCurrentRoom();
 
 		// Entity Functions
-		inline std::shared_ptr<ECS::Entity>& CreateEntity(const glm::vec3& position = glm::vec3(0.0f), const glm::vec3& rotation = glm::vec3(0.0f), const glm::vec3& scale = glm::vec3(1.0f), bool isStatic = false) { return m_Scene->CreateEntity(position, rotation, scale, isStatic); }
+		std::shared_ptr<ECS::Entity>& CreateEntity(const glm::vec3& position = glm::vec3(0.0f), const glm::vec3& rotation = glm::vec3(0.0f), const glm::vec3& scale = glm::vec3(1.0f), bool isStatic = false);
 		void RemoveEntity(const std::shared_ptr<ECS::Entity>& entity);
 		inline std::unique_ptr<ECS::EntityManager>& GetEntityManager() { return m_Scene->GetEntityManager(); }
 		template<typename ComponentType>
@@ -55,7 +60,7 @@ namespace Frosty
 			return m_Scene->HasComponent<ComponentType>(entity);
 		}
 		void AddToDestroyList(const std::shared_ptr<ECS::Entity>& entity);
-		//std::vector<std::shared_ptr<ECS::Entity>> GetEntitiesInRadius(const glm::vec3& position, float radius);
+		void AddToGroup(const std::shared_ptr<ECS::Entity>& entity, bool current = true);
 		
 		// Component Functions
 		template<typename ComponentType>
@@ -103,14 +108,6 @@ namespace Frosty
 		{
 			return m_Scene->GetComponentManager<ComponentType>();
 		}
-
-		template<typename ComponentType>
-		inline void InitiateComponent()
-		{
-			ComponentType* component(new ComponentType());
-			std::unique_ptr<ComponentType> componentPtr{ component };
-			m_ComponentList[ECS::getComponentTypeID<ComponentType>()] = std::move(componentPtr);
-		}
 		
 		// Other
 		void PrintWorld();
@@ -121,12 +118,14 @@ namespace Frosty
 	private:
 		// Scene Declarations
 		std::unique_ptr<Scene> m_Scene;
+		size_t m_CurrentRoom{ 0 };
 
 		// System Declarations 
 		std::array<std::unique_ptr<ECS::BaseSystem>, ECS::MAX_SYSTEMS> m_Systems;
 		size_t m_TotalSystems{ 1 };
 
 		std::vector<std::shared_ptr<ECS::Entity>> m_DestroyedEntities;
+		int32_t m_DestroyRoom{ -1 };
 
 	};
 }

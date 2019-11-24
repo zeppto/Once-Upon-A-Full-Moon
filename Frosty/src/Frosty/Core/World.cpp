@@ -24,6 +24,7 @@ namespace Frosty
 	void World::OnStart()
 	{
 		if (!m_DestroyedEntities.empty()) HandleDestroyedEntities();
+		if (m_DestroyRoom != -1) HandleDestroyedRoom();
 
 		for (size_t i = 1; i < m_TotalSystems; i++)
 		{
@@ -100,6 +101,44 @@ namespace Frosty
 		m_Scene.reset();
 	}
 
+	void World::SetSceneCamera(const std::shared_ptr<ECS::Entity>& entity)
+	{
+		m_Scene->AddCamera(entity);
+	}
+
+	void World::DestroyGroup(bool current)
+	{
+		if (current) m_DestroyRoom = (int32_t)(m_CurrentRoom);
+		else m_DestroyRoom = (int32_t)((m_CurrentRoom + 1) % 2);
+	}
+
+	void World::HandleDestroyedRoom()
+	{
+		auto& entityGroup = m_Scene->GetEntityManager()->GetEntityGroup(m_DestroyRoom);
+		size_t groupSize = entityGroup.size();
+		for (size_t i = groupSize; i-- > 0; i)
+		{
+			RemoveEntity(entityGroup[i]);
+		}
+
+		m_DestroyRoom = -1;
+	}
+
+	size_t World::GetCurrentRoom() const
+	{
+		return m_CurrentRoom;
+	}
+
+	void World::ChangeCurrentRoom()
+	{
+		m_CurrentRoom = (m_CurrentRoom + 1) % 2;
+	}
+
+	std::shared_ptr<ECS::Entity>& World::CreateEntity(const glm::vec3& position, const glm::vec3& rotation, const glm::vec3& scale, bool isStatic)
+	{
+		return m_Scene->CreateEntity(position, rotation, scale, isStatic);
+	}
+
 	void World::RemoveEntity(const std::shared_ptr<ECS::Entity>& entity)
 	{
 		for (size_t i = 1; i < m_TotalSystems; i++)
@@ -113,6 +152,12 @@ namespace Frosty
 	void World::AddToDestroyList(const std::shared_ptr<ECS::Entity>& entity)
 	{
 		m_DestroyedEntities.emplace_back(entity);
+	}
+
+	void World::AddToGroup(const std::shared_ptr<ECS::Entity>& entity, bool current)
+	{
+		if (current) m_Scene->GetEntityManager()->AddToGroup(m_CurrentRoom, entity);
+		else m_Scene->GetEntityManager()->AddToGroup((m_CurrentRoom + 1) % 2, entity);
 	}
 
 	void World::PrintWorld()
@@ -130,14 +175,11 @@ namespace Frosty
 
 	void World::HandleDestroyedEntities()
 	{
-	
-
-		for (int i = int(m_DestroyedEntities.size())-1; int(m_DestroyedEntities.size()) > 0; i--)
+		size_t entitySize = m_DestroyedEntities.size();
+		for (size_t i = entitySize; i-- > 0; i)
 		{
 			RemoveEntity(m_DestroyedEntities[i]);
 			m_DestroyedEntities.erase(m_DestroyedEntities.begin() + i);
-		
 		}
-
 	}
 }

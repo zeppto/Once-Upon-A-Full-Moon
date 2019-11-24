@@ -15,7 +15,6 @@ namespace Frosty
 	
 	Application::Application()
 	{
-
 		Log::Init();
 		FY_CORE_INFO("Logger initialized..");
 
@@ -24,7 +23,6 @@ namespace Frosty
 
 		EventBus::GetEventBus()->Subscribe<Application, BaseEvent>(this, &Application::OnEvent);
 
-		//m_Window.reset(FY_NEW Window());
 		m_Window.reset(BaseWindow::Create());
 		m_Window->Init();
 
@@ -37,60 +35,6 @@ namespace Frosty
 
 		m_World.reset(FY_NEW World());
 		m_World->Init();
-
-		//Testing AssetManager
-		//Assetmanager::Get()->LoadFiles();
-		//TextureFile* l =  Assetmanager::GetTexture("pCube10_diffuse");
-		//Animation* g =  Assetmanager::GetAnimation("klocka");
-
-		//From Particle. Re-integrate with new system isntead__________________________________
-		/*MotherLoader::GetMotherLoader()->LoadFiles();
-
-		m_Canvas.reset(FY_NEW Canvas);
-		m_Sprite.reset(FY_NEW Sprite);
-		m_particleSystem.reset(FY_NEW ParticleSystem("Test", DEFAULT_PARTICLE_PATH, 10));
-
-		ECS::ComponentManager<ECS::CTransform> cManager;
-		InitPrefabBuffers();
-		InitShaders();
-		//if (!loadShaderSource()) {
-		//	FY_CORE_ERROR("Could not load shader source.");
-		//}
-		MotherLoader::GetMotherLoader()->LoadFiles();
-		*/
-
-
-
-
-		//Assetmanager::Get()->LoadFiles();
-
-		//std::unordered_map<std::string, LinkedMaterial>::iterator it = Assetmanager::GetMaterialMap()->begin();
-
-		//while (it != Assetmanager::GetMaterialMap()->end())
-		//{
-		//	FY_CORE_INFO("Mat: {0}", it->first);
-
-		//	if (it->second.GetDiffuse() != nullptr)
-		//	{
-		//	FY_CORE_INFO("Has Dif");
-		//	}
-		//	if (it->second.GetNormal() != nullptr)
-		//	{
-		//		FY_CORE_INFO("Has Norm");
-		//	}
-		//	if (it->second.GetGlow() != nullptr)
-		//	{
-		//		FY_CORE_INFO("Has Glow");
-		//	}
-		//	it++;
-		//}
-
-
-
-
-
-
-
 	}
 
 	Application::~Application()
@@ -99,114 +43,14 @@ namespace Frosty
 		m_Window->Shutdown();
 		Renderer::Shutdown();
 		AssetManager::Delete();
-		//PrefabManager::Delete();
-	}
-
-	void Application::InitPrefabBuffers()
-	{
-		//m_VertexArray.reset(VertexArray::Create());
-		//
-		////Canvas test
-		//m_Canvas->SetScale(glm::vec3(0.5, 0.5, 0.5));
-		//m_Canvas->SetPosition(glm::vec3(0.0, 0.0, 0.0));
-		//m_Canvas->Init();
-		////Sprite test
-		////m_Sprite->SetScale(glm::vec3(0.2, 0.2, 0.2));
-		////m_Sprite->SetPosition(glm::vec3(0.7, -0.7, 0.0));
-		////m_Sprite->Init();
-		////
-
-		////Layout
-		//BufferLayout layout =
-		//{
-		//	{ ShaderDataType::Float3, "vsInPos" },
-		//	{ ShaderDataType::Float4, "vsInCol" },
-		//	{ ShaderDataType::Float2, "vsInUV" }
-		//};
-
-		//////Sprite quad
-		////std::shared_ptr<VertexBuffer> m_VertexBuffer1;
-		////m_VertexBuffer1.reset(VertexBuffer::Create(m_Sprite->vertices, sizeof(m_Sprite->vertices)));
-		////m_VertexBuffer1->SetLayout(layout);
-		////m_VertexArray->AddVertexBuffer(m_VertexBuffer1); //Add to array
-
-		////Canvas quad
-		//std::shared_ptr<VertexBuffer> m_VertexBuffer2;
-		//m_VertexBuffer2.reset(VertexBuffer::Create(m_Canvas->m_Vertices, sizeof(m_Canvas->m_Vertices)));
-		//m_VertexBuffer2->SetLayout(layout);
-		//m_VertexBuffer2->SetNrOfVertices(6);
-		//m_VertexArray->AddVertexBuffer(m_VertexBuffer2); //Add to array
-
-		//uint32_t indices[6] = { 0, 1, 2, 3, 4, 5};
-		//std::shared_ptr<IndexBuffer> m_IndexBuffer;
-		//m_IndexBuffer.reset(IndexBuffer::Create(indices, sizeof(indices) / sizeof(uint32_t)));
-		//m_VertexArray->SetIndexBuffer(m_IndexBuffer);
-
-		////m_VertexArray->Unbind();
-		////m_IndexBuffer->Unbind();
-		////m_VertexBuffer2->Unbind();
-
-		////Text
-		//m_TextVertexArray.reset(VertexArray::Create());
-		//m_textVertBuffer.reset(VertexBuffer::Create());
-		//BufferLayout textLayout =
-		//{
-		//	{ ShaderDataType::Float4, "vertex" }
-		//};
-		//m_textVertBuffer->SetLayout(textLayout);
-		//m_TextVertexArray->AddVertexBuffer(m_textVertBuffer);
-
-		//uint32_t textIndices[6] = { 0, 1, 2, 3, 4, 5 };
-		//std::shared_ptr<IndexBuffer> textIndexBuffer;
-		//textIndexBuffer.reset(IndexBuffer::Create(textIndices, sizeof(textIndices) / sizeof(uint32_t)));
-		//m_TextVertexArray->SetIndexBuffer(textIndexBuffer);
 	}
 
 	void Application::Run()
 	{
-		/*Renderer::InitScene(m_Shader2);*/
-	/*	states.AddState(Frosty::StateRef(new MainMenuState(s_Instance)), false);*/
-		/*states.ProcessStateChanges();*/
-
 		while (m_Running)
 		{
 			/// Frame Start
 			Time::OnUpdate();
-
-
-			//states.GetActiveState()->OnUpdate();
-			//if (mainMenuReturn == true)
-			//{
-			//	states.AddState(Frosty::StateRef(new MainMenuState(s_Instance)), true);
-			//	mainMenuReturn = false;
-			//}
-
-
-
-			////TEST SPRITE
-			//m_Shader->UploadUniformInt(m_Sprite->GetTexture().name, 0);
-			//glActiveTexture(GL_TEXTURE0);
-			//glBindTexture(GL_TEXTURE_2D, m_Canvas->GetTexture());
-			//Renderer::Submit2D(m_Shader, m_VertexArray, m_Sprite->GetTexture().name, m_Canvas->GetTransform().GetModel());
-
-			//glBindTexture(GL_TEXTURE_2D, 0);
-
-			////Render particles
-			//m_particleShader->Bind();
-			//glEnable(GL_BLEND);
-			//glBlendFunc(GL_SRC_ALPHA, GL_ONE);
-			//m_particleSystem->LoadTexture();
-			//glBindTexture(GL_TEXTURE_2D, m_particleSystem->GetTextureID());
-			//Renderer::SubmitParticles(m_particleShader, m_particleSystem->GetVertexArray(), m_particleSystem->GetModelMatrix(), m_particleSystem->GetParticleCount());
-			//m_particleShader->UnBind();
-			//glDisable(GL_BLEND);
-
-			////Render text
-			//glEnable(GL_BLEND);
-			//glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-			//std::string tempText = "Hello team";
-			//Renderer::SubmitText(m_textShader, m_TextVertexArray, tempText);
-			//glDisable(GL_BLEND);
 
 			m_EditorCamera.OnUpdate();
 			for (Layer* layer : m_LayerHandler)
@@ -220,7 +64,6 @@ namespace Frosty
 				RenderCommand::Clear();
 			
 				Renderer::BeginScene();
-				//Renderer::SetCamera(m_EditorCamera.GetPosition(), m_EditorCamera.GetViewProjectionMatrix());
 				Renderer::SetCamera(m_EditorCamera.GetPosition(), m_EditorCamera.GetViewMatrix(), m_EditorCamera.GetProjectionMatrix());
 			}
 			else
@@ -230,7 +73,9 @@ namespace Frosty
 				m_World->OnUpdate();
 				m_World->BeginScene();
 			}
-
+			//Simon move this
+			glm::ivec4 viewP(m_Window->GetViewport());
+			glViewport(viewP.x, viewP.y, viewP.z, viewP.w);
 			Renderer::RenderScene();
 
 			m_World->Render();
@@ -347,14 +192,6 @@ namespace Frosty
 		{
 			m_Running = false;
 		}
-		//if (e.GetKeyCode() == GLFW_KEY_O)
-		//{
-		//	std::cout << "Options was clicked!!" << std::endl;
-		//}
-		if (e.GetKeyCode() == FY_KEY_M)
-		{
-			/*states.GetActiveState()->OnInput();*/
-		}
 		if ((InputManager::IsKeyPressed(FY_KEY_LEFT_CONTROL) || InputManager::IsKeyPressed(FY_KEY_RIGHT_CONTROL)) && e.GetKeyCode() == FY_KEY_P && m_CanPrintInfo)
 		{
 			m_World->PrintWorld();
@@ -368,27 +205,5 @@ namespace Frosty
 		{
 			m_CanPrintInfo = true;
 		}
-	}
-
-	void Application::SubmitPrefab(std::string prefabName)
-	{
-		/*auto tempPrefabManager = PrefabManager::GetPrefabManager();
-		Prefab* tempPrefab = tempPrefabManager->GetPrefab(prefabName);
-
-		tempPrefab->GetModelKey().GetKeyData().GetVertexArray(0)->Bind();
-		Renderer::Submit(m_Shader2, tempPrefab->GetModelKey().GetKeyData().GetVertexArray(0));
-
-		std::shared_ptr<VertexArray> v = tempPrefab->GetModelKey().GetKeyData().GetVertexArray(0);*/
-
-		////I want a texture! >:C
-
-		///*RenderModel
-		//(
-		//	tempPrefab->GetModelKey().GetKeyData().GetVBO(0),
-		//	tempPrefab->GetModelKey().GetKeyData().GetMeshConst(0).vertexCount,
-		//	m_Transform.getModel(), //temp
-		//	tempPrefab->GetMaterialKey().GetKeyData().Diffuse_Texture_MetaData_Ptr->GetData()->GetBufferID()
-
-		//);*/
 	}
 }

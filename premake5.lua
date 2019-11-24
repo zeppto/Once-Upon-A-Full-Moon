@@ -21,6 +21,8 @@ IncludeDir["glm"] = "Frosty/vendor/glm"
 IncludeDir["Luna"] = "Frosty/vendor/Luna"
 IncludeDir["stb_image"] = "Frosty/vendor/stb_image"
 IncludeDir["FreeType"] = "Frosty/vendor/FreeType/include"
+IncludeDir["PugiXML"] = "Frosty/vendor/PugiXML"
+IncludeDir["irrKlang"] = "Frosty/vendor/irrKlang/include"
 
 group "Dependencies"
 	include "Frosty/vendor/GLFW"
@@ -49,7 +51,9 @@ project "Frosty"
 		"%{prj.name}/src/**.hpp",
 		"%{prj.name}/src/**.cpp",
 		"%{prj.name}/vendor/stb_image/**.h",
-		"%{prj.name}/vendor/stb_image/**.cpp"
+		"%{prj.name}/vendor/stb_image/**.cpp",
+		"%{prj.name}/vendor/PugiXML/**.hpp",
+		"%{prj.name}/vendor/PugiXML/**.cpp"
 	}
 
 	includedirs
@@ -63,7 +67,9 @@ project "Frosty"
 		"%{IncludeDir.Luna}",
 		"%{IncludeDir.glm}",
 		"%{IncludeDir.stb_image}",
-		"%{IncludeDir.FreeType}"
+		"%{IncludeDir.FreeType}",
+		"%{IncludeDir.PugiXML}",
+		"%{IncludeDir.irrKlang}"
 	}
 	
 	excludes
@@ -83,7 +89,8 @@ project "Frosty"
 	{
 		"%{prj.name}/vendor/GLFW/lib",
 		"%{prj.name}/vendor/Luna/lib",
-		"%{prj.name}/vendor/FreeType/lib"
+		"%{prj.name}/vendor/FreeType/lib",
+		"%{prj.name}/vendor/irrKlang/lib"
 	}
 
 	links
@@ -92,7 +99,8 @@ project "Frosty"
 		"Glad",
 		"ImGui",
 		"opengl32.lib",
-		"freetype.lib"
+		"freetype.lib",
+		"irrKlang.lib"
 	}
 
 	filter "system:windows"
@@ -165,17 +173,29 @@ project "Sandbox"
 		"%{IncludeDir.Glad}",
 		"%{IncludeDir.ImGui}",
 		"%{IncludeDir.glm}",
-		"%{IncludeDir.FreeType}"
+		"%{IncludeDir.FreeType}",
+		"%{IncludeDir.PugiXML}",
+		"%{IncludeDir.irrKlang}"
+	}
+
+	libdirs
+	{
+		"Frosty/vendor/irrKlang/lib"
 	}
 
 	links
 	{
-		"Frosty"
+		"Frosty",
+		"irrKlang.lib"
 	}
 	
 	postbuildcommands
 	{
-		("{COPY} %{wks.location.relpath} ../assets ../bin/" .. outputdir .. "/%{prj.name}/assets/")
+		("{COPY} %{wks.location.relpath} ../assets ../bin/" .. outputdir .. "/%{prj.name}/assets/"),
+		("{COPY} %{wks.location.relpath} ../Frosty/vendor/FreeType/lib/freetype.dll ../bin/" .. outputdir .. "/%{prj.name}/"),
+		("{COPY} %{wks.location.relpath} ../Frosty/vendor/irrKlang/bin/winx64-visualStudio/ikpFlac.dll ../bin/" .. outputdir .. "/%{prj.name}/"),
+		("{COPY} %{wks.location.relpath} ../Frosty/vendor/irrKlang/bin/winx64-visualStudio/ikpMP3.dll ../bin/" .. outputdir .. "/%{prj.name}/"),
+		("{COPY} %{wks.location.relpath} ../Frosty/vendor/irrKlang/bin/winx64-visualStudio/irrKlang.dll ../bin/" .. outputdir .. "/%{prj.name}/")
 	}
 
 	filter "system:windows"

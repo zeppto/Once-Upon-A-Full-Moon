@@ -51,15 +51,18 @@ namespace MCS
 			unsigned int counter = 0;
 			for (auto& entity : *world->GetEntityManager())
 			{
-				ImGuiTreeNodeFlags node_flags = ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen | ((selection_mask & (1 << counter)) ? ImGuiTreeNodeFlags_Selected : 0); // ImGuiTreeNodeFlags_Bullet
-				Frosty::ECS::EntityID eid = entity->Id;
-				ImGui::TreeNodeEx((void*)(intptr_t)counter, node_flags, "Entity (%d)", eid);
-				if (ImGui::IsItemClicked())
+				if (entity->ShowInEditor)
 				{
-					node_clicked = (int)counter;
-					m_SelectedEntity = entity;
+					ImGuiTreeNodeFlags node_flags = ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen | ((selection_mask & (1 << counter)) ? ImGuiTreeNodeFlags_Selected : 0); // ImGuiTreeNodeFlags_Bullet
+					Frosty::ECS::EntityID eid = entity->Id;
+					ImGui::TreeNodeEx((void*)(intptr_t)counter, node_flags, "Entity (%d)", eid);
+					if (ImGui::IsItemClicked())
+					{
+						node_clicked = (int)counter;
+						m_SelectedEntity = entity;
+					}
+					counter++;
 				}
-				counter++;
 			}
 			if (node_clicked != -1)
 			{
@@ -265,11 +268,9 @@ namespace MCS
 									if (world->HasComponent<Frosty::ECS::CMaterial>(m_SelectedEntity))
 									{
 										Frosty::Renderer::ChangeEntity(m_SelectedEntity->Id, &world->GetComponent<Frosty::ECS::CMaterial>(m_SelectedEntity),
-											oldMeshName, world->GetComponent<Frosty::ECS::CMesh>(m_SelectedEntity).Mesh,
+											oldMeshName, &world->GetComponent<Frosty::ECS::CMesh>(m_SelectedEntity),
 											m_SelectedEntity->Id, &world->GetComponent<Frosty::ECS::CTransform>(m_SelectedEntity));
-
 									}
-								
 								}
 							}
 
@@ -338,7 +339,7 @@ namespace MCS
 									if (world->HasComponent<Frosty::ECS::CMesh>(m_SelectedEntity))
 									{
 										Frosty::Renderer::ChangeEntity(m_SelectedEntity->Id, &world->GetComponent<Frosty::ECS::CMaterial>(m_SelectedEntity),
-											world->GetComponent<Frosty::ECS::CMesh>(m_SelectedEntity).Mesh->GetName(), world->GetComponent<Frosty::ECS::CMesh>(m_SelectedEntity).Mesh,
+											world->GetComponent<Frosty::ECS::CMesh>(m_SelectedEntity).Mesh->GetName(), &world->GetComponent<Frosty::ECS::CMesh>(m_SelectedEntity),
 											m_SelectedEntity->Id, &world->GetComponent<Frosty::ECS::CTransform>(m_SelectedEntity));
 									}
 								}
@@ -815,8 +816,8 @@ namespace MCS
 					{
 						auto& comp = world->GetComponent<Frosty::ECS::CHealth>(m_SelectedEntity);
 						ImGui::BeginChild("CHealth", ImVec2(EDITOR_INSPECTOR_WIDTH, 70), true);
-						ImGui::InputFloat("Max Health", &comp.MaxHealth, 1.0f, 10.0f, 0);
-						ImGui::InputFloat("Current Health", &comp.CurrentHealth, 1.0f, 10.0f, 0);
+						ImGui::InputInt("Max Health", &comp.MaxHealth, 1, 10, 0);
+						ImGui::InputInt("Current Health", &comp.CurrentHealth, 1, 10, 0);
 						ImGui::EndChild();
 					}
 				}
@@ -850,15 +851,17 @@ namespace MCS
 					if (ImGui::CollapsingHeader("Particle System"))
 					{
 						auto& comp = world->GetComponent<Frosty::ECS::CParticleSystem>(m_SelectedEntity);
-						ImGui::BeginChild("CParticleSystem", ImVec2(EDITOR_INSPECTOR_WIDTH, 345), true);
+						ImGui::BeginChild("CParticleSystem", ImVec2(EDITOR_INSPECTOR_WIDTH, 560), true);
 						ImGui::Text("Active particles: %i", comp.ParticleCount);
 						ImGui::Checkbox("Preview", &comp.Preview);
+						ImGui::SameLine();
 						ImGui::Checkbox("Face camera", &comp.AlwaysFaceCamera);
 						if (ImGui::IsItemClicked())
 						{
 							if (comp.AlwaysFaceCamera == false) //Was false, changed to true
 							{
 								comp.UseShader = Frosty::AssetManager::GetShader("Particles");
+								comp.RotateOverLifetime = false;
 							}
 							else if(comp.AlwaysFaceCamera == true) //Was true, changed to false
 							{
@@ -866,7 +869,22 @@ namespace MCS
 
 							}
 						}
-						ImGui::ColorEdit4("Color", glm::value_ptr(comp.ParticleSystemColor));
+						if (!Frosty::Application::Get().GameIsRunning())
+						{
+							ImGui::SameLine();
+							ImGui::Checkbox("Static color", &comp.StaticColor);
+
+							if (comp.StaticColor == true)
+							{
+								ImGui::ColorEdit4("Color", glm::value_ptr(comp.SystemStartColor));
+								comp.SystemEndColor = comp.SystemStartColor;
+							}
+							else
+							{
+								ImGui::ColorEdit4("Start color", glm::value_ptr(comp.SystemStartColor));
+								ImGui::ColorEdit4("End color", glm::value_ptr(comp.SystemEndColor));
+							}
+						}
 						ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(10, 10));
 						ImGui::Image(comp.Texture ? comp.Texture->GetRenderID() : Frosty::AssetManager::GetTexture2D("Checkerboard")->GetRenderID(), ImVec2(64, 64));
 						ImGui::PopStyleVar();
@@ -908,13 +926,44 @@ namespace MCS
 						{
 							ImGui::SliderInt("Particle count", (int*)&comp.MaxParticles, 1, comp.MAX_PARTICLE_COUNT);
 						}
-						ImGui::DragFloat3("Direction", glm::value_ptr(comp.ParticleSystemDirection), 0.1f, 0.0f, 0.0f, "%.2f");
-						ImGui::InputFloat("Speed", &comp.Speed);
+						ImGui::DragFloat3("Rotation", glm::value_ptr(comp.SystemRotation), 0.1f, 0.0f, 0.0f, "%.2f");
+						ImGui::Checkbox("Random direction", &comp.RandomDirection);
+						if (comp.RandomDirection == false)
+						{
+							ImGui::DragFloat3("Direction", glm::value_ptr(comp.ParticleSystemDirection), 0.1f, 0.0f, 0.0f, "%.2f");
+						}
+						else
+						{
+							ImGui::InputFloat("Spread", &comp.randSpread);
+							ImGui::DragFloat3("Main direction", glm::value_ptr(comp.randMainDir), 0.1f, 0.0f, 0.0, "%.2f");
+						}
+						ImGui::Checkbox("Random start position", &comp.RandomStartPos);
+						if (comp.RandomStartPos == false)
+						{
+							ImGui::DragFloat3("Start position", glm::value_ptr(comp.ParticleSystemStartPos), 0.1f, 0.0f, 0.0f, "%.2f");
+						}
+						ImGui::Checkbox("Random lifetimes", &comp.RandomLifetimes);
+						if (comp.RandomLifetimes == true)
+						{
+							ImGui::InputFloat("Min lifetime", &comp.MinLifetime);
+							ImGui::InputFloat("Max lifetime", &comp.MaxLifetime);
+						}
+						if (comp.AlwaysFaceCamera == false) //Only relevant if particles aren't billboarded since we won't see any difference
+						{
+							ImGui::Checkbox("Rotate over lifetime", &comp.RotateOverLifetime);
+						}
+						if (!Frosty::Application::Get().GameIsRunning())
+						{
+							ImGui::InputFloat("Speed", &comp.Speed);
+						}
 						ImGui::InputFloat("Start size", &comp.StartParticleSize);
 						ImGui::InputFloat("End size", &comp.EndParticleSize);
 						ImGui::InputFloat("Emit rate", &comp.EmitRate);
+						ImGui::DragInt("Emit count", (int*)&comp.EmitCount, 1, 1, comp.MaxParticles);
 						ImGui::InputFloat("Lifetime", &comp.MaxLifetime);
-						ImGui::SliderFloat("Fade", &comp.FadeTreshold, 0.0f, comp.MaxLifetime);
+						ImGui::SliderFloat("Fade in", &comp.FadeInTreshold, comp.MaxLifetime, 0.0f);
+						ImGui::SliderFloat("Fade out", &comp.FadeTreshold, 0.0f, comp.MaxLifetime);
+
 						ImGui::EndChild();
 					}
 				}
@@ -1063,6 +1112,25 @@ namespace MCS
 			{
 				Frosty::EventBus::GetEventBus()->Publish<Frosty::CreatEntityEvent>(Frosty::CreatEntityEvent(17));
 			}
+			if (ImGui::Button("sparsFierflis", ImVec2(100.0f, EDITOR_MAIN_MENU_BAR_HEIGHT)))
+			{
+				Frosty::EventBus::GetEventBus()->Publish<Frosty::CreatEntityEvent>(Frosty::CreatEntityEvent(18));
+			}
+			ImGui::SameLine();
+			if (ImGui::Button("fierflis", ImVec2(80.0f, EDITOR_MAIN_MENU_BAR_HEIGHT)))
+			{
+				Frosty::EventBus::GetEventBus()->Publish<Frosty::CreatEntityEvent>(Frosty::CreatEntityEvent(19));
+			}
+			ImGui::SameLine();
+			if (ImGui::Button("fierflisSwarm", ImVec2(100.0f, EDITOR_MAIN_MENU_BAR_HEIGHT)))
+			{
+				Frosty::EventBus::GetEventBus()->Publish<Frosty::CreatEntityEvent>(Frosty::CreatEntityEvent(20));
+			}
+			ImGui::SameLine();
+			if (ImGui::Button("fierflisBlue", ImVec2(100.0f, EDITOR_MAIN_MENU_BAR_HEIGHT)))
+			{
+				Frosty::EventBus::GetEventBus()->Publish<Frosty::CreatEntityEvent>(Frosty::CreatEntityEvent(21));
+			}
 		}
 		ImGui::End();
 
@@ -1163,7 +1231,7 @@ namespace MCS
 		return true;
 	}
 
-	bool InspectorLayer::OnKeyPressedEvent(Frosty::KeyPressedEvent & e)
+	bool InspectorLayer::OnKeyPressedEvent(Frosty::KeyPressedEvent& e)
 	{
 		if (e.GetKeyCode() == FY_KEY_TAB)
 		{

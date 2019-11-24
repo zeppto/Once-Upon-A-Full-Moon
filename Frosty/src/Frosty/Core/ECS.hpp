@@ -6,7 +6,7 @@
 #include "Frosty/Core/KeyCodes.h"
 #include "Frosty/Core/MouseButtonCodes.h"
 #include "Frosty/API/AssetManager/AssetFiles/Animation.hpp"
-
+#include "Frosty/API/AssetManager/AssetManager.hpp"
 #include "Frosty/UI/UIText.h"
 #include "Frosty/UI/UISprite.h"
 #include "Frosty/UI/UILayout.hpp"
@@ -20,6 +20,8 @@ namespace Frosty
 		template<typename T, typename C>
 		inline int BinarySearch(const std::vector<std::shared_ptr<T>>& v, const C& value)
 		{
+			if (v.size() == 0) return -1;
+
 			unsigned int first = 0;
 			unsigned int last = (unsigned int)(v.size() - 1);
 			unsigned int middle = 0;
@@ -64,6 +66,55 @@ namespace Frosty
 			return index;
 		}
 
+		template<typename T, typename C>
+		inline int BinarySearch(const std::vector<T>& v, const C& value)
+		{
+			if (v.size() == 0) return -1;
+
+			unsigned int first = 0;
+			unsigned int last = (unsigned int)(v.size() - 1);
+			unsigned int middle = 0;
+			int index = -1;
+			unsigned int bSearchLimit = 5;
+
+			while (index == -1 && last >= first)
+			{
+				middle = (last + first) / 2;
+
+				if (v[middle] == value)
+				{
+					// Value Found
+					index = middle;
+				}
+				else if (v[middle] > value)
+				{
+					// Value is less. Not found
+					// Move last
+					last = middle - 1;
+				}
+				else if (v[middle] < value)
+				{
+					// Value is greater. Not found
+					// Move first
+					first = middle + 1;
+				}
+
+				if ((last - first) <= bSearchLimit)
+				{
+					// Start linear search instead
+					for (unsigned int i = first; i <= last && index == -1; i++)
+					{
+						if (v[i] == value)
+						{
+							index = i;
+						}
+					}
+				}
+			}
+
+			return index;
+		}
+
 		template<size_t N>
 		inline bool BitsetFits(const std::bitset<N>& key, const std::bitset<N>& keyHole)
 		{
@@ -95,7 +146,7 @@ namespace Frosty
 
 		// Let's define a maximum number of entities that
 		// can have the same component type:
-		constexpr std::size_t MAX_ENTITIES_PER_COMPONENT{ 1024 };
+		constexpr std::size_t MAX_ENTITIES_PER_COMPONENT{ 30024 };
 
 		// Defining the maximum nr of systems
 		constexpr std::size_t MAX_SYSTEMS{ 20 };
@@ -150,6 +201,8 @@ namespace Frosty
 			inline static EntityID s_LastId{ 1 };
 			EntityID Id{ 0 };
 			ComponentBitset Bitset;
+			bool ShowInEditor{ true };
+			int32_t GroupId{ -1 };
 
 			Entity() : Id(s_LastId++) { FY_CORE_INFO("An entity({0}) was successfully created.", Id); }
 			Entity(const Entity& obj) { FY_CORE_ASSERT(false, "Copy constructor in Entity called."); }
@@ -181,7 +234,7 @@ namespace Frosty
 		class EntityManager
 		{
 		public:
-			EntityManager() { m_Entities.reserve(MAX_ENTITIES_PER_COMPONENT); }
+			EntityManager() { m_Entities.reserve(MAX_ENTITIES_PER_COMPONENT); m_EntityGroups[0].reserve(MAX_ENTITIES_PER_COMPONENT); m_EntityGroups[1].reserve(MAX_ENTITIES_PER_COMPONENT); }
 			EntityManager(const EntityManager& obj) { FY_CORE_ASSERT(false, "Copy constructor in EntityManager called."); }
 			virtual ~EntityManager() { }
 
@@ -189,6 +242,7 @@ namespace Frosty
 			EntityManager& operator=(const EntityManager& e) { FY_CORE_ASSERT(false, "Assignment operator in EntityManager called."); return *this; }
 
 			inline std::vector<std::shared_ptr<Entity>>& GetEntities() { return m_Entities; }
+			inline std::vector<std::shared_ptr<Entity>>& GetEntityGroup(int32_t groupID) { return m_EntityGroups[groupID]; }
 			inline std::shared_ptr<Entity>& GetEntityById(EntityID eid)
 			{
 				int index = utils::BinarySearch(m_Entities, eid);
@@ -211,16 +265,23 @@ namespace Frosty
 				FY_CORE_INFO("Removing an entity..");
 
 				int index = utils::BinarySearch(m_Entities, entity->Id);
+				int groupIndex = -1;
+				if (entity->GroupId != -1)
+				{
+					groupIndex = utils::BinarySearch(m_EntityGroups[entity->GroupId], entity->Id);
+				}
 
 				FY_CORE_ASSERT(index >= 0, "Entity doesn't exist in the manager.");
-				//if (index == -1)
-				//{
-				//	return false;
-				//}
 
 				m_Entities.erase(m_Entities.begin() + index);
+				if (groupIndex >= 0) m_EntityGroups[entity->GroupId].erase(m_EntityGroups[entity->GroupId].begin() + groupIndex);
 
 				return true;
+			}
+
+			inline void AddToGroup(uint64_t groupId, const std::shared_ptr<Entity>& entity)
+			{
+				m_EntityGroups[groupId].emplace_back(entity);
 			}
 
 			std::vector<std::shared_ptr<Entity>>::iterator begin() { return m_Entities.begin(); }
@@ -241,6 +302,7 @@ namespace Frosty
 
 		private:
 			std::vector<std::shared_ptr<Entity>> m_Entities;
+			std::array<std::vector<std::shared_ptr<Entity>>, 2> m_EntityGroups;
 
 		};
 
@@ -382,7 +444,7 @@ namespace Frosty
 		struct CTransform : public BaseComponent
 		{
 			static std::string NAME;
-			
+
 			glm::vec3 Position{ 0.0f };
 			glm::vec3 Rotation{ 0.0f };
 			glm::vec3 Scale{ 1.0f };
@@ -393,7 +455,7 @@ namespace Frosty
 			CTransform(const glm::vec3& position, const glm::vec3& rotation, const glm::vec3& scale, bool isStatic = false)
 				: Position(position), Rotation(rotation), Scale(scale), IsStatic(isStatic)
 			{
-			
+
 				if (isStatic)
 				{
 					ModelMatrix = glm::translate(glm::mat4(1.0f), Position);
@@ -426,8 +488,8 @@ namespace Frosty
 				ModelMatrix = glm::scale(ModelMatrix, Scale);
 
 				return &ModelMatrix;
-
 			}
+
 			virtual std::string GetName() const { return NAME; }
 		};
 
@@ -436,14 +498,14 @@ namespace Frosty
 			static std::string NAME;
 			std::shared_ptr<VertexArray> Mesh;
 			bool RenderMesh{ true };
+			glm::mat4* parentMatrix = nullptr;
+			glm::mat4* animOffset = nullptr;
 
 			CMesh() = default;
 			CMesh(std::shared_ptr<VertexArray> mesh, bool render = true) : Mesh(mesh), RenderMesh(render) { }
 			CMesh(const CMesh& org) { FY_CORE_ASSERT(false, "Copy constructor in CMesh called."); }
 			CMesh& operator=(const CMesh& org)
 			{
-				FY_WARN("Assignment operator in CMesh called.");
-
 				if (this != &org)
 				{
 					Mesh = org.Mesh;
@@ -472,9 +534,7 @@ namespace Frosty
 
 			CCamera() = default;
 			CCamera(float fov, float aspect, float zNear, float zFar)
-				: FieldOfView(fov), Near(zNear), Far(zFar), ProjectionMatrix(glm::perspective(glm::radians(fov), aspect, zNear, zFar))
-			{
-			}
+				: FieldOfView(fov), Near(zNear), Far(zFar), ProjectionMatrix(glm::perspective(glm::radians(fov), aspect, zNear, zFar)) { }
 			CCamera(const CCamera& org) { FY_CORE_ASSERT(false, "Copy constructor in CCamera called."); }
 			CCamera& operator=(const CCamera& org)
 			{
@@ -518,7 +578,7 @@ namespace Frosty
 			bool HasTransparency = false;
 
 			CMaterial() = default;
-			CMaterial(const std::shared_ptr<Shader>& shader) : UseShader(shader) { }
+			CMaterial(const std::shared_ptr<Shader>& shader) : UseShader(shader) { NormalTexture = AssetManager::GetTexture2D("FlatNormal"); }
 			CMaterial(const CMaterial& org) { FY_CORE_ASSERT(false, "Copy constructor in CMaterial called."); }
 			CMaterial& operator=(const CMaterial& org)
 			{
@@ -561,6 +621,10 @@ namespace Frosty
 			enum class LightType { Point, Directional };
 
 			static std::string NAME;
+
+			CTransform* Origin{ nullptr };
+			glm::vec3 Offset{ 0.f };
+
 			LightType Type{ LightType::Point };
 			glm::vec3 Color{ 1.0f, 0.96f, 0.84f };
 			glm::vec3 Direction{ 1.0f, 0.0f, 1.0f };
@@ -569,15 +633,18 @@ namespace Frosty
 
 			CLight() = default;
 			CLight(LightType lightType) : Type(lightType) { }
-			CLight(LightType lightType, float strength, glm::vec3 color, float radius, glm::vec3 direction) : Type(lightType), Strength(strength), Color(color), Radius(radius),Direction(direction) { }
-			CLight(LightType lightType, float strength, glm::vec3 color) : Type(lightType), Strength(strength), Color(color) { }
+			CLight(LightType lightType, float strength, glm::vec3 color, float radius, glm::vec3 direction) : Type(lightType), Strength(strength), Color(color), Radius(radius), Direction(direction) { }
+			CLight(LightType lightType, float strength, glm::vec3 color, CTransform* origin = nullptr, const glm::vec3& offset = glm::vec3(0.f)) : Type(lightType), Strength(strength), Color(color), Origin(origin), Offset(offset) { }
 			CLight(const CLight& org) { FY_CORE_ASSERT(false, "Copy constructor in CLight called."); }
 			CLight& operator=(const CLight& org)
 			{
 				if (this != &org)
 				{
+					Origin = org.Origin;
+					Offset = org.Offset;
 					Type = org.Type;
 					Color = org.Color;
+					Direction = org.Direction;
 					Radius = org.Radius;
 					Strength = org.Strength;
 				}
@@ -598,12 +665,15 @@ namespace Frosty
 			float SpeedMultiplier{ 1.f };						// Used in combination with Speed Boost Potion
 
 			CPhysics() = default;
-			CPhysics(const std::shared_ptr<Luna::BoundingBox>& bb, float speed = 0.0f) : BoundingBox(bb), Speed(speed) { }
+			CPhysics(const std::shared_ptr<Luna::BoundingBox>& bb, float speed = 0.0f) : BoundingBox(bb), Speed(speed)
+			{
+				BoundingBox->halfSize[0] *= 0.85f;
+				BoundingBox->halfSize[1] *= 0.85f;
+				BoundingBox->halfSize[2] *= 0.85f;
+			}
 			CPhysics(const CPhysics& org) { FY_CORE_ASSERT(false, "Copy constructor in CPhysics called."); }
 			CPhysics& operator=(const CPhysics& org)
 			{
-				FY_WARN("Assignment operator in CPhysics called.");
-
 				if (this != &org)
 				{
 					BoundingBox = org.BoundingBox;
@@ -623,49 +693,79 @@ namespace Frosty
 		{
 			static std::string NAME;
 
-			enum class WeaponType { Sword, Arrow };
+			enum class WeaponType { Sword, Bow, Bite };
 			WeaponType Type{ WeaponType::Sword };
 
-			unsigned int ItemID{ 1 };
-			bool IsPlayerWeapon{ false };
+			uint8_t Level{ 1 };
+			std::string Speciality{ "Default" };
 
 			// Range
-			float AttackRange{ 15.f };						// 6.f if melee and 25.f if bow
+			float MaxAttackRange{ 0.0f };	
+			float MinAttackRange{ 0.0f };
 
 			// Damage
 			float Damage{ 1.0f };
 
 			// Critical Hit
-			float CriticalHit{ 0.5f };						// Adds upp with damage for total damage
+			float CriticalHit{ 1.0f };						// Adds upp with damage for total damage
 			float CriticalHitChance{ 0.1f };				// 10 % chanse of performing a critical hit
 
 			// Speed
-			float LVL1AttackCooldown{ 1.f };
-			float LVL2AttackCooldown{ 2.f };
-			float LVL3AttackCooldown{ 3.f };
+			float LVL1AttackCooldown{ 1.0f };
+			float LVL2AttackCooldown{ 2.0f };
+			float LVL3AttackCooldown{ 3.0f };
 
 			float LVL1AttackCooldownTimer{ Frosty::Time::CurrentTime() };
 			float LVL2AttackCooldownTimer{ Frosty::Time::CurrentTime() };
 			float LVL3AttackCooldownTimer{ Frosty::Time::CurrentTime() };
+			
+			// 
+			glm::vec3 AttackHitboxScale{ 0.0f };
 
-			float Lifetime{ 2.f };
+			float Lifetime{ 2.0f };
+			glm::vec3 AttackHittBoxScale{ 0.0f };
 
+			bool IsPlayerWeapon{ false };
+			
 			// Special Effect / Elemental Abilities
-			// Fire (+ CriticalChance)
-			// Earth (+ Damage)
-			// Wind (+ Speed)
-			// Water (+ Heal)
+			float FireCriticalHitChance{ 0 };				// Fire (+ CriticalChance)
+			float EarthDamage{ 0 };							// Earth (+ Damage)
+			float WindSpeed{ 0 };							// Wind (+ Speed)
+			float WaterHealing{ 0 };						// Water (+ Heal)
+
+			// Special Attribute for Bow
+			float ProjectileSpeed{ 0.f };
 
 			CWeapon() = default;
-			CWeapon(WeaponType type, unsigned int itemID, float damage, bool isPlayerWeapon = false) : Type(type), ItemID(itemID), Damage(damage), IsPlayerWeapon(isPlayerWeapon) { }
+			CWeapon(WeaponType type, unsigned int level, float damage, bool isPlayerWeapon = false) : Type(type), Level(level), Damage(damage), IsPlayerWeapon(isPlayerWeapon) { }
+			CWeapon(Frosty::Weapon weapon, bool isPlayerWeapon = false) : Level(weapon.Level), Speciality(weapon.Speciality), MaxAttackRange(weapon.MaxAttackRange), MinAttackRange(weapon.MinAttackRange),
+				Damage(weapon.Damage), CriticalHit(weapon.CriticalHit), CriticalHitChance(weapon.CriticalHitChance), LVL1AttackCooldown(weapon.LVL1AttackCooldown), 
+				LVL2AttackCooldown(weapon.LVL2AttackCooldown), LVL3AttackCooldown(weapon.LVL3AttackCooldown), Lifetime(weapon.Lifetime), AttackHittBoxScale(weapon.AttackHitboxScale), IsPlayerWeapon(isPlayerWeapon), ProjectileSpeed(weapon.ProjectileSpeed)
+			{  
+				switch (weapon.Type)
+				{
+				case Frosty::Weapon::WeaponType::Sword:
+						Type = WeaponType::Sword;
+					break;
+				case Frosty::Weapon::WeaponType::Bow:
+					Type = WeaponType::Bow;
+					break;
+				case Frosty::Weapon::WeaponType::Bite:
+					Type = WeaponType::Bite;
+					break;
+				default:
+					break;
+				}
+			}
 			CWeapon(const CWeapon& org) { FY_CORE_ASSERT(false, "Copy constructor in CWeapon called."); }
 			CWeapon& operator=(const CWeapon& org)
 			{
 				if (this != &org)
 				{
 					Type = org.Type;
-					ItemID = org.ItemID;
-					AttackRange = org.AttackRange;
+					Level = org.Level;
+					MaxAttackRange = org.MaxAttackRange;
+					MinAttackRange = org.MinAttackRange;
 					Damage = org.Damage;
 					CriticalHit = org.CriticalHit;
 					CriticalHitChance = org.CriticalHitChance;
@@ -676,12 +776,18 @@ namespace Frosty
 					LVL2AttackCooldownTimer = org.LVL2AttackCooldownTimer;
 					LVL3AttackCooldownTimer = org.LVL3AttackCooldownTimer;
 					Lifetime = org.Lifetime;
+					AttackHittBoxScale = org.AttackHittBoxScale;
+					FireCriticalHitChance = org.FireCriticalHitChance;
+					EarthDamage = org.EarthDamage;
+					WindSpeed = org.WindSpeed;
+					WaterHealing = org.WaterHealing;
+					ProjectileSpeed = org.ProjectileSpeed;
 				}
 
 
 				return *this;
 			}
-			bool operator!=(const CWeapon& org) { return ItemID != org.ItemID; }
+			bool operator!=(const CWeapon& org) { return Level != org.Level; }
 			virtual std::string GetName() const { return NAME; }
 		};
 
@@ -689,25 +795,29 @@ namespace Frosty
 		{
 			static std::string NAME;
 
+			std::vector<EntityID> AttackedEntities;
+
 			enum class AttackType { Melee, Range };
 			AttackType Type{ AttackType::Melee };
 
-			float Damage{ 10.0f };
-			bool Friendly{ 0 };			// A friendly attack effects neither the Player or the attack. 1 = friendly attack, 0 = enemy attack
+			int Damage{ 10 };
+			bool Friendly{ false };			// A friendly attack effects neither the Player or the attack. 1 = friendly attack, 0 = enemy attack
 
-			float Lifetime{ 0.5f };
+
+			float Lifetime{ 0.1f };
 			float LifetimeTimer{ Frosty::Time::CurrentTime() };
 
 			bool Destroyable{ true };	// Cannot be destr0yed in collision with other enemies
 
 			CAttack() = default;
-			CAttack(AttackType type, float damage, bool friendly = 0, float lifeTime = 0.5f, bool destroyable = true) : Type(type), Damage(damage), Friendly(friendly), Lifetime(lifeTime), Destroyable(destroyable) { }
+			CAttack(AttackType type, int damage, bool friendly = false, float lifeTime = 0.1f, bool destroyable = true) : Type(type), Damage(damage), Friendly(friendly), Lifetime(lifeTime), Destroyable(destroyable) { }
 			CAttack(const CAttack& org) { FY_CORE_ASSERT(false, "Copy constructor in CAttack called."); }
 			CAttack& operator=(const CAttack& org)
 			{
 				if (this != &org)
 				{
 					Type = org.Type;
+					AttackedEntities = org.AttackedEntities;
 					Damage = org.Damage;
 					Friendly = org.Friendly;
 					Destroyable = org.Destroyable;
@@ -732,7 +842,6 @@ namespace Frosty
 			int MoveRightKey{ FY_KEY_D };
 			int MoveBackKey{ FY_KEY_S };
 			int DashKey{ FY_KEY_LEFT_SHIFT };
-			//temp for creation of level (I dont want arrows to spwan when i save a level)
 			int LVL1Attack{ FY_MOUSE_BUTTON_LEFT };
 			int LVL2Attack{ FY_MOUSE_BUTTON_RIGHT };
 			int LVL3Attack{ FY_KEY_SPACE };
@@ -776,43 +885,49 @@ namespace Frosty
 		struct CEnemy : public BaseComponent
 		{
 			static std::string NAME;
+			static const int RESET_DISTANCE = 60;
+
+			enum class State { Idle, Escape, Attack, Chase, Reset };
+			State CurrentState{ State::Idle };
 
 			CWeapon* Weapon{ nullptr };
 			CTransform* Target{ nullptr };
-			
+
+			glm::vec3 SpawnPosition{ 0.0f };
 			glm::vec3 CellTarget{ 0.0f };
-			float AttackRange{ 2.5f };
 			float SightRange{ 40.0f };
 
+			float RunOnHealth{ 0.0f };
+
 			CEnemy() = default;
-			CEnemy(CWeapon* weapon) : Weapon(weapon) { }
-			CEnemy(CTransform* target) : Target(target) { }
+			CEnemy(CTransform* target, CWeapon* weapon = nullptr, float runOnHealth = 0.0f) : Target(target), Weapon(weapon), RunOnHealth(runOnHealth) { }
 			CEnemy(const CEnemy& org) { FY_CORE_ASSERT(false, "Copy constructor in CEnemy called."); }
 			CEnemy& operator=(const CEnemy& org)
 			{
 				if (this != &org)
 				{
+					CurrentState = org.CurrentState;
 					Weapon = org.Weapon;
 					Target = org.Target;
-
 					CellTarget = org.CellTarget;
-					AttackRange = org.AttackRange;
 					SightRange = org.SightRange;
+					RunOnHealth = org.RunOnHealth;
 				}
 				return *this;
 			}
+
 			virtual std::string GetName() const { return NAME; }
 		};
 
 		struct CHealth : public BaseComponent
 		{
 			static std::string NAME;
-			float MaxPossibleHealth{ 20 };							// Max health an entity can upgrade to
-			float MaxHealth{ 5 };								// Max health an entity can currently have
-			float CurrentHealth{ 5 };
+			int MaxPossibleHealth{ 20 };							// Max health an entity can upgrade to
+			int MaxHealth{ 5 };								// Max health an entity can currently have
+			int CurrentHealth{ 5 };
 
 			CHealth() = default;
-			CHealth(float health) : MaxHealth(health), CurrentHealth(health) {};
+			CHealth(int16_t health) : MaxHealth(health), CurrentHealth(health) {};
 			CHealth(const CHealth& org) { FY_CORE_ASSERT(false, "Copy constructor in CHealth called."); }
 			CHealth& operator=(const CHealth& org)
 			{
@@ -835,14 +950,14 @@ namespace Frosty
 			// HEALING POTION - heals consumer (temp)
 			int MaxHealingPotions{ 5 };							// Max number of healing potions
 			int CurrentHealingPotions{ 3 };						// Current number of potions in inventory
-			float Heal{ 5.f };									// Heals 5 hearts
+			int Heal{ 5 };									// Heals 5 hearts
 			float HealingCooldown{ 3.f };						// Consumer can only drink Healing Potion every 3rd second
 			float HealingTimer{ Frosty::Time::CurrentTime() };			// Timer used to check cooldown
 
 			// INCREASE HEALTH POTION - inreases max health on consumer (const)
 			int MaxIncreaseHPPotions{ 5 };
 			int CurrentIncreaseHPPotions{ 3 };
-			float IncreaseHP{ 3.f };
+			int IncreaseHP{ 3 };
 			float IncreaseHPCooldown{ 3.f };
 			float IncreaseHPTimer{ Frosty::Time::CurrentTime() };
 
@@ -980,27 +1095,28 @@ namespace Frosty
 		struct CParticleSystem : public BaseComponent
 		{
 			static std::string NAME;
-			
+
 			struct Particle
 			{
-				glm::vec4 Position = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
-				glm::vec4 Color = glm::vec4(1.0f);
-				float Size = 1.0f; //The current size
+				glm::vec4 Position{ 0.0f, 0.0f, 0.0f, 1.0f };
+				glm::vec4 Color{ 1.0f };
+				float Size{ 1.0f }; //The current size
 
-				glm::vec4 Direction = glm::vec4(0.0f, 1.0f, 0.0f, 1.0f);
-				glm::vec4 StartPos = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
-				float Lifetime = -1.0f;
-				float Speed = 2.0f;
-				float StartSize = 1.0f;
-				float EndSize = 1.0f;
+				glm::vec4 Direction{ 0.0f, 1.0f, 0.0f, 1.0f };
+				glm::vec4 StartPos{ 0.0f, 0.0f, 0.0f, 1.0f };
+				glm::vec4 StartColor{ 1.0f };
+				float Lifetime{ -1.0f };
+				float MaxLifetime{ 3.0f };
+				float Speed{ 2.0f };
+				float StartSize{ 1.0f };
+				float EndSize{ 1.0f };
 
-				float CamDistance = -1.0f; //For sorting
+				float CamDistance{ -1.0f }; //For sorting
 
 				Particle() = default;
-				Particle(glm::vec4 color)
-					: Color(color) {};
+				Particle(const glm::vec4& color) : Color(color) { }
 
-				bool operator<(Particle& that) // Sort in reverse order, far particles drawn first
+				bool operator<(const Particle& that) const // Sort in reverse order, far particles drawn first
 				{
 					return this->CamDistance > that.CamDistance;
 				}
@@ -1008,54 +1124,121 @@ namespace Frosty
 
 			struct GPUParticle
 			{
-				glm::vec4 Position = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
-				glm::vec4 Color = glm::vec4(1.0f);
-				float Size = 1.0f;
+				glm::vec4 Position{ 0.0f, 0.0f, 0.0f, 1.0f };
+				glm::vec4 Color{ 1.0f };
+				float Size{ 1.0f };
 			};
 
 			static const uint32_t MAX_PARTICLE_COUNT = 200; //Absolute suported max
 
-			uint32_t MaxParticles = 1; //User's choice of max particles
-			float StartParticleSize = 1.0f;
-			float EndParticleSize = 0.0f;
-			float ParticleSize = 1.0f; //For a constant size
+			uint32_t MaxParticles{ 1 }; //User's choice of max particles
+			float StartParticleSize{ 1.0f };
+			float EndParticleSize{ 0.0f };
+			float ParticleSize{ 1.0f }; //For a constant size
 
-			uint32_t ParticleCount = 0;
-			glm::vec3 ParticleSystemColor = glm::vec3(1.0f);
-			glm::vec3 ParticleSystemDirection = glm::vec3(0.0f, 1.0f, 0.0f);
-			float EmitRate = 0.1f;
-			uint32_t EmitCount = 1;
-			float Speed = 1.0f;
-			float MaxLifetime = 3.0f; //All particles
-			float FadeTreshold = 0.0f; //No fade
-			bool AlwaysFaceCamera = true;
-			bool Preview = false;
-			float Timer = 0.0f;
+			glm::vec3 SystemRotation{ 0.0f };
 
-			uint32_t LastUsedParticle = 0;
+			uint32_t ParticleCount{ 0 };
+			glm::vec3 SystemStartColor{ 1.0f };
+			glm::vec3 SystemEndColor{ 1.0f };
+			glm::vec3 ParticleSystemDirection{ 0.0f, 1.0f, 0.0f };
+			glm::vec3 ParticleSystemStartPos{ 0.0f, 0.0f, 0.0f };
+			float EmitRate{ 0.1f };
+			uint32_t EmitCount{ 1 };
+			float Speed{ 1.0f };
+			float MinLifetime{ 3.0f };
+			float MaxLifetime{ 3.0f };
+			float FadeTreshold{ 0.0f };
+			float FadeInTreshold{ MaxLifetime };
+
+			float randSpread{ 1.5f };
+			glm::vec3 randMainDir{ 0.0f, 1.0f, 0.0f };
+
+			bool RotateOverLifetime{ false };
+			bool StaticColor{ true };
+			bool RandomLifetimes{ false };
+			bool RandomStartPos{ false };
+			bool RandomDirection{ false };
+			bool AlwaysFaceCamera{ true };
+			bool Preview{ false };
+
+			float Timer{ 0.0f };
+
+			uint32_t LastUsedParticle{ 0 };
 
 			std::vector<Particle> Particles; //The complete data
 			GPUParticle GpuParticles[MAX_PARTICLE_COUNT]; //The data we send to the gpu
 
 			std::string ShaderName = "Particles";
+			std::string TextureName = "particle";
 
 			std::shared_ptr<VertexArray> ParticleVertArray;
 			std::shared_ptr<Shader> UseShader;
 			std::shared_ptr<Texture2D> Texture;
 
-			CParticleSystem() = default;
-			CParticleSystem(std::shared_ptr<VertexArray> verts, std::shared_ptr<Shader> shader, std::shared_ptr<Texture2D> tex)
-				: ParticleVertArray(verts), UseShader(shader), Texture(tex) {}
-			CParticleSystem(std::shared_ptr<VertexArray> verts, std::shared_ptr<Shader> shader, std::shared_ptr<Texture2D> tex, glm::vec4 color = glm::vec4(1.0f), float particleSize = 1.0f)
-				: ParticleVertArray(verts), UseShader(shader), Texture(tex), ParticleSystemColor(color), ParticleSize(particleSize)
+			CParticleSystem() = default; //Should never be initialized empty!
+			CParticleSystem(const std::string shaderName, const std::string texName, unsigned int maxParticles, const glm::vec3& color, float particleSpeed)
+				: ShaderName(shaderName), TextureName(texName), MaxParticles(maxParticles), SystemStartColor(color), SystemEndColor(color), Speed(particleSpeed)
 			{
-				for (uint32_t i = 0; i < MaxParticles; i++)
+				Particles.resize(maxParticles);
+				for (unsigned int i = 0; i < maxParticles; i++)
 				{
-					Particles[i].Color = color;
-					Particles[i].Size = particleSize;
+					Particles[i].StartColor = glm::vec4(color, 1.0f);
+					Particles[i].Speed = particleSpeed;
 				}
 			}
 			CParticleSystem(const CParticleSystem& org) { FY_CORE_ASSERT(false, "Copy constructor in CParticleSystem called."); }
+
+			CParticleSystem& operator=(const CParticleSystem& org)
+			{
+				if (this != &org)
+				{
+					ShaderName = org.ShaderName;
+					UseShader = org.UseShader;
+					AlwaysFaceCamera = org.AlwaysFaceCamera;
+					TextureName = org.TextureName;
+					Texture = org.Texture;
+					MaxParticles = org.MaxParticles;
+					StartParticleSize = org.StartParticleSize;
+					EndParticleSize = org.EndParticleSize;
+					ParticleSize = org.ParticleSize;
+					SystemRotation = org.SystemRotation;
+					ParticleCount = org.ParticleCount;
+					SystemStartColor = org.SystemStartColor;
+					SystemEndColor = org.SystemEndColor;
+					ParticleSystemDirection = org.ParticleSystemDirection;
+					ParticleSystemStartPos = org.ParticleSystemStartPos;
+					EmitRate = org.EmitRate;
+					EmitCount = org.EmitCount;
+					Speed = org.Speed;
+					MinLifetime = org.MinLifetime;
+					MaxLifetime = org.MaxLifetime;
+					FadeTreshold = org.FadeTreshold;
+					FadeInTreshold = org.FadeInTreshold;
+					randSpread = org.randSpread;
+					randMainDir = org.randMainDir;
+					RotateOverLifetime = org.RotateOverLifetime;
+					StaticColor = org.StaticColor;
+					RandomStartPos = org.RandomStartPos;
+					RandomLifetimes = org.RandomLifetimes;
+					RandomDirection = org.RandomDirection;
+					Preview = org.Preview;
+					Timer = org.Timer;
+					LastUsedParticle = org.LastUsedParticle;
+
+					Particles = org.Particles;
+				}
+				return *this;
+			}
+
+			//void Init() //For utility reasons. Actually all vital data should just be in the constructor
+			//{
+
+			//	for ()
+			//	{
+
+			//	}
+			//}
 
 			virtual std::string GetName() const { return NAME; }
 		};
@@ -1063,18 +1246,18 @@ namespace Frosty
 		struct CLootable : public BaseComponent
 		{
 			static std::string NAME;
-			enum class LootType 
-			{ 
-				HealingPotion, IncHealthPotion, SpeedPotion, SpeedBoot, 
+			enum class LootType
+			{
+				HealingPotion, IncHealthPotion, SpeedPotion, SpeedBoot,
 				Sword1, Sword2, Sword3,
-				Arrow1, Arrow2, Arrow3
+				Bow1, Bow2, Bow3
 			};
 			LootType Type{ LootType::HealingPotion };
 
 			CLootable() = default;
 			CLootable(LootType type) : Type(type) {}
 			CLootable(const CLootable& org) { FY_CORE_ASSERT(false, "Copy constructor in CLootable called."); }
-			CLootable& operator=(const CLootable& org) 
+			CLootable& operator=(const CLootable& org)
 			{
 				if (this != &org)
 				{
@@ -1130,9 +1313,12 @@ namespace Frosty
 			static std::string NAME;
 
 			bool isSliderControlled = false;
-			float animSpeed = 1;
+			float animSpeed = 0;
 			Animation* currAnim;
 			float dt = 0;
+			glm::mat4* holdPtr = nullptr;
+
+			bool isBusy = false;
 
 			virtual std::string GetName() const { return NAME; }
 		};
@@ -1204,8 +1390,8 @@ namespace Frosty
 			case 14:	return "Dash";
 			case 15:	return "Destroy";
 			case 16:	return "ParticleSystem";
-			case 17:	return "Chest";
-			case 18:	return "Lootable";
+			case 17:	return "Lootable";
+			case 18:	return "DropItem";
 			case 19:	return "Boss";
 			case 20:	return "LevelExit";
 			case 21:	return "GUI";
