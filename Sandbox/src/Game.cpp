@@ -95,7 +95,7 @@ namespace MCS
 		playerMat.DiffuseTexture = Frosty::AssetManager::GetTexture2D("Scarlet_diffuse");
 		playerMat.NormalTexture = Frosty::AssetManager::GetTexture2D("Scarlet_normal");
 		playerMat.SpecularTexture = Frosty::AssetManager::GetTexture2D("Scarlet_specular");
-		world->AddComponent<Frosty::ECS::CPlayer>(player, &playerWeaponComp);	// <-- Give player a weapon
+		world->AddComponent<Frosty::ECS::CPlayer>(player, &weaponComp);	// <-- Give player a weapon
 		//weaponTransform.Position += playerTransform.Position;//Check this
 		world->AddComponent<Frosty::ECS::CPhysics>(player, Frosty::AssetManager::GetBoundingBox("scarlet"), 13.0f);
 		world->AddComponent<Frosty::ECS::CDash>(player);
