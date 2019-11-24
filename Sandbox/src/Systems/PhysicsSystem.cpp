@@ -2,7 +2,7 @@
 #include "PhysicsSystem.hpp"
 #include "Frosty/Events/AbilityEvent.hpp"
 #include "Frosty/API/AssetManager/AssetManager.hpp"
-#include"Frosty/Core/BoolMap/BoolMap.hpp"
+#include"Frosty/API/AssetManager/AssetFiles/BoolMap.hpp"
 
 namespace MCS
 {

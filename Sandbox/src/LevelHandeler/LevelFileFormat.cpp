@@ -762,7 +762,7 @@ void LevelFileFormat::LoadBoolMap(std::string fileName)
 		it++;
 	}
 
-	std::shared_ptr<BoolMap> ABoolMap = Frosty::BoolMapGenerator::RenderBoolMap();
+	std::shared_ptr<Frosty::BoolMap> ABoolMap = Frosty::BoolMapGenerator::RenderBoolMap();
 	//for (int i = 0; i < 300; i++)
 	//{
 	//	for (int j = 0; j < 300; j++)
@@ -776,6 +776,7 @@ void LevelFileFormat::LoadBoolMap(std::string fileName)
 	//}
 	bool k = ABoolMap->CheckCollision(glm::vec3(1.0f, 0.0f, 1.0f));
 	ABoolMap->SaveMap("Ignore This", fileName);
+	//ABoolMap->LoadToMem();
 	//ABoolMap->SaveMap("", "BoolMap");
 	//ABoolMap->LoadMap("BoolMap.bmap");
 }

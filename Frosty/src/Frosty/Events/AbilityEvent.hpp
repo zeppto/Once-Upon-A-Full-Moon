@@ -2,7 +2,7 @@
 #define ABILITY_EVENT_HPP
 
 #include "EventSystem.hpp"
-#include "Frosty/Core/BoolMap/BoolMap.hpp"
+#include "Frosty/API/AssetManager/AssetFiles/BoolMap.hpp"
 
 namespace Frosty
 {

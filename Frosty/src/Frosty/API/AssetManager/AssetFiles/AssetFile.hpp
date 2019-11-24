@@ -40,11 +40,11 @@ namespace Frosty
 		inline FileMetaData& GetfileMetaData() { return m_MetaData; };
 		inline void SetFileMetaData(const FileMetaData& MetaData) { m_MetaData = MetaData; }
 
-		virtual bool LoadToMem(const bool& Reload = false) { return true; }
-		virtual bool DeleteFromMem() { return true; }
+		virtual bool LoadToMem(const bool& Reload = false) { return false; }
+		virtual bool DeleteFromMem() { return false; }
 
-		virtual bool LoadToGPU() { return true; }
-		virtual bool DeleteFromGPU() { return true; }
+		virtual bool LoadToGPU() { return false; }
+		virtual bool DeleteFromGPU() { return false; }
 
 		inline const bool& LoadedOnCPU() const { return m_OnMem; }
 		inline const bool& LoadedOnGPU() const { return m_OnGPU; }

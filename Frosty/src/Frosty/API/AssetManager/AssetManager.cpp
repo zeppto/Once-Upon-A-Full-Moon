@@ -27,6 +27,7 @@ namespace Frosty
 	std::map<std::string, std::shared_ptr<Luna::BoundingBox>> AssetManager::s_BoundingBoxes;
 	std::map<std::string, std::shared_ptr<TrueTypeFile>> AssetManager::s_TruefontTypes;
 	std::map<std::string, std::shared_ptr<WeaponHandler>> AssetManager::s_WeaponHandler;
+	std::map<std::string, std::shared_ptr<BoolMap>> AssetManager::s_BoolMaps;
 
 	std::vector<std::string> AssetManager::s_FilePath_Vector;
 
@@ -85,6 +86,9 @@ namespace Frosty
 				returnValue = LoadXML(TempFileInfo);
 				break;
 
+			case BMAP:
+				returnValue = LoadBmap(TempFileInfo);
+					break;
 
 
 			default:
@@ -247,6 +251,20 @@ namespace Frosty
 		else
 		{
 			s_Textures2D.emplace(MetaData.FileName, FY_NEW Texture2D(MetaData.FileName, MetaData.FullFilePath));
+		}
+		return true;
+	}
+
+	bool AssetManager::AddBmap(const FileMetaData& MetaData)
+	{
+		if (BmapLoaded(MetaData.FileName))
+		{
+			FY_CORE_INFO("BoolMap: {0}, Is already loaded", MetaData.FileName);
+			return false;
+		}
+		else
+		{
+			s_BoolMaps.emplace(MetaData.FileName, FY_NEW BoolMap(MetaData));
 		}
 		return true;
 	}
@@ -600,6 +618,21 @@ namespace Frosty
 		return returnValue;
 	}
 
+	bool AssetManager::BmapLoaded(const std::string& FileName)
+	{
+		bool returnValue = false;
+
+		std::map<std::string, std::shared_ptr<BoolMap>>::iterator it;
+		for (it = s_BoolMaps.begin(); it != s_BoolMaps.end() && returnValue == false; it++)
+		{
+			if (it->first == FileName)
+			{
+				returnValue = true;
+			}
+		}
+
+		return returnValue;
+	}
 
 	bool AssetManager::LoadLunaFile(const FileMetaData& FileNameInformation, const bool& Reload)
 	{
@@ -815,7 +848,6 @@ namespace Frosty
 		return returnValue;
 	}
 
-	
 	bool AssetManager::LoadXML(const FileMetaData& FileNameInformation, const bool& Reload)
 	{
 		bool returnValue = false;
@@ -831,6 +863,21 @@ namespace Frosty
 			}
 
 
+		}
+		return returnValue;
+	}
+
+	bool AssetManager::LoadBmap(const FileMetaData& FileNameInformation, const bool& Reload)
+	{
+		bool returnValue = false;
+		if (AddBmap(FileNameInformation))
+		{
+			std::shared_ptr<BoolMap> ptr = GetBoolMap(FileNameInformation.FileName);
+
+			if (ptr->LoadToMem())
+			{
+				returnValue = true;
+			}
 		}
 		return returnValue;
 	}
@@ -910,6 +957,10 @@ namespace Frosty
 		else if (fileType == FILE_TYPE_XML)
 		{
 			return XML;
+		}
+		else if (fileType == FILE_TYPE_BOOLMAP)
+		{
+			return BMAP;
 		}
 
 
