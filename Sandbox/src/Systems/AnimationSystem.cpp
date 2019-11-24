@@ -26,7 +26,11 @@ void MCS::AnimationSystem::OnUpdate()
 			{
 				if (m_Physics[i]->Direction.x != 0.0f || m_Physics[i]->Direction.y != 0.0f || m_Physics[i]->Direction.z != 0.0f)
 				{
-					//m_AControllers[i]->currAnim = Frosty::AssetManager::GetAnimation("NewRun");
+					if (m_AControllers[i]->currAnim->GetName() != "NewRun")
+					{
+						m_AControllers[i]->currAnim = Frosty::AssetManager::GetAnimation("NewRun");
+						UpdateAnimOffset(m_AControllers[i]);
+					}
 				}
 				else
 				{
@@ -127,6 +131,7 @@ void MCS::AnimationSystem::OnBasicAttackEvent(Frosty::BasicAttackEvent& e)
 		//If not enemy it's player.
 		Frosty::ECS::CAnimController * controller = &world->GetComponent<Frosty::ECS::CAnimController>(it->first);
 		controller->currAnim = Frosty::AssetManager::GetAnimation("p_atk");
+		UpdateAnimOffset(controller);
 	}
 }
 
@@ -138,4 +143,14 @@ void MCS::AnimationSystem::OnDashEvent(Frosty::DashEvent& e)
 	Frosty::ECS::CAnimController * controller = &world->GetComponent<Frosty::ECS::CAnimController>(e.GetEntity());
 
 	controller->currAnim = Frosty::AssetManager::GetAnimation("p_atk");
+	UpdateAnimOffset(controller);
+}
+
+void MCS::AnimationSystem::UpdateAnimOffset(Frosty::ECS::CAnimController* ctrl)
+{
+	/*ctrl->EntityPtr*/
+	auto& wEntity = m_World->GetComponent<Frosty::ECS::CPlayer>(ctrl->EntityPtr).Weapon->EntityPtr;
+
+	m_World->GetComponent<Frosty::ECS::CMesh>(wEntity).animOffset = ctrl->currAnim->getHoldingJoint();
+	Frosty::Renderer::UpdateCMesh(wEntity->Id, &m_World->GetComponent<Frosty::ECS::CMesh>(wEntity));
 }
