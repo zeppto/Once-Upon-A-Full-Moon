@@ -793,10 +793,10 @@ namespace MCS
 				SwapWeapon(m_Player[i]->Weapon->EntityPtr, e.GetEntity());
 
 				ResetAllHUDWeaponInfo(i);
-				HUD.Layout.sprites.at(1).SetImage("attackMelle");
-				HUD.Layout.sprites.at(2).SetImage("attackMelle1");
-				HUD.Layout.sprites.at(3).SetImage("attackMelle2");
-				HUD.Layout.sprites.at(4).SetImage("attackMelle3");
+				HUD.Layout.sprites.at(1).SetImage("attackMelee");
+				HUD.Layout.sprites.at(2).SetImage("attackMelee1");
+				HUD.Layout.sprites.at(3).SetImage("attackMelee2");
+				HUD.Layout.sprites.at(4).SetImage("attackMelee3");
 
 			}
 			else if (type == Frosty::ECS::CLootable::LootType::Sword2)
@@ -806,10 +806,10 @@ namespace MCS
 				SwapWeapon(m_Player[i]->Weapon->EntityPtr, e.GetEntity());
 
 				ResetAllHUDWeaponInfo(i);
-				HUD.Layout.sprites.at(1).SetImage("attackMelle");
-				HUD.Layout.sprites.at(2).SetImage("attackMelle1");
-				HUD.Layout.sprites.at(3).SetImage("attackMelle2");
-				HUD.Layout.sprites.at(4).SetImage("attackMelle3");
+				HUD.Layout.sprites.at(1).SetImage("attackMelee");
+				HUD.Layout.sprites.at(2).SetImage("attackMelee1");
+				HUD.Layout.sprites.at(3).SetImage("attackMelee2");
+				HUD.Layout.sprites.at(4).SetImage("attackMelee3");
 			}
 			else if (type == Frosty::ECS::CLootable::LootType::Sword3)
 			{
@@ -818,10 +818,10 @@ namespace MCS
 				SwapWeapon(m_Player[i]->Weapon->EntityPtr, e.GetEntity());
 
 				ResetAllHUDWeaponInfo(i);
-				HUD.Layout.sprites.at(1).SetImage("attackMelle");
-				HUD.Layout.sprites.at(2).SetImage("attackMelle1");
-				HUD.Layout.sprites.at(3).SetImage("attackMelle2");
-				HUD.Layout.sprites.at(4).SetImage("attackMelle3");
+				HUD.Layout.sprites.at(1).SetImage("attackMelee");
+				HUD.Layout.sprites.at(2).SetImage("attackMelee1");
+				HUD.Layout.sprites.at(3).SetImage("attackMelee2");
+				HUD.Layout.sprites.at(4).SetImage("attackMelee3");
 			}
 			else if (type == Frosty::ECS::CLootable::LootType::Arrow1)
 			{
@@ -831,10 +831,10 @@ namespace MCS
 
 				ResetAllHUDWeaponInfo(i);
 
-				HUD.Layout.sprites.at(1).SetImage("attackRange");
-				HUD.Layout.sprites.at(2).SetImage("attackRange1");
-				HUD.Layout.sprites.at(3).SetImage("attackRange2");
-				HUD.Layout.sprites.at(4).SetImage("attackRange3");
+				HUD.Layout.sprites.at(1).SetImage("attackRanged");
+				HUD.Layout.sprites.at(2).SetImage("attackRanged1");
+				HUD.Layout.sprites.at(3).SetImage("attackRanged2");
+				HUD.Layout.sprites.at(4).SetImage("attackRanged3");
 			}
 			else if (type == Frosty::ECS::CLootable::LootType::Arrow2)
 			{
@@ -843,10 +843,10 @@ namespace MCS
 				SwapWeapon(m_Player[i]->Weapon->EntityPtr, e.GetEntity());
 
 				ResetAllHUDWeaponInfo(i);
-				HUD.Layout.sprites.at(1).SetImage("attackRange");
-				HUD.Layout.sprites.at(2).SetImage("attackRange1");
-				HUD.Layout.sprites.at(3).SetImage("attackRange2");
-				HUD.Layout.sprites.at(4).SetImage("attackRange3");
+				HUD.Layout.sprites.at(1).SetImage("attackRanged");
+				HUD.Layout.sprites.at(2).SetImage("attackRanged1");
+				HUD.Layout.sprites.at(3).SetImage("attackRanged2");
+				HUD.Layout.sprites.at(4).SetImage("attackRanged3");
 			}
 			else if (type == Frosty::ECS::CLootable::LootType::Arrow3)
 			{
@@ -855,10 +855,10 @@ namespace MCS
 				SwapWeapon(m_Player[i]->Weapon->EntityPtr, e.GetEntity());
 
 				ResetAllHUDWeaponInfo(i);
-				HUD.Layout.sprites.at(1).SetImage("attackRange");
-				HUD.Layout.sprites.at(2).SetImage("attackRange1");
-				HUD.Layout.sprites.at(3).SetImage("attackRange2");
-				HUD.Layout.sprites.at(4).SetImage("attackRange3");
+				HUD.Layout.sprites.at(1).SetImage("attackRanged");
+				HUD.Layout.sprites.at(2).SetImage("attackRanged1");
+				HUD.Layout.sprites.at(3).SetImage("attackRanged2");
+				HUD.Layout.sprites.at(4).SetImage("attackRanged3");
 			}
 		}
 	}
@@ -1075,7 +1075,7 @@ namespace MCS
 
 			}
 
-
+			
 			//Dash cooldown
 			if (m_Dash[index]->CurrentCooldown > 0)
 			{
@@ -1083,10 +1083,14 @@ namespace MCS
 				int cooldown2 = (int)(((m_Dash[index]->CurrentCooldown - cooldown1) * 10));
 
 				HUD.Layout.texts.at(10).SetText(std::string(std::to_string(cooldown1) + "." + std::to_string(cooldown2)));
+				HUD.Layout.sprites.at(13).SetColorSprite(glm::vec4(0.1f, 0.1f, 0.1f, 0.90f));
+
 			}
 			else
 			{
 				HUD.Layout.texts.at(10).SetText(std::string(""));
+				HUD.Layout.sprites.at(13).SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+
 			}
 
 
@@ -1164,7 +1168,7 @@ namespace MCS
 
 			}
 
-
+			
 		}
 	}
 

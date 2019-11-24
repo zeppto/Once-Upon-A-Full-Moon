@@ -133,7 +133,7 @@ namespace MCS
 		world->GetComponent<Frosty::ECS::CCamera>(camEntity).Target = &playerTransform;
 
 		//Player HUD
-		Frosty::UILayout uiLayout(21, 13);
+		Frosty::UILayout uiLayout(21, 14);
 		 
 		//Items
 		float padding = 200.0f;
@@ -196,7 +196,7 @@ namespace MCS
 		uiLayout.AddText(glm::vec2(115, 45), "1.0", glm::vec3(1.0f, 1.0f, 1.0f), 0.65); //9
 
 		//Dash cooldown
-		uiLayout.AddText(glm::vec2(200, 40), "0.0", glm::vec3(1.0f, 1.0f, 1.0f), 0.75); //10
+		uiLayout.AddText(glm::vec2(200, 40), "0.0", glm::vec3(1.0f, 1.0f, 1.0f),0.65); //10
 
 		//Item cooldown
 		float offsetx2 = 50;
@@ -213,19 +213,19 @@ namespace MCS
 		uiLayout.AddText(glm::vec2(105, 40 + 35), "[L-MOUSE]", glm::vec3(1.0f, 1.0f, 0.75f), controlsInfoSize2); //16
 
 		//Dash
-		uiLayout.AddText(glm::vec2(200 + 30, 40), "[SHIFT]", glm::vec3(1.0f, 1.0f, 0.75f), controlsInfoSize2); //17
+		uiLayout.AddText(glm::vec2(240, 40 + 35), "[SHIFT]", glm::vec3(1.0f, 1.0f, 0.75f), controlsInfoSize2); //17
 
 		//Items
 		uiLayout.AddText(hpPotionControl, "[1]", glm::vec3(1.0f, 1.0f, 0.75f), controlsInfoSize2); //18
 		uiLayout.AddText(spPotionControl, "[2]", glm::vec3(1.0f, 1.0f, 0.75f), controlsInfoSize2); //19
 		uiLayout.AddText(baitControl, "[Q]", glm::vec3(1.0f, 1.0f, 0.75f), controlsInfoSize2); //20
+		
 
-		int testOffset = 100;
 
-		uiLayout.AddSprite(glm::vec2(960 / 1.5, 540 / 1.5), glm::vec2(16 * 1.6, 9 * 1.6), "feerEffekt", glm::vec4(0.0f, 0.0f, 0.0f, 0.75f)); // 0
+		uiLayout.AddSprite(glm::vec2(960 / 1.5, 540 / 1.5), glm::vec2(16 * 1.6, 9 * 1.6), "fearEffect", glm::vec4(0.0f, 0.0f, 0.0f, 0.75f)); // 0
 
 		//Weapon
-		uiLayout.AddSprite(glm::vec2(55.0f, 75.0f), glm::vec2(1, 1), "attackRange", glm::vec4(1.0f));// 1
+		uiLayout.AddSprite(glm::vec2(55.0f, 75.0f), glm::vec2(1, 1), "attackRanged", glm::vec4(1.0f));// 1
 
 		glm::vec2 attackScale = glm::vec2(0.75, 0.75);
 
@@ -233,9 +233,9 @@ namespace MCS
 		//Cooldown =  glm::vec4(0.1f, 0.1f, 0.1f, 0.90f)
 		//Locked glm::vec4(0.1f, 0.1f, 0.1f, 0.50f)
 
-		uiLayout.AddSprite(glm::vec2(130 , 50.0f), attackScale, "attackRange1", glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));// 2
-		uiLayout.AddSprite(glm::vec2(105 , 110.0f), attackScale, "attackRange2", glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));// 3
-		uiLayout.AddSprite(glm::vec2(50.0f  , 140.0f), attackScale, "attackRange3", glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));// 4
+		uiLayout.AddSprite(glm::vec2(130 , 50.0f), attackScale, "attackRanged1", glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));// 2
+		uiLayout.AddSprite(glm::vec2(105 , 110.0f), attackScale, "attackRanged2", glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));// 3
+		uiLayout.AddSprite(glm::vec2(50.0f  , 140.0f), attackScale, "attackRanged3", glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));// 4
 
 		int elementXOffset = 30;
 		int elementyOffset = 30;
@@ -243,30 +243,37 @@ namespace MCS
 
 		glm::vec2 elementScale = glm::vec2(0.5, 0.5);
 
-	 
+		//Element
 		//Normal
-		uiLayout.AddSprite(glm::vec2(elementXOffset + elementPadding * 0, elementyOffset), elementScale, "elementEart", glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));// 5
+		uiLayout.AddSprite(glm::vec2(elementXOffset + elementPadding * 0, elementyOffset), elementScale, "elementEarth", glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));// 5
 		//uiLayout.AddSprite(glm::vec2(elementXOffset + elementPadding * 1, elementyOffset), elementScale, "elementFire", glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));// 6
 		//uiLayout.AddSprite(glm::vec2(elementXOffset + elementPadding * 2, elementyOffset), elementScale, "elementWater", glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));// 7
 		//uiLayout.AddSprite(glm::vec2(elementXOffset + elementPadding * 3, elementyOffset), elementScale, "elementWind", glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));// 8
 
 		//Empty
-	//	uiLayout.AddSprite(glm::vec2(elementXOffset + elementPadding * 0, elementyOffset), elementScale, "elementEartEmty", glm::vec4(0.1f, 0.1f, 0.1f, 0.50f));// 5
-		uiLayout.AddSprite(glm::vec2(elementXOffset + elementPadding * 1, elementyOffset), elementScale, "elementFireEmty", glm::vec4(0.1f, 0.1f, 0.1f, 0.50f));// 6
-		uiLayout.AddSprite(glm::vec2(elementXOffset + elementPadding * 2, elementyOffset), elementScale, "elementWaterEmty", glm::vec4(0.1f, 0.1f, 0.1f, 0.50f));// 7
-		uiLayout.AddSprite(glm::vec2(elementXOffset + elementPadding * 3, elementyOffset), elementScale, "elementWindEmty", glm::vec4(0.1f, 0.1f, 0.1f, 0.50f));// 8
+	//	uiLayout.AddSprite(glm::vec2(elementXOffset + elementPadding * 0, elementyOffset), elementScale, "elementEarthEmpty", glm::vec4(0.1f, 0.1f, 0.1f, 0.50f));// 5
+		uiLayout.AddSprite(glm::vec2(elementXOffset + elementPadding * 1, elementyOffset), elementScale, "elementFireEmpty", glm::vec4(0.1f, 0.1f, 0.1f, 0.50f));// 6
+		uiLayout.AddSprite(glm::vec2(elementXOffset + elementPadding * 2, elementyOffset), elementScale, "elementWaterEmpty", glm::vec4(0.1f, 0.1f, 0.1f, 0.50f));// 7
+		uiLayout.AddSprite(glm::vec2(elementXOffset + elementPadding * 3, elementyOffset), elementScale, "elementWindEmpty", glm::vec4(0.1f, 0.1f, 0.1f, 0.50f));// 8
 		
 		
-
-
 
 		uiLayout.AddSprite(hpPotionSprite, glm::vec2(1, 1), "hpPotion", glm::vec4(1.0f));// 9
 		uiLayout.AddSprite(spPotionSprite, glm::vec2(1, 1), "spPotion", glm::vec4(1.0f));// 10
-		uiLayout.AddSprite(baitSprite, glm::vec2(1, 1), "bait2", glm::vec4(1.0f));// 11
+		uiLayout.AddSprite(baitSprite, glm::vec2(1, 1), "bait", glm::vec4(1.0f));// 11
 		uiLayout.AddSprite(wolfsbainSprite, glm::vec2(1, 1), "wolfsbain", glm::vec4(1.0f));// 12
+
+		////Need to change this sprite to a "dodge" sprite ////
+		uiLayout.AddSprite(glm::vec2(215, 45), glm::vec2(1, 1), "attackRanged3", glm::vec4(1.0f));// 13
+	
+
 
 		//uiLayout.AddSprite(glm::vec2(25.0f + testOffset * 0, 620.0f), glm::vec2(1, 1), "higlightHart", glm::vec4(1.0f));
 		world->AddComponent<Frosty::ECS::CGUI>(player, uiLayout);
+
+
+
+
 
 
 		//// WALL
