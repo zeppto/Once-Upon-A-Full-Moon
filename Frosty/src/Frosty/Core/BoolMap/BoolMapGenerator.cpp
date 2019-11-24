@@ -247,7 +247,7 @@ namespace Frosty
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		glBindTexture(GL_TEXTURE_2D, 0);
 		glDeleteFramebuffers(1, &s_GBuffer);
-	//	glDeleteTextures(1, &s_Texture);
+		glDeleteTextures(1, &s_Texture);
 		s_VABatch.erase(s_VABatch.begin(), s_VABatch.end());
 		s_ModelBatch.erase(s_ModelBatch.begin(), s_ModelBatch.end());
 		s_BoundBatch.erase(s_BoundBatch.begin(), s_BoundBatch.end()); 

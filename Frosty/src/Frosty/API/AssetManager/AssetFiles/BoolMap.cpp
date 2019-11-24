@@ -207,6 +207,10 @@ namespace Frosty
 
 			size_t TestBitMap = fread(&m_BitMap[0], sizeof(uint64_t), m_BitMapCount, File);
 
+			m_PixWidth = m_CoordWidth * m_PixCoordRatio;
+			m_PixHeight = m_CoordHeight * m_PixCoordRatio;
+			m_FileName = m_MetaData.FileName;
+
 
 			if (TestBitMap == m_BitMapCount)
 			{
