@@ -41,7 +41,7 @@ namespace Frosty
 
 		//static void AddLight(const int& ID, const glm::vec3& color, const glm::vec3& pos, float strength, float radius);
 		static void AddLight(Frosty::ECS::CLight* light, ECS::CTransform* transform);
-		static void UppdateLight(Frosty::ECS::CLight* light, ECS::CTransform* transform);
+		static void UpdateLight(Frosty::ECS::CLight* light, ECS::CTransform* transform);
 		static void RemoveLight(const std::shared_ptr<ECS::Entity>& entity);
 		static void RemoveAllLights();
 		static void ChangeLight(const std::shared_ptr<ECS::Entity>& entity);
@@ -52,12 +52,13 @@ namespace Frosty
 		static void AnimSubmit(ECS::CMaterial* mat, const std::shared_ptr<VertexArray>& vertexArray, const glm::mat4& transform, ECS::CAnimController * controller);
 		//static void Submit2D(const std::shared_ptr<Shader>& shader, const std::shared_ptr<VertexArray>& vertexArray, std::string& tex, glm::mat4& modelMatrix);
 		static void SubmitText(const std::shared_ptr<Shader>& shader, const std::shared_ptr<VertexArray>& vertexArray, std::string& text, glm::vec2 pos, glm::vec3 color, float scale);
+		static void SubmitSprite(const std::shared_ptr<Shader>& shader, const std::shared_ptr<VertexArray>& vertexArray, const uint32_t textureID, glm::vec4 color, glm::mat4 transform);
 		static void SubmitParticles(const std::shared_ptr<Shader>& shader, const std::shared_ptr<VertexArray>& vertexArray, glm::mat4& modelMat, size_t particleCount, float maxLifetime);
 		static void Submit2d(const std::shared_ptr<Shader>& shader, const std::shared_ptr<VertexArray>& vertexArray, const glm::mat4& transform);
 		static void SubmitHealthBar(const std::shared_ptr<Shader>& shader, const std::shared_ptr<VertexArray>& vertexArray, const glm::vec3& translate, const glm::vec3& scale, const glm::vec3& HealthBarSpace);
 		static void AddToRenderer(ECS::CMaterial* mat, ECS::CMesh * mesh, ECS::CTransform* transform, ECS::CAnimController* anim);
 		static void RemoveFromRenderer( const size_t& matID ,const std::string& meshName, const size_t& transformID);
-		static void UppdateEntity (const size_t& matID,ECS::CMaterial* mat, const std::string& meshName, std::shared_ptr<VertexArray> vertexArray, const size_t& transformID, ECS::CTransform* transform);
+		static void UpdateEntity (const size_t& matID,ECS::CMaterial* mat, const std::string& meshName, std::shared_ptr<VertexArray> vertexArray, const size_t& transformID, ECS::CTransform* transform);
 		
 		//Suggestion: Overload this for each individual trait. That way we need not replace everything.
 		static void ChangeEntity (const size_t& OldMatID,ECS::CMaterial* mat, const std::string& OldMeshName, ECS::CMesh* mesh, const size_t& transformID, ECS::CTransform* transform);

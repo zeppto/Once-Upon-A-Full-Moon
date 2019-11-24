@@ -32,7 +32,7 @@ namespace MCS
 
 		std::shared_ptr<Frosty::ECS::Entity> m_Player = nullptr;
 
-		float m_WorkingArea = 2.0f;
+		float m_WorkingArea = 3.0f;
 		float m_CoolDown = 0.0f;
 	};
 }

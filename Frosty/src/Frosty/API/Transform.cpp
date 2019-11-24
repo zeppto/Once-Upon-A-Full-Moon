@@ -48,9 +48,35 @@ namespace Frosty
 		);
 	}
 
+	Transform::Transform(const Transform& p)
+	{
+		this->m_Anchor_vec3 = p.m_Anchor_vec3;
+		this->m_Translate_vec3 = p.m_Translate_vec3;
+		this->m_Rotate_vec3 = p.m_Rotate_vec3;
+		this->m_Scale_vec3 = p.m_Scale_vec3;
+
+		this->m_Translate_mat4 = p.m_Translate_mat4;
+		this->m_Rotate_mat4 = p.m_Rotate_mat4;
+		this->m_Scale_mat4 = p.m_Scale_mat4;
+	}
+
 
 	Transform::~Transform()
 	{
+	}
+
+	Transform& Transform::operator= (const Transform& p)
+	{
+		this->m_Anchor_vec3 = p.m_Anchor_vec3;
+		this->m_Translate_vec3 = p.m_Translate_vec3;
+		this->m_Rotate_vec3 = p.m_Rotate_vec3;
+		this->m_Scale_vec3 = p.m_Scale_vec3;
+
+		this->m_Translate_mat4 = p.m_Translate_mat4;
+		this->m_Rotate_mat4 = p.m_Rotate_mat4;
+		this->m_Scale_mat4 = p.m_Scale_mat4;
+
+		return *this;
 	}
 
 	void Transform::SetAnchor(glm::vec3 anchor)
@@ -131,7 +157,7 @@ namespace Frosty
 		return m_Scale_vec3;
 	}
 
-	glm::mat4 Transform::GetModel()
+	glm::mat4 Transform::GetTransform()
 	{
 		return (m_Translate_mat4 * m_Rotate_mat4 * m_Scale_mat4);
 	}

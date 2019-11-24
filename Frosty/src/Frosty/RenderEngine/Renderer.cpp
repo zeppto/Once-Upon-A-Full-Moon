@@ -42,7 +42,7 @@ namespace Frosty
 		int nrOfDrawnedObjs = 0;
 		int nrOfCulledObjs = 0;
 		bool culling = false;
-
+		
 		//For all shaders
 		for (auto& ShaderIt : s_ShaderMap)
 		{
@@ -234,7 +234,7 @@ namespace Frosty
 		}
 	}
 
-	void Renderer::UppdateLight(Frosty::ECS::CLight* light, ECS::CTransform* transform)
+	void Renderer::UpdateLight(Frosty::ECS::CLight* light, ECS::CTransform* transform)
 	{
 		if (light->Type == Frosty::ECS::CLight::LightType::Point)
 		{
@@ -321,6 +321,7 @@ namespace Frosty
 	{
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		glDisable(GL_DEPTH_TEST);
 		shader->Bind();
 		vertexArray->Bind();
 
@@ -356,7 +357,6 @@ namespace Frosty
 			vertexArray->GetVertexBuffer().front()->Bind();
 			vertexArray->GetVertexBuffer().front()->SetData(*verts, sizeof(verts), Frosty::BufferType::DYNAMIC);
 
-
 			glActiveTexture(GL_TEXTURE0);
 			glBindTexture(GL_TEXTURE_2D, ch.textureID);
 
@@ -369,6 +369,40 @@ namespace Frosty
 		shader->UnBind();
 		vertexArray->Unbind();
 		glDisable(GL_BLEND);
+		glEnable(GL_DEPTH_TEST);
+	}
+
+	void Renderer::SubmitSprite(const std::shared_ptr<Shader>& shader, const std::shared_ptr<VertexArray>& vertexArray, const uint32_t textureID, glm::vec4 color, glm::mat4 transform)
+	{
+		shader->Bind();
+		vertexArray->Bind();
+
+		float width = 1280.0f;
+		float height = 720.0f;
+		glm::mat4 projection = glm::ortho(0.0f, width, 0.0f, height);
+		shader->UploadUniformMat4("projection", projection);
+		shader->UploadUniformMat4("transform", transform);
+		shader->UploadUniformFloat4("color", color); //Make sure this number matches the active and sampled texture
+
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		glDisable(GL_DEPTH_TEST);
+
+		vertexArray->GetVertexBuffer().front()->Bind();
+
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, textureID);
+		RenderCommand::EnableBackfaceCulling();
+		RenderCommand::Draw2D(vertexArray); //Will probably change later
+		RenderCommand::DisableBackfaceCulling();
+		glBindTexture(GL_TEXTURE_2D, 0);
+
+		glDisable(GL_BLEND);
+		glEnable(GL_DEPTH_TEST);
+
+		shader->UnBind();
+		vertexArray->Unbind();
+		
 	}
 
 	void Renderer::SubmitParticles(const std::shared_ptr<Shader>& shader, const std::shared_ptr<VertexArray>& vertexArray, glm::mat4& modelMat, size_t particleCount, float maxLifetime)
@@ -448,6 +482,11 @@ namespace Frosty
 	//For 2D, might be temp
 	void Renderer::Submit2d(const std::shared_ptr<Shader>& shader, const std::shared_ptr<VertexArray>& vertexArray, const glm::mat4& transform)
 	{
+		float width = 1280.0f;
+		float height = 720.0f;
+		glm::mat4 projection = glm::ortho(0.0f, width, 0.0f, height);
+
+		shader->UploadUniformMat4("projection", projection);
 
 		shader->Bind();
 		vertexArray->Bind();
@@ -610,7 +649,7 @@ namespace Frosty
 
 	}
 
-	void Renderer::UppdateEntity(const size_t& matID, ECS::CMaterial* mat, const std::string& meshName, std::shared_ptr<VertexArray> vertexArray, const size_t& transformID, ECS::CTransform* transform)
+	void Renderer::UpdateEntity(const size_t& matID, ECS::CMaterial* mat, const std::string& meshName, std::shared_ptr<VertexArray> vertexArray, const size_t& transformID, ECS::CTransform* transform)
 	{
 		if (s_TransformLookUpMap.find(transformID) != s_TransformLookUpMap.end())
 		{

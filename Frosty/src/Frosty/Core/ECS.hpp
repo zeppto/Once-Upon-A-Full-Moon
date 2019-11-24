@@ -850,6 +850,10 @@ namespace Frosty
 			int SpeedPotionKey{ FY_KEY_2 };
 			int DropBaitKey{ FY_KEY_Q };
 
+			int Score{ 0 };
+			float PickUpTextTime{ 2.0f };
+			float PickUpTextTimer{ Frosty::Time::CurrentTime() };
+
 			CPlayer() = default;
 			CPlayer(CWeapon* weapon) : Weapon(weapon) { }
 			CPlayer(const CPlayer& org) { FY_CORE_ASSERT(false, "Copy constructor in CPlayer called."); }
@@ -971,7 +975,7 @@ namespace Frosty
 
 			// BAIT - chunks of meat used to distract the wolf
 			int MaxBaitAmount{ 5 };
-			int CurrentBaitAmount{ 100 };
+			int CurrentBaitAmount{ 4 };
 			float BaitCooldown{ 1.f };
 			float BaitTimer{ Frosty::Time::CurrentTime() };
 

@@ -402,9 +402,9 @@ namespace MCS
 			particel.EndParticleSize = 8.0f;
 			particel.EmitRate = 1.0;
 			particel.EmitCount = 1;
-			particel.FadeInTreshold = 1.915;
-			particel.FadeTreshold = 0.902;
-			particel.ParticleSystemStartPos = glm::vec3(0, 0.03, 0);
+			particel.FadeInTreshold = 1.915f;
+			particel.FadeTreshold = 0.902f;
+			particel.ParticleSystemStartPos = glm::vec3(0, 0.03f, 0);
 		}
 		//mushroomsAndStonesBig
 		if (e.GetEntityType() == 5)
@@ -541,10 +541,10 @@ namespace MCS
 			particel.randMainDir = glm::vec3(0, 0, 1);
 			particel.RandomStartPos = true;
 			particel.StartParticleSize = 0.8f;
-			particel.EmitRate = 0.3;
+			particel.EmitRate = 0.3f;
 			particel.EmitCount = 5;
-			particel.FadeInTreshold = 2.622;
-			particel.FadeTreshold = 2.675;
+			particel.FadeInTreshold = 2.622f;
+			particel.FadeTreshold = 2.675f;
 		}
 		//fire flises
 		if (e.GetEntityType() == 19)
@@ -558,10 +558,10 @@ namespace MCS
 			particel.randMainDir = glm::vec3(0, 0, 1);
 			particel.RandomStartPos = true;
 			particel.StartParticleSize = 0.8f;
-			particel.EmitRate = 0.1;
+			particel.EmitRate = 0.1f;
 			particel.EmitCount = 12;
-			particel.FadeInTreshold = 2.622;
-			particel.FadeTreshold = 2.675;
+			particel.FadeInTreshold = 2.622f;
+			particel.FadeTreshold = 2.675f;
 		}
 		//swarm fire flises
 		if (e.GetEntityType() == 20)
@@ -575,10 +575,10 @@ namespace MCS
 			particel.randMainDir = glm::vec3(0, 0, 1);
 			particel.RandomStartPos = true;
 			particel.StartParticleSize = 0.8f;
-			particel.EmitRate = 0.1;
+			particel.EmitRate = 0.1f;
 			particel.EmitCount = 12;
-			particel.FadeInTreshold = 2.622;
-			particel.FadeTreshold = 2.675;
+			particel.FadeInTreshold = 2.622f;
+			particel.FadeTreshold = 2.675f;
 		}
 		//fire flises blue
 		if (e.GetEntityType() == 21)
@@ -595,8 +595,8 @@ namespace MCS
 			particel.EndParticleSize = 0.3f;
 			particel.EmitRate = 1.0f;
 			particel.EmitCount = 3;
-			particel.FadeInTreshold = 2.589;
-			particel.FadeTreshold = 0.305;
+			particel.FadeInTreshold = 2.589f;
+			particel.FadeTreshold = 0.305f;
 		}
 	}
 }

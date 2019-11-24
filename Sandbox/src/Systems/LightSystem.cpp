@@ -104,7 +104,7 @@ namespace MCS
 			m_Transform[it->second] = transformPtr;
 			m_Light[it->second] = lightPtr;
 
-			Frosty::Renderer::UppdateLight(m_Light[it->second], m_Transform[it->second]);
+			Frosty::Renderer::UpdateLight(m_Light[it->second], m_Transform[it->second]);
 
 		}
 	}

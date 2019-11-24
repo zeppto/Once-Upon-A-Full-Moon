@@ -6,7 +6,10 @@ namespace Frosty
 	{
 	public:
 		Transform();
+		Transform(const Transform& p);
 		~Transform();
+
+		Transform& operator= (const Transform& p);
 
 		void SetAnchor(glm::vec3 anchor);
 		void SetTranslate(glm::vec3 translate);
@@ -18,7 +21,7 @@ namespace Frosty
 		glm::vec3 GetRotate();
 		glm::vec3 GetScale();
 				  
-		glm::mat4 GetModel();
+		glm::mat4 GetTransform();
 
 	private:
 		glm::vec3 m_Anchor_vec3;
