@@ -43,6 +43,7 @@ void LevelFileFormat::AddEntity(const std::shared_ptr<Frosty::ECS::Entity>& enti
 		{
 			myComponents.MyComponents.at(1).HaveComponent = true;
 			auto& mesh = m_World->GetComponent<Frosty::ECS::CMesh>(entity);
+			std::string meskhh = mesh.Mesh->GetName().c_str();
 			strcpy_s(myComponents.myMesh.MeshName, mesh.Mesh->GetName().c_str());
 		}
 		else
@@ -484,22 +485,44 @@ void LevelFileFormat::OpenFromFile(std::string fileName, glm::ivec2 roomId , Fro
 				if (fileEntitys.myEntitys.at(i).MyComponents.at(6).HaveComponent)
 				{
 					//temp wepond
-					auto& enemyWeaponA = m_World->CreateEntity({ 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 1.0f, 1.0f, 1.0f });
-					//world->AddComponent<Frosty::ECS::CMesh>(weapon, Frosty::AssetManager::GetMesh("pCube1"));
-					//world->AddComponent<Frosty::ECS::CMaterial>(weapon, Frosty::AssetManager::GetShader("FlatColor"));
-					auto& enemyWeaponCompA = m_World->AddComponent<Frosty::ECS::CWeapon>(enemyWeaponA, Frosty::ECS::CWeapon::WeaponType::Bow, 1, 1.0f);
-					enemyWeaponCompA.LVL1AttackCooldown = 3.0f;
-					//enemyWeaponCompA.MaxAttackRange = 5.0f;
-					//enemyWeaponCompA.MinAttackRange = 0.0f;
-					enemyWeaponCompA.MaxAttackRange = 22.0f;
-					enemyWeaponCompA.MinAttackRange = 18.0f;
-					//enemyWeaponCompA.AttackHitboxScale = glm::vec3(10.0f, 6.0f, 4.0f);				// Sword
-					//enemyWeaponCompA.AttackHitboxScale = glm::vec3(4.0f, 6.0f, 4.0f);				// Bite
-					enemyWeaponCompA.AttackHitboxScale = glm::vec3(0.3f);							// Arrow
-
 					existingFile.read((char*)& fileEntitys.myEntitys.at(i).myEnemy, sizeof(Level_Enemy));
-					auto& enemy = m_World->AddComponent<Frosty::ECS::CEnemy>(entity, playerTransform, &enemyWeaponCompA, fileEntitys.myEntitys.at(i).myEnemy.RunOnHealth);
-					//auto& enemyComp = m_World->AddComponent<Frosty::ECS::CEnemy>(entity, playerTransform, nullptr, 0.1f);
+					std::string meshName = fileEntitys.myEntitys.at(i).myMesh.MeshName;
+					auto& enemyWeaponA = m_World->CreateEntity({ 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 1.0f, 1.0f, 1.0f });
+					if (meshName.find("Cultist") != std::string::npos)
+					{
+						//world->AddComponent<Frosty::ECS::CMesh>(weapon, Frosty::AssetManager::GetMesh("pCube1"));
+						//world->AddComponent<Frosty::ECS::CMaterial>(weapon, Frosty::AssetManager::GetShader("FlatColor"));
+						auto& enemyWeaponCompA = m_World->AddComponent<Frosty::ECS::CWeapon>(enemyWeaponA, Frosty::ECS::CWeapon::WeaponType::Bow, 1, 1.0f);
+						enemyWeaponCompA.LVL1AttackCooldown = 3.0f;
+						//enemyWeaponCompA.MaxAttackRange = 5.0f;
+						//enemyWeaponCompA.MinAttackRange = 0.0f;
+						enemyWeaponCompA.MaxAttackRange = 22.0f;
+						enemyWeaponCompA.MinAttackRange = 18.0f;
+						//enemyWeaponCompA.AttackHitboxScale = glm::vec3(10.0f, 6.0f, 4.0f);				// Sword
+						//enemyWeaponCompA.AttackHitboxScale = glm::vec3(4.0f, 6.0f, 4.0f);				// Bite
+						enemyWeaponCompA.AttackHitboxScale = glm::vec3(0.3f);							// Arrow
+						auto& enemy = m_World->AddComponent<Frosty::ECS::CEnemy>(entity, playerTransform, &enemyWeaponCompA, fileEntitys.myEntitys.at(i).myEnemy.RunOnHealth);
+						auto& transform = m_World->GetComponent< Frosty::ECS::CTransform>(entity);
+						enemy.SpawnPosition = transform.Position;
+					}
+					else if (meshName.find("Wolf") != std::string::npos)
+					{
+						//world->AddComponent<Frosty::ECS::CMesh>(weapon, Frosty::AssetManager::GetMesh("pCube1"));
+						//world->AddComponent<Frosty::ECS::CMaterial>(weapon, Frosty::AssetManager::GetShader("FlatColor"));
+						auto& enemyWeaponCompA = m_World->AddComponent<Frosty::ECS::CWeapon>(enemyWeaponA, Frosty::ECS::CWeapon::WeaponType::Bite, 1, 1.0f);
+						enemyWeaponCompA.LVL1AttackCooldown = 3.0f;
+						enemyWeaponCompA.MaxAttackRange = 5.0f;
+						enemyWeaponCompA.MinAttackRange = 0.0f;
+						//enemyWeaponCompA.MaxAttackRange = 22.0f;
+						//enemyWeaponCompA.MinAttackRange = 18.0f;
+						//enemyWeaponCompA.AttackHitboxScale = glm::vec3(10.0f, 6.0f, 4.0f);				// Sword
+						enemyWeaponCompA.AttackHitboxScale = glm::vec3(4.0f, 6.0f, 4.0f);				// Bite
+						//enemyWeaponCompA.AttackHitboxScale = glm::vec3(0.3f);
+						auto& enemy = m_World->AddComponent<Frosty::ECS::CEnemy>(entity, playerTransform, &enemyWeaponCompA, fileEntitys.myEntitys.at(i).myEnemy.RunOnHealth);
+						auto& transform = m_World->GetComponent< Frosty::ECS::CTransform>(entity);
+						enemy.SpawnPosition = transform.Position;
+					}
+					//auto& enemy = m_World->AddComponent<Frosty::ECS::CEnemy>(entity, playerTransform, &enemyWeaponCompA, fileEntitys.myEntitys.at(i).myEnemy.RunOnHealth);
 					//enemy.SpawnPosition = fileEntitys.myEntitys.at(i).myEnemy.SpawnPosition;
 				}
 				//7 = Health

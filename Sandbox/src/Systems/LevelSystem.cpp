@@ -50,12 +50,20 @@ namespace MCS
 			//std::string texture = m_Map.getRoomTextur(m_PlayerPos, &rotation);
 			//Level::Room(m_CurrentRoome.sideExits[0], m_CurrentRoome.sideExits[1], m_CurrentRoome.sideExits[2], m_CurrentRoome.sideExits[3], texture, rotation);
 			//this is curently the start room
+			Frosty::ECS::CTransform* playerTransform = nullptr;
+			for (size_t i = 1; i < p_Total; i++)
+			{
+				if (m_World->HasComponent<Frosty::ECS::CPlayer>(m_Transform[i]->EntityPtr))
+				{
+					playerTransform = m_Transform[i];
+				}
+			}
 			int rotate;
 			m_Map.getRoomTextur(m_PlayerPos, &rotate);
 			Level::MoveToNewRoom(m_CurrentRoome.sideExits[0], m_CurrentRoome.sideExits[1], m_CurrentRoome.sideExits[2], m_CurrentRoome.sideExits[3]);
-			m_LevelFileFormat.OpenFromFile("deadend_chests_IsStatick_t_p", m_PlayerPos, nullptr, rotate);
+			m_LevelFileFormat.OpenFromFile("deadend_chests_IsStatick_t_p_e", m_PlayerPos, playerTransform, rotate);
 			m_Start = false;
-			m_LevelFileFormat.LoadBoolMap("deadend_chests_IsStatick_t_p");
+			m_LevelFileFormat.LoadBoolMap("deadend_chests_IsStatick_t_p_e");
 		}
 	}
 
@@ -619,7 +627,7 @@ namespace MCS
 
 
 			// ENEMY A
-			auto& enemyA = m_World->CreateEntity({ -45.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 2.0f, 2.0f, 2.0f });
+			auto& enemyA = m_World->CreateEntity({ 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 2.0f, 2.0f, 2.0f });
 			//world->AddComponent<Frosty::ECS::CAnimController>(enemyA).currAnim = Frosty::AssetManager::GetAnimation("Wolf_Running");
 			m_World->AddComponent<Frosty::ECS::CMesh>(enemyA, Frosty::AssetManager::GetMesh("Cultist"));
 			auto& enemyMatA = m_World->AddComponent<Frosty::ECS::CMaterial>(enemyA, Frosty::AssetManager::GetShader("Texture2D"));
@@ -627,7 +635,7 @@ namespace MCS
 			enemyMatA.NormalTexture = Frosty::AssetManager::GetTexture2D("Cult_defaultMat_Normal");
 			m_World->AddComponent<Frosty::ECS::CPhysics>(enemyA, Frosty::AssetManager::GetBoundingBox("Cultist"), 6.0f);
 			auto& enemyComp = m_World->AddComponent<Frosty::ECS::CEnemy>(enemyA, nullptr, &enemyWeaponCompA, 0.1f);
-			enemyComp.SpawnPosition = { -45.0f, 0.0f, 0.0f };
+			enemyComp.SpawnPosition = { 0.0f, 0.0f, 0.0f };
 			m_World->AddComponent<Frosty::ECS::CHealth>(enemyA, 10);
 			m_World->AddComponent<Frosty::ECS::CHealthBar>(enemyA, glm::vec3(0.0f, 10.0f, 0.0f));
 			m_World->AddComponent<Frosty::ECS::CDropItem>(enemyA);
@@ -651,7 +659,7 @@ namespace MCS
 
 
 			// ENEMY A
-			auto& enemyA = m_World->CreateEntity({ -45.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 2.0f, 2.0f, 2.0f });
+			auto& enemyA = m_World->CreateEntity({ 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 2.0f, 2.0f, 2.0f });
 			//world->AddComponent<Frosty::ECS::CAnimController>(enemyA).currAnim = Frosty::AssetManager::GetAnimation("Wolf_Running");
 			m_World->AddComponent<Frosty::ECS::CMesh>(enemyA, Frosty::AssetManager::GetMesh("Wolf"));
 			auto& enemyMatA = m_World->AddComponent<Frosty::ECS::CMaterial>(enemyA, Frosty::AssetManager::GetShader("Texture2D"));
@@ -659,7 +667,7 @@ namespace MCS
 			enemyMatA.NormalTexture = Frosty::AssetManager::GetTexture2D("wolf_defaultMat_Normal");
 			m_World->AddComponent<Frosty::ECS::CPhysics>(enemyA, Frosty::AssetManager::GetBoundingBox("Wolf"), 6.0f);
 			auto& enemyComp = m_World->AddComponent<Frosty::ECS::CEnemy>(enemyA, nullptr, &enemyWeaponCompA, 0.0f);
-			enemyComp.SpawnPosition = { -45.0f, 0.0f, 0.0f };
+			enemyComp.SpawnPosition = { 0.0f, 0.0f, 0.0f };
 			m_World->AddComponent<Frosty::ECS::CHealth>(enemyA, 10);
 			m_World->AddComponent<Frosty::ECS::CHealthBar>(enemyA, glm::vec3(0.0f, 10.0f, 0.0f));
 			m_World->AddComponent<Frosty::ECS::CDropItem>(enemyA);
