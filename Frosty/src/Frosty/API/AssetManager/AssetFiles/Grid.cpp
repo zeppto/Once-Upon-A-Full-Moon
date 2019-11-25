@@ -228,6 +228,8 @@ namespace Frosty
 		if (InFile.is_open())
 		{
 
+			//m_FilePath = FilePath;
+
 			std::string temp;
 
 			std::getline(InFile, temp);

@@ -20,7 +20,6 @@ namespace Frosty
 	std::unordered_map<std::string, LinkedMaterial> AssetManager::s_LinkedMaterials;
 	std::unordered_map <std::string, std::list<TextureFile**>> AssetManager::s_TextureWatchList;
 
-	//From Temp AssetManager
 	std::map<std::string, std::shared_ptr<VertexArray>> AssetManager::s_VertexArrays;
 	std::map<std::string, std::shared_ptr<Shader>> AssetManager::s_Shaders;
 	std::map<std::string, std::shared_ptr<Texture2D>> AssetManager::s_Textures2D;
@@ -28,6 +27,7 @@ namespace Frosty
 	std::map<std::string, std::shared_ptr<TrueTypeFile>> AssetManager::s_TruefontTypes;
 	std::map<std::string, std::shared_ptr<WeaponHandler>> AssetManager::s_WeaponHandler;
 	std::map<std::string, std::shared_ptr<BoolMap>> AssetManager::s_BoolMaps;
+	std::map<std::string, std::shared_ptr<Grid>> AssetManager::s_AI_Grids;
 
 	std::vector<std::string> AssetManager::s_FilePath_Vector;
 
@@ -89,6 +89,10 @@ namespace Frosty
 			case BMAP:
 				returnValue = LoadBmap(TempFileInfo);
 					break;
+
+			case GRID:
+				returnValue = LoadGrid(TempFileInfo);
+				break;
 
 
 			default:
@@ -251,6 +255,20 @@ namespace Frosty
 		else
 		{
 			s_Textures2D.emplace(MetaData.FileName, FY_NEW Texture2D(MetaData.FileName, MetaData.FullFilePath));
+		}
+		return true;
+	}
+
+	bool AssetManager::AddGrid(const FileMetaData& MetaData)
+	{
+		if (GridLoaded(MetaData.FileName))
+		{
+			FY_CORE_INFO("Grid: {0}, Is already loaded", MetaData.FileName);
+			return false;
+		}
+		else
+		{
+			s_AI_Grids.emplace(MetaData.FileName, FY_NEW Grid());
 		}
 		return true;
 	}
@@ -634,6 +652,22 @@ namespace Frosty
 		return returnValue;
 	}
 
+	bool AssetManager::GridLoaded(const std::string& FileName)
+	{
+		bool returnValue = false;
+
+		std::map<std::string, std::shared_ptr<Grid>>::iterator it;
+		for (it = s_AI_Grids.begin(); it != s_AI_Grids.end() && returnValue == false; it++)
+		{
+			if (it->first == FileName)
+			{
+				returnValue = true;
+			}
+		}
+
+		return returnValue;
+	}
+
 	bool AssetManager::LoadLunaFile(const FileMetaData& FileNameInformation, const bool& Reload)
 	{
 
@@ -878,6 +912,26 @@ namespace Frosty
 			{
 				returnValue = true;
 			}
+			else
+			{
+				FY_CORE_FATAL("Bool Map: {0} Not Loadded", FileNameInformation.FileName);
+			}
+		}
+		return returnValue;
+	}
+
+	bool AssetManager::LoadGrid(const FileMetaData& FileNameInformation, const bool& Reload)
+	{
+		bool returnValue = false;
+		if (AddGrid(FileNameInformation))
+		{
+			
+			std::shared_ptr<Grid> ptr = GetGridMap(FileNameInformation.FileName);
+			ptr->SetFileName(FileNameInformation.FileName);
+			ptr->SetFilePath(FileNameInformation.FullFilePath);
+			ptr->LoadFile();
+			
+		
 		}
 		return returnValue;
 	}
@@ -961,6 +1015,10 @@ namespace Frosty
 		else if (fileType == FILE_TYPE_BOOLMAP)
 		{
 			return BMAP;
+		}
+		else if (fileType == FILE_TYPE_GRID)
+		{
+			return GRID;
 		}
 
 

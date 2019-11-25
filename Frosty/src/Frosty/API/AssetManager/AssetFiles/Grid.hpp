@@ -59,8 +59,15 @@ namespace Frosty
 		void DrawSeekerCell(ECS::CTransform* transform);
 		void DrawPathCells(const std::vector<CellNode*> path);
 
+
+		//Should be bools
 		void SaveFile(const std::string FileName);
 		void LoadFile(const std::string FilePath);
+		inline void LoadFile() { if (m_FilePath != "") {LoadFile(m_FilePath); }else { FY_CORE_ASSERT(0, "Grid does not have a filepath!"); }
+	}
+
+		inline void SetFileName(const std::string& FileName) { m_FileName = FileName; }
+		inline void SetFilePath(const std::string& FilePath) { m_FilePath = FilePath; }
 
 	private:
 		void CreateGrid();
@@ -76,6 +83,7 @@ namespace Frosty
 		std::vector<CellNode*> m_DynamicOccupiedNodes;
 
 		std::string m_FileName{ "" };
+		std::string m_FilePath{ "" };
 
 		// TEMPORARY FOR DEUGGING
 		bool m_DrawGizmos{ false };
