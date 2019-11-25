@@ -108,7 +108,7 @@ void LevelFileFormat::AddEntity(const std::shared_ptr<Frosty::ECS::Entity>& enti
 			myComponents.myPhysics.Direction = physics.Direction;
 			myComponents.myPhysics.MaxSpeed = physics.MaxSpeed;
 			myComponents.myPhysics.Speed = physics.Speed;
-			myComponents.myPhysics.Velocity = physics.Velocity;
+			//myComponents.myPhysics.Velocity = physics.Velocity;
 			myComponents.myPhysics.SpeedMultiplier = physics.SpeedMultiplier;
 
 		}
@@ -475,7 +475,7 @@ void LevelFileFormat::OpenFromFile(std::string fileName, glm::ivec2 roomId , Fro
 					physics.MaxSpeed = fileEntitys.myEntitys.at(i).myPhysics.MaxSpeed;
 					physics.Speed = fileEntitys.myEntitys.at(i).myPhysics.Speed;
 					physics.SpeedMultiplier = fileEntitys.myEntitys.at(i).myPhysics.SpeedMultiplier;
-					physics.Velocity = fileEntitys.myEntitys.at(i).myPhysics.Velocity;
+					//physics.Velocity = fileEntitys.myEntitys.at(i).myPhysics.Velocity;
 				}
 				//6 = Enemy
 				if (fileEntitys.myEntitys.at(i).MyComponents.at(6).HaveComponent)
