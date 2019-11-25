@@ -145,6 +145,22 @@ namespace Frosty
 		std::shared_ptr <BoolMap> m_BoolMap;
 	};
 
+	
+
+
+
+		class UpdateCurrentRoomEvent : public BaseEvent
+	{
+	public:
+		UpdateCurrentRoomEvent(const std::string& CurrentRoom ) : m_CurrentRoom(CurrentRoom) {}
+
+		inline const std::string& GetCurrentRoom() { return m_CurrentRoom; }
+
+		EVENT_TYPE(UpdateCurrentRoom)
+
+	private:
+		std::string m_CurrentRoom;
+	};
 
 	class CreateLevelEvent : public BaseEvent
 	{

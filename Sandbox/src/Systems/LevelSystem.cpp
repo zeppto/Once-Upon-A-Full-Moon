@@ -27,6 +27,16 @@ namespace MCS
 				glm::vec3(0.0f, 0.0f, 0.0f),
 				m_LoadExitDir);
 
+
+			if (m_CurrentRoomBool)
+			{
+				m_FirstRoom = m_LoadFileName;
+			}
+			else
+			{
+				m_SecondRoom = m_LoadFileName;
+			}
+
 			m_PlayerTransformLoadComponent = nullptr;
 			m_LoadMapBool = false;
 		}
@@ -84,8 +94,12 @@ namespace MCS
 		//	bool TempcurrentRoom = m_World->GetCurrentRoom();
 			
 
-
+			m_FirstRoom = "deadend_chests_IsStatick";
 			m_LevelFileFormat.OpenFromFile("deadend_chests_IsStatick", true, m_PlayerCoords, nullptr, rotate);
+			Frosty::EventBus::GetEventBus()->Publish<Frosty::UpdateCurrentRoomEvent>(Frosty::UpdateCurrentRoomEvent(m_FirstRoom));
+		
+
+
 			m_Start = false;
 			//m_LevelFileFormat.LoadBoolMap("deadend_chests_IsStatick");
 			//m_LevelFileFormat.LoadBoolMap("straightRoad_chests_IsStatick");
@@ -569,6 +583,14 @@ namespace MCS
 			m_OtherRoom = m_PlayerCoords;
 			m_World->ChangeCurrentRoom();
 			m_CurrentRoomBool = m_World->GetCurrentRoom();
+			if (m_CurrentRoomBool)
+			{
+				Frosty::EventBus::GetEventBus()->Publish<Frosty::UpdateCurrentRoomEvent>(Frosty::UpdateCurrentRoomEvent(m_SecondRoom));
+			}
+			else
+			{
+				Frosty::EventBus::GetEventBus()->Publish<Frosty::UpdateCurrentRoomEvent>(Frosty::UpdateCurrentRoomEvent(m_FirstRoom));
+			}
 		}
 		m_PlayerCoords = e.GetCoords();
 	}

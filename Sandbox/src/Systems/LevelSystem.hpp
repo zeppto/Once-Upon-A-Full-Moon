@@ -48,13 +48,15 @@ namespace MCS
 		glm::ivec2 m_PlayerCoords = { 10, 15 };//{ 10, 15 };
 		glm::ivec2 m_OtherRoom = { -1, -1 };
 
-		std::pair<glm::ivec2, bool> m_FirstRoom;
-		std::pair<glm::ivec2, bool> m_SecondRoom;
+		
 
 		//map.generateMap();
 		//Room m_CurrentRoome;// = map.getRoom(glm::ivec2(11, 15));
 		bool m_CurrentRoomBool = true;
 		bool m_Start = true;
+
+		std::string m_FirstRoom {""}; //False
+		std::string m_SecondRoom {""}; //True
 
 		//type of room (needed for creation of file)
 		std::string m_RoomType = "unknown";
