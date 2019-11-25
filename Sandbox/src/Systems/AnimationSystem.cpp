@@ -32,7 +32,7 @@ void MCS::AnimationSystem::OnUpdate()
 						if (m_AControllers[i]->currAnim->GetName() != "Scarlet_Run")
 						{
 							m_AControllers[i]->currAnim = Frosty::AssetManager::GetAnimation("Scarlet_Run");
-							m_AControllers[i]->animSpeed = 0.7;
+							m_AControllers[i]->animSpeed = 0.7f;
 							UpdateAnimOffset(m_AControllers[i]);
 						}
 					}
@@ -42,7 +42,7 @@ void MCS::AnimationSystem::OnUpdate()
 						{
 							m_AControllers[i]->currAnim->SetIsRepeating(true);
 							m_AControllers[i]->currAnim = Frosty::AssetManager::GetAnimation("Scarlet_Idle");
-							m_AControllers[i]->animSpeed = 1.0;
+							m_AControllers[i]->animSpeed = 1.0f;
 							UpdateAnimOffset(m_AControllers[i]);
 						}
 					}
@@ -62,7 +62,7 @@ void MCS::AnimationSystem::OnUpdate()
 						{
 							m_AControllers[i]->currAnim->SetIsRepeating(true);
 							m_AControllers[i]->currAnim = Frosty::AssetManager::GetAnimation("Wolf_Run");
-							m_AControllers[i]->animSpeed = 1.0;
+							m_AControllers[i]->animSpeed = 1.0f;
 						}
 					}
 					else
@@ -71,7 +71,7 @@ void MCS::AnimationSystem::OnUpdate()
 						{
 							m_AControllers[i]->currAnim->SetIsRepeating(true);
 							m_AControllers[i]->currAnim = Frosty::AssetManager::GetAnimation("Wolf_Idle");
-							m_AControllers[i]->animSpeed = 1.0;
+							m_AControllers[i]->animSpeed = 1.0f;
 						}
 					}
 				}
@@ -84,7 +84,7 @@ void MCS::AnimationSystem::OnUpdate()
 						{
 							m_AControllers[i]->currAnim->SetIsRepeating(true);
 							m_AControllers[i]->currAnim = Frosty::AssetManager::GetAnimation("Cultist_Run");
-							m_AControllers[i]->animSpeed = 1.0;
+							m_AControllers[i]->animSpeed = 1.0f;
 						}
 					}
 					else
@@ -93,7 +93,7 @@ void MCS::AnimationSystem::OnUpdate()
 						{
 							m_AControllers[i]->currAnim->SetIsRepeating(true);
 							m_AControllers[i]->currAnim = Frosty::AssetManager::GetAnimation("Cultist_Idle");
-							m_AControllers[i]->animSpeed = 1.0;
+							m_AControllers[i]->animSpeed = 1.0f;
 						}
 					}
 				}
@@ -304,5 +304,5 @@ void MCS::AnimationSystem::UpdateAnimOffset(Frosty::ECS::CAnimController* ctrl)
 	auto& wEntity = m_World->GetComponent<Frosty::ECS::CPlayer>(ctrl->EntityPtr).Weapon->EntityPtr;
 
 	m_World->GetComponent<Frosty::ECS::CMesh>(wEntity).animOffset = ctrl->currAnim->getHoldingJoint();
-	Frosty::Renderer::UpdateCMesh(wEntity->Id, &m_World->GetComponent<Frosty::ECS::CMesh>(wEntity));
+	Frosty::Renderer::UpdateCMesh((int)wEntity->Id, &m_World->GetComponent<Frosty::ECS::CMesh>(wEntity));
 }

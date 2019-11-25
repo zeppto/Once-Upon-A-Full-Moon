@@ -24,7 +24,7 @@ namespace MCS
 		void CheckState(size_t index);
 		void HandleAttack(size_t index);
 		void LookAtPoint(const glm::vec3& point, size_t index);
-		void KeepDistanceFromTarget(size_t index, float minAtkRange);
+		bool HandleBossAbilities(size_t index);
 
 	private:
 		Frosty::World* m_World{ nullptr };
