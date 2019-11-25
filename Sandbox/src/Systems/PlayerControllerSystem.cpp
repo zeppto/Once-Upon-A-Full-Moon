@@ -23,6 +23,8 @@ namespace MCS
 	{
 		for (size_t i = 1; i < p_Total; i++)
 		{
+			if (m_Transform[i]->Position.y != 0.0f) continue;
+
 			// Reset (Should this be here? Maybe release instead)
 
 			// Maybe move these functions somewhere else so they can be used by other systems as well.
@@ -39,7 +41,6 @@ namespace MCS
 				HandleAttack(point3D, i);
 				HandleInventory(i);
 			}
-
 		}
 	}
 
@@ -47,15 +48,15 @@ namespace MCS
 	{
 		for (size_t i = 1; i < p_Total; i++)
 		{
-			if (m_Dash[i]->CurrentCooldown > 0.0) m_Dash[i]->CurrentCooldown -= Frosty::Time::DeltaTime();
-			if (Frosty::Time::CurrentTime() - m_Inventory[i]->SpeedTimer >= m_Inventory[i]->SpeedCooldown)
+			if (m_Dash[i]->CurrentCooldown > 0.0f) m_Dash[i]->CurrentCooldown -= Frosty::Time::DeltaTime();
+			if (Frosty::Time::CurrentTime() - m_Inventory[i]->SpeedTimer >= m_Inventory[i]->SpeedCooldown && m_Physics[i]->SpeedMultiplier > 1.0f)
 			{
-				m_Physics[i]->SpeedMultiplier = 1.f;
+				m_Physics[i]->SpeedMultiplier = 1.0f;
 			}
 
 			if (m_Dash[i]->Active)
 			{
-				m_Dash[i]->DistanceDashed += glm::length(m_Physics[i]->Velocity * Frosty::Time::DeltaTime());
+				m_Dash[i]->DistanceDashed += glm::length(m_Physics[i]->Direction * m_Physics[i]->Speed * m_Physics[i]->SpeedMultiplier * Frosty::Time::DeltaTime());
 				if (m_Dash[i]->DistanceDashed >= m_Dash[i]->DISTANCE / 1000.0f)
 				{
 					m_Dash[i]->Active = false;
@@ -231,12 +232,12 @@ namespace MCS
 		if (Frosty::InputManager::IsKeyReleased(m_Player[index]->MoveForwardKey) || Frosty::InputManager::IsKeyReleased(m_Player[index]->MoveBackKey))
 		{
 			m_Physics[index]->Direction.z = 0.0f;
-			m_Physics[index]->Velocity.z = 0.0f;
+			//m_Physics[index]->Velocity.z = 0.0f;
 		}
 		if (Frosty::InputManager::IsKeyReleased(m_Player[index]->MoveLeftKey) || Frosty::InputManager::IsKeyReleased(m_Player[index]->MoveRightKey))
 		{
 			m_Physics[index]->Direction.x = 0.0f;
-			m_Physics[index]->Velocity.x = 0.0f;
+			//m_Physics[index]->Velocity.x = 0.0f;
 		}
 
 		if (Frosty::InputManager::IsKeyPressed(m_Player[index]->MoveForwardKey))
@@ -258,7 +259,7 @@ namespace MCS
 
 		if (glm::length(m_Physics[index]->Direction) > 0.0f)
 		{
-			m_Physics[index]->Velocity = glm::normalize(m_Physics[index]->Direction) * m_Physics[index]->Speed * m_Physics[index]->SpeedMultiplier;
+			//m_Physics[index]->Velocity = glm::normalize(m_Physics[index]->Direction) * m_Physics[index]->Speed * m_Physics[index]->SpeedMultiplier;
 
 			if (Frosty::InputManager::IsKeyPressed(m_Player[index]->DashKey))
 			{
@@ -268,7 +269,8 @@ namespace MCS
 					m_Dash[index]->Active = true;
 					//ASDF
 					Frosty::EventBus::GetEventBus()->Publish<Frosty::DashEvent>(Frosty::DashEvent(m_Player[index]->EntityPtr));
-					m_Physics[index]->Velocity *= m_Dash[index]->SpeedMultiplier;
+					//m_Physics[index]->Velocity *= m_Dash[index]->SpeedMultiplier;
+					m_Physics[index]->SpeedMultiplier = m_Dash[index]->SpeedMultiplier;
 					m_Dash[index]->CurrentCooldown = m_Dash[index]->COOLDOWN / 1000.0f;
 				}
 			}
@@ -491,7 +493,7 @@ namespace MCS
 		m_World->AddComponent<Frosty::ECS::CMesh>(projectile, Frosty::AssetManager::GetMesh("pSphere1"));
 		m_World->AddComponent<Frosty::ECS::CMaterial>(projectile, Frosty::AssetManager::GetShader("FlatColor"));
 		auto& projectilePhysics = m_World->AddComponent<Frosty::ECS::CPhysics>(projectile, Frosty::AssetManager::GetBoundingBox("pSphere1"), weaponComp.ProjectileSpeed);
-		projectilePhysics.Velocity = direction * projectilePhysics.Speed;
+		projectilePhysics.Direction = direction;
 
 		float criticalHit = 0;
 		criticalHit = GenerateCriticalHit(weaponComp.CriticalHit, weaponComp.CriticalHitChance);
@@ -530,7 +532,7 @@ namespace MCS
 			m_World->AddComponent<Frosty::ECS::CMesh>(projectile, Frosty::AssetManager::GetMesh("pSphere1"));
 			m_World->AddComponent<Frosty::ECS::CMaterial>(projectile, Frosty::AssetManager::GetShader("FlatColor"));
 			auto& projectilePhysics = m_World->AddComponent<Frosty::ECS::CPhysics>(projectile, Frosty::AssetManager::GetBoundingBox("pSphere1"), weaponComp.ProjectileSpeed);
-			projectilePhysics.Velocity = direction * projectilePhysics.Speed;
+			projectilePhysics.Direction = direction;
 
 			float criticalHit = 0;
 			criticalHit = GenerateCriticalHit(weaponComp.CriticalHit, weaponComp.CriticalHitChance);
@@ -560,7 +562,7 @@ namespace MCS
 		m_World->AddComponent<Frosty::ECS::CMesh>(projectile, Frosty::AssetManager::GetMesh("pSphere1"));
 		m_World->AddComponent<Frosty::ECS::CMaterial>(projectile, Frosty::AssetManager::GetShader("FlatColor"));
 		auto& projectilePhysics = m_World->AddComponent<Frosty::ECS::CPhysics>(projectile, Frosty::AssetManager::GetBoundingBox("pSphere1"), weaponComp.ProjectileSpeed);
-		projectilePhysics.Velocity = direction * projectilePhysics.Speed;
+		projectilePhysics.Direction = direction;
 
 		float criticalHit = 0;
 		criticalHit = GenerateCriticalHit(weaponComp.CriticalHit, weaponComp.CriticalHitChance);

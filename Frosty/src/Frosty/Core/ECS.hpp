@@ -374,7 +374,7 @@ namespace Frosty
 			inline const std::array<ComponentType, MAX_ENTITIES_PER_COMPONENT>& GetAll() const { return m_Data; }
 
 			template<typename... TArgs>
-			inline ComponentType& Add(std::shared_ptr<Entity>& entity, TArgs&& ... mArgs)
+			inline ComponentType& Add(const std::shared_ptr<Entity>& entity, TArgs&& ... mArgs)
 			{
 				FY_CORE_ASSERT(Total < MAX_ENTITIES_PER_COMPONENT,
 					"Maximum number of entities for this specific component({0}) is reached.", getComponentTypeID<ComponentType>());
@@ -659,10 +659,11 @@ namespace Frosty
 			static std::string NAME;
 			std::shared_ptr<Luna::BoundingBox> BoundingBox;
 			glm::vec3 Direction{ 0.0f, 0.0f, 0.0f };
-			float MaxSpeed{ 100.f };							// Maximun speed an entiry can upgrate its speed to
+			float MaxSpeed{ 100.f };							// Maximum speed an entity can upgrade its speed to
 			float Speed{ 0.0f };
-			glm::vec3 Velocity{ 0.0f };
+			//glm::vec3 Velocity{ 0.0f };
 			float SpeedMultiplier{ 1.f };						// Used in combination with Speed Boost Potion
+			float HangTime{ 0.0f };
 
 			CPhysics() = default;
 			CPhysics(const std::shared_ptr<Luna::BoundingBox>& bb, float speed = 0.0f) : BoundingBox(bb), Speed(speed)
@@ -680,7 +681,7 @@ namespace Frosty
 					Direction = org.Direction;
 					MaxSpeed = org.MaxSpeed;
 					Speed = org.Speed;
-					Velocity = org.Velocity;
+					//Velocity = org.Velocity;
 					SpeedMultiplier = org.SpeedMultiplier;
 				}
 				return *this;
@@ -1267,6 +1268,28 @@ namespace Frosty
 			bool Distracted{ false };
 			bool Hunting{ false };
 			std::vector<std::shared_ptr<Frosty::ECS::Entity>> TargetList;
+
+			enum class AbilityState { None, Leap, Charge };
+			AbilityState ActiveAbility{ AbilityState::None };
+
+			// Abilities
+			int32_t LeapDamage{ 3 };
+			float LeapChance{ 25.0f };
+			float LeapInterval{ 2.5f };
+			float LeapCooldownTime{ Frosty::Time::CurrentTime() };
+			float LeapDistance{ 35.0f };
+			//
+			int32_t ChargeDamage{ 9 };
+			float ChargeChance{ 15.0f };
+			float ChargeInterval{ 2.0f };
+			float ChargeCooldownTime{ Frosty::Time::CurrentTime() };
+			float ChargeDistance{ 25.0f };
+			float DistanceCharged{ 0.0f };
+			float ChargeLoadTime{ 1.5f };
+			float ChargeLoadCooldownTime{ 0.0f };
+			float ChargeHangTime{ 0.75f };
+			glm::vec3 ChargeTargetPosition{ 0.0f };
+
 
 			CBoss() = default;
 			CBoss(float DistractionTime) : DistractionTime(DistractionTime) { }

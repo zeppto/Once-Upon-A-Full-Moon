@@ -138,11 +138,31 @@ namespace MCS
 			}
 		}
 
+		// Check if the attack killed the target (Maybe move this to another system that handles basic enemy, boss and player death differently)
+		if (m_Health[it->second]->CurrentHealth <= 0)
+		{
+			if (m_World->HasComponent<Frosty::ECS::CPlayer>(it->first))
+			{
+				// Handle player death differently
+			}
+			else if (m_World->HasComponent<Frosty::ECS::CBoss>(it->first))
+			{
+				// Handle boss death differently
+			}
+			else
+			{
+				// Basic Enemy
+				if (!m_World->HasComponent<Frosty::ECS::CDestroy>(it->first))
+				{
+					m_World->AddComponent<Frosty::ECS::CDestroy>(it->first);
+				}
+			}
+		}
+
 		// Check if attack should be destroyed on hit
 		if (m_World->GetComponent<Frosty::ECS::CAttack>(entityA).Destroyable && !m_World->HasComponent<Frosty::ECS::CDestroy>(entityA))
 		{
 			m_World->AddComponent<Frosty::ECS::CDestroy>(entityA);
 		}
-
 	}
 }

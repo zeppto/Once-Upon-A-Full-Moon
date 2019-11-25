@@ -8,6 +8,7 @@ namespace MCS
 
 	void NavigationSystem::Init()
 	{
+		m_World = Frosty::Application::Get().GetWorld().get();
 		p_Signature.set(Frosty::ECS::getComponentTypeID<Frosty::ECS::CTransform>(), true);
 		p_Signature.set(Frosty::ECS::getComponentTypeID<Frosty::ECS::CPhysics>(), true);
 		p_Signature.set(Frosty::ECS::getComponentTypeID<Frosty::ECS::CEnemy>(), true);
@@ -30,7 +31,7 @@ namespace MCS
 			{
 			case Frosty::ECS::CEnemy::State::Idle:
 				m_Physics[i]->SpeedMultiplier = 1.0f;
-				m_Physics[i]->Velocity = glm::vec3(0.0f);
+				m_Physics[i]->Direction = glm::vec3(0.0f);
 				break;
 			case Frosty::ECS::CEnemy::State::Attack:
 				HandleDistance(i);
@@ -223,10 +224,17 @@ namespace MCS
 	
 	void NavigationSystem::HandlePathfinding(size_t index)
 	{
+		// Check if enemy is boss and check active ability
+		if (m_World->HasComponent<Frosty::ECS::CBoss>(m_Transform[index]->EntityPtr))
+		{
+			auto& bossComp = m_World->GetComponent<Frosty::ECS::CBoss>(m_Transform[index]->EntityPtr);
+			if (bossComp.ActiveAbility != Frosty::ECS::CBoss::AbilityState::None) return;
+		}
+		
 		// Find target cell and set velocity
 		glm::vec3 cellTarget = m_Pathfinding->FindPath(m_Transform[index]->Position, m_Enemy[index]->Target->Position);
 		m_Enemy[index]->CellTarget = cellTarget;
-		m_Physics[index]->Velocity = glm::normalize(m_Enemy[index]->CellTarget - glm::vec3(m_Transform[index]->Position.x, 0.0f, m_Transform[index]->Position.z)) * m_Physics[index]->Speed;
+		m_Physics[index]->Direction = glm::normalize(m_Enemy[index]->CellTarget - glm::vec3(m_Transform[index]->Position.x, 0.0f, m_Transform[index]->Position.z));
 
 		// Rotate towards target (cell)
 		LookAtPoint(cellTarget, index);
@@ -260,15 +268,16 @@ namespace MCS
 
 	void NavigationSystem::HandleDistance(size_t index)
 	{
-		//if (m_Enemy[index]->Weapon->MinAttackRange == 0.0f) return;
+		// Check if enemy is boss
+		if (m_World->HasComponent<Frosty::ECS::CBoss>(m_Transform[index]->EntityPtr)) return;
 
 		if (glm::distance(m_Transform[index]->Position, m_Enemy[index]->Target->Position) >= m_Enemy[index]->Weapon->MinAttackRange)
 		{
-			m_Physics[index]->Velocity = glm::vec3(0.0f);
+			m_Physics[index]->Direction = glm::vec3(0.0f);
 		}
 		else if (glm::distance(m_Transform[index]->Position, m_Enemy[index]->Target->Position) < m_Enemy[index]->Weapon->MinAttackRange)
 		{
-			m_Physics[index]->Velocity = glm::normalize(glm::vec3(m_Transform[index]->Position.x, 0.0f, m_Transform[index]->Position.z) - m_Enemy[index]->Target->Position) * m_Physics[index]->Speed;
+			m_Physics[index]->Direction = glm::normalize(glm::vec3(m_Transform[index]->Position.x, 0.0f, m_Transform[index]->Position.z) - m_Enemy[index]->Target->Position);
 		}
 	}
 	
@@ -277,15 +286,16 @@ namespace MCS
 		m_Physics[index]->SpeedMultiplier = 1.5f;
 		glm::vec3 escapeVector = glm::vec3(m_Transform[index]->Position.x, 0.0f, m_Transform[index]->Position.z) - m_Enemy[index]->Target->Position;
 		LookAtPoint(escapeVector * 5.0f, index);
-		m_Physics[index]->Velocity = glm::normalize(escapeVector) * m_Physics[index]->Speed * m_Physics[index]->SpeedMultiplier;
+		m_Physics[index]->Direction = glm::normalize(escapeVector);
 	}	
 
 	void NavigationSystem::HandleReset(size_t index)
 	{
 		// Find target cell and set velocity
+		m_Physics[index]->SpeedMultiplier = 1.5f;
 		glm::vec3 cellTarget = m_Pathfinding->FindPath(m_Transform[index]->Position, m_Enemy[index]->SpawnPosition);
 		m_Enemy[index]->CellTarget = cellTarget;
-		m_Physics[index]->Velocity = glm::normalize(m_Enemy[index]->CellTarget - glm::vec3(m_Transform[index]->Position.x, 0.0f, m_Transform[index]->Position.z)) * m_Physics[index]->Speed * m_Physics[index]->SpeedMultiplier;
+		m_Physics[index]->Direction = glm::normalize(m_Enemy[index]->CellTarget - glm::vec3(m_Transform[index]->Position.x, 0.0f, m_Transform[index]->Position.z));
 
 		// Rotate towards target (cell)
 		LookAtPoint(cellTarget, index);
