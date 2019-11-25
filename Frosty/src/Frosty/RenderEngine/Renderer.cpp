@@ -103,6 +103,7 @@ namespace Frosty
 
 				auto& materialData = shaderData->MaterialMap.at(MaterialIt.first);
 
+				
 				shaderData->Shader->UploadUniformInt("u_Shininess", materialData->Material->Shininess);
 
 

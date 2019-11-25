@@ -72,8 +72,10 @@ void LevelFileFormat::AddEntity(const std::shared_ptr<Frosty::ECS::Entity>& enti
 			std::string meshName = myComponents.myMesh.MeshName;
 			myComponents.myMaterial.HasTransparency = material.HasTransparency;
 
-			//if (m_World->HasComponent<Frosty::ECS::CMesh>(entity) && meshName.find("tree") != std::string::npos)
-			//	myComponents.myMaterial.HasTransparency = true;
+			if (m_World->HasComponent<Frosty::ECS::CMesh>(entity) && meshName.find("tree") != std::string::npos)
+				myComponents.myMaterial.HasTransparency = true;
+			if (m_World->HasComponent<Frosty::ECS::CMesh>(entity) && meshName.find("Tree") != std::string::npos)
+				myComponents.myMaterial.HasTransparency = true;
 		}
 		else
 			myComponents.MyComponents.at(2).HaveComponent = false;
@@ -440,6 +442,12 @@ void LevelFileFormat::OpenFromFile(std::string fileName, glm::ivec2 roomId , Fro
 					material.SpecularStrength = fileEntitys.myEntitys.at(i).myMaterial.SpecularStrength;
 					material.Shininess = fileEntitys.myEntitys.at(i).myMaterial.Shininess;
 					material.TextureScale = fileEntitys.myEntitys.at(i).myMaterial.TextureScale;
+					material.HasTransparency = fileEntitys.myEntitys.at(i).myMaterial.HasTransparency;
+					std::string meshName = fileEntitys.myEntitys.at(i).myMaterial.DiffuseTextureName;
+					if (m_World->HasComponent<Frosty::ECS::CMesh>(entity) && meshName.find("tree") != std::string::npos)
+						material.HasTransparency = true;
+					if (m_World->HasComponent<Frosty::ECS::CMesh>(entity) && meshName.find("Tree") != std::string::npos)
+						material.HasTransparency = true;
 				}
 				//3 = Follow
 				if (fileEntitys.myEntitys.at(i).MyComponents.at(3).HaveComponent)

@@ -1030,7 +1030,35 @@ namespace MCS
 			HUD.Layout.texts.at(4).SetText(std::string("Points: " + std::to_string(m_Player[index]->Score)));
 
 			//Temp Health
-			HUD.Layout.texts.at(5).SetText(std::string(std::to_string((int)m_Health[index]->CurrentHealth) + "/" + std::to_string((int)m_Health[index]->MaxHealth)));
+			//HUD.Layout.texts.at(5).SetText(std::string(std::to_string((int)m_Health[index]->CurrentHealth) + "/" + std::to_string((int)m_Health[index]->MaxHealth)));
+
+			int nrOfFilledHearts = m_Health[index]->CurrentHealth / 4;
+			int nrOfHeartQuadrants = m_Health[index]->CurrentHealth % 4;
+
+			int healthSpriteID = 19;
+			for (int i = 0; i < nrOfFilledHearts && nrOfFilledHearts <= m_Health[index]->MaxHealth; i++)
+			{
+				HUD.Layout.sprites.at(healthSpriteID).SetImage("Heart_4");
+				healthSpriteID++;
+			}
+			  
+			if (nrOfHeartQuadrants == 1)
+			{
+				HUD.Layout.sprites.at(healthSpriteID).SetImage("Heart_1");
+			}
+			else if (nrOfHeartQuadrants == 2)
+			{
+				HUD.Layout.sprites.at(healthSpriteID).SetImage("Heart_2");
+			}
+			else if (nrOfHeartQuadrants == 3)
+			{
+				HUD.Layout.sprites.at(healthSpriteID).SetImage("Heart_3");
+			}
+			else if (m_Health[index]->CurrentHealth < m_Health[index]->MaxHealth)
+			{
+				HUD.Layout.sprites.at(healthSpriteID).SetImage("Heart_0");
+			}
+
 
 			//Pickup Text
 			if (Frosty::Time::CurrentTime() - m_Player[index]->PickUpTextTimer >= m_Player[index]->PickUpTextTime)
@@ -1225,6 +1253,14 @@ namespace MCS
 
 			}
 
+			//Speed boots
+			int bootSpriteID = 14;
+			for (int i = 0; i < m_Inventory[index]->CurrentSpeedBoots && m_Inventory[index]->CurrentSpeedBoots <= 5; i++)
+			{
+				
+				HUD.Layout.sprites.at(bootSpriteID).SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+				bootSpriteID++;
+			}
 			
 		}
 	}
