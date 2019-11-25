@@ -20,6 +20,7 @@ namespace MCS
 		// TEMPORARY FOR DEBUGGING
 		Frosty::ECS::EntityID CellEntityID{ 0 };
 
+		CellNode() {}
 		CellNode(const glm::vec3& worldPos, bool walkable, int32_t gridX, int32_t gridY) : WorldPosition(worldPos), Walkable(walkable), GridX(gridX), GridY(gridY) { }
 		
 		// Operators
@@ -54,6 +55,9 @@ namespace MCS
 		void DrawTargetCell(Frosty::ECS::CTransform* transform);
 		void DrawSeekerCell(Frosty::ECS::CTransform* transform);
 		void DrawPathCells(const std::vector<CellNode*> path);
+
+		void SaveFile(const std::string FileName);
+		void LoadFile(const std::string FilePath);
 
 	private:
 		void CreateGrid();
