@@ -204,9 +204,9 @@ namespace Frosty
 			bool ShowInEditor{ true };
 			int32_t GroupId{ -1 };
 
-			Entity() : Id(s_LastId++) { FY_CORE_INFO("An entity({0}) was successfully created.", Id); }
+			Entity() : Id(s_LastId++) { /*FY_CORE_INFO("An entity({0}) was successfully created.", Id);*/ }
 			Entity(const Entity& obj) { FY_CORE_ASSERT(false, "Copy constructor in Entity called."); }
-			virtual ~Entity() { FY_CORE_INFO("An entity({0}) was successfully deleted.", Id); }
+			virtual ~Entity() { /*FY_CORE_INFO("An entity({0}) was successfully deleted.", Id);*/ }
 
 			// Operators
 			Entity& operator=(const Entity& e) { FY_CORE_ASSERT(false, "Assignment operator in Entity called."); return *this; }
@@ -255,14 +255,14 @@ namespace Frosty
 
 			inline std::shared_ptr<Entity>& Create()
 			{
-				FY_CORE_INFO("Creating a new entity..");
+				/*FY_CORE_INFO("Creating a new entity..");*/
 				m_Entities.emplace_back(FY_NEW Entity());
 				return m_Entities.back();
 			}
 
 			inline bool Remove(const std::shared_ptr<Entity>& entity)
 			{
-				FY_CORE_INFO("Removing an entity..");
+				/*FY_CORE_INFO("Removing an entity..");*/
 
 				int index = utils::BinarySearch(m_Entities, entity->Id);
 				int groupIndex = -1;
@@ -348,7 +348,7 @@ namespace Frosty
 		class ComponentManager : public BaseComponentManager
 		{
 		public:
-			ComponentManager() : BaseComponentManager() { FY_CORE_INFO("A new component manager({0}) was successfully created.", getComponentTypeID<ComponentType>()); }
+			ComponentManager() : BaseComponentManager() { /*FY_CORE_INFO("A new component manager({0}) was successfully created.", getComponentTypeID<ComponentType>());*/ }
 			ComponentManager(const ComponentManager& obj) : BaseComponentManager(obj) { FY_CORE_ASSERT(false, "Copy constructor in ComponentManager({0}) called.", getComponentTypeID<ComponentType>()); }
 			virtual ~ComponentManager() { }
 
@@ -374,7 +374,7 @@ namespace Frosty
 			inline const std::array<ComponentType, MAX_ENTITIES_PER_COMPONENT>& GetAll() const { return m_Data; }
 
 			template<typename... TArgs>
-			inline ComponentType& Add(std::shared_ptr<Entity>& entity, TArgs&& ... mArgs)
+			inline ComponentType& Add(const std::shared_ptr<Entity>& entity, TArgs&& ... mArgs)
 			{
 				FY_CORE_ASSERT(Total < MAX_ENTITIES_PER_COMPONENT,
 					"Maximum number of entities for this specific component({0}) is reached.", getComponentTypeID<ComponentType>());
@@ -659,17 +659,18 @@ namespace Frosty
 			static std::string NAME;
 			std::shared_ptr<Luna::BoundingBox> BoundingBox;
 			glm::vec3 Direction{ 0.0f, 0.0f, 0.0f };
-			float MaxSpeed{ 100.f };							// Maximun speed an entiry can upgrate its speed to
+			float MaxSpeed{ 100.f };							// Maximum speed an entity can upgrade its speed to
 			float Speed{ 0.0f };
-			glm::vec3 Velocity{ 0.0f };
+			//glm::vec3 Velocity{ 0.0f };
 			float SpeedMultiplier{ 1.f };						// Used in combination with Speed Boost Potion
+			float HangTime{ 0.0f };
 
 			CPhysics() = default;
 			CPhysics(const std::shared_ptr<Luna::BoundingBox>& bb, float speed = 0.0f) : BoundingBox(bb), Speed(speed)
 			{
-				BoundingBox->halfSize[0] *= 0.85f;
-				BoundingBox->halfSize[1] *= 0.85f;
-				BoundingBox->halfSize[2] *= 0.85f;
+				//BoundingBox->halfSize[0] *= 0.85f;
+				//BoundingBox->halfSize[1] *= 0.85f;
+				//BoundingBox->halfSize[2] *= 0.85f;
 			}
 			CPhysics(const CPhysics& org) { FY_CORE_ASSERT(false, "Copy constructor in CPhysics called."); }
 			CPhysics& operator=(const CPhysics& org)
@@ -680,7 +681,7 @@ namespace Frosty
 					Direction = org.Direction;
 					MaxSpeed = org.MaxSpeed;
 					Speed = org.Speed;
-					Velocity = org.Velocity;
+					//Velocity = org.Velocity;
 					SpeedMultiplier = org.SpeedMultiplier;
 				}
 				return *this;
@@ -842,7 +843,7 @@ namespace Frosty
 			int MoveRightKey{ FY_KEY_D };
 			int MoveBackKey{ FY_KEY_S };
 			int DashKey{ FY_KEY_LEFT_SHIFT };
-			int LVL1Attack{ FY_MOUSE_BUTTON_LEFT };
+			int LVL1Attack{ FY_MOUSE_BUTTON_RIGHT };
 			int LVL2Attack{ FY_MOUSE_BUTTON_RIGHT };
 			int LVL3Attack{ FY_KEY_SPACE };
 
@@ -1286,6 +1287,28 @@ namespace Frosty
 			bool Distracted{ false };
 			bool Hunting{ false };
 			std::vector<std::shared_ptr<Frosty::ECS::Entity>> TargetList;
+
+			enum class AbilityState { None, Leap, Charge };
+			AbilityState ActiveAbility{ AbilityState::None };
+
+			// Abilities
+			int32_t LeapDamage{ 3 };
+			float LeapChance{ 25.0f };
+			float LeapInterval{ 2.5f };
+			float LeapCooldownTime{ Frosty::Time::CurrentTime() };
+			float LeapDistance{ 35.0f };
+			//
+			int32_t ChargeDamage{ 9 };
+			float ChargeChance{ 15.0f };
+			float ChargeInterval{ 2.0f };
+			float ChargeCooldownTime{ Frosty::Time::CurrentTime() };
+			float ChargeDistance{ 25.0f };
+			float DistanceCharged{ 0.0f };
+			float ChargeLoadTime{ 1.5f };
+			float ChargeLoadCooldownTime{ 0.0f };
+			float ChargeHangTime{ 0.75f };
+			glm::vec3 ChargeTargetPosition{ 0.0f };
+
 
 			CBoss() = default;
 			CBoss(float DistractionTime) : DistractionTime(DistractionTime) { }

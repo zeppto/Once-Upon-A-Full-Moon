@@ -20,6 +20,7 @@ void MCS::AnimationSystem::OnUpdate()
 {
 	for (size_t i = 1; i < p_Total; i++)
 	{
+		//May want to reset DT for idle and run too.
 		if (!m_AControllers[i]->isBusy)
 		{
 			if (m_Player[i])
@@ -31,7 +32,7 @@ void MCS::AnimationSystem::OnUpdate()
 						if (m_AControllers[i]->currAnim->GetName() != "Scarlet_Run")
 						{
 							m_AControllers[i]->currAnim = Frosty::AssetManager::GetAnimation("Scarlet_Run");
-							m_AControllers[i]->animSpeed = 0.7;
+							m_AControllers[i]->animSpeed = 0.7f;
 							UpdateAnimOffset(m_AControllers[i]);
 						}
 					}
@@ -41,8 +42,58 @@ void MCS::AnimationSystem::OnUpdate()
 						{
 							m_AControllers[i]->currAnim->SetIsRepeating(true);
 							m_AControllers[i]->currAnim = Frosty::AssetManager::GetAnimation("Scarlet_Idle");
-							m_AControllers[i]->animSpeed = 1.0;
+							m_AControllers[i]->animSpeed = 1.0f;
 							UpdateAnimOffset(m_AControllers[i]);
+						}
+					}
+				}
+			}
+			else if (m_World->HasComponent<Frosty::ECS::CEnemy>(m_Transform[i]->EntityPtr))
+			{
+				auto& enemy = m_World->GetComponent<Frosty::ECS::CEnemy>(m_Transform[i]->EntityPtr);
+				auto& wType = m_World->GetComponent<Frosty::ECS::CEnemy>(m_Transform[i]->EntityPtr).Weapon->Type;
+
+				//If it has bite it is a wolf
+				if (wType == Frosty::ECS::CWeapon::WeaponType::Bite)
+				{
+					if (enemy.CurrentState == Frosty::ECS::CEnemy::State::Chase || enemy.CurrentState == Frosty::ECS::CEnemy::State::Escape)
+					{
+						if (m_AControllers[i]->currAnim->GetName() != "Wolf_Run")
+						{
+							m_AControllers[i]->currAnim->SetIsRepeating(true);
+							m_AControllers[i]->currAnim = Frosty::AssetManager::GetAnimation("Wolf_Run");
+							m_AControllers[i]->animSpeed = 1.0f;
+						}
+					}
+					else
+					{
+						if (m_AControllers[i]->currAnim->GetName() != "Wolf_Idle")
+						{
+							m_AControllers[i]->currAnim->SetIsRepeating(true);
+							m_AControllers[i]->currAnim = Frosty::AssetManager::GetAnimation("Wolf_Idle");
+							m_AControllers[i]->animSpeed = 1.0f;
+						}
+					}
+				}
+				else
+				{
+					//Otherwise it is cultist.
+					if (enemy.CurrentState == Frosty::ECS::CEnemy::State::Chase || enemy.CurrentState == Frosty::ECS::CEnemy::State::Escape)
+					{
+						if (m_AControllers[i]->currAnim->GetName() != "Cultist_Run")
+						{
+							m_AControllers[i]->currAnim->SetIsRepeating(true);
+							m_AControllers[i]->currAnim = Frosty::AssetManager::GetAnimation("Cultist_Run");
+							m_AControllers[i]->animSpeed = 1.0f;
+						}
+					}
+					else
+					{
+						if (m_AControllers[i]->currAnim->GetName() != "Cultist_Idle")
+						{
+							m_AControllers[i]->currAnim->SetIsRepeating(true);
+							m_AControllers[i]->currAnim = Frosty::AssetManager::GetAnimation("Cultist_Idle");
+							m_AControllers[i]->animSpeed = 1.0f;
 						}
 					}
 				}
@@ -173,48 +224,78 @@ void MCS::AnimationSystem::OnPlayAnimEvent(Frosty::PlayAnimEvent& e)
 
   	const unsigned int* id = e.getAnimID();
 
-	switch (*id)
+	if (m_World->HasComponent<Frosty::ECS::CPlayer>(e.GetEntity()))
 	{
-	case 0:
-		controller->dt = 0;
-		controller->currAnim = Frosty::AssetManager::GetAnimation("Scarlet_Death");
-		controller->currAnim->SetIsRepeating(false);
-		controller->isBusy = true;
-		break;
-	case 1:
-		controller->dt = 0;
-		controller->currAnim = Frosty::AssetManager::GetAnimation("Scarlet_Attack1");
-		controller->currAnim->SetIsRepeating(false);
-		controller->currAnim->SetIsFinished(false);
-		controller->isBusy = true;
-		controller->animSpeed = 1.0f;
-		break;
-	case 2:
-		controller->dt = 0;
-		controller->currAnim = Frosty::AssetManager::GetAnimation("Scarlet_Attack2");
-		controller->currAnim->SetIsRepeating(false);
-		controller->currAnim->SetIsFinished(false);
-		controller->isBusy = true;
-		controller->animSpeed = 1.2f;
-		break;
-	case 3:
-		controller->dt = 0;
-		controller->currAnim = Frosty::AssetManager::GetAnimation("Scarlet_Attack3");
-		controller->currAnim->SetIsRepeating(false);
-		controller->currAnim->SetIsFinished(false);
-		controller->isBusy = true;
-		controller->animSpeed = 1.0f;
-		break;
-	case 4:
-		controller->dt = 0;
-		controller->currAnim = Frosty::AssetManager::GetAnimation("Scarlet_Attack4");
-		controller->currAnim->SetIsRepeating(false);
-		controller->currAnim->SetIsFinished(false);
-		controller->isBusy = true;
-		controller->animSpeed = 1.5f;
-		break;
+		switch (*id)
+		{
+		case 0:
+			BeginNewAnim(controller, "Scarlet_Death");
+			controller->animSpeed = 1.0f;
+			break;
+		case 1:
+			BeginNewAnim(controller, "Scarlet_Attack1");
+			controller->animSpeed = 1.0f;
+			break;
+		case 2:
+			BeginNewAnim(controller, "Scarlet_Attack2");
+			controller->animSpeed = 1.2f;
+			break;
+		case 3:
+			BeginNewAnim(controller, "Scarlet_Attack3");
+			controller->animSpeed = 1.0f;
+			break;
+		case 4:
+			//Put temp transform here.
+			BeginNewAnim(controller, "Scarlet_Attack4");
+			controller->animSpeed = 1.5f;
+			break;
+		}
+		UpdateAnimOffset(controller);
 	}
-	UpdateAnimOffset(controller);
+	else if(m_World->HasComponent<Frosty::ECS::CEnemy>(e.GetEntity()))
+	{
+		auto& wType = m_World->GetComponent<Frosty::ECS::CEnemy>(e.GetEntity()).Weapon->Type;
+
+		//If it has bite it is a wolf
+		if (wType == Frosty::ECS::CWeapon::WeaponType::Bite)
+		{
+			switch (*id)
+			{
+			case 0:
+				BeginNewAnim(controller, "Wolf_Death");
+				controller->animSpeed = 1.0f;
+			case 1:
+				BeginNewAnim(controller, "Wolf_Attack");
+				controller->animSpeed = 1.0f;
+			}
+		}
+		else
+		{
+			//Otherwise it is cultist.
+			switch (*id)
+			{
+			case 0:
+				BeginNewAnim(controller, "Wolf_Death");
+				controller->animSpeed = 1.0f;
+			case 1:
+				BeginNewAnim(controller, "Cultist_Attack1");
+				controller->animSpeed = 1.0f;
+			case 2:
+				BeginNewAnim(controller, "Cultist_Attack2");
+				controller->animSpeed = 1.0f;
+			}
+		}
+	}
+}
+
+// Resets the time for the anim controller and sets the animation to not repeat and resets the animation.
+void MCS::AnimationSystem::BeginNewAnim(Frosty::ECS::CAnimController* controller, const std::string& animName)
+{
+	controller->dt = 0;
+	controller->currAnim = Frosty::AssetManager::GetAnimation(animName);
+	controller->currAnim->SetIsRepeating(false);
+	controller->currAnim->SetIsFinished(false);
+	controller->isBusy = true;
 }
 
 void MCS::AnimationSystem::UpdateAnimOffset(Frosty::ECS::CAnimController* ctrl)
@@ -223,5 +304,5 @@ void MCS::AnimationSystem::UpdateAnimOffset(Frosty::ECS::CAnimController* ctrl)
 	auto& wEntity = m_World->GetComponent<Frosty::ECS::CPlayer>(ctrl->EntityPtr).Weapon->EntityPtr;
 
 	m_World->GetComponent<Frosty::ECS::CMesh>(wEntity).animOffset = ctrl->currAnim->getHoldingJoint();
-	Frosty::Renderer::UpdateCMesh(wEntity->Id, &m_World->GetComponent<Frosty::ECS::CMesh>(wEntity));
+	Frosty::Renderer::UpdateCMesh((int)wEntity->Id, &m_World->GetComponent<Frosty::ECS::CMesh>(wEntity));
 }

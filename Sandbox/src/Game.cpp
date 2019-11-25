@@ -78,20 +78,20 @@ namespace MCS
 		//Sword Offset
 		auto& weapon = world->CreateEntity({ -0.7f, 2.1f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 1.f, 1.f, 1.f });
 		//Bow Offset
-		/*auto& weapon = world->CreateEntity({ -0.7f, 2.3f, 0.2f }, { 0.0f, 0.0f, 0.0f }, { 1.f, 1.f, 1.f });*/
+		/*auto& weapon = world->CreateEntity({ -0.7f, 2.3f, 0.2f }, { 0.0f, 60.0f, 0.0f }, { 1.f, 1.f, 1.f });*/
 		auto& weaponHandler = Frosty::AssetManager::GetWeaponHandler("Weapons");
 		Frosty::Weapon loadedWeapon = weaponHandler->GetWeaponByType(Frosty::Weapon::WeaponType::Sword);
 		world->AddComponent<Frosty::ECS::CWeapon>(weapon, loadedWeapon, true);	
 		auto& weaponComp = world->GetComponent<Frosty::ECS::CWeapon>(weapon);
 		weaponComp.Level = 3;
 		auto& weaponMesh = world->AddComponent<Frosty::ECS::CMesh>(weapon, Frosty::AssetManager::GetMesh("sword"));
-		auto& weaponMat = world->AddComponent<Frosty::ECS::CMaterial>(weapon, Frosty::AssetManager::GetShader("FlatColor"));
-
+		auto& weaponMat = world->AddComponent<Frosty::ECS::CMaterial>(weapon, Frosty::AssetManager::GetShader("Texture2D"));
+		weaponMat.DiffuseTexture = Frosty::AssetManager::GetTexture2D("sword_lvl1_diffuse");
+		weaponMat.NormalTexture = Frosty::AssetManager::GetTexture2D("sword_normal");
 
 
 		// PLAYER
 		auto& player = world->CreateEntity({ -104.0f, 0.0f, -15.4f }, { 0.0f, 0.0f, 0.0f }, { 2.0f, 2.0f, 2.0f } );
-		//auto& player = world->CreateEntity({ -90.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 2.0f, 2.0f, 2.0f } );
 		auto& playerTransform = world->GetComponent<Frosty::ECS::CTransform>(player);
 		world->AddComponent<Frosty::ECS::CAnimController>(player).currAnim = Frosty::AssetManager::GetAnimation("Scarlet_Idle");
 		auto& animation = world->GetComponent<Frosty::ECS::CAnimController>(player);
@@ -117,7 +117,7 @@ namespace MCS
 		//Make it move according to the player's hand.
 		weaponMesh.animOffset = animation.holdPtr;
 		//Update it in renderer.
-		Frosty::Renderer::UpdateCMesh(weapon->Id, &weaponMesh);
+		Frosty::Renderer::UpdateCMesh((int)weapon->Id, &weaponMesh);
 	
 		// TORCH
 		auto& torch = world->CreateEntity({ 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f });
@@ -300,42 +300,53 @@ namespace MCS
 		//world->AddComponent<Frosty::ECS::CPhysics>(wall, Frosty::AssetManager::GetBoundingBox("pCube1"));
 
 		// ENEMY WEAPON 
-		auto& enemyWeaponA = world->CreateEntity({ 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 1.0f, 1.0f, 1.0f });
+		//auto& enemyWeaponA = world->CreateEntity({ 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 1.0f, 1.0f, 1.0f });
 		//world->AddComponent<Frosty::ECS::CMesh>(weapon, Frosty::AssetManager::GetMesh("pCube1"));
 		//world->AddComponent<Frosty::ECS::CMaterial>(weapon, Frosty::AssetManager::GetShader("FlatColor"));
-		auto& enemyWeaponCompA = world->AddComponent<Frosty::ECS::CWeapon>(enemyWeaponA, Frosty::ECS::CWeapon::WeaponType::Bow, 1, 1.0f);
-		enemyWeaponCompA.LVL1AttackCooldown = 3.0f;
-		//enemyWeaponCompA.MaxAttackRange = 5.0f;
-		//enemyWeaponCompA.MinAttackRange = 0.0f;
-		enemyWeaponCompA.MaxAttackRange = 22.0f;
-		enemyWeaponCompA.MinAttackRange = 18.0f;
-		//enemyWeaponCompA.AttackHitboxScale = glm::vec3(10.0f, 6.0f, 4.0f);				// Sword
+		//auto& enemyWeaponCompA = world->AddComponent<Frosty::ECS::CWeapon>(enemyWeaponA, Frosty::ECS::CWeapon::WeaponType::Sword, 1, 1.0f);
+		//enemyWeaponCompA.LVL1AttackCooldown = 3.0f;
+		//enemyWeaponCompA.MaxAttackRange = 10.0f;			// Werewolf
+		//enemyWeaponCompA.MinAttackRange = 0.0f;				// Werewolf
+		//enemyWeaponCompA.MaxAttackRange = 6.0f;			// Wolf
+		//enemyWeaponCompA.MinAttackRange = 0.0f;			// Wolf
+		//enemyWeaponCompA.MaxAttackRange = 5.0f;			// Melee Cult
+		//enemyWeaponCompA.MinAttackRange = 0.0f;			// Melee Cult
+		//enemyWeaponCompA.MaxAttackRange = 22.0f;			// Range Cult
+		//enemyWeaponCompA.MinAttackRange = 18.0f;			// Range Cult
+		//enemyWeaponCompA.AttackHitboxScale = glm::vec3(14.0f, 6.0f, 7.0f);				// Slash
+		//enemyWeaponCompA.AttackHitboxScale = glm::vec3(10.0f, 6.0f, 4.0f);			// Sword
 		//enemyWeaponCompA.AttackHitboxScale = glm::vec3(4.0f, 6.0f, 4.0f);				// Bite
-		enemyWeaponCompA.AttackHitboxScale = glm::vec3(0.3f);							// Arrow
+		//enemyWeaponCompA.AttackHitboxScale = glm::vec3(0.3f);							// Arrow
 		
-		/*
+		
 		// ENEMY A
-		auto& enemyA = world->CreateEntity({ -45.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 2.0f, 2.0f, 2.0f });
-		//world->AddComponent<Frosty::ECS::CAnimController>(enemyA).currAnim = Frosty::AssetManager::GetAnimation("Wolf_Running");
-		world->AddComponent<Frosty::ECS::CMesh>(enemyA, Frosty::AssetManager::GetMesh("Cult:Group43567"));
-		auto& enemyMatA = world->AddComponent<Frosty::ECS::CMaterial>(enemyA, Frosty::AssetManager::GetShader("Texture2D"));
-		enemyMatA.DiffuseTexture = Frosty::AssetManager::GetTexture2D("Cult_Diffuse");
-		enemyMatA.NormalTexture = Frosty::AssetManager::GetTexture2D("Cult_defaultMat_Normal");
-		world->AddComponent<Frosty::ECS::CPhysics>(enemyA, Frosty::AssetManager::GetBoundingBox("Cult:Group43567"), 6.0f);
-		auto& enemyComp = world->AddComponent<Frosty::ECS::CEnemy>(enemyA, &playerTransform, &enemyWeaponCompA, 0.1f);
-		enemyComp.SpawnPosition = { -45.0f, 0.0f, 0.0f };
-		world->AddComponent<Frosty::ECS::CHealth>(enemyA, 10);
-		world->AddComponent<Frosty::ECS::CHealthBar>(enemyA, glm::vec3(0.0f, 10.0f, 0.0f));
-		world->AddComponent<Frosty::ECS::CDropItem>(enemyA);
+		//auto& enemyA = world->CreateEntity({ -45.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 2.0f, 2.0f, 2.0f });
+		////world->AddComponent<Frosty::ECS::CAnimController>(enemyA).currAnim = Frosty::AssetManager::GetAnimation("Wolf_Running");
+		//auto& enemyMatA = world->AddComponent<Frosty::ECS::CMaterial>(enemyA, Frosty::AssetManager::GetShader("Texture2D"));
+		//enemyMatA.DiffuseTexture = Frosty::AssetManager::GetTexture2D("Werewolf_Diffuse");
+		//enemyMatA.NormalTexture = Frosty::AssetManager::GetTexture2D("Werewolf_Lowpoly_defaultMat_Normal");
+		//world->AddComponent<Frosty::ECS::CPhysics>(enemyA, Frosty::AssetManager::GetBoundingBox("Werewolf"), 6.0f);
+		//world->AddComponent<Frosty::ECS::CMesh>(enemyA, Frosty::AssetManager::GetMesh("Werewolf"));
+		////enemyMatA.DiffuseTexture = Frosty::AssetManager::GetTexture2D("Cult_Diffuse");
+		////enemyMatA.NormalTexture = Frosty::AssetManager::GetTexture2D("Cult_defaultMat_Normal");
+		////world->AddComponent<Frosty::ECS::CPhysics>(enemyA, Frosty::AssetManager::GetBoundingBox("Cult:Group43567"), 6.0f);
+		////world->AddComponent<Frosty::ECS::CMesh>(enemyA, Frosty::AssetManager::GetMesh("Cult:Group43567"));
+		//auto& enemyComp = world->AddComponent<Frosty::ECS::CEnemy>(enemyA, &playerTransform, &enemyWeaponCompA);
+		//enemyComp.SpawnPosition = { -45.0f, 0.0f, 0.0f };
+		//world->AddComponent<Frosty::ECS::CHealth>(enemyA, 10);
+		//world->AddComponent<Frosty::ECS::CHealthBar>(enemyA, glm::vec3(0.0f, 10.0f, 0.0f));
+		//world->AddComponent<Frosty::ECS::CDropItem>(enemyA);
+		//auto& bossComp = world->AddComponent<Frosty::ECS::CBoss>(enemyA, 3.0f);
 
 
 		// TREE
-		auto& tree = world->CreateEntity({ 50.0f, 3.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 8.0f, 6.0f, 7.0f }, true);
-		world->AddComponent<Frosty::ECS::CMesh>(tree, Frosty::AssetManager::GetMesh("pCube1"));
-		world->AddComponent<Frosty::ECS::CMaterial>(tree, Frosty::AssetManager::GetShader("FlatColor"));
-		world->AddComponent<Frosty::ECS::CPhysics>(tree, Frosty::AssetManager::GetBoundingBox("pCube1"));
+		//auto& tree = world->CreateEntity({ 50.0f, 3.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 8.0f, 6.0f, 7.0f }, true);
+		//world->AddComponent<Frosty::ECS::CMesh>(tree, Frosty::AssetManager::GetMesh("pCube1"));
+		//world->AddComponent<Frosty::ECS::CMaterial>(tree, Frosty::AssetManager::GetShader("FlatColor"));
+		//world->AddComponent<Frosty::ECS::CPhysics>(tree, Frosty::AssetManager::GetBoundingBox("pCube1"));
 
-		navSystem->InitiateGridMap(planeTransform);*/
+
+		//navSystem->InitiateGridMap(planeTransform);
 
 		
 		//navSystem->InitiateGridMap(world->GetComponent<Frosty::ECS::CTransform>(plane));
@@ -354,6 +365,16 @@ namespace MCS
 		//particleSystemComp2.SystemEndColor = glm::vec3(0.0f, 0.0f, 1.0f);
 		//particleSystemComp2.StartParticleSize = 5.0f;
 		//particleSystemComp2.EndParticleSize = 2.0f;
+
+		//Blendmap working
+		//auto& blendTest = world->CreateEntity({ 0.0f, 1.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, {300.0f, 1.0f, 300.0f});
+		//world->AddComponent<Frosty::ECS::CMesh>(blendTest, Frosty::AssetManager::GetMesh("pPlane1"));
+		//auto& blendShaderComp = world->AddComponent<Frosty::ECS::CMaterial>(blendTest, Frosty::AssetManager::GetShader("BlendShader"));
+		//blendShaderComp.BlendMapTexture = Frosty::AssetManager::GetTexture2D("blend_road_cross");
+		//blendShaderComp.DiffuseTexture = Frosty::AssetManager::GetTexture2D("ground_test2"); //Alpha channel
+		//blendShaderComp.BlendTexture1 = Frosty::AssetManager::GetTexture2D("brown_mud_diffuse"); //Red channel
+		//blendShaderComp.BlendTexture2 = blendShaderComp.DiffuseTexture; //Green channel
+		//blendShaderComp.NormalTexture = Frosty::AssetManager::GetTexture2D("ground_test_normal");
 
 //ifdef FY_DEBUG
 	PushLayer(FY_NEW InspectorLayer());

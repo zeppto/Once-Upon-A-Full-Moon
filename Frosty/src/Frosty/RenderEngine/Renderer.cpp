@@ -66,6 +66,11 @@ namespace Frosty
 				RenderCommand::EnableBackfaceCulling();
 				culling = true;
 			}
+			else if (shaderData->Shader->GetName() == "BlendShader")
+			{
+				RenderCommand::EnableBackfaceCulling();
+				culling = true;
+			}
 			else
 			{
 				culling = false;
@@ -76,7 +81,6 @@ namespace Frosty
 			int PointLI = 0;
 			for (auto& PLightIt : s_SceneData->PointLights)
 			{
-
 				shaderData->Shader->UploadUniformFloat3Array("u_PointLights[" + std::to_string(PointLI) + "].Color", s_SceneData->PointLights[PLightIt.first].PointLight->Color);
 				shaderData->Shader->UploadUniformFloat3Array("u_PointLights[" + std::to_string(PointLI) + "].Position", s_SceneData->PointLights[PLightIt.first].Transform->Position);
 				shaderData->Shader->UploadUniformFloatArray("u_PointLights[" + std::to_string(PointLI) + "].Radius", s_SceneData->PointLights[PLightIt.first].PointLight->Radius);
@@ -103,7 +107,6 @@ namespace Frosty
 
 				auto& materialData = shaderData->MaterialMap.at(MaterialIt.first);
 
-				
 				shaderData->Shader->UploadUniformInt("u_Shininess", materialData->Material->Shininess);
 
 
@@ -126,6 +129,22 @@ namespace Frosty
 				if (materialData->Material->NormalTexture != nullptr)
 				{
 					materialData->Material->NormalTexture->Bind(1);
+				}
+				if (materialData->Material->SpecularTexture != nullptr)
+				{
+					materialData->Material->SpecularTexture->Bind(2);
+				}
+				if (materialData->Material->BlendMapTexture != nullptr)
+				{
+					materialData->Material->BlendMapTexture->Bind(3);
+				}
+				if (materialData->Material->BlendTexture1 != nullptr)
+				{
+					materialData->Material->BlendTexture1->Bind(4);
+				}
+				if (materialData->Material->BlendTexture1 != nullptr)
+				{
+					materialData->Material->BlendTexture1->Bind(5);
 				}
 
 				//For all Meshes
