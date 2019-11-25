@@ -19,6 +19,8 @@ namespace MCS
 	{
 		for (size_t i = 1; i < p_Total; i++)
 		{
+			if (m_Enemy[i]->Target == nullptr) continue;
+
 			CheckState(i);
 
 			HandleAttack(i);

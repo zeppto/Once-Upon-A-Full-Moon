@@ -116,7 +116,8 @@ struct Level_Physics
 //6 = Enemy
 struct Level_Enemy
 {
-	//nothing to send ( it is emty)
+	float RunOnHealth{ 0.0f };
+	glm::vec3 SpawnPosition{ 0.0f };
 };
 
 //7 = Health
