@@ -366,6 +366,16 @@ namespace MCS
 		//particleSystemComp2.StartParticleSize = 5.0f;
 		//particleSystemComp2.EndParticleSize = 2.0f;
 
+		//Blendmap working
+		//auto& blendTest = world->CreateEntity({ 0.0f, 1.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, {300.0f, 1.0f, 300.0f});
+		//world->AddComponent<Frosty::ECS::CMesh>(blendTest, Frosty::AssetManager::GetMesh("pPlane1"));
+		//auto& blendShaderComp = world->AddComponent<Frosty::ECS::CMaterial>(blendTest, Frosty::AssetManager::GetShader("BlendShader"));
+		//blendShaderComp.BlendMapTexture = Frosty::AssetManager::GetTexture2D("blend_road_cross");
+		//blendShaderComp.DiffuseTexture = Frosty::AssetManager::GetTexture2D("ground_test2"); //Alpha channel
+		//blendShaderComp.BlendTexture1 = Frosty::AssetManager::GetTexture2D("brown_mud_diffuse"); //Red channel
+		//blendShaderComp.BlendTexture2 = blendShaderComp.DiffuseTexture; //Green channel
+		//blendShaderComp.NormalTexture = Frosty::AssetManager::GetTexture2D("ground_test_normal");
+
 //ifdef FY_DEBUG
 	PushLayer(FY_NEW InspectorLayer());
 //else
