@@ -371,8 +371,8 @@ namespace MCS
 		//world->AddComponent<Frosty::ECS::CMesh>(blendTest, Frosty::AssetManager::GetMesh("pPlane1"));
 		//auto& blendShaderComp = world->AddComponent<Frosty::ECS::CMaterial>(blendTest, Frosty::AssetManager::GetShader("BlendShader"));
 		//blendShaderComp.BlendMapTexture = Frosty::AssetManager::GetTexture2D("blend_road_cross");
-		//blendShaderComp.DiffuseTexture = Frosty::AssetManager::GetTexture2D("ground_test2"); //Alpha channel
-		//blendShaderComp.BlendTexture1 = Frosty::AssetManager::GetTexture2D("brown_mud_diffuse"); //Red channel
+		//blendShaderComp.DiffuseTexture = Frosty::AssetManager::GetTexture2D("ground_test2");
+		//blendShaderComp.BlendTexture1 = Frosty::AssetManager::GetTexture2D("road_test2"); //Red channel
 		//blendShaderComp.BlendTexture2 = blendShaderComp.DiffuseTexture; //Green channel
 		//blendShaderComp.NormalTexture = Frosty::AssetManager::GetTexture2D("ground_test_normal");
 
