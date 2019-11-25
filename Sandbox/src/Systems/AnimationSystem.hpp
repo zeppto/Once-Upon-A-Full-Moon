@@ -31,6 +31,7 @@ namespace MCS
 		void OnDashEvent(Frosty::DashEvent& e);
 		void UpdateAnimOffset(Frosty::ECS::CAnimController* ctrl);
 		void OnPlayAnimEvent(Frosty::PlayAnimEvent& e);
+		void BeginNewAnim(Frosty::ECS::CAnimController* controller, const std::string& animName);
 
 	private:
 		std::array<Frosty::ECS::CTransform*, Frosty::ECS::MAX_ENTITIES_PER_COMPONENT> m_Transform;
