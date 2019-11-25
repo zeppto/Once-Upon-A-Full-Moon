@@ -63,6 +63,8 @@ namespace MCS
 				}
 			}
 			//m_Transform[i]->Position.y = 0.f;
+
+			UpdateHUD(i);
 		}
 	}
 
@@ -265,6 +267,7 @@ namespace MCS
 				// Check if entity has CDash component before publishing
 				if (m_Dash[index]->CurrentCooldown <= 0.0f)
 				{
+
 					m_Dash[index]->Active = true;
 					//ASDF
 					Frosty::EventBus::GetEventBus()->Publish<Frosty::DashEvent>(Frosty::DashEvent(m_Player[index]->EntityPtr));
@@ -322,9 +325,11 @@ namespace MCS
 			switch (weaponComp.Type)
 			{
 			case Frosty::ECS::CWeapon::WeaponType::Sword:
+				Frosty::EventBus::GetEventBus()->Publish <Frosty::PlayAnimEvent>(Frosty::PlayAnimEvent(weaponCarrier, 1));
 				CreateLVL1BoundingBox(weaponCarrier, weaponComp.EntityPtr);
 				break;
 			case Frosty::ECS::CWeapon::WeaponType::Bow:
+				Frosty::EventBus::GetEventBus()->Publish <Frosty::PlayAnimEvent>(Frosty::PlayAnimEvent(weaponCarrier, 4));
 				CreateLVL1Projectile(weaponCarrier, weaponComp.EntityPtr);
 				break;
 			default:
@@ -348,9 +353,11 @@ namespace MCS
 			switch (weaponComp.Type)
 			{
 			case Frosty::ECS::CWeapon::WeaponType::Sword:
+				Frosty::EventBus::GetEventBus()->Publish <Frosty::PlayAnimEvent>(Frosty::PlayAnimEvent(weaponCarrier, 2));
 				CreateLVL2BoundingBox(weaponCarrier, weaponComp.EntityPtr);
 				break;
 			case Frosty::ECS::CWeapon::WeaponType::Bow:
+				Frosty::EventBus::GetEventBus()->Publish <Frosty::PlayAnimEvent>(Frosty::PlayAnimEvent(weaponCarrier, 4));
 				CreateLVL2Projectile(weaponCarrier, weaponComp.EntityPtr);
 				break;
 			default:
@@ -374,9 +381,11 @@ namespace MCS
 			switch (weaponComp.Type)
 			{
 			case Frosty::ECS::CWeapon::WeaponType::Sword:
+				Frosty::EventBus::GetEventBus()->Publish <Frosty::PlayAnimEvent>(Frosty::PlayAnimEvent(weaponCarrier, 3));
 				CreateLVL3BoundingBox(weaponCarrier, weaponComp.EntityPtr);
 				break;
 			case Frosty::ECS::CWeapon::WeaponType::Bow:
+				Frosty::EventBus::GetEventBus()->Publish <Frosty::PlayAnimEvent>(Frosty::PlayAnimEvent(weaponCarrier, 4));
 				CreateLVL3Projectile(weaponCarrier, weaponComp.EntityPtr);
 				break;
 			default:
@@ -415,6 +424,7 @@ namespace MCS
 		int totalDamage = int(glm::round(weaponComp.Damage + criticalHit));
 
 		m_World->AddComponent<Frosty::ECS::CAttack>(sword, Frosty::ECS::CAttack::AttackType::Melee, totalDamage, true); // <-- true in the end because it's a friendly attack
+
 	}
 
 	void PlayerControllerSystem::CreateLVL2BoundingBox(const std::shared_ptr<Frosty::ECS::Entity>& weaponCarrier, const std::shared_ptr<Frosty::ECS::Entity>& weapon)
@@ -486,10 +496,10 @@ namespace MCS
 
 		// Create projectile
 		glm::vec3 spawnPos = attackerTransform.Position + (glm::vec3(direction) * 3.0f);
-		auto& projectile = m_World->CreateEntity({ spawnPos.x, 1.0f, spawnPos.z }, attackerTransform.Rotation, { 0.3f, 0.3f, 0.3f });
-		m_World->AddComponent<Frosty::ECS::CMesh>(projectile, Frosty::AssetManager::GetMesh("pSphere1"));
+		auto& projectile = m_World->CreateEntity({ spawnPos.x, 1.0f, spawnPos.z }, attackerTransform.Rotation, { 5.0f, 5.0f, 2.0f });
+		m_World->AddComponent<Frosty::ECS::CMesh>(projectile, Frosty::AssetManager::GetMesh("player_arrow"));
 		m_World->AddComponent<Frosty::ECS::CMaterial>(projectile, Frosty::AssetManager::GetShader("FlatColor"));
-		auto& projectilePhysics = m_World->AddComponent<Frosty::ECS::CPhysics>(projectile, Frosty::AssetManager::GetBoundingBox("pSphere1"), weaponComp.ProjectileSpeed);
+		auto& projectilePhysics = m_World->AddComponent<Frosty::ECS::CPhysics>(projectile, Frosty::AssetManager::GetBoundingBox("player_arrow"), weaponComp.ProjectileSpeed);
 		projectilePhysics.Velocity = direction * projectilePhysics.Speed;
 
 		float criticalHit = 0;
@@ -525,10 +535,10 @@ namespace MCS
 			}
 
 			glm::vec3 spawnPos = attackerTransform.Position + (glm::vec3(direction) * 3.0f);
-			auto& projectile = m_World->CreateEntity({ spawnPos.x, 1.0f, spawnPos.z }, attackerTransform.Rotation, { 0.3f, 0.3f, 0.3f });
-			m_World->AddComponent<Frosty::ECS::CMesh>(projectile, Frosty::AssetManager::GetMesh("pSphere1"));
+			auto& projectile = m_World->CreateEntity({ spawnPos.x, 1.0f, spawnPos.z }, attackerTransform.Rotation, { 5.0f, 5.0f, 2.0f });
+			m_World->AddComponent<Frosty::ECS::CMesh>(projectile, Frosty::AssetManager::GetMesh("player_arrow"));
 			m_World->AddComponent<Frosty::ECS::CMaterial>(projectile, Frosty::AssetManager::GetShader("FlatColor"));
-			auto& projectilePhysics = m_World->AddComponent<Frosty::ECS::CPhysics>(projectile, Frosty::AssetManager::GetBoundingBox("pSphere1"), weaponComp.ProjectileSpeed);
+			auto& projectilePhysics = m_World->AddComponent<Frosty::ECS::CPhysics>(projectile, Frosty::AssetManager::GetBoundingBox("player_arrow"), weaponComp.ProjectileSpeed);
 			projectilePhysics.Velocity = direction * projectilePhysics.Speed;
 
 			float criticalHit = 0;
@@ -555,10 +565,10 @@ namespace MCS
 
 		// Create projectile
 		glm::vec3 spawnPos = attackerTransform.Position + (glm::vec3(direction) * 3.0f);
-		auto& projectile = m_World->CreateEntity({ spawnPos.x, 1.0f, spawnPos.z }, attackerTransform.Rotation, { 0.3f, 0.3f, 0.3f });
-		m_World->AddComponent<Frosty::ECS::CMesh>(projectile, Frosty::AssetManager::GetMesh("pSphere1"));
+		auto& projectile = m_World->CreateEntity({ spawnPos.x, 1.0f, spawnPos.z }, attackerTransform.Rotation, { 5.0f, 5.0f, 2.0f });
+		m_World->AddComponent<Frosty::ECS::CMesh>(projectile, Frosty::AssetManager::GetMesh("player_arrow"));
 		m_World->AddComponent<Frosty::ECS::CMaterial>(projectile, Frosty::AssetManager::GetShader("FlatColor"));
-		auto& projectilePhysics = m_World->AddComponent<Frosty::ECS::CPhysics>(projectile, Frosty::AssetManager::GetBoundingBox("pSphere1"), weaponComp.ProjectileSpeed);
+		auto& projectilePhysics = m_World->AddComponent<Frosty::ECS::CPhysics>(projectile, Frosty::AssetManager::GetBoundingBox("player_arrow"), weaponComp.ProjectileSpeed);
 		projectilePhysics.Velocity = direction * projectilePhysics.Speed;
 
 		float criticalHit = 0;
@@ -722,54 +732,160 @@ namespace MCS
 		for (size_t i = 1; i < p_Total; i++)
 		{
 			auto& type = world->GetComponent<Frosty::ECS::CLootable>(e.GetEntity()).Type;
+			auto& HUD = m_World->GetComponent<Frosty::ECS::CGUI>(m_Transform[i]->EntityPtr);
 
-			if (type == Frosty::ECS::CLootable::LootType::HealingPotion && m_Inventory[i]->CurrentHealingPotions < m_Inventory[i]->MaxHealingPotions)
+			if (type == Frosty::ECS::CLootable::LootType::HealingPotion)
 			{
-				m_Inventory[i]->CurrentHealingPotions++;
-				FY_INFO("HealingPotion in Inventory");
-				FY_INFO("{0} / {1}", m_Inventory[i]->CurrentHealingPotions, m_Inventory[i]->MaxHealingPotions);
-				if (!world->HasComponent<Frosty::ECS::CDestroy>(e.GetEntity()))
+				if (m_Inventory[i]->CurrentHealingPotions < m_Inventory[i]->MaxHealingPotions)
 				{
-					world->AddComponent<Frosty::ECS::CDestroy>(e.GetEntity());
+					m_Inventory[i]->CurrentHealingPotions++;
+					SetPickUpText(i, "+1 Healing Potion");
+
+					FY_INFO("HealingPotion in Inventory");
+					FY_INFO("{0} / {1}", m_Inventory[i]->CurrentHealingPotions, m_Inventory[i]->MaxHealingPotions);
+					if (!world->HasComponent<Frosty::ECS::CDestroy>(e.GetEntity()))
+					{
+						world->AddComponent<Frosty::ECS::CDestroy>(e.GetEntity());
+					}
+				}
+				else
+				{
+					SetPickUpText(i, "Can't Pick Up Healing Potion");
+				}
+
+			}
+			else if (type == Frosty::ECS::CLootable::LootType::IncHealthPotion)
+			{
+				if (m_Inventory[i]->CurrentIncreaseHPPotions < m_Inventory[i]->MaxIncreaseHPPotions)
+				{
+					m_Health[i]->MaxHealth += 3;
+					SetPickUpText(i, "Health Increased");
+
+					FY_INFO("Health Increased");
+					//FY_INFO("{0} / {1}", m_Inventory[i]->CurrentIncreaseHPPotions, m_Inventory[i]->MaxIncreaseHPPotions);
+					if (!world->HasComponent<Frosty::ECS::CDestroy>(e.GetEntity()))
+					{
+						world->AddComponent<Frosty::ECS::CDestroy>(e.GetEntity());
+					}
+				}
+				else
+				{
+					SetPickUpText(i, "Can't Pick Up Health Increaser");
 				}
 			}
-			else if (type == Frosty::ECS::CLootable::LootType::IncHealthPotion && m_Inventory[i]->CurrentIncreaseHPPotions < m_Inventory[i]->MaxIncreaseHPPotions)
+			else if (type == Frosty::ECS::CLootable::LootType::SpeedPotion)
 			{
-				m_Health[i]->MaxHealth += 3;
-				FY_INFO("Health Increased");
-				//FY_INFO("{0} / {1}", m_Inventory[i]->CurrentIncreaseHPPotions, m_Inventory[i]->MaxIncreaseHPPotions);
-				if (!world->HasComponent<Frosty::ECS::CDestroy>(e.GetEntity()))
+				if (m_Inventory[i]->CurrentSpeedPotions < m_Inventory[i]->MaxSpeedPotions)
 				{
-					world->AddComponent<Frosty::ECS::CDestroy>(e.GetEntity());
+					m_Inventory[i]->CurrentSpeedPotions++;
+					SetPickUpText(i, "+1 Speed Potion");
+
+					FY_INFO("SpeedPotion in Inventory");
+					FY_INFO("{0} / {1}", m_Inventory[i]->CurrentSpeedPotions, m_Inventory[i]->MaxSpeedPotions);
+					if (!world->HasComponent<Frosty::ECS::CDestroy>(e.GetEntity()))
+					{
+						world->AddComponent<Frosty::ECS::CDestroy>(e.GetEntity());
+					}
+				}
+				else
+				{
+					SetPickUpText(i, "Can't Pick Up Speed Potion");
 				}
 			}
-			else if (type == Frosty::ECS::CLootable::LootType::SpeedPotion && m_Inventory[i]->CurrentSpeedPotions < m_Inventory[i]->MaxSpeedPotions)
+			else if (type == Frosty::ECS::CLootable::LootType::SpeedBoot)
 			{
-				m_Inventory[i]->CurrentSpeedPotions++;
-				FY_INFO("SpeedPotion in Inventory");
-				FY_INFO("{0} / {1}", m_Inventory[i]->CurrentSpeedPotions, m_Inventory[i]->MaxSpeedPotions);
-				if (!world->HasComponent<Frosty::ECS::CDestroy>(e.GetEntity()))
+				if (m_Inventory[i]->CurrentSpeedBoots < m_Inventory[i]->MaxSpeedBoots)
 				{
-					world->AddComponent<Frosty::ECS::CDestroy>(e.GetEntity());
+					if (m_Inventory[i]->IncreaseSpeed <= (m_Physics[i]->MaxSpeed - m_Physics[i]->Speed))
+					{
+						m_Physics[i]->Speed += m_Inventory[i]->IncreaseSpeed;
+						SetPickUpText(i, "Speed Increased");
+					}
+					FY_INFO("SpeedBoots Activated");
+					FY_INFO("{0} / {1}", m_Inventory[i]->CurrentSpeedBoots, m_Inventory[i]->MaxSpeedBoots);
+					if (!world->HasComponent<Frosty::ECS::CDestroy>(e.GetEntity()))
+					{
+						world->AddComponent<Frosty::ECS::CDestroy>(e.GetEntity());
+					}
+				}
+				else
+				{
+					SetPickUpText(i, "Can't Pick Up SpeedBoots");
 				}
 			}
-			else if (type == Frosty::ECS::CLootable::LootType::SpeedBoot && m_Inventory[i]->CurrentSpeedBoots < m_Inventory[i]->MaxSpeedBoots)
+			else if (type == Frosty::ECS::CLootable::LootType::Sword1)
 			{
-				if (m_Inventory[i]->IncreaseSpeed <= (m_Physics[i]->MaxSpeed - m_Physics[i]->Speed))
-				{
-					m_Physics[i]->Speed += m_Inventory[i]->IncreaseSpeed;
-				}
-				FY_INFO("SpeedBoots Activated");
-				FY_INFO("{0} / {1}", m_Inventory[i]->CurrentSpeedBoots, m_Inventory[i]->MaxSpeedBoots);
-				if (!world->HasComponent<Frosty::ECS::CDestroy>(e.GetEntity()))
-				{
-					world->AddComponent<Frosty::ECS::CDestroy>(e.GetEntity());
-				}
-			}
-			else if (world->HasComponent<Frosty::ECS::CWeapon>(e.GetEntity()))
-			{
-				FY_INFO("Weapon");
+				FY_INFO("Sword1");
+				SetPickUpText(i, "Picked Up Sword Level 1");
 				SwapWeapon(m_Player[i]->Weapon->EntityPtr, e.GetEntity());
+
+				ResetAllHUDWeaponInfo(i);
+				HUD.Layout.sprites.at(1).SetImage("attackMelee");
+				HUD.Layout.sprites.at(2).SetImage("attackMelee1");
+				HUD.Layout.sprites.at(3).SetImage("attackMelee2");
+				HUD.Layout.sprites.at(4).SetImage("attackMelee3");
+
+			}
+			else if (type == Frosty::ECS::CLootable::LootType::Sword2)
+			{
+				FY_INFO("Sword2");
+				SetPickUpText(i, "Picked Up Sword Level 2");
+				SwapWeapon(m_Player[i]->Weapon->EntityPtr, e.GetEntity());
+
+				ResetAllHUDWeaponInfo(i);
+				HUD.Layout.sprites.at(1).SetImage("attackMelee");
+				HUD.Layout.sprites.at(2).SetImage("attackMelee1");
+				HUD.Layout.sprites.at(3).SetImage("attackMelee2");
+				HUD.Layout.sprites.at(4).SetImage("attackMelee3");
+			}
+			else if (type == Frosty::ECS::CLootable::LootType::Sword3)
+			{
+				FY_INFO("Sword3");
+				SetPickUpText(i, "Picked Up Sword Level 3");
+				SwapWeapon(m_Player[i]->Weapon->EntityPtr, e.GetEntity());
+
+				ResetAllHUDWeaponInfo(i);
+				HUD.Layout.sprites.at(1).SetImage("attackMelee");
+				HUD.Layout.sprites.at(2).SetImage("attackMelee1");
+				HUD.Layout.sprites.at(3).SetImage("attackMelee2");
+				HUD.Layout.sprites.at(4).SetImage("attackMelee3");
+			}
+			else if (type == Frosty::ECS::CLootable::LootType::Bow1)
+			{
+				FY_INFO("Arrow1");
+				SetPickUpText(i, "Picked Up Bow Level 1");
+				SwapWeapon(m_Player[i]->Weapon->EntityPtr, e.GetEntity());
+
+				ResetAllHUDWeaponInfo(i);
+
+				HUD.Layout.sprites.at(1).SetImage("attackRanged");
+				HUD.Layout.sprites.at(2).SetImage("attackRanged1");
+				HUD.Layout.sprites.at(3).SetImage("attackRanged2");
+				HUD.Layout.sprites.at(4).SetImage("attackRanged3");
+			}
+			else if (type == Frosty::ECS::CLootable::LootType::Bow2)
+			{
+				FY_INFO("Arrow2");
+				SetPickUpText(i, "Picked Up Bow Level 2");
+				SwapWeapon(m_Player[i]->Weapon->EntityPtr, e.GetEntity());
+
+				ResetAllHUDWeaponInfo(i);
+				HUD.Layout.sprites.at(1).SetImage("attackRanged");
+				HUD.Layout.sprites.at(2).SetImage("attackRanged1");
+				HUD.Layout.sprites.at(3).SetImage("attackRanged2");
+				HUD.Layout.sprites.at(4).SetImage("attackRanged3");
+			}
+			else if (type == Frosty::ECS::CLootable::LootType::Bow3)
+			{
+				FY_INFO("Arrow3");
+				SetPickUpText(i, "Picked Up Bow Level 3");
+				SwapWeapon(m_Player[i]->Weapon->EntityPtr, e.GetEntity());
+
+				ResetAllHUDWeaponInfo(i);
+				HUD.Layout.sprites.at(1).SetImage("attackRanged");
+				HUD.Layout.sprites.at(2).SetImage("attackRanged1");
+				HUD.Layout.sprites.at(3).SetImage("attackRanged2");
+				HUD.Layout.sprites.at(4).SetImage("attackRanged3");
 			}
 		}
 	}
@@ -793,6 +909,7 @@ namespace MCS
 				// Swap loot type in lootWeapon depending on playerWeapon
 				SwapLootType(playerWeapon, lootWeapon);
 			}
+
 		}
 	}
 
@@ -852,4 +969,283 @@ namespace MCS
 				lootComp.Type = Frosty::ECS::CLootable::LootType::Bow3;
 		}
 	}
+	void PlayerControllerSystem::UpdateHUD(size_t index)
+	{
+		if (m_World->HasComponent<Frosty::ECS::CGUI>(m_Transform[index]->EntityPtr))
+		{
+			auto& HUD = m_World->GetComponent<Frosty::ECS::CGUI>(m_Transform[index]->EntityPtr);
+			//Items
+			HUD.Layout.texts.at(0).SetText(std::string(std::to_string(m_Inventory[index]->CurrentHealingPotions) + "/" + std::string(std::to_string(m_Inventory[index]->MaxHealingPotions))));
+			HUD.Layout.texts.at(1).SetText(std::string(std::to_string(m_Inventory[index]->CurrentSpeedPotions) + "/" + std::string(std::to_string(m_Inventory[index]->MaxSpeedBoots))));
+			HUD.Layout.texts.at(2).SetText(std::string(std::to_string(m_Inventory[index]->CurrentBaitAmount) + "/" + std::string(std::to_string(m_Inventory[index]->MaxBaitAmount))));
+			HUD.Layout.texts.at(3).SetText(std::string(std::to_string(m_Inventory[index]->CurrentWolfsbane)));
+
+			if (m_Inventory[index]->CurrentHealingPotions == 0)
+			{
+				HUD.Layout.sprites.at(9).SetColorSprite(glm::vec4(0.3f, 0.3f, 0.3f, 1.0f));
+				HUD.Layout.texts.at(18).SetText(std::string(""));
+				HUD.Layout.texts.at(0).SetColor(glm::vec3(0.75f, 0.75f, 0.50f));
+			}
+			else
+			{
+				HUD.Layout.sprites.at(9).SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+				HUD.Layout.texts.at(18).SetText(std::string("[1]"));
+				HUD.Layout.texts.at(0).SetColor(glm::vec3(1.0f, 1.0f, 0.75f));
+
+			}
+
+			if (m_Inventory[index]->CurrentSpeedPotions == 0)
+			{
+				HUD.Layout.sprites.at(10).SetColorSprite(glm::vec4(0.3f, 0.3f, 0.3f, 1.0f));
+				HUD.Layout.texts.at(19).SetText(std::string(""));
+				HUD.Layout.texts.at(1).SetColor(glm::vec3(0.75f, 0.75f, 0.50f));
+
+			}
+			else
+			{
+				HUD.Layout.sprites.at(9).SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+				HUD.Layout.texts.at(19).SetText(std::string("[2]"));
+				HUD.Layout.texts.at(1).SetColor(glm::vec3(1.0f, 1.0f, 0.75f));
+
+			}
+
+			if (m_Inventory[index]->CurrentBaitAmount == 0)
+			{
+				HUD.Layout.sprites.at(11).SetColorSprite(glm::vec4(0.3f, 0.3f, 0.3f, 1.0f));
+				HUD.Layout.texts.at(20).SetText(std::string(""));
+				HUD.Layout.texts.at(2).SetColor(glm::vec3(0.5f, 0.5f, 0.25f));
+
+			}
+			else
+			{
+				HUD.Layout.sprites.at(9).SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+				HUD.Layout.texts.at(20).SetText(std::string("[Q]"));
+				HUD.Layout.texts.at(2).SetColor(glm::vec3(1.0f, 1.0f, 0.75f));
+
+			}
+
+			//Points
+			HUD.Layout.texts.at(4).SetText(std::string("Points: " + std::to_string(m_Player[index]->Score)));
+
+			//Temp Health
+			HUD.Layout.texts.at(5).SetText(std::string(std::to_string((int)m_Health[index]->CurrentHealth) + "/" + std::to_string((int)m_Health[index]->MaxHealth)));
+
+			//Pickup Text
+			if (Frosty::Time::CurrentTime() - m_Player[index]->PickUpTextTimer >= m_Player[index]->PickUpTextTime)
+			{
+				HUD.Layout.texts.at(6).SetText("");
+			}
+
+			//Attack cooldown
+			auto& weapon = m_Player[index]->Weapon;
+			if (weapon->Level == 3)
+			{
+				HUD.Layout.texts.at(14).SetText(std::string("[SPACE]"));
+
+				float timer = weapon->LVL3AttackCooldownTimer;
+				float time = Frosty::Time::CurrentTime();
+				float dif = (time - timer);
+				float cooldown = weapon->LVL3AttackCooldown - dif;
+				if (cooldown > 0)
+				{
+					int cooldown1 = (int)cooldown;
+					int cooldown2 = (int)((cooldown - cooldown1) * 10);
+					HUD.Layout.texts.at(7).SetText(std::string(std::to_string(cooldown1) + "." + std::to_string(cooldown2)));
+					HUD.Layout.sprites.at(4).SetColorSprite(glm::vec4(0.1f, 0.1f, 0.1f, 0.90f));
+				}
+				else
+				{
+					HUD.Layout.texts.at(7).SetText(std::string(""));
+					HUD.Layout.sprites.at(4).SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+
+				}
+			}
+			else
+			{
+				HUD.Layout.texts.at(14).SetText(std::string(""));
+				HUD.Layout.sprites.at(4).SetColorSprite(glm::vec4(0.1f, 0.1f, 0.1f, 0.50f));
+
+			}
+
+			if (weapon->Level >= 2)
+			{
+				HUD.Layout.texts.at(15).SetText(std::string("[R-MOUSE]"));
+
+				float timer = weapon->LVL2AttackCooldownTimer;
+				float time = Frosty::Time::CurrentTime();
+				float dif = (time - timer);
+				float cooldown = weapon->LVL2AttackCooldown - dif;
+				if (cooldown > 0)
+				{
+					int cooldown1 = (int)cooldown;
+					int cooldown2 = (int)((cooldown - cooldown1) * 10);
+					HUD.Layout.texts.at(8).SetText(std::string(std::to_string(cooldown1) + "." + std::to_string(cooldown2)));
+					HUD.Layout.sprites.at(3).SetColorSprite(glm::vec4(0.1f, 0.1f, 0.1f, 0.90f));
+
+
+				}
+				else
+				{
+					HUD.Layout.texts.at(8).SetText(std::string(""));
+					HUD.Layout.sprites.at(3).SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+
+				}
+			}
+			else
+			{
+				HUD.Layout.texts.at(15).SetText(std::string(""));
+				HUD.Layout.sprites.at(3).SetColorSprite(glm::vec4(0.1f, 0.1f, 0.1f, 0.50f));
+
+			}
+
+			if (weapon->Level >= 1)
+			{
+				HUD.Layout.texts.at(16).SetText(std::string("[L-MOUSE]"));
+
+				float timer = weapon->LVL1AttackCooldownTimer;
+				float time = Frosty::Time::CurrentTime();
+				float dif = (time - timer);
+				float cooldown = weapon->LVL1AttackCooldown - dif;
+				if (cooldown > 0)
+				{
+					int cooldown1 = (int)cooldown;
+					int cooldown2 = (int)((cooldown - cooldown1) * 10);
+					HUD.Layout.texts.at(9).SetText(std::string(std::to_string(cooldown1) + "." + std::to_string(cooldown2)));
+					HUD.Layout.sprites.at(2).SetColorSprite(glm::vec4(0.1f, 0.1f, 0.1f, 0.90f));
+
+
+				}
+				else
+				{
+					HUD.Layout.texts.at(9).SetText(std::string(""));
+					HUD.Layout.sprites.at(2).SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+
+				}
+
+			}
+			else
+			{
+				HUD.Layout.texts.at(16).SetText(std::string(""));
+				HUD.Layout.sprites.at(2).SetColorSprite(glm::vec4(0.1f, 0.1f, 0.1f, 0.50f));
+
+			}
+
+			
+			//Dash cooldown
+			if (m_Dash[index]->CurrentCooldown > 0)
+			{
+				int cooldown1 = (int)(m_Dash[index]->CurrentCooldown);
+				int cooldown2 = (int)(((m_Dash[index]->CurrentCooldown - cooldown1) * 10));
+
+				HUD.Layout.texts.at(10).SetText(std::string(std::to_string(cooldown1) + "." + std::to_string(cooldown2)));
+				HUD.Layout.sprites.at(13).SetColorSprite(glm::vec4(0.1f, 0.1f, 0.1f, 0.90f));
+
+			}
+			else
+			{
+				HUD.Layout.texts.at(10).SetText(std::string(""));
+				HUD.Layout.sprites.at(13).SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+
+			}
+
+
+			m_Inventory[index]->HealingTimer;
+
+			//Item Cooldowns
+			float CurrentTime = Frosty::Time::CurrentTime();
+
+			//Health
+			float timer = m_Inventory[index]->HealingTimer;
+			float dif = (CurrentTime - timer);
+			float cooldown = m_Inventory[index]->HealingCooldown - dif;
+
+			if (cooldown > 0)
+			{
+				int cooldown1 = (int)cooldown;
+				int cooldown2 = (int)((cooldown - cooldown1) * 10);
+				HUD.Layout.texts.at(11).SetText(std::string(std::to_string(cooldown1) + "." + std::to_string(cooldown2)));
+				HUD.Layout.sprites.at(9).SetColorSprite(glm::vec4(0.2f, 0.2f, 0.2f, 0.75f));
+
+			}
+			else
+			{
+				HUD.Layout.texts.at(11).SetText(std::string(""));
+				if (m_Inventory[index]->CurrentHealingPotions != 0)
+				{
+					HUD.Layout.sprites.at(9).SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+				}
+
+			}
+
+			//Speed
+			timer = m_Inventory[index]->SpeedTimer;
+			dif = (CurrentTime - timer);
+			cooldown = m_Inventory[index]->SpeedCooldown - dif;
+
+			if (cooldown > 0)
+			{
+				int cooldown1 = (int)cooldown;
+				int cooldown2 = (int)((cooldown - cooldown1) * 10);
+				HUD.Layout.texts.at(12).SetText(std::string(std::to_string(cooldown1) + "." + std::to_string(cooldown2)));
+				HUD.Layout.sprites.at(10).SetColorSprite(glm::vec4(0.2f, 0.2f, 0.2f, 0.75f));
+
+			}
+			else
+			{
+				HUD.Layout.texts.at(12).SetText(std::string(""));
+				if (m_Inventory[index]->CurrentSpeedPotions != 0)
+				{
+					HUD.Layout.sprites.at(10).SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+				}
+
+			}
+
+			//Bait
+			timer = m_Inventory[index]->BaitTimer;
+			dif = (CurrentTime - timer);
+			cooldown = m_Inventory[index]->BaitCooldown - dif;
+
+			if (cooldown > 0)
+			{
+				int cooldown1 = (int)cooldown;
+				int cooldown2 = (int)((cooldown - cooldown1) * 10);
+				HUD.Layout.texts.at(13).SetText(std::string(std::to_string(cooldown1) + "." + std::to_string(cooldown2)));
+				HUD.Layout.sprites.at(11).SetColorSprite(glm::vec4(0.2f, 0.2f, 0.2f, 0.75f));
+
+			}
+			else
+			{
+				HUD.Layout.texts.at(13).SetText(std::string(""));
+				if (m_Inventory[index]->CurrentBaitAmount != 0)
+				{
+					HUD.Layout.sprites.at(11).SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+				}
+
+			}
+
+			
+		}
+	}
+
+	void PlayerControllerSystem::SetPickUpText(size_t index, std::string text)
+	{
+		if (m_World->HasComponent<Frosty::ECS::CGUI>(m_Transform[index]->EntityPtr))
+		{
+			auto& HUD = m_World->GetComponent<Frosty::ECS::CGUI>(m_Transform[index]->EntityPtr);
+
+			HUD.Layout.texts.at(6).SetText(text);
+			m_Player[index]->PickUpTextTimer = Frosty::Time::CurrentTime();
+
+		}
+	}
+
+	void PlayerControllerSystem::ResetAllHUDWeaponInfo(size_t index)
+	{
+		auto& HUD = m_World->GetComponent<Frosty::ECS::CGUI>(m_Transform[index]->EntityPtr);
+		HUD.Layout.texts.at(7).SetText(std::string(""));
+		HUD.Layout.texts.at(8).SetText(std::string(""));
+		HUD.Layout.texts.at(9).SetText(std::string(""));
+	}
+
+
 }

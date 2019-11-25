@@ -7,7 +7,7 @@ namespace MCS
 	{
 	public:
 		GameState();
-		virtual ~GameState();
+		virtual ~GameState() = default;
 
 		virtual void Initiate() override;
 		virtual void OnInput() override;
@@ -16,7 +16,6 @@ namespace MCS
 		//virtual void Pause();
 		//virtual void Resume();
 	private:
-		void InitiateGui();
 		void InitiateLight();
 
 		// Temp
@@ -24,8 +23,6 @@ namespace MCS
 	private:
 		Frosty::Application* m_App = nullptr;
 		Frosty::World* m_World = nullptr;
-
-		std::shared_ptr<Frosty::ECS::Entity> m_GameGui;
 	};
 }
 #endif

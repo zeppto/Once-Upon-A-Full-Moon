@@ -122,9 +122,9 @@ struct Level_Enemy
 //7 = Health
 struct Level_Health
 {
-	float MaxPossibleHealth = 20;						
-	float MaxHealth = 5;								
-	float CurrentHealth = 5;
+	int MaxPossibleHealth = 20;						
+	int MaxHealth = 5;								
+	int CurrentHealth = 5;
 };
 
 //8 = HealthBar
@@ -142,15 +142,38 @@ struct Level_HealthBar
 //9 = ParticleSystem
 struct Level_ParticleSystem
 {
-	//under construction
-	float startParticleSize = 1.0f;
-	float endParticleSize = 0.0f;
+	uint32_t MaxParticles{ 1 }; //User's choice of max particles
+	float StartParticleSize{ 1.0f };
+	float EndParticleSize{ 0.0f };
+	float ParticleSize{ 1.0f }; //For a constant size
 
-	glm::vec3 particleSystemColor = glm::vec3(1.0f);
-	float emitRate = 0.1f;
-	uint32_t emitCount = 1;
-	float maxLifetime = 3.0f; //All particles
-	float fadeTreshold = 0.0f; //No fade
+	glm::vec3 SystemRotation{ 0.0f };
+
+	uint32_t ParticleCount{ 0 };
+	glm::vec3 SystemStartColor{ 1.0f };
+	glm::vec3 SystemEndColor{ 1.0f };
+	glm::vec3 ParticleSystemDirection{ 0.0f, 1.0f, 0.0f };
+	glm::vec3 ParticleSystemStartPos{ 0.0f, 0.0f, 0.0f };
+	float EmitRate{ 0.1f };
+	uint32_t EmitCount{ 1 };
+	float Speed{ 1.0f };
+	float MinLifetime{ 3.0f };
+	float MaxLifetime{ 3.0f };
+	float FadeTreshold{ 0.0f };
+	float FadeInTreshold{ MaxLifetime };
+
+	float randSpread{ 1.5f };
+	glm::vec3 randMainDir{ 0.0f, 1.0f, 0.0f };
+
+	bool RotateOverLifetime{ false };
+	bool StaticColor{ true };
+	bool RandomLifetimes{ false };
+	bool RandomStartPos{ false };
+	bool RandomDirection{ false };
+	bool AlwaysFaceCamera{ true };
+
+	char TextureName[50] = "";
+	char ShaderName[50] = "";
 };
 
 //10 = LevelExit

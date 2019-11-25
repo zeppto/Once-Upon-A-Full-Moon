@@ -27,6 +27,7 @@ namespace MCS
 		void OnCollisionEvent(Frosty::CollisionEvent& e);
 
 	private:
+		Frosty::World* m_World{ nullptr };
 		std::array<Frosty::ECS::CTransform*, Frosty::ECS::MAX_ENTITIES_PER_COMPONENT> m_Transform;
 		std::array<Frosty::ECS::CHealth*, Frosty::ECS::MAX_ENTITIES_PER_COMPONENT> m_Health;
 

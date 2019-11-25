@@ -144,7 +144,7 @@ namespace Frosty
 				//glBindVertexArray(RenderModelID);
 				glUniformMatrix4fv(locationMM, 1, GL_FALSE, &(*PosIt)[0][0]);
 				//glDrawArrays(GL_TRIANGLES, 0, 3);
-				glDrawElements(GL_TRIANGLES, ModelBatchIt->Indices.size(), GL_UNSIGNED_INT, 0);
+				glDrawElements(GL_TRIANGLES, (int)ModelBatchIt->Indices.size(), GL_UNSIGNED_INT, 0);
 				PosIt++;
 			}
 			ModelBatchIt++;

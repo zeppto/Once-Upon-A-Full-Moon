@@ -10,9 +10,9 @@ namespace Frosty
 {
 	Renderer::SceneData* Renderer::s_SceneData = FY_NEW Renderer::SceneData;
 	std::unordered_map<std::string, std::shared_ptr<Renderer::ShaderData>> Renderer::s_ShaderMap;
-	std::unordered_map<int, std::unordered_map<int, Frosty::ECS::CTransform*>*> Renderer::s_TransformLookUpMap;
-	std::unordered_map<int, std::unordered_map<std::string, std::shared_ptr<Renderer::MeshData>>*> Renderer::s_MeshLookUpMap;
-	std::unordered_map<int, std::unordered_map<int, std::shared_ptr<Renderer::MaterialData>>*> Renderer::s_MaterialLookUpMap;
+	std::unordered_map<size_t, std::unordered_map<size_t, Frosty::ECS::CTransform*>*> Renderer::s_TransformLookUpMap;
+	std::unordered_map<size_t, std::unordered_map<std::string, std::shared_ptr<Renderer::MeshData>>*> Renderer::s_MeshLookUpMap;
+	std::unordered_map<size_t, std::unordered_map<size_t, std::shared_ptr<Renderer::MaterialData>>*> Renderer::s_MaterialLookUpMap;
 	std::vector<Renderer::RenderPassData>  Renderer::s_RenderPas;
 
 	int Renderer::s_TotalNrOfFrames;
@@ -42,7 +42,7 @@ namespace Frosty
 		int nrOfDrawnedObjs = 0;
 		int nrOfCulledObjs = 0;
 		bool culling = false;
-
+		
 		//For all shaders
 		for (auto& ShaderIt : s_ShaderMap)
 		{
@@ -96,9 +96,6 @@ namespace Frosty
 			}
 
 
-
-
-
 			//For all Materials
 			for (auto& MaterialIt : shaderData->MaterialMap)
 			{
@@ -141,17 +138,30 @@ namespace Frosty
 					//For all Transforms
 					for (auto& TransformIt : meshData->TransformMap)
 					{
+						//If mesh is parented
+						if (meshData->parentMatrix != nullptr)
+						{
+							//If mesh is bound to a specific joint during animations.
+							if (meshData->holdJointTransform != nullptr)
+							{
+								meshData->TransformMap[TransformIt.first]->ModelMatrix = (*meshData->parentMatrix * *meshData->holdJointTransform * *meshData->TransformMap[TransformIt.first]->GetModelMatrix());
+							}
+							else
+							{
+								meshData->TransformMap[TransformIt.first]->ModelMatrix = *meshData->parentMatrix * meshData->TransformMap[TransformIt.first]->ModelMatrix;
+							}
+						}
+
 						float distance = 0;																	//The scale check is so the plane is not culled
-						if (culling && Time::GetFrameCount /*&& s_TotalNrOfFrames % 2 == 0*/ && meshData->TransformMap.at(TransformIt.first)->Scale.x < 100 && s_DistanceCulling)
+						if (culling && Time::GetFrameCount() /*&& s_TotalNrOfFrames % 2 == 0*/ && meshData->TransformMap.at(TransformIt.first)->Scale.x < 100 && s_DistanceCulling)
 						{
 							distance = glm::distance(meshData->TransformMap.at(TransformIt.first)->Position, s_SceneData->GameCamera.CameraPosition);
 						}
 
-
 						if (distance < 110)
 						{
 							nrOfDrawnedObjs++;
-							shaderData->Shader->UploadUniformMat4("u_Transform", *meshData->TransformMap.at(TransformIt.first)->GetModelMatrix());
+							shaderData->Shader->UploadUniformMat4("u_Transform", meshData->TransformMap.at(TransformIt.first)->ModelMatrix);
 							RenderCommand::Draw2D(meshData->VertexArray);
 
 						}
@@ -224,7 +234,7 @@ namespace Frosty
 		}
 	}
 
-	void Renderer::UppdateLight(Frosty::ECS::CLight* light, ECS::CTransform* transform)
+	void Renderer::UpdateLight(Frosty::ECS::CLight* light, ECS::CTransform* transform)
 	{
 		if (light->Type == Frosty::ECS::CLight::LightType::Point)
 		{
@@ -311,6 +321,7 @@ namespace Frosty
 	{
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		glDisable(GL_DEPTH_TEST);
 		shader->Bind();
 		vertexArray->Bind();
 
@@ -346,7 +357,6 @@ namespace Frosty
 			vertexArray->GetVertexBuffer().front()->Bind();
 			vertexArray->GetVertexBuffer().front()->SetData(*verts, sizeof(verts), Frosty::BufferType::DYNAMIC);
 
-
 			glActiveTexture(GL_TEXTURE0);
 			glBindTexture(GL_TEXTURE_2D, ch.textureID);
 
@@ -359,6 +369,40 @@ namespace Frosty
 		shader->UnBind();
 		vertexArray->Unbind();
 		glDisable(GL_BLEND);
+		glEnable(GL_DEPTH_TEST);
+	}
+
+	void Renderer::SubmitSprite(const std::shared_ptr<Shader>& shader, const std::shared_ptr<VertexArray>& vertexArray, const uint32_t textureID, glm::vec4 color, glm::mat4 transform)
+	{
+		shader->Bind();
+		vertexArray->Bind();
+
+		float width = 1280.0f;
+		float height = 720.0f;
+		glm::mat4 projection = glm::ortho(0.0f, width, 0.0f, height);
+		shader->UploadUniformMat4("projection", projection);
+		shader->UploadUniformMat4("transform", transform);
+		shader->UploadUniformFloat4("color", color); //Make sure this number matches the active and sampled texture
+
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		glDisable(GL_DEPTH_TEST);
+
+		vertexArray->GetVertexBuffer().front()->Bind();
+
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, textureID);
+		RenderCommand::EnableBackfaceCulling();
+		RenderCommand::Draw2D(vertexArray); //Will probably change later
+		RenderCommand::DisableBackfaceCulling();
+		glBindTexture(GL_TEXTURE_2D, 0);
+
+		glDisable(GL_BLEND);
+		glEnable(GL_DEPTH_TEST);
+
+		shader->UnBind();
+		vertexArray->Unbind();
+		
 	}
 
 	void Renderer::SubmitParticles(const std::shared_ptr<Shader>& shader, const std::shared_ptr<VertexArray>& vertexArray, glm::mat4& modelMat, size_t particleCount, float maxLifetime)
@@ -438,6 +482,11 @@ namespace Frosty
 	//For 2D, might be temp
 	void Renderer::Submit2d(const std::shared_ptr<Shader>& shader, const std::shared_ptr<VertexArray>& vertexArray, const glm::mat4& transform)
 	{
+		float width = 1280.0f;
+		float height = 720.0f;
+		glm::mat4 projection = glm::ortho(0.0f, width, 0.0f, height);
+
+		shader->UploadUniformMat4("projection", projection);
 
 		shader->Bind();
 		vertexArray->Bind();
@@ -482,7 +531,7 @@ namespace Frosty
 
 	int counter = 0;
 
-	void Renderer::AddToRenderer(ECS::CMaterial* mat, std::shared_ptr<VertexArray> vertexArray, ECS::CTransform* transform, ECS::CAnimController* anim)
+	void Renderer::AddToRenderer(ECS::CMaterial* mat, ECS::CMesh* mesh, ECS::CTransform* transform, ECS::CAnimController* anim)
 	{
 		if (mat->UseShader->GetName() != "Animation")
 		{
@@ -503,9 +552,9 @@ namespace Frosty
 
 			counter++;
 			//Set up IDs
-			int matID = transform->EntityPtr->Id; //Works but can be improved whith a real material ID
-			std::string meshID = vertexArray->GetName();
-			int transformID = transform->EntityPtr->Id;
+			size_t matID = transform->EntityPtr->Id; //Works but can be improved whith a real material ID
+			std::string meshID = mesh->Mesh->GetName();
+			size_t transformID = transform->EntityPtr->Id;
 
 
 			//Check if the shader key is already in the map, if not add it.
@@ -537,8 +586,13 @@ namespace Frosty
 				materialData->MeshMap.emplace(meshID, FY_NEW  MeshData);
 			}
 			auto& meshData = materialData->MeshMap.at(meshID);
-			meshData->VertexArray = vertexArray;
+			meshData->VertexArray = mesh->Mesh;
 			meshData->TransformMap.emplace(transformID, transform);
+			if (mesh->parentMatrix != nullptr)
+			{
+				meshData->parentMatrix = mesh->parentMatrix;
+				meshData->holdJointTransform = mesh->animOffset;
+			}
 
 			//Add the mesh to the MeshLookUpMap
 			s_MeshLookUpMap.emplace(transformID, &materialData->MeshMap);
@@ -551,14 +605,14 @@ namespace Frosty
 		}
 	}
 
-	void Renderer::RemoveFromRenderer(const int& matID, const std::string& meshName, const int& transformID)
+	void Renderer::RemoveFromRenderer(const size_t& matID, const std::string& meshName, const size_t& transformID)
 	{
 		if (s_TransformLookUpMap.find(transformID) != s_TransformLookUpMap.end())
 		{
 			s_ShaderMap;
 
-			int nrOfTransforms = 0;
-			int nrOfMeshes = 0;
+			size_t nrOfTransforms = 0;
+			size_t nrOfMeshes = 0;
 
 			s_TransformLookUpMap.at(transformID)->at(transformID) = nullptr;
 			s_TransformLookUpMap.at(transformID)->erase(transformID);
@@ -595,7 +649,7 @@ namespace Frosty
 
 	}
 
-	void Renderer::UppdateEntity(const int& matID, ECS::CMaterial* mat, const std::string& meshName, std::shared_ptr<VertexArray> vertexArray, const int& transformID, ECS::CTransform* transform)
+	void Renderer::UpdateEntity(const size_t& matID, ECS::CMaterial* mat, const std::string& meshName, std::shared_ptr<VertexArray> vertexArray, const size_t& transformID, ECS::CTransform* transform)
 	{
 		if (s_TransformLookUpMap.find(transformID) != s_TransformLookUpMap.end())
 		{
@@ -607,7 +661,7 @@ namespace Frosty
 		}
 	}
 
-	void Renderer::ChangeEntity(const int& OldMatID, ECS::CMaterial* mat, const std::string& OldMeshName, std::shared_ptr<VertexArray> vertexArray, const int& transformID, ECS::CTransform* transform)
+	void Renderer::ChangeEntity(const size_t& OldMatID, ECS::CMaterial* mat, const std::string& OldMeshName, ECS::CMesh * mesh, const size_t& transformID, ECS::CTransform* transform)
 	{
 		//Not the best but it works
 
@@ -619,17 +673,21 @@ namespace Frosty
 			//Add new
 			if (mat->UseShader->GetName() != "Animation")
 			{
-				AddToRenderer(mat, vertexArray, transform, nullptr);
+				AddToRenderer(mat, mesh, transform, nullptr);
 			}
 
 		}
 	}
 
-
-
-
-
-
+	void Renderer::UpdateCMesh(const int& entityID, ECS::CMesh* mesh)
+	{
+		if (s_TransformLookUpMap.find(entityID) != s_TransformLookUpMap.end())
+		{
+			auto& meshData = s_MeshLookUpMap.at(entityID)->at(mesh->Mesh->GetName());
+			meshData->parentMatrix = mesh->parentMatrix;
+			meshData->holdJointTransform = mesh->animOffset;
+		}
+	}
 
 	void Renderer::AnimSubmit(ECS::CMaterial* mat, const std::shared_ptr<VertexArray>& vertexArray, const glm::mat4& transform, ECS::CAnimController* controller)
 	{
@@ -665,29 +723,23 @@ namespace Frosty
 			mat->UseShader->UploadUniformFloatArray("u_DirectionalLights[" + std::to_string(DirectLI) + "].Strength", s_SceneData->DirectionalLights[DLightIt.first].DirectionalLight->Strength);
 			DirectLI++;
 		}
-		//// Point Lights
-		//mat->UseShader->UploadUniformInt("u_TotalPointLights", (int)s_SceneData->PointLights.size());
-		//for (size_t i = 0; i < s_SceneData->PointLights.size(); i++)
-		//{
-		//	mat->UseShader->UploadUniformFloat3Array("u_PointLights[" + std::to_string(i) + "].Color", s_SceneData->PointLights[i].Color);
-		//	mat->UseShader->UploadUniformFloat3Array("u_PointLights[" + std::to_string(i) + "].Position", s_SceneData->PointLights[i].Position);
-		//	mat->UseShader->UploadUniformFloatArray("u_PointLights[" + std::to_string(i) + "].Radius", s_SceneData->PointLights[i].Radius);
-		//	mat->UseShader->UploadUniformFloatArray("u_PointLights[" + std::to_string(i) + "].Strength", s_SceneData->PointLights[i].Strength);
-		//}
-
-		//// Directional Lights
-		//mat->UseShader->UploadUniformInt("u_TotalDirectionalLights", (int)s_SceneData->DirectionalLights.size());
-		//for (size_t i = 0; i < s_SceneData->DirectionalLights.size(); i++)
-		//{
-		//	mat->UseShader->UploadUniformFloat3Array("u_DirectionalLights[" + std::to_string(i) + "].Color", s_SceneData->DirectionalLights[i].Color);
-		//	mat->UseShader->UploadUniformFloat3Array("u_DirectionalLights[" + std::to_string(i) + "].Direction", s_SceneData->DirectionalLights[i].Direction);
-		//	mat->UseShader->UploadUniformFloatArray("u_DirectionalLights[" + std::to_string(i) + "].Strength", s_SceneData->DirectionalLights[i].Strength);
-		//}
 
 		void* skinDataPtr = nullptr;
 		int nrOfBones = 0;
 		controller->currAnim->CalculateAnimMatrix(&controller->dt);
 		controller->currAnim->GetSkinData(skinDataPtr, nrOfBones);
+
+		//this shit don't need to go all the way up to animation system if we just do it in RenderScene()
+		glm::mat4* temp = controller->currAnim->getHoldingJoint();
+		if (temp != nullptr)
+		{
+			//Will not work since animated is not included.
+			if (s_MaterialLookUpMap.find(mat->EntityPtr->Id) != s_MaterialLookUpMap.end())
+			{
+				auto& meshData = s_MeshLookUpMap.at(mat->EntityPtr->Id)->at(vertexArray->GetName());
+				meshData->holdJointTransform = temp;
+			}
+		}
 
 		vertexArray->GetUniformBuffer()->BindUpdate(skinDataPtr, nrOfBones);
 

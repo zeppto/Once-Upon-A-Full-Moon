@@ -152,14 +152,34 @@ void LevelFileFormat::AddEntity(const std::shared_ptr<Frosty::ECS::Entity>& enti
 		if (m_World->HasComponent<Frosty::ECS::CParticleSystem>(entity))
 		{
 			myComponents.MyComponents.at(9).HaveComponent = true;
-			//auto& particelSystem = m_World->GetComponent<Frosty::ECS::CParticleSystem>(entity);
-			//myComponents.myParticleSystem.startParticleSize = particelSystem.startParticleSize;
-			//myComponents.myParticleSystem.endParticleSize = particelSystem.endParticleSize;
-			//myComponents.myParticleSystem.particleSystemColor = particelSystem.particleSystemColor;
-			//myComponents.myParticleSystem.emitRate = particelSystem.emitRate;
-			//myComponents.myParticleSystem.emitCount = particelSystem.emitCount;
-			//myComponents.myParticleSystem.maxLifetime = particelSystem.maxLifetime;
-			//myComponents.myParticleSystem.fadeTreshold = particelSystem.fadeTreshold;
+			auto& particelSystem = m_World->GetComponent<Frosty::ECS::CParticleSystem>(entity);
+			myComponents.myParticleSystem.AlwaysFaceCamera = particelSystem.AlwaysFaceCamera;
+			myComponents.myParticleSystem.EmitCount = particelSystem.EmitCount;
+			myComponents.myParticleSystem.EmitRate = particelSystem.EmitRate;
+			myComponents.myParticleSystem.EndParticleSize = particelSystem.EndParticleSize;
+			myComponents.myParticleSystem.FadeInTreshold = particelSystem.FadeInTreshold;
+			myComponents.myParticleSystem.FadeTreshold = particelSystem.FadeTreshold;
+			myComponents.myParticleSystem.MaxLifetime = particelSystem.MaxLifetime;
+			myComponents.myParticleSystem.MaxParticles = particelSystem.MaxParticles;
+			myComponents.myParticleSystem.MinLifetime = particelSystem.MinLifetime;
+			myComponents.myParticleSystem.ParticleCount = particelSystem.ParticleCount;
+			myComponents.myParticleSystem.ParticleSize = particelSystem.ParticleSize;
+			myComponents.myParticleSystem.ParticleSystemDirection = particelSystem.ParticleSystemDirection;
+			myComponents.myParticleSystem.ParticleSystemStartPos = particelSystem.ParticleSystemStartPos;
+			myComponents.myParticleSystem.randMainDir = particelSystem.randMainDir;
+			myComponents.myParticleSystem.RandomDirection = particelSystem.RandomDirection;
+			myComponents.myParticleSystem.RandomLifetimes = particelSystem.RandomLifetimes;
+			myComponents.myParticleSystem.RandomStartPos = particelSystem.RandomStartPos;
+			myComponents.myParticleSystem.randSpread = particelSystem.randSpread;
+			myComponents.myParticleSystem.RotateOverLifetime = particelSystem.RotateOverLifetime;
+			strcpy_s(myComponents.myParticleSystem.ShaderName, particelSystem.UseShader->GetName().c_str());
+			myComponents.myParticleSystem.Speed = particelSystem.Speed;
+			myComponents.myParticleSystem.StartParticleSize = particelSystem.StartParticleSize;
+			myComponents.myParticleSystem.StaticColor = particelSystem.StaticColor;
+			myComponents.myParticleSystem.SystemEndColor = particelSystem.SystemEndColor;
+			myComponents.myParticleSystem.SystemRotation = particelSystem.SystemRotation;
+			myComponents.myParticleSystem.SystemStartColor = particelSystem.SystemStartColor;
+			strcpy_s(myComponents.myParticleSystem.TextureName, particelSystem.Texture->GetName().c_str());
 		}
 		else
 			myComponents.MyComponents.at(9).HaveComponent = false;
@@ -374,6 +394,29 @@ void LevelFileFormat::OpenFromFile(std::string fileName, glm::ivec2 roomId , Fro
 					//if(!fileEntitys.myEntitys.at(i).MyComponents.at(10).HaveComponent)
 					m_World->AddComponent<Frosty::ECS::CMesh>(entity,
 						Frosty::AssetManager::GetMesh(fileEntitys.myEntitys.at(i).myMesh.MeshName));
+					//std::string meshName = fileEntitys.myEntitys.at(i).myMesh.MeshName;
+					//if (meshName.find("hexCircle") != std::string::npos)
+					//{
+					//	auto& particel = m_World->AddComponent<Frosty::ECS::CParticleSystem>(entity, "ParticlesHorizontal", "particleRing", 3, glm::vec3(0.1f, 0.5f, 0.58f), 0.0f);
+					//	particel.SystemEndColor = glm::vec3(0.43f, 0.145f, 0.145f);
+					//	particel.StartParticleSize = 3.0f;
+					//	particel.EndParticleSize = 8.0f;
+					//	particel.EmitRate = 1.0;
+					//	particel.EmitCount = 1;
+					//	particel.FadeInTreshold = 1.915;
+					//	particel.FadeTreshold = 0.902;
+					//	particel.ParticleSystemStartPos = glm::vec3(0, 0.03, 0);
+					//}
+					//else if (meshName.find("chest") != std::string::npos)
+					//{
+					//	m_World->AddComponent<Frosty::ECS::CLight>(entity, Frosty::ECS::CLight::LightType::Point, 1.0f, glm::vec3(1.0f, 0.99f, 0.95f), 5, glm::vec3(0.f, 1.0f, 0.f));
+					//	////CParticleSystem(const std::string shaderName, const std::string texName, unsigned int maxParticles, const glm::vec3& color, float particleSpeed)
+					//	auto& particel = m_World->AddComponent<Frosty::ECS::CParticleSystem>(entity, "ParticlesHorizontal", "particle", 3, glm::vec3(1.0f, 0.96f, 0.0f), 0);
+					//	particel.EndParticleSize = 10;
+					//	particel.FadeInTreshold = 0.94f;
+					//	particel.FadeTreshold = 1.32f;
+					//	particel.EmitRate = 1;
+					//}
 				}
 				//2 = Material
 				if (fileEntitys.myEntitys.at(i).MyComponents.at(2).HaveComponent)
@@ -464,7 +507,34 @@ void LevelFileFormat::OpenFromFile(std::string fileName, glm::ivec2 roomId , Fro
 				if (fileEntitys.myEntitys.at(i).MyComponents.at(9).HaveComponent)
 				{
 					existingFile.read((char*)& fileEntitys.myEntitys.at(i).myParticleSystem, sizeof(Level_ParticleSystem));
-					//not in use for now
+						auto& particleSystem = m_World->AddComponent<Frosty::ECS::CParticleSystem>(entity,
+							fileEntitys.myEntitys.at(i).myParticleSystem.ShaderName,
+							fileEntitys.myEntitys.at(i).myParticleSystem.TextureName,
+							fileEntitys.myEntitys.at(i).myParticleSystem.MaxParticles,
+							fileEntitys.myEntitys.at(i).myParticleSystem.SystemStartColor,
+							fileEntitys.myEntitys.at(i).myParticleSystem.Speed);
+						particleSystem.StartParticleSize = fileEntitys.myEntitys.at(i).myParticleSystem.StartParticleSize;
+						particleSystem.EndParticleSize = fileEntitys.myEntitys.at(i).myParticleSystem.EndParticleSize;
+						particleSystem.SystemEndColor = fileEntitys.myEntitys.at(i).myParticleSystem.SystemEndColor;
+						particleSystem.AlwaysFaceCamera = fileEntitys.myEntitys.at(i).myParticleSystem.AlwaysFaceCamera;
+						particleSystem.EmitCount = fileEntitys.myEntitys.at(i).myParticleSystem.EmitCount;
+						particleSystem.EmitRate = fileEntitys.myEntitys.at(i).myParticleSystem.EmitRate;
+						particleSystem.FadeInTreshold = fileEntitys.myEntitys.at(i).myParticleSystem.FadeInTreshold;
+						particleSystem.FadeTreshold = fileEntitys.myEntitys.at(i).myParticleSystem.FadeTreshold;
+						particleSystem.MaxLifetime = fileEntitys.myEntitys.at(i).myParticleSystem.MaxLifetime;
+						particleSystem.MinLifetime = fileEntitys.myEntitys.at(i).myParticleSystem.MinLifetime;
+						particleSystem.ParticleCount = fileEntitys.myEntitys.at(i).myParticleSystem.ParticleCount;
+						particleSystem.ParticleSize = fileEntitys.myEntitys.at(i).myParticleSystem.ParticleSize;
+						particleSystem.ParticleSystemDirection = fileEntitys.myEntitys.at(i).myParticleSystem.ParticleSystemDirection;
+						particleSystem.ParticleSystemStartPos = fileEntitys.myEntitys.at(i).myParticleSystem.ParticleSystemStartPos;
+						particleSystem.randMainDir = fileEntitys.myEntitys.at(i).myParticleSystem.randMainDir;
+						particleSystem.RandomDirection = fileEntitys.myEntitys.at(i).myParticleSystem.RandomDirection;
+						particleSystem.RandomLifetimes = fileEntitys.myEntitys.at(i).myParticleSystem.RandomLifetimes;
+						particleSystem.RandomStartPos = fileEntitys.myEntitys.at(i).myParticleSystem.RandomStartPos;
+						particleSystem.randSpread = fileEntitys.myEntitys.at(i).myParticleSystem.randSpread;
+						particleSystem.RotateOverLifetime = fileEntitys.myEntitys.at(i).myParticleSystem.RotateOverLifetime;
+						particleSystem.StaticColor = fileEntitys.myEntitys.at(i).myParticleSystem.StaticColor;
+						particleSystem.SystemRotation = fileEntitys.myEntitys.at(i).myParticleSystem.SystemRotation;
 				}
 				//10 = LevelExit
 				if (fileEntitys.myEntitys.at(i).MyComponents.at(10).HaveComponent)
@@ -517,50 +587,50 @@ void LevelFileFormat::OpenFromFile(std::string fileName, glm::ivec2 roomId , Fro
 		}
 		
 		//to remove "enemys" or chest m.m to control the number and randomize pos
-		int enteredRoomId = -1;
-		for (int i = 0; i < m_VisitedRooms.size(); i++)
-		{
-			if (m_VisitedRooms.at(i).myRoomId == roomId)
-			{
-				enteredRoomId = i;
-			}
-		}
-		if (enteredRoomId != -1)
-		{
-			for (int i = 0; i < m_VisitedRooms.at(enteredRoomId).removeEnemy.size(); i++)
-			{
-				if (!m_World->HasComponent<Frosty::ECS::CDestroy>(m_Enemys.at(m_VisitedRooms.at(enteredRoomId).removeEnemy.at(i))))
-				{
-					m_World->AddComponent<Frosty::ECS::CDestroy>(m_Enemys.at(m_VisitedRooms.at(enteredRoomId).removeEnemy.at(i)));
-				}
-				std::shared_ptr<Frosty::ECS::Entity> temp = m_Enemys.at(m_VisitedRooms.at(enteredRoomId).removeEnemy.at(i));
-				m_Enemys.at(m_VisitedRooms.at(enteredRoomId).removeEnemy.at(i)) = m_Enemys.at(m_Enemys.size() - 1 - i);
-				m_Enemys.back() = temp;
-			}
-		}
-		else
-		{
-			int nrToHave = rand() % 3;
-			Level_rememberedEntitys rEntitys;
-			rEntitys.myRoomId = roomId;
-			//temp nr of 
-			if (m_Enemys.size() >= nrToHave)
-			{
-				for (int i = 0; i < m_Enemys.size() - nrToHave; i++)
-				{
-					int rnd = rand() % (m_Enemys.size() - i);
-					if (!m_World->HasComponent<Frosty::ECS::CDestroy>(m_Enemys.at(rnd)))
-					{
-						rEntitys.removeEnemy.push_back(rnd);
-						m_World->AddComponent<Frosty::ECS::CDestroy>(m_Enemys.at(rnd));
-					}
-					std::shared_ptr<Frosty::ECS::Entity> temp = m_Enemys.at(rnd);
-					m_Enemys.at(rnd) = m_Enemys.at(m_Enemys.size() - 1 - i);
-					m_Enemys.back() = temp;
-				}
-			}
-			m_VisitedRooms.push_back(rEntitys);
-		}
+		//int enteredRoomId = -1;
+		//for (int i = 0; i < m_VisitedRooms.size(); i++)
+		//{
+		//	if (m_VisitedRooms.at(i).myRoomId == roomId)
+		//	{
+		//		enteredRoomId = i;
+		//	}
+		//}
+		//if (enteredRoomId != -1)
+		//{
+		//	for (int i = 0; i < m_VisitedRooms.at(enteredRoomId).removeEnemy.size(); i++)
+		//	{
+		//		if (!m_World->HasComponent<Frosty::ECS::CDestroy>(m_Enemys.at(m_VisitedRooms.at(enteredRoomId).removeEnemy.at(i))))
+		//		{
+		//			m_World->AddComponent<Frosty::ECS::CDestroy>(m_Enemys.at(m_VisitedRooms.at(enteredRoomId).removeEnemy.at(i)));
+		//		}
+		//		std::shared_ptr<Frosty::ECS::Entity> temp = m_Enemys.at(m_VisitedRooms.at(enteredRoomId).removeEnemy.at(i));
+		//		m_Enemys.at(m_VisitedRooms.at(enteredRoomId).removeEnemy.at(i)) = m_Enemys.at(m_Enemys.size() - 1 - i);
+		//		m_Enemys.back() = temp;
+		//	}
+		//}
+		//else
+		//{
+		//	int nrToHave = rand() % 3;
+		//	Level_rememberedEntitys rEntitys;
+		//	rEntitys.myRoomId = roomId;
+		//	//temp nr of 
+		//	if (m_Enemys.size() >= nrToHave)
+		//	{
+		//		for (int i = 0; i < m_Enemys.size() - nrToHave; i++)
+		//		{
+		//			int rnd = rand() % (m_Enemys.size() - i);
+		//			if (!m_World->HasComponent<Frosty::ECS::CDestroy>(m_Enemys.at(rnd)))
+		//			{
+		//				rEntitys.removeEnemy.push_back(rnd);
+		//				m_World->AddComponent<Frosty::ECS::CDestroy>(m_Enemys.at(rnd));
+		//			}
+		//			std::shared_ptr<Frosty::ECS::Entity> temp = m_Enemys.at(rnd);
+		//			m_Enemys.at(rnd) = m_Enemys.at(m_Enemys.size() - 1 - i);
+		//			m_Enemys.back() = temp;
+		//		}
+		//	}
+		//	m_VisitedRooms.push_back(rEntitys);
+		//}
 	}
 	else
 	{

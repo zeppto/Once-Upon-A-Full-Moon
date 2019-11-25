@@ -5,6 +5,7 @@
 #include "Frosty/API/AssetManager/AssetManager.hpp"
 #include "Frosty/Events/CombatEvent.hpp"
 #include "Systems/LevelSystem.hpp"
+#include "Systems/ParticleSystem.hpp"
 
 namespace MCS
 {
@@ -16,24 +17,20 @@ namespace MCS
 		if (!m_App->GetGameLoad())
 		{
 			m_World->AddSystem<LevelSystem>();
+
+
+
+
+
 			InitiateLight();
 			m_App->SetGameLoad(true);
 		}
 	}
 
-	GameState::~GameState()
-	{
-		if (!m_World->HasComponent<Frosty::ECS::CDestroy>(m_GameGui))
-		{
-			m_World->AddComponent<Frosty::ECS::CDestroy>(m_GameGui);
-		}
-	}
-
 	void GameState::Initiate()
 	{
-		InitiateGui();
 		//InitiateLight();
-		//InitiateObjects();
+		InitiateObjects();
 	}
 
 	void GameState::OnInput()
@@ -59,15 +56,6 @@ namespace MCS
 	{
 	}
 
-	void GameState::InitiateGui()
-	{
-		m_GameGui = m_World->CreateEntity();
-
-		Frosty::UILayout UILayout(1, 0);
-		UILayout.AddText(glm::vec2(25.0f, 220.0f), "GameState", glm::vec3(0.0f, 1.0f, 0.0f), 1.5f);
-		m_World->AddComponent<Frosty::ECS::CGUI>(m_GameGui, UILayout);
-	}
-
 	void GameState::InitiateLight()
 	{
 		// LIGHT 1
@@ -78,5 +66,39 @@ namespace MCS
 
 	void GameState::InitiateObjects()
 	{
+		//// WEAPON 1
+		////Sword Offset
+		//auto& weapon = m_World->CreateEntity({ -0.7f, 2.1f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 1.f, 1.f, 1.f });
+		////Bow Offset
+		///*auto& weapon = world->CreateEntity({ -0.7f, 2.3f, 0.2f }, { 0.0f, 0.0f, 0.0f }, { 1.f, 1.f, 1.f });*/
+		//auto& weaponHandler = Frosty::AssetManager::GetWeaponHandler("Weapons");
+		//Frosty::Weapon loadedWeapon = weaponHandler->GetWeaponByType(Frosty::Weapon::WeaponType::Sword);
+		//m_World->AddComponent<Frosty::ECS::CWeapon>(weapon, loadedWeapon, true);
+		//auto& weaponComp = m_World->GetComponent<Frosty::ECS::CWeapon>(weapon);
+		//weaponComp.Level = 3;
+		//auto& weaponMesh = m_World->AddComponent<Frosty::ECS::CMesh>(weapon, Frosty::AssetManager::GetMesh("sword"));
+		//auto& weaponMat = m_World->AddComponent<Frosty::ECS::CMaterial>(weapon, Frosty::AssetManager::GetShader("FlatColor"));
+
+		// PLAYER
+		//auto& player = m_World->CreateEntity({ -104.0f, 0.0f, -15.4f }, { 0.0f, 0.0f, 0.0f }, { 2.0f, 2.0f, 2.0f } );
+		////auto& player = world->CreateEntity({ -90.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 2.0f, 2.0f, 2.0f } );
+		//auto& playerTransform = m_World->GetComponent<Frosty::ECS::CTransform>(player);
+		//m_World->AddComponent<Frosty::ECS::CAnimController>(player).currAnim = Frosty::AssetManager::GetAnimation("Scarlet_Idle");
+		//auto& animation = m_World->GetComponent<Frosty::ECS::CAnimController>(player);
+		//animation.animSpeed = 0.7f;
+		//m_World->AddComponent<Frosty::ECS::CMesh>(player, Frosty::AssetManager::GetMesh("Scarlet"));
+		//auto& playerMat = m_World->AddComponent<Frosty::ECS::CMaterial>(player, Frosty::AssetManager::GetShader("Animation"));
+		//playerMat.DiffuseTexture = Frosty::AssetManager::GetTexture2D("Scarlet_diffuse");
+		//playerMat.NormalTexture = Frosty::AssetManager::GetTexture2D("Scarlet_normal");
+		//playerMat.SpecularTexture = Frosty::AssetManager::GetTexture2D("Scarlet_specular");
+		//m_World->AddComponent<Frosty::ECS::CPlayer>(player, &weaponComp);	// <-- Give player a weapon
+		////weaponTransform.Position += playerTransform.Position;//Check this
+		//m_World->AddComponent<Frosty::ECS::CPhysics>(player, Frosty::AssetManager::GetBoundingBox("Scarlet"), 13.0f);
+		//m_World->AddComponent<Frosty::ECS::CDash>(player);
+		//m_World->AddComponent<Frosty::ECS::CHealth>(player, 20);
+		//m_World->AddComponent<Frosty::ECS::CInventory>(player);
+		//m_World->AddComponent<Frosty::ECS::CHealthBar>(player, glm::vec3(0.0f, 10.0f, 0.0f));
+		//auto& camEntity = m_World->GetSceneCamera();
+		//m_World->GetComponent<Frosty::ECS::CCamera>(camEntity).Target = &playerTransform;
 	}
 }

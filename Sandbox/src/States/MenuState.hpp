@@ -22,9 +22,6 @@ namespace MCS
 
 		Frosty::World* m_World = nullptr;
 		std::shared_ptr<Frosty::ECS::Entity> m_MenuGui;
-
-		// Temp
-		std::shared_ptr<Frosty::ECS::Entity> m_TempMenuGui;
 	};
 }
 #endif

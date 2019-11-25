@@ -87,6 +87,8 @@ namespace MCS
 
 			m_ParticleSystem[p_Total]->Particles.resize(m_ParticleSystem[p_Total]->MaxParticles);
 
+
+
 			p_Total++;
 		}
 	}
@@ -186,6 +188,10 @@ namespace MCS
 
 		SortParticles(systemIndex);
 		UpdateBuffer(systemIndex);
+		if (m_ParticleSystem[systemIndex]->RotateOverLifetime == true)
+		{
+			m_ParticleSystem[systemIndex]->SystemRotation.y += 10 * Frosty::Time::DeltaTime();
+		}
 	}
 
 	void ParticleSystem::EditorUpdateParticleSystem(size_t systemIndex)
@@ -193,13 +199,12 @@ namespace MCS
 		if (m_ParticleSystem[systemIndex]->Particles.size() != m_ParticleSystem[systemIndex]->MaxParticles)
 		{
 			m_ParticleSystem[systemIndex]->Particles.resize(m_ParticleSystem[systemIndex]->MaxParticles);
-			m_ParticleSystem[systemIndex]->LastUsedParticle = m_ParticleSystem[systemIndex]->MaxParticles; //To avoid searching for a used particle that shouldn't exist any more
 			for (uint32_t i = 0; i < m_ParticleSystem[systemIndex]->MaxParticles; i++)
 			{
 				UpdateGpuData(systemIndex, i);
 			}
 		}
-		if (glm::vec3(m_ParticleSystem[systemIndex]->Particles[0].StartColor) != m_ParticleSystem[systemIndex]->SystemStartColor)
+		if (glm::vec3(m_ParticleSystem[systemIndex]->Particles[0].StartColor) != m_ParticleSystem[systemIndex]->SystemStartColor) //Still very temporary solution to determine if data needs updating
 		{
 			for (uint32_t i = 0; i < m_ParticleSystem[systemIndex]->MaxParticles; i++)
 			{
@@ -261,6 +266,10 @@ namespace MCS
 			SortParticles(systemIndex);
 			UpdateBuffer(systemIndex);
 		}
+		if (m_ParticleSystem[systemIndex]->RotateOverLifetime == true)
+		{
+			m_ParticleSystem[systemIndex]->SystemRotation.y += 10 * Frosty::Time::DeltaTime();
+		}
 	}
 
 	void ParticleSystem::UpdateParticle(size_t systemIndex, size_t index)
@@ -271,37 +280,33 @@ namespace MCS
 		p.Position += (p.Direction * p.Speed) * Frosty::Time::DeltaTime();
 
 		//Fade in
-		//if (p.color.a < 1.0 && p.lifetime > 1.0) { //TODO: Fix this temporary code
-		//	p.color.a += 2.0 * Frosty::Time::DeltaTime();
-		//}
-
+		if (m_ParticleSystem[systemIndex]->FadeInTreshold < p.MaxLifetime) {
+			if (p.Lifetime > m_ParticleSystem[systemIndex]->FadeInTreshold)
+			{
+				float t = (p.Lifetime - m_ParticleSystem[systemIndex]->FadeInTreshold) / (p.MaxLifetime - m_ParticleSystem[systemIndex]->FadeInTreshold);
+				p.Color.a = Lerp(1.0f, 0.0f, t);
+			}
+		}
 		//Fade out
 		if (m_ParticleSystem[systemIndex]->FadeTreshold > 0.0f)
 		{
 			if (p.Lifetime < m_ParticleSystem[systemIndex]->FadeTreshold)
 			{
 				float t = p.Lifetime / m_ParticleSystem[systemIndex]->FadeTreshold;
-				p.Color.a = Lerp(0.0f, 1.0f, t); //TODO: use endAlpha and startAlpha perhaps
+				p.Color.a = Lerp(0.0f, 1.0f, t);
 			}
 		}
 		if (m_ParticleSystem[systemIndex]->StartParticleSize != m_ParticleSystem[systemIndex]->EndParticleSize)
 		{
 			//Update particle size
 			float t = p.Lifetime / m_ParticleSystem[systemIndex]->MaxLifetime;
-
-			if (p.Size > m_ParticleSystem[systemIndex]->EndParticleSize)
-			{
-				p.Size = Lerp(m_ParticleSystem[systemIndex]->EndParticleSize, m_ParticleSystem[systemIndex]->StartParticleSize, t);
-			}
-			else if (p.Size < m_ParticleSystem[systemIndex]->EndParticleSize)
-			{
-				p.Size = Lerp(m_ParticleSystem[systemIndex]->EndParticleSize, m_ParticleSystem[systemIndex]->StartParticleSize, t);
-			}
+			p.Size = Lerp(m_ParticleSystem[systemIndex]->EndParticleSize, m_ParticleSystem[systemIndex]->StartParticleSize, t);
 		}
-		if (m_ParticleSystem[systemIndex]->SystemStartColor != m_ParticleSystem[systemIndex]->SystemEndColor)
+		//Interpolate color
+		if (glm::vec3(p.StartColor) != m_ParticleSystem[systemIndex]->SystemEndColor) //TODO: use an individual endColor for particles and interpolate that
 		{
 			float t = p.Lifetime / m_ParticleSystem[systemIndex]->MaxLifetime;
-			glm::vec3 interpolatedColor = m_ParticleSystem[systemIndex]->SystemEndColor * (1 - t) + m_ParticleSystem[systemIndex]->SystemStartColor * t; //Interpolation
+			glm::vec3 interpolatedColor = m_ParticleSystem[systemIndex]->SystemEndColor * (1 - t) + glm::vec3(p.StartColor) * t; //Interpolation
 			p.Color.r = interpolatedColor.r;
 			p.Color.g = interpolatedColor.g;
 			p.Color.b = interpolatedColor.b;
@@ -336,7 +341,6 @@ namespace MCS
 		p.Lifetime = p.MaxLifetime;
 		p.Position = p.StartPos;
 		p.Size = p.StartSize;
-		p.Color.a = 1.0f; //TODO: set to startColor/startAlpha
 		if (m_ParticleSystem[systemIndex]->RandomDirection == false)
 		{
 			p.Direction = glm::vec4(m_ParticleSystem[systemIndex]->ParticleSystemDirection, 1.0f);
@@ -345,10 +349,13 @@ namespace MCS
 		else
 		{
 			//Not the best way to randomize direction but good enough for now
+
 			glm::vec3 randDir;
 			randDir.x = (rand()% 2000 - 1000.0f) / 1000.0f;
 			randDir.y = (rand() % 2000 - 1000.0f) / 1000.0f;
 			randDir.z = (rand() % 2000 - 1000.0f) / 1000.0f;
+
+			randDir = m_ParticleSystem[systemIndex]->randMainDir + randDir * m_ParticleSystem[systemIndex]->randSpread;
 
 			glm::normalize(randDir);
 
@@ -385,19 +392,20 @@ namespace MCS
 		//Linear search, but since we start at the last used index it will usually return immediately
 
 		for (unsigned int i = m_ParticleSystem[systemIndex]->LastUsedParticle; i < m_ParticleSystem[systemIndex]->MaxParticles; i++) {
-			if (m_ParticleSystem[systemIndex]->Particles[i].Lifetime < 0.0f) {
+			if (m_ParticleSystem[systemIndex]->Particles[i].Lifetime <= 0.0f) {
 				m_ParticleSystem[systemIndex]->LastUsedParticle = i;
 				return i;
 			}
 		}
 
 		for (unsigned int i = 0; i < m_ParticleSystem[systemIndex]->LastUsedParticle; i++) {
-			if (m_ParticleSystem[systemIndex]->Particles[i].Lifetime < 0) {
+			if (m_ParticleSystem[systemIndex]->Particles[i].Lifetime <= 0.0f) {
 				m_ParticleSystem[systemIndex]->LastUsedParticle = i;
 				return i;
 			}
 		}
 
+		//m_ParticleSystem[systemIndex]->LastUsedParticle = 0;
 		return 0; // All particles taken, override the first one
 	}
 

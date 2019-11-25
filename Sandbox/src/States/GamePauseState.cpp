@@ -48,8 +48,7 @@ namespace MCS
 
 		float x = Frosty::InputManager::GetMouseX();
 		float y = Frosty::InputManager::GetMouseY();
-
-		FY_INFO("{0} : {1}", x, y);
+		//FY_INFO("{0} : {1}", x, y);
 
 		if (x > 880.f && x < 1060.0f && y > 560.0f && y < 610.0f)
 		{

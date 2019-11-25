@@ -119,91 +119,144 @@ namespace MCS
 	{
 		for (size_t i = 1; i < p_Total; i++)
 		{
-			if (index != i && m_Physics[index]->Speed != 0)
+			if (index != i)
 			{
-				glm::vec3 finalCenterA = m_Transform[index]->Position + glm::vec3(m_Physics[index]->BoundingBox->pos[0], m_Physics[index]->BoundingBox->pos[1], m_Physics[index]->BoundingBox->pos[2]);
-				glm::vec3 finalCenterB = m_Transform[i]->Position + glm::vec3(m_Physics[i]->BoundingBox->pos[0], m_Physics[i]->BoundingBox->pos[1], m_Physics[i]->BoundingBox->pos[2]);
-				glm::vec3 finalLengthA = glm::vec3(m_Physics[index]->BoundingBox->halfSize[0], m_Physics[index]->BoundingBox->halfSize[1], m_Physics[index]->BoundingBox->halfSize[2]) * m_Transform[index]->Scale;
-				glm::vec3 finalLengthB = glm::vec3(m_Physics[i]->BoundingBox->halfSize[0], m_Physics[i]->BoundingBox->halfSize[1], m_Physics[i]->BoundingBox->halfSize[2]) * m_Transform[i]->Scale;
-				bool intersect = Frosty::CollisionDetection::AABBIntersect(finalLengthA, finalCenterA, finalLengthB, finalCenterB);
-
-				if (intersect)
+				bool checkCollision = false;
+				// Check all collision types that you wanna ignore
+				if (m_World->HasComponent<Frosty::ECS::CAttack>(m_Transform[index]->EntityPtr) &&
+					(m_World->HasComponent<Frosty::ECS::CPlayer>(m_Transform[i]->EntityPtr) || m_World->HasComponent<Frosty::ECS::CDropItem>(m_Transform[i]->EntityPtr)))
 				{
-					// If collison is an attack...
-					if (m_World->HasComponent<Frosty::ECS::CAttack>(m_Transform[index]->EntityPtr))
-					{
-						auto& comp = m_World->GetComponent<Frosty::ECS::CAttack>(m_Transform[index]->EntityPtr);
+					checkCollision = true;
+				}
+				else if (m_World->HasComponent<Frosty::ECS::CPlayer>(m_Transform[index]->EntityPtr) && (m_World->HasComponent<Frosty::ECS::CLevelExit>(m_Transform[i]->EntityPtr) ||
+					m_Transform[i]->IsStatic || m_World->HasComponent<Frosty::ECS::CDropItem>(m_Transform[i]->EntityPtr)))		// Add witch circle check here
+				{
+					checkCollision = true;
+				}
+				else if (m_World->HasComponent<Frosty::ECS::CEnemy>(m_Transform[index]->EntityPtr) && (m_World->HasComponent<Frosty::ECS::CPlayer>(m_Transform[i]->EntityPtr) || m_Transform[i]->IsStatic))
+				{
+					checkCollision = true;
+				}
 
-						// ... and an enemy has been hit my a player attack --> destroy enemy (should lower HP)
-						if (m_World->HasComponent<Frosty::ECS::CEnemy>(m_Transform[i]->EntityPtr) && comp.Friendly)
-						{
-							if (m_World->HasComponent<Frosty::ECS::CDropItem>(m_Transform[i]->EntityPtr))
-							{
-								SpawnItem(i);
-								if (!m_World->HasComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr))
-								{
-									m_World->AddComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr);
-								}
-							}
-							else
-							{
-								if (!m_World->HasComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr))
-								{
-									m_World->AddComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr);
-								}
-							}
-						}
-						// ... and an chest has been hit by a player attack --> destroy Chest 
-						else if (m_World->HasComponent<Frosty::ECS::CDropItem>(m_Transform[i]->EntityPtr) && comp.Friendly)
-						{
-							if (!m_World->HasComponent<Frosty::ECS::CEnemy>(m_Transform[i]->EntityPtr))
-							{
-								SpawnItem(i);
-								if (!m_World->HasComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr))
-								{
-									m_World->AddComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr);
-								}
-							}
-						}
-						// ... and a player has been hit by an enemy attack --> destroy player (should lower HP)
-						else if (m_World->HasComponent<Frosty::ECS::CPlayer>(m_Transform[i]->EntityPtr) && !comp.Friendly)
-						{
-							if (!m_World->HasComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr))
-							{
-								m_World->AddComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr);
-							}
-						}
-						// Now a check for the actual attack
-						if (!(m_World->HasComponent<Frosty::ECS::CAttack>(m_Transform[i]->EntityPtr)))
-						{
-							// If an undestructible attack collides with a static obj --> make it destroyable
-							if (m_World->GetComponent<Frosty::ECS::CTransform>(m_Transform[i]->EntityPtr).IsStatic)
-							{
-								m_World->GetComponent<Frosty::ECS::CAttack>(m_Transform[index]->EntityPtr).Destroyable = true;
-							}
-							// Destroy attack. The damage has been done
-							if (!m_World->HasComponent<Frosty::ECS::CDestroy>(m_Transform[index]->EntityPtr) && (m_World->GetComponent<Frosty::ECS::CAttack>(m_Transform[index]->EntityPtr).Destroyable))
-							{
-								m_World->AddComponent<Frosty::ECS::CDestroy>(m_Transform[index]->EntityPtr);
-							}
-						}
-					}
-					// If player collides with exit Bounding box
-					else if (m_World->HasComponent<Frosty::ECS::CPlayer>(m_Transform[index]->EntityPtr) && m_World->HasComponent<Frosty::ECS::CLevelExit>(m_Transform[i]->EntityPtr))
+				if (checkCollision)
+				{
+					bool intersect = false;
+					glm::vec3 finalCenterA = m_Transform[index]->Position + glm::vec3(m_Physics[index]->BoundingBox->pos[0], m_Physics[index]->BoundingBox->pos[1], m_Physics[index]->BoundingBox->pos[2]);
+					glm::vec3 finalCenterB = m_Transform[i]->Position + glm::vec3(m_Physics[i]->BoundingBox->pos[0], m_Physics[i]->BoundingBox->pos[1], m_Physics[i]->BoundingBox->pos[2]);
+					glm::vec3 finalLengthA = glm::vec3(m_Physics[index]->BoundingBox->halfSize[0], m_Physics[index]->BoundingBox->halfSize[1], m_Physics[index]->BoundingBox->halfSize[2]) * m_Transform[index]->Scale;
+					glm::vec3 finalLengthB = glm::vec3(m_Physics[i]->BoundingBox->halfSize[0], m_Physics[i]->BoundingBox->halfSize[1], m_Physics[i]->BoundingBox->halfSize[2]) * m_Transform[i]->Scale;
+					intersect = Frosty::CollisionDetection::AABBIntersect(finalLengthA, finalCenterA, finalLengthB, finalCenterB);
+
+
+					if (intersect)
 					{
-						//to go to next room
-						Frosty::EventBus::GetEventBus()->Publish<Frosty::ExitLevelEvent>(Frosty::ExitLevelEvent(m_Transform[i]->EntityPtr, m_Transform[index]->EntityPtr));
-					}
-					// If the one colliding is an enemy or a player...
-					else if (m_World->HasComponent<Frosty::ECS::CEnemy>(m_Transform[index]->EntityPtr) || m_World->HasComponent<Frosty::ECS::CPlayer>(m_Transform[index]->EntityPtr))
-					{
-						// ... and it's not colliding with an attack --> back off
-						if (!m_World->HasComponent<Frosty::ECS::CAttack>(m_Transform[i]->EntityPtr))
+						// Attack with Player/Enemy/Chest
+						if (m_World->HasComponent<Frosty::ECS::CAttack>(m_Transform[index]->EntityPtr))
+						{
+							if (m_World->HasComponent<Frosty::ECS::CEnemy>(m_Transform[i]->EntityPtr) || m_World->HasComponent<Frosty::ECS::CPlayer>(m_Transform[i]->EntityPtr))
+							{
+								// Attack - Enemy or Player
+								auto& attack = m_World->GetComponent<Frosty::ECS::CAttack>(m_Transform[index]->EntityPtr);
+
+								if (attack.Friendly && m_World->HasComponent<Frosty::ECS::CDropItem>(m_Transform[i]->EntityPtr))
+								{
+									// Player Attack - Enemy or Chest
+									Frosty::EventBus::GetEventBus()->Publish<Frosty::CollisionEvent>(Frosty::CollisionEvent(m_Transform[index]->EntityPtr, m_Transform[i]->EntityPtr));
+								}
+								 if (!attack.Friendly && m_World->HasComponent<Frosty::ECS::CPlayer>(m_Transform[i]->EntityPtr))
+								{
+									// Enemy Attack - Player
+									Frosty::EventBus::GetEventBus()->Publish<Frosty::CollisionEvent>(Frosty::CollisionEvent(m_Transform[index]->EntityPtr, m_Transform[i]->EntityPtr));
+								}
+							}
+						}
+
+						// Enemy and Player colliding
+						else if (m_World->HasComponent<Frosty::ECS::CEnemy>(m_Transform[index]->EntityPtr) || m_World->HasComponent<Frosty::ECS::CPlayer>(m_Transform[index]->EntityPtr))
 						{
 							m_Transform[index]->Position -= Frosty::CollisionDetection::AABBIntersecPushback(finalLengthA, finalCenterA, finalLengthB, finalCenterB);
 						}
+
 					}
 				}
+
+
+				//{
+				//	// If collision is an attack...
+				//	if (m_World->HasComponent<Frosty::ECS::CAttack>(m_Transform[index]->EntityPtr))
+				//	{
+				//		auto& comp = m_World->GetComponent<Frosty::ECS::CAttack>(m_Transform[index]->EntityPtr);
+				//
+				//		// ... and an enemy has been hit my a player attack --> destroy enemy (should lower HP)
+				//		if (m_World->HasComponent<Frosty::ECS::CEnemy>(m_Transform[i]->EntityPtr) && comp.Friendly)
+				//		{
+				//			if (m_World->HasComponent<Frosty::ECS::CDropItem>(m_Transform[i]->EntityPtr))
+				//			{
+				//				SpawnItem(i);
+				//				if (!m_World->HasComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr))
+				//				{
+				//					m_World->AddComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr);
+				//				}
+				//			}
+				//			else
+				//			{
+				//				if (!m_World->HasComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr))
+				//				{
+				//					m_World->AddComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr);
+				//				}
+				//			}
+				//		}
+				//		// ... and an chest has been hit by a player attack --> destroy Chest 
+				//		else if (m_World->HasComponent<Frosty::ECS::CDropItem>(m_Transform[i]->EntityPtr) && comp.Friendly)
+				//		{
+				//			if (!m_World->HasComponent<Frosty::ECS::CEnemy>(m_Transform[i]->EntityPtr))
+				//			{
+				//				SpawnItem(i);
+				//				if (!m_World->HasComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr))
+				//				{
+				//					m_World->AddComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr);
+				//				}
+				//			}
+				//		}
+				//		// ... and a player has been hit by an enemy attack --> destroy player (should lower HP)
+				//		else if (m_World->HasComponent<Frosty::ECS::CPlayer>(m_Transform[i]->EntityPtr) && !comp.Friendly)
+				//		{
+				//			if (!m_World->HasComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr))
+				//			{
+				//				m_World->AddComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr);
+				//			}
+				//		}
+				//		// Now a check for the actual attack
+				//		if (!(m_World->HasComponent<Frosty::ECS::CAttack>(m_Transform[i]->EntityPtr)))
+				//		{
+				//			// If an undestructible attack collides with a static obj --> make it destroyable
+				//			if (m_World->GetComponent<Frosty::ECS::CTransform>(m_Transform[i]->EntityPtr).IsStatic)
+				//			{
+				//				m_World->GetComponent<Frosty::ECS::CAttack>(m_Transform[index]->EntityPtr).Destroyable = true;
+				//			}
+				//			// Destroy attack. The damage has been done
+				//			if (!m_World->HasComponent<Frosty::ECS::CDestroy>(m_Transform[index]->EntityPtr) && (m_World->GetComponent<Frosty::ECS::CAttack>(m_Transform[index]->EntityPtr).Destroyable))
+				//			{
+				//				m_World->AddComponent<Frosty::ECS::CDestroy>(m_Transform[index]->EntityPtr);
+				//			}
+				//		}
+				//	}
+				//	// If player collides with exit Bounding box
+				//	else if (m_World->HasComponent<Frosty::ECS::CPlayer>(m_Transform[index]->EntityPtr) && m_World->HasComponent<Frosty::ECS::CLevelExit>(m_Transform[i]->EntityPtr))
+				//	{
+				//		//to go to next room
+				//		Frosty::EventBus::GetEventBus()->Publish<Frosty::ExitLevelEvent>(Frosty::ExitLevelEvent(m_Transform[i]->EntityPtr, m_Transform[index]->EntityPtr));
+				//	}
+				//	// If the one colliding is an enemy or a player...
+				//	else if (m_World->HasComponent<Frosty::ECS::CEnemy>(m_Transform[index]->EntityPtr) || m_World->HasComponent<Frosty::ECS::CPlayer>(m_Transform[index]->EntityPtr))
+				//	{
+				//		// ... and it's not colliding with an attack --> back off
+				//		if (!m_World->HasComponent<Frosty::ECS::CAttack>(m_Transform[i]->EntityPtr))
+				//		{
+				//			m_Transform[index]->Position -= Frosty::CollisionDetection::AABBIntersecPushback(finalLengthA, finalCenterA, finalLengthB, finalCenterB);
+				//		}
+				//	}
+				//}
 			}
 		}
 	}

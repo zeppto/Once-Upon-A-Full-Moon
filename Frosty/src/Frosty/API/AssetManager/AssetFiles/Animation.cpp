@@ -42,6 +42,18 @@ namespace Frosty
 		return m_KeyframeMap.at(jointId);
 	}
 
+	glm::mat4* Animation::getHoldingJoint()
+	{
+		if (m_holdingJoint != nullptr)
+		{
+			return &m_SkinData.jTrans[*m_holdingJoint];
+		}
+		else
+		{
+			return nullptr;
+		}
+	}
+
 	void Animation::GetSkinData(void*& data, int& nrOfJoints)
 	{
 		data = &m_SkinData;
@@ -55,7 +67,15 @@ namespace Frosty
 		float duration = m_Animation.duration;
 		if (*currentAnimTime > m_Animation.duration)
 		{
-			*currentAnimTime = 0;
+			if (isRepeating == true)
+			{
+				*currentAnimTime = 0;
+			}
+			else
+			{
+				isFinished = true;
+				return;
+			}
 		}
 		//Since all animations are baked which joint it is irrelevant for determining last keyframe.
 		std::vector<Luna::Keyframe> keyVec;
@@ -103,20 +123,6 @@ namespace Frosty
 
 		glm::mat4 local_r = transMat_r * rotMat_r * scaleMat_r;
 
-		for (int i = 0; i < 4; i++)
-		{
-			float arr[4];
-			arr[0] = local_r[i][0];
-			arr[1] = local_r[i][1];
-			arr[2] = local_r[i][2];
-			arr[3] = local_r[i][3];
-
-			arr[0] = 0;
-		}
-
-	/*	glm::mat4 local_r;
-		Fbx2Hmm(temp,local_r);*/
-
 		glm::mat4 invBindPose_r = glm::make_mat4(&m_Joints[0].invBindposeMatrix[0][0]);
 
 		m_SkinData.jTrans[0] = local_r * invBindPose_r;
@@ -160,6 +166,21 @@ namespace Frosty
 		}
 	}
 
+	void Animation::SetIsRepeating(bool isRepeat)
+	{
+		this->isRepeating = isRepeat;
+	}
+
+	void Animation::SetIsFinished(bool isFinish)
+	{
+		this->isFinished = isFinish;
+	}
+
+	bool Animation::GetIsFinished()
+	{
+		return isFinished;
+	}
+
 	bool Animation::LoadToMem(const bool& Reload)
 	{
 		bool returnValue = false;
@@ -189,8 +210,12 @@ namespace Frosty
 
 				for (uint16_t i = 0; i < m_Joints.size(); i++)
 				{
-					/*tempFile.getKeyframes();*/
-
+					//Identifing joint to hold items
+					if (m_Joints[i].jointID == 27)
+					{
+						//Should compare names instead
+						m_holdingJoint = &m_Joints[i].jointID;
+					}
 					tempFile.getKeyframes(m_Joints.at(i).jointID, m_KeyframeMap[m_Joints[i].jointID]);
 				}
 

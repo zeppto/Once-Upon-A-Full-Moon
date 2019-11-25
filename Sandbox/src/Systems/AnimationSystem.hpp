@@ -3,6 +3,7 @@
 
 namespace Frosty { class BasicAttackEvent; 
 				   class DashEvent;
+				   class PlayAnimEvent;
 				 }
 
 namespace MCS
@@ -28,12 +29,16 @@ namespace MCS
 	private:
 		void OnBasicAttackEvent(Frosty::BasicAttackEvent& e);
 		void OnDashEvent(Frosty::DashEvent& e);
+		void UpdateAnimOffset(Frosty::ECS::CAnimController* ctrl);
+		void OnPlayAnimEvent(Frosty::PlayAnimEvent& e);
 
 	private:
 		std::array<Frosty::ECS::CTransform*, Frosty::ECS::MAX_ENTITIES_PER_COMPONENT> m_Transform;
 		std::array<Frosty::ECS::CPhysics*, Frosty::ECS::MAX_ENTITIES_PER_COMPONENT> m_Physics;
 		std::array<Frosty::ECS::CAnimController*, Frosty::ECS::MAX_ENTITIES_PER_COMPONENT> m_AControllers;
 		std::array<Frosty::ECS::CDash*, Frosty::ECS::MAX_ENTITIES_PER_COMPONENT> m_Dash;
+		std::array<Frosty::ECS::CPlayer*, Frosty::ECS::MAX_ENTITIES_PER_COMPONENT> m_Player;
+		Frosty::World* m_World{ nullptr };
 
 	};
 }

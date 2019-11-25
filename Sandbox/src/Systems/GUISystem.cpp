@@ -24,7 +24,13 @@ namespace MCS
 	{
 		for (size_t i = 1; i < p_Total; i++)
 		{
-			//Render all text
+			//Render all sprites
+			for (int j = 0; j < m_GUI[i]->Layout.sprites.size(); j++)
+			{
+				auto& currSprite = m_GUI[i]->Layout.sprites[j];
+				Frosty::Renderer::SubmitSprite(m_GUI[i]->SpriteShader, currSprite.GetVertexArray(), currSprite.GetTextureID(), currSprite.GetColor(), currSprite.GetTransformSprite());
+			}
+			//Render all text  
 			for (int j = 0; j < m_GUI[i]->Layout.texts.size(); j++)
 			{
 				Frosty::UIText& currText = m_GUI[i]->Layout.texts[j];
@@ -41,8 +47,8 @@ namespace MCS
 			auto& world = Frosty::Application::Get().GetWorld();
 			m_Transform[p_Total] = &world->GetComponent<Frosty::ECS::CTransform>(entity);
 			m_GUI[p_Total] = &world->GetComponent<Frosty::ECS::CGUI>(entity);
-
 			m_GUI[p_Total]->TextShader = Frosty::AssetManager::GetShader("Text");
+			m_GUI[p_Total]->SpriteShader = Frosty::AssetManager::GetShader("Sprite");
 
 			////Debug test
 
