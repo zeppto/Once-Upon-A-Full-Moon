@@ -1,7 +1,7 @@
 #include "mcspch.hpp"
 #include "MenuState.hpp"
 #include "GameState.hpp"
-//#include "GamePauseState.hpp"
+#include "GamePauseState.hpp"
 #include "Frosty/API/AssetManager/AssetManager.hpp"
 #include "Frosty/Events/CombatEvent.hpp"
 #include "Systems/LevelSystem.hpp"
@@ -11,7 +11,14 @@ namespace MCS
 	GameState::GameState()
 	{
 		m_World = Frosty::Application::Get().GetWorld().get();
-		m_World->AddSystem<LevelSystem>();
+		m_App = &Frosty::Application::Get();
+
+		if (!m_App->GetGameLoad())
+		{
+			m_World->AddSystem<LevelSystem>();
+			InitiateLight();
+			m_App->SetGameLoad(true);
+		}
 	}
 
 	GameState::~GameState()
@@ -33,8 +40,18 @@ namespace MCS
 	{
 		if (Frosty::InputManager::IsKeyPressed(FY_KEY_ESCAPE))
 		{
+			/*if (m_App->GameIsRunning())
+			{
+				m_App->StopGame(true);
+			}
+			else if (!m_App->GameIsRunning())
+			{
+				m_App->StartGame(true);
+			}
+			m_App->GetStateMachine().AddState(Frosty::StateRef(new GamePauseState()));*/
+
 			FY_INFO("GAME PAUSE STAGE NEXT");
-			//m_App->GetStateMachine().AddState(Frosty::StateRef(new GamePauseState()));
+			m_App->GetStateMachine().AddState(Frosty::StateRef(FY_NEW(GamePauseState)));
 		}
 	}
 
@@ -53,6 +70,10 @@ namespace MCS
 
 	void GameState::InitiateLight()
 	{
+		// LIGHT 1
+		auto& light = m_World->CreateEntity({ 0.0f, 0.0f, 0.0f }, { 120.0f, 8.0f, -10.0f });
+		auto& DLight = m_World->AddComponent<Frosty::ECS::CLight>(light, Frosty::ECS::CLight::LightType::Directional, 0.9f, glm::vec3(0.5f, 0.6f, 1.f));
+		DLight.Direction = glm::vec3(-1.0f, -0.8, -1.0);
 	}
 
 	void GameState::InitiateObjects()

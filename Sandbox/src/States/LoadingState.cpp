@@ -25,28 +25,6 @@
 #include "Frosty/API/AssetManager/AssetManager.hpp"
 #include "Frosty/Events/CombatEvent.hpp"
 
-#include "Systems/LightSystem.hpp"
-#include "Systems/CameraSystem.hpp"
-#include "Systems/RenderSystem.hpp"
-#include "Systems/PhysicsSystem.hpp"
-#include "Systems/PlayerControllerSystem.hpp"
-
-#include "Systems/FollowSystem.hpp"
-#include "Systems/AttackSystem.hpp"
-#include "Systems/CombatSystem.hpp"
-#include "Systems/DestroySystem.hpp"
-#include "Systems/NavigationSystem.hpp"
-#include "Systems/ParticleSystem.hpp"
-#include "Systems/LootingSystem.hpp"
-#include "Systems/LevelSystem.hpp"
-#include "Systems/HealthBarSystem.hpp"
-#include "Systems/BossBehaviorSystem.hpp"
-#include "Systems/GUISystem.hpp"
-#include "Systems/AnimationSystem.hpp"
-
-// TODO
-// Will fix this mess ...
-
 namespace MCS
 {
 	LoadingState::LoadingState()
@@ -137,19 +115,11 @@ namespace MCS
 		if (m_IsInitialized)
 		{
 			FY_INFO("READY FOR MENU STAGE");
-			m_App->GetStateMachine().AddState(Frosty::StateRef(new MenuState()));
+			m_App->GetStateMachine().AddState(Frosty::StateRef(FY_NEW(MenuState)));
 		}
 		else
 		{
 			// SetLoadingScreen
-
-			//FY_INFO("Initializing ...");
-			//m_World->AddSystem<RenderSystem>();
-			//m_World->AddSystem<CameraSystem>();
-			//m_World->AddSystem<LightSystem>();
-			//m_World->AddSystem<GUISystem>();
-			//m_IsInitialized = true;
-			//FY_INFO("Initialization completed.");
 		}
 	}
 
@@ -160,13 +130,11 @@ namespace MCS
 	void LoadingState::InitiateSystems()
 	{
 		auto& world = Frosty::Application::Get().GetWorld();
-		//world->AddSystem<LevelSystem>();
 		world->AddSystem<CameraSystem>();
 		world->AddSystem<LightSystem>();
 		world->AddSystem<RenderSystem>();
 		world->AddSystem<PlayerControllerSystem>();
 		world->AddSystem<PhysicsSystem>();
-		world->AddSystem<FollowSystem>();
 		world->AddSystem<AttackSystem>();
 		world->AddSystem<CombatSystem>();
 		world->AddSystem<DestroySystem>();
@@ -190,15 +158,6 @@ namespace MCS
 
 	void LoadingState::InitiateGui()
 	{
-		/*m_MenuGui = m_App->Get().GetWorld()->CreateEntity();
-
-		Frosty::UILayout UILayout(4, 1);
-		UILayout.AddText(glm::vec2(550.0f, 525.f), "Main Menu");
-		UILayout.AddText(glm::vec2(610.0f, 400.0f), "Play");
-		UILayout.AddText(glm::vec2(575.0f, 325.0f), "Settings");
-		UILayout.AddText(glm::vec2(610.0f, 250.0f), "Exit");
-		m_World->AddComponent<Frosty::ECS::CGUI>(m_MenuGui, UILayout);*/
-
 		// TEMP
 		m_LoadGui = m_World->CreateEntity();
 		Frosty::UILayout UILayout2(1, 0);

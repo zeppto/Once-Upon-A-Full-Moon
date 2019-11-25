@@ -16,7 +16,7 @@ namespace MCS
 		virtual void OnImGuiRender() override {}
 		inline virtual bool OnEvent(Frosty::BaseEvent& event) { return false; }
 	private:
-		Frosty::Application* m_App;
+		Frosty::Application* m_App = nullptr;
 	};
 }
 #endif

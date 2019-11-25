@@ -48,10 +48,13 @@ namespace Frosty
 		void StartGame(bool maximize);
 		void StopGame(bool maximize);
 
+		bool GetGameLoad();
+		void SetGameLoad(bool loaded);
+
 		inline StateMachine &GetStateMachine() { return m_StateMachine; }
 	private:
 		void OnWindowCloseEvent(WindowCloseEvent& e);
-		void OnKeyPressedEvent(KeyPressedEvent& e);	
+		void OnKeyPressedEvent(KeyPressedEvent& e);
 		void OnKeyReleasedEvent(KeyReleasedEvent& e);
 
 		void OnMousePressedEvent(MouseButtonPressedEvent & e);
@@ -60,6 +63,8 @@ namespace Frosty
 		InputManager m_InputManager;
 		bool m_Running = true;
 		bool m_GameRunning = false;
+
+		bool m_GameLoaded = false;
 
 		ImGuiLayer* m_ImGuiLayer;
 		LayerHandler m_LayerHandler;
@@ -76,7 +81,6 @@ namespace Frosty
 
 		// Only for Debug
 		bool m_CanPrintInfo = true;
-
 	};
 }
 #endif 

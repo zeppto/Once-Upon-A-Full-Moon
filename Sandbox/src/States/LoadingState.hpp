@@ -23,7 +23,7 @@ namespace MCS
 		void InitiateParticleSystem();
 		void InitiateMapGenerator();
 	private:
-		Frosty::Application* m_App;
+		Frosty::Application* m_App = nullptr;
 		Frosty::World* m_World = nullptr;
 		bool m_IsInitialized = false;
 

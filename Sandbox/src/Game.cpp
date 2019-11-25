@@ -34,11 +34,10 @@ namespace MCS
 	Game::Game()
 	{
 		auto& state = Application::Get().GetStateMachine();
-		state.AddState(Frosty::StateRef(new LoadingState));
+		state.AddState(Frosty::StateRef(FY_NEW(LoadingState)));
 
-		//PushLayer(FY_NEW InspectorLayer());
-		Application::Get().StartGame(true);
-
+		PushLayer(FY_NEW InspectorLayer());
+		//Application::Get().StartGame(true);
 
 
 

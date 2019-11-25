@@ -17,7 +17,7 @@ namespace MCS
 		void InitiateMenuScreen();
 		void InitiateButtons();
 	private:
-		Frosty::Application* m_App;
+		Frosty::Application* m_App = nullptr;
 		//MenuLayer * m_MenuLayer;
 
 		Frosty::World* m_World = nullptr;

@@ -31,18 +31,51 @@ namespace MCS
 
 	void MenuState::OnInput()
 	{
-		if (Frosty::InputManager::IsMouseButtonPressed(FY_MOUSE_BUTTON_LEFT) && Frosty::InputManager::IsKeyPressed(FY_KEY_F))
+		/*if (Frosty::InputManager::IsMouseButtonPressed(FY_MOUSE_BUTTON_LEFT) && Frosty::InputManager::IsKeyPressed(FY_KEY_F))
 		{
 			FY_INFO("GAME STAGE NEXT");
 			m_App->GetStateMachine().AddState(Frosty::StateRef(new GameState()));
-		}
-		else if (Frosty::InputManager::IsMouseButtonPressed(FY_MOUSE_BUTTON_LEFT) && Frosty::InputManager::IsKeyPressed(FY_KEY_G))
+		}*/
+		/*else if (Frosty::InputManager::IsMouseButtonPressed(FY_MOUSE_BUTTON_LEFT) && Frosty::InputManager::IsKeyPressed(FY_KEY_G))
 		{
 			FY_INFO("SETTING STAGE NEXT");
-		}
-		else if (Frosty::InputManager::IsMouseButtonPressed(FY_MOUSE_BUTTON_LEFT) && Frosty::InputManager::IsKeyPressed(FY_KEY_H))
+		}*/
+		/*else if (Frosty::InputManager::IsMouseButtonPressed(FY_MOUSE_BUTTON_LEFT) && Frosty::InputManager::IsKeyPressed(FY_KEY_H))
 		{
 			Frosty::EventBus::GetEventBus()->Publish<Frosty::WindowCloseEvent>(Frosty::WindowCloseEvent());
+		}*/
+
+		float x = Frosty::InputManager::GetMouseX();
+		float y = Frosty::InputManager::GetMouseY();
+		//FY_INFO("{0} : {1}", x, y);
+
+		// TODO
+		// FIx HardCoded "Button" Positions ...
+		if (x > 920.f && x < 990.0f && y > 540.0f && y < 600.0f)
+		{
+			FY_INFO("GREEN 1");
+			if (Frosty::InputManager::IsMouseButtonPressed(FY_MOUSE_BUTTON_LEFT))
+			{
+				FY_INFO("GAME STAGE NEXT");
+				m_App->GetStateMachine().AddState(Frosty::StateRef(FY_NEW(GameState)));
+			}
+		}
+		else if (x > 825.f && x < 1025.0f && y > 450.0f && y < 500.0f)
+		{
+			FY_INFO("YELLOW 2");
+			if (Frosty::InputManager::IsMouseButtonPressed(FY_MOUSE_BUTTON_LEFT))
+			{
+				FY_INFO("SETTINGS STAGE NEXT");
+			}
+		}
+		else if (x > 920.f && x < 1000.0f && y > 350.0f && y < 400.0f)
+		{
+			FY_INFO("RED 3");
+			if (Frosty::InputManager::IsMouseButtonPressed(FY_MOUSE_BUTTON_LEFT))
+			{
+				FY_INFO("EXIT STAGE NEXT");
+				Frosty::EventBus::GetEventBus()->Publish<Frosty::WindowCloseEvent>(Frosty::WindowCloseEvent());
+			}
 		}
 	}
 

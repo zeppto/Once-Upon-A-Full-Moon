@@ -155,6 +155,16 @@ namespace Frosty
 		if (maximize) m_Window->ActivateEditorMode();
 	}
 
+	bool Application::GetGameLoad()
+	{
+		return m_GameLoaded;
+	}
+
+	void Application::SetGameLoad(bool loaded)
+	{
+		m_GameLoaded = loaded;
+	}
+
 	void Application::OnEvent(BaseEvent& e)
 	{
 		switch (e.GetEventType())
