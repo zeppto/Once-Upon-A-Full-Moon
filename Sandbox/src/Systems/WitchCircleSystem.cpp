@@ -185,7 +185,7 @@ namespace MCS
 		lightComp.Radius = 0.f;
 		auto& particleComp = m_World->GetComponent<Frosty::ECS::CParticleSystem>(m_WitchCircle[m_CurrentActiveWC]->EntityPtr);
 		particleComp.MaxParticles = 1;
-		particleComp.EmitCount = 0.f;
+		particleComp.EmitCount = 0;
 
 		// Cannot remove components in entity due to address ptr failures, just like remove entities	~ W-_-W ~
 		//m_World->RemoveComponent<Frosty::ECS::CLight>(m_WitchCircle[m_CurrentActiveWC]->EntityPtr);
