@@ -267,9 +267,7 @@ namespace MCS
 				// Check if entity has CDash component before publishing
 				if (m_Dash[index]->CurrentCooldown <= 0.0f)
 				{
-
 					m_Dash[index]->Active = true;
-					//ASDF
 					Frosty::EventBus::GetEventBus()->Publish<Frosty::DashEvent>(Frosty::DashEvent(m_Player[index]->EntityPtr));
 					m_Physics[index]->Velocity *= m_Dash[index]->SpeedMultiplier;
 					m_Dash[index]->CurrentCooldown = m_Dash[index]->COOLDOWN / 1000.0f;

@@ -210,8 +210,9 @@ namespace Frosty
 
 				for (uint16_t i = 0; i < m_Joints.size(); i++)
 				{
+					std::string tmp(m_Joints[i].jointName);
 					//Identifing joint to hold items
-					if (m_Joints[i].jointID == 27)
+					if (tmp == "Wrist_R")
 					{
 						//Should compare names instead
 						m_holdingJoint = &m_Joints[i].jointID;
