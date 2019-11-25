@@ -121,9 +121,9 @@ void LevelFileFormat::AddEntity(const std::shared_ptr<Frosty::ECS::Entity>& enti
 		{
 			myComponents.MyComponents.at(7).HaveComponent = true;
 			auto& health = m_World->GetComponent<Frosty::ECS::CHealth>(entity);
-			myComponents.myHealth.CurrentHealth = health.CurrentHealth;
-			myComponents.myHealth.MaxHealth = health.MaxHealth;
-			myComponents.myHealth.MaxPossibleHealth = health.MaxPossibleHealth;
+			myComponents.myHealth.CurrentHealth = (float)health.CurrentHealth;
+			myComponents.myHealth.MaxHealth = (float)health.MaxHealth;
+			myComponents.myHealth.MaxPossibleHealth = (float)health.MaxPossibleHealth;
 		}
 		else
 			myComponents.MyComponents.at(7).HaveComponent = false;
@@ -439,9 +439,9 @@ void LevelFileFormat::OpenFromFile(std::string fileName, glm::ivec2 roomId , Fro
 				{
 					existingFile.read((char*)& fileEntitys.myEntitys.at(i).myHealth, sizeof(Level_Health));
 					auto& health = m_World->AddComponent<Frosty::ECS::CHealth>(entity);
-					health.CurrentHealth = fileEntitys.myEntitys.at(i).myHealth.CurrentHealth;
-					health.MaxHealth = fileEntitys.myEntitys.at(i).myHealth.MaxHealth;
-					health.MaxPossibleHealth = fileEntitys.myEntitys.at(i).myHealth.MaxPossibleHealth;
+					health.CurrentHealth = (int)fileEntitys.myEntitys.at(i).myHealth.CurrentHealth;
+					health.MaxHealth = (int)fileEntitys.myEntitys.at(i).myHealth.MaxHealth;
+					health.MaxPossibleHealth = (int)fileEntitys.myEntitys.at(i).myHealth.MaxPossibleHealth;
 				}
 				//8 = HealthBar
 				if (fileEntitys.myEntitys.at(i).MyComponents.at(8).HaveComponent)

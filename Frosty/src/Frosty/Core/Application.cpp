@@ -75,7 +75,7 @@ namespace Frosty
 			}
 			//Simon move this
 			glm::vec4 viewP(m_Window->GetViewport());
-			glViewport(viewP.x,viewP.y,viewP.z,viewP.w);
+			glViewport((GLint)viewP.x, (GLint)viewP.y, (GLint)viewP.z, (GLint)viewP.w);
 			Renderer::RenderScene();
 
 			m_World->Render();

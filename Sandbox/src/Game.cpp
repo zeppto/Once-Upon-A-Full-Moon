@@ -24,6 +24,8 @@
 #include "Systems/BossBehaviorSystem.hpp"
 #include "Systems/GUISystem.hpp"
 #include "Systems/AnimationSystem.hpp"
+#include "Systems/WitchCircleSystem.hpp"
+
 
 //#include "LevelHandeler/LevelFileFormat.hpp"
 
@@ -54,6 +56,8 @@ namespace MCS
 		world->AddSystem<BossBehaviorSystem>();
 		world->AddSystem<GUISystem>();
 		world->AddSystem<LootingSystem>();
+		world->AddSystem<WitchCircleSystem>();
+
 
 		world->Awake();
 		particleSystem->AttachGameCamera(&world->GetComponent<Frosty::ECS::CTransform>(world->GetSceneCamera()));
@@ -66,7 +70,7 @@ namespace MCS
 		// WEAPON 1
 		auto& weapon = world->CreateEntity({ 0.f, 0.f, 0.f }, { 0.0f, 0.0f, 0.0f }, { 1.f, 1.f, 1.f });
 		auto& weaponHandler = Frosty::AssetManager::GetWeaponHandler("Weapons");
-		Frosty::Weapon loadedWeapon = weaponHandler->GetWeaponByType(Frosty::Weapon::WeaponType::Bow);
+		Frosty::Weapon loadedWeapon = weaponHandler->GetAPlayerWeapon(1, 3);
 		world->AddComponent<Frosty::ECS::CWeapon>(weapon, loadedWeapon, true);	
 		auto& weaponComp = world->GetComponent<Frosty::ECS::CWeapon>(weapon);
 
@@ -75,7 +79,7 @@ namespace MCS
 		auto& playerTransform = world->GetComponent<Frosty::ECS::CTransform>(player);
 		world->AddComponent<Frosty::ECS::CAnimController>(player).currAnim = Frosty::AssetManager::GetAnimation("NewRun");
 		auto& animation = world->GetComponent<Frosty::ECS::CAnimController>(player);
-		animation.animSpeed = 0.7;
+		animation.animSpeed = 0.7f;
 		world->AddComponent<Frosty::ECS::CMesh>(player, Frosty::AssetManager::GetMesh("ScarRun:model:scarlet"));
 		auto& playerMat = world->AddComponent<Frosty::ECS::CMaterial>(player, Frosty::AssetManager::GetShader("Animation"));
 		playerMat.DiffuseTexture = Frosty::AssetManager::GetTexture2D("Scarlet_diffuse");
@@ -92,16 +96,26 @@ namespace MCS
 	
 		// TORCH
 		auto& torch = world->CreateEntity({ 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f });
-		world->AddComponent<Frosty::ECS::CLight>(torch, Frosty::ECS::CLight::LightType::Point, 1.f, glm::vec3(0.99f, 0.9f, 0.8f), &playerTransform, glm::vec3(0.f, 5.f, 0.f));
+		auto& torchComp = world->AddComponent<Frosty::ECS::CLight>(torch, Frosty::ECS::CLight::LightType::Point, 1.f, glm::vec3(0.99f, 0.9f, 0.8f), 15.f, &playerTransform, glm::vec3(0.f, 5.f, 0.f));
 
-		// TEXT
-		auto& GUI = world->CreateEntity();
-		Frosty::UILayout uiLayout(3, 1);
-		uiLayout.AddText(glm::vec2(25.0f, 20.0f), "Hello team");
-		uiLayout.AddText(glm::vec2(20.0f, 700.0f), "uwu", glm::vec3(1.0f, 0.0f, 1.0f), 0.25f);
-		uiLayout.AddText(glm::vec2(25.0f, 220.0f), "1234!", glm::vec3(0.5f, 0.1f, 0.9f), 1.5f);
-		
-		world->AddComponent<Frosty::ECS::CGUI>(GUI, uiLayout);
+		// WITCH CIRCLE
+		auto& witchCircle = world->CreateEntity({ -80.0f, 0.1f, -15.4f }, { 0.0f, 0.0f, 0.0f }, { 2.0f, 2.0f, 2.0f });
+		world->AddComponent<Frosty::ECS::CMesh>(witchCircle, Frosty::AssetManager::GetMesh("hexCircle"));
+		auto& material = world->AddComponent<Frosty::ECS::CMaterial>(witchCircle, Frosty::AssetManager::GetShader("Texture2D"));
+		material.DiffuseTexture = Frosty::AssetManager::GetTexture2D("mashRoomCirkel");
+		world->AddComponent<Frosty::ECS::CPhysics>(witchCircle, Frosty::AssetManager::GetBoundingBox("hexCircle"), 0.f);
+		world->AddComponent<Frosty::ECS::CWitchCircle>(witchCircle);
+		world->AddComponent<Frosty::ECS::CHealth>(witchCircle, 200, 0);
+		auto& barComp = world->AddComponent<Frosty::ECS::CHealthBar>(witchCircle, glm::vec3(0.0f, 20.0f, -5.0f), Frosty::AssetManager::GetMesh("UIPlane"), Frosty::AssetManager::GetShader("HealthBar"), Frosty::AssetManager::GetTexture2D("yellow"));
+		auto& lightComp = world->AddComponent<Frosty::ECS::CLight>(witchCircle, Frosty::ECS::CLight::LightType::Point, 5.f, glm::vec3(0.1f, 1.f, 0.5f));
+		lightComp.Radius = 5.f;
+		auto& witchcircleParticleComp = world->AddComponent<Frosty::ECS::CParticleSystem>(witchCircle, "ParticlesHorizontal", "particle", 20, glm::vec3(0.4f, 0.1f, 0.55f), glm::vec3(0.0f, 1.0f, 1.0f), 1.0f, 0.0f);
+		witchcircleParticleComp.EmitCount = 10;
+		witchcircleParticleComp.StaticColor = false;
+		witchcircleParticleComp.RandomStartPos = true;
+		witchcircleParticleComp.RandomDirection = true;
+		witchcircleParticleComp.AlwaysFaceCamera = true;
+		witchcircleParticleComp.MaxLifetime = 1.f;
 
 		//Particle System Test
 		auto& ParticleSystem1 = world->CreateEntity();

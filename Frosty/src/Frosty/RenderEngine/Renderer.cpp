@@ -142,7 +142,7 @@ namespace Frosty
 					for (auto& TransformIt : meshData->TransformMap)
 					{
 						float distance = 0;																	//The scale check is so the plane is not culled
-						if (culling && Time::GetFrameCount /*&& s_TotalNrOfFrames % 2 == 0*/ && meshData->TransformMap.at(TransformIt.first)->Scale.x < 100 && s_DistanceCulling)
+						if (culling && Time::GetFrameCount() /*&& s_TotalNrOfFrames % 2 == 0*/ && meshData->TransformMap.at(TransformIt.first)->Scale.x < 100 && s_DistanceCulling)
 						{
 							distance = glm::distance(meshData->TransformMap.at(TransformIt.first)->Position, s_SceneData->GameCamera.CameraPosition);
 						}
@@ -248,7 +248,6 @@ namespace Frosty
 		if (s_SceneData->PointLights.find(entity->Id) != s_SceneData->PointLights.end())
 		{
 			s_SceneData->PointLights.erase(entity->Id);
-
 		}
 		else if (s_SceneData->DirectionalLights.find(entity->Id) != s_SceneData->DirectionalLights.end())
 		{

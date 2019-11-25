@@ -818,8 +818,8 @@ namespace MCS
 					{
 						auto& comp = world->GetComponent<Frosty::ECS::CHealth>(m_SelectedEntity);
 						ImGui::BeginChild("CHealth", ImVec2(EDITOR_INSPECTOR_WIDTH, 70), true);
-						ImGui::InputFloat("Max Health", &comp.MaxHealth, 1.0f, 10.0f, 0);
-						ImGui::InputFloat("Current Health", &comp.CurrentHealth, 1.0f, 10.0f, 0);
+						ImGui::InputInt("Max Health", &comp.MaxHealth, 1., 10, 0);
+						ImGui::InputInt("Current Health", &comp.CurrentHealth, 1, 10, 0);
 						ImGui::EndChild();
 					}
 				}

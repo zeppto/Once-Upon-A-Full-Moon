@@ -49,7 +49,7 @@ BoolMap& BoolMap::operator=(const BoolMap& other)
 	return *this;
 }
 
-const bool& BoolMap::CheckCollition(const glm::vec3& LocalPos) const
+const bool BoolMap::CheckCollition(const glm::vec3& LocalPos) const
 {
 	bool returnValue = false;
 	if (m_CoordWidth >= LocalPos.x && 0 <= LocalPos.x && LocalPos.z >= 0 && LocalPos.z <= m_CoordHeight)
@@ -144,7 +144,7 @@ bool BoolMap::LoadMap(const std::string& FilePath)
 	uint8_t status = remove(FilePath.c_str());
 
 
-	for (int i = 0; i < m_BitMapCount; i++)
+	for (uint32_t i = 0; i < m_BitMapCount; i++)
 	{
 		if (bitMap[i] != m_BitMap[i])
 		{

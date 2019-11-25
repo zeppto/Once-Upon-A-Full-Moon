@@ -144,7 +144,7 @@ namespace Frosty
 				//glBindVertexArray(RenderModelID);
 				glUniformMatrix4fv(locationMM, 1, GL_FALSE, &(*PosIt)[0][0]);
 				//glDrawArrays(GL_TRIANGLES, 0, 3);
-				glDrawElements(GL_TRIANGLES, ModelBatchIt->Indices.size(), GL_UNSIGNED_INT, 0);
+				glDrawElements(GL_TRIANGLES, (GLsizei)ModelBatchIt->Indices.size(), GL_UNSIGNED_INT, 0);
 				PosIt++;
 			}
 			ModelBatchIt++;
@@ -195,7 +195,7 @@ namespace Frosty
 		float* tempFloatPtr = FY_NEW float[texSize];
 		glReadPixels(0, 0, TmpWidth, TmpHeight, GL_RED, GL_FLOAT, &tempFloatPtr[0]);
 
-		int bitSize = std::ceil((texSize / 64.0f));
+		int bitSize = int(std::ceil((texSize / 64.0f)));
 		std::shared_ptr<uint64_t[]> bitMap(FY_NEW uint64_t[bitSize]);
 
 		//temp
