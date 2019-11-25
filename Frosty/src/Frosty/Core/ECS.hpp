@@ -668,9 +668,9 @@ namespace Frosty
 			CPhysics() = default;
 			CPhysics(const std::shared_ptr<Luna::BoundingBox>& bb, float speed = 0.0f) : BoundingBox(bb), Speed(speed)
 			{
-				BoundingBox->halfSize[0] *= 0.85f;
-				BoundingBox->halfSize[1] *= 0.85f;
-				BoundingBox->halfSize[2] *= 0.85f;
+				//BoundingBox->halfSize[0] *= 0.85f;
+				//BoundingBox->halfSize[1] *= 0.85f;
+				//BoundingBox->halfSize[2] *= 0.85f;
 			}
 			CPhysics(const CPhysics& org) { FY_CORE_ASSERT(false, "Copy constructor in CPhysics called."); }
 			CPhysics& operator=(const CPhysics& org)

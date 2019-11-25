@@ -312,7 +312,6 @@ namespace MCS
 		//auto& bossComp = world->AddComponent<Frosty::ECS::CBoss>(enemyA, 3.0f);
 
 
-		/*
 		// TREE
 		//auto& tree = world->CreateEntity({ 50.0f, 3.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 8.0f, 6.0f, 7.0f }, true);
 		//world->AddComponent<Frosty::ECS::CMesh>(tree, Frosty::AssetManager::GetMesh("pCube1"));
