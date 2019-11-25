@@ -25,71 +25,88 @@ namespace MCS
 		}
 		else
 		{
-			myComponents.MyComponents.at(1).HaveComponent = true;
-			auto& mesh = m_World->GetComponent<Frosty::ECS::CMesh>(entity);
-			strcpy_s(myComponents.myMesh.MeshName, mesh.Mesh->GetName().c_str());
-		}
-		else
-			myComponents.MyComponents.at(1).HaveComponent = false;
-		//Material
-		if (m_World->HasComponent<Frosty::ECS::CMaterial>(entity))
-		{
-			myComponents.MyComponents.at(2).HaveComponent = true;
-			auto& material = m_World->GetComponent<Frosty::ECS::CMaterial>(entity);
-			strcpy_s(myComponents.myMaterial.UseShaderName, material.UseShader->GetName().c_str());
-			myComponents.myMaterial.Albedo = material.Albedo;
-			if(material.DiffuseTexture != nullptr)
-				strcpy_s(myComponents.myMaterial.DiffuseTextureName, material.DiffuseTexture->GetName().c_str());
-			if (material.SpecularTexture != nullptr)
-				strcpy_s(myComponents.myMaterial.SpecularTextureName, material.SpecularTexture->GetName().c_str());
-			if (material.NormalTexture != nullptr)
-				strcpy_s(myComponents.myMaterial.NormalTextureName, material.NormalTexture->GetName().c_str());
-			if (material.BlendMapTexture != nullptr)
-				strcpy_s(myComponents.myMaterial.BlendMapTextureName, material.BlendMapTexture->GetName().c_str());
-			if (material.BlendTexture1 != nullptr)
-				strcpy_s(myComponents.myMaterial.BlendTexture1Name, material.BlendTexture1->GetName().c_str());
-			if (material.BlendTexture2 != nullptr)
-				strcpy_s(myComponents.myMaterial.BlendTexture2Name, material.BlendTexture2->GetName().c_str());
-			myComponents.myMaterial.SpecularStrength = material.SpecularStrength;
-			myComponents.myMaterial.Shininess = material.Shininess;
-			myComponents.myMaterial.TextureScale = material.TextureScale;
-			std::string meshName = myComponents.myMesh.MeshName;
-			myComponents.myMaterial.HasTransparency = material.HasTransparency;
+			Level_Components myComponents;
+			myComponents.MyComponents.resize(m_Header.NrOfComponents);
+			m_Header.NrOfEntitys++;
+			//Transform
+			if (m_World->HasComponent<Frosty::ECS::CTransform>(entity))
+			{
+				myComponents.MyComponents.at(0).HaveComponent = true;
+				auto& tranform = m_World->GetComponent<Frosty::ECS::CTransform>(entity);
+				myComponents.myTransform.Position = tranform.Position;
+				myComponents.myTransform.Rotation = tranform.Rotation;
+				myComponents.myTransform.Scale = tranform.Scale;
+				myComponents.myTransform.IsStatic = tranform.IsStatic;
+			}
+			else
+				myComponents.MyComponents.at(0).HaveComponent = false;
+			//Mesh
+			if (m_World->HasComponent<Frosty::ECS::CMesh>(entity))
+			{
+				myComponents.MyComponents.at(1).HaveComponent = true;
+				auto& mesh = m_World->GetComponent<Frosty::ECS::CMesh>(entity);
+				std::string meskhh = mesh.Mesh->GetName().c_str();
+				strcpy_s(myComponents.myMesh.MeshName, mesh.Mesh->GetName().c_str());
+			}
+			else
+				myComponents.MyComponents.at(1).HaveComponent = false;
+			//Material
+			if (m_World->HasComponent<Frosty::ECS::CMaterial>(entity))
+			{
+				myComponents.MyComponents.at(2).HaveComponent = true;
+				auto& material = m_World->GetComponent<Frosty::ECS::CMaterial>(entity);
+				strcpy_s(myComponents.myMaterial.UseShaderName, material.UseShader->GetName().c_str());
+				myComponents.myMaterial.Albedo = material.Albedo;
+				if (material.DiffuseTexture != nullptr)
+					strcpy_s(myComponents.myMaterial.DiffuseTextureName, material.DiffuseTexture->GetName().c_str());
+				if (material.SpecularTexture != nullptr)
+					strcpy_s(myComponents.myMaterial.SpecularTextureName, material.SpecularTexture->GetName().c_str());
+				if (material.NormalTexture != nullptr)
+					strcpy_s(myComponents.myMaterial.NormalTextureName, material.NormalTexture->GetName().c_str());
+				if (material.BlendMapTexture != nullptr)
+					strcpy_s(myComponents.myMaterial.BlendMapTextureName, material.BlendMapTexture->GetName().c_str());
+				if (material.BlendTexture1 != nullptr)
+					strcpy_s(myComponents.myMaterial.BlendTexture1Name, material.BlendTexture1->GetName().c_str());
+				if (material.BlendTexture2 != nullptr)
+					strcpy_s(myComponents.myMaterial.BlendTexture2Name, material.BlendTexture2->GetName().c_str());
+				myComponents.myMaterial.SpecularStrength = material.SpecularStrength;
+				myComponents.myMaterial.Shininess = material.Shininess;
+				myComponents.myMaterial.TextureScale = material.TextureScale;
+				std::string meshName = myComponents.myMesh.MeshName;
+				myComponents.myMaterial.HasTransparency = material.HasTransparency;
 
-			if (m_World->HasComponent<Frosty::ECS::CMesh>(entity) && meshName.find("tree") != std::string::npos)
-				myComponents.myMaterial.HasTransparency = true;
-			if (m_World->HasComponent<Frosty::ECS::CMesh>(entity) && meshName.find("Tree") != std::string::npos)
-				myComponents.myMaterial.HasTransparency = true;
-		}
-		else
-			myComponents.MyComponents.at(2).HaveComponent = false;
-		//Follow
-		if (m_World->HasComponent<Frosty::ECS::CFollow>(entity))
-		{
-			myComponents.MyComponents.at(3).HaveComponent = true;
-			//under construction
-			auto& follow = m_World->GetComponent<Frosty::ECS::CFollow>(entity);
-			myComponents.myFollow.StopDistance = follow.StopDistance;
-		}
-		else
-			myComponents.MyComponents.at(3).HaveComponent = false;
-		//Light
-		if (m_World->HasComponent<Frosty::ECS::CLight>(entity))
-		{
-			myComponents.MyComponents.at(4).HaveComponent = true;
-			auto& light = m_World->GetComponent<Frosty::ECS::CLight>(entity);
-			myComponents.myLight.Type = (int)light.Type;
-			myComponents.myLight.Color = light.Color;
-			myComponents.myLight.Radius = light.Radius;
-			myComponents.myLight.Strength = light.Strength;
-		}
-		else
-			myComponents.MyComponents.at(4).HaveComponent = false;
-		//Physics
-		if (m_World->HasComponent<Frosty::ECS::CPhysics>(entity))
-		{
-			myComponents.MyComponents.at(5).HaveComponent = true;
-			auto& physics = m_World->GetComponent<Frosty::ECS::CPhysics>(entity);
+				//if (m_World->HasComponent<Frosty::ECS::CMesh>(entity) && meshName.find("tree") != std::string::npos)
+				//	myComponents.myMaterial.HasTransparency = true;
+			}
+			else
+				myComponents.MyComponents.at(2).HaveComponent = false;
+			//Follow
+			if (m_World->HasComponent<Frosty::ECS::CFollow>(entity))
+			{
+				myComponents.MyComponents.at(3).HaveComponent = true;
+				//under construction
+				auto& follow = m_World->GetComponent<Frosty::ECS::CFollow>(entity);
+				myComponents.myFollow.StopDistance = follow.StopDistance;
+			}
+			else
+				myComponents.MyComponents.at(3).HaveComponent = false;
+			//Light
+			if (m_World->HasComponent<Frosty::ECS::CLight>(entity))
+			{
+				myComponents.MyComponents.at(4).HaveComponent = true;
+				auto& light = m_World->GetComponent<Frosty::ECS::CLight>(entity);
+				myComponents.myLight.Type = (int)light.Type;
+				myComponents.myLight.Color = light.Color;
+				myComponents.myLight.Radius = light.Radius;
+				myComponents.myLight.Strength = light.Strength;
+			}
+			else
+				myComponents.MyComponents.at(4).HaveComponent = false;
+			//Physics
+			if (m_World->HasComponent<Frosty::ECS::CPhysics>(entity))
+			{
+				myComponents.MyComponents.at(5).HaveComponent = true;
+				auto& physics = m_World->GetComponent<Frosty::ECS::CPhysics>(entity);
 
 				myComponents.myPhysics.Direction = physics.Direction;
 				myComponents.myPhysics.MaxSpeed = physics.MaxSpeed;
@@ -811,3 +828,4 @@ namespace MCS
 		ABoolMap->LoadMap("BoolMap.bmap");
 	}
 }
+
