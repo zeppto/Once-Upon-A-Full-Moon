@@ -3,20 +3,20 @@
 
 namespace MCS
 {
-	void Pathfinding::Init(Grid* grid)
+	void Pathfinding::Init(Frosty::Grid* grid)
 	{
 		m_Grid = grid;
 	}
 
 	glm::vec3 Pathfinding::FindPath(const glm::vec3& startPos, const glm::vec3& targetPos)
 	{
-		CellNode startNode = m_Grid->WorldPointToNode(startPos);
-		CellNode targetNode = m_Grid->WorldPointToNode(targetPos);
+		Frosty::CellNode startNode = m_Grid->WorldPointToNode(startPos);
+		Frosty::CellNode targetNode = m_Grid->WorldPointToNode(targetPos);
 
-		std::priority_queue<CellNode> openSet;
-		std::unordered_set<CellNode> closedSet;
+		std::priority_queue<Frosty::CellNode> openSet;
+		std::unordered_set<Frosty::CellNode> closedSet;
 		openSet.push(startNode);
-		CellNode currentNode = openSet.top();
+		Frosty::CellNode currentNode = openSet.top();
 
 		while (!openSet.empty())
 		{
@@ -35,7 +35,7 @@ namespace MCS
 				return RetracePath(&startNode, &targetNode);
 			}
 
-			for each (CellNode* neighbour in m_Grid->GetNeighbours(&currentNode))
+			for each (Frosty::CellNode* neighbour in m_Grid->GetNeighbours(&currentNode))
 			{
 				if (neighbour->Walkable && closedSet.count(*neighbour) == 0)
 				{
@@ -69,7 +69,7 @@ namespace MCS
 		return glm::vec3(0.0f);
 	}
 
-	int32_t Pathfinding::GetDistance(CellNode* nodeA, CellNode* nodeB) const
+	int32_t Pathfinding::GetDistance(Frosty::CellNode* nodeA, Frosty::CellNode* nodeB) const
 	{
 		int32_t distX = glm::abs(nodeA->GridX - nodeB->GridX);
 		int32_t distY = glm::abs(nodeA->GridY - nodeB->GridY);
@@ -82,10 +82,10 @@ namespace MCS
 		return DIAGONAL_CELL_WEIGHT * distX + ADJACENT_CELL_WEIGHT * (distY - distX);
 	}
 
-	glm::vec3 Pathfinding::RetracePath(CellNode* startNode, CellNode* targetNode)
+	glm::vec3 Pathfinding::RetracePath(Frosty::CellNode* startNode, Frosty::CellNode* targetNode)
 	{
-		std::vector<CellNode*> path;
-		CellNode* currentNode = targetNode;
+		std::vector<Frosty::CellNode*> path;
+		Frosty::CellNode* currentNode = targetNode;
 
 		while (*currentNode != *startNode)
 		{

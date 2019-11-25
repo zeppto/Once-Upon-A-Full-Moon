@@ -187,7 +187,7 @@ namespace MCS
 
 	void NavigationSystem::InitiateGridMap(const Frosty::ECS::CTransform& planeTransform)
 	{
-		m_Grid.reset(FY_NEW Grid());
+		m_Grid.reset(FY_NEW Frosty::Grid());
 		Frosty::Time::StartTimer("Grid::Init()");
 		m_Grid->Init(planeTransform);
 		Frosty::Time::EndTimer("Grid::Init()");
@@ -198,7 +198,7 @@ namespace MCS
 
 	void NavigationSystem::OnInitiateGridMap(Frosty::InitiateGridEvent& e)
 	{
-		m_Grid.reset(FY_NEW Grid());
+		m_Grid.reset(FY_NEW Frosty::Grid());
 		Frosty::Time::StartTimer("Grid::Init()");
 		m_Grid->Init(*e.GetTransform());
 		Frosty::Time::EndTimer("Grid::Init()");

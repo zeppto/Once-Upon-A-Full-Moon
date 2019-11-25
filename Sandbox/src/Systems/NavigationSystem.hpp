@@ -40,7 +40,7 @@ namespace MCS
 		std::array<Frosty::ECS::CEnemy*, Frosty::ECS::MAX_ENTITIES_PER_COMPONENT> m_Enemy;
 
 		//std::unique_ptr<GridMap> m_GridMap;
-		std::unique_ptr<Grid> m_Grid;
+		std::unique_ptr<Frosty::Grid> m_Grid;
 		std::unique_ptr<Pathfinding> m_Pathfinding;
 
 	};
