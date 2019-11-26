@@ -229,6 +229,7 @@ namespace MCS
 									}
 									else if (m_World->HasComponent<Frosty::ECS::CEnemy>(m_Transform[i]->EntityPtr))
 									{
+										normalCollisionPushback = false;
 									}
 									else if (m_Transform[i]->IsStatic)
 									{

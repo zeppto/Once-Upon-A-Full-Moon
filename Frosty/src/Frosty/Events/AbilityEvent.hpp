@@ -228,6 +228,14 @@ namespace Frosty
 
 		EVENT_TYPE(UpgradeWeapon)
 	};
+
+	class HealAbilityEvent : public BaseEvent
+	{
+	public:
+		HealAbilityEvent() { }
+
+		EVENT_TYPE(HealAbility)
+	};
 }
 
 #endif // !ABILITY_EVENT_HPP

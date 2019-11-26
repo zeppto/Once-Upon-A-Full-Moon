@@ -79,6 +79,9 @@ namespace MCS
 		case Frosty::EventType::UpgradeWeapon:
 			OnUpgradeWeaponEvent();
 			break;
+		case Frosty::EventType::HealAbility:
+			OnHealAbilityEvent();
+			break;
 		default:
 			break;
 		}
@@ -956,6 +959,34 @@ namespace MCS
 			// If all four elements are upgraded --> weapon becomes fully upgraded
 			if (weaponComp.FireCriticalHitChance != 0.f && weaponComp.EarthDamage != 0.f && weaponComp.WindSpeed != 0.f && weaponComp.WaterHealing != 0)
 				weaponComp.IsFullyUpgraded = true;
+		}
+	}
+
+	void PlayerControllerSystem::OnHealAbilityEvent()
+	{
+		for (size_t i = 1; i < p_Total; i++)
+		{
+			auto& weaponComp = m_World->GetComponent<Frosty::ECS::CWeapon>(m_Player[i]->Weapon->EntityPtr);
+
+			if (m_Health[i]->CurrentHealth < m_Health[i]->MaxHealth && weaponComp.WaterHealing != 0)
+			{
+				uint8_t randomValue = rand() % 10 + 1;
+
+				// 50% chance of healing
+				if (randomValue <= 5)
+				{
+					// If healing won't exceed health capacity --> directly add heal value to health
+					if (weaponComp.WaterHealing <= (m_Health[i]->MaxHealth - m_Health[i]->CurrentHealth))
+					{
+						m_Health[i]->CurrentHealth += m_Inventory[i]->Heal;
+					}
+					// But if healing exceeds health capacity --> max health achieved
+					else
+					{
+						m_Health[i]->CurrentHealth = m_Health[i]->MaxHealth;
+					}
+				}
+			}
 		}
 	}
 

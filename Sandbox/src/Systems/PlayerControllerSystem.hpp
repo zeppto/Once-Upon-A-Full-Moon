@@ -1,7 +1,7 @@
 #ifndef PLAYER_CONTROLLER_SYSTEM_HPP
 #define PLAYER_CONTROLLER_SYSTEM_HPP
 
-namespace Frosty { class PickUpEvent; class UpgradeWeaponEvent; }
+namespace Frosty { class PickUpEvent; class UpgradeWeaponEvent; class HealAbilityEvent; }
 
 namespace MCS
 {
@@ -46,6 +46,7 @@ namespace MCS
 		void HandleInventory(size_t index);
 		void OnPickUpEvent(Frosty::PickUpEvent& e);
 		void OnUpgradeWeaponEvent();
+		void OnHealAbilityEvent();
 
 		void SwapWeapon(const std::shared_ptr<Frosty::ECS::Entity>& playerWeapon, const std::shared_ptr<Frosty::ECS::Entity>& lootWeapon);
 		void SwapMesh(const std::shared_ptr<Frosty::ECS::Entity>& playerWeapon, const std::shared_ptr<Frosty::ECS::Entity>& lootWeapon);
