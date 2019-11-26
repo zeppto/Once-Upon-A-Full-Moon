@@ -275,7 +275,7 @@ namespace MCS
 
 				/*auto& weapon = world->CreateEntity({ -0.7f, 2.3f, 0.2f }, { 0.0f, 60.0f, 0.0f }, { 1.f, 1.f, 1.f });*/
 
-		auto& enemyWeaponA = world->CreateEntity({ -0.7f, 2.3f, 0.2f }, { 0.0f, 60.0f, 0.0f }, { 1.f, 1.f, 1.f });
+		auto& enemyWeaponA = world->CreateEntity({ 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 1.f, 1.f, 1.f });
 
 		auto& enemyWeaponCompA = world->AddComponent<Frosty::ECS::CWeapon>(enemyWeaponA, Frosty::ECS::CWeapon::WeaponType::Bow, 1, 1.0f);
 		weaponComp.Level = 3;
@@ -313,7 +313,10 @@ namespace MCS
 		eWeaponMesh.parentMatrix = world->GetComponent<Frosty::ECS::CTransform>(enemyA).GetModelMatrix();
 		world->GetComponent<Frosty::ECS::CAnimController>(enemyA).holdPtr = world->GetComponent<Frosty::ECS::CAnimController>(enemyA).currAnim->getHoldingJoint();
 		//Make it move according to the player's hand.
-		eWeaponMesh.animOffset = world->GetComponent<Frosty::ECS::CAnimController>(enemyA).holdPtr;
+		//eWeaponMesh.animOffset = world->GetComponent<Frosty::ECS::CAnimController>(enemyA).holdPtr;
+
+		world->GetComponent<Frosty::ECS::CTransform>(enemyWeaponA).Position = *world->GetComponent<Frosty::ECS::CAnimController>(enemyA).currAnim->getHoldingJointOffset();
+
 		//Update it in renderer.
 		Frosty::Renderer::UpdateCMesh(enemyWeaponA->Id, &eWeaponMesh);
 

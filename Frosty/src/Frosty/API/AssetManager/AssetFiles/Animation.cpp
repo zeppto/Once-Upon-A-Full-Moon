@@ -44,14 +44,19 @@ namespace Frosty
 
 	glm::mat4* Animation::getHoldingJoint()
 	{
-		if (m_holdingJoint != nullptr)
+		if (m_HoldingJoint != nullptr)
 		{
-			return &m_SkinData.jTrans[*m_holdingJoint];
+			return &m_SkinData.jTrans[*m_HoldingJoint];
 		}
 		else
 		{
 			return nullptr;
 		}
+	}
+
+	glm::vec3* Animation::getHoldingJointOffset()
+	{
+		return &m_HoldingJointOffset;
 	}
 
 	void Animation::GetSkinData(void*& data, int& nrOfJoints)
@@ -214,8 +219,8 @@ namespace Frosty
 					//Identifing joint to hold items
 					if (tmp == "Wrist_R")
 					{
-						//Should compare names instead
-						m_holdingJoint = &m_Joints[i].jointID;
+						//Animation translation
+						m_HoldingJoint = &m_Joints[i].jointID;
 					}
 					tempFile.getKeyframes(m_Joints.at(i).jointID, m_KeyframeMap[m_Joints[i].jointID]);
 				}
