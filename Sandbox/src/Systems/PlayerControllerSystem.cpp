@@ -811,6 +811,7 @@ namespace MCS
 				{
 					if (m_Inventory[i]->IncreaseSpeed <= (m_Physics[i]->MaxSpeed - m_Physics[i]->Speed))
 					{
+						m_Inventory[i]->CurrentSpeedBoots++;
 						m_Physics[i]->Speed += m_Inventory[i]->IncreaseSpeed;
 						SetPickUpText(i, "Speed Increased");
 					}
