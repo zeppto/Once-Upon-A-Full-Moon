@@ -511,18 +511,6 @@ namespace Frosty
 				}
 			}
 			CTransform(const CTransform& org) { FY_CORE_ASSERT(false, "Copy constructor in CTransform called."); }
-			CTransform& operator=(const CTransform& org)
-			{
-				if (this != &org)
-				{
-					Position = org.Position;
-					Rotation = org.Rotation;
-					Scale = org.Scale;
-					ModelMatrix = org.ModelMatrix;
-					IsStatic = org.IsStatic;
-				}
-				return *this;
-			}
 
 			glm::mat4* GetModelMatrix()
 			{
@@ -549,15 +537,6 @@ namespace Frosty
 			CMesh() = default;
 			CMesh(std::shared_ptr<VertexArray> mesh, bool render = true) : Mesh(mesh), RenderMesh(render) { }
 			CMesh(const CMesh& org) { FY_CORE_ASSERT(false, "Copy constructor in CMesh called."); }
-			CMesh& operator=(const CMesh& org)
-			{
-				if (this != &org)
-				{
-					Mesh = org.Mesh;
-				}
-
-				return *this;
-			}
 			bool operator!=(const CMesh& org) { return Mesh != org.Mesh; }
 
 			virtual std::string GetName() const { return NAME; }
@@ -581,23 +560,6 @@ namespace Frosty
 			CCamera(float fov, float aspect, float zNear, float zFar)
 				: FieldOfView(fov), Near(zNear), Far(zFar), ProjectionMatrix(glm::perspective(glm::radians(fov), aspect, zNear, zFar)) { }
 			CCamera(const CCamera& org) { FY_CORE_ASSERT(false, "Copy constructor in CCamera called."); }
-			CCamera& operator=(const CCamera& org)
-			{
-				if (this != &org)
-				{
-					Target = org.Target;
-					Front = org.Front;
-					Background = org.Background;
-					FieldOfView = org.FieldOfView;
-					Near = org.Near;
-					Far = org.Far;
-					ViewMatrix = org.ViewMatrix;
-					ProjectionMatrix = org.ProjectionMatrix;
-					ViewProjectionMatrix = org.ViewProjectionMatrix;
-					UpdateProjection = org.UpdateProjection;
-				}
-				return *this;
-			}
 
 			virtual std::string GetName() const { return NAME; }
 		};
@@ -681,20 +643,6 @@ namespace Frosty
 			CLight(LightType lightType, float strength, glm::vec3 color, float radius, glm::vec3 direction) : Type(lightType), Strength(strength), Color(color), Radius(radius), Direction(direction) { }
 			CLight(LightType lightType, float strength, glm::vec3 color, float radius = 20.f, CTransform* origin = nullptr, const glm::vec3& offset = glm::vec3(0.f)) : Type(lightType), Strength(strength), Color(color), Radius(radius), Origin(origin), Offset(offset) { }
 			CLight(const CLight& org) { FY_CORE_ASSERT(false, "Copy constructor in CLight called."); }
-			CLight& operator=(const CLight& org)
-			{
-				if (this != &org)
-				{
-					Origin = org.Origin;
-					Offset = org.Offset;
-					Type = org.Type;
-					Color = org.Color;
-					Direction = org.Direction;
-					Radius = org.Radius;
-					Strength = org.Strength;
-				}
-				return *this;
-			}
 
 			virtual std::string GetName() const { return NAME; }
 		};
@@ -718,19 +666,6 @@ namespace Frosty
 				//BoundingBox->halfSize[2] *= 0.85f;
 			}
 			CPhysics(const CPhysics& org) { FY_CORE_ASSERT(false, "Copy constructor in CPhysics called."); }
-			CPhysics& operator=(const CPhysics& org)
-			{
-				if (this != &org)
-				{
-					BoundingBox = org.BoundingBox;
-					Direction = org.Direction;
-					MaxSpeed = org.MaxSpeed;
-					Speed = org.Speed;
-					//Velocity = org.Velocity;
-					SpeedMultiplier = org.SpeedMultiplier;
-				}
-				return *this;
-			}
 
 			virtual std::string GetName() const { return NAME; }
 		};
@@ -857,21 +792,6 @@ namespace Frosty
 			CAttack() = default;
 			CAttack(AttackType type, int damage, bool friendly = false, float lifeTime = 0.1f, bool destroyable = true) : Type(type), Damage(damage), Friendly(friendly), Lifetime(lifeTime), Destroyable(destroyable) { }
 			CAttack(const CAttack& org) { FY_CORE_ASSERT(false, "Copy constructor in CAttack called."); }
-			CAttack& operator=(const CAttack& org)
-			{
-				if (this != &org)
-				{
-					Type = org.Type;
-					AttackedEntities = org.AttackedEntities;
-					Damage = org.Damage;
-					Friendly = org.Friendly;
-					Destroyable = org.Destroyable;
-					Lifetime = org.Lifetime;
-					LifetimeTimer = org.LifetimeTimer;
-				}
-
-				return *this;
-			}
 
 			virtual std::string GetName() const { return NAME; }
 		};
@@ -903,27 +823,6 @@ namespace Frosty
 			CPlayer() = default;
 			CPlayer(CWeapon* weapon) : Weapon(weapon) { }
 			CPlayer(const CPlayer& org) { FY_CORE_ASSERT(false, "Copy constructor in CPlayer called."); }
-			CPlayer& operator=(const CPlayer& org)
-			{
-				if (this != &org)
-				{
-					Weapon = org.Weapon;
-
-					MoveLeftKey = org.MoveLeftKey;
-					MoveForwardKey = org.MoveForwardKey;
-					MoveRightKey = org.MoveRightKey;
-					MoveBackKey = org.MoveBackKey;
-					DashKey = org.DashKey;
-					LVL1Attack = org.LVL1Attack;
-					LVL2Attack = org.LVL2Attack;
-					LVL3Attack = org.LVL3Attack;
-
-					HealingPotionKey = org.HealingPotionKey;
-					SpeedPotionKey = org.SpeedPotionKey;
-					DropBaitKey = org.DropBaitKey;
-				}
-				return *this;
-			}
 
 			virtual std::string GetName() const { return NAME; }
 		};
@@ -948,19 +847,6 @@ namespace Frosty
 			CEnemy() = default;
 			CEnemy(CTransform* target, CWeapon* weapon = nullptr, float runOnHealth = 0.0f) : Target(target), Weapon(weapon), RunOnHealth(runOnHealth) { }
 			CEnemy(const CEnemy& org) { FY_CORE_ASSERT(false, "Copy constructor in CEnemy called."); }
-			CEnemy& operator=(const CEnemy& org)
-			{
-				if (this != &org)
-				{
-					CurrentState = org.CurrentState;
-					Weapon = org.Weapon;
-					Target = org.Target;
-					CellTarget = org.CellTarget;
-					SightRange = org.SightRange;
-					RunOnHealth = org.RunOnHealth;
-				}
-				return *this;
-			}
 
 			virtual std::string GetName() const { return NAME; }
 		};
@@ -969,24 +855,14 @@ namespace Frosty
 		{
 			static std::string NAME;
 
-			int MaxPossibleHealth{ 20 };						// Max health an entity can upgrade to
-			int MaxHealth{ 5 };									// Max health an entity can currently have
+			int MaxPossibleHealth{ 20 };								// Max health an entity can upgrade to
+			int MaxHealth{ 5 };											// Max health an entity can currently have
 			int CurrentHealth{ 5 };
 
 			CHealth() = default;
 			CHealth(int health) : MaxHealth(health), CurrentHealth(health) {};
 			CHealth(int maxHealth, int currentHealth) : MaxHealth(maxHealth), CurrentHealth(currentHealth) {};
 			CHealth(const CHealth& org) { FY_CORE_ASSERT(false, "Copy constructor in CHealth called."); }
-			CHealth& operator=(const CHealth& org)
-			{
-				if (this != &org)
-				{
-					MaxPossibleHealth = org.MaxPossibleHealth;
-					MaxHealth = org.MaxHealth;
-					CurrentHealth = org.CurrentHealth;
-				}
-				return *this;
-			}
 
 			virtual std::string GetName() const { return NAME; }
 		};
@@ -1032,39 +908,6 @@ namespace Frosty
 
 			CInventory() = default;
 			CInventory(const CInventory& org) { FY_CORE_ASSERT(false, "Copy constructor in CInventory called."); }
-			CInventory& operator=(const CInventory& org)
-			{
-				if (this != &org)
-				{
-					MaxHealingPotions = org.MaxHealingPotions;
-					CurrentHealingPotions = org.CurrentHealingPotions;
-					Heal = org.Heal;
-					HealingCooldown = org.HealingCooldown;
-					HealingTimer = org.HealingTimer;
-
-					MaxIncreaseHPPotions = org.MaxIncreaseHPPotions;
-					CurrentIncreaseHPPotions = org.CurrentIncreaseHPPotions;
-					IncreaseHP = org.IncreaseHP;
-					IncreaseHPCooldown = org.IncreaseHPCooldown;
-					IncreaseHPTimer = org.IncreaseHPTimer;
-
-					MaxSpeedPotions = org.MaxSpeedPotions;
-					CurrentSpeedPotions = org.CurrentSpeedPotions;
-					IncreaseSpeedTemporary = org.IncreaseSpeedTemporary;
-					SpeedCooldown = org.SpeedCooldown;
-					SpeedTimer = org.SpeedTimer;
-
-					MaxSpeedBoots = org.MaxSpeedBoots;
-					CurrentSpeedBoots = org.CurrentSpeedBoots;
-					IncreaseSpeed = org.IncreaseSpeed;
-
-					MaxBaitAmount = org.MaxBaitAmount;
-					CurrentBaitAmount = org.CurrentBaitAmount;
-					BaitCooldown = org.BaitCooldown;
-					BaitTimer = org.BaitTimer;
-				}
-				return *this;
-			}
 
 			virtual std::string GetName() const { return NAME; }
 		};
@@ -1088,20 +931,6 @@ namespace Frosty
 			CHealthBar(glm::vec3 barOffset, std::shared_ptr<VertexArray> mesh, std::shared_ptr<Shader> shader, std::shared_ptr<Texture2D> tex)
 				: BarOffset(barOffset), Mesh(mesh), UseShader(shader), Texture(tex) { }
 			CHealthBar(const CHealthBar& org) { FY_CORE_ASSERT(false, "Copy constructor in CHealthBar called."); }
-			CHealthBar& operator=(const CHealthBar& org)
-			{
-				if (this != &org)
-				{
-					BarOffset = org.BarOffset;
-					Mesh = org.Mesh;
-					UseShader = org.UseShader;
-					Texture = org.Texture;
-
-					Translate = org.Translate;
-					Scale = org.Scale;
-				}
-				return *this;
-			}
 
 			virtual std::string GetName() const { return NAME; }
 		};
@@ -1118,17 +947,6 @@ namespace Frosty
 
 			CDash() = default;
 			CDash(const CDash& org) { FY_CORE_ASSERT(false, "Copy constructor in CDash called."); }
-			CDash& operator=(const CDash& org)
-			{
-				if (this != &org)
-				{
-					Active = org.Active;
-					CurrentCooldown = org.CurrentCooldown;
-					DistanceDashed = org.DistanceDashed;
-					SpeedMultiplier = org.SpeedMultiplier;
-				}
-				return *this;
-			}
 
 			virtual std::string GetName() const { return NAME; }
 		};
@@ -1240,48 +1058,6 @@ namespace Frosty
 			}
 			CParticleSystem(const CParticleSystem& org) { FY_CORE_ASSERT(false, "Copy constructor in CParticleSystem called."); }
 
-			CParticleSystem& operator=(const CParticleSystem& org)
-			{
-				if (this != &org)
-				{
-					ShaderName = org.ShaderName;
-					UseShader = org.UseShader;
-					AlwaysFaceCamera = org.AlwaysFaceCamera;
-					TextureName = org.TextureName;
-					Texture = org.Texture;
-					MaxParticles = org.MaxParticles;
-					StartParticleSize = org.StartParticleSize;
-					EndParticleSize = org.EndParticleSize;
-					ParticleSize = org.ParticleSize;
-					SystemRotation = org.SystemRotation;
-					ParticleCount = org.ParticleCount;
-					SystemStartColor = org.SystemStartColor;
-					SystemEndColor = org.SystemEndColor;
-					ParticleSystemDirection = org.ParticleSystemDirection;
-					ParticleSystemStartPos = org.ParticleSystemStartPos;
-					EmitRate = org.EmitRate;
-					EmitCount = org.EmitCount;
-					Speed = org.Speed;
-					MinLifetime = org.MinLifetime;
-					MaxLifetime = org.MaxLifetime;
-					FadeTreshold = org.FadeTreshold;
-					FadeInTreshold = org.FadeInTreshold;
-					randSpread = org.randSpread;
-					randMainDir = org.randMainDir;
-					RotateOverLifetime = org.RotateOverLifetime;
-					StaticColor = org.StaticColor;
-					RandomStartPos = org.RandomStartPos;
-					RandomLifetimes = org.RandomLifetimes;
-					RandomDirection = org.RandomDirection;
-					Preview = org.Preview;
-					Timer = org.Timer;
-					LastUsedParticle = org.LastUsedParticle;
-
-					Particles = org.Particles;
-				}
-				return *this;
-			}
-
 			//void Init() //For utility reasons. Actually all vital data should just be in the constructor
 			//{
 
@@ -1308,14 +1084,7 @@ namespace Frosty
 			CLootable() = default;
 			CLootable(LootType type) : Type(type) {}
 			CLootable(const CLootable& org) { FY_CORE_ASSERT(false, "Copy constructor in CLootable called."); }
-			CLootable& operator=(const CLootable& org)
-			{
-				if (this != &org)
-				{
-					Type = org.Type;
-				}
-				return *this;
-			}
+
 			virtual std::string GetName() const { return NAME; }
 		};
 
@@ -1346,7 +1115,9 @@ namespace Frosty
 			float LeapChance{ 25.0f };
 			float LeapInterval{ 2.5f };
 			float LeapCooldownTime{ Frosty::Time::CurrentTime() };
-			float LeapDistance{ 35.0f };
+			glm::vec3 LeapTargetPosition{ 0.0f };
+			float LeapMaxDistance{ 35.0f };
+			float LeapMinDistance{ 15.0f };
 			//
 			int32_t ChargeDamage{ 9 };
 			float ChargeChance{ 15.0f };
@@ -1363,19 +1134,6 @@ namespace Frosty
 			CBoss() = default;
 			CBoss(float DistractionTime) : DistractionTime(DistractionTime) { }
 			CBoss(const CBoss& org) { FY_CORE_ASSERT(false, "Copy constructor in CBoss called."); }
-			CBoss& operator=(const CBoss& org)
-			{
-				if (this != &org)
-				{
-					DistractionTime = org.DistractionTime;
-					DistractionTimer = org.DistractionTimer;
-					Distracted = org.Distracted;
-					Hunting = org.Hunting;
-
-					TargetList = org.TargetList;
-				}
-				return *this;
-			}
 
 			virtual std::string GetName() const { return NAME; }
 		};
@@ -1384,13 +1142,16 @@ namespace Frosty
 		{
 			static std::string NAME;
 
-			bool isSliderControlled = false;
-			float animSpeed = 0;
-			Animation* currAnim;
-			float dt = 0;
-			glm::mat4* holdPtr = nullptr;
+			bool isSliderControlled{ false };
+			float animSpeed{ 0.0f };
+			Animation* currAnim{ nullptr };
+			float dt{ 0.0f };
+			glm::mat4* holdPtr{ nullptr };
 
-			bool isBusy = false;
+			bool isBusy{ false };
+
+			CAnimController() = default;
+			CAnimController(const CAnimController& org) { FY_CORE_ASSERT(false, "Copy constructor in CAnimController called."); }
 
 			virtual std::string GetName() const { return NAME; }
 		};
@@ -1406,6 +1167,7 @@ namespace Frosty
 			CLevelExit() = default;
 			CLevelExit(int exitDirection) : ExitDirection(exitDirection) { }
 			CLevelExit(const CLevelExit& org) { FY_CORE_ASSERT(false, "Copy constructor in CLevelExit called."); }
+<<<<<<< HEAD
 			CLevelExit& operator=(const CLevelExit& org)
 			{
 				if (this != &org)
@@ -1416,6 +1178,8 @@ namespace Frosty
 				}
 				return *this;
 			}
+=======
+>>>>>>> 03399dae73bc12fdf2d4ceabdb1e6e5fe74d0bb9
 
 			virtual std::string GetName() const { return NAME; }
 		};
@@ -1432,16 +1196,7 @@ namespace Frosty
 			CGUI() = default;
 			CGUI(UILayout& layout) : Layout(layout) {  }
 			CGUI(const CGUI& org) { FY_CORE_ASSERT(false, "Copy constructor in CGUI called."); }
-			CGUI& operator=(const CGUI& org)
-			{
-				if (this != &org)
-				{
-					TextShader = org.TextShader;
-					SpriteShader = org.SpriteShader;
-					Layout = org.Layout;
-				}
-				return *this;
-			}
+
 			virtual std::string GetName() const { return NAME; }
 		};
 
@@ -1454,17 +1209,7 @@ namespace Frosty
 			float WitchCircleTimer{ Frosty::Time::CurrentTime() };
 
 			CWitchCircle() = default;
-			CWitchCircle(const CWitchCircle& org) { FY_CORE_ASSERT(false, "Copy constructor in CBoss called."); }
-			CWitchCircle& operator=(const CWitchCircle& org)
-			{
-				if (this != &org)
-				{
-					Enchanter = org.Enchanter;
-					Deployed = org.Deployed;
-					WitchCircleTimer = org.WitchCircleTimer;
-				}
-				return *this;
-			}
+			CWitchCircle(const CWitchCircle& org) { FY_CORE_ASSERT(false, "Copy constructor in CWitchCircle called."); }
 
 			virtual std::string GetName() const { return NAME; }
 		};
@@ -1547,5 +1292,4 @@ namespace Frosty
 
 	}
 }
-
 #endif // !ECS_HPP

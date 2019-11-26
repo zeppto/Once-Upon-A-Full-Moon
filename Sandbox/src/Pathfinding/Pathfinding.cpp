@@ -100,8 +100,6 @@ namespace MCS
 		while (*currentNode != *startNode)
 		{
 			path.emplace_back(currentNode);
-			//currentNode->HCost = 0;
-			//currentNode->GCost = 0;
 			currentNode = m_Grid->GetNode(currentNode->ParentGridX, currentNode->ParentGridY);
 		}
 
