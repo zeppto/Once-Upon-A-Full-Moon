@@ -241,7 +241,6 @@ namespace MCS
 									}
 								}
 							}
-
 							if (normalCollisionPushback) m_Transform[index]->Position -= Frosty::CollisionDetection::AABBIntersecPushback(finalLengthA, finalCenterA, finalLengthB, finalCenterB);
 						}
 					}
@@ -317,11 +316,10 @@ namespace MCS
 				//	// If the one colliding is an enemy or a player...
 				//	else if (m_World->HasComponent<Frosty::ECS::CEnemy>(m_Transform[index]->EntityPtr) || m_World->HasComponent<Frosty::ECS::CPlayer>(m_Transform[index]->EntityPtr))
 				//	{
-				//		// ... and it's not colliding with an attack --> back off
-				//		if (!m_World->HasComponent<Frosty::ECS::CAttack>(m_Transform[i]->EntityPtr))
-				//		{
-				//			m_Transform[index]->Position -= Frosty::CollisionDetection::AABBIntersecPushback(finalLengthA, finalCenterA, finalLengthB, finalCenterB);
-				//		}
+				//	// ... and it's not colliding with an attack --> back off
+				//	if (!m_World->HasComponent<Frosty::ECS::CAttack>(m_Transform[i]->EntityPtr) && !m_World->HasComponent<Frosty::ECS::CWitchCircle>(m_Transform[i]->EntityPtr))
+				//	{
+				//		m_Transform[index]->Position -= Frosty::CollisionDetection::AABBIntersecPushback(finalLengthA, finalCenterA, finalLengthB, finalCenterB);
 				//	}
 				//}
 			}

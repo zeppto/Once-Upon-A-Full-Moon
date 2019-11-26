@@ -113,7 +113,6 @@ namespace MCS
 				myComponents.myPhysics.Speed = physics.Speed;
 				//myComponents.myPhysics.Velocity = physics.Velocity;
 				myComponents.myPhysics.SpeedMultiplier = physics.SpeedMultiplier;
-
 			}
 			else
 				myComponents.MyComponents.at(5).HaveComponent = false;
