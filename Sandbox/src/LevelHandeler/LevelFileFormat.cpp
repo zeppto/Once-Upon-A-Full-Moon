@@ -385,15 +385,15 @@ namespace MCS
 					existingFile.read((char*)& fileEntitys.myEntitys.at(i).myTransform, sizeof(Level_Transform));
 
 					//temp cross
-					if (fileEntitys.myEntitys.at(i).myTransform.Scale.x == 270)
-					{
-						fileEntitys.myEntitys.at(i).myTransform.Scale.x = 110.0f;
-						fileEntitys.myEntitys.at(i).myTransform.Position.x = -81.0f;
-					}
-					if (fileEntitys.myEntitys.at(i).myTransform.Scale.z == 270)
-					{
-						fileEntitys.myEntitys.at(i).myTransform.Scale.z = 110;
-					}
+					//if (fileEntitys.myEntitys.at(i).myTransform.Scale.x == 270)
+					//{
+					//	fileEntitys.myEntitys.at(i).myTransform.Scale.x = 110.0f;
+					//	fileEntitys.myEntitys.at(i).myTransform.Position.x = -81.0f;
+					//}
+					//if (fileEntitys.myEntitys.at(i).myTransform.Scale.z == 270)
+					//{
+					//	fileEntitys.myEntitys.at(i).myTransform.Scale.z = 110;
+					//}
 
 					glm::mat4 matrix(1.0f);
 					matrix = glm::rotate(matrix, glm::radians((float)rotation), glm::vec3(0, 1, 0));
