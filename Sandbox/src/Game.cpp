@@ -12,7 +12,7 @@
 
 //temp
 //#include "LevelHandeler/LevelsHardCoded.hpp"
-#include "Systems/FollowSystem.hpp"
+//#include "Systems/FollowSystem.hpp"
 #include "Systems/AttackSystem.hpp"
 #include "Systems/CombatSystem.hpp"
 #include "Systems/DestroySystem.hpp"
@@ -42,7 +42,6 @@ namespace MCS
 		world->AddSystem<RenderSystem>();
 		world->AddSystem<PlayerControllerSystem>();
 		world->AddSystem<PhysicsSystem>();
-		world->AddSystem<FollowSystem>();
 		world->AddSystem<AttackSystem>();
 		world->AddSystem<CombatSystem>();
 		world->AddSystem<DestroySystem>();

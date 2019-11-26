@@ -81,14 +81,14 @@ namespace MCS
 			else
 				myComponents.MyComponents.at(2).HaveComponent = false;
 			//Follow
-			if (m_World->HasComponent<Frosty::ECS::CFollow>(entity))
-			{
-				myComponents.MyComponents.at(3).HaveComponent = true;
-				//under construction
-				auto& follow = m_World->GetComponent<Frosty::ECS::CFollow>(entity);
-				myComponents.myFollow.StopDistance = follow.StopDistance;
-			}
-			else
+			//if (m_World->HasComponent<Frosty::ECS::CFollow>(entity))
+			//{
+			//	myComponents.MyComponents.at(3).HaveComponent = true;
+			//	//under construction
+			//	auto& follow = m_World->GetComponent<Frosty::ECS::CFollow>(entity);
+			//	myComponents.myFollow.StopDistance = follow.StopDistance;
+			//}
+			//else
 				myComponents.MyComponents.at(3).HaveComponent = false;
 			//Light
 			if (m_World->HasComponent<Frosty::ECS::CLight>(entity))
@@ -449,11 +449,11 @@ namespace MCS
 					//3 = Follow
 					if (fileEntitys.myEntitys.at(i).MyComponents.at(3).HaveComponent)
 					{
-						existingFile.read((char*)& fileEntitys.myEntitys.at(i).myFollow, sizeof(Level_Follow));
-						auto& follow = m_World->AddComponent<Frosty::ECS::CFollow>(entity, playerTransform);
+						//existingFile.read((char*)& fileEntitys.myEntitys.at(i).myFollow, sizeof(Level_Follow));
+						//auto& follow = m_World->AddComponent<Frosty::ECS::CFollow>(entity, playerTransform);
 						//For edeting old level
 						//auto& follow = m_World->AddComponent<Frosty::ECS::CFollow>(entity);// , playerTransform);
-						follow.StopDistance = fileEntitys.myEntitys.at(i).myFollow.StopDistance;
+						//follow.StopDistance = fileEntitys.myEntitys.at(i).myFollow.StopDistance;
 						//under construction
 					}
 					//4 = Light
