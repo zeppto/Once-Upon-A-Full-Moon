@@ -676,6 +676,7 @@ namespace Frosty
 
 			s_TransformLookUpMap.at(transformID)->at(transformID) = transform;
 			s_MeshLookUpMap.at(transformID)->at(meshName)->VertexArray = vertexArray;
+			//^^ Crashes up there on row 678 occasion after weapon pickup ^^
 			s_MaterialLookUpMap.at(transformID)->at(matID)->Material = mat;
 		}
 	}

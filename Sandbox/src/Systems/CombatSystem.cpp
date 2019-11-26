@@ -153,7 +153,7 @@ namespace MCS
 				// Handle boss death differently
 			}
 			else
-			{
+			{     
 				// Basic Enemy
 				if (!m_World->HasComponent<Frosty::ECS::CDestroy>(it->first))
 				{
