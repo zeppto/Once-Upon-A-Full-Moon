@@ -60,8 +60,6 @@ namespace Frosty
 		void DrawSeekerCell(Frosty::ECS::CTransform* transform);
 		void DrawPathCells(const std::vector<CellNode*> path);
 
-
-
 		void SaveFile(const std::string FileName);
 		void LoadFile(const std::string FilePath);
 		inline void LoadFile() {

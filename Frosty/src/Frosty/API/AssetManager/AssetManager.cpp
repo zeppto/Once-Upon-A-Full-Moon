@@ -27,6 +27,7 @@ namespace Frosty
 	std::map<std::string, std::shared_ptr<Luna::BoundingBox>> AssetManager::s_BoundingBoxes;
 	std::map<std::string, std::shared_ptr<TrueTypeFile>> AssetManager::s_TruefontTypes;
 	std::map<std::string, std::shared_ptr<WeaponHandler>> AssetManager::s_WeaponHandler;
+	std::map<std::string, std::shared_ptr<Grid>> AssetManager::s_Grid;
 
 	std::vector<std::string> AssetManager::s_FilePath_Vector;
 
@@ -85,7 +86,9 @@ namespace Frosty
 				returnValue = LoadXML(TempFileInfo);
 				break;
 
-
+			case GRID:
+				returnValue = LoadGrid(TempFileInfo);
+				break;
 
 			default:
 				FY_CORE_WARN("Unknown fileformat, Filepath: {0}", TempFileInfo.FileName);
@@ -284,6 +287,19 @@ namespace Frosty
 		return true;
 	}
 	
+	bool AssetManager::AddGrid(const FileMetaData& MetaData)
+	{
+		if (GridLoaded(MetaData.FileName))
+		{
+			FY_CORE_INFO("Grid: {0}, Is already loaded", MetaData.FileName);
+			return false;
+		}
+		else
+		{
+			s_Grid.emplace(MetaData.FileName, FY_NEW Grid());
+		}
+		return true;
+	}
 
 	bool AssetManager::AddMaterial(LinkedMaterial& LnkMat)
 	{
@@ -604,6 +620,21 @@ namespace Frosty
 		return returnValue;
 	}
 
+	bool AssetManager::GridLoaded(const std::string& FileName)
+	{
+		bool returnValue = false;
+
+		std::map<std::string, std::shared_ptr<Grid>>::iterator it;
+		for (it = s_Grid.begin(); it != s_Grid.end() && returnValue == false; it++)
+		{
+			if (it->first == FileName)
+			{
+				returnValue = true;
+			}
+		}
+
+		return returnValue;
+	}
 
 	bool AssetManager::LoadLunaFile(const FileMetaData& FileNameInformation, const bool& Reload)
 	{
@@ -819,7 +850,21 @@ namespace Frosty
 		return returnValue;
 	}
 
-	
+	bool AssetManager::LoadGrid(const FileMetaData& FileNameInformation, const bool& Reload)
+	{
+		bool returnValue = false;
+		if (AddGrid(FileNameInformation))
+		{
+
+			std::shared_ptr<Grid> ptr = GetGridMap(FileNameInformation.FileName);
+			ptr->SetFileName(FileNameInformation.FileName);
+			ptr->SetFilePath(FileNameInformation.FullFilePath);
+			ptr->LoadFile();
+
+		}
+		return returnValue;
+	}
+
 	bool AssetManager::LoadXML(const FileMetaData& FileNameInformation, const bool& Reload)
 	{
 		bool returnValue = false;
@@ -914,6 +959,10 @@ namespace Frosty
 		else if (fileType == FILE_TYPE_XML)
 		{
 			return XML;
+		}
+		else if (fileType == FILE_TYPE_GRID)
+		{
+			return GRID;
 		}
 
 
