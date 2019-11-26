@@ -378,7 +378,7 @@ namespace MCS
 		auto& enemyMatA = world->AddComponent<Frosty::ECS::CMaterial>(enemyA, Frosty::AssetManager::GetShader("Animation"));
 		enemyMatA.DiffuseTexture = Frosty::AssetManager::GetTexture2D("Wolf_Diffuse");
 		enemyMatA.NormalTexture = Frosty::AssetManager::GetTexture2D("wolf_defaultMat_Normal");
-		world->AddComponent<Frosty::ECS::CPhysics>(enemyA, Frosty::AssetManager::GetBoundingBox("Wolf"), 6.0f);
+		world->AddComponent<Frosty::ECS::CPhysics>(enemyA, Frosty::AssetManager::GetBoundingBox("Wolf"), 0.0f);
 		auto& enemyComp = world->AddComponent<Frosty::ECS::CEnemy>(enemyA, &playerTransform, &enemyWeaponCompA, 0.1f);
 		enemyComp.SpawnPosition = { -45.0f, 0.0f, 0.0f };
 		world->AddComponent<Frosty::ECS::CHealth>(enemyA, 10);
