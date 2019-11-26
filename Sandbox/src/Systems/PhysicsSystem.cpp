@@ -346,7 +346,6 @@ namespace MCS
 	void PhysicsSystem::SpawnItem(size_t index)
 	{
 		m_RandItem = (rand() % 10) + 1;
-		m_RandItem = 4;
 
 		auto& item = m_World->CreateEntity({ m_Transform.at(index)->Position }, { 0.0f, 0.0f, 0.0f }, { 0.5f, 0.5f, 0.5f });
 		//m_World->AddComponent<Frosty::ECS::CMesh>(item, Frosty::AssetManager::GetMesh("pCube1"));
