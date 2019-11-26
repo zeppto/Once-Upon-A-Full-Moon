@@ -1367,7 +1367,7 @@ namespace MCS
 			}
 
 			//Bait
-			timer = m_Inventory[index]->BaitTimer;
+			/*timer = m_Inventory[index]->BaitTimer;
 			dif = (CurrentTime - timer);
 			cooldown = m_Inventory[index]->BaitCooldown - dif;
 
@@ -1387,7 +1387,7 @@ namespace MCS
 					HUD.Layout.sprites.at(11).SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
 				}
 
-			}
+			}*/
 
 			//Speed boots
 			int bootSpriteID = 14;
