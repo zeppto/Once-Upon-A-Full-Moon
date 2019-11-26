@@ -1192,22 +1192,6 @@ namespace MCS
 
 			}
 
-			/*	if (m_Health[index]->MaxHealth < m_Health[index]->MaxPossibleHealth)
-				{
-					int nrOfLockedHearts = (m_Health[index]->MaxPossibleHealth - m_Health[index]->MaxHealth) / 4;
-					healthSpriteID =  19 + m_Health[index]->MaxHealth / 4;
-
-					for (int i = 0; i < nrOfLockedHearts; i++)
-					{
-						if (healthSpriteID < 29)
-						{
-							HUD.Layout.sprites.at(healthSpriteID).SetImage("Heart_0");
-							HUD.Layout.sprites.at(healthSpriteID).SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 0.0f));
-							healthSpriteID++;
-						}
-					}
-				}*/
-
 				//Pickup Text
 			if (Frosty::Time::CurrentTime() - m_Player[index]->PickUpTextTimer >= m_Player[index]->PickUpTextTime)
 			{
@@ -1408,6 +1392,45 @@ namespace MCS
 
 				HUD.Layout.sprites.at(bootSpriteID).SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
 				bootSpriteID++;
+			}
+
+			//Elemental
+
+			//Earth
+			if (m_Player[index]->Weapon->FireCriticalHitChance > 0.0f)
+			{
+				HUD.Layout.sprites.at(5).SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+			}
+			else
+			{
+				HUD.Layout.sprites.at(5).SetColorSprite(glm::vec4(0.1f, 0.1f, 0.1f, 0.50f));
+			}
+			//Fire
+			if (m_Player[index]->Weapon->FireCriticalHitChance > 0.0f)
+			{
+				HUD.Layout.sprites.at(6).SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+			}
+			else
+			{
+				HUD.Layout.sprites.at(6).SetColorSprite(glm::vec4(0.1f, 0.1f, 0.1f, 0.50f));
+			}
+			//Water
+			if (m_Player[index]->Weapon->FireCriticalHitChance > 0.0f)
+			{
+				HUD.Layout.sprites.at(7).SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+			}
+			else
+			{
+				HUD.Layout.sprites.at(7).SetColorSprite(glm::vec4(0.1f, 0.1f, 0.1f, 0.50f));
+			}
+			//Wind
+			if (m_Player[index]->Weapon->FireCriticalHitChance > 0.0f)
+			{
+				HUD.Layout.sprites.at(8).SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+			}
+			else
+			{
+				HUD.Layout.sprites.at(8).SetColorSprite(glm::vec4(0.1f, 0.1f, 0.1f, 0.50f));
 			}
 
 		}
