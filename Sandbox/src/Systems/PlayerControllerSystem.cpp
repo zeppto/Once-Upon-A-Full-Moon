@@ -56,11 +56,15 @@ namespace MCS
 
 			if (m_Dash[i]->Active)
 			{
-				m_Dash[i]->DistanceDashed += glm::length(m_Physics[i]->Direction * m_Physics[i]->Speed * m_Physics[i]->SpeedMultiplier * Frosty::Time::DeltaTime());
+				m_Dash[i]->DistanceDashed += glm::length(m_Physics[i]->Direction * m_Physics[i]->Speed * m_Dash[i]->SpeedMultiplier * Frosty::Time::DeltaTime());
 				if (m_Dash[i]->DistanceDashed >= m_Dash[i]->DISTANCE / 1000.0f)
 				{
 					m_Dash[i]->Active = false;
 					m_Dash[i]->DistanceDashed = 0.0f;
+				}
+				else
+				{
+					m_Transform[i]->Position += m_Dash[i]->SpeedMultiplier * glm::normalize(m_Physics[i]->Direction); /*(m_Physics[i]->Direction * m_Physics[i]->Speed) * m_Physics[i]->SpeedMultiplier;*/
 				}
 			}
 			//m_Transform[i]->Position.y = 0.f;
