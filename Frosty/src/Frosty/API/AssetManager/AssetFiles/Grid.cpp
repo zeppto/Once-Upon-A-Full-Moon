@@ -151,6 +151,17 @@ namespace Frosty
 			}
 		}
 
+		// "crossroad_chests_IsStatick_t_p_e_r_h";
+		// "threeWayRoad_chests_IsStatick_t_p_e_r_h";
+		// "turningRoad_chests_IsStatick_t_p_e_r_h";
+		// "straightRoad_chests_IsStatick_t_p_e_r_h";
+		// "deadend_chests_IsStatick_t_p_e_r_h";
+
+
+		SaveFile("straightRoad_chests_IsStatick_t_p_e_r_h");
+		//LoadFile("TestGmap.Gmap");
+
+
 		if (!m_DrawGizmos) return;
 
 		for (size_t i = 0; i < m_CellNodes.size(); i++)
@@ -162,6 +173,238 @@ namespace Frosty
 			cellMat.DiffuseTexture = Frosty::AssetManager::GetTexture2D(m_CellNodes[i].Walkable ? "green_square" : "red_square");
 			m_CellNodes[i].CellEntityID = cell->Id;
 		}
+	}
+
+	void Grid::SaveFile(const std::string FileName)
+	{
+		//Worst Solution ever!
+		std::ofstream OutFile;
+
+		OutFile.open(FileName + ".gmap");
+		if (OutFile.is_open())
+		{
+			OutFile << m_GridWorldPosition.x << "\n";
+			OutFile << m_GridWorldPosition.y << "\n";
+			OutFile << m_GridWorldPosition.z << "\n";
+			OutFile << m_GridWorldSize.x << "\n";
+			OutFile << m_GridWorldSize.y << "\n";
+			OutFile << m_GridSize.x << "\n";
+			OutFile << m_GridSize.y << "\n";
+
+
+
+			uint32_t VecSize = m_CellNodes.size();
+			OutFile << VecSize << "\n";
+
+
+			for (int i = 0; i < VecSize; i++)
+			{
+				OutFile << m_CellNodes[i].WorldPosition[0] << "\n";
+				OutFile << m_CellNodes[i].WorldPosition[1] << "\n";
+				OutFile << m_CellNodes[i].WorldPosition[2] << "\n";
+
+				OutFile << m_CellNodes[i].Walkable << "\n";
+				OutFile << m_CellNodes[i].GridX << "\n";
+				OutFile << m_CellNodes[i].GridY << "\n";
+
+				OutFile << m_CellNodes[i].GCost << "\n";
+				OutFile << m_CellNodes[i].HCost << "\n";
+
+				OutFile << m_CellNodes[i].ParentGridX << "\n";
+				OutFile << m_CellNodes[i].ParentGridY << "\n";
+
+				OutFile << m_CellNodes[i].ExistsInOpenSet << "\n";
+
+				OutFile << m_CellNodes[i].CellEntityID << "\n";
+			}
+		}
+		else
+		{
+			FY_ASSERT(0, "Could not open Grid Map (Save Function)");
+		}
+
+
+
+		//FILE* File;
+
+		//std::string Name = FileName + ".Gmap";
+
+		//File = fopen(Name.c_str(), "w");
+
+		//fwrite(&(m_GridWorldPosition[0]), sizeof(glm::vec3), 1, File);
+		//fwrite(&(m_GridWorldSize[0]), sizeof(glm::vec2), 1, File);
+		//fwrite(&(m_GridSize[0]), sizeof(glm::vec2), 1, File);
+
+		//uint32_t VecSize = m_CellNodes.size();
+
+		//fwrite(&VecSize, sizeof(uint32_t), 1, File);
+		////int test = fwrite(&m_CellNodes[0], sizeof(struct CellNode), VecSize, File);
+		////int test = 0;
+
+		//for (int i = (VecSize-1); i >= 0; i--)
+		//{
+		//	if (1 != fwrite(&(m_CellNodes[i].WorldPosition[0]), sizeof(glm::vec3), 1, File)) __debugbreak();
+		//	if (1 != fwrite(&(m_CellNodes[i].Walkable), sizeof(bool), 1, File)) __debugbreak();
+		//	if (1 != fwrite(&(m_CellNodes[i].GridX), sizeof(int32_t), 1, File)) __debugbreak();
+		//	if (1 != fwrite(&(m_CellNodes[i].GridY), sizeof(int32_t), 1, File)) __debugbreak();
+		//	if (1 != fwrite(&(m_CellNodes[i].GCost), sizeof(int16_t), 1, File)) __debugbreak();
+		//	if (1 != fwrite(&(m_CellNodes[i].HCost), sizeof(int16_t), 1, File)) __debugbreak();
+		//	if (1 != fwrite(&(m_CellNodes[i].ParentGridX), sizeof(int32_t), 1, File)) __debugbreak();
+		//	if (1 != fwrite(&(m_CellNodes[i].ParentGridY), sizeof(int32_t), 1, File)) __debugbreak();
+		//	if (1 != fwrite(&(m_CellNodes[i].ExistsInOpenSet), sizeof(bool), 1, File)) __debugbreak();
+		//	if (1 != fwrite(&(m_CellNodes[i].CellEntityID), sizeof(int32_t), 1, File)) __debugbreak();
+		//}
+
+
+
+		////if (test == m_CellNodes.size())
+		////{
+		////	int kl = 0;
+		////}
+
+		//fclose(File);
+	}
+
+	void Grid::LoadFile(const std::string FilePath)
+	{
+
+
+		std::ifstream InFile;
+
+		InFile.open(FilePath);
+
+		if (InFile.is_open())
+		{
+
+			//m_FilePath = FilePath;
+
+			std::string temp;
+
+			std::getline(InFile, temp);
+			m_GridWorldPosition.x = std::stof(temp);
+			std::getline(InFile, temp);
+			m_GridWorldPosition.y = std::stof(temp);
+			std::getline(InFile, temp);
+			m_GridWorldPosition.z = std::stof(temp);
+
+			std::getline(InFile, temp);
+			m_GridWorldSize.x = std::stof(temp);
+			std::getline(InFile, temp);
+			m_GridWorldSize.y = std::stof(temp);
+
+			std::getline(InFile, temp);
+			m_GridSize.x = std::stof(temp);
+			std::getline(InFile, temp);
+			m_GridSize.y = std::stof(temp);
+
+
+			std::getline(InFile, temp);
+			uint32_t VecSize = std::stof(temp);
+			//std::vector<CellNode> TestVec;
+			//TestVec.resize(VecSize);
+			m_CellNodes.resize(VecSize);
+
+
+			for (int i = 0; i < VecSize; i++)
+			{
+
+				std::getline(InFile, temp);
+				m_CellNodes[i].WorldPosition[0] = std::stof(temp);
+				std::getline(InFile, temp);
+				m_CellNodes[i].WorldPosition[1] = std::stof(temp);
+				std::getline(InFile, temp);
+				m_CellNodes[i].WorldPosition[2] = std::stof(temp);
+
+				std::getline(InFile, temp);
+				m_CellNodes[i].Walkable = std::stoi(temp);
+
+				std::getline(InFile, temp);
+				m_CellNodes[i].GridX = std::stoi(temp);
+				std::getline(InFile, temp);
+				m_CellNodes[i].GridY = std::stoi(temp);
+
+				std::getline(InFile, temp);
+				m_CellNodes[i].GCost = std::stoi(temp);
+				std::getline(InFile, temp);
+				m_CellNodes[i].HCost = std::stoi(temp);
+
+				std::getline(InFile, temp);
+				m_CellNodes[i].ParentGridX = std::stoi(temp);
+				std::getline(InFile, temp);
+				m_CellNodes[i].ParentGridY = std::stoi(temp);
+
+				std::getline(InFile, temp);
+				m_CellNodes[i].ExistsInOpenSet = std::stoi(temp);
+				std::getline(InFile, temp);
+				m_CellNodes[i].CellEntityID = std::stoi(temp);
+			}
+
+
+
+
+
+
+			//FILE* File;
+
+			//File = fopen(FilePath.c_str(), "r");
+
+			//if (File != nullptr)
+			//{
+			//	fread(&m_GridWorldPosition[0], sizeof(glm::vec3), 1, File);
+			//	fread(&m_GridWorldSize[0], sizeof(glm::vec2), 1, File);
+			//	fread(&m_GridSize[0], sizeof(glm::vec2), 1, File);
+
+
+
+			//	uint32_t VecSize;
+			//	fread(&VecSize, sizeof(uint32_t), 1, File);
+
+			//	std::vector<CellNode> TestVec;
+			//	TestVec.resize(VecSize);
+
+
+			//	//	int test = fread(&TestVec[0], sizeof(struct CellNode), VecSize, File);
+
+			//	for (int i = (VecSize-1); i >= 0; i--)
+			//	{
+			//		if (1 != fread(&(TestVec[i].WorldPosition[0]), sizeof(glm::vec3), 1, File)) __debugbreak();
+			//		if(1 != fread(&(TestVec[i].Walkable), sizeof(bool), 1, File)) __debugbreak();
+			//		if(1 != fread(&(TestVec[i].GridX), sizeof(int32_t), 1, File)) __debugbreak();
+			//		if(1 != fread(&(TestVec[i].GridY), sizeof(int32_t), 1, File)) __debugbreak();
+			//		if(1 != fread(&(TestVec[i].GCost), sizeof(int16_t), 1, File)) __debugbreak();
+			//		if(1 != fread(&(TestVec[i].HCost), sizeof(int16_t), 1, File)) __debugbreak();
+			//		if(1 != fread(&(TestVec[i].ParentGridX), sizeof(int32_t), 1, File)) __debugbreak();
+			//		if(1 != fread(&(TestVec[i].ParentGridY), sizeof(int32_t), 1, File)) __debugbreak();
+			//		if(1 != fread(&(TestVec[i].ExistsInOpenSet), sizeof(bool), 1, File)) __debugbreak();
+			//		if(1 != fread(&(TestVec[i].CellEntityID), sizeof(int32_t), 1, File)) __debugbreak();
+			//	}
+
+
+			//TestCase
+			//for (int i = 0; i < m_CellNodes.size(); i++)
+			//{
+			//	if (m_CellNodes.at(i) != TestVec.at(i))
+			//	{
+			//		int nein = 9;
+			//	}
+			//}
+
+		}
+		else
+		{
+			FY_ASSERT(0, "Could not open Grid Map (Load Function)");
+		}
+
+
+
+
+		//}
+		//else
+		//{
+		//	FY_ASSERT(0, "Could not load Grid Map");
+		//}
+
+		//fclose(File);
 	}
 
 	bool Grid::CheckCollision(const glm::vec3& worldPoint, float radius) const
