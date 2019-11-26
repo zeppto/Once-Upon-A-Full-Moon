@@ -23,8 +23,8 @@ namespace MCS
 	GameState::~GameState()
 	{
 		// Get Player last position ...
-		DeletePlayer();
 		DeleteLight();
+		DeletePlayer();
 	}
 
 	void GameState::Initiate()
@@ -245,10 +245,6 @@ namespace MCS
 		world->AddComponent<Frosty::ECS::CGUI>(m_Player, uiLayout);
 	}
 
-	void GameState::SetEnemies()
-	{
-	}
-
 	void GameState::DeletePlayer()
 	{
 		auto& world = Frosty::Application::Get().GetWorld();
@@ -273,9 +269,5 @@ namespace MCS
 		{
 			world->AddComponent<Frosty::ECS::CDestroy>(m_Light);
 		}
-	}
-
-	void GameState::DeleteEnemies()
-	{
 	}
 }

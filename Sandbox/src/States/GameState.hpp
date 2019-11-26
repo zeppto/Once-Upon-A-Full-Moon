@@ -28,6 +28,7 @@ namespace MCS
 		std::shared_ptr<Frosty::ECS::Entity> m_Light;
 		std::shared_ptr<Frosty::ECS::Entity> m_Torch;
 		std::shared_ptr<Frosty::ECS::Entity> m_Weapon;
+		std::shared_ptr<Frosty::ECS::Entity> m_Enemy;
 
 		// Temp
 		glm::vec3 m_PlayerFirstPos = glm::vec3(-104.0f, 0.0f, -15.4f);
