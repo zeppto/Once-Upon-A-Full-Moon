@@ -686,35 +686,42 @@ void LevelFileFormat::LoadBoolMap(std::string fileName)
 					//Skip Level Exit
 					if (!fileEntitys.myEntitys.at(i).MyComponents.at(10).HaveComponent)
 					{
-						//Add To a new Batch List
-						if (!TestMap.count(fileEntitys.myEntitys.at(i).myMesh.MeshName))
+						if (  (std::string)fileEntitys.myEntitys.at(i).myMesh.MeshName != "hexCircle" && (std::string)fileEntitys.myEntitys.at(i).myMesh.MeshName != "chest")
 						{
-							Frosty::VABatch Temp;
-							//Change to ptr
-							Temp.VertexArrayObj = Frosty::AssetManager::GetMesh(fileEntitys.myEntitys.at(i).myMesh.MeshName);
+							//Add To a new Batch List
+							if (!TestMap.count(fileEntitys.myEntitys.at(i).myMesh.MeshName))
+							{
+								Frosty::VABatch Temp;
+								//Change to ptr
+								Temp.VertexArrayObj = Frosty::AssetManager::GetMesh(fileEntitys.myEntitys.at(i).myMesh.MeshName);
 
 
-							glm::mat4 TempMat(1.0f);
-							glm::vec3 Offset(150.0f, 0.0f, 150.0f);
-							TempMat = glm::translate(TempMat, fileEntitys.myEntitys.at(i).myTransform.Position + Offset);
-							TempMat = glm::rotate(TempMat, glm::radians(fileEntitys.myEntitys.at(i).myTransform.Rotation.y), glm::vec3(0.0f, 1.0f, 0.0f));
-							TempMat = glm::scale(TempMat, fileEntitys.myEntitys.at(i).myTransform.Scale);
-							Temp.Transforms.emplace_back(TempMat);
-							TestMap[fileEntitys.myEntitys.at(i).myMesh.MeshName] = Temp;
-							//	TestMap.emplace(fileEntitys.myEntitys.at(i).myMesh.MeshName, Temp);
+								glm::mat4 TempMat(1.0f);
+								glm::vec3 Offset(150.0f, 0.0f, 150.0f);
+								TempMat = glm::translate(TempMat, fileEntitys.myEntitys.at(i).myTransform.Position + Offset);
+								TempMat = glm::rotate(TempMat, glm::radians(fileEntitys.myEntitys.at(i).myTransform.Rotation.y), glm::vec3(0.0f, 1.0f, 0.0f));
+								TempMat = glm::scale(TempMat, fileEntitys.myEntitys.at(i).myTransform.Scale);
+								Temp.Transforms.emplace_back(TempMat);
+								TestMap[fileEntitys.myEntitys.at(i).myMesh.MeshName] = Temp;
+								//	TestMap.emplace(fileEntitys.myEntitys.at(i).myMesh.MeshName, Temp);
+							}
+							//Add a transform to existing batch list
+							else
+							{
+								glm::mat4 TempMat(1.0f);
+
+								glm::vec3 Offset(150.0f, 0.0f, 150.0f);
+								TempMat = glm::translate(TempMat, fileEntitys.myEntitys.at(i).myTransform.Position + Offset);
+								//Just Rotation in Y axis. (Add other rotations if needed)
+								TempMat = glm::rotate(TempMat, glm::radians(fileEntitys.myEntitys.at(i).myTransform.Rotation.y), glm::vec3(0.0f, 1.0f, 0.0f));
+								TempMat = glm::scale(TempMat, fileEntitys.myEntitys.at(i).myTransform.Scale);
+
+								TestMap[fileEntitys.myEntitys.at(i).myMesh.MeshName].Transforms.emplace_back(TempMat);
+							}
 						}
-						//Add a transform to existing batch list
 						else
 						{
-							glm::mat4 TempMat(1.0f);
-
-							glm::vec3 Offset(150.0f, 0.0f, 150.0f);
-							TempMat = glm::translate(TempMat, fileEntitys.myEntitys.at(i).myTransform.Position + Offset);
-							//Just Rotation in Y axis. (Add other rotations if needed)
-							TempMat = glm::rotate(TempMat, glm::radians(fileEntitys.myEntitys.at(i).myTransform.Rotation.y), glm::vec3(0.0f, 1.0f, 0.0f));
-							TempMat = glm::scale(TempMat, fileEntitys.myEntitys.at(i).myTransform.Scale);
-
-							TestMap[fileEntitys.myEntitys.at(i).myMesh.MeshName].Transforms.emplace_back(TempMat);
+							int found1 = 0;
 						}
 					}
 				}

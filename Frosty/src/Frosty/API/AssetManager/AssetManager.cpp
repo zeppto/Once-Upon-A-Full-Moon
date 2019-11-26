@@ -76,12 +76,12 @@ namespace Frosty
 			case LUNA:
 
 				returnValue = LoadLunaFile(TempFileInfo);
-
+				 
 				break;
 
 			case TTF:
 				returnValue = LoadTTF_File(TempFileInfo);
-				break;
+				break; 
 			case XML:
 				returnValue = LoadXML(TempFileInfo);
 				break;

@@ -132,7 +132,7 @@ namespace Frosty
 		//Worst Solution ever!
 		std::ofstream OutFile;
 
-		OutFile.open(FileName + ".Gmap");
+		OutFile.open(FileName + ".gmap");
 		if (OutFile.is_open())
 		{
 			OutFile << m_GridWorldPosition.x << "\n";
@@ -376,8 +376,8 @@ namespace Frosty
 			}
 		}
 
-		SaveFile("TestGmap");
-		LoadFile("TestGmap.Gmap");
+		//SaveFile("crossroad_chests_IsStatick");
+		//LoadFile("TestGmap.Gmap");
 
 		if (!m_DrawGizmos) return;
 
