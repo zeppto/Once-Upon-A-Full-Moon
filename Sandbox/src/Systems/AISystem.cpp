@@ -135,7 +135,7 @@ namespace MCS
 			}
 			else
 			{
-				//if (Frosty::Time::GetFrameCount() % 20 == 0) FY_INFO("Reset");
+				if (Frosty::Time::GetFrameCount() % 60 == 0) FY_INFO("Reset");
 				return;
 			}
 		}
@@ -144,7 +144,7 @@ namespace MCS
 		if (m_Health[index]->CurrentHealth <= m_Health[index]->MaxHealth * m_Enemy[index]->RunOnHealth)
 		{
 			m_Enemy[index]->CurrentState = Frosty::ECS::CEnemy::State::Escape;
-			//if (Frosty::Time::GetFrameCount() % 20 == 0) FY_INFO("Escape");
+			if (Frosty::Time::GetFrameCount() % 60 == 0) FY_INFO("Escape");
 			return;
 		}
 
@@ -152,7 +152,7 @@ namespace MCS
 		if (glm::distance(m_Transform[index]->Position, m_Enemy[index]->Target->Position) > m_Enemy[index]->SightRange)
 		{
 			m_Enemy[index]->CurrentState = Frosty::ECS::CEnemy::State::Idle;
-			//if (Frosty::Time::GetFrameCount() % 20 == 0) FY_INFO("Idle");
+			if (Frosty::Time::GetFrameCount() % 60 == 0) FY_INFO("Idle");
 			return;
 		}
 
@@ -160,7 +160,7 @@ namespace MCS
 		if (glm::distance(m_Transform[index]->Position, m_Enemy[index]->Target->Position) <= m_Enemy[index]->Weapon->MaxAttackRange)
 		{
 			m_Enemy[index]->CurrentState = Frosty::ECS::CEnemy::State::Attack;
-			//if (Frosty::Time::GetFrameCount() % 20 == 0) FY_INFO("Attack");
+			if (Frosty::Time::GetFrameCount() % 60 == 0) FY_INFO("Attack");
 
 			//if (glm::distance(m_Transform[index]->Position, m_Enemy[index]->Target->Position) < m_Enemy[index]->Weapon->MinAttackRange)
 			//{
@@ -177,7 +177,7 @@ namespace MCS
 			if (!stopChase)
 			{
 				m_Enemy[index]->CurrentState = Frosty::ECS::CEnemy::State::Chase;
-				//if (Frosty::Time::GetFrameCount() % 20 == 0) FY_INFO("Chase");
+				if (Frosty::Time::GetFrameCount() % 60 == 0) FY_INFO("Chase");
 			}
 		}
 	}
