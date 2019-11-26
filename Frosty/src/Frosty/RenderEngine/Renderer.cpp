@@ -146,6 +146,11 @@ namespace Frosty
 				{
 					materialData->Material->BlendTexture1->Bind(5);
 				}
+				
+				if (materialData->Material->HasTransparency)
+				{
+					int test = 0;
+				}
 
 				//For all Meshes
 				for (auto& MeshIt : materialData->MeshMap)
