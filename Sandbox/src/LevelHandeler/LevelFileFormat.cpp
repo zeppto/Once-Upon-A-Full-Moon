@@ -673,6 +673,9 @@ namespace MCS
 			//		}
 			//	}
 			//	m_VisitedRooms.push_back(rEntitys);
+
+			//	// Send event buss to update the number of rooms visited in dropItemSystem
+			//	Frosty::EventBus::GetEventBus()->Publish<Frosty::EnterNewRoomEvent>(Frosty::EnterNewRoomEvent(int(m_VisitedRooms.size())));
 			//}
 		}
 		else

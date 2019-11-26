@@ -69,6 +69,10 @@ namespace MCS
 				{
 					Frosty::Renderer::AnimSubmit(m_Materials[i], m_Meshes[i]->Mesh, m_Transform[i]->ModelMatrix, m_Anims[i]);
 				}
+				else if (m_Materials[i]->UseShader->GetName() == "HealthBar")
+				{
+					Frosty::Renderer::SubmitHealthBar(m_Materials[i]->UseShader, m_Meshes[i]->Mesh, m_Transform[i]->Position, m_Transform[i]->Scale, glm::vec3(0.f, 0.f, 0.f));
+				}
 
 				if (m_Materials[i]->UseShader->GetName() == "Animation" && m_Materials[i]->DiffuseTexture) m_Materials[i]->DiffuseTexture->Unbind();
 				if (m_Materials[i]->UseShader->GetName() == "Animation" && m_Materials[i]->NormalTexture) m_Materials[i]->NormalTexture->Unbind();
