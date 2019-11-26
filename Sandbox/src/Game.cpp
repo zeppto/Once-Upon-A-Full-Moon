@@ -359,6 +359,7 @@ namespace MCS
 		//particleSystemComp2.SystemEndColor = glm::vec3(0.0f, 0.0f, 1.0f);
 		//particleSystemComp2.StartParticleSize = 5.0f;
 		//particleSystemComp2.EndParticleSize = 2.0f;
+		//particleSystem->ChangeParticlesStartColor(particleSystemComp2, glm::vec3(1.0, 1.0, 1.0)); //This function is fine if you need to change color after initialization
 
 		//Blendmap working
 		//auto& blendTest = world->CreateEntity({ 0.0f, 1.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, {300.0f, 1.0f, 300.0f});
