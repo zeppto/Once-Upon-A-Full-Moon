@@ -1401,7 +1401,7 @@ namespace MCS
 			//Elemental
 
 			//Earth
-			if (m_Player[index]->Weapon->FireCriticalHitChance > 0.0f)
+			if (m_Player[index]->Weapon->EarthDamage > 0.0f)
 			{
 				HUD.Layout.sprites.at(5).SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
 			}
@@ -1419,7 +1419,7 @@ namespace MCS
 				HUD.Layout.sprites.at(6).SetColorSprite(glm::vec4(0.1f, 0.1f, 0.1f, 0.50f));
 			}
 			//Water
-			if (m_Player[index]->Weapon->FireCriticalHitChance > 0.0f)
+			if (m_Player[index]->Weapon->WaterHealing > 0.0f)
 			{
 				HUD.Layout.sprites.at(7).SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
 			}
@@ -1428,7 +1428,7 @@ namespace MCS
 				HUD.Layout.sprites.at(7).SetColorSprite(glm::vec4(0.1f, 0.1f, 0.1f, 0.50f));
 			}
 			//Wind
-			if (m_Player[index]->Weapon->FireCriticalHitChance > 0.0f)
+			if (m_Player[index]->Weapon->WindSpeed > 0.0f)
 			{
 				HUD.Layout.sprites.at(8).SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
 			}
