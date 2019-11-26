@@ -91,14 +91,6 @@ namespace MCS
 		auto& weaponMat = world->AddComponent<Frosty::ECS::CMaterial>(weapon, Frosty::AssetManager::GetShader("Texture2D"));
 		weaponMat.DiffuseTexture = Frosty::AssetManager::GetTexture2D("sword_lvl1_diffuse");
 		weaponMat.NormalTexture = Frosty::AssetManager::GetTexture2D("sword_normal");
-		if (weaponComp.Type == Frosty::ECS::CWeapon::WeaponType::Bow)	// Change values if weapon is a bow
-		{
-			weaponMesh = world->AddComponent<Frosty::ECS::CMesh>(weapon, Frosty::AssetManager::GetMesh("Bow"));
-			weaponMat = world->AddComponent<Frosty::ECS::CMaterial>(weapon, Frosty::AssetManager::GetShader("Texture2D"));
-			weaponMat.DiffuseTexture = Frosty::AssetManager::GetTexture2D("bow_lvl1_diffuse");
-			weaponMat.NormalTexture = Frosty::AssetManager::GetTexture2D("bow_normal");
-		}
-
 
 		// PLAYER
 		auto& player = world->CreateEntity({ -104.0f, 0.0f, -15.4f }, { 0.0f, 0.0f, 0.0f }, { 2.0f, 2.0f, 2.0f } );
