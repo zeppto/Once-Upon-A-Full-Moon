@@ -14,7 +14,7 @@ namespace MCS
 		virtual void OnInput() override;
 		virtual void OnUpdate() override;
 	private:
-		void InitiateMenuScreen();
+		//void InitiateMenuScreen();
 		void InitiateButtons();
 	private:
 		Frosty::Application* m_App = nullptr;

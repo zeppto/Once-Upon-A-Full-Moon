@@ -18,6 +18,7 @@ namespace MCS
 	private:
 		Frosty::Application* m_App = nullptr;
 		std::shared_ptr<Frosty::ECS::Entity> m_GamePauseGui;
+		std::shared_ptr<Frosty::ECS::Entity> m_Player;
 	};
 }
 #endif

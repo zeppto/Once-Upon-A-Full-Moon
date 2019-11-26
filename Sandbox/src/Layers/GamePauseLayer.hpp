@@ -13,7 +13,7 @@ namespace MCS
 		virtual void OnDetach() override { }
 		virtual void OnUpdate() override { }
 
-		virtual void OnImGuiRender() override {}
+		virtual void OnImGuiRender() override {};
 		virtual bool OnEvent(Frosty::BaseEvent& event) { return false; }
 	private:
 		Frosty::Application* m_App;

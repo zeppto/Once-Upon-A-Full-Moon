@@ -47,12 +47,10 @@ namespace MCS
 		m_App = &Frosty::Application::Get();
 		m_App->PushOverlay(FY_NEW(MenuLayer));
 
-		// -------------------------------------------------------------
-
 		if (!m_App->MenuLoaded())
 		{
 			auto& world = Frosty::Application::Get().GetWorld();
-			// Add systems
+
 			world->AddSystem<LevelSystem>();
 			world->AddSystem<CameraSystem>();
 			world->AddSystem<LightSystem>();
@@ -89,31 +87,29 @@ namespace MCS
 	{
 		float x = Frosty::InputManager::GetMouseX();
 		float y = Frosty::InputManager::GetMouseY();
-		FY_INFO("{0} : {1}", x, y);
+		//FY_INFO("{0} : {1}", x, y);
 		
-		if (x > 915.0f && x < 1005.0f && y > 540.0f && y < 600.0f)
+		if (x > 920.0f && x < 1000.0f && y > 550.0f && y < 610.0f)
 		{
 			if (Frosty::InputManager::IsMouseButtonPressed(FY_MOUSE_BUTTON_LEFT))
 			{
 				auto& world = Frosty::Application::Get().GetWorld();
 				world->PlayGame();
-				FY_INFO("GAME STAGE NEXT");
-				//m_App->GetStateMachine().AddState(Frosty::StateRef(FY_NEW(GameState)));
+				m_App->GetStateMachine().AddState(Frosty::StateRef(FY_NEW(GameState)), true);
 			}
 		}
-		else if (x > 830.f && x < 1030.0f && y > 450.0f && y < 500.0f)
+		else if (x > 860.f && x < 1040.0f && y > 445.0f && y < 500.0f)
 		{
 			if (Frosty::InputManager::IsMouseButtonPressed(FY_MOUSE_BUTTON_LEFT))
 			{
 				FY_INFO("SETTINGS STAGE NEXT");
 			}
 		}
-		else if (x > 920.f && x < 1000.0f && y > 350.0f && y < 400.0f)
+		else if (x > 920.f && x < 1010.0f && y > 350.0f && y < 390.0f)
 		{
 			if (Frosty::InputManager::IsMouseButtonPressed(FY_MOUSE_BUTTON_LEFT))
 			{
-				FY_INFO("EXIT STAGE NEXT");
-				//Frosty::EventBus::GetEventBus()->Publish<Frosty::WindowCloseEvent>(Frosty::WindowCloseEvent());
+				Frosty::EventBus::GetEventBus()->Publish<Frosty::WindowCloseEvent>(Frosty::WindowCloseEvent());
 			}
 		}
 	}
@@ -134,8 +130,5 @@ namespace MCS
 		UILayout.AddText(glm::vec2(575.0f, 325.0f), "Settings", glm::vec3(0.4f, 0.4f, 0.4f), 1.0f);
 		UILayout.AddText(glm::vec2(610.0f, 250.0f), "Exit", glm::vec3(0.8f, 0.0f, 0.0f), 1.0f);
 		world->AddComponent<Frosty::ECS::CGUI>(m_MenuGui, UILayout);
-
-		//auto& camEntity = world->GetSceneCamera();
-		//world->GetComponent<Frosty::ECS::CCamera>(camEntity).
 	}
 }
