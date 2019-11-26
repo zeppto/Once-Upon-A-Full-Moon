@@ -148,7 +148,13 @@ namespace MCS
 
 				if (m_World->HasComponent<Frosty::ECS::CPlayer>(m_Transform[i]->EntityPtr))
 				{
-					if (m_CurrentActiveBoolMap->CheckCollision((m_Transform[i]->Position+glm::vec3(150.0f,0.0f,150.0f))))
+					glm::vec3 testVec = (m_Transform[i]->Position + glm::vec3(150.0f, 0.0f, 150.0f));
+
+					float tempX = testVec.x;
+					testVec.x = 300.0f - testVec.z;
+					testVec.z = tempX;
+
+					if (m_CurrentActiveBoolMap->CheckCollision(testVec))
 					{
 						FY_INFO("1");
 					}
