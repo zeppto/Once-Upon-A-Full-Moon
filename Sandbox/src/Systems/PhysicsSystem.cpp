@@ -213,7 +213,21 @@ namespace MCS
 						// Player with Exit Level
 						else if (m_World->HasComponent<Frosty::ECS::CPlayer>(m_Transform[index]->EntityPtr) && m_World->HasComponent<Frosty::ECS::CLevelExit>(m_Transform[i]->EntityPtr))
 						{
-							Frosty::EventBus::GetEventBus()->Publish<Frosty::ExitLevelEvent>(Frosty::ExitLevelEvent(m_Transform[i]->EntityPtr, m_Transform[index]->EntityPtr));
+							//Frosty::EventBus::GetEventBus()->Publish<Frosty::ExitLevelEvent>(Frosty::ExitLevelEvent(m_Transform[i]->EntityPtr, m_Transform[index]->EntityPtr));
+							auto& Exit = m_World->GetComponent<Frosty::ECS::CLevelExit>(m_Transform[i]->EntityPtr);
+							if (!Exit.IsTriggered)
+							{
+								glm::ivec2 CoordsTest = m_World->GetComponent<Frosty::ECS::CLevelExit>(m_Transform[i]->EntityPtr).RoomCoords;
+
+								Exit.IsTriggered = true;
+								Frosty::EventBus::GetEventBus()->Publish
+									<Frosty::UpdatePlayerRoomCoordEvent>(Frosty::UpdatePlayerRoomCoordEvent
+									(m_World->GetComponent<Frosty::ECS::CLevelExit>(m_Transform[i]->EntityPtr).RoomCoords));
+
+								Frosty::EventBus::GetEventBus()->Publish
+									<Frosty::ExitLevelEvent>(Frosty::ExitLevelEvent
+									(m_Transform[i]->EntityPtr, m_Transform[index]->EntityPtr));
+							}
 						}
 						// Enemy or Player colliding
 						else if (m_World->HasComponent<Frosty::ECS::CEnemy>(m_Transform[index]->EntityPtr) || m_World->HasComponent<Frosty::ECS::CPlayer>(m_Transform[index]->EntityPtr))
@@ -270,6 +284,11 @@ namespace MCS
 							}
 							if (normalCollisionPushback) m_Transform[index]->Position -= Frosty::CollisionDetection::AABBIntersecPushback(finalLengthA, finalCenterA, finalLengthB, finalCenterB);
 						}
+					}
+					else if (m_World->HasComponent<Frosty::ECS::CPlayer>(m_Transform[index]->EntityPtr) && m_World->HasComponent<Frosty::ECS::CLevelExit>(m_Transform[i]->EntityPtr))
+					{
+						auto& Exit = m_World->GetComponent<Frosty::ECS::CLevelExit>(m_Transform[i]->EntityPtr);
+						Exit.IsTriggered = false;
 					}
 				}
 

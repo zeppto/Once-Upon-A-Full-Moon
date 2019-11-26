@@ -20,6 +20,7 @@ namespace MCS
 
 	public:
 		virtual void Init() override;
+		virtual void OnStart() override;
 		virtual void OnUpdate() override;
 		virtual void OnEvent(Frosty::BaseEvent& e) override;
 

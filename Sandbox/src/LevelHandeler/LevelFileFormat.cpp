@@ -306,7 +306,14 @@ namespace MCS
 
 	}
 
-	void LevelFileFormat::OpenFromFile(std::string fileName, glm::ivec2 roomId, Frosty::ECS::CTransform* playerTransform, int rotation, glm::vec3 move)
+	void LevelFileFormat::OpenFromFile(
+		std::string fileName,
+		const bool& OtherRoom,
+		glm::ivec2 roomId,
+		Frosty::ECS::CTransform* playerTransform,
+		int rotation,
+		glm::vec3 move,
+		const int& RoomExitDir)
 	{
 		int physCounter = 0;
 		Frosty::ECS::CTransform* planeTransform = nullptr;
@@ -322,6 +329,15 @@ namespace MCS
 			FY_INFO("it opend");
 			existingFile.read((char*)& heder, sizeof(Level_Header));
 			fileEntitys.myEntitys.resize(heder.NrOfEntitys);
+
+			float xOffset = 0.0f;
+			float zOffset = 0.0f;
+
+			int RoomX = roomId.x - 10;
+			int RoomY = roomId.y - 15;
+
+			glm::vec3 startOffset(RoomX * 300.0f, 0.0f, RoomY * 300.0f);
+
 			for (int i = 0; i < heder.NrOfEntitys; i++)
 			{
 				//to Fix my problen
@@ -396,7 +412,8 @@ namespace MCS
 					{
 						tempRotation.y += rotation;
 					}
-					auto& entity = m_World->CreateEntity(glm::vec3(matrix[3].x, matrix[3].y, matrix[3].z), tempRotation, fileEntitys.myEntitys.at(i).myTransform.Scale, fileEntitys.myEntitys.at(i).myTransform.IsStatic);
+					auto& entity = m_World->CreateEntity((glm::vec3(matrix[3].x, matrix[3].y, matrix[3].z) + startOffset), tempRotation, fileEntitys.myEntitys.at(i).myTransform.Scale, fileEntitys.myEntitys.at(i).myTransform.IsStatic);
+					m_World->AddToGroup(entity, OtherRoom);
 					auto& newlyTreansform = m_World->GetComponent<Frosty::ECS::CTransform>(entity);
 					if (newlyTreansform.Scale == glm::vec3(300.0f, 1.0f, 300.0f))
 					{
@@ -607,6 +624,7 @@ namespace MCS
 					{
 						existingFile.read((char*)& fileEntitys.myEntitys.at(i).myLevelExit, sizeof(Level_LevelExit));
 						int newExit = fileEntitys.myEntitys.at(i).myLevelExit.ExitDirection;
+						int translatedExitDir = -2;
 						if (rotation == 270)
 						{
 							if (fileEntitys.myEntitys.at(i).myLevelExit.ExitDirection == 0)
@@ -640,7 +658,36 @@ namespace MCS
 							if (fileEntitys.myEntitys.at(i).myLevelExit.ExitDirection == 3)
 								newExit = 0;
 						}
-						m_World->AddComponent<Frosty::ECS::CLevelExit>(entity, newExit);
+						if (RoomExitDir != -2)
+						{
+
+							if (newExit == 0)
+							{
+								translatedExitDir = 1;
+							}
+							else if (newExit == 1)
+							{
+								translatedExitDir = 0;
+							}
+							else if (newExit == 2)
+							{
+								translatedExitDir = 3;
+							}
+							else if (newExit == 3)
+							{
+								translatedExitDir = 2;
+							}
+							else
+							{
+								FY_ASSERT(0, "Translation Fault!");
+							}
+						}
+						auto& exit = m_World->AddComponent<Frosty::ECS::CLevelExit>(entity, newExit);
+						exit.RoomCoords = roomId;
+						if (RoomExitDir == translatedExitDir)
+						{
+							exit.IsTriggered = true;
+						}
 					}
 					//11 = DropItem
 					if (fileEntitys.myEntitys.at(i).MyComponents.at(11).HaveComponent)
@@ -706,7 +753,7 @@ namespace MCS
 		}
 		else
 		{
-			FY_INFO("it diden't exist");
+			FY_FATAL("Could not open Map: {0}", fileName);
 		}
 		existingFile.close();
 
