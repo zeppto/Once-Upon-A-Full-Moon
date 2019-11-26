@@ -399,6 +399,7 @@ namespace MCS
 						//if(!fileEntitys.myEntitys.at(i).MyComponents.at(10).HaveComponent)
 						m_World->AddComponent<Frosty::ECS::CMesh>(entity,
 							Frosty::AssetManager::GetMesh(fileEntitys.myEntitys.at(i).myMesh.MeshName));
+
 						//std::string meshName = fileEntitys.myEntitys.at(i).myMesh.MeshName;
 						//if (meshName.find("hexCircle") != std::string::npos)
 						//{
@@ -427,6 +428,12 @@ namespace MCS
 					if (fileEntitys.myEntitys.at(i).MyComponents.at(2).HaveComponent)
 					{
 						existingFile.read((char*)& fileEntitys.myEntitys.at(i).myMaterial, sizeof(Level_Material));
+
+						//if (fileEntitys.myEntitys.at(i).MyComponents.at(6).HaveComponent)
+						//{
+						//	strcpy_s(fileEntitys.myEntitys.at(i).myMaterial.UseShaderName, "Animation");
+						//}
+
 						auto& material = m_World->AddComponent<Frosty::ECS::CMaterial>(entity,
 							Frosty::AssetManager::GetShader(fileEntitys.myEntitys.at(i).myMaterial.UseShaderName));
 						material.Albedo = fileEntitys.myEntitys.at(i).myMaterial.Albedo;

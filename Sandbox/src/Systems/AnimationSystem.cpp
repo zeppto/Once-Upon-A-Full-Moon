@@ -220,72 +220,80 @@ void MCS::AnimationSystem::OnDashEvent(Frosty::DashEvent& e)
 
 void MCS::AnimationSystem::OnPlayAnimEvent(Frosty::PlayAnimEvent& e)
 {
-	Frosty::ECS::CAnimController* controller = &m_World->GetComponent<Frosty::ECS::CAnimController>(e.GetEntity());
-
-	const unsigned int* id = e.getAnimID();
-
-	if (m_World->HasComponent<Frosty::ECS::CPlayer>(e.GetEntity()))
+	if (m_World->HasComponent<Frosty::ECS::CAnimController>(e.GetEntity()))
 	{
-		switch (*id)
-		{
-		case 0:
-			BeginNewAnim(controller, "Scarlet_Death");
-			controller->animSpeed = 1.0f;
-			break;
-		case 1:
-			BeginNewAnim(controller, "Scarlet_Attack1");
-			controller->animSpeed = 1.0f;
-			break;
-		case 2:
-			BeginNewAnim(controller, "Scarlet_Attack2");
-			controller->animSpeed = 1.2f;
-			break;
-		case 3:
-			BeginNewAnim(controller, "Scarlet_Attack3");
-			controller->animSpeed = 1.0f;
-			break;
-		case 4:
-			//Put temp transform here.
-			BeginNewAnim(controller, "Scarlet_Attack4");
-			controller->animSpeed = 1.5f;
-			break;
-		}
-		UpdateAnimOffset(controller);
-	}
-	else if (m_World->HasComponent<Frosty::ECS::CEnemy>(e.GetEntity()))
-	{
-		auto& wType = m_World->GetComponent<Frosty::ECS::CEnemy>(e.GetEntity()).Weapon->Type;
+		Frosty::ECS::CAnimController* controller = &m_World->GetComponent<Frosty::ECS::CAnimController>(e.GetEntity());
 
-		//If it has bite it is a wolf
-		if (wType == Frosty::ECS::CWeapon::WeaponType::Bite)
+		const unsigned int* id = e.getAnimID();
+
+		if (m_World->HasComponent<Frosty::ECS::CPlayer>(e.GetEntity()))
 		{
 			switch (*id)
 			{
 			case 0:
-				BeginNewAnim(controller, "Wolf_Death");
+				BeginNewAnim(controller, "Scarlet_Death");
 				controller->animSpeed = 1.0f;
+				break;
 			case 1:
-				BeginNewAnim(controller, "Wolf_Attack");
+				BeginNewAnim(controller, "Scarlet_Attack1");
 				controller->animSpeed = 1.0f;
-			}
-		}
-		else
-		{
-			//Otherwise it is cultist.
-			switch (*id)
-			{
-			case 0:
-				BeginNewAnim(controller, "Wolf_Death");
-				controller->animSpeed = 1.0f;
-			case 1:
-				BeginNewAnim(controller, "Cultist_Attack1");
-				controller->animSpeed = 1.0f;
+				break;
 			case 2:
-				BeginNewAnim(controller, "Cultist_Attack2");
-				controller->animSpeed = 2.0f;
+				BeginNewAnim(controller, "Scarlet_Attack2");
+				controller->animSpeed = 1.2f;
+				break;
+			case 3:
+				BeginNewAnim(controller, "Scarlet_Attack3");
+				controller->animSpeed = 1.0f;
+				break;
+			case 4:
+				//Put temp transform here.
+				BeginNewAnim(controller, "Scarlet_Attack4");
+				controller->animSpeed = 1.5f;
+				break;
 			}
 			UpdateAnimOffset(controller);
 		}
+		else if (m_World->HasComponent<Frosty::ECS::CEnemy>(e.GetEntity()))
+		{
+			auto& wType = m_World->GetComponent<Frosty::ECS::CEnemy>(e.GetEntity()).Weapon->Type;
+
+			//If it has bite it is a wolf
+			if (wType == Frosty::ECS::CWeapon::WeaponType::Bite)
+			{
+				switch (*id)
+				{
+				case 0:
+					BeginNewAnim(controller, "Wolf_Death");
+					controller->animSpeed = 1.0f;
+				case 1:
+					BeginNewAnim(controller, "Wolf_Attack");
+					controller->animSpeed = 1.0f;
+				}
+			}
+			else
+			{
+				//Otherwise it is cultist.
+				switch (*id)
+				{
+				case 0:
+					BeginNewAnim(controller, "Wolf_Death");
+					controller->animSpeed = 1.0f;
+				case 1:
+					BeginNewAnim(controller, "Cultist_Attack1");
+					controller->animSpeed = 1.0f;
+				case 2:
+					BeginNewAnim(controller, "Cultist_Attack2");
+					controller->animSpeed = 2.0f;
+				}
+				UpdateAnimOffset(controller);
+			}
+		}
+	}
+	else
+	{
+		FY_FATAL("AN ANIM EVENT WAS PUBLISHED ON ENTITY: {0}" ,e.GetEntity()->Id);
+		FY_FATAL("WITHOUT HAVING AN ANIMCONTROLLER COMPONENT! WHY WOULD YOU DO THAT?? WHAT IS W R O N G WITH YOU!!???");
 	}
 }
 
