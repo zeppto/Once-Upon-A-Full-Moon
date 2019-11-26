@@ -134,6 +134,9 @@ namespace MCS
 				{
 					attackComp.AttackedEntities.emplace_back(it->first->Id);
 					m_Health[it->second]->CurrentHealth -= attackComp.Damage;
+
+					// Send event to heal Player
+					Frosty::EventBus::GetEventBus()->Publish<Frosty::HealAbilityEvent>(Frosty::HealAbilityEvent());
 				}
 			}
 		}

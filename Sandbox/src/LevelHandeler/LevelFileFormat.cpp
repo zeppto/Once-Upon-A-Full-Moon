@@ -416,6 +416,8 @@ namespace MCS
 						//if(!fileEntitys.myEntitys.at(i).MyComponents.at(10).HaveComponent)
 						m_World->AddComponent<Frosty::ECS::CMesh>(entity,
 							Frosty::AssetManager::GetMesh(fileEntitys.myEntitys.at(i).myMesh.MeshName));
+
+						//std::string meshName = fileEntitys.myEntitys.at(i).myMesh.MeshName;
 						//if (meshName.find("hexCircle") != std::string::npos)
 						//{
 						//	auto& particel = m_World->AddComponent<Frosty::ECS::CParticleSystem>(entity, "ParticlesHorizontal", "particleRing", 3, glm::vec3(0.1f, 0.5f, 0.58f), 0.0f);
@@ -443,16 +445,12 @@ namespace MCS
 					if (fileEntitys.myEntitys.at(i).MyComponents.at(2).HaveComponent)
 					{
 						existingFile.read((char*)& fileEntitys.myEntitys.at(i).myMaterial, sizeof(Level_Material));
-						std::string meshName = fileEntitys.myEntitys.at(i).myMesh.MeshName;
-						//if (meshName.find("pPlane1") != std::string::npos)
+
+						//if (fileEntitys.myEntitys.at(i).MyComponents.at(6).HaveComponent)
 						//{
-						//	strcpy_s(fileEntitys.myEntitys.at(i).myMaterial.UseShaderName, "BlendShader");
-						//	strcpy_s(fileEntitys.myEntitys.at(i).myMaterial.BlendMapTextureName, "blend_road_turn");
-						//	strcpy_s(fileEntitys.myEntitys.at(i).myMaterial.DiffuseTextureName, "ground_test2");
-						//	strcpy_s(fileEntitys.myEntitys.at(i).myMaterial.BlendTexture1Name, "road_test2"); //Red channel
-						//	strcpy_s(fileEntitys.myEntitys.at(i).myMaterial.BlendTexture2Name, "ground_test2"); //Green channel
-						//	strcpy_s(fileEntitys.myEntitys.at(i).myMaterial.NormalTextureName, "ground_test_normal");
+						//	strcpy_s(fileEntitys.myEntitys.at(i).myMaterial.UseShaderName, "Animation");
 						//}
+
 						auto& material = m_World->AddComponent<Frosty::ECS::CMaterial>(entity,
 							Frosty::AssetManager::GetShader(fileEntitys.myEntitys.at(i).myMaterial.UseShaderName));
 						material.Albedo = fileEntitys.myEntitys.at(i).myMaterial.Albedo;

@@ -79,6 +79,9 @@ namespace MCS
 		case Frosty::EventType::UpgradeWeapon:
 			OnUpgradeWeaponEvent();
 			break;
+		case Frosty::EventType::HealAbility:
+			OnHealAbilityEvent();
+			break;
 		default:
 			break;
 		}
@@ -271,9 +274,7 @@ namespace MCS
 				// Check if entity has CDash component before publishing
 				if (m_Dash[index]->CurrentCooldown <= 0.0f)
 				{
-
 					m_Dash[index]->Active = true;
-					//ASDF
 					Frosty::EventBus::GetEventBus()->Publish<Frosty::DashEvent>(Frosty::DashEvent(m_Player[index]->EntityPtr));
 					//m_Physics[index]->Velocity *= m_Dash[index]->SpeedMultiplier;
 					m_Physics[index]->SpeedMultiplier = m_Dash[index]->SpeedMultiplier;
@@ -959,13 +960,39 @@ namespace MCS
 		}
 	}
 
+	void PlayerControllerSystem::OnHealAbilityEvent()
+	{
+		for (size_t i = 1; i < p_Total; i++)
+		{
+			auto& weaponComp = m_World->GetComponent<Frosty::ECS::CWeapon>(m_Player[i]->Weapon->EntityPtr);
+
+			if (m_Health[i]->CurrentHealth < m_Health[i]->MaxHealth && weaponComp.WaterHealing != 0)
+			{
+				uint8_t randomValue = rand() % 10 + 1;
+
+				// 50% chance of healing
+				if (randomValue <= 5)
+				{
+					// If healing won't exceed health capacity --> directly add heal value to health
+					if (weaponComp.WaterHealing <= (m_Health[i]->MaxHealth - m_Health[i]->CurrentHealth))
+					{
+						m_Health[i]->CurrentHealth += m_Inventory[i]->Heal;
+					}
+					// But if healing exceeds health capacity --> max health achieved
+					else
+					{
+						m_Health[i]->CurrentHealth = m_Health[i]->MaxHealth;
+					}
+				}
+			}
+		}
+	}
+
 	void PlayerControllerSystem::SwapWeapon(const std::shared_ptr<Frosty::ECS::Entity>& playerWeapon, const std::shared_ptr<Frosty::ECS::Entity>& lootWeapon)
 	{
 		// Swap CWeapon
 		if ((m_World->HasComponent<Frosty::ECS::CWeapon>(playerWeapon)) && (m_World->HasComponent<Frosty::ECS::CWeapon>(lootWeapon)))
 		{
-			if ((m_World->GetComponent<Frosty::ECS::CWeapon>(playerWeapon) != m_World->GetComponent<Frosty::ECS::CWeapon>(lootWeapon)))
-			{
 				// Swap loot type in lootWeapon depending on playerWeapon
 				SwapLootType(playerWeapon, lootWeapon);
 
@@ -977,7 +1004,7 @@ namespace MCS
 				// Only switch CMesh and CMaterial when weapon stats have been swapped
 				SwapMesh(playerWeapon, lootWeapon);
 				SwapMaterial(playerWeapon, lootWeapon);
-			}
+				Frosty::Renderer::SwapEntity(playerWeapon, lootWeapon);
 		}
 	}
 

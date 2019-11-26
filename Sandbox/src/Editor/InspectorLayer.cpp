@@ -986,7 +986,7 @@ namespace MCS
 					{
 						auto& comp = world->GetComponent<Frosty::ECS::CGUI>(m_SelectedEntity);
 						ImGui::BeginChild("CGUI", ImVec2(EDITOR_INSPECTOR_WIDTH, 45), true);
-						ImGui::Text("Test text"); //TODO: Fill with info
+						ImGui::Text("The GUI is active."); //TODO: Fill with info
 						ImGui::EndChild();
 					}
 				}
