@@ -63,6 +63,16 @@ namespace MCS
 		world->Awake();
 		particleSystem->AttachGameCamera(&world->GetComponent<Frosty::ECS::CTransform>(world->GetSceneCamera()));
 
+		//Blendmap working
+		//auto& blendTest = world->CreateEntity({ 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 300.0f, 1.0f, 300.0f });
+		//world->AddComponent<Frosty::ECS::CMesh>(blendTest, Frosty::AssetManager::GetMesh("pPlane1"));
+		//auto& blendShaderComp = world->AddComponent<Frosty::ECS::CMaterial>(blendTest, Frosty::AssetManager::GetShader("BlendShader"));
+		//blendShaderComp.BlendMapTexture = Frosty::AssetManager::GetTexture2D("blend_road_cross");
+		//blendShaderComp.DiffuseTexture = Frosty::AssetManager::GetTexture2D("ground_test2");
+		//blendShaderComp.BlendTexture1 = Frosty::AssetManager::GetTexture2D("road_test2"); //Red channel
+		//blendShaderComp.BlendTexture2 = blendShaderComp.DiffuseTexture; //Green channel
+		//blendShaderComp.NormalTexture = Frosty::AssetManager::GetTexture2D("ground_test_normal");
+
 		// SCENE 1
 		// PLANE
 		auto& plane = world->CreateEntity({ 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 200.0f, 1.0f, 100.0f }, true);
@@ -104,7 +114,6 @@ namespace MCS
 			weaponMat.NormalTexture = Frosty::AssetManager::GetTexture2D("sword_normal");
 		}
 
-
 		// PLAYER
 		auto& player = world->CreateEntity({ -104.0f, 0.0f, -15.4f }, { 0.0f, 0.0f, 0.0f }, { 2.0f, 2.0f, 2.0f });
 		auto& playerTransform = world->GetComponent<Frosty::ECS::CTransform>(player);
@@ -139,7 +148,7 @@ namespace MCS
 		world->AddComponent<Frosty::ECS::CLight>(torch, Frosty::ECS::CLight::LightType::Point, 1.f, glm::vec3(0.99f, 0.9f, 0.8f), 15.f, &playerTransform, glm::vec3(0.f, 5.f, 0.f));
 
 		//Player HUD
-		Frosty::UILayout uiLayout(21, 24);
+		Frosty::UILayout uiLayout(21, 29);
 
 		//Items
 		float padding = 200.0f;
@@ -267,15 +276,15 @@ namespace MCS
 		//Element
 		//Normal
 		uiLayout.AddSprite(glm::vec2(elementXOffset + elementPadding * 0, elementyOffset), elementScale, "elementEarth", glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));// 5
-		//uiLayout.AddSprite(glm::vec2(elementXOffset + elementPadding * 1, elementyOffset), elementScale, "elementFire", glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));// 6
-		//uiLayout.AddSprite(glm::vec2(elementXOffset + elementPadding * 2, elementyOffset), elementScale, "elementWater", glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));// 7
-		//uiLayout.AddSprite(glm::vec2(elementXOffset + elementPadding * 3, elementyOffset), elementScale, "elementWind", glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));// 8
+		uiLayout.AddSprite(glm::vec2(elementXOffset + elementPadding * 1, elementyOffset), elementScale, "elementFire", glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));// 6
+		uiLayout.AddSprite(glm::vec2(elementXOffset + elementPadding * 2, elementyOffset), elementScale, "elementWater", glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));// 7
+		uiLayout.AddSprite(glm::vec2(elementXOffset + elementPadding * 3, elementyOffset), elementScale, "elementWind", glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));// 8
 
 		//Empty
 	//	uiLayout.AddSprite(glm::vec2(elementXOffset + elementPadding * 0, elementyOffset), elementScale, "elementEarthEmpty", glm::vec4(0.1f, 0.1f, 0.1f, 0.50f));// 5
-		uiLayout.AddSprite(glm::vec2(elementXOffset + elementPadding * 1, elementyOffset), elementScale, "elementFireEmpty", glm::vec4(0.1f, 0.1f, 0.1f, 0.50f));// 6
-		uiLayout.AddSprite(glm::vec2(elementXOffset + elementPadding * 2, elementyOffset), elementScale, "elementWaterEmpty", glm::vec4(0.1f, 0.1f, 0.1f, 0.50f));// 7
-		uiLayout.AddSprite(glm::vec2(elementXOffset + elementPadding * 3, elementyOffset), elementScale, "elementWindEmpty", glm::vec4(0.1f, 0.1f, 0.1f, 0.50f));// 8
+	//	uiLayout.AddSprite(glm::vec2(elementXOffset + elementPadding * 1, elementyOffset), elementScale, "elementFireEmpty", glm::vec4(0.1f, 0.1f, 0.1f, 0.50f));// 6
+	//	uiLayout.AddSprite(glm::vec2(elementXOffset + elementPadding * 2, elementyOffset), elementScale, "elementWaterEmpty", glm::vec4(0.1f, 0.1f, 0.1f, 0.50f));// 7
+	//	uiLayout.AddSprite(glm::vec2(elementXOffset + elementPadding * 3, elementyOffset), elementScale, "elementWindEmpty", glm::vec4(0.1f, 0.1f, 0.1f, 0.50f));// 8
 
 		uiLayout.AddSprite(hpPotionSprite, glm::vec2(1, 1), "hpPotion", glm::vec4(1.0f));// 9
 		uiLayout.AddSprite(spPotionSprite, glm::vec2(1, 1), "spPotion", glm::vec4(1.0f));// 10
@@ -303,11 +312,16 @@ namespace MCS
 		int healthPadding = 45;
 		glm::vec2 healthScale = glm::vec2(0.75, 0.75);
 
-		uiLayout.AddSprite(glm::vec2(healthXOffset + healthPadding * 0, healthYOffset), healthScale, "Heart_0", glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));// 19
-		uiLayout.AddSprite(glm::vec2(healthXOffset + healthPadding * 1, healthYOffset), healthScale, "Heart_0", glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));// 20
-		uiLayout.AddSprite(glm::vec2(healthXOffset + healthPadding * 2, healthYOffset), healthScale, "Heart_0", glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));// 21
-		uiLayout.AddSprite(glm::vec2(healthXOffset + healthPadding * 3, healthYOffset), healthScale, "Heart_0", glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));// 22
-		uiLayout.AddSprite(glm::vec2(healthXOffset + healthPadding * 4, healthYOffset), healthScale, "Heart_0", glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));// 23
+		uiLayout.AddSprite(glm::vec2(healthXOffset + healthPadding * 0, healthYOffset), healthScale, "Heart_0", glm::vec4(1.0f, 1.0f, 1.0f, 0.0f));// 19
+		uiLayout.AddSprite(glm::vec2(healthXOffset + healthPadding * 1, healthYOffset), healthScale, "Heart_0", glm::vec4(1.0f, 1.0f, 1.0f, 0.0f));// 20
+		uiLayout.AddSprite(glm::vec2(healthXOffset + healthPadding * 2, healthYOffset), healthScale, "Heart_0", glm::vec4(1.0f, 1.0f, 1.0f, 0.0f));// 21
+		uiLayout.AddSprite(glm::vec2(healthXOffset + healthPadding * 3, healthYOffset), healthScale, "Heart_0", glm::vec4(1.0f, 1.0f, 1.0f, 0.0f));// 22
+		uiLayout.AddSprite(glm::vec2(healthXOffset + healthPadding * 4, healthYOffset), healthScale, "Heart_0", glm::vec4(1.0f, 1.0f, 1.0f, 0.0f));// 23
+		uiLayout.AddSprite(glm::vec2(healthXOffset + healthPadding * 5, healthYOffset), healthScale, "Heart_0", glm::vec4(1.0f, 1.0f, 1.0f, 0.0f));// 24
+		uiLayout.AddSprite(glm::vec2(healthXOffset + healthPadding * 6, healthYOffset), healthScale, "Heart_0", glm::vec4(1.0f, 1.0f, 1.0f, 0.0f));// 25
+		uiLayout.AddSprite(glm::vec2(healthXOffset + healthPadding * 7, healthYOffset), healthScale, "Heart_0", glm::vec4(1.0f, 1.0f, 1.0f, 0.0f));// 26
+		uiLayout.AddSprite(glm::vec2(healthXOffset + healthPadding * 8, healthYOffset), healthScale, "Heart_0", glm::vec4(1.0f, 1.0f, 1.0f, 0.0f));// 27
+		uiLayout.AddSprite(glm::vec2(healthXOffset + healthPadding * 9, healthYOffset), healthScale, "Heart_0", glm::vec4(1.0f, 1.0f, 1.0f, 0.0f));// 28
 
 
 		//uiLayout.AddSprite(glm::vec2(25.0f + testOffset * 0, 620.0f), glm::vec2(1, 1), "higlightHart", glm::vec4(1.0f));
@@ -413,16 +427,6 @@ namespace MCS
 		//particleSystemComp2.StartParticleSize = 5.0f;
 		//particleSystemComp2.EndParticleSize = 2.0f;
 		//particleSystem->ChangeParticlesStartColor(particleSystemComp2, glm::vec3(1.0, 1.0, 1.0)); //This function is fine if you need to change color after initialization
-
-		//Blendmap working
-		//auto& blendTest = world->CreateEntity({ 0.0f, 1.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, {300.0f, 1.0f, 300.0f});
-		//world->AddComponent<Frosty::ECS::CMesh>(blendTest, Frosty::AssetManager::GetMesh("pPlane1"));
-		//auto& blendShaderComp = world->AddComponent<Frosty::ECS::CMaterial>(blendTest, Frosty::AssetManager::GetShader("BlendShader"));
-		//blendShaderComp.BlendMapTexture = Frosty::AssetManager::GetTexture2D("blend_road_cross");
-		//blendShaderComp.DiffuseTexture = Frosty::AssetManager::GetTexture2D("ground_test2");
-		//blendShaderComp.BlendTexture1 = Frosty::AssetManager::GetTexture2D("road_test2"); //Red channel
-		//blendShaderComp.BlendTexture2 = blendShaderComp.DiffuseTexture; //Green channel
-		//blendShaderComp.NormalTexture = Frosty::AssetManager::GetTexture2D("ground_test_normal");
 
 		//			FOR EMMMA			//
 		//// WITCH CIRCLE

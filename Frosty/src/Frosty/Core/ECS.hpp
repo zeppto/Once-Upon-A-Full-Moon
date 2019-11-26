@@ -775,6 +775,9 @@ namespace Frosty
 			float PickUpTextTime{ 2.0f };
 			float PickUpTextTimer{ Frosty::Time::CurrentTime() };
 
+			float DamageEffectTime{ 2.0f };
+			float DamageEffectTimer{ Frosty::Time::CurrentTime() };
+
 			CPlayer() = default;
 			CPlayer(CWeapon* weapon) : Weapon(weapon) { }
 			CPlayer(const CPlayer& org) { FY_CORE_ASSERT(false, "Copy constructor in CPlayer called."); }
@@ -810,7 +813,7 @@ namespace Frosty
 		{
 			static std::string NAME;
 
-			int MaxPossibleHealth{ 20 };								// Max health an entity can upgrade to
+			int MaxPossibleHealth{ 40 };								// Max health an entity can upgrade to
 			int MaxHealth{ 5 };											// Max health an entity can currently have
 			int CurrentHealth{ 5 };
 
@@ -836,7 +839,7 @@ namespace Frosty
 			// INCREASE HEALTH POTION - inreases max health on consumer (const)
 			int MaxIncreaseHPPotions{ 5 };
 			int CurrentIncreaseHPPotions{ 0 };
-			int IncreaseHP{ 3 };
+			int IncreaseHP{ 4 };
 			float IncreaseHPCooldown{ 3.f };
 			float IncreaseHPTimer{ Frosty::Time::CurrentTime() };
 
@@ -859,6 +862,7 @@ namespace Frosty
 			float BaitTimer{ Frosty::Time::CurrentTime() };
 
 			// WOLFSBANE - poisonous flower, used as currency
+			int MaxWolfsbaneAmount{ 10 };
 			int CurrentWolfsbane{ 0 };
 
 			CInventory() = default;
@@ -1013,15 +1017,6 @@ namespace Frosty
 			}
 			CParticleSystem(const CParticleSystem& org) { FY_CORE_ASSERT(false, "Copy constructor in CParticleSystem called."); }
 
-			//void Init() //For utility reasons. Actually all vital data should just be in the constructor
-			//{
-
-			//	for ()
-			//	{
-
-			//	}
-			//}
-
 			virtual std::string GetName() const { return NAME; }
 		};
 
@@ -1030,14 +1025,18 @@ namespace Frosty
 			static std::string NAME;
 			enum class LootType
 			{
-				HealingPotion, IncHealthPotion, SpeedPotion, SpeedBoot,
-				Sword1, Sword2, Sword3,
-				Bow1, Bow2, Bow3
+				HealingPotion, IncHealthPotion, SpeedPotion, SpeedBoots, Wolfsbane, Bait, Weapon
 			};
+			enum class WeaponType
+			{
+				None, Sword1, Sword2, Sword3, Bow1, Bow2, Bow3
+			};
+
 			LootType Type{ LootType::HealingPotion };
+			WeaponType Weapon{ WeaponType::None };
 
 			CLootable() = default;
-			CLootable(LootType type) : Type(type) {}
+			CLootable(LootType type, WeaponType weapon = WeaponType::None) : Type(type), Weapon(weapon) {}
 			CLootable(const CLootable& org) { FY_CORE_ASSERT(false, "Copy constructor in CLootable called."); }
 
 			virtual std::string GetName() const { return NAME; }
