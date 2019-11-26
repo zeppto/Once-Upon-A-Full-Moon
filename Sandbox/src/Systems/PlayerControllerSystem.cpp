@@ -82,6 +82,9 @@ namespace MCS
 		case Frosty::EventType::HealAbility:
 			OnHealAbilityEvent();
 			break;
+		case Frosty::EventType::PlayerDamage:
+			OnDamage();
+			break;
 		default:
 			break;
 		}
@@ -1434,6 +1437,29 @@ namespace MCS
 				HUD.Layout.sprites.at(8).SetColorSprite(glm::vec4(0.1f, 0.1f, 0.1f, 0.50f));
 			}
 
+			//Damage Effect
+			float timeLeft = Frosty::Time::CurrentTime() - m_Player[index]->DamageEffectTimer;
+			if (timeLeft <= m_Player[index]->DamageEffectTime && timeLeft >= 0)
+			{
+				float percentage = m_Player[index]->DamageEffectTime / (Frosty::Time::CurrentTime() - m_Player[index]->DamageEffectTimer);
+				percentage /= 100;
+
+				if (m_Health[index]->CurrentHealth <= 4 && percentage <= 0.75)
+				{
+					percentage = 0.75;
+				}
+				HUD.Layout.sprites.at(0).SetColorSprite(glm::vec4(1.0f* percentage, 0.0f, 0.0f, 0.75f));
+
+				
+			}
+			else if(m_Health[index]->CurrentHealth <= 4)
+			{
+				HUD.Layout.sprites.at(0).SetColorSprite(glm::vec4(0.75f, 0.0f, 0.0f, 0.75f));
+			}
+			else
+			{
+				HUD.Layout.sprites.at(0).SetColorSprite(glm::vec4(0.0f, 0.0f, 0.0f, 0.75f));
+			}
 		}
 	}
 
@@ -1455,5 +1481,17 @@ namespace MCS
 		HUD.Layout.texts.at(7).SetText(std::string(""));
 		HUD.Layout.texts.at(8).SetText(std::string(""));
 		HUD.Layout.texts.at(9).SetText(std::string(""));
+	}
+
+	void PlayerControllerSystem::OnDamage()
+	{
+		for (size_t i = 1; i < p_Total; i++)
+		{
+			auto& HUD = m_World->GetComponent<Frosty::ECS::CGUI>(m_Transform[i]->EntityPtr);
+			HUD.Layout.sprites.at(0).SetColorSprite(glm::vec4(1.0f, 0.0f, 0.0f, 0.75f));
+
+			m_Player[i]->DamageEffectTimer = Frosty::Time::CurrentTime();
+		}
+
 	}
 }

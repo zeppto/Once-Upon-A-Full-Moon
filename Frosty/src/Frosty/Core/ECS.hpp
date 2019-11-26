@@ -775,6 +775,9 @@ namespace Frosty
 			float PickUpTextTime{ 2.0f };
 			float PickUpTextTimer{ Frosty::Time::CurrentTime() };
 
+			float DamageEffectTime{ 2.0f };
+			float DamageEffectTimer{ Frosty::Time::CurrentTime() };
+
 			CPlayer() = default;
 			CPlayer(CWeapon* weapon) : Weapon(weapon) { }
 			CPlayer(const CPlayer& org) { FY_CORE_ASSERT(false, "Copy constructor in CPlayer called."); }
