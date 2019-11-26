@@ -225,6 +225,9 @@ namespace Frosty
 			// THIS IS A TEMPORARY MESURE TO GET ANIM NAME TO THE
 			s_VertexArrays[MetaData.TagName]->SetCurrentAnim(temp);
 
+			//Temp
+			s_VertexArrays[MetaData.TagName]->SetName(MetaData.TagName);
+
 			// Index Buffer
 			std::shared_ptr<IndexBuffer> indexBuffer;
 			indexBuffer.reset(IndexBuffer::Create(&indices.front(), (uint32_t)indices.size()));

@@ -153,6 +153,22 @@ namespace MCS
 		return retInfo.str();
 	}
 
+	void ParticleSystem::ChangeParticlesStartColor(Frosty::ECS::CParticleSystem& particleSystem, glm::vec3 color)
+	{
+		particleSystem.SystemStartColor = color;
+		for (unsigned int i = 0; i < particleSystem.MaxParticles; i++)
+		{
+			particleSystem.Particles[i].StartColor.r = color.r;
+			particleSystem.Particles[i].StartColor.g = color.g;
+			particleSystem.Particles[i].StartColor.b = color.b;
+		}
+	}
+
+	void ParticleSystem::ChangeParticlesTexture(Frosty::ECS::CParticleSystem & particleSystem, std::string textureName)
+	{
+
+	}
+
 	void ParticleSystem::UpdateParticleSystem(size_t systemIndex)
 	{
 		m_ParticleSystem[systemIndex]->Timer -= Frosty::Time::DeltaTime(); //Update internal timer

@@ -25,6 +25,7 @@
 #include "Systems/GUISystem.hpp"
 #include "Systems/AnimationSystem.hpp"
 #include "Systems/AISystem.hpp"
+#include "Systems/WitchCircleSystem.hpp"
 
 namespace MCS
 {
@@ -74,6 +75,7 @@ namespace MCS
 			world->AddSystem<BossBehaviorSystem>();
 			world->AddSystem<GUISystem>();
 			world->AddSystem<LootingSystem>();
+			world->AddSystem<WitchCircleSystem>();
 
 			world->Awake();
 			particleSystem->AttachGameCamera(&world->GetComponent<Frosty::ECS::CTransform>(world->GetSceneCamera()));
@@ -87,18 +89,19 @@ namespace MCS
 	{
 		float x = Frosty::InputManager::GetMouseX();
 		float y = Frosty::InputManager::GetMouseY();
-		//FY_INFO("{0} : {1}", x, y);
+		FY_INFO("{0} : {1}", x, y);
 		
-		if (x > 920.f && x < 990.0f && y > 540.0f && y < 600.0f)
+		if (x > 915.0f && x < 1005.0f && y > 540.0f && y < 600.0f)
 		{
 			if (Frosty::InputManager::IsMouseButtonPressed(FY_MOUSE_BUTTON_LEFT))
 			{
 				auto& world = Frosty::Application::Get().GetWorld();
 				world->PlayGame();
-				m_App->GetStateMachine().AddState(Frosty::StateRef(FY_NEW(GameState)));
+				FY_INFO("GAME STAGE NEXT");
+				//m_App->GetStateMachine().AddState(Frosty::StateRef(FY_NEW(GameState)));
 			}
 		}
-		else if (x > 825.f && x < 1025.0f && y > 450.0f && y < 500.0f)
+		else if (x > 830.f && x < 1030.0f && y > 450.0f && y < 500.0f)
 		{
 			if (Frosty::InputManager::IsMouseButtonPressed(FY_MOUSE_BUTTON_LEFT))
 			{
@@ -109,7 +112,8 @@ namespace MCS
 		{
 			if (Frosty::InputManager::IsMouseButtonPressed(FY_MOUSE_BUTTON_LEFT))
 			{
-				Frosty::EventBus::GetEventBus()->Publish<Frosty::WindowCloseEvent>(Frosty::WindowCloseEvent());
+				FY_INFO("EXIT STAGE NEXT");
+				//Frosty::EventBus::GetEventBus()->Publish<Frosty::WindowCloseEvent>(Frosty::WindowCloseEvent());
 			}
 		}
 	}

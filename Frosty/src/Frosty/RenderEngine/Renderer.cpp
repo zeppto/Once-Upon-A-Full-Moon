@@ -66,6 +66,11 @@ namespace Frosty
 				RenderCommand::EnableBackfaceCulling();
 				culling = true;
 			}
+			else if (shaderData->Shader->GetName() == "BlendShader")
+			{
+				RenderCommand::EnableBackfaceCulling();
+				culling = true;
+			}
 			else
 			{
 				culling = false;
@@ -76,7 +81,6 @@ namespace Frosty
 			int PointLI = 0;
 			for (auto& PLightIt : s_SceneData->PointLights)
 			{
-
 				shaderData->Shader->UploadUniformFloat3Array("u_PointLights[" + std::to_string(PointLI) + "].Color", s_SceneData->PointLights[PLightIt.first].PointLight->Color);
 				shaderData->Shader->UploadUniformFloat3Array("u_PointLights[" + std::to_string(PointLI) + "].Position", s_SceneData->PointLights[PLightIt.first].Transform->Position);
 				shaderData->Shader->UploadUniformFloatArray("u_PointLights[" + std::to_string(PointLI) + "].Radius", s_SceneData->PointLights[PLightIt.first].PointLight->Radius);
@@ -125,6 +129,22 @@ namespace Frosty
 				if (materialData->Material->NormalTexture != nullptr)
 				{
 					materialData->Material->NormalTexture->Bind(1);
+				}
+				if (materialData->Material->SpecularTexture != nullptr)
+				{
+					materialData->Material->SpecularTexture->Bind(2);
+				}
+				if (materialData->Material->BlendMapTexture != nullptr)
+				{
+					materialData->Material->BlendMapTexture->Bind(3);
+				}
+				if (materialData->Material->BlendTexture1 != nullptr)
+				{
+					materialData->Material->BlendTexture1->Bind(4);
+				}
+				if (materialData->Material->BlendTexture1 != nullptr)
+				{
+					materialData->Material->BlendTexture1->Bind(5);
 				}
 
 				//For all Meshes
@@ -258,7 +278,6 @@ namespace Frosty
 		if (s_SceneData->PointLights.find(entity->Id) != s_SceneData->PointLights.end())
 		{
 			s_SceneData->PointLights.erase(entity->Id);
-
 		}
 		else if (s_SceneData->DirectionalLights.find(entity->Id) != s_SceneData->DirectionalLights.end())
 		{
@@ -661,6 +680,21 @@ namespace Frosty
 		}
 	}
 
+	void Renderer::SwapEntity(const std::shared_ptr<ECS::Entity>& EntityA, const std::shared_ptr<ECS::Entity>& EntityB)
+	{
+		auto& world = Application::Get().GetWorld();
+
+		ECS::CMesh* meshA = &world->GetComponent<ECS::CMesh>(EntityA);
+		ECS::CMesh* meshB = &world->GetComponent<ECS::CMesh>(EntityB);
+
+		ECS::CMaterial* matA = &world->GetComponent<ECS::CMaterial>(EntityA);
+		ECS::CMaterial* matB = &world->GetComponent<ECS::CMaterial>(EntityB);
+
+		ChangeEntity(EntityA->Id, matA, meshB->Mesh->GetName(), meshA, EntityA->Id, &world->GetComponent<ECS::CTransform>(EntityA));
+		ChangeEntity(EntityB->Id, matB, meshA->Mesh->GetName(), meshB, EntityB->Id, &world->GetComponent<ECS::CTransform>(EntityB));
+
+	}
+
 	void Renderer::ChangeEntity(const size_t& OldMatID, ECS::CMaterial* mat, const std::string& OldMeshName, ECS::CMesh * mesh, const size_t& transformID, ECS::CTransform* transform)
 	{
 		//Not the best but it works
@@ -681,7 +715,7 @@ namespace Frosty
 
 	void Renderer::UpdateCMesh(const int& entityID, ECS::CMesh* mesh)
 	{
-		if (s_TransformLookUpMap.find(entityID) != s_TransformLookUpMap.end())
+		if (s_MeshLookUpMap.find(entityID) != s_MeshLookUpMap.end())
 		{
 			auto& meshData = s_MeshLookUpMap.at(entityID)->at(mesh->Mesh->GetName());
 			meshData->parentMatrix = mesh->parentMatrix;

@@ -41,12 +41,14 @@ namespace MCS
 		void HandleReset(size_t index);
 
 	private:
+		Frosty::World* m_World{ nullptr };
+
 		std::array<Frosty::ECS::CTransform*, Frosty::ECS::MAX_ENTITIES_PER_COMPONENT> m_Transform;
 		std::array<Frosty::ECS::CPhysics*, Frosty::ECS::MAX_ENTITIES_PER_COMPONENT> m_Physics;
 		std::array<Frosty::ECS::CEnemy*, Frosty::ECS::MAX_ENTITIES_PER_COMPONENT> m_Enemy;
 
 		//std::unique_ptr<GridMap> m_GridMap;
-		std::unique_ptr<Grid> m_Grid;
+		std::unique_ptr<Frosty::Grid> m_Grid;
 		std::unique_ptr<Pathfinding> m_Pathfinding;
 
 	};

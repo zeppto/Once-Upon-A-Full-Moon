@@ -207,6 +207,35 @@ namespace Frosty
 	private:
 		Frosty::ECS::CTransform* m_Transform;
 	};
+
+	class ActivateWitchCircleEvent : public BaseEvent
+	{
+	public:
+		ActivateWitchCircleEvent(const std::shared_ptr<ECS::Entity>& entity) : m_Entity(entity) { }
+
+		const std::shared_ptr<ECS::Entity>& GetEntity() const { return m_Entity; }
+
+		EVENT_TYPE(ActivateWitchCircle)
+
+	private:
+		std::shared_ptr<ECS::Entity> m_Entity;
+	};
+
+	class UpgradeWeaponEvent : public BaseEvent
+	{
+	public:
+		UpgradeWeaponEvent(){ }
+
+		EVENT_TYPE(UpgradeWeapon)
+	};
+
+	class HealAbilityEvent : public BaseEvent
+	{
+	public:
+		HealAbilityEvent() { }
+
+		EVENT_TYPE(HealAbility)
+	};
 }
 
 #endif // !ABILITY_EVENT_HPP

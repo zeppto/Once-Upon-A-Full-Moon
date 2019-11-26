@@ -16,19 +16,17 @@ namespace MCS
 		void InitiateLight();
 
 		// Temp
-		void InitiateObjects();
-		void SetPlayer();
-		void SetEnemies();
-		void DeletePlayer();
-		void DeleteLight();
-		void DeleteEnemies();
+		//void InitiateObjects();
+		//void SetPlayer();
+		//void DeletePlayer();
+		//void DeleteLight();
 	private:
 		Frosty::Application* m_App = nullptr;
-		std::shared_ptr<Frosty::ECS::Entity> m_Player;
-		std::shared_ptr<Frosty::ECS::Entity> m_Light;
-		std::shared_ptr<Frosty::ECS::Entity> m_Torch;
-		std::shared_ptr<Frosty::ECS::Entity> m_Weapon;
-		std::shared_ptr<Frosty::ECS::Entity> m_Enemy;
+		//std::shared_ptr<Frosty::ECS::Entity> m_Player;
+		//std::shared_ptr<Frosty::ECS::Entity> m_Light;
+		//std::shared_ptr<Frosty::ECS::Entity> m_Torch;
+		//std::shared_ptr<Frosty::ECS::Entity> m_Weapon;
+		//std::shared_ptr<Frosty::ECS::Entity> m_Enemy;
 
 		// Temp
 		glm::vec3 m_PlayerFirstPos = glm::vec3(-104.0f, 0.0f, -15.4f);

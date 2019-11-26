@@ -134,6 +134,30 @@ namespace MCS
 				{
 					attackComp.AttackedEntities.emplace_back(it->first->Id);
 					m_Health[it->second]->CurrentHealth -= attackComp.Damage;
+
+					// Send event to heal Player
+					Frosty::EventBus::GetEventBus()->Publish<Frosty::HealAbilityEvent>(Frosty::HealAbilityEvent());
+				}
+			}
+		}
+
+		// Check if the attack killed the target (Maybe move this to another system that handles basic enemy, boss and player death differently)
+		if (m_Health[it->second]->CurrentHealth <= 0)
+		{
+			if (m_World->HasComponent<Frosty::ECS::CPlayer>(it->first))
+			{
+				// Handle player death differently
+			}
+			else if (m_World->HasComponent<Frosty::ECS::CBoss>(it->first))
+			{
+				// Handle boss death differently
+			}
+			else
+			{
+				// Basic Enemy
+				if (!m_World->HasComponent<Frosty::ECS::CDestroy>(it->first))
+				{
+					m_World->AddComponent<Frosty::ECS::CDestroy>(it->first);
 				}
 			}
 		}
@@ -143,6 +167,5 @@ namespace MCS
 		{
 			m_World->AddComponent<Frosty::ECS::CDestroy>(entityA);
 		}
-
 	}
 }

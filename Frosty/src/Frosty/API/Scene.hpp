@@ -49,7 +49,7 @@ namespace Frosty
 		}
 
 		template<typename ComponentType, typename... TArgs>
-		inline ComponentType& AddComponent(std::shared_ptr<ECS::Entity>& entity, TArgs&&... mArgs)
+		inline ComponentType& AddComponent(const std::shared_ptr<ECS::Entity>& entity, TArgs&&... mArgs)
 		{
 			static_assert(std::is_base_of<ECS::BaseComponent, ComponentType>::value,
 				"ComponentType must inherit from BaseComponent");
