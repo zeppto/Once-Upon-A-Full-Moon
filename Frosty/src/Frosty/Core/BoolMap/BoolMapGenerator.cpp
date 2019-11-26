@@ -1,7 +1,8 @@
 #include<fypch.hpp>
 #include"BoolMapGenerator.hpp"
 #include "Glad/glad.h"
-
+#define STB_IMAGE_WRITE_IMPLEMENTATION
+#include<stb_image_write.h>
 
 #define BUFFER_OFFSET(i) ((char *)nullptr + (i))
 
@@ -95,7 +96,7 @@ namespace Frosty
 	}
 
 
-	std::shared_ptr<BoolMap> BoolMapGenerator::RenderMap()
+	std::shared_ptr<BoolMap> BoolMapGenerator::RenderMap(const std::string& FileName)
 	{
 		//temp
 	//	glDeleteTextures(1, &s_Texture);
@@ -190,6 +191,30 @@ namespace Frosty
 			VABatchIt++;
 		}
 
+
+
+
+
+
+		if (FileName != "")
+		{
+			const size_t imageSizeInBytes = size_t(TmpWidth) * size_t(TmpHeight);
+			BYTE* pixels = static_cast<BYTE*>(malloc(imageSizeInBytes));
+			glPixelStorei(GL_PACK_ALIGNMENT, 1);
+			glReadPixels(0, 0, TmpWidth, TmpHeight, GL_RED, GL_UNSIGNED_BYTE, pixels);
+
+			std::string tempstr((FileName + ".jpg"));
+			int check = stbi_write_jpg(tempstr.c_str(), TmpWidth, TmpHeight, 1, pixels, 100);
+
+			free(pixels);
+		}
+
+
+
+
+
+
+
 		int texSize = (unsigned int)TmpWidth * (unsigned int)TmpHeight;
 
 		float* tempFloatPtr = FY_NEW float[texSize];
@@ -242,6 +267,11 @@ namespace Frosty
 
 
 		delete[]tempFloatPtr;
+
+
+
+
+
 
 
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);

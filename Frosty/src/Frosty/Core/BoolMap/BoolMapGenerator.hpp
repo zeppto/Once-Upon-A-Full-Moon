@@ -113,7 +113,7 @@ namespace Frosty
 		inline static void AddBatch(const BoundBatch& Batch) { InitCheck();  s_BoundBatch.push_back(Batch); }
 		inline static void AddBatch(const VABatch& Batch) { InitCheck();  s_VABatch.push_back(Batch); }
 
-		inline static std::shared_ptr<BoolMap> RenderBoolMap() { InitCheck(); return RenderMap(); }
+		inline static std::shared_ptr<BoolMap> RenderBoolMap(const std::string& FileName) { InitCheck(); return RenderMap(FileName); }
 
 		inline static  const unsigned int& GetTextureID() { return s_Texture; }
 
@@ -128,7 +128,7 @@ namespace Frosty
 
 		static void InitiateRenderData();
 		static void InitiateGBuffer();
-		static std::shared_ptr<BoolMap> RenderMap();
+		static std::shared_ptr<BoolMap> RenderMap(const std::string& FileName = "");
 	};
 
 

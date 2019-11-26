@@ -101,7 +101,10 @@ namespace MCS
 
 
 			m_Start = false;
-			//m_LevelFileFormat.LoadBoolMap("deadend_chests_IsStatick");
+
+			// TO DO Remove chest and shroomcircle
+
+			m_LevelFileFormat.LoadBoolMap("deadend_chests_IsStatick");
 			//m_LevelFileFormat.LoadBoolMap("straightRoad_chests_IsStatick");
 			//m_LevelFileFormat.LoadBoolMap("turningRoad_chests_IsStatick");
 			//m_LevelFileFormat.LoadBoolMap("threeWayRoad_chests_IsStatick");

@@ -84,7 +84,11 @@ namespace MCS
 		playerMat.NormalTexture = Frosty::AssetManager::GetTexture2D("Scarlet_normal");
 		playerMat.SpecularTexture = Frosty::AssetManager::GetTexture2D("Scarlet_specular");
 		world->AddComponent<Frosty::ECS::CPlayer>(player, &weaponComp);	// <-- Give player a weapon
-		world->AddComponent<Frosty::ECS::CPhysics>(player, Frosty::AssetManager::GetBoundingBox("scarlet"), 60.0f);
+		auto& comp = world->AddComponent<Frosty::ECS::CPhysics>(player, Frosty::AssetManager::GetBoundingBox("scarlet"), 60.0f);
+		//Col Test
+		comp.BoundingBox->halfSize[0] = 0.0f;
+		comp.BoundingBox->halfSize[1] = 0.0f;
+		comp.BoundingBox->halfSize[2] = 0.0f;
 		world->AddComponent<Frosty::ECS::CDash>(player);
 		world->AddComponent<Frosty::ECS::CHealth>(player);
 		world->AddComponent<Frosty::ECS::CInventory>(player);

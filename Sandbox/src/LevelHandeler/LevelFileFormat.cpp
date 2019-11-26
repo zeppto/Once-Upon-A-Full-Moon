@@ -658,12 +658,9 @@ void LevelFileFormat::LoadBoolMap(std::string fileName)
 	{
 		existingFile.read((char*)&testHeder, sizeof(Level_Header));
 		fileEntitys.myEntitys.resize(testHeder.NrOfEntitys);
+
 		for (int i = 0; i < testHeder.NrOfEntitys; i++)
 		{
-
-			bool MeshAdded = false;
-			std::vector<std::string> AddedMeshes;
-			std::unordered_map<std::string, Frosty::VABatch> TestMap;
 
 			fileEntitys.myEntitys.at(i).MyComponents.resize(testHeder.NrOfComponents);
 			for (int j = 0; j < m_Header.NrOfComponents; j++)
@@ -685,34 +682,40 @@ void LevelFileFormat::LoadBoolMap(std::string fileName)
 				//Map check
 				if (fileEntitys.myEntitys.at(i).myTransform.Scale != glm::vec3(300.0f, 1.0f, 300.0f) && fileEntitys.myEntitys.at(i).myTransform.IsStatic)
 				{
-					//Add To a new Batch List
-					if (!TestMap.count(fileEntitys.myEntitys.at(i).myMesh.MeshName))
+
+					//Skip Level Exit
+					if (!fileEntitys.myEntitys.at(i).MyComponents.at(10).HaveComponent)
 					{
-						Frosty::VABatch Temp;
-						//Change to ptr
-						Temp.VertexArrayObj = Frosty::AssetManager::GetMesh(fileEntitys.myEntitys.at(i).myMesh.MeshName);
+						//Add To a new Batch List
+						if (!TestMap.count(fileEntitys.myEntitys.at(i).myMesh.MeshName))
+						{
+							Frosty::VABatch Temp;
+							//Change to ptr
+							Temp.VertexArrayObj = Frosty::AssetManager::GetMesh(fileEntitys.myEntitys.at(i).myMesh.MeshName);
 
 
-						glm::mat4 TempMat(1.0f);
-						glm::vec3 Offset(150.0f, 0.0f, 150.0f);
-						TempMat = glm::translate(TempMat, fileEntitys.myEntitys.at(i).myTransform.Position + Offset);
-						TempMat = glm::rotate(TempMat, glm::radians(fileEntitys.myEntitys.at(i).myTransform.Rotation.y), glm::vec3(0.0f, 1.0f, 0.0f));
-						TempMat = glm::scale(TempMat, fileEntitys.myEntitys.at(i).myTransform.Scale);
-						Temp.Transforms.emplace_back(TempMat);
-						TestMap[fileEntitys.myEntitys.at(i).myMesh.MeshName] = Temp;
-					}
-					//Add a transform to existing batch list
-					else
-					{
-						glm::mat4 TempMat(1.0f);
+							glm::mat4 TempMat(1.0f);
+							glm::vec3 Offset(150.0f, 0.0f, 150.0f);
+							TempMat = glm::translate(TempMat, fileEntitys.myEntitys.at(i).myTransform.Position + Offset);
+							TempMat = glm::rotate(TempMat, glm::radians(fileEntitys.myEntitys.at(i).myTransform.Rotation.y), glm::vec3(0.0f, 1.0f, 0.0f));
+							TempMat = glm::scale(TempMat, fileEntitys.myEntitys.at(i).myTransform.Scale);
+							Temp.Transforms.emplace_back(TempMat);
+							TestMap[fileEntitys.myEntitys.at(i).myMesh.MeshName] = Temp;
+							//	TestMap.emplace(fileEntitys.myEntitys.at(i).myMesh.MeshName, Temp);
+						}
+						//Add a transform to existing batch list
+						else
+						{
+							glm::mat4 TempMat(1.0f);
 
-						glm::vec3 Offset(150.0f, 0.0f, 150.0f);
-						TempMat = glm::translate(TempMat, fileEntitys.myEntitys.at(i).myTransform.Position + Offset);
-						//Just Rotation in Y axis. (Add other rotations if needed)
-						TempMat = glm::rotate(TempMat, glm::radians(fileEntitys.myEntitys.at(i).myTransform.Rotation.y), glm::vec3(0.0f, 1.0f, 0.0f));
-						TempMat = glm::scale(TempMat, fileEntitys.myEntitys.at(i).myTransform.Scale);
+							glm::vec3 Offset(150.0f, 0.0f, 150.0f);
+							TempMat = glm::translate(TempMat, fileEntitys.myEntitys.at(i).myTransform.Position + Offset);
+							//Just Rotation in Y axis. (Add other rotations if needed)
+							TempMat = glm::rotate(TempMat, glm::radians(fileEntitys.myEntitys.at(i).myTransform.Rotation.y), glm::vec3(0.0f, 1.0f, 0.0f));
+							TempMat = glm::scale(TempMat, fileEntitys.myEntitys.at(i).myTransform.Scale);
 
-						TestMap[fileEntitys.myEntitys.at(i).myMesh.MeshName].Transforms.emplace_back(TempMat);
+							TestMap[fileEntitys.myEntitys.at(i).myMesh.MeshName].Transforms.emplace_back(TempMat);
+						}
 					}
 				}
 				else
@@ -762,7 +765,7 @@ void LevelFileFormat::LoadBoolMap(std::string fileName)
 		it++;
 	}
 
-	std::shared_ptr<Frosty::BoolMap> ABoolMap = Frosty::BoolMapGenerator::RenderBoolMap();
+	std::shared_ptr<Frosty::BoolMap> ABoolMap = Frosty::BoolMapGenerator::RenderBoolMap(fileName);
 	//for (int i = 0; i < 300; i++)
 	//{
 	//	for (int j = 0; j < 300; j++)
@@ -774,7 +777,7 @@ void LevelFileFormat::LoadBoolMap(std::string fileName)
 	//		}
 	//	}
 	//}
-	bool k = ABoolMap->CheckCollision(glm::vec3(1.0f, 0.0f, 1.0f));
+//	bool k = ABoolMap->CheckCollision(glm::vec3(1.0f, 0.0f, 1.0f));
 	ABoolMap->SaveMap("Ignore This", fileName);
 	//ABoolMap->LoadToMem();
 	//ABoolMap->SaveMap("", "BoolMap");

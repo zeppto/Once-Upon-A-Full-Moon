@@ -3,6 +3,7 @@
 #include<fstream>
 //#include"AssetFile.hpp"
 
+
 namespace Frosty
 {
 
@@ -198,12 +199,14 @@ namespace Frosty
 
 		if (File != nullptr)
 		{
+			m_BitMap.reset();
+
 			size_t TestWidth = fread(&m_CoordWidth, sizeof(uint16_t), 1, File);
 			size_t TestHeigth = fread(&m_CoordHeight, sizeof(uint16_t), 1, File);
 			size_t TestPixCoordRatio = fread(&m_PixCoordRatio, sizeof(uint8_t), 1, File);
 			size_t TestBitMapCount = fread(&m_BitMapCount, sizeof(uint32_t), 1, File);
 
-			std::shared_ptr<uint64_t[]> m_BitMap(FY_NEW uint64_t[m_BitMapCount]);
+			m_BitMap = std::shared_ptr<uint64_t[]>(FY_NEW uint64_t[m_BitMapCount]);
 
 			size_t TestBitMap = fread(&m_BitMap[0], sizeof(uint64_t), m_BitMapCount, File);
 
