@@ -62,6 +62,9 @@ namespace MCS
 		case Frosty::EventType::CreatEntity:
 			OnCreatEntityEvent(static_cast<Frosty::CreatEntityEvent&>(e));
 			break;
+		case Frosty::EventType::UpdatePlayerCoordsPos:
+			OnPlayerUpdateCoordEvent(static_cast<Frosty::UpdatePlayerRoomCoordEvent&>(e));
+			break;
 		default:
 			break;
 		}
