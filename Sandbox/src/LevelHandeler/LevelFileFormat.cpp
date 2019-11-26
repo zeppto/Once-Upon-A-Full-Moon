@@ -383,6 +383,18 @@ namespace MCS
 				{
 					//0 = Transform
 					existingFile.read((char*)& fileEntitys.myEntitys.at(i).myTransform, sizeof(Level_Transform));
+
+					//temp cross
+					if (fileEntitys.myEntitys.at(i).myTransform.Scale.x == 270)
+					{
+						fileEntitys.myEntitys.at(i).myTransform.Scale.x = 110.0f;
+						fileEntitys.myEntitys.at(i).myTransform.Position.x = -81.0f;
+					}
+					if (fileEntitys.myEntitys.at(i).myTransform.Scale.z == 270)
+					{
+						fileEntitys.myEntitys.at(i).myTransform.Scale.z = 110;
+					}
+
 					glm::mat4 matrix(1.0f);
 					matrix = glm::rotate(matrix, glm::radians((float)rotation), glm::vec3(0, 1, 0));
 					matrix = glm::translate(matrix, fileEntitys.myEntitys.at(i).myTransform.Position);
@@ -409,6 +421,7 @@ namespace MCS
 					{
 						tempRotation.y += rotation;
 					}
+
 					auto& entity = m_World->CreateEntity(glm::vec3(matrix[3].x, matrix[3].y, matrix[3].z), tempRotation, fileEntitys.myEntitys.at(i).myTransform.Scale, fileEntitys.myEntitys.at(i).myTransform.IsStatic);
 					auto& newlyTreansform = m_World->GetComponent<Frosty::ECS::CTransform>(entity);
 					if (newlyTreansform.Scale == glm::vec3(300.0f, 1.0f, 300.0f))
@@ -514,6 +527,10 @@ namespace MCS
 					//5 = Physics
 					if (fileEntitys.myEntitys.at(i).MyComponents.at(5).HaveComponent)
 					{
+						if (!fileEntitys.myEntitys.at(i).MyComponents.at(1).HaveComponent)
+						{
+							int t = 0;
+						}
 						existingFile.read((char*)& fileEntitys.myEntitys.at(i).myPhysics, sizeof(Level_Physics));
 						physCounter++;
 						auto& physics = m_World->AddComponent<Frosty::ECS::CPhysics>(entity);
@@ -651,11 +668,18 @@ namespace MCS
 						health.MaxHealth = fileEntitys.myEntitys.at(i).myHealth.MaxHealth;
 						health.MaxPossibleHealth = fileEntitys.myEntitys.at(i).myHealth.MaxPossibleHealth;
 						if (fileEntitys.myEntitys.at(i).MyComponents.at(6).HaveComponent)
+						{
+							if (m_VisitedRooms.size() < 2)
+							{
+								health.CurrentHealth -= health.CurrentHealth * 0.4;
+								health.MaxHealth -= health.MaxHealth * 0.4;
+							}
 							if (m_VisitedRooms.size() < 4)
 							{
 								health.CurrentHealth -= health.CurrentHealth * 0.2;
 								health.MaxHealth -= health.MaxHealth * 0.2;
 							}
+						}
 
 						if (fileEntitys.myEntitys.at(i).MyComponents.at(12).HaveComponent)
 						{
