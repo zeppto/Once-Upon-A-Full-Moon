@@ -61,9 +61,9 @@ namespace MCS
 			int rotate;
 			m_Map.getRoomTextur(m_PlayerPos, &rotate);
 			Level::MoveToNewRoom(m_CurrentRoome.sideExits[0], m_CurrentRoome.sideExits[1], m_CurrentRoome.sideExits[2], m_CurrentRoome.sideExits[3]);
-			m_LevelFileFormat.OpenFromFile("deadend_chests_IsStatick_t_p_e", m_PlayerPos, playerTransform, rotate);
+			m_LevelFileFormat.OpenFromFile("deadend_chests_IsStatick_t_p_e_r_h", m_PlayerPos, playerTransform, rotate);
 			m_Start = false;
-			m_LevelFileFormat.LoadBoolMap("deadend_chests_IsStatick_t_p_e");
+			m_LevelFileFormat.LoadBoolMap("deadend_chests_IsStatick_t_p_e_r_h");
 		}
 	}
 
@@ -402,11 +402,10 @@ namespace MCS
 		//Mushroom cirkel
 		if (e.GetEntityType() == 4)
 		{
-			auto& mushroom = m_World->CreateEntity({ 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 2.0f, 2.0f, 2.0f });
+			auto& mushroom = m_World->CreateEntity({ 0.0f, 0.1f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 2.0f, 2.0f, 2.0f });
 			m_World->AddComponent<Frosty::ECS::CMesh>(mushroom, Frosty::AssetManager::GetMesh("hexCircle"));
 			auto& material = m_World->AddComponent<Frosty::ECS::CMaterial>(mushroom, Frosty::AssetManager::GetShader("Texture2D"));
 			material.DiffuseTexture = Frosty::AssetManager::GetTexture2D("mashRoomCirkel");
-			m_World->AddComponent<Frosty::ECS::CPhysics>(mushroom, Frosty::AssetManager::GetBoundingBox("hexCircle"), 0.0f);
 			auto& particel = m_World->AddComponent<Frosty::ECS::CParticleSystem>(mushroom, "ParticlesHorizontal", "particleRing", 3, glm::vec3(0.1f, 0.5f, 0.58f), 0.0f);
 			particel.SystemEndColor = glm::vec3(0.43f, 0.145f, 0.145f);
 			particel.StartParticleSize = 3.0f;
@@ -416,6 +415,10 @@ namespace MCS
 			particel.FadeInTreshold = 1.915f;
 			particel.FadeTreshold = 0.902f;
 			particel.ParticleSystemStartPos = glm::vec3(0, 0.03f, 0);
+			m_World->AddComponent<Frosty::ECS::CWitchCircle>(mushroom);
+			m_World->AddComponent<Frosty::ECS::CLight>(mushroom, Frosty::ECS::CLight::LightType::Point, 5.0f, glm::vec3(0.1f, 1.f, 0.5f), 5.0f);
+			m_World->AddComponent<Frosty::ECS::CHealth>(mushroom, 200, 0);
+			auto& barComp = m_World->AddComponent<Frosty::ECS::CHealthBar>(mushroom, glm::vec3(0.0f, 20.0f, -5.0f), Frosty::AssetManager::GetMesh("UIPlane"), Frosty::AssetManager::GetShader("HealthBar"), Frosty::AssetManager::GetTexture2D("yellow"));
 		}
 		//mushroomsAndStonesBig
 		if (e.GetEntityType() == 5)
