@@ -23,8 +23,8 @@ namespace MCS
 		for (size_t i = 1; i < p_Total; i++)
 		{
 
-			float TmaxHP = m_Health[i]->MaxHealth;
-			float TcurrHP = m_Health[i]->CurrentHealth;
+			float TmaxHP = (float)m_Health[i]->MaxHealth;
+			float TcurrHP = (float)m_Health[i]->CurrentHealth;
 
 			float sizeFact = 0.05f * TmaxHP;
 
@@ -57,7 +57,7 @@ namespace MCS
 			m_Health[p_Total] = &world->GetComponent<Frosty::ECS::CHealth>(entity);
 			m_HealthBar[p_Total] = &world->GetComponent<Frosty::ECS::CHealthBar>(entity);
 
-			if (!m_HealthBar[p_Total]->Mesh)
+			if (m_HealthBar[p_Total]->Mesh == nullptr)
 			{
 				m_HealthBar[p_Total]->Mesh = Frosty::AssetManager::GetMesh("UIPlane");
 				m_HealthBar[p_Total]->UseShader = Frosty::AssetManager::GetShader("HealthBar");
@@ -132,5 +132,4 @@ namespace MCS
 
 		return retInfo.str();
 	}
-
 }

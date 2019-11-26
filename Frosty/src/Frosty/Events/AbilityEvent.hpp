@@ -12,8 +12,8 @@ namespace Frosty
 	class CollisionEvent : public BaseEvent
 	{
 	public:
-		CollisionEvent(const std::shared_ptr<ECS::Entity>& entityA, const std::shared_ptr<ECS::Entity>& entityB, const glm::vec3& offset)
-			: m_EntityA(entityA), m_EntityB(entityB), m_Offset(offset) { }
+		CollisionEvent(const std::shared_ptr<ECS::Entity>& entityA, const std::shared_ptr<ECS::Entity>& entityB)
+			: m_EntityA(entityA), m_EntityB(entityB) { }
 
 		const std::shared_ptr<ECS::Entity>& GetEntityA() const { return m_EntityA; }
 		const std::shared_ptr<ECS::Entity>& GetEntityB() const { return m_EntityB; }
@@ -88,6 +88,24 @@ namespace Frosty
 
 	private:
 		std::shared_ptr<ECS::Entity> m_Entity;
+	};
+
+	class PlayAnimEvent : public BaseEvent
+	{
+	public:
+		PlayAnimEvent(const std::shared_ptr<ECS::Entity>& entity, unsigned int animID) : m_Entity(entity), m_AnimID(animID) {}
+		//Anim ID:
+		// 0 is die anim
+		// 1,2,3 is sword attacks
+		// 4 is bow anim
+
+		const std::shared_ptr<ECS::Entity>& GetEntity() const { return m_Entity; }
+		const unsigned int * getAnimID() { return &m_AnimID; }
+
+		EVENT_TYPE(PlayAnim);
+	private:
+		std::shared_ptr<ECS::Entity> m_Entity;
+		unsigned int m_AnimID;
 	};
 
 	class ExitLevelEvent : public BaseEvent
@@ -220,6 +238,27 @@ namespace Frosty
 
 	private:
 		Frosty::ECS::CTransform* m_Transform;
+	};
+
+	class ActivateWitchCircleEvent : public BaseEvent
+	{
+	public:
+		ActivateWitchCircleEvent(const std::shared_ptr<ECS::Entity>& entity) : m_Entity(entity) { }
+
+		const std::shared_ptr<ECS::Entity>& GetEntity() const { return m_Entity; }
+
+		EVENT_TYPE(ActivateWitchCircle)
+
+	private:
+		std::shared_ptr<ECS::Entity> m_Entity;
+	};
+
+	class UpgradeWeaponEvent : public BaseEvent
+	{
+	public:
+		UpgradeWeaponEvent(){ }
+
+		EVENT_TYPE(UpgradeWeapon)
 	};
 }
 

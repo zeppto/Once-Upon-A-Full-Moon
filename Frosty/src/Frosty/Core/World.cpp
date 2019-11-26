@@ -114,11 +114,8 @@ namespace Frosty
 
 	void World::DestroyGroup(bool current)
 	{
-		if (current) m_DestroyRoom = m_CurrentRoom;
-		else m_DestroyRoom = (m_CurrentRoom + 1) % 2;
-
-		
-
+		if (current) m_DestroyRoom = (int32_t)(m_CurrentRoom);
+		else m_DestroyRoom = (int32_t)((m_CurrentRoom + 1) % 2);
 	}
 
 	void World::HandleDestroyedRoom()
@@ -184,7 +181,8 @@ namespace Frosty
 
 	void World::HandleDestroyedEntities()
 	{
-		for (int32_t i = (m_DestroyedEntities.size() - 1); i >= 0; --i)
+		size_t entitySize = m_DestroyedEntities.size();
+		for (size_t i = entitySize; i-- > 0; i)
 		{
 			RemoveEntity(m_DestroyedEntities[i]);
 			m_DestroyedEntities.erase(m_DestroyedEntities.begin() + i);

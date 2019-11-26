@@ -74,7 +74,7 @@ namespace Frosty
 		}
 
 		template<typename ComponentType, typename... TArgs>
-		inline ComponentType& AddComponent(std::shared_ptr<ECS::Entity>& entity, TArgs&&... mArgs)
+		inline ComponentType& AddComponent(const std::shared_ptr<ECS::Entity>& entity, TArgs&&... mArgs)
 		{
 			//FY_CORE_ASSERT(cId > -1, "Component was not found!");
 			ComponentType& addedComp = m_Scene->AddComponent<ComponentType>(entity, std::forward<TArgs>(mArgs)...);

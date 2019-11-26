@@ -30,19 +30,28 @@ namespace Frosty
 		std::vector<Luna::Joint> m_Joints;
 		std::vector<Luna::Weights> m_Weights;
 		std::map<uint16_t, std::vector<Luna::Keyframe>> m_KeyframeMap;
+		unsigned int* m_holdingJoint;
+		bool isRepeating;
+		bool isFinished;
 
 		JointTransforms m_SkinData;
 
 
 	public:
-		Animation() : AssetFile(FileMetaData()) {}
+		Animation() : AssetFile(FileMetaData()) {
+			isRepeating = true;
+			isFinished = false;
+		}
 		Animation(const FileMetaData& MetaData, const uint16_t& MeshId, Luna::Animation LuAni, const bool& HasSkeleton = false)
 			:m_Mesh_Id(MeshId), m_Has_Skeleton(HasSkeleton), AssetFile(MetaData), m_Animation(LuAni)
 		{
+			isRepeating = true;
+			isFinished = false;
 			for (int i = 0; i < MAX_BONES ; i++)
 			{
-				m_SkinData.jTrans[i] = glm::mat4(0.0f);
+				m_SkinData.jTrans[i] = glm::mat4(1.0f);
 			}
+			m_holdingJoint = nullptr;
 		}
 		virtual ~Animation();
 
@@ -53,9 +62,13 @@ namespace Frosty
 		const std::vector<Luna::Weights>& GetWeights()const;
 		const std::map<uint16_t, std::vector<Luna::Keyframe>>& GetKeyFrameMap()const;
 		const std::vector<Luna::Keyframe>& GetKeyFrameVec(const uint16_t& jointId)const;
+		glm::mat4* getHoldingJoint();
 
 		void GetSkinData(void*& data, int &nrOfJoints);
 		void CalculateAnimMatrix(float* currentAnimTime);
+		void SetIsRepeating(bool isRepeat);
+		void SetIsFinished(bool isFinish);
+		bool GetIsFinished();
 
 		inline const std::string GetName()const { return m_Animation.animationName;}
 

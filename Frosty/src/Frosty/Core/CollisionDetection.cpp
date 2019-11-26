@@ -48,24 +48,27 @@ glm::vec3 Frosty::CollisionDetection::AABBIntersecPushback(glm::vec3 pushbackLen
 	{
 		for (int i = 0; i < 3; i++)
 		{
-			if (pbMax[i] >= otherMin[i] && pbMax[i] < otherMax[i])
+			if (i != 1)
 			{
-				toPush[i] = pbMax[i] - otherMin[i];
-				if (abs(smallestPush) > abs(toPush[i]) || !isZero && smallestPush == 0)
-					smallestPush = toPush[i];
-				if (toPush[i] == 0)
-					isZero = true;
+				if (pbMax[i] >= otherMin[i] && pbMax[i] < otherMax[i])
+				{
+					toPush[i] = pbMax[i] - otherMin[i];
+					if (abs(smallestPush) > abs(toPush[i]) || !isZero && smallestPush == 0)
+						smallestPush = toPush[i];
+					if (toPush[i] == 0)
+						isZero = true;
+				}
+				if (otherMax[i] >= pbMin[i] && otherMin[i] < pbMin[i])
+				{
+					toPush[i] = pbMin[i] - otherMax[i];
+					if (abs(smallestPush) > abs(toPush[i]) || !isZero && smallestPush == 0)
+						smallestPush = toPush[i];
+					if (toPush[i] == 0)
+						isZero = true;
+				}
 			}
-			if (otherMax[i] >= pbMin[i] && otherMin[i] < pbMin[i])
-			{
-				toPush[i] = pbMin[i] - otherMax[i];
-				if (abs(smallestPush) > abs(toPush[i]) || !isZero && smallestPush == 0)
-					smallestPush = toPush[i];
-				if (toPush[i] == 0)
-					isZero = true;
-			}
-			toPush1[i] = pbMax[i] - otherMin[i];
-			toPush2[i] = pbMin[i] - otherMax[i];
+			//toPush1[i] = pbMax[i] - otherMin[i];
+			//toPush2[i] = pbMin[i] - otherMax[i];
 		}
 		for (int i = 0; i < 3; i++)
 		{

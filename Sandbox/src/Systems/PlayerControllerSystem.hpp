@@ -1,7 +1,7 @@
 #ifndef PLAYER_CONTROLLER_SYSTEM_HPP
 #define PLAYER_CONTROLLER_SYSTEM_HPP
 
-namespace Frosty { class PickUpEvent; }
+namespace Frosty { class PickUpEvent; class UpgradeWeaponEvent; }
 
 namespace MCS
 {
@@ -28,7 +28,7 @@ namespace MCS
 		glm::vec3 ScreenToTerrainPoint();
 		void LookAtPoint(const glm::vec3& point, size_t index);
 		void HandleMovement(size_t index);
-		void HandleAttack(const glm::vec3& point, size_t index);
+		void HandleAttack(size_t index);
 		void LVL1Attack(const size_t index);
 		void LVL2Attack(const size_t index);
 		void LVL3Attack(const size_t index);
@@ -45,10 +45,16 @@ namespace MCS
 
 		void HandleInventory(size_t index);
 		void OnPickUpEvent(Frosty::PickUpEvent& e);
+		void OnUpgradeWeaponEvent();
 
 		void SwapWeapon(const std::shared_ptr<Frosty::ECS::Entity>& playerWeapon, const std::shared_ptr<Frosty::ECS::Entity>& lootWeapon);
 		void SwapMesh(const std::shared_ptr<Frosty::ECS::Entity>& playerWeapon, const std::shared_ptr<Frosty::ECS::Entity>& lootWeapon);
 		void SwapMaterial(const std::shared_ptr<Frosty::ECS::Entity>& playerWeapon, const std::shared_ptr<Frosty::ECS::Entity>& lootWeapon);
+		void SwapLootType(const std::shared_ptr<Frosty::ECS::Entity>& playerWeapon, const std::shared_ptr<Frosty::ECS::Entity>& lootWeapon);
+
+		void UpdateHUD(size_t index);
+		void SetPickUpText(size_t index, std::string text);
+		void ResetAllHUDWeaponInfo(size_t index);
 
 	private:
 		std::array<Frosty::ECS::CTransform*, Frosty::ECS::MAX_ENTITIES_PER_COMPONENT> m_Transform;

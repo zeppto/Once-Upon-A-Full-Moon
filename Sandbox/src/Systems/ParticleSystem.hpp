@@ -37,12 +37,12 @@ namespace MCS
 		void SortParticles(size_t systemIndex);
 
 		float Lerp(float a, float b, float f);
+		float RandomFloat(float min, float max);
 
 	private:
 		std::array<Frosty::ECS::CTransform*, Frosty::ECS::MAX_ENTITIES_PER_COMPONENT> m_Transform;
 		std::array<Frosty::ECS::CParticleSystem*, Frosty::ECS::MAX_ENTITIES_PER_COMPONENT> m_ParticleSystem;
 		bool m_EditMode{ false };
-		bool m_SwitchShader{ false };
 
 		Frosty::ECS::CTransform* m_CameraTransform{ nullptr };
 	};

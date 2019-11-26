@@ -3,6 +3,8 @@
 #include "Frosty.h"
 #include"Frosty/API/AssetManager/AssetManager.hpp"
 
+//namespace Frosty { class ActivateWitchCircleEvent; }
+
 namespace MCS
 {
 	class HealthBarSystem : public Frosty::ECS::BaseSystem

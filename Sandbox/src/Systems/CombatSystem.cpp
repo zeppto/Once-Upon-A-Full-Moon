@@ -8,6 +8,8 @@ namespace MCS
 
 	void CombatSystem::Init()
 	{
+		m_World = Frosty::Application::Get().GetWorld().get();
+
 		p_Signature.set(Frosty::ECS::getComponentTypeID<Frosty::ECS::CTransform>(), true);
 		p_Signature.set(Frosty::ECS::getComponentTypeID<Frosty::ECS::CHealth>(), true);
 	}
@@ -106,29 +108,61 @@ namespace MCS
 
 	void CombatSystem::OnCollisionEvent(Frosty::CollisionEvent& e)
 	{
-		bool entityA = p_EntityMap.count(e.GetEntityA());
-		bool entityB = p_EntityMap.count(e.GetEntityB());
-		auto& world = Frosty::Application::Get().GetWorld();
+		// Entity A is attack and Entity B is either player, enemy or chest
+		// Entity A doesn't exist in this system but Entity B must
+		auto& entityA = e.GetEntityA();						// Attack entity
+		auto& it = p_EntityMap.find(e.GetEntityB());		// Other entity (Player/Enemy)
 
-		if (entityA)
+		if (it == p_EntityMap.end()) return;
+
+		if (m_World->HasComponent<Frosty::ECS::CPlayer>(it->first))
 		{
-			if (world->HasComponent<Frosty::ECS::CAttack>(e.GetEntityB()))
+			auto& attackComp = m_World->GetComponent<Frosty::ECS::CAttack>(entityA);
+			if (Frosty::utils::BinarySearch(attackComp.AttackedEntities, it->first->Id) == -1)
 			{
-				if (!world->HasComponent<Frosty::ECS::CDestroy>(e.GetEntityA()))
+				attackComp.AttackedEntities.emplace_back(it->first->Id);
+				m_Health[it->second]->CurrentHealth -= attackComp.Damage;
+			}
+		}
+		else if (m_World->HasComponent<Frosty::ECS::CEnemy>(it->first))
+		{
+			auto& enemyComp = m_World->GetComponent<Frosty::ECS::CEnemy>(it->first);
+			if (enemyComp.CurrentState != Frosty::ECS::CEnemy::State::Reset)
+			{
+				auto& attackComp = m_World->GetComponent<Frosty::ECS::CAttack>(entityA);
+				if (Frosty::utils::BinarySearch(attackComp.AttackedEntities, it->first->Id) == -1)
 				{
-					world->AddComponent<Frosty::ECS::CDestroy>(e.GetEntityA());
+					attackComp.AttackedEntities.emplace_back(it->first->Id);
+					m_Health[it->second]->CurrentHealth -= attackComp.Damage;
 				}
 			}
 		}
-		if (entityB)
+
+		// Check if the attack killed the target (Maybe move this to another system that handles basic enemy, boss and player death differently)
+		if (m_Health[it->second]->CurrentHealth <= 0)
 		{
-			if (world->HasComponent<Frosty::ECS::CAttack>(e.GetEntityA()))
+			if (m_World->HasComponent<Frosty::ECS::CPlayer>(it->first))
 			{
-				if (!world->HasComponent<Frosty::ECS::CDestroy>(e.GetEntityB()))
+				// Handle player death differently
+			}
+			else if (m_World->HasComponent<Frosty::ECS::CBoss>(it->first))
+			{
+				// Handle boss death differently
+			}
+			else
+			{
+				// Basic Enemy
+				if (!m_World->HasComponent<Frosty::ECS::CDestroy>(it->first))
 				{
-					world->AddComponent<Frosty::ECS::CDestroy>(e.GetEntityB());
+					m_World->AddComponent<Frosty::ECS::CDestroy>(it->first);
 				}
 			}
+		}
+
+		// Check if attack should be destroyed on hit
+		if (m_World->GetComponent<Frosty::ECS::CAttack>(entityA).Destroyable && !m_World->HasComponent<Frosty::ECS::CDestroy>(entityA))
+		{
+			m_World->AddComponent<Frosty::ECS::CDestroy>(entityA);
 		}
 	}
 }

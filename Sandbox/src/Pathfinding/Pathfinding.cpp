@@ -29,15 +29,23 @@ namespace MCS
 			{
 				while (!openSet.empty())
 				{
-					m_Grid->GetNode(openSet.top().GridX, openSet.top().GridY)->ExistsInOpenSet = false;
+					CellNode* tempNode = m_Grid->GetNode(openSet.top().GridX, openSet.top().GridY);
+					tempNode->ExistsInOpenSet = false;
+					tempNode->HCost = 0;
+					tempNode->GCost = 0;
 					openSet.pop();
 				}
+				//for (auto elem : closedSet)
+				//{
+				//	elem.HCost = 0;
+				//	elem.GCost;
+				//}
 				return RetracePath(&startNode, &targetNode);
 			}
 
 			for each (Frosty::CellNode* neighbour in m_Grid->GetNeighbours(&currentNode))
 			{
-				if (neighbour->Walkable && closedSet.count(*neighbour) == 0)
+				if ((neighbour->Walkable || *neighbour == targetNode) && closedSet.count(*neighbour) == 0)
 				{
 					int32_t newMovementCostToNeightbour = currentNode.GCost + GetDistance(&currentNode, neighbour);
 					if (newMovementCostToNeightbour < neighbour->GCost || !neighbour->ExistsInOpenSet)
@@ -84,12 +92,16 @@ namespace MCS
 
 	glm::vec3 Pathfinding::RetracePath(Frosty::CellNode* startNode, Frosty::CellNode* targetNode)
 	{
-		std::vector<Frosty::CellNode*> path;
-		Frosty::CellNode* currentNode = targetNode;
+		if (*startNode == *targetNode) return targetNode->WorldPosition;
+
+		std::vector<CellNode*> path;
+		CellNode* currentNode = targetNode;
 
 		while (*currentNode != *startNode)
 		{
 			path.emplace_back(currentNode);
+			//currentNode->HCost = 0;
+			//currentNode->GCost = 0;
 			currentNode = m_Grid->GetNode(currentNode->ParentGridX, currentNode->ParentGridY);
 		}
 

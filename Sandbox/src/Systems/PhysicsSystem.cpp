@@ -1,3 +1,4 @@
+
 #include <mcspch.hpp>
 #include "PhysicsSystem.hpp"
 #include "Frosty/Events/AbilityEvent.hpp"
@@ -20,8 +21,26 @@ namespace MCS
 	{
 		for (size_t i = 1; i < p_Total; i++)
 		{
-			m_Transform[i]->Position += m_Physics[i]->Velocity * Frosty::Time::DeltaTime();
+			//if (i == 2 && Frosty::Time::GetFrameCount() % 100 == 0) FY_INFO("Direction is ({0}, {1}, {2})", m_Physics[i]->Direction.x, m_Physics[i]->Direction.y, m_Physics[i]->Direction.z);
+			//if (i == 2 && Frosty::Time::GetFrameCount() % 10 == 0) FY_INFO("Speed multiplier is ({0})", m_Physics[i]->SpeedMultiplier);
+			m_Transform[i]->Position += m_Physics[i]->Direction * m_Physics[i]->Speed * m_Physics[i]->SpeedMultiplier * Frosty::Time::DeltaTime();
 			CheckCollision(i);
+
+			if (m_Physics[i]->Direction.y > 0.0f)
+			{
+				m_Physics[i]->HangTime -= Frosty::Time::DeltaTime();
+
+				if (m_Physics[i]->HangTime <= 0.0f)
+				{
+					m_Physics[i]->HangTime = 0.0f;
+					m_Physics[i]->Direction = glm::vec3(0.0f, -1.0f, 0.0f);
+				}
+			}
+			else if (m_Physics[i]->Direction.y < 0.0f && m_Transform[i]->Position.y < 0.0f)
+			{
+				m_Physics[i]->SpeedMultiplier = 1.0f;
+				m_Physics[i]->Direction = glm::vec3(0.0f);
+			}
 		}
 	}
 
@@ -128,96 +147,110 @@ namespace MCS
 	{
 		for (size_t i = 1; i < p_Total; i++)
 		{
-			if (index != i && m_Physics[index]->Speed != 0)
+			if (index != i)
 			{
-				bool intersect = false;
-				glm::vec3 finalCenterA;
-					glm::vec3 finalCenterB;
-					glm::vec3 finalLengthA;
-					glm::vec3 finalLengthB;
-
-
-				if (!m_World->HasComponent<Frosty::ECS::CPlayer>(m_Transform[i]->EntityPtr))
+				bool checkCollision = false;
+				// Check all collision types that you wanna ignore
+				if (m_World->HasComponent<Frosty::ECS::CAttack>(m_Transform[index]->EntityPtr) &&
+					(m_World->HasComponent<Frosty::ECS::CPlayer>(m_Transform[i]->EntityPtr) || m_World->HasComponent<Frosty::ECS::CDropItem>(m_Transform[i]->EntityPtr)))
 				{
-					finalCenterA = m_Transform[index]->Position + glm::vec3(m_Physics[index]->BoundingBox->pos[0], m_Physics[index]->BoundingBox->pos[1], m_Physics[index]->BoundingBox->pos[2]);
-					finalCenterB = m_Transform[i]->Position + glm::vec3(m_Physics[i]->BoundingBox->pos[0], m_Physics[i]->BoundingBox->pos[1], m_Physics[i]->BoundingBox->pos[2]);
-					finalLengthA = glm::vec3(m_Physics[index]->BoundingBox->halfSize[0], m_Physics[index]->BoundingBox->halfSize[1], m_Physics[index]->BoundingBox->halfSize[2]) * m_Transform[index]->Scale;
-					finalLengthB = glm::vec3(m_Physics[i]->BoundingBox->halfSize[0], m_Physics[i]->BoundingBox->halfSize[1], m_Physics[i]->BoundingBox->halfSize[2]) * m_Transform[i]->Scale;
+					checkCollision = true;
+				}
+				else if (m_World->HasComponent<Frosty::ECS::CPlayer>(m_Transform[index]->EntityPtr) && (m_World->HasComponent<Frosty::ECS::CLevelExit>(m_Transform[i]->EntityPtr) ||
+					m_Transform[i]->IsStatic || m_World->HasComponent<Frosty::ECS::CDropItem>(m_Transform[i]->EntityPtr)))		// Add witch circle check here
+				{
+					checkCollision = true;
+				}
+				else if (m_World->HasComponent<Frosty::ECS::CEnemy>(m_Transform[index]->EntityPtr) && (m_World->HasComponent<Frosty::ECS::CPlayer>(m_Transform[i]->EntityPtr) || m_Transform[i]->IsStatic))
+				{
+					checkCollision = true;
+				}
+
+				if (checkCollision)
+				{
+					bool intersect = false;
+					glm::vec3 finalCenterA = m_Transform[index]->Position + glm::vec3(m_Physics[index]->BoundingBox->pos[0], m_Physics[index]->BoundingBox->pos[1], m_Physics[index]->BoundingBox->pos[2]);
+					glm::vec3 finalCenterB = m_Transform[i]->Position + glm::vec3(m_Physics[i]->BoundingBox->pos[0], m_Physics[i]->BoundingBox->pos[1], m_Physics[i]->BoundingBox->pos[2]);
+					glm::vec3 finalLengthA = glm::vec3(m_Physics[index]->BoundingBox->halfSize[0], m_Physics[index]->BoundingBox->halfSize[1], m_Physics[index]->BoundingBox->halfSize[2]) * m_Transform[index]->Scale;
+					glm::vec3 finalLengthB = glm::vec3(m_Physics[i]->BoundingBox->halfSize[0], m_Physics[i]->BoundingBox->halfSize[1], m_Physics[i]->BoundingBox->halfSize[2]) * m_Transform[i]->Scale;
 					intersect = Frosty::CollisionDetection::AABBIntersect(finalLengthA, finalCenterA, finalLengthB, finalCenterB);
-				}
 
-				if (m_World->HasComponent<Frosty::ECS::CPlayer>(m_Transform[i]->EntityPtr))
-				{
-					glm::vec3 testVec = (m_Transform[i]->Position + glm::vec3(150.0f, 0.0f, 150.0f));
 
-					float tempX = testVec.x;
-					testVec.x = 300.0f - testVec.z;
-					testVec.z = tempX;
-
-					if (m_CurrentActiveBoolMap->CheckCollision(testVec))
+					if (intersect)
 					{
-						FY_INFO("1");
-					}
-				}
-				if (intersect == true)
-				{
-					// If collison is an attack...
-					if (m_World->HasComponent<Frosty::ECS::CAttack>(m_Transform[index]->EntityPtr))
-					{
-						auto& comp = m_World->GetComponent<Frosty::ECS::CAttack>(m_Transform[index]->EntityPtr);
+						// Attack with Player/Enemy/Chest
+						if (m_World->HasComponent<Frosty::ECS::CAttack>(m_Transform[index]->EntityPtr))
+						{
+							auto& attack = m_World->GetComponent<Frosty::ECS::CAttack>(m_Transform[index]->EntityPtr);
 
-						// ... and an enemy has been hit my a player attack --> destroy enemy (should lower HP)
-						if (m_World->HasComponent<Frosty::ECS::CEnemy>(m_Transform[i]->EntityPtr) && comp.Friendly)
-						{
-							if (m_World->HasComponent<Frosty::ECS::CDropItem>(m_Transform[i]->EntityPtr))
+							// Attack - Enemy or Player
+							if (m_World->HasComponent<Frosty::ECS::CDropItem>(m_Transform[i]->EntityPtr) || m_World->HasComponent<Frosty::ECS::CPlayer>(m_Transform[i]->EntityPtr))
 							{
-								SpawnItem(i);
-								if (!m_World->HasComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr))
+								if (attack.Friendly && m_World->HasComponent<Frosty::ECS::CDropItem>(m_Transform[i]->EntityPtr))
 								{
-									m_World->AddComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr);
+									// Player Attack - Enemy or Chest
+									if (!m_World->HasComponent<Frosty::ECS::CEnemy>(m_Transform[i]->EntityPtr))
+									{
+										SpawnItem(i);
+										if (!m_World->HasComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr))
+										{
+											m_World->AddComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr);
+										}
+									}
+									else
+									{
+										Frosty::EventBus::GetEventBus()->Publish<Frosty::CollisionEvent>(Frosty::CollisionEvent(m_Transform[index]->EntityPtr, m_Transform[i]->EntityPtr));
+									}
 								}
-							}
-							else
-							{
-								if (!m_World->HasComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr))
+								else if (!attack.Friendly && m_World->HasComponent<Frosty::ECS::CPlayer>(m_Transform[i]->EntityPtr))
 								{
-									m_World->AddComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr);
-								}
-							}
-						}
-						// ... and an chest has been hit by a player attack --> destroy Chest 
-						else if (m_World->HasComponent<Frosty::ECS::CDropItem>(m_Transform[i]->EntityPtr) && comp.Friendly)
-						{
-							if (!m_World->HasComponent<Frosty::ECS::CEnemy>(m_Transform[i]->EntityPtr))
-							{
-								SpawnItem(i);
-								if (!m_World->HasComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr))
-								{
-									m_World->AddComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr);
+									// Enemy Attack - Player
+									Frosty::EventBus::GetEventBus()->Publish<Frosty::CollisionEvent>(Frosty::CollisionEvent(m_Transform[index]->EntityPtr, m_Transform[i]->EntityPtr));
 								}
 							}
 						}
-						// ... and a player has been hit by an enemy attack --> destroy player (should lower HP)
-						else if (m_World->HasComponent<Frosty::ECS::CPlayer>(m_Transform[i]->EntityPtr) && !comp.Friendly)
+						// Player with Exit Level
+						else if (m_World->HasComponent<Frosty::ECS::CPlayer>(m_Transform[index]->EntityPtr) && m_World->HasComponent<Frosty::ECS::CLevelExit>(m_Transform[i]->EntityPtr))
 						{
-							if (!m_World->HasComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr))
-							{
-								m_World->AddComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr);
-							}
+							Frosty::EventBus::GetEventBus()->Publish<Frosty::ExitLevelEvent>(Frosty::ExitLevelEvent(m_Transform[i]->EntityPtr, m_Transform[index]->EntityPtr));
 						}
-						// Now a check for the actual attack
-						if (!(m_World->HasComponent<Frosty::ECS::CAttack>(m_Transform[i]->EntityPtr)))
+						// Enemy or Player colliding
+						else if (m_World->HasComponent<Frosty::ECS::CEnemy>(m_Transform[index]->EntityPtr) || m_World->HasComponent<Frosty::ECS::CPlayer>(m_Transform[index]->EntityPtr))
 						{
-							// If an undestructible attack collides with a static obj --> make it destroyable
-							if (m_World->GetComponent<Frosty::ECS::CTransform>(m_Transform[i]->EntityPtr).IsStatic)
+							bool normalCollisionPushback = true;
+							if (m_World->HasComponent<Frosty::ECS::CBoss>(m_Transform[index]->EntityPtr))
 							{
-								m_World->GetComponent<Frosty::ECS::CAttack>(m_Transform[index]->EntityPtr).Destroyable = true;
+								auto& bossComp = m_World->GetComponent<Frosty::ECS::CBoss>(m_Transform[index]->EntityPtr);
+								if (bossComp.ActiveAbility == Frosty::ECS::CBoss::AbilityState::Charge)
+								{
+									if (m_World->HasComponent<Frosty::ECS::CPlayer>(m_Transform[i]->EntityPtr))
+									{
+										// Charge into a player, push player back
+										m_Physics[i]->Direction = glm::vec3(0.0f, 1.0f, 0.0f);
+										m_Physics[i]->HangTime = bossComp.ChargeHangTime;
+										m_Physics[i]->SpeedMultiplier = 0.5f;
+										bossComp.DistanceCharged = bossComp.ChargeDistance;
+										m_Physics[index]->SpeedMultiplier = 1.0f;
+										bossComp.ActiveAbility = Frosty::ECS::CBoss::AbilityState::None;
+										bossComp.ChargeTargetPosition = glm::vec3(0.0f);
+										bossComp.ChargeLoadCooldownTime = 0.0f;
+										normalCollisionPushback = false;
+									}
+									else if (m_World->HasComponent<Frosty::ECS::CEnemy>(m_Transform[i]->EntityPtr))
+									{
+									}
+									else if (m_Transform[i]->IsStatic)
+									{
+										// Charge into a static obstacle
+										bossComp.DistanceCharged = bossComp.ChargeDistance;
+										m_Physics[index]->SpeedMultiplier = 1.0f;
+										bossComp.ActiveAbility = Frosty::ECS::CBoss::AbilityState::None;
+										bossComp.ChargeTargetPosition = glm::vec3(0.0f);
+										bossComp.ChargeLoadCooldownTime = 0.0f;
+									}
+								}
 							}
-							// Destroy attack. The damage has been done
-							if (!m_World->HasComponent<Frosty::ECS::CDestroy>(m_Transform[index]->EntityPtr) && (m_World->GetComponent<Frosty::ECS::CAttack>(m_Transform[index]->EntityPtr).Destroyable))
-							{
-								m_World->AddComponent<Frosty::ECS::CDestroy>(m_Transform[index]->EntityPtr);
-							}
+							if (normalCollisionPushback) m_Transform[index]->Position -= Frosty::CollisionDetection::AABBIntersecPushback(finalLengthA, finalCenterA, finalLengthB, finalCenterB);
 						}
 					}
 					// If player collides with exit Bounding box
@@ -270,35 +303,104 @@ namespace MCS
 
 	void PhysicsSystem::SpawnItem(size_t index)
 	{
-		m_RandItem = (rand() % 6) + 1;
+		m_RandItem = (rand() % 10) + 1;
 
 		auto& item = m_World->CreateEntity({ m_Transform.at(index)->Position }, { 0.0f, 0.0f, 0.0f }, { 0.5f, 0.5f, 0.5f });
-		m_World->AddComponent<Frosty::ECS::CMesh>(item, Frosty::AssetManager::GetMesh("pCube1"));
-		m_World->AddComponent<Frosty::ECS::CMaterial>(item, Frosty::AssetManager::GetShader("FlatColor"));
-		m_World->AddComponent<Frosty::ECS::CPhysics>(item, Frosty::AssetManager::GetBoundingBox("pCube1"), 6.0f);
+		//m_World->AddComponent<Frosty::ECS::CMesh>(item, Frosty::AssetManager::GetMesh("pCube1"));
+		//m_World->AddComponent<Frosty::ECS::CMaterial>(item, Frosty::AssetManager::GetShader("FlatColor"));
+		//m_World->AddComponent<Frosty::ECS::CPhysics>(item, Frosty::AssetManager::GetBoundingBox("pCube1"), 6.0f);
 
+		auto& itemMat = m_World->AddComponent<Frosty::ECS::CMaterial>(item, Frosty::AssetManager::GetShader("Texture2D"));
+		//TempTexture
+		itemMat.DiffuseTexture = Frosty::AssetManager::GetTexture2D("sword_lvl2_diffuse");
+		itemMat.NormalTexture = Frosty::AssetManager::GetTexture2D("sword_normal");
+
+		auto& weaponHandler = Frosty::AssetManager::GetWeaponHandler("Weapons");
+		Frosty::Weapon loadedWeapon;
 		//add wolfsbain and bait as items to be dropt by chest!
+		//Also Add Non-Temporary Meshes for case 1-4.
 		switch (m_RandItem)
 		{
 		case 1:
 			m_World->AddComponent<Frosty::ECS::CLootable>(item, Frosty::ECS::CLootable::LootType::HealingPotion);
+			m_World->AddComponent<Frosty::ECS::CMesh>(item, Frosty::AssetManager::GetMesh("pCube1"));
+			m_World->AddComponent<Frosty::ECS::CPhysics>(item, Frosty::AssetManager::GetBoundingBox("pCube1"), 6.0f);
 			break;
 		case 2:
 			m_World->AddComponent<Frosty::ECS::CLootable>(item, Frosty::ECS::CLootable::LootType::IncHealthPotion);
+			m_World->AddComponent<Frosty::ECS::CMesh>(item, Frosty::AssetManager::GetMesh("pCube1"));
+			m_World->AddComponent<Frosty::ECS::CPhysics>(item, Frosty::AssetManager::GetBoundingBox("pCube1"), 6.0f);
 			break;
 		case 3:
 			m_World->AddComponent<Frosty::ECS::CLootable>(item, Frosty::ECS::CLootable::LootType::SpeedPotion);
+			m_World->AddComponent<Frosty::ECS::CMesh>(item, Frosty::AssetManager::GetMesh("pCube1"));
+			m_World->AddComponent<Frosty::ECS::CPhysics>(item, Frosty::AssetManager::GetBoundingBox("pCube1"), 6.0f);
 			break;
 		case 4:
 			m_World->AddComponent<Frosty::ECS::CLootable>(item, Frosty::ECS::CLootable::LootType::SpeedBoot);
+			m_World->AddComponent<Frosty::ECS::CMesh>(item, Frosty::AssetManager::GetMesh("pCube1"));
+			m_World->AddComponent<Frosty::ECS::CPhysics>(item, Frosty::AssetManager::GetBoundingBox("pCube1"), 6.0f);
 			break;
 		case 5:
 			m_World->AddComponent<Frosty::ECS::CLootable>(item, Frosty::ECS::CLootable::LootType::Sword1);
-			m_World->AddComponent<Frosty::ECS::CWeapon>(item, Frosty::ECS::CWeapon::WeaponType::Sword, 1, 1.f);
+			m_World->AddComponent<Frosty::ECS::CMesh>(item, Frosty::AssetManager::GetMesh("sword"));
+			//It's a little silly to have seperate cases when only diffuse and lootType changes...
+			itemMat.DiffuseTexture = Frosty::AssetManager::GetTexture2D("sword_lvl1_diffuse");
+			itemMat.NormalTexture = Frosty::AssetManager::GetTexture2D("sword_normal");
+			m_World->AddComponent<Frosty::ECS::CPhysics>(item, Frosty::AssetManager::GetBoundingBox("sword"), 6.0f);
+			//auto& weaponHandler = Frosty::AssetManager::GetWeaponHandler("Weapons");
+			loadedWeapon = weaponHandler->GetWeaponByTypeAndLevel(Frosty::Weapon::WeaponType::Sword, 1, 1);
+			m_World->AddComponent<Frosty::ECS::CWeapon>(item, loadedWeapon);
 			break;
 		case 6:
-			m_World->AddComponent<Frosty::ECS::CLootable>(item, Frosty::ECS::CLootable::LootType::Arrow1);
-			m_World->AddComponent<Frosty::ECS::CWeapon>(item, Frosty::ECS::CWeapon::WeaponType::Bow, 1, 1.f);
+			m_World->AddComponent<Frosty::ECS::CLootable>(item, Frosty::ECS::CLootable::LootType::Sword2);
+			m_World->AddComponent<Frosty::ECS::CMesh>(item, Frosty::AssetManager::GetMesh("sword"));
+			itemMat.DiffuseTexture = Frosty::AssetManager::GetTexture2D("sword_lvl2_diffuse");
+			itemMat.NormalTexture = Frosty::AssetManager::GetTexture2D("sword_normal");
+			m_World->AddComponent<Frosty::ECS::CPhysics>(item, Frosty::AssetManager::GetBoundingBox("sword"), 6.0f);
+			//auto& weaponHandler = Frosty::AssetManager::GetWeaponHandler("Weapons");
+			loadedWeapon = weaponHandler->GetWeaponByTypeAndLevel(Frosty::Weapon::WeaponType::Sword, 2, 2);
+			m_World->AddComponent<Frosty::ECS::CWeapon>(item, loadedWeapon);
+			break;
+		case 7:
+			m_World->AddComponent<Frosty::ECS::CLootable>(item, Frosty::ECS::CLootable::LootType::Sword3);
+			m_World->AddComponent<Frosty::ECS::CMesh>(item, Frosty::AssetManager::GetMesh("sword"));
+			itemMat.DiffuseTexture = Frosty::AssetManager::GetTexture2D("sword_lvl3_diffuse");
+			itemMat.NormalTexture = Frosty::AssetManager::GetTexture2D("sword_normal");
+			m_World->AddComponent<Frosty::ECS::CPhysics>(item, Frosty::AssetManager::GetBoundingBox("sword"), 6.0f);
+			//auto& weaponHandler = Frosty::AssetManager::GetWeaponHandler("Weapons");
+			loadedWeapon = weaponHandler->GetWeaponByTypeAndLevel(Frosty::Weapon::WeaponType::Sword, 3, 3);
+			m_World->AddComponent<Frosty::ECS::CWeapon>(item, loadedWeapon);
+			break;
+		case 8:
+			m_World->AddComponent<Frosty::ECS::CLootable>(item, Frosty::ECS::CLootable::LootType::Bow1);
+			m_World->AddComponent<Frosty::ECS::CMesh>(item, Frosty::AssetManager::GetMesh("Bow"));
+			itemMat.DiffuseTexture = Frosty::AssetManager::GetTexture2D("bow_lvl1_diffuse");
+			itemMat.NormalTexture = Frosty::AssetManager::GetTexture2D("bow_normal");
+			m_World->AddComponent<Frosty::ECS::CPhysics>(item, Frosty::AssetManager::GetBoundingBox("Bow"), 6.0f);
+			//auto& weaponHandler = Frosty::AssetManager::GetWeaponHandler("Weapons");
+			loadedWeapon = weaponHandler->GetWeaponByTypeAndLevel(Frosty::Weapon::WeaponType::Bow, 1, 1);
+			m_World->AddComponent<Frosty::ECS::CWeapon>(item, loadedWeapon);
+			break;
+		case 9:
+			m_World->AddComponent<Frosty::ECS::CLootable>(item, Frosty::ECS::CLootable::LootType::Bow2);
+			m_World->AddComponent<Frosty::ECS::CMesh>(item, Frosty::AssetManager::GetMesh("Bow"));
+			itemMat.DiffuseTexture = Frosty::AssetManager::GetTexture2D("bow_lvl2_diffuse");
+			itemMat.NormalTexture = Frosty::AssetManager::GetTexture2D("bow_normal");
+			m_World->AddComponent<Frosty::ECS::CPhysics>(item, Frosty::AssetManager::GetBoundingBox("Bow"), 6.0f);
+			//auto& weaponHandler = Frosty::AssetManager::GetWeaponHandler("Weapons");
+			loadedWeapon = weaponHandler->GetWeaponByTypeAndLevel(Frosty::Weapon::WeaponType::Bow, 2, 2);
+			m_World->AddComponent<Frosty::ECS::CWeapon>(item, loadedWeapon);
+			break;
+		case 10:
+			m_World->AddComponent<Frosty::ECS::CLootable>(item, Frosty::ECS::CLootable::LootType::Bow3);
+			m_World->AddComponent<Frosty::ECS::CMesh>(item, Frosty::AssetManager::GetMesh("Bow"));
+			itemMat.DiffuseTexture = Frosty::AssetManager::GetTexture2D("bow_lvl3_diffuse");
+			itemMat.NormalTexture = Frosty::AssetManager::GetTexture2D("bow_normal");
+			m_World->AddComponent<Frosty::ECS::CPhysics>(item, Frosty::AssetManager::GetBoundingBox("Bow"), 6.0f);
+			//auto& weaponHandler = Frosty::AssetManager::GetWeaponHandler("Weapons");
+			loadedWeapon = weaponHandler->GetWeaponByTypeAndLevel(Frosty::Weapon::WeaponType::Bow, 3, 3);
+			m_World->AddComponent<Frosty::ECS::CWeapon>(item, loadedWeapon);
 			break;
 		default:
 			break;
