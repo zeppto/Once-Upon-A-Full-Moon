@@ -899,6 +899,8 @@ namespace MCS
 		{
 			if ((m_World->GetComponent<Frosty::ECS::CWeapon>(playerWeapon) != m_World->GetComponent<Frosty::ECS::CWeapon>(lootWeapon)))
 			{
+				SwapLootType(playerWeapon, lootWeapon);
+			
 				Frosty::ECS::CWeapon tempWeapon;
 				tempWeapon = m_World->GetComponent<Frosty::ECS::CWeapon>(playerWeapon);
 				m_World->GetComponent<Frosty::ECS::CWeapon>(playerWeapon) = m_World->GetComponent<Frosty::ECS::CWeapon>(lootWeapon);
@@ -909,7 +911,8 @@ namespace MCS
 				SwapMaterial(playerWeapon, lootWeapon);
 
 				// Swap loot type in lootWeapon depending on playerWeapon
-				SwapLootType(playerWeapon, lootWeapon);
+
+				Frosty::Renderer::SwapEntity(playerWeapon, lootWeapon);
 			}
 
 		}
@@ -971,6 +974,7 @@ namespace MCS
 				lootComp.Type = Frosty::ECS::CLootable::LootType::Bow3;
 		}
 	}
+
 	void PlayerControllerSystem::UpdateHUD(size_t index)
 	{
 		if (m_World->HasComponent<Frosty::ECS::CGUI>(m_Transform[index]->EntityPtr))

@@ -681,6 +681,21 @@ namespace Frosty
 		}
 	}
 
+	void Renderer::SwapEntity(const std::shared_ptr<ECS::Entity>& EntityA, const std::shared_ptr<ECS::Entity>& EntityB)
+	{
+		auto& world = Application::Get().GetWorld();
+
+		ECS::CMesh* meshA = &world->GetComponent<ECS::CMesh>(EntityA);
+		ECS::CMesh* meshB = &world->GetComponent<ECS::CMesh>(EntityB);
+
+		ECS::CMaterial* matA = &world->GetComponent<ECS::CMaterial>(EntityA);
+		ECS::CMaterial* matB = &world->GetComponent<ECS::CMaterial>(EntityB);
+
+		ChangeEntity(EntityA->Id, matA, meshB->Mesh->GetName(), meshA, EntityA->Id, &world->GetComponent<ECS::CTransform>(EntityA));
+		ChangeEntity(EntityB->Id, matB, meshA->Mesh->GetName(), meshB, EntityB->Id, &world->GetComponent<ECS::CTransform>(EntityB));
+
+	}
+
 	void Renderer::ChangeEntity(const size_t& OldMatID, ECS::CMaterial* mat, const std::string& OldMeshName, ECS::CMesh * mesh, const size_t& transformID, ECS::CTransform* transform)
 	{
 		//Not the best but it works
@@ -701,7 +716,7 @@ namespace Frosty
 
 	void Renderer::UpdateCMesh(const int& entityID, ECS::CMesh* mesh)
 	{
-		if (s_TransformLookUpMap.find(entityID) != s_TransformLookUpMap.end())
+		if (s_MeshLookUpMap.find(entityID) != s_MeshLookUpMap.end())
 		{
 			auto& meshData = s_MeshLookUpMap.at(entityID)->at(mesh->Mesh->GetName());
 			meshData->parentMatrix = mesh->parentMatrix;

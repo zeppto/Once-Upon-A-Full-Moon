@@ -599,7 +599,7 @@ namespace Frosty
 
 				return *this;
 			}
-			bool operator!=(const CMaterial& org) { return Albedo != org.Albedo; }	// This works best for Flatcolor shader. Talk to W-_-W if you have any questions
+			bool operator!=(const CMaterial& org) { return  DiffuseTexture != org.DiffuseTexture; }	// This works best for Flatcolor shader. Talk to W-_-W if you have any questions
 			virtual std::string GetName() const { return NAME; }
 		};
 
@@ -843,7 +843,7 @@ namespace Frosty
 			int MoveRightKey{ FY_KEY_D };
 			int MoveBackKey{ FY_KEY_S };
 			int DashKey{ FY_KEY_LEFT_SHIFT };
-			int LVL1Attack{ FY_MOUSE_BUTTON_RIGHT };
+			int LVL1Attack{ FY_MOUSE_BUTTON_LEFT };
 			int LVL2Attack{ FY_MOUSE_BUTTON_RIGHT };
 			int LVL3Attack{ FY_KEY_SPACE };
 
