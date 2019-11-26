@@ -60,8 +60,6 @@ namespace Frosty
 				m_CallInput = false;
 			}
 
-
-
 			m_EditorCamera.OnUpdate();
 			m_StateMachine.GetActiveState()->OnUpdate();
 			for (Layer* layer : m_LayerHandler)
@@ -155,14 +153,24 @@ namespace Frosty
 		if (maximize) m_Window->ActivateEditorMode();
 	}
 
-	bool Application::GetGameLoad()
+	bool Application::MenuLoaded()
+	{
+		return m_MenuLoaded;
+	}
+
+	bool Application::GameLoaded()
 	{
 		return m_GameLoaded;
 	}
 
-	void Application::SetGameLoad(bool loaded)
+	void Application::SetMenuLoad(bool menuLoad)
 	{
-		m_GameLoaded = loaded;
+		m_MenuLoaded = menuLoad;
+	}
+
+	void Application::SetGameLoad(bool gameLoad)
+	{
+		m_GameLoaded = gameLoad;
 	}
 
 	void Application::OnEvent(BaseEvent& e)

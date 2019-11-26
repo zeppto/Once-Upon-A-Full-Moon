@@ -1,5 +1,6 @@
 #ifndef GAMEPAUSESTATE_HPP
 #define GAMEPAUSESTATE_HPP
+#include "Layers/GamePauseLayer.hpp"
 
 namespace MCS
 {
@@ -16,9 +17,6 @@ namespace MCS
 		void InitiateGui();
 	private:
 		Frosty::Application* m_App = nullptr;
-		Frosty::World* m_World = nullptr;
-
-		std::shared_ptr<Frosty::ECS::Entity> m_TempGamePauseGui;
 		std::shared_ptr<Frosty::ECS::Entity> m_GamePauseGui;
 	};
 }

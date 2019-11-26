@@ -18,9 +18,6 @@ namespace MCS
 		void InitiateButtons();
 	private:
 		Frosty::Application* m_App = nullptr;
-		//MenuLayer * m_MenuLayer;
-
-		Frosty::World* m_World = nullptr;
 		std::shared_ptr<Frosty::ECS::Entity> m_MenuGui;
 	};
 }

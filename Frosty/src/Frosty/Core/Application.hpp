@@ -48,8 +48,12 @@ namespace Frosty
 		void StartGame(bool maximize);
 		void StopGame(bool maximize);
 
-		bool GetGameLoad();
-		void SetGameLoad(bool loaded);
+		// Temp for StateMaster ...
+		bool MenuLoaded();
+		bool GameLoaded();
+
+		void SetMenuLoad(bool menuLoad);
+		void SetGameLoad(bool gameLoad);
 
 		inline StateMachine &GetStateMachine() { return m_StateMachine; }
 	private:
@@ -63,7 +67,7 @@ namespace Frosty
 		InputManager m_InputManager;
 		bool m_Running = true;
 		bool m_GameRunning = false;
-
+		bool m_MenuLoaded = false;
 		bool m_GameLoaded = false;
 
 		ImGuiLayer* m_ImGuiLayer;
@@ -83,4 +87,4 @@ namespace Frosty
 		bool m_CanPrintInfo = true;
 	};
 }
-#endif 
+#endif
