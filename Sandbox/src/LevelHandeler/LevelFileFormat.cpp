@@ -396,11 +396,15 @@ namespace MCS
 					if (fileEntitys.myEntitys.at(i).MyComponents.at(1).HaveComponent)
 					{
 						existingFile.read((char*)& fileEntitys.myEntitys.at(i).myMesh, sizeof(Level_Mesh));
+						std::string meshName = fileEntitys.myEntitys.at(i).myMesh.MeshName;
+						//if (meshName.find("tiledGround") != std::string::npos)
+						//{
+						//	strcpy_s(fileEntitys.myEntitys.at(i).myMesh.MeshName, "pPlane1");
+						//}
 						//for in game
 						//if(!fileEntitys.myEntitys.at(i).MyComponents.at(10).HaveComponent)
 						m_World->AddComponent<Frosty::ECS::CMesh>(entity,
 							Frosty::AssetManager::GetMesh(fileEntitys.myEntitys.at(i).myMesh.MeshName));
-						//std::string meshName = fileEntitys.myEntitys.at(i).myMesh.MeshName;
 						//if (meshName.find("hexCircle") != std::string::npos)
 						//{
 						//	auto& particel = m_World->AddComponent<Frosty::ECS::CParticleSystem>(entity, "ParticlesHorizontal", "particleRing", 3, glm::vec3(0.1f, 0.5f, 0.58f), 0.0f);
@@ -428,6 +432,16 @@ namespace MCS
 					if (fileEntitys.myEntitys.at(i).MyComponents.at(2).HaveComponent)
 					{
 						existingFile.read((char*)& fileEntitys.myEntitys.at(i).myMaterial, sizeof(Level_Material));
+						std::string meshName = fileEntitys.myEntitys.at(i).myMesh.MeshName;
+						//if (meshName.find("pPlane1") != std::string::npos)
+						//{
+						//	strcpy_s(fileEntitys.myEntitys.at(i).myMaterial.UseShaderName, "BlendShader");
+						//	strcpy_s(fileEntitys.myEntitys.at(i).myMaterial.BlendMapTextureName, "blend_road_turn");
+						//	strcpy_s(fileEntitys.myEntitys.at(i).myMaterial.DiffuseTextureName, "ground_test2");
+						//	strcpy_s(fileEntitys.myEntitys.at(i).myMaterial.BlendTexture1Name, "road_test2"); //Red channel
+						//	strcpy_s(fileEntitys.myEntitys.at(i).myMaterial.BlendTexture2Name, "ground_test2"); //Green channel
+						//	strcpy_s(fileEntitys.myEntitys.at(i).myMaterial.NormalTextureName, "ground_test_normal");
+						//}
 						auto& material = m_World->AddComponent<Frosty::ECS::CMaterial>(entity,
 							Frosty::AssetManager::GetShader(fileEntitys.myEntitys.at(i).myMaterial.UseShaderName));
 						material.Albedo = fileEntitys.myEntitys.at(i).myMaterial.Albedo;
@@ -503,7 +517,7 @@ namespace MCS
 							//enemyWeaponCompA.AttackHitboxScale = glm::vec3(10.0f, 6.0f, 4.0f);				// Sword
 							//enemyWeaponCompA.AttackHitboxScale = glm::vec3(4.0f, 6.0f, 4.0f);				// Bite
 							enemyWeaponCompA.AttackHitboxScale = glm::vec3(0.3f);							// Arrow
-							auto& enemy = m_World->AddComponent<Frosty::ECS::CEnemy>(entity, playerTransform, &enemyWeaponCompA, fileEntitys.myEntitys.at(i).myEnemy.RunOnHealth);
+							auto& enemy = m_World->AddComponent<Frosty::ECS::CEnemy>(entity, nullptr, &enemyWeaponCompA, fileEntitys.myEntitys.at(i).myEnemy.RunOnHealth);
 							auto& transform = m_World->GetComponent< Frosty::ECS::CTransform>(entity);
 							enemy.SpawnPosition = transform.Position;
 						}
@@ -520,7 +534,7 @@ namespace MCS
 							//enemyWeaponCompA.AttackHitboxScale = glm::vec3(10.0f, 6.0f, 4.0f);				// Sword
 							enemyWeaponCompA.AttackHitboxScale = glm::vec3(4.0f, 6.0f, 4.0f);				// Bite
 							//enemyWeaponCompA.AttackHitboxScale = glm::vec3(0.3f);
-							auto& enemy = m_World->AddComponent<Frosty::ECS::CEnemy>(entity, playerTransform, &enemyWeaponCompA, fileEntitys.myEntitys.at(i).myEnemy.RunOnHealth);
+							auto& enemy = m_World->AddComponent<Frosty::ECS::CEnemy>(entity, nullptr, &enemyWeaponCompA, fileEntitys.myEntitys.at(i).myEnemy.RunOnHealth);
 							auto& transform = m_World->GetComponent< Frosty::ECS::CTransform>(entity);
 							enemy.SpawnPosition = transform.Position;
 						}
