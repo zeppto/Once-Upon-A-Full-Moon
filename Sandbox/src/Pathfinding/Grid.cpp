@@ -1,25 +1,12 @@
-#include<fypch.hpp>
-//#include "Grid.hpp"
-//#include"Frosty/API/AssetManager/AssetFiles/Grid.hpp"
-//#include "Frosty/API/AssetManager/AssetManager.hpp"
-//#include"Frosty/Core/Application.hpp"
-//#include"Frosty/Core/ECS.hpp"
-
-
-
+#include <mcspch.hpp>
 #include "Grid.hpp"
 #include "Frosty/API/AssetManager/AssetManager.hpp"
-#include<fstream>
-#include<ostream>
-#include<istream>
-//#include<Frosty/Core/ECS.hpp>
-#include"Frosty/Core/Application.hpp"
 
-namespace Frosty
+namespace MCS
 {
-	void Grid::Init(const ECS::CTransform& mapTransform)
+	void Grid::Init(const Frosty::ECS::CTransform& mapTransform)
 	{
-		m_World = Application::Get().GetWorld().get();
+		m_World = Frosty::Application::Get().GetWorld().get();
 		m_GridWorldPosition = mapTransform.Position;
 		m_GridWorldSize = glm::vec2(mapTransform.Scale.x, mapTransform.Scale.z);
 		m_GridSize = glm::vec2(m_GridWorldSize.x / CELL_SIZE, m_GridWorldSize.y / CELL_SIZE);

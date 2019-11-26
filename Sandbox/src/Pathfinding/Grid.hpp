@@ -1,10 +1,7 @@
 #ifndef GRID_HPP
 #define GRID_HPP
 
-#include"Frosty/Core/ECS.hpp"
-#include"Frosty/Core/World.hpp"
-
-namespace Frosty
+namespace MCS
 {
 	struct CellNode
 	{
@@ -21,7 +18,7 @@ namespace Frosty
 
 
 		// TEMPORARY FOR DEBUGGING
-		ECS::EntityID CellEntityID{ 0 };
+		Frosty::ECS::EntityID CellEntityID{ 0 };
 
 		CellNode(const glm::vec3& worldPos, bool walkable, int32_t gridX, int32_t gridY) : WorldPosition(worldPos), Walkable(walkable), GridX(gridX), GridY(gridY) { }
 		
@@ -63,7 +60,7 @@ namespace Frosty
 		bool CheckCollision(const glm::vec3& worldPoint, float radius) const;
 
 	private:
-		World* m_World;
+		Frosty::World* m_World;
 		glm::vec3 m_GridWorldPosition{ 0.0f };		// Position(XZ) of the plane in world space 
 		glm::vec2 m_GridWorldSize{ 0.0f };			// Scale(XZ) of the plane in world space
 		glm::vec2 m_GridSize{ 0.0f };				// Number of grids in XZ
@@ -80,9 +77,9 @@ namespace Frosty
 namespace std
 {
 	template <>
-	struct hash<Frosty::CellNode>
+	struct hash<MCS::CellNode>
 	{
-		size_t operator()(const Frosty::CellNode& k) const
+		size_t operator()(const MCS::CellNode& k) const
 		{
 			// Compute individual hash values for two data members and combine them using XOR and bit shifting
 			return ((hash<int>()(k.GridX) ^ (hash<int>()(k.GridY) << 1)) >> 1);
