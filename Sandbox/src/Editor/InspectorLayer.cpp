@@ -667,6 +667,11 @@ namespace MCS
 							ImGui::Text("Normal");
 						}
 
+						if (comp.HasTransparency)
+						{
+							ImGui::Text("Has transparency");
+						}
+
 						// Add more parameters like texture etc
 						ImGui::EndChild();
 					}
