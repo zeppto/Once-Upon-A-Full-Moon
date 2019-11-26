@@ -33,7 +33,6 @@ public:
 	bool SaveMap(const std::string& FilePath, const std::string& FileName = "");
 	bool LoadMap(const std::string& FilePath);
 
-
 	bool CheckCollition(const glm::vec3& LocalPos) const;
 
 	inline const uint16_t& GetPixWidth() { return m_PixWidth; }

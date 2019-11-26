@@ -23,6 +23,8 @@ namespace MCS
 	{
 		for (size_t i = 1; i < p_Total; i++)
 		{
+			if (m_Transform[i]->Position.y != 0.0f) continue;
+
 			// Reset (Should this be here? Maybe release instead)
 
 			// Maybe move these functions somewhere else so they can be used by other systems as well.
@@ -36,10 +38,9 @@ namespace MCS
 			if (!m_Dash[i]->Active)
 			{
 				HandleMovement(i);
-				HandleAttack(point3D, i);
+				HandleAttack(i);
 				HandleInventory(i);
 			}
-
 		}
 	}
 
@@ -47,15 +48,15 @@ namespace MCS
 	{
 		for (size_t i = 1; i < p_Total; i++)
 		{
-			if (m_Dash[i]->CurrentCooldown > 0.0) m_Dash[i]->CurrentCooldown -= Frosty::Time::DeltaTime();
-			if (Frosty::Time::CurrentTime() - m_Inventory[i]->SpeedTimer >= m_Inventory[i]->SpeedCooldown)
+			if (m_Dash[i]->CurrentCooldown > 0.0f) m_Dash[i]->CurrentCooldown -= Frosty::Time::DeltaTime();
+			if (Frosty::Time::CurrentTime() - m_Inventory[i]->SpeedTimer >= m_Inventory[i]->SpeedCooldown && m_Physics[i]->SpeedMultiplier > 1.0f)
 			{
-				m_Physics[i]->SpeedMultiplier = 1.f;
+				m_Physics[i]->SpeedMultiplier = 1.0f;
 			}
 
 			if (m_Dash[i]->Active)
 			{
-				m_Dash[i]->DistanceDashed += glm::length(m_Physics[i]->Velocity * Frosty::Time::DeltaTime());
+				m_Dash[i]->DistanceDashed += glm::length(m_Physics[i]->Direction * m_Physics[i]->Speed * m_Physics[i]->SpeedMultiplier * Frosty::Time::DeltaTime());
 				if (m_Dash[i]->DistanceDashed >= m_Dash[i]->DISTANCE / 1000.0f)
 				{
 					m_Dash[i]->Active = false;
@@ -74,6 +75,9 @@ namespace MCS
 		{
 		case Frosty::EventType::PickUp:
 			OnPickUpEvent(static_cast<Frosty::PickUpEvent&>(e));
+			break;
+		case Frosty::EventType::UpgradeWeapon:
+			OnUpgradeWeaponEvent();
 			break;
 		default:
 			break;
@@ -233,12 +237,12 @@ namespace MCS
 		if (Frosty::InputManager::IsKeyReleased(m_Player[index]->MoveForwardKey) || Frosty::InputManager::IsKeyReleased(m_Player[index]->MoveBackKey))
 		{
 			m_Physics[index]->Direction.z = 0.0f;
-			m_Physics[index]->Velocity.z = 0.0f;
+			//m_Physics[index]->Velocity.z = 0.0f;
 		}
 		if (Frosty::InputManager::IsKeyReleased(m_Player[index]->MoveLeftKey) || Frosty::InputManager::IsKeyReleased(m_Player[index]->MoveRightKey))
 		{
 			m_Physics[index]->Direction.x = 0.0f;
-			m_Physics[index]->Velocity.x = 0.0f;
+			//m_Physics[index]->Velocity.x = 0.0f;
 		}
 
 		if (Frosty::InputManager::IsKeyPressed(m_Player[index]->MoveForwardKey))
@@ -260,7 +264,7 @@ namespace MCS
 
 		if (glm::length(m_Physics[index]->Direction) > 0.0f)
 		{
-			m_Physics[index]->Velocity = glm::normalize(m_Physics[index]->Direction) * m_Physics[index]->Speed * m_Physics[index]->SpeedMultiplier;
+			//m_Physics[index]->Velocity = glm::normalize(m_Physics[index]->Direction) * m_Physics[index]->Speed * m_Physics[index]->SpeedMultiplier;
 
 			if (Frosty::InputManager::IsKeyPressed(m_Player[index]->DashKey))
 			{
@@ -269,14 +273,15 @@ namespace MCS
 				{
 					m_Dash[index]->Active = true;
 					Frosty::EventBus::GetEventBus()->Publish<Frosty::DashEvent>(Frosty::DashEvent(m_Player[index]->EntityPtr));
-					m_Physics[index]->Velocity *= m_Dash[index]->SpeedMultiplier;
+					//m_Physics[index]->Velocity *= m_Dash[index]->SpeedMultiplier;
+					m_Physics[index]->SpeedMultiplier = m_Dash[index]->SpeedMultiplier;
 					m_Dash[index]->CurrentCooldown = m_Dash[index]->COOLDOWN / 1000.0f;
 				}
 			}
 		}
 	}
 
-	void PlayerControllerSystem::HandleAttack(const glm::vec3& point, size_t index)
+	void PlayerControllerSystem::HandleAttack(size_t index)
 	{
 		// The entity pointing to a CWeapon component (player / enemy)
 		auto& weaponCarrier = m_Player[index]->EntityPtr;
@@ -318,7 +323,7 @@ namespace MCS
 		// The weapon that the player is wielding
 		auto& weaponComp = (m_World->GetComponent<Frosty::ECS::CWeapon>(m_Player[index]->Weapon->EntityPtr));
 
-		if (Frosty::Time::CurrentTime() - weaponComp.LVL1AttackCooldownTimer >= weaponComp.LVL1AttackCooldown)
+		if (Frosty::Time::CurrentTime() - weaponComp.LVL1AttackCooldownTimer >= weaponComp.LVL1AttackCooldown - weaponComp.WindSpeed)
 		{
 			switch (weaponComp.Type)
 			{
@@ -346,7 +351,7 @@ namespace MCS
 		// The weapon that the player is wielding
 		auto& weaponComp = (m_World->GetComponent<Frosty::ECS::CWeapon>(m_Player[index]->Weapon->EntityPtr));
 
-		if (Frosty::Time::CurrentTime() - weaponComp.LVL2AttackCooldownTimer >= weaponComp.LVL2AttackCooldown)
+		if (Frosty::Time::CurrentTime() - weaponComp.LVL2AttackCooldownTimer >= weaponComp.LVL2AttackCooldown - weaponComp.WindSpeed)
 		{
 			switch (weaponComp.Type)
 			{
@@ -374,7 +379,7 @@ namespace MCS
 		// The weapon that the player is wielding
 		auto& weaponComp = (m_World->GetComponent<Frosty::ECS::CWeapon>(m_Player[index]->Weapon->EntityPtr));
 
-		if (Frosty::Time::CurrentTime() - weaponComp.LVL3AttackCooldownTimer >= weaponComp.LVL3AttackCooldown)
+		if (Frosty::Time::CurrentTime() - weaponComp.LVL3AttackCooldownTimer >= weaponComp.LVL3AttackCooldown - weaponComp.WindSpeed)
 		{
 			switch (weaponComp.Type)
 			{
@@ -417,9 +422,9 @@ namespace MCS
 		m_World->AddComponent<Frosty::ECS::CPhysics>(sword, Frosty::AssetManager::GetBoundingBox("pCube1"));
 
 		float criticalHit = 0;
-		criticalHit = GenerateCriticalHit(weaponComp.CriticalHit, weaponComp.CriticalHitChance);
+		criticalHit = GenerateCriticalHit(weaponComp.CriticalHit, weaponComp.CriticalHitChance + weaponComp.FireCriticalHitChance);
 
-		int totalDamage = int(glm::round(weaponComp.Damage + criticalHit));
+		int totalDamage = int(glm::round(weaponComp.Damage + criticalHit + weaponComp.EarthDamage));
 
 		m_World->AddComponent<Frosty::ECS::CAttack>(sword, Frosty::ECS::CAttack::AttackType::Melee, totalDamage, true); // <-- true in the end because it's a friendly attack
 
@@ -442,9 +447,9 @@ namespace MCS
 		m_World->AddComponent<Frosty::ECS::CPhysics>(sword, Frosty::AssetManager::GetBoundingBox("pCube1"));
 
 		float criticalHit = 0;
-		criticalHit = GenerateCriticalHit(weaponComp.CriticalHit, weaponComp.CriticalHitChance);
+		criticalHit = GenerateCriticalHit(weaponComp.CriticalHit, weaponComp.CriticalHitChance + weaponComp.FireCriticalHitChance);
 
-		int totalDamage = int(glm::round(weaponComp.Damage + criticalHit));
+		int totalDamage = int(glm::round(weaponComp.Damage + criticalHit + weaponComp.EarthDamage));
 
 		m_World->AddComponent<Frosty::ECS::CAttack>(sword, Frosty::ECS::CAttack::AttackType::Melee, totalDamage, true); // <-- true in the end because it's a friendly attack
 	}
@@ -472,9 +477,9 @@ namespace MCS
 		m_World->AddComponent<Frosty::ECS::CPhysics>(sword, Frosty::AssetManager::GetBoundingBox("pCube1"));
 
 		float criticalHit = 0;
-		criticalHit = GenerateCriticalHit(weaponComp.CriticalHit, weaponComp.CriticalHitChance);
+		criticalHit = GenerateCriticalHit(weaponComp.CriticalHit, weaponComp.CriticalHitChance + weaponComp.FireCriticalHitChance);
 
-		int totalDamage = int(glm::round(weaponComp.Damage + criticalHit));
+		int totalDamage = int(glm::round(weaponComp.Damage + criticalHit + weaponComp.EarthDamage));
 
 		m_World->AddComponent<Frosty::ECS::CAttack>(sword, Frosty::ECS::CAttack::AttackType::Melee, totalDamage, true); // <-- true in the end because it's a friendly attack
 	}
@@ -498,12 +503,12 @@ namespace MCS
 		m_World->AddComponent<Frosty::ECS::CMesh>(projectile, Frosty::AssetManager::GetMesh("player_arrow"));
 		m_World->AddComponent<Frosty::ECS::CMaterial>(projectile, Frosty::AssetManager::GetShader("FlatColor"));
 		auto& projectilePhysics = m_World->AddComponent<Frosty::ECS::CPhysics>(projectile, Frosty::AssetManager::GetBoundingBox("player_arrow"), weaponComp.ProjectileSpeed);
-		projectilePhysics.Velocity = direction * projectilePhysics.Speed;
+		projectilePhysics.Direction = direction;
 
 		float criticalHit = 0;
-		criticalHit = GenerateCriticalHit(weaponComp.CriticalHit, weaponComp.CriticalHitChance);
+		criticalHit = GenerateCriticalHit(weaponComp.CriticalHit, weaponComp.CriticalHitChance + weaponComp.FireCriticalHitChance);
 
-		int totalDamage = int(glm::round(weaponComp.Damage + criticalHit));
+		int totalDamage = int(glm::round(weaponComp.Damage + criticalHit + weaponComp.EarthDamage));
 
 		m_World->AddComponent<Frosty::ECS::CAttack>(projectile, Frosty::ECS::CAttack::AttackType::Range, totalDamage, true, weaponComp.Lifetime);
 	}
@@ -537,12 +542,12 @@ namespace MCS
 			m_World->AddComponent<Frosty::ECS::CMesh>(projectile, Frosty::AssetManager::GetMesh("player_arrow"));
 			m_World->AddComponent<Frosty::ECS::CMaterial>(projectile, Frosty::AssetManager::GetShader("FlatColor"));
 			auto& projectilePhysics = m_World->AddComponent<Frosty::ECS::CPhysics>(projectile, Frosty::AssetManager::GetBoundingBox("player_arrow"), weaponComp.ProjectileSpeed);
-			projectilePhysics.Velocity = direction * projectilePhysics.Speed;
+			projectilePhysics.Direction = direction;
 
 			float criticalHit = 0;
-			criticalHit = GenerateCriticalHit(weaponComp.CriticalHit, weaponComp.CriticalHitChance);
+			criticalHit = GenerateCriticalHit(weaponComp.CriticalHit, weaponComp.CriticalHitChance + weaponComp.FireCriticalHitChance);
 
-			int totalDamage = int(glm::round(weaponComp.Damage + criticalHit));
+			int totalDamage = int(glm::round(weaponComp.Damage + criticalHit + weaponComp.EarthDamage));
 
 			m_World->AddComponent<Frosty::ECS::CAttack>(projectile, Frosty::ECS::CAttack::AttackType::Range, totalDamage, true, weaponComp.Lifetime);
 		}
@@ -567,12 +572,12 @@ namespace MCS
 		m_World->AddComponent<Frosty::ECS::CMesh>(projectile, Frosty::AssetManager::GetMesh("player_arrow"));
 		m_World->AddComponent<Frosty::ECS::CMaterial>(projectile, Frosty::AssetManager::GetShader("FlatColor"));
 		auto& projectilePhysics = m_World->AddComponent<Frosty::ECS::CPhysics>(projectile, Frosty::AssetManager::GetBoundingBox("player_arrow"), weaponComp.ProjectileSpeed);
-		projectilePhysics.Velocity = direction * projectilePhysics.Speed;
+		projectilePhysics.Direction = direction;
 
 		float criticalHit = 0;
-		criticalHit = GenerateCriticalHit(weaponComp.CriticalHit, weaponComp.CriticalHitChance);
+		criticalHit = GenerateCriticalHit(weaponComp.CriticalHit, weaponComp.CriticalHitChance + weaponComp.FireCriticalHitChance);
 
-		int totalDamage = int(glm::round(weaponComp.Damage + criticalHit));
+		int totalDamage = int(glm::round(weaponComp.Damage + criticalHit + weaponComp.EarthDamage));
 
 		m_World->AddComponent<Frosty::ECS::CAttack>(projectile, Frosty::ECS::CAttack::AttackType::Range, totalDamage, true, weaponComp.Lifetime, false);
 	}
@@ -686,12 +691,19 @@ namespace MCS
 		//#pragma endregion Speed Boots
 
 #pragma region Pick Up
-		if (Frosty::InputManager::IsKeyPressed(FY_KEY_E))
+		if (Frosty::InputManager::IsKeyPressed(m_Player[index]->InteractionKey))
 		{
 			if (!m_keyPressed)
 			{
 				m_keyPressed = true;
 				Frosty::EventBus::GetEventBus()->Publish<Frosty::PickUpAttemptEvent>(Frosty::PickUpAttemptEvent(m_Player[index]->EntityPtr));
+
+				// CheckWitchCircle
+				if (m_Inventory[index]->CurrentWolfsbane > 0)
+				{
+					// Send event to start the hexCircle timer (send the one requesting the enchantment)
+					Frosty::EventBus::GetEventBus()->Publish<Frosty::ActivateWitchCircleEvent>(Frosty::ActivateWitchCircleEvent(m_Player[index]->EntityPtr));
+				}
 			}
 		}
 		else if (m_keyPressed)
@@ -808,6 +820,12 @@ namespace MCS
 				}
 				else
 				{
+					m_Physics[i]->Speed += m_Physics[i]->MaxSpeed;
+				}
+				FY_INFO("SpeedBoots Activated");
+				FY_INFO("{0} / {1}", m_Inventory[i]->CurrentSpeedBoots, m_Inventory[i]->MaxSpeedBoots);
+				if (!world->HasComponent<Frosty::ECS::CDestroy>(e.GetEntity()))
+				{
 					SetPickUpText(i, "Can't Pick Up SpeedBoots");
 				}
 			}
@@ -888,6 +906,57 @@ namespace MCS
 		}
 	}
 
+	void PlayerControllerSystem::OnUpgradeWeaponEvent()
+	{
+		auto& weaponComp = m_World->GetComponent<Frosty::ECS::CWeapon>(m_Player[p_Total - 1]->Weapon->EntityPtr);
+
+		// If player weapon is NOT fully upgraded --> proceed
+		if (!weaponComp.IsFullyUpgraded)
+		{
+			// Each element is represented by a number 0-3 (Fire, Earth, Wind, Water)
+			std::vector<int> elements;
+			elements.reserve(4);
+
+			// Check which elements are possible to generate
+			if (weaponComp.FireCriticalHitChance == 0.f)	// Fire = 0
+				elements.emplace_back(0);
+			if (weaponComp.EarthDamage == 0.f)				// Earth = 1
+				elements.emplace_back(1);
+			if (weaponComp.WindSpeed == 0.f)				// Wind = 2
+				elements.emplace_back(2);
+			if (weaponComp.WaterHealing == 0.f)				// Water = 3
+				elements.emplace_back(3);
+
+			int randomElement = rand() % int(elements.size());
+			
+			// Upgrade according to randomized value
+			switch (elements[randomElement])
+			{
+			case 0:
+				if (weaponComp.FireCriticalHitChance == 0.f)	weaponComp.FireCriticalHitChance += 0.1f;
+				break;
+			case 1:
+				if (weaponComp.EarthDamage == 0.f)	weaponComp.EarthDamage += 1.f;
+				break;
+			case 2:
+				if (weaponComp.WindSpeed == 0.f)	weaponComp.WindSpeed += 0.4f;
+				break;
+			case 3:
+				if (weaponComp.WaterHealing == 0)	weaponComp.WaterHealing += 1;
+				break;
+			default:
+				break;
+			}
+
+			auto& inventoryComp = m_World->GetComponent<Frosty::ECS::CInventory>(m_Player[p_Total - 1]->EntityPtr);
+			inventoryComp.CurrentWolfsbane--;
+
+			// If all four elements are upgraded --> weapon becomes fully upgraded
+			if (weaponComp.FireCriticalHitChance != 0.f && weaponComp.EarthDamage != 0.f && weaponComp.WindSpeed != 0.f && weaponComp.WaterHealing != 0)
+				weaponComp.IsFullyUpgraded = true;
+		}
+	}
+
 	void PlayerControllerSystem::SwapWeapon(const std::shared_ptr<Frosty::ECS::Entity>& playerWeapon, const std::shared_ptr<Frosty::ECS::Entity>& lootWeapon)
 	{
 		// Swap CWeapon
@@ -895,6 +964,9 @@ namespace MCS
 		{
 			if ((m_World->GetComponent<Frosty::ECS::CWeapon>(playerWeapon) != m_World->GetComponent<Frosty::ECS::CWeapon>(lootWeapon)))
 			{
+				// Swap loot type in lootWeapon depending on playerWeapon
+				SwapLootType(playerWeapon, lootWeapon);
+
 				Frosty::ECS::CWeapon tempWeapon;
 				tempWeapon = m_World->GetComponent<Frosty::ECS::CWeapon>(playerWeapon);
 				m_World->GetComponent<Frosty::ECS::CWeapon>(playerWeapon) = m_World->GetComponent<Frosty::ECS::CWeapon>(lootWeapon);
@@ -903,11 +975,7 @@ namespace MCS
 				// Only switch CMesh and CMaterial when weapon stats have been swapped
 				SwapMesh(playerWeapon, lootWeapon);
 				SwapMaterial(playerWeapon, lootWeapon);
-
-				// Swap loot type in lootWeapon depending on playerWeapon
-				SwapLootType(playerWeapon, lootWeapon);
 			}
-
 		}
 	}
 
@@ -967,6 +1035,7 @@ namespace MCS
 				lootComp.Type = Frosty::ECS::CLootable::LootType::Bow3;
 		}
 	}
+	
 	void PlayerControllerSystem::UpdateHUD(size_t index)
 	{
 		if (m_World->HasComponent<Frosty::ECS::CGUI>(m_Transform[index]->EntityPtr))
@@ -1026,7 +1095,35 @@ namespace MCS
 			HUD.Layout.texts.at(4).SetText(std::string("Points: " + std::to_string(m_Player[index]->Score)));
 
 			//Temp Health
-			HUD.Layout.texts.at(5).SetText(std::string(std::to_string((int)m_Health[index]->CurrentHealth) + "/" + std::to_string((int)m_Health[index]->MaxHealth)));
+			//HUD.Layout.texts.at(5).SetText(std::string(std::to_string((int)m_Health[index]->CurrentHealth) + "/" + std::to_string((int)m_Health[index]->MaxHealth)));
+
+			int nrOfFilledHearts = m_Health[index]->CurrentHealth / 4;
+			int nrOfHeartQuadrants = m_Health[index]->CurrentHealth % 4;
+
+			int healthSpriteID = 19;
+			for (int i = 0; i < nrOfFilledHearts && nrOfFilledHearts <= m_Health[index]->MaxHealth; i++)
+			{
+				HUD.Layout.sprites.at(healthSpriteID).SetImage("Heart_4");
+				healthSpriteID++;
+			}
+			  
+			if (nrOfHeartQuadrants == 1)
+			{
+				HUD.Layout.sprites.at(healthSpriteID).SetImage("Heart_1");
+			}
+			else if (nrOfHeartQuadrants == 2)
+			{
+				HUD.Layout.sprites.at(healthSpriteID).SetImage("Heart_2");
+			}
+			else if (nrOfHeartQuadrants == 3)
+			{
+				HUD.Layout.sprites.at(healthSpriteID).SetImage("Heart_3");
+			}
+			else if (m_Health[index]->CurrentHealth < m_Health[index]->MaxHealth)
+			{
+				HUD.Layout.sprites.at(healthSpriteID).SetImage("Heart_0");
+			}
+
 
 			//Pickup Text
 			if (Frosty::Time::CurrentTime() - m_Player[index]->PickUpTextTimer >= m_Player[index]->PickUpTextTime)
@@ -1221,6 +1318,14 @@ namespace MCS
 
 			}
 
+			//Speed boots
+			int bootSpriteID = 14;
+			for (int i = 0; i < m_Inventory[index]->CurrentSpeedBoots && m_Inventory[index]->CurrentSpeedBoots <= 5; i++)
+			{
+				
+				HUD.Layout.sprites.at(bootSpriteID).SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+				bootSpriteID++;
+			}
 			
 		}
 	}
@@ -1244,6 +1349,4 @@ namespace MCS
 		HUD.Layout.texts.at(8).SetText(std::string(""));
 		HUD.Layout.texts.at(9).SetText(std::string(""));
 	}
-
-
 }

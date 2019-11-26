@@ -142,7 +142,7 @@ namespace Frosty
 #pragma region Settings
 
 		// Let's define a maximum number of unique components:
-		constexpr std::size_t MAX_COMPONENTS{ 23 };
+		constexpr std::size_t MAX_COMPONENTS{ 24 };
 
 		// Let's define a maximum number of entities that
 		// can have the same component type:
@@ -204,9 +204,9 @@ namespace Frosty
 			bool ShowInEditor{ true };
 			int32_t GroupId{ -1 };
 
-			Entity() : Id(s_LastId++) { FY_CORE_INFO("An entity({0}) was successfully created.", Id); }
+			Entity() : Id(s_LastId++) { /*FY_CORE_INFO("An entity({0}) was successfully created.", Id);*/ }
 			Entity(const Entity& obj) { FY_CORE_ASSERT(false, "Copy constructor in Entity called."); }
-			virtual ~Entity() { FY_CORE_INFO("An entity({0}) was successfully deleted.", Id); }
+			virtual ~Entity() { /*FY_CORE_INFO("An entity({0}) was successfully deleted.", Id);*/ }
 
 			// Operators
 			Entity& operator=(const Entity& e) { FY_CORE_ASSERT(false, "Assignment operator in Entity called."); return *this; }
@@ -255,14 +255,14 @@ namespace Frosty
 
 			inline std::shared_ptr<Entity>& Create()
 			{
-				FY_CORE_INFO("Creating a new entity..");
+				/*FY_CORE_INFO("Creating a new entity..");*/
 				m_Entities.emplace_back(FY_NEW Entity());
 				return m_Entities.back();
 			}
 
 			inline bool Remove(const std::shared_ptr<Entity>& entity)
 			{
-				FY_CORE_INFO("Removing an entity..");
+				/*FY_CORE_INFO("Removing an entity..");*/
 
 				int index = utils::BinarySearch(m_Entities, entity->Id);
 				int groupIndex = -1;
@@ -348,7 +348,7 @@ namespace Frosty
 		class ComponentManager : public BaseComponentManager
 		{
 		public:
-			ComponentManager() : BaseComponentManager() { FY_CORE_INFO("A new component manager({0}) was successfully created.", getComponentTypeID<ComponentType>()); }
+			ComponentManager() : BaseComponentManager() { /*FY_CORE_INFO("A new component manager({0}) was successfully created.", getComponentTypeID<ComponentType>());*/ }
 			ComponentManager(const ComponentManager& obj) : BaseComponentManager(obj) { FY_CORE_ASSERT(false, "Copy constructor in ComponentManager({0}) called.", getComponentTypeID<ComponentType>()); }
 			virtual ~ComponentManager() { }
 
@@ -374,7 +374,7 @@ namespace Frosty
 			inline const std::array<ComponentType, MAX_ENTITIES_PER_COMPONENT>& GetAll() const { return m_Data; }
 
 			template<typename... TArgs>
-			inline ComponentType& Add(std::shared_ptr<Entity>& entity, TArgs&& ... mArgs)
+			inline ComponentType& Add(const std::shared_ptr<Entity>& entity, TArgs&& ... mArgs)
 			{
 				FY_CORE_ASSERT(Total < MAX_ENTITIES_PER_COMPONENT,
 					"Maximum number of entities for this specific component({0}) is reached.", getComponentTypeID<ComponentType>());
@@ -634,7 +634,7 @@ namespace Frosty
 			CLight() = default;
 			CLight(LightType lightType) : Type(lightType) { }
 			CLight(LightType lightType, float strength, glm::vec3 color, float radius, glm::vec3 direction) : Type(lightType), Strength(strength), Color(color), Radius(radius), Direction(direction) { }
-			CLight(LightType lightType, float strength, glm::vec3 color, CTransform* origin = nullptr, const glm::vec3& offset = glm::vec3(0.f)) : Type(lightType), Strength(strength), Color(color), Origin(origin), Offset(offset) { }
+			CLight(LightType lightType, float strength, glm::vec3 color, float radius = 20.f, CTransform* origin = nullptr, const glm::vec3& offset = glm::vec3(0.f)) : Type(lightType), Strength(strength), Color(color), Radius(radius), Origin(origin), Offset(offset) { }
 			CLight(const CLight& org) { FY_CORE_ASSERT(false, "Copy constructor in CLight called."); }
 			CLight& operator=(const CLight& org)
 			{
@@ -659,17 +659,18 @@ namespace Frosty
 			static std::string NAME;
 			std::shared_ptr<Luna::BoundingBox> BoundingBox;
 			glm::vec3 Direction{ 0.0f, 0.0f, 0.0f };
-			float MaxSpeed{ 100.f };							// Maximun speed an entiry can upgrate its speed to
+			float MaxSpeed{ 100.f };							// Maximum speed an entity can upgrade its speed to
 			float Speed{ 0.0f };
-			glm::vec3 Velocity{ 0.0f };
+			//glm::vec3 Velocity{ 0.0f };
 			float SpeedMultiplier{ 1.f };						// Used in combination with Speed Boost Potion
+			float HangTime{ 0.0f };
 
 			CPhysics() = default;
 			CPhysics(const std::shared_ptr<Luna::BoundingBox>& bb, float speed = 0.0f) : BoundingBox(bb), Speed(speed)
 			{
-				BoundingBox->halfSize[0] *= 0.85f;
-				BoundingBox->halfSize[1] *= 0.85f;
-				BoundingBox->halfSize[2] *= 0.85f;
+				//BoundingBox->halfSize[0] *= 0.85f;
+				//BoundingBox->halfSize[1] *= 0.85f;
+				//BoundingBox->halfSize[2] *= 0.85f;
 			}
 			CPhysics(const CPhysics& org) { FY_CORE_ASSERT(false, "Copy constructor in CPhysics called."); }
 			CPhysics& operator=(const CPhysics& org)
@@ -680,7 +681,7 @@ namespace Frosty
 					Direction = org.Direction;
 					MaxSpeed = org.MaxSpeed;
 					Speed = org.Speed;
-					Velocity = org.Velocity;
+					//Velocity = org.Velocity;
 					SpeedMultiplier = org.SpeedMultiplier;
 				}
 				return *this;
@@ -719,19 +720,17 @@ namespace Frosty
 			float LVL2AttackCooldownTimer{ Frosty::Time::CurrentTime() };
 			float LVL3AttackCooldownTimer{ Frosty::Time::CurrentTime() };
 			
-			// 
-			glm::vec3 AttackHitboxScale{ 0.0f };
-
-			float Lifetime{ 2.0f };
-			glm::vec3 AttackHittBoxScale{ 0.0f };
+			float Lifetime{ 2.f };
+			glm::vec3 AttackHitboxScale{ 0.f };
 
 			bool IsPlayerWeapon{ false };
 			
 			// Special Effect / Elemental Abilities
-			float FireCriticalHitChance{ 0 };				// Fire (+ CriticalChance)
-			float EarthDamage{ 0 };							// Earth (+ Damage)
-			float WindSpeed{ 0 };							// Wind (+ Speed)
-			float WaterHealing{ 0 };						// Water (+ Heal)
+			float FireCriticalHitChance{ 0.f };				// Fire (+ CriticalChance)
+			float EarthDamage{ 0.f };						// Earth (+ Damage)
+			float WindSpeed{ 0.f };							// Wind (+ Speed)
+			int WaterHealing{ 0 };							// Water (+ Heal)
+			bool IsFullyUpgraded{ false };
 
 			// Special Attribute for Bow
 			float ProjectileSpeed{ 0.f };
@@ -740,7 +739,7 @@ namespace Frosty
 			CWeapon(WeaponType type, unsigned int level, float damage, bool isPlayerWeapon = false) : Type(type), Level(level), Damage(damage), IsPlayerWeapon(isPlayerWeapon) { }
 			CWeapon(Frosty::Weapon weapon, bool isPlayerWeapon = false) : Level(weapon.Level), Speciality(weapon.Speciality), MaxAttackRange(weapon.MaxAttackRange), MinAttackRange(weapon.MinAttackRange),
 				Damage(weapon.Damage), CriticalHit(weapon.CriticalHit), CriticalHitChance(weapon.CriticalHitChance), LVL1AttackCooldown(weapon.LVL1AttackCooldown), 
-				LVL2AttackCooldown(weapon.LVL2AttackCooldown), LVL3AttackCooldown(weapon.LVL3AttackCooldown), Lifetime(weapon.Lifetime), AttackHittBoxScale(weapon.AttackHitboxScale), IsPlayerWeapon(isPlayerWeapon), ProjectileSpeed(weapon.ProjectileSpeed)
+				LVL2AttackCooldown(weapon.LVL2AttackCooldown), LVL3AttackCooldown(weapon.LVL3AttackCooldown), Lifetime(weapon.Lifetime), AttackHitboxScale(weapon.AttackHitboxScale), IsPlayerWeapon(isPlayerWeapon), ProjectileSpeed(weapon.ProjectileSpeed)
 			{  
 				switch (weapon.Type)
 				{
@@ -776,11 +775,12 @@ namespace Frosty
 					LVL2AttackCooldownTimer = org.LVL2AttackCooldownTimer;
 					LVL3AttackCooldownTimer = org.LVL3AttackCooldownTimer;
 					Lifetime = org.Lifetime;
-					AttackHittBoxScale = org.AttackHittBoxScale;
+					AttackHitboxScale = org.AttackHitboxScale;
 					FireCriticalHitChance = org.FireCriticalHitChance;
 					EarthDamage = org.EarthDamage;
 					WindSpeed = org.WindSpeed;
 					WaterHealing = org.WaterHealing;
+					IsFullyUpgraded = org.IsFullyUpgraded;
 					ProjectileSpeed = org.ProjectileSpeed;
 				}
 
@@ -801,13 +801,13 @@ namespace Frosty
 			AttackType Type{ AttackType::Melee };
 
 			int Damage{ 10 };
-			bool Friendly{ false };			// A friendly attack effects neither the Player or the attack. 1 = friendly attack, 0 = enemy attack
+			bool Friendly{ false };						// A friendly attack effects neither the Player or the attack. 1 = friendly attack, 0 = enemy attack
 
 
 			float Lifetime{ 0.1f };
 			float LifetimeTimer{ Frosty::Time::CurrentTime() };
 
-			bool Destroyable{ true };	// Cannot be destr0yed in collision with other enemies
+			bool Destroyable{ true };					// Cannot be destroyed in collision with other enemies
 
 			CAttack() = default;
 			CAttack(AttackType type, int damage, bool friendly = false, float lifeTime = 0.1f, bool destroyable = true) : Type(type), Damage(damage), Friendly(friendly), Lifetime(lifeTime), Destroyable(destroyable) { }
@@ -842,10 +842,11 @@ namespace Frosty
 			int MoveRightKey{ FY_KEY_D };
 			int MoveBackKey{ FY_KEY_S };
 			int DashKey{ FY_KEY_LEFT_SHIFT };
-			int LVL1Attack{ FY_MOUSE_BUTTON_LEFT };
+			int LVL1Attack{ FY_MOUSE_BUTTON_RIGHT };
 			int LVL2Attack{ FY_MOUSE_BUTTON_RIGHT };
 			int LVL3Attack{ FY_KEY_SPACE };
 
+			int InteractionKey{ FY_KEY_E };
 			int HealingPotionKey{ FY_KEY_1 };
 			int SpeedPotionKey{ FY_KEY_2 };
 			int DropBaitKey{ FY_KEY_Q };
@@ -922,12 +923,14 @@ namespace Frosty
 		struct CHealth : public BaseComponent
 		{
 			static std::string NAME;
-			int MaxPossibleHealth{ 20 };							// Max health an entity can upgrade to
-			int MaxHealth{ 5 };								// Max health an entity can currently have
+
+			int MaxPossibleHealth{ 20 };						// Max health an entity can upgrade to
+			int MaxHealth{ 5 };									// Max health an entity can currently have
 			int CurrentHealth{ 5 };
 
 			CHealth() = default;
-			CHealth(int16_t health) : MaxHealth(health), CurrentHealth(health) {};
+			CHealth(int health) : MaxHealth(health), CurrentHealth(health) {};
+			CHealth(int maxHealth, int currentHealth) : MaxHealth(maxHealth), CurrentHealth(currentHealth) {};
 			CHealth(const CHealth& org) { FY_CORE_ASSERT(false, "Copy constructor in CHealth called."); }
 			CHealth& operator=(const CHealth& org)
 			{
@@ -948,22 +951,22 @@ namespace Frosty
 			static std::string NAME;
 
 			// HEALING POTION - heals consumer (temp)
-			int MaxHealingPotions{ 5 };							// Max number of healing potions
-			int CurrentHealingPotions{ 3 };						// Current number of potions in inventory
-			int Heal{ 5 };									// Heals 5 hearts
-			float HealingCooldown{ 3.f };						// Consumer can only drink Healing Potion every 3rd second
+			int MaxHealingPotions{ 5 };									// Max number of healing potions
+			int CurrentHealingPotions{ 0 };								// Current number of potions in inventory
+			int Heal{ 5 };												// Heals 5 hearts
+			float HealingCooldown{ 3.f };								// Consumer can only drink Healing Potion every 3rd second
 			float HealingTimer{ Frosty::Time::CurrentTime() };			// Timer used to check cooldown
 
 			// INCREASE HEALTH POTION - inreases max health on consumer (const)
 			int MaxIncreaseHPPotions{ 5 };
-			int CurrentIncreaseHPPotions{ 3 };
+			int CurrentIncreaseHPPotions{ 0 };
 			int IncreaseHP{ 3 };
 			float IncreaseHPCooldown{ 3.f };
 			float IncreaseHPTimer{ Frosty::Time::CurrentTime() };
 
 			// SPEED BOOSTER POTION - boosts speed during a time interval (temp)
 			int MaxSpeedPotions{ 5 };
-			int CurrentSpeedPotions{ 3 };
+			int CurrentSpeedPotions{ 0 };
 			float IncreaseSpeedTemporary{ 0.2f };
 			float SpeedCooldown{ 5.f };
 			float SpeedTimer{ Frosty::Time::CurrentTime() };
@@ -975,7 +978,7 @@ namespace Frosty
 
 			// BAIT - chunks of meat used to distract the wolf
 			int MaxBaitAmount{ 5 };
-			int CurrentBaitAmount{ 4 };
+			int CurrentBaitAmount{ 5 };
 			float BaitCooldown{ 1.f };
 			float BaitTimer{ Frosty::Time::CurrentTime() };
 
@@ -1024,10 +1027,13 @@ namespace Frosty
 		struct CHealthBar : public BaseComponent
 		{
 			static std::string NAME;
+
+			CHealthBar* Background{ nullptr };
+
 			glm::vec3 BarOffset{ 0.0f, 5.0f, 0.0f };
-			std::shared_ptr<VertexArray> Mesh;
-			std::shared_ptr<Shader> UseShader;
-			std::shared_ptr<Texture2D> Texture;
+			std::shared_ptr<VertexArray> Mesh{ nullptr };
+			std::shared_ptr<Shader> UseShader{ nullptr };
+			std::shared_ptr<Texture2D> Texture{ nullptr };
 
 			glm::vec3 Translate{ 1.0f };
 			glm::vec3 Scale{ 1.0f };
@@ -1287,6 +1293,28 @@ namespace Frosty
 			bool Hunting{ false };
 			std::vector<std::shared_ptr<Frosty::ECS::Entity>> TargetList;
 
+			enum class AbilityState { None, Leap, Charge };
+			AbilityState ActiveAbility{ AbilityState::None };
+
+			// Abilities
+			int32_t LeapDamage{ 3 };
+			float LeapChance{ 25.0f };
+			float LeapInterval{ 2.5f };
+			float LeapCooldownTime{ Frosty::Time::CurrentTime() };
+			float LeapDistance{ 35.0f };
+			//
+			int32_t ChargeDamage{ 9 };
+			float ChargeChance{ 15.0f };
+			float ChargeInterval{ 2.0f };
+			float ChargeCooldownTime{ Frosty::Time::CurrentTime() };
+			float ChargeDistance{ 25.0f };
+			float DistanceCharged{ 0.0f };
+			float ChargeLoadTime{ 1.5f };
+			float ChargeLoadCooldownTime{ 0.0f };
+			float ChargeHangTime{ 0.75f };
+			glm::vec3 ChargeTargetPosition{ 0.0f };
+
+
 			CBoss() = default;
 			CBoss(float DistractionTime) : DistractionTime(DistractionTime) { }
 			CBoss(const CBoss& org) { FY_CORE_ASSERT(false, "Copy constructor in CBoss called."); }
@@ -1305,7 +1333,6 @@ namespace Frosty
 			}
 
 			virtual std::string GetName() const { return NAME; }
-
 		};
 
 		struct CAnimController :public BaseComponent
@@ -1369,6 +1396,30 @@ namespace Frosty
 			virtual std::string GetName() const { return NAME; }
 		};
 
+		struct CWitchCircle : public BaseComponent
+		{
+			static std::string NAME;
+
+			CTransform* Enchanter{ nullptr };
+			bool Deployed{ false };
+			float WitchCircleTimer{ Frosty::Time::CurrentTime() };
+
+			CWitchCircle() = default;
+			CWitchCircle(const CWitchCircle& org) { FY_CORE_ASSERT(false, "Copy constructor in CBoss called."); }
+			CWitchCircle& operator=(const CWitchCircle& org)
+			{
+				if (this != &org)
+				{
+					Enchanter = org.Enchanter;
+					Deployed = org.Deployed;
+					WitchCircleTimer = org.WitchCircleTimer;
+				}
+				return *this;
+			}
+
+			virtual std::string GetName() const { return NAME; }
+		};
+
 		static std::string GetComponentName(size_t i)
 		{
 			switch (i)
@@ -1393,9 +1444,10 @@ namespace Frosty
 			case 17:	return "Lootable";
 			case 18:	return "DropItem";
 			case 19:	return "Boss";
-			case 20:	return "LevelExit";
-			case 21:	return "GUI";
-			case 22:	return "AnimController";
+			case 20:	return "AnimController";
+			case 21:	return "LevelExit";
+			case 22:	return "GUI";
+			case 23:	return "WitchCircle";
 			default:	return "";
 			}
 		}

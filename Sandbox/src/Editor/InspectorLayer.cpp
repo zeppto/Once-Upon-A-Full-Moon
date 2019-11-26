@@ -803,10 +803,12 @@ namespace MCS
 				}
 				if (world->HasComponent<Frosty::ECS::CEnemy>(m_SelectedEntity))
 				{
-					if (ImGui::CollapsingHeader("Player Attack"))
+					if (ImGui::CollapsingHeader("Enemy Attack"))
 					{
 						auto& comp = world->GetComponent<Frosty::ECS::CEnemy>(m_SelectedEntity);
-						ImGui::BeginChild("CPlayerAttack", ImVec2(EDITOR_INSPECTOR_WIDTH, 105), true);
+						ImGui::BeginChild("CEnemy", ImVec2(EDITOR_INSPECTOR_WIDTH, 105), true);
+						ImGui::DragFloat3("SpawnPosition", glm::value_ptr(comp.SpawnPosition), 0.0f, 0.0f, 0.0f, "%.2f");
+						ImGui::InputFloat("RunOnHealth", &comp.RunOnHealth, 1.0f, 10.0f, 0);
 						ImGui::EndChild();
 					}
 				}
@@ -1130,6 +1132,15 @@ namespace MCS
 			if (ImGui::Button("fierflisBlue", ImVec2(100.0f, EDITOR_MAIN_MENU_BAR_HEIGHT)))
 			{
 				Frosty::EventBus::GetEventBus()->Publish<Frosty::CreatEntityEvent>(Frosty::CreatEntityEvent(21));
+			}
+			if (ImGui::Button("cultist", ImVec2(100.0f, EDITOR_MAIN_MENU_BAR_HEIGHT)))
+			{
+				Frosty::EventBus::GetEventBus()->Publish<Frosty::CreatEntityEvent>(Frosty::CreatEntityEvent(22));
+			}
+			ImGui::SameLine();
+			if (ImGui::Button("wolf", ImVec2(100.0f, EDITOR_MAIN_MENU_BAR_HEIGHT)))
+			{
+				Frosty::EventBus::GetEventBus()->Publish<Frosty::CreatEntityEvent>(Frosty::CreatEntityEvent(23));
 			}
 		}
 		ImGui::End();

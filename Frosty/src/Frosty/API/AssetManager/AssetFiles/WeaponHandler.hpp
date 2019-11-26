@@ -55,7 +55,7 @@ namespace Frosty
 		bool LoadWeapons(const std::string& filePath);
 	
 		const int GetNumberOfWeapons();
-		const Weapon& GetWeaponAt(unsigned int index);
+		const Weapon& GetWeaponAt(size_t index);
 		const std::vector<Weapon>& GetAllWeapons();
 		
 		// Returns a random weapon depending on the maximim level required
@@ -66,6 +66,12 @@ namespace Frosty
 	
 		// Returns a random weapon depending on the type required
 		const Weapon& GetWeaponByType(Weapon::WeaponType type);
+
+		// Returns a random weapon depending on the type, minimum and maximum level required
+		const Weapon& GetWeaponByTypeAndLevel(Weapon::WeaponType type, unsigned int minLevel, unsigned int maxLevel);
+
+		// Returns a random weapon suitable for a player depending on minimum and maximum level required
+		const Weapon& GetAPlayerWeapon(unsigned int minLevel, unsigned int maxLevel);
 
 	private:
 		std::vector<Weapon> m_Weapons;
