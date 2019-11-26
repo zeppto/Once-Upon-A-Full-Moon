@@ -377,12 +377,20 @@ namespace MCS
 		//world->AddComponent<Frosty::ECS::CMesh>(witchCircle, Frosty::AssetManager::GetMesh("hexCircle"));
 		//auto& material = world->AddComponent<Frosty::ECS::CMaterial>(witchCircle, Frosty::AssetManager::GetShader("Texture2D"));
 		//material.DiffuseTexture = Frosty::AssetManager::GetTexture2D("mashRoomCirkel");
-		//world->AddComponent<Frosty::ECS::CPhysics>(witchCircle, Frosty::AssetManager::GetBoundingBox("hexCircle"), 0.f);
+		////world->AddComponent<Frosty::ECS::CPhysics>(witchCircle, Frosty::AssetManager::GetBoundingBox("hexCircle"), 0.f);
 		//world->AddComponent<Frosty::ECS::CWitchCircle>(witchCircle);
 		//world->AddComponent<Frosty::ECS::CHealth>(witchCircle, 200, 0);
 		//auto& barComp = world->AddComponent<Frosty::ECS::CHealthBar>(witchCircle, glm::vec3(0.0f, 20.0f, -5.0f), Frosty::AssetManager::GetMesh("UIPlane"), Frosty::AssetManager::GetShader("HealthBar"), Frosty::AssetManager::GetTexture2D("yellow"));
-		//auto& lightComp = world->AddComponent<Frosty::ECS::CLight>(witchCircle, Frosty::ECS::CLight::LightType::Point, 5.f, glm::vec3(0.1f, 1.f, 0.5f));
-		//lightComp.Radius = 5.f;
+		//auto& lightComp = world->AddComponent<Frosty::ECS::CLight>(witchCircle, Frosty::ECS::CLight::LightType::Point, 5.f, glm::vec3(0.1f, 1.f, 0.5f), 5.f);
+		//auto& particel = world->AddComponent<Frosty::ECS::CParticleSystem>(witchCircle, "ParticlesHorizontal", "particleRing", 3, glm::vec3(0.1f, 0.5f, 0.58f), 0.0f);
+		//particel.SystemEndColor = glm::vec3(0.43f, 0.145f, 0.145f);
+		//particel.StartParticleSize = 3.0f;
+		//particel.EndParticleSize = 8.0f;
+		//particel.EmitRate = 1.0;
+		//particel.EmitCount = 1;
+		//particel.FadeInTreshold = 1.915f;
+		//particel.FadeTreshold = 0.902f;
+		//particel.ParticleSystemStartPos = glm::vec3(0, 0.03f, 0);
 
 //ifdef FY_DEBUG
 	PushLayer(FY_NEW InspectorLayer());

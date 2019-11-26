@@ -21,7 +21,7 @@ namespace MCS
 	struct Level_Header
 	{
 		int NrOfEntitys = 0;
-		int NrOfComponents = 12;
+		int NrOfComponents = 13;
 	};
 
 	//Do this per nrOfEntitys and as meny times as nrOfComponents (to make older files have a higer shans of combadebilety) 
@@ -191,6 +191,12 @@ namespace MCS
 		//int ExitDirection = 0;
 	};
 
+	//12 = WitchCircle
+	struct Level_WitchCircle
+	{
+		//emty
+	};
+
 	//n = name
 	//struct Level_
 	//{
@@ -213,6 +219,8 @@ namespace MCS
 		Level_ParticleSystem myParticleSystem;
 		Level_LevelExit myLevelExit;
 		Level_DropItem myDropItem;
+		Level_WitchCircle myWitchCircle;
+
 
 	};
 
