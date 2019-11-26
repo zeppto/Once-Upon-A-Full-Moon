@@ -1,11 +1,12 @@
 #ifndef GRID_HPP
 #define GRID_HPP
 
-#include"Frosty/Core/ECS.hpp"
-#include"Frosty/Core/World.hpp"
 
 namespace Frosty
 {
+	class World;
+	namespace ECS { struct CTransform; }
+
 	struct CellNode
 	{
 		glm::vec3 WorldPosition{ 0.0f };
@@ -21,7 +22,7 @@ namespace Frosty
 
 
 		// TEMPORARY FOR DEBUGGING
-		ECS::EntityID CellEntityID{ 0 };
+		size_t CellEntityID{ 0 };
 
 		inline CellNode() {};
 		inline CellNode(const glm::vec3& worldPos, bool walkable, int32_t gridX, int32_t gridY) : WorldPosition(worldPos), Walkable(walkable), GridX(gridX), GridY(gridY) { }

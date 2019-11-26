@@ -10,6 +10,7 @@
 #include "Frosty/RenderEngine/Texture.hpp"
 #include "AssetFiles/TrueTypeFile.hpp"
 #include"AssetFiles/WeaponHandler.hpp"
+#include "AssetFiles/Grid.hpp"
 
 
 
@@ -30,11 +31,9 @@
 #define MAT_NAME "Mat_" //(followed by a number)
 #define MAT_NAME_FOLLOW ":"
 
-class Grid;
 
 namespace Frosty
 {
-
 
 	enum FileType
 	{
