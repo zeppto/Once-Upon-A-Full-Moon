@@ -65,10 +65,21 @@ namespace MCS
 				//if (m_Materials[i]->UseShader->GetName() == "BlendShader" && m_Materials[i]->BlendTexture1) m_Materials[i]->BlendTexture1->Bind(4);
 				//if (m_Materials[i]->UseShader->GetName() == "BlendShader" && m_Materials[i]->BlendTexture2) m_Materials[i]->BlendTexture2->Bind(5);
 
+<<<<<<< HEAD
 				//if (m_Materials[i]->UseShader->GetName() == "Animation")
 				//{
 				//	Frosty::Renderer::AnimSubmit(m_Materials[i], m_Meshes[i]->Mesh, m_Transform[i]->ModelMatrix, m_Anims[i]);
 				//}
+=======
+				if (m_Materials[i]->UseShader->GetName() == "Animation")
+				{
+					Frosty::Renderer::AnimSubmit(m_Materials[i], m_Meshes[i]->Mesh, m_Transform[i]->ModelMatrix, m_Anims[i]);
+				}
+				else if (m_Materials[i]->UseShader->GetName() == "HealthBar")
+				{
+					Frosty::Renderer::SubmitHealthBar(m_Materials[i]->UseShader, m_Meshes[i]->Mesh, m_Transform[i]->Position, m_Transform[i]->Scale, glm::vec3(0.f, 0.f, 0.f));
+				}
+>>>>>>> WeedBranch
 
 		/*		if (m_Materials[i]->UseShader->GetName() == "Animation" && m_Materials[i]->DiffuseTexture) m_Materials[i]->DiffuseTexture->Unbind();
 				if (m_Materials[i]->UseShader->GetName() == "Animation" && m_Materials[i]->NormalTexture) m_Materials[i]->NormalTexture->Unbind();

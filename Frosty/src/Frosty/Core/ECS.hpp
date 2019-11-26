@@ -862,6 +862,7 @@ namespace Frosty
 			float BaitTimer{ Frosty::Time::CurrentTime() };
 
 			// WOLFSBANE - poisonous flower, used as currency
+			int MaxWolfsbaneAmount{ 10 };
 			int CurrentWolfsbane{ 0 };
 
 			CInventory() = default;
@@ -1024,14 +1025,18 @@ namespace Frosty
 			static std::string NAME;
 			enum class LootType
 			{
-				HealingPotion, IncHealthPotion, SpeedPotion, SpeedBoot,
-				Sword1, Sword2, Sword3,
-				Bow1, Bow2, Bow3
+				HealingPotion, IncHealthPotion, SpeedPotion, SpeedBoots, Wolfsbane, Bait, Weapon
 			};
+			enum class WeaponType
+			{
+				None, Sword1, Sword2, Sword3, Bow1, Bow2, Bow3
+			};
+
 			LootType Type{ LootType::HealingPotion };
+			WeaponType Weapon{ WeaponType::None };
 
 			CLootable() = default;
-			CLootable(LootType type) : Type(type) {}
+			CLootable(LootType type, WeaponType weapon = WeaponType::None) : Type(type), Weapon(weapon) {}
 			CLootable(const CLootable& org) { FY_CORE_ASSERT(false, "Copy constructor in CLootable called."); }
 
 			virtual std::string GetName() const { return NAME; }

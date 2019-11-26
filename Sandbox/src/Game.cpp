@@ -114,7 +114,6 @@ namespace MCS
 			weaponMat.NormalTexture = Frosty::AssetManager::GetTexture2D("sword_normal");
 		}
 
-
 		// PLAYER
 		auto& player = world->CreateEntity({ -104.0f, 0.0f, -15.4f }, { 0.0f, 0.0f, 0.0f }, { 2.0f, 2.0f, 2.0f });
 		auto& playerTransform = world->GetComponent<Frosty::ECS::CTransform>(player);
