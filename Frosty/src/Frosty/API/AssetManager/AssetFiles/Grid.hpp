@@ -23,8 +23,7 @@ namespace Frosty
 		// TEMPORARY FOR DEBUGGING
 		ECS::EntityID CellEntityID{ 0 };
 
-		inline CellNode() {};
-		inline CellNode(const glm::vec3& worldPos, bool walkable, int32_t gridX, int32_t gridY) : WorldPosition(worldPos), Walkable(walkable), GridX(gridX), GridY(gridY) { }
+		CellNode(const glm::vec3& worldPos, bool walkable, int32_t gridX, int32_t gridY) : WorldPosition(worldPos), Walkable(walkable), GridX(gridX), GridY(gridY) { }
 		
 		// Operators
 		bool operator==(const CellNode& obj) const { return obj.GridX == GridX && obj.GridY == GridY; }
@@ -59,18 +58,6 @@ namespace Frosty
 		void DrawSeekerCell(Frosty::ECS::CTransform* transform);
 		void DrawPathCells(const std::vector<CellNode*> path);
 
-
-
-		void SaveFile(const std::string FileName);
-		void LoadFile(const std::string FilePath);
-		inline void LoadFile() {
-			if (m_FilePath != "") { LoadFile(m_FilePath); }
-			else { FY_CORE_ASSERT(0, "Grid does not have a filepath!"); }
-		}
-
-		inline void SetFileName(const std::string& FileName) { m_FileName = FileName; }
-		inline void SetFilePath(const std::string& FilePath) { m_FilePath = FilePath; }
-
 	private:
 		void CreateGrid();
 		bool CheckCollision(const glm::vec3& worldPoint, float radius) const;
@@ -83,9 +70,6 @@ namespace Frosty
 
 		std::vector<CellNode> m_CellNodes;
 		std::vector<CellNode*> m_DynamicOccupiedNodes;
-
-		std::string m_FileName{ "" };
-		std::string m_FilePath{ "" };
 
 		// TEMPORARY FOR DEUGGING
 		bool m_DrawGizmos{ false };
