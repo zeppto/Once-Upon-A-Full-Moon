@@ -111,13 +111,6 @@ namespace MCS
 		//auto& lightComp = world->AddComponent<Frosty::ECS::CLight>(witchCircle, Frosty::ECS::CLight::LightType::Point, 5.f, glm::vec3(0.1f, 1.f, 0.5f));
 		//lightComp.Radius = 5.f;
 
-		//Particle System Test
-		auto& ParticleSystem1 = world->CreateEntity();
-		auto& particleSystem1Transform = world->GetComponent<Frosty::ECS::CTransform>(ParticleSystem1);
-		auto& particleSystemComp = world->AddComponent<Frosty::ECS::CParticleSystem>(ParticleSystem1, "ParticlesHorizontal", "particle", 50, glm::vec3(0.8f, 0.3f, 1.0f), 0.0f, 2.0f);
-		//particleSystemComp.ParticleSystemDirection = glm::vec3(1.0f, 0.0f, 0.0f);
-		particleSystemComp.RandomDirection = true;
-
 //ifdef FY_DEBUG
 	PushLayer(FY_NEW InspectorLayer());
 //else
