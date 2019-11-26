@@ -353,23 +353,23 @@ namespace MCS
 
 
 		// ENEMY A
-		//auto& enemyA = world->CreateEntity({ -45.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 2.0f, 2.0f, 2.0f });
-		//world->AddComponent<Frosty::ECS::CAnimController>(enemyA).currAnim = Frosty::AssetManager::GetAnimation("Werewolf_Run");
-		//auto& enemyMatA = world->AddComponent<Frosty::ECS::CMaterial>(enemyA, Frosty::AssetManager::GetShader("Animation"));
-		//enemyMatA.DiffuseTexture = Frosty::AssetManager::GetTexture2D("Werewolf_Diffuse");
-		//enemyMatA.NormalTexture = Frosty::AssetManager::GetTexture2D("Werewolf_defaultMat_Normal");
-		//world->AddComponent<Frosty::ECS::CPhysics>(enemyA, Frosty::AssetManager::GetBoundingBox("Werewolf"), 6.0f);
-		//world->AddComponent<Frosty::ECS::CMesh>(enemyA, Frosty::AssetManager::GetMesh("Werewolf"));
-		////enemyMatA.DiffuseTexture = Frosty::AssetManager::GetTexture2D("Cult_Diffuse");
-		////enemyMatA.NormalTexture = Frosty::AssetManager::GetTexture2D("Cult_defaultMat_Normal");
-		////world->AddComponent<Frosty::ECS::CPhysics>(enemyA, Frosty::AssetManager::GetBoundingBox("Cult:Group43567"), 6.0f);
-		////world->AddComponent<Frosty::ECS::CMesh>(enemyA, Frosty::AssetManager::GetMesh("Cult:Group43567"));
-		//auto& enemyComp = world->AddComponent<Frosty::ECS::CEnemy>(enemyA, &playerTransform, &enemyWeaponCompA);
-		//enemyComp.SpawnPosition = { -45.0f, 0.0f, 0.0f };
-		//world->AddComponent<Frosty::ECS::CHealth>(enemyA, 10);
-		//world->AddComponent<Frosty::ECS::CHealthBar>(enemyA, glm::vec3(0.0f, 10.0f, 0.0f));
-		//world->AddComponent<Frosty::ECS::CDropItem>(enemyA);
-		//auto& bossComp = world->AddComponent<Frosty::ECS::CBoss>(enemyA, 3.0f);
+		auto& enemyA = world->CreateEntity({ -45.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 2.0f, 2.0f, 2.0f });
+		world->AddComponent<Frosty::ECS::CAnimController>(enemyA).currAnim = Frosty::AssetManager::GetAnimation("Werewolf_Run");
+		auto& enemyMatA = world->AddComponent<Frosty::ECS::CMaterial>(enemyA, Frosty::AssetManager::GetShader("Animation"));
+		enemyMatA.DiffuseTexture = Frosty::AssetManager::GetTexture2D("Werewolf_Diffuse");
+		enemyMatA.NormalTexture = Frosty::AssetManager::GetTexture2D("Werewolf_defaultMat_Normal");
+		world->AddComponent<Frosty::ECS::CPhysics>(enemyA, Frosty::AssetManager::GetBoundingBox("Werewolf"), 6.0f);
+		world->AddComponent<Frosty::ECS::CMesh>(enemyA, Frosty::AssetManager::GetMesh("Werewolf"));
+		//enemyMatA.DiffuseTexture = Frosty::AssetManager::GetTexture2D("Cult_Diffuse");
+		//enemyMatA.NormalTexture = Frosty::AssetManager::GetTexture2D("Cult_defaultMat_Normal");
+		//world->AddComponent<Frosty::ECS::CPhysics>(enemyA, Frosty::AssetManager::GetBoundingBox("Cult:Group43567"), 6.0f);
+		//world->AddComponent<Frosty::ECS::CMesh>(enemyA, Frosty::AssetManager::GetMesh("Cult:Group43567"));
+		auto& enemyComp = world->AddComponent<Frosty::ECS::CEnemy>(enemyA, &playerTransform, &enemyWeaponCompA);
+		enemyComp.SpawnPosition = { -45.0f, 0.0f, 0.0f };
+		world->AddComponent<Frosty::ECS::CHealth>(enemyA, 10);
+		world->AddComponent<Frosty::ECS::CHealthBar>(enemyA, glm::vec3(0.0f, 10.0f, 0.0f));
+		world->AddComponent<Frosty::ECS::CDropItem>(enemyA);
+		auto& bossComp = world->AddComponent<Frosty::ECS::CBoss>(enemyA, 3.0f);
 
 //		// ENEMY WEAPON 
 //		auto& enemyWeaponA = world->CreateEntity({ 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 1.0f, 1.0f, 1.0f });

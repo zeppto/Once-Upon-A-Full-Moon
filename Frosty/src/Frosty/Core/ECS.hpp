@@ -1092,7 +1092,7 @@ namespace Frosty
 			static std::string NAME;
 
 			bool isSliderControlled{ false };
-			float animSpeed{ 0.0f };
+			float animSpeed{ 1.0f };
 			Animation* currAnim{ nullptr };
 			float dt{ 0.0f };
 			glm::mat4* holdPtr{ nullptr };
