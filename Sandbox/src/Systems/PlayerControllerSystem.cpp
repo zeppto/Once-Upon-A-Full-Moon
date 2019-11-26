@@ -980,7 +980,7 @@ namespace MCS
 					// If healing won't exceed health capacity --> directly add heal value to health
 					if (weaponComp.WaterHealing <= (m_Health[i]->MaxHealth - m_Health[i]->CurrentHealth))
 					{
-						m_Health[i]->CurrentHealth += m_Inventory[i]->Heal;
+						m_Health[i]->CurrentHealth += weaponComp.WaterHealing;
 					}
 					// But if healing exceeds health capacity --> max health achieved
 					else
