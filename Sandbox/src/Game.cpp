@@ -63,6 +63,16 @@ namespace MCS
 		world->Awake();
 		particleSystem->AttachGameCamera(&world->GetComponent<Frosty::ECS::CTransform>(world->GetSceneCamera()));
 
+		//Blendmap working
+		//auto& blendTest = world->CreateEntity({ 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 300.0f, 1.0f, 300.0f });
+		//world->AddComponent<Frosty::ECS::CMesh>(blendTest, Frosty::AssetManager::GetMesh("pPlane1"));
+		//auto& blendShaderComp = world->AddComponent<Frosty::ECS::CMaterial>(blendTest, Frosty::AssetManager::GetShader("BlendShader"));
+		//blendShaderComp.BlendMapTexture = Frosty::AssetManager::GetTexture2D("blend_road_cross");
+		//blendShaderComp.DiffuseTexture = Frosty::AssetManager::GetTexture2D("ground_test2");
+		//blendShaderComp.BlendTexture1 = Frosty::AssetManager::GetTexture2D("road_test2"); //Red channel
+		//blendShaderComp.BlendTexture2 = blendShaderComp.DiffuseTexture; //Green channel
+		//blendShaderComp.NormalTexture = Frosty::AssetManager::GetTexture2D("ground_test_normal");
+
 		// SCENE 1
 		// PLANE
 		auto& plane = world->CreateEntity({ 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 200.0f, 1.0f, 100.0f }, true);
@@ -243,10 +253,10 @@ namespace MCS
 
 		if (weaponComp.Type == Frosty::ECS::CWeapon::WeaponType::Bow)
 		{
-			uiLayout.AddSprite(glm::vec2(55.0f, 75.0f), glm::vec2(1, 1), "attackRange", glm::vec4(1.0f));// 1
-			uiLayout.AddSprite(glm::vec2(130, 50.0f), attackScale, "attackRange1", glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));// 2
-			uiLayout.AddSprite(glm::vec2(105, 110.0f), attackScale, "attackRange2", glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));// 3
-			uiLayout.AddSprite(glm::vec2(50.0f, 140.0f), attackScale, "attackRange3", glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));// 4
+			uiLayout.AddSprite(glm::vec2(55.0f, 75.0f), glm::vec2(1, 1), "attackRanged", glm::vec4(1.0f));// 1
+			uiLayout.AddSprite(glm::vec2(130, 50.0f), attackScale, "attackRanged1", glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));// 2
+			uiLayout.AddSprite(glm::vec2(105, 110.0f), attackScale, "attackRanged2", glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));// 3
+			uiLayout.AddSprite(glm::vec2(50.0f, 140.0f), attackScale, "attackRanged3", glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));// 4
 
 		}
 		else
@@ -383,7 +393,7 @@ namespace MCS
 		auto& enemyMatA = world->AddComponent<Frosty::ECS::CMaterial>(enemyA, Frosty::AssetManager::GetShader("Animation"));
 		enemyMatA.DiffuseTexture = Frosty::AssetManager::GetTexture2D("Wolf_Diffuse");
 		enemyMatA.NormalTexture = Frosty::AssetManager::GetTexture2D("wolf_defaultMat_Normal");
-		world->AddComponent<Frosty::ECS::CPhysics>(enemyA, Frosty::AssetManager::GetBoundingBox("Wolf"), 6.0f);
+		world->AddComponent<Frosty::ECS::CPhysics>(enemyA, Frosty::AssetManager::GetBoundingBox("Wolf"), 0.0f);
 		auto& enemyComp = world->AddComponent<Frosty::ECS::CEnemy>(enemyA, &playerTransform, &enemyWeaponCompA, 0.1f);
 		enemyComp.SpawnPosition = { -45.0f, 0.0f, 0.0f };
 		world->AddComponent<Frosty::ECS::CHealth>(enemyA, 10);
@@ -419,28 +429,26 @@ namespace MCS
 		//particleSystemComp2.EndParticleSize = 2.0f;
 		//particleSystem->ChangeParticlesStartColor(particleSystemComp2, glm::vec3(1.0, 1.0, 1.0)); //This function is fine if you need to change color after initialization
 
-		//Blendmap working
-		//auto& blendTest = world->CreateEntity({ 0.0f, 1.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, {300.0f, 1.0f, 300.0f});
-		//world->AddComponent<Frosty::ECS::CMesh>(blendTest, Frosty::AssetManager::GetMesh("pPlane1"));
-		//auto& blendShaderComp = world->AddComponent<Frosty::ECS::CMaterial>(blendTest, Frosty::AssetManager::GetShader("BlendShader"));
-		//blendShaderComp.BlendMapTexture = Frosty::AssetManager::GetTexture2D("blend_road_cross");
-		//blendShaderComp.DiffuseTexture = Frosty::AssetManager::GetTexture2D("ground_test2");
-		//blendShaderComp.BlendTexture1 = Frosty::AssetManager::GetTexture2D("road_test2"); //Red channel
-		//blendShaderComp.BlendTexture2 = blendShaderComp.DiffuseTexture; //Green channel
-		//blendShaderComp.NormalTexture = Frosty::AssetManager::GetTexture2D("ground_test_normal");
-
 		//			FOR EMMMA			//
 		//// WITCH CIRCLE
 		//auto& witchCircle = world->CreateEntity({ -80.0f, 0.1f, -15.4f }, { 0.0f, 0.0f, 0.0f }, { 2.0f, 2.0f, 2.0f });
 		//world->AddComponent<Frosty::ECS::CMesh>(witchCircle, Frosty::AssetManager::GetMesh("hexCircle"));
 		//auto& material = world->AddComponent<Frosty::ECS::CMaterial>(witchCircle, Frosty::AssetManager::GetShader("Texture2D"));
 		//material.DiffuseTexture = Frosty::AssetManager::GetTexture2D("mashRoomCirkel");
-		//world->AddComponent<Frosty::ECS::CPhysics>(witchCircle, Frosty::AssetManager::GetBoundingBox("hexCircle"), 0.f);
+		////world->AddComponent<Frosty::ECS::CPhysics>(witchCircle, Frosty::AssetManager::GetBoundingBox("hexCircle"), 0.f);
 		//world->AddComponent<Frosty::ECS::CWitchCircle>(witchCircle);
 		//world->AddComponent<Frosty::ECS::CHealth>(witchCircle, 200, 0);
 		//auto& barComp = world->AddComponent<Frosty::ECS::CHealthBar>(witchCircle, glm::vec3(0.0f, 20.0f, -5.0f), Frosty::AssetManager::GetMesh("UIPlane"), Frosty::AssetManager::GetShader("HealthBar"), Frosty::AssetManager::GetTexture2D("yellow"));
-		//auto& lightComp = world->AddComponent<Frosty::ECS::CLight>(witchCircle, Frosty::ECS::CLight::LightType::Point, 5.f, glm::vec3(0.1f, 1.f, 0.5f));
-		//lightComp.Radius = 5.f;
+		//auto& lightComp = world->AddComponent<Frosty::ECS::CLight>(witchCircle, Frosty::ECS::CLight::LightType::Point, 5.f, glm::vec3(0.1f, 1.f, 0.5f), 5.f);
+		//auto& particel = world->AddComponent<Frosty::ECS::CParticleSystem>(witchCircle, "ParticlesHorizontal", "particleRing", 3, glm::vec3(0.1f, 0.5f, 0.58f), 0.0f);
+		//particel.SystemEndColor = glm::vec3(0.43f, 0.145f, 0.145f);
+		//particel.StartParticleSize = 3.0f;
+		//particel.EndParticleSize = 8.0f;
+		//particel.EmitRate = 1.0;
+		//particel.EmitCount = 1;
+		//particel.FadeInTreshold = 1.915f;
+		//particel.FadeTreshold = 0.902f;
+		//particel.ParticleSystemStartPos = glm::vec3(0, 0.03f, 0);
 
 //ifdef FY_DEBUG
 		PushLayer(FY_NEW InspectorLayer());

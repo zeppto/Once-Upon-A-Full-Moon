@@ -206,6 +206,22 @@ namespace MCS
 			}
 			else
 				myComponents.MyComponents.at(11).HaveComponent = false;
+			//WitchCircle
+			if (m_World->HasComponent<Frosty::ECS::CWitchCircle>(entity))
+			{
+				myComponents.MyComponents.at(12).HaveComponent = true;
+				m_World->GetComponent<Frosty::ECS::CWitchCircle>(entity);
+			}
+			else
+				myComponents.MyComponents.at(12).HaveComponent = false;
+			//AnimController
+			if (m_World->HasComponent<Frosty::ECS::CAnimController>(entity))
+			{
+				myComponents.MyComponents.at(13).HaveComponent = true;
+				m_World->GetComponent<Frosty::ECS::CAnimController>(entity);
+			}
+			else
+				myComponents.MyComponents.at(13).HaveComponent = false;
 			m_Entitys.myEntitys.push_back(myComponents);
 		}
 	}
@@ -279,9 +295,16 @@ namespace MCS
 					case 10:
 						myFile.write((const char*)& m_Entitys.myEntitys.at(i).myLevelExit, sizeof(Level_LevelExit));
 						break;
-						//10 = LevelExit
+						//11 = DropItem
 					case 11:
 						myFile.write((const char*)& m_Entitys.myEntitys.at(i).myDropItem, sizeof(Level_DropItem));
+						break;
+						//12 = WitchCircle
+					case 12:
+						myFile.write((const char*)& m_Entitys.myEntitys.at(i).myWitchCircle, sizeof(Level_WitchCircle));
+						break;
+					case 13:
+						myFile.write((const char*)& m_Entitys.myEntitys.at(i).myAnimController, sizeof(Level_AnimController));
 						break;
 					default:
 						break;
@@ -395,6 +418,11 @@ namespace MCS
 					if (fileEntitys.myEntitys.at(i).MyComponents.at(1).HaveComponent)
 					{
 						existingFile.read((char*)& fileEntitys.myEntitys.at(i).myMesh, sizeof(Level_Mesh));
+						std::string meshName = fileEntitys.myEntitys.at(i).myMesh.MeshName;
+						//if (meshName.find("tiledGround") != std::string::npos)
+						//{
+						//	strcpy_s(fileEntitys.myEntitys.at(i).myMesh.MeshName, "pPlane1");
+						//}
 						//for in game
 						//if(!fileEntitys.myEntitys.at(i).MyComponents.at(10).HaveComponent)
 						m_World->AddComponent<Frosty::ECS::CMesh>(entity,
@@ -431,6 +459,15 @@ namespace MCS
 
 						//if (fileEntitys.myEntitys.at(i).MyComponents.at(6).HaveComponent)
 						//{
+						//	std::string meshName = fileEntitys.myEntitys.at(i).myMesh.MeshName;
+						//	if (meshName.find("Wolf") != std::string::npos)
+						//	{
+						//		m_World->AddComponent<Frosty::ECS::CAnimController>(entity).currAnim = Frosty::AssetManager::GetAnimation("Wolf_Idle");
+						//	}
+						//	else if (meshName.find("Cultist") != std::string::npos)
+						//	{
+						//		m_World->AddComponent<Frosty::ECS::CAnimController>(entity).currAnim = Frosty::AssetManager::GetAnimation("Cultist_Idle");
+						//	}
 						//	strcpy_s(fileEntitys.myEntitys.at(i).myMaterial.UseShaderName, "Animation");
 						//}
 
@@ -476,8 +513,8 @@ namespace MCS
 					//5 = Physics
 					if (fileEntitys.myEntitys.at(i).MyComponents.at(5).HaveComponent)
 					{
-						physCounter++;
 						existingFile.read((char*)& fileEntitys.myEntitys.at(i).myPhysics, sizeof(Level_Physics));
+						physCounter++;
 						auto& physics = m_World->AddComponent<Frosty::ECS::CPhysics>(entity);
 						if (fileEntitys.myEntitys.at(i).MyComponents.at(1).HaveComponent)
 							physics.BoundingBox = Frosty::AssetManager::GetBoundingBox(fileEntitys.myEntitys.at(i).myMesh.MeshName);
@@ -633,6 +670,31 @@ namespace MCS
 						m_World->AddComponent<Frosty::ECS::CDropItem>(entity);
 						m_Enemys.push_back(entity);
 					}
+					//12 = WitchCircle
+					if (fileEntitys.myEntitys.at(i).MyComponents.at(12).HaveComponent)
+					{
+						existingFile.read((char*)& fileEntitys.myEntitys.at(i).myWitchCircle, sizeof(Level_WitchCircle));
+						m_World->AddComponent<Frosty::ECS::CWitchCircle>(entity);
+					}
+					//13 = AnimController
+					if (fileEntitys.myEntitys.at(i).MyComponents.at(13).HaveComponent)
+					{
+						existingFile.read((char*)& fileEntitys.myEntitys.at(i).myWitchCircle, sizeof(Level_AnimController));
+						std::string meshName = fileEntitys.myEntitys.at(i).myMesh.MeshName;
+						if (meshName.find("Wolf") != std::string::npos)
+						{
+							m_World->AddComponent<Frosty::ECS::CAnimController>(entity).currAnim = Frosty::AssetManager::GetAnimation("Wolf_Idle");
+						}
+						else if (meshName.find("Cultist") != std::string::npos)
+						{
+							m_World->AddComponent<Frosty::ECS::CAnimController>(entity).currAnim = Frosty::AssetManager::GetAnimation("Cultist_Idle");
+						}
+						else
+						{
+
+							m_World->AddComponent<Frosty::ECS::CAnimController>(entity);
+						}
+					}
 				}
 			}
 
@@ -712,6 +774,7 @@ namespace MCS
 
 		if (existingFile.good())
 		{
+
 			existingFile.read((char*)& testHeder, sizeof(Level_Header));
 			fileEntitys.myEntitys.resize(testHeder.NrOfEntitys);
 			for (int i = 0; i < testHeder.NrOfEntitys; i++)
@@ -721,8 +784,8 @@ namespace MCS
 				std::vector<std::string> AddedMeshes;
 				std::unordered_map<std::string, Frosty::VABatch> TestMap;
 
-				fileEntitys.myEntitys.at(i).MyComponents.resize(testHeder.NrOfComponents);
-				for (int j = 0; j < m_Header.NrOfComponents; j++)
+				fileEntitys.myEntitys.at(i).MyComponents.resize(m_Header.NrOfComponents);
+				for (int j = 0; j < testHeder.NrOfComponents; j++)
 				{
 					existingFile.read((char*)& fileEntitys.myEntitys.at(i).MyComponents.at(j).HaveComponent, sizeof(bool));
 				}
@@ -800,6 +863,18 @@ namespace MCS
 				if (fileEntitys.myEntitys.at(i).MyComponents.at(11).HaveComponent)
 				{
 					existingFile.read((char*)& fileEntitys.myEntitys.at(i).myDropItem, sizeof(Level_DropItem));
+
+				}
+				//12 = WitchCircle
+				if (fileEntitys.myEntitys.at(i).MyComponents.at(12).HaveComponent)
+				{
+					existingFile.read((char*)& fileEntitys.myEntitys.at(i).myWitchCircle, sizeof(Level_WitchCircle));
+
+				}
+				//13 = AnimController
+				if (fileEntitys.myEntitys.at(i).MyComponents.at(13).HaveComponent)
+				{
+					existingFile.read((char*)& fileEntitys.myEntitys.at(i).myAnimController, sizeof(Level_AnimController));
 
 				}
 			}

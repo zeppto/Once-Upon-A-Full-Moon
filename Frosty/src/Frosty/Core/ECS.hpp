@@ -762,7 +762,7 @@ namespace Frosty
 			int MoveRightKey{ FY_KEY_D };
 			int MoveBackKey{ FY_KEY_S };
 			int DashKey{ FY_KEY_LEFT_SHIFT };
-			int LVL1Attack{ FY_MOUSE_BUTTON_LEFT };
+			int LVL1Attack{ FY_MOUSE_BUTTON_RIGHT };
 			int LVL2Attack{ FY_MOUSE_BUTTON_RIGHT };
 			int LVL3Attack{ FY_KEY_SPACE };
 
@@ -1015,15 +1015,6 @@ namespace Frosty
 				}
 			}
 			CParticleSystem(const CParticleSystem& org) { FY_CORE_ASSERT(false, "Copy constructor in CParticleSystem called."); }
-
-			//void Init() //For utility reasons. Actually all vital data should just be in the constructor
-			//{
-
-			//	for ()
-			//	{
-
-			//	}
-			//}
 
 			virtual std::string GetName() const { return NAME; }
 		};

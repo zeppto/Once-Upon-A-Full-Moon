@@ -247,6 +247,7 @@ namespace MCS
 						ImGui::BeginChild("CMesh", ImVec2(EDITOR_INSPECTOR_WIDTH, 35), true);
 						if (ImGui::Button("Select mesh.."))
 							ImGui::OpenPopup("Mesh selector");
+						ImGui::SetNextWindowSize(ImVec2(160, 370));
 						if (ImGui::BeginPopupModal("Mesh selector", NULL, ImGuiWindowFlags_MenuBar))
 						{
 							//auto& meshes = Frosty::AssetManager::GetMeshes();
@@ -664,6 +665,11 @@ namespace MCS
 							}
 							ImGui::SameLine();
 							ImGui::Text("Normal");
+						}
+
+						if (comp.HasTransparency)
+						{
+							ImGui::Text("Has transparency");
 						}
 
 						// Add more parameters like texture etc
