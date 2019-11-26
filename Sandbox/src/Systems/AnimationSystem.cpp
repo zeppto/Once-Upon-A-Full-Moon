@@ -200,6 +200,36 @@ void MCS::AnimationSystem::RemoveEntity(const std::shared_ptr<Frosty::ECS::Entit
 
 void MCS::AnimationSystem::UpdateEntityComponent(const std::shared_ptr<Frosty::ECS::Entity>& entity)
 {
+	auto& it = p_EntityMap.find(entity);
+
+	if (it != p_EntityMap.end())
+	{
+		auto& world = Frosty::Application::Get().GetWorld();
+		Frosty::ECS::CTransform* transformPtr = world->GetComponentAddress<Frosty::ECS::CTransform>(entity);
+		Frosty::ECS::CAnimController* animPtr = world->GetComponentAddress<Frosty::ECS::CAnimController>(entity);
+
+		m_Transform[it->second] = transformPtr;
+		m_AControllers[it->second] = animPtr;
+	}
+}
+
+void MCS::AnimationSystem::Render()
+{
+	for (size_t i = 1; i < p_Total; i++)
+	{
+		auto& mesh = m_World->GetComponent<Frosty::ECS::CMesh>(m_Transform[i]->EntityPtr).Mesh;
+		auto& material = m_World->GetComponent<Frosty::ECS::CMaterial>(m_Transform[i]->EntityPtr);
+
+		material.DiffuseTexture->Bind(0);
+		material.NormalTexture->Bind(1);
+	/*	material.SpecularTexture->Bind(2);*/
+
+		Frosty::Renderer::AnimSubmit(&material, mesh, m_Transform[i]->ModelMatrix, m_AControllers[i]);
+
+		material.DiffuseTexture->Unbind();
+		material.NormalTexture->Unbind();
+		//material.SpecularTexture->Unbind();
+	}
 }
 
 std::string MCS::AnimationSystem::GetInfo() const
@@ -376,9 +406,9 @@ void MCS::AnimationSystem::UpdateAnimOffset(Frosty::ECS::CAnimController* ctrl)
 	else
 	{
 		//Is cultist
-		auto& wEntity = m_World->GetComponent<Frosty::ECS::CEnemy>(ctrl->EntityPtr).Weapon->EntityPtr;
+		/*auto& wEntity = m_World->GetComponent<Frosty::ECS::CEnemy>(ctrl->EntityPtr).Weapon->EntityPtr;
 
 		m_World->GetComponent<Frosty::ECS::CMesh>(wEntity).animOffset = ctrl->currAnim->getHoldingJoint();
-		Frosty::Renderer::UpdateCMesh(wEntity->Id, &m_World->GetComponent<Frosty::ECS::CMesh>(wEntity));
+		Frosty::Renderer::UpdateCMesh(wEntity->Id, &m_World->GetComponent<Frosty::ECS::CMesh>(wEntity));*/
 	}
 }

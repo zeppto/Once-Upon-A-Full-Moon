@@ -82,6 +82,9 @@ namespace MCS
 		case Frosty::EventType::HealAbility:
 			OnHealAbilityEvent();
 			break;
+		case Frosty::EventType::PlayerDamage:
+			OnDamage();
+			break;
 		default:
 			break;
 		}
@@ -769,12 +772,12 @@ namespace MCS
 			}
 			else if (type == Frosty::ECS::CLootable::LootType::IncHealthPotion)
 			{
-				if (m_Inventory[i]->CurrentIncreaseHPPotions < m_Inventory[i]->MaxIncreaseHPPotions)
+				if (m_Inventory[i]->CurrentIncreaseHPPotions < m_Inventory[i]->MaxIncreaseHPPotions && m_Health[i]->MaxHealth < m_Health[i]->MaxPossibleHealth)
 				{
-					m_Health[i]->MaxHealth += 3;
-					SetPickUpText(i, "Health Increased");
+					m_Health[i]->MaxHealth += m_Inventory[i]->IncreaseHP;
+					SetPickUpText(i, "Max Health Increased");
 
-					FY_INFO("Health Increased");
+					FY_INFO("Max Health Increased");
 					//FY_INFO("{0} / {1}", m_Inventory[i]->CurrentIncreaseHPPotions, m_Inventory[i]->MaxIncreaseHPPotions);
 					if (!world->HasComponent<Frosty::ECS::CDestroy>(e.GetEntity()))
 					{
@@ -783,7 +786,7 @@ namespace MCS
 				}
 				else
 				{
-					SetPickUpText(i, "Can't Pick Up Health Increaser");
+					SetPickUpText(i, "Can't Pick Up Max Health Increaser");
 				}
 			}
 			else if (type == Frosty::ECS::CLootable::LootType::SpeedPotion)
@@ -811,6 +814,7 @@ namespace MCS
 				{
 					if (m_Inventory[i]->IncreaseSpeed <= (m_Physics[i]->MaxSpeed - m_Physics[i]->Speed))
 					{
+						m_Inventory[i]->CurrentSpeedBoots++;
 						m_Physics[i]->Speed += m_Inventory[i]->IncreaseSpeed;
 						SetPickUpText(i, "Speed Increased");
 					}
@@ -931,7 +935,7 @@ namespace MCS
 				elements.emplace_back(3);
 
 			int randomElement = rand() % int(elements.size());
-			
+
 			// Upgrade according to randomized value
 			switch (elements[randomElement])
 			{
@@ -976,7 +980,7 @@ namespace MCS
 					// If healing won't exceed health capacity --> directly add heal value to health
 					if (weaponComp.WaterHealing <= (m_Health[i]->MaxHealth - m_Health[i]->CurrentHealth))
 					{
-						m_Health[i]->CurrentHealth += m_Inventory[i]->Heal;
+						m_Health[i]->CurrentHealth += weaponComp.WaterHealing;
 					}
 					// But if healing exceeds health capacity --> max health achieved
 					else
@@ -993,18 +997,18 @@ namespace MCS
 		// Swap CWeapon
 		if ((m_World->HasComponent<Frosty::ECS::CWeapon>(playerWeapon)) && (m_World->HasComponent<Frosty::ECS::CWeapon>(lootWeapon)))
 		{
-				// Swap loot type in lootWeapon depending on playerWeapon
-				SwapLootType(playerWeapon, lootWeapon);
+			// Swap loot type in lootWeapon depending on playerWeapon
+			SwapLootType(playerWeapon, lootWeapon);
 
-				Frosty::ECS::CWeapon tempWeapon;
-				tempWeapon = m_World->GetComponent<Frosty::ECS::CWeapon>(playerWeapon);
-				m_World->GetComponent<Frosty::ECS::CWeapon>(playerWeapon) = m_World->GetComponent<Frosty::ECS::CWeapon>(lootWeapon);
-				m_World->GetComponent<Frosty::ECS::CWeapon>(lootWeapon) = tempWeapon;
+			Frosty::ECS::CWeapon tempWeapon;
+			tempWeapon = m_World->GetComponent<Frosty::ECS::CWeapon>(playerWeapon);
+			m_World->GetComponent<Frosty::ECS::CWeapon>(playerWeapon) = m_World->GetComponent<Frosty::ECS::CWeapon>(lootWeapon);
+			m_World->GetComponent<Frosty::ECS::CWeapon>(lootWeapon) = tempWeapon;
 
-				// Only switch CMesh and CMaterial when weapon stats have been swapped
-				SwapMesh(playerWeapon, lootWeapon);
-				SwapMaterial(playerWeapon, lootWeapon);
-				Frosty::Renderer::SwapEntity(playerWeapon, lootWeapon);
+			// Only switch CMesh and CMaterial when weapon stats have been swapped
+			SwapMesh(playerWeapon, lootWeapon);
+			SwapMaterial(playerWeapon, lootWeapon);
+			Frosty::Renderer::SwapEntity(playerWeapon, lootWeapon);
 		}
 	}
 
@@ -1038,7 +1042,7 @@ namespace MCS
 			}
 		}
 	}
-	
+
 	void PlayerControllerSystem::SwapLootType(const std::shared_ptr<Frosty::ECS::Entity>& playerWeapon, const std::shared_ptr<Frosty::ECS::Entity>& lootWeapon)
 	{
 		auto& playerWeaponComp = m_World->GetComponent<Frosty::ECS::CWeapon>(playerWeapon);
@@ -1049,9 +1053,9 @@ namespace MCS
 		{
 			if (level == 1)
 				lootComp.Type = Frosty::ECS::CLootable::LootType::Sword1;
-			else if(level == 2)
+			else if (level == 2)
 				lootComp.Type = Frosty::ECS::CLootable::LootType::Sword2;
-			else if(level == 3)
+			else if (level == 3)
 				lootComp.Type = Frosty::ECS::CLootable::LootType::Sword3;
 		}
 		else if (playerWeaponComp.Type == Frosty::ECS::CWeapon::WeaponType::Bow)
@@ -1064,7 +1068,7 @@ namespace MCS
 				lootComp.Type = Frosty::ECS::CLootable::LootType::Bow3;
 		}
 	}
-	
+
 	void PlayerControllerSystem::UpdateHUD(size_t index)
 	{
 		if (m_World->HasComponent<Frosty::ECS::CGUI>(m_Transform[index]->EntityPtr))
@@ -1099,7 +1103,7 @@ namespace MCS
 			}
 			else
 			{
-				HUD.Layout.sprites.at(9).SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+				HUD.Layout.sprites.at(10).SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
 				HUD.Layout.texts.at(19).SetText(std::string("[2]"));
 				HUD.Layout.texts.at(1).SetColor(glm::vec3(1.0f, 1.0f, 0.75f));
 
@@ -1114,7 +1118,7 @@ namespace MCS
 			}
 			else
 			{
-				HUD.Layout.sprites.at(9).SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+				HUD.Layout.sprites.at(11).SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
 				HUD.Layout.texts.at(20).SetText(std::string("[Q]"));
 				HUD.Layout.texts.at(2).SetColor(glm::vec3(1.0f, 1.0f, 0.75f));
 
@@ -1132,29 +1136,67 @@ namespace MCS
 			int healthSpriteID = 19;
 			for (int i = 0; i < nrOfFilledHearts && nrOfFilledHearts <= m_Health[index]->MaxHealth; i++)
 			{
-				HUD.Layout.sprites.at(healthSpriteID).SetImage("Heart_4");
-				healthSpriteID++;
+				if (healthSpriteID < 29)
+				{
+					HUD.Layout.sprites.at(healthSpriteID).SetImage("Heart_4");
+					HUD.Layout.sprites.at(healthSpriteID).SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+					healthSpriteID++;
+				}
 			}
-			  
+
 			if (nrOfHeartQuadrants == 1)
 			{
-				HUD.Layout.sprites.at(healthSpriteID).SetImage("Heart_1");
+				if (healthSpriteID < 29)
+				{
+					HUD.Layout.sprites.at(healthSpriteID).SetImage("Heart_1");
+					HUD.Layout.sprites.at(healthSpriteID).SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+				}
 			}
 			else if (nrOfHeartQuadrants == 2)
 			{
-				HUD.Layout.sprites.at(healthSpriteID).SetImage("Heart_2");
+				if (healthSpriteID < 29)
+				{
+					HUD.Layout.sprites.at(healthSpriteID).SetImage("Heart_2");
+					HUD.Layout.sprites.at(healthSpriteID).SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+				}
 			}
 			else if (nrOfHeartQuadrants == 3)
 			{
-				HUD.Layout.sprites.at(healthSpriteID).SetImage("Heart_3");
+				if (healthSpriteID < 29)
+				{
+					HUD.Layout.sprites.at(healthSpriteID).SetImage("Heart_3");
+					HUD.Layout.sprites.at(healthSpriteID).SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+				}
 			}
 			else if (m_Health[index]->CurrentHealth < m_Health[index]->MaxHealth)
 			{
-				HUD.Layout.sprites.at(healthSpriteID).SetImage("Heart_0");
+				if (healthSpriteID < 29)
+				{
+					HUD.Layout.sprites.at(healthSpriteID).SetImage("Heart_0");
+					HUD.Layout.sprites.at(healthSpriteID).SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+				}
 			}
 
+			int nrOfEmptyHearts = (m_Health[index]->MaxHealth - m_Health[index]->CurrentHealth) / 4;
+			healthSpriteID = 19 + m_Health[index]->CurrentHealth / 4;
 
-			//Pickup Text
+			if (nrOfHeartQuadrants > 0)
+			{
+				healthSpriteID++;
+			}
+
+			for (int i = 0; i < nrOfEmptyHearts; i++)
+			{
+				if (healthSpriteID < 29)
+				{
+					HUD.Layout.sprites.at(healthSpriteID).SetImage("Heart_0");
+					HUD.Layout.sprites.at(healthSpriteID).SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+					healthSpriteID++;
+				}
+
+			}
+
+				//Pickup Text
 			if (Frosty::Time::CurrentTime() - m_Player[index]->PickUpTextTimer >= m_Player[index]->PickUpTextTime)
 			{
 				HUD.Layout.texts.at(6).SetText("");
@@ -1254,7 +1296,7 @@ namespace MCS
 
 			}
 
-			
+
 			//Dash cooldown
 			if (m_Dash[index]->CurrentCooldown > 0)
 			{
@@ -1351,11 +1393,73 @@ namespace MCS
 			int bootSpriteID = 14;
 			for (int i = 0; i < m_Inventory[index]->CurrentSpeedBoots && m_Inventory[index]->CurrentSpeedBoots <= 5; i++)
 			{
-				
+
 				HUD.Layout.sprites.at(bootSpriteID).SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
 				bootSpriteID++;
 			}
-			
+
+			//Elemental
+
+			//Earth
+			if (m_Player[index]->Weapon->EarthDamage > 0.0f)
+			{
+				HUD.Layout.sprites.at(5).SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+			}
+			else
+			{
+				HUD.Layout.sprites.at(5).SetColorSprite(glm::vec4(0.1f, 0.1f, 0.1f, 0.50f));
+			}
+			//Fire
+			if (m_Player[index]->Weapon->FireCriticalHitChance > 0.0f)
+			{
+				HUD.Layout.sprites.at(6).SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+			}
+			else
+			{
+				HUD.Layout.sprites.at(6).SetColorSprite(glm::vec4(0.1f, 0.1f, 0.1f, 0.50f));
+			}
+			//Water
+			if (m_Player[index]->Weapon->WaterHealing > 0.0f)
+			{
+				HUD.Layout.sprites.at(7).SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+			}
+			else
+			{
+				HUD.Layout.sprites.at(7).SetColorSprite(glm::vec4(0.1f, 0.1f, 0.1f, 0.50f));
+			}
+			//Wind
+			if (m_Player[index]->Weapon->WindSpeed > 0.0f)
+			{
+				HUD.Layout.sprites.at(8).SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+			}
+			else
+			{
+				HUD.Layout.sprites.at(8).SetColorSprite(glm::vec4(0.1f, 0.1f, 0.1f, 0.50f));
+			}
+
+			//Damage Effect
+			float timeLeft = Frosty::Time::CurrentTime() - m_Player[index]->DamageEffectTimer;
+			if (timeLeft <= m_Player[index]->DamageEffectTime && timeLeft >= 0)
+			{
+				float percentage = m_Player[index]->DamageEffectTime / (Frosty::Time::CurrentTime() - m_Player[index]->DamageEffectTimer);
+				percentage /= 100;
+
+				if (m_Health[index]->CurrentHealth <= 4 && percentage <= 0.75)
+				{
+					percentage = 0.75;
+				}
+				HUD.Layout.sprites.at(0).SetColorSprite(glm::vec4(1.0f* percentage, 0.0f, 0.0f, 0.75f));
+
+				
+			}
+			else if(m_Health[index]->CurrentHealth <= 4)
+			{
+				HUD.Layout.sprites.at(0).SetColorSprite(glm::vec4(0.75f, 0.0f, 0.0f, 0.75f));
+			}
+			else
+			{
+				HUD.Layout.sprites.at(0).SetColorSprite(glm::vec4(0.0f, 0.0f, 0.0f, 0.75f));
+			}
 		}
 	}
 
@@ -1377,5 +1481,17 @@ namespace MCS
 		HUD.Layout.texts.at(7).SetText(std::string(""));
 		HUD.Layout.texts.at(8).SetText(std::string(""));
 		HUD.Layout.texts.at(9).SetText(std::string(""));
+	}
+
+	void PlayerControllerSystem::OnDamage()
+	{
+		for (size_t i = 1; i < p_Total; i++)
+		{
+			auto& HUD = m_World->GetComponent<Frosty::ECS::CGUI>(m_Transform[i]->EntityPtr);
+			HUD.Layout.sprites.at(0).SetColorSprite(glm::vec4(1.0f, 0.0f, 0.0f, 0.75f));
+
+			m_Player[i]->DamageEffectTimer = Frosty::Time::CurrentTime();
+		}
+
 	}
 }

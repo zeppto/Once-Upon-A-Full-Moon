@@ -122,6 +122,7 @@ namespace MCS
 			{
 				attackComp.AttackedEntities.emplace_back(it->first->Id);
 				m_Health[it->second]->CurrentHealth -= attackComp.Damage;
+				Frosty::EventBus::GetEventBus()->Publish<Frosty::PlayerDamageEvent>(Frosty::PlayerDamageEvent());
 			}
 		}
 		else if (m_World->HasComponent<Frosty::ECS::CEnemy>(it->first))

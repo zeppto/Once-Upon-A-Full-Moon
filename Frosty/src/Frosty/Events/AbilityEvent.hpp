@@ -236,6 +236,14 @@ namespace Frosty
 
 		EVENT_TYPE(HealAbility)
 	};
+
+	class PlayerDamageEvent : public BaseEvent
+	{
+	public:
+		PlayerDamageEvent() { }
+
+		EVENT_TYPE(PlayerDamage)
+	};
 }
 
 #endif // !ABILITY_EVENT_HPP

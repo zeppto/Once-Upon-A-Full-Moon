@@ -550,7 +550,7 @@ namespace Frosty
 
 	int counter = 0;
 
-	void Renderer::AddToRenderer(ECS::CMaterial* mat, ECS::CMesh* mesh, ECS::CTransform* transform, ECS::CAnimController* anim)
+	void Renderer::AddToRenderer(ECS::CMaterial* mat, ECS::CMesh* mesh, ECS::CTransform* transform)
 	{
 		if (mat->UseShader->GetName() != "Animation")
 		{
@@ -708,7 +708,7 @@ namespace Frosty
 			//Add new
 			if (mat->UseShader->GetName() != "Animation")
 			{
-				AddToRenderer(mat, mesh, transform, nullptr);
+				AddToRenderer(mat, mesh, transform);
 			}
 
 		}
@@ -726,61 +726,70 @@ namespace Frosty
 
 	void Renderer::AnimSubmit(ECS::CMaterial* mat, const std::shared_ptr<VertexArray>& vertexArray, const glm::mat4& transform, ECS::CAnimController* controller)
 	{
-		mat->UseShader->Bind();
-		mat->UseShader->UploadUniformMat4("u_ViewProjection", s_SceneData->GameCamera.ViewProjectionMatrix);
-		mat->UseShader->UploadUniformMat4("u_Transform", transform);
-		mat->UseShader->AssignUniformBlock("a_jointDataBlock");
-
-		mat->UseShader->UploadUniformFloat3("u_CameraPosition", s_SceneData->GameCamera.CameraPosition);
-		mat->UseShader->UploadUniformInt("u_Shininess", mat->Shininess);
-
-		
-		// Point Lights
-		mat->UseShader->UploadUniformInt("u_TotalPointLights", (int)s_SceneData->PointLights.size());
-		int PointLI = 0;
-		for (auto& PLightIt : s_SceneData->PointLights)
+		if (controller->currAnim != nullptr)
 		{
 
-			mat->UseShader->UploadUniformFloat3Array("u_PointLights[" + std::to_string(PointLI) + "].Color", s_SceneData->PointLights[PLightIt.first].PointLight->Color);
-			mat->UseShader->UploadUniformFloat3Array("u_PointLights[" + std::to_string(PointLI) + "].Position", s_SceneData->PointLights[PLightIt.first].Transform->Position);
-			mat->UseShader->UploadUniformFloatArray("u_PointLights[" + std::to_string(PointLI) + "].Radius", s_SceneData->PointLights[PLightIt.first].PointLight->Radius);
-			mat->UseShader->UploadUniformFloatArray("u_PointLights[" + std::to_string(PointLI) + "].Strength", s_SceneData->PointLights[PLightIt.first].PointLight->Strength);
-			PointLI++;
-		}
 
-		// Directional Lights
-		mat->UseShader->UploadUniformInt("u_TotalDirectionalLights", (int)s_SceneData->DirectionalLights.size());
-		int DirectLI = 0;
-		for (auto& DLightIt : s_SceneData->DirectionalLights)
-		{
-			mat->UseShader->UploadUniformFloat3Array("u_DirectionalLights[" + std::to_string(DirectLI) + "].Color", s_SceneData->DirectionalLights[DLightIt.first].DirectionalLight->Color);
-			mat->UseShader->UploadUniformFloat3Array("u_DirectionalLights[" + std::to_string(DirectLI) + "].Direction", s_SceneData->DirectionalLights[DLightIt.first].DirectionalLight->Direction);
-			mat->UseShader->UploadUniformFloatArray("u_DirectionalLights[" + std::to_string(DirectLI) + "].Strength", s_SceneData->DirectionalLights[DLightIt.first].DirectionalLight->Strength);
-			DirectLI++;
-		}
+			mat->UseShader->Bind();
+			mat->UseShader->UploadUniformMat4("u_ViewProjection", s_SceneData->GameCamera.ViewProjectionMatrix);
+			mat->UseShader->UploadUniformMat4("u_Transform", transform);
+			mat->UseShader->AssignUniformBlock("a_jointDataBlock");
 
-		void* skinDataPtr = nullptr;
-		int nrOfBones = 0;
-		controller->currAnim->CalculateAnimMatrix(&controller->dt);
-		controller->currAnim->GetSkinData(skinDataPtr, nrOfBones);
+			mat->UseShader->UploadUniformFloat3("u_CameraPosition", s_SceneData->GameCamera.CameraPosition);
+			mat->UseShader->UploadUniformInt("u_Shininess", mat->Shininess);
 
-		//this shit don't need to go all the way up to animation system if we just do it in RenderScene()
-		glm::mat4* temp = controller->currAnim->getHoldingJoint();
-		if (temp != nullptr)
-		{
-			//Will not work since animated is not included.
-			if (s_MaterialLookUpMap.find(mat->EntityPtr->Id) != s_MaterialLookUpMap.end())
+
+			// Point Lights
+			mat->UseShader->UploadUniformInt("u_TotalPointLights", (int)s_SceneData->PointLights.size());
+			int PointLI = 0;
+			for (auto& PLightIt : s_SceneData->PointLights)
 			{
-				auto& meshData = s_MeshLookUpMap.at(mat->EntityPtr->Id)->at(vertexArray->GetName());
-				meshData->holdJointTransform = temp;
+
+				mat->UseShader->UploadUniformFloat3Array("u_PointLights[" + std::to_string(PointLI) + "].Color", s_SceneData->PointLights[PLightIt.first].PointLight->Color);
+				mat->UseShader->UploadUniformFloat3Array("u_PointLights[" + std::to_string(PointLI) + "].Position", s_SceneData->PointLights[PLightIt.first].Transform->Position);
+				mat->UseShader->UploadUniformFloatArray("u_PointLights[" + std::to_string(PointLI) + "].Radius", s_SceneData->PointLights[PLightIt.first].PointLight->Radius);
+				mat->UseShader->UploadUniformFloatArray("u_PointLights[" + std::to_string(PointLI) + "].Strength", s_SceneData->PointLights[PLightIt.first].PointLight->Strength);
+				PointLI++;
 			}
+
+			// Directional Lights
+			mat->UseShader->UploadUniformInt("u_TotalDirectionalLights", (int)s_SceneData->DirectionalLights.size());
+			int DirectLI = 0;
+			for (auto& DLightIt : s_SceneData->DirectionalLights)
+			{
+				mat->UseShader->UploadUniformFloat3Array("u_DirectionalLights[" + std::to_string(DirectLI) + "].Color", s_SceneData->DirectionalLights[DLightIt.first].DirectionalLight->Color);
+				mat->UseShader->UploadUniformFloat3Array("u_DirectionalLights[" + std::to_string(DirectLI) + "].Direction", s_SceneData->DirectionalLights[DLightIt.first].DirectionalLight->Direction);
+				mat->UseShader->UploadUniformFloatArray("u_DirectionalLights[" + std::to_string(DirectLI) + "].Strength", s_SceneData->DirectionalLights[DLightIt.first].DirectionalLight->Strength);
+				DirectLI++;
+			}
+
+			void* skinDataPtr = nullptr;
+			int nrOfBones = 0;
+			controller->currAnim->CalculateAnimMatrix(&controller->dt);
+			controller->currAnim->GetSkinData(skinDataPtr, nrOfBones);
+
+			//this shit don't need to go all the way up to animation system if we just do it in RenderScene()
+			glm::mat4* temp = controller->currAnim->getHoldingJoint();
+			if (temp != nullptr)
+			{
+				//Will not work since animated is not included.
+				if (s_MaterialLookUpMap.find(mat->EntityPtr->Id) != s_MaterialLookUpMap.end())
+				{
+					auto& meshData = s_MeshLookUpMap.at(mat->EntityPtr->Id)->at(vertexArray->GetName());
+					meshData->holdJointTransform = temp;
+				}
+			}
+
+			vertexArray->GetUniformBuffer()->BindUpdate(skinDataPtr, nrOfBones);
+
+			vertexArray->Bind();
+			RenderCommand::EnableBackfaceCulling();
+			RenderCommand::Draw2D(vertexArray);
+			controller->dt += Frosty::Time::DeltaTime() * controller->animSpeed;
 		}
-
-		vertexArray->GetUniformBuffer()->BindUpdate(skinDataPtr, nrOfBones);
-
-		vertexArray->Bind();
-		RenderCommand::EnableBackfaceCulling();
-		RenderCommand::Draw2D(vertexArray);
-		controller->dt += Frosty::Time::DeltaTime() * controller->animSpeed;
+		else
+		{
+			FY_FATAL("ANIMCONROLLER HAS NO CURRENTANIM");
+		}
 	}
 }

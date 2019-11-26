@@ -762,7 +762,7 @@ namespace Frosty
 			int MoveRightKey{ FY_KEY_D };
 			int MoveBackKey{ FY_KEY_S };
 			int DashKey{ FY_KEY_LEFT_SHIFT };
-			int LVL1Attack{ FY_MOUSE_BUTTON_LEFT };
+			int LVL1Attack{ FY_MOUSE_BUTTON_RIGHT };
 			int LVL2Attack{ FY_MOUSE_BUTTON_RIGHT };
 			int LVL3Attack{ FY_KEY_SPACE };
 
@@ -774,6 +774,9 @@ namespace Frosty
 			int Score{ 0 };
 			float PickUpTextTime{ 2.0f };
 			float PickUpTextTimer{ Frosty::Time::CurrentTime() };
+
+			float DamageEffectTime{ 2.0f };
+			float DamageEffectTimer{ Frosty::Time::CurrentTime() };
 
 			CPlayer() = default;
 			CPlayer(CWeapon* weapon) : Weapon(weapon) { }
@@ -810,7 +813,7 @@ namespace Frosty
 		{
 			static std::string NAME;
 
-			int MaxPossibleHealth{ 20 };								// Max health an entity can upgrade to
+			int MaxPossibleHealth{ 40 };								// Max health an entity can upgrade to
 			int MaxHealth{ 5 };											// Max health an entity can currently have
 			int CurrentHealth{ 5 };
 
@@ -836,7 +839,7 @@ namespace Frosty
 			// INCREASE HEALTH POTION - inreases max health on consumer (const)
 			int MaxIncreaseHPPotions{ 5 };
 			int CurrentIncreaseHPPotions{ 0 };
-			int IncreaseHP{ 3 };
+			int IncreaseHP{ 4 };
 			float IncreaseHPCooldown{ 3.f };
 			float IncreaseHPTimer{ Frosty::Time::CurrentTime() };
 
@@ -1012,15 +1015,6 @@ namespace Frosty
 				}
 			}
 			CParticleSystem(const CParticleSystem& org) { FY_CORE_ASSERT(false, "Copy constructor in CParticleSystem called."); }
-
-			//void Init() //For utility reasons. Actually all vital data should just be in the constructor
-			//{
-
-			//	for ()
-			//	{
-
-			//	}
-			//}
 
 			virtual std::string GetName() const { return NAME; }
 		};
