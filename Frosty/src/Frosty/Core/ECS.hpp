@@ -492,7 +492,6 @@ namespace Frosty
 			CMesh() = default;
 			CMesh(std::shared_ptr<VertexArray> mesh, bool render = true) : Mesh(mesh), RenderMesh(render) { }
 			CMesh(const CMesh& org) { FY_CORE_ASSERT(false, "Copy constructor in CMesh called."); }
-			
 			bool operator!=(const CMesh& org) { return Mesh != org.Mesh; }
 
 			virtual std::string GetName() const { return NAME; }
@@ -516,7 +515,7 @@ namespace Frosty
 			CCamera(float fov, float aspect, float zNear, float zFar)
 				: FieldOfView(fov), Near(zNear), Far(zFar), ProjectionMatrix(glm::perspective(glm::radians(fov), aspect, zNear, zFar)) { }
 			CCamera(const CCamera& org) { FY_CORE_ASSERT(false, "Copy constructor in CCamera called."); }
-			
+
 			virtual std::string GetName() const { return NAME; }
 		};
 
@@ -543,7 +542,6 @@ namespace Frosty
 			CMaterial() = default;
 			CMaterial(const std::shared_ptr<Shader>& shader) : UseShader(shader) { NormalTexture = AssetManager::GetTexture2D("FlatNormal"); }
 			CMaterial(const CMaterial& org) { FY_CORE_ASSERT(false, "Copy constructor in CMaterial called."); }
-			
 			bool operator!=(const CMaterial& org) { return Albedo != org.Albedo; }	// This works best for Flatcolor shader. Talk to W-_-W if you have any questions
 			
 			virtual std::string GetName() const { return NAME; }
@@ -582,7 +580,7 @@ namespace Frosty
 			CLight(LightType lightType, float strength, glm::vec3 color, float radius, glm::vec3 direction) : Type(lightType), Strength(strength), Color(color), Radius(radius), Direction(direction) { }
 			CLight(LightType lightType, float strength, glm::vec3 color, float radius = 20.f, CTransform* origin = nullptr, const glm::vec3& offset = glm::vec3(0.f)) : Type(lightType), Strength(strength), Color(color), Radius(radius), Origin(origin), Offset(offset) { }
 			CLight(const CLight& org) { FY_CORE_ASSERT(false, "Copy constructor in CLight called."); }
-			
+
 			virtual std::string GetName() const { return NAME; }
 		};
 
@@ -605,7 +603,7 @@ namespace Frosty
 				//BoundingBox->halfSize[2] *= 0.85f;
 			}
 			CPhysics(const CPhysics& org) { FY_CORE_ASSERT(false, "Copy constructor in CPhysics called."); }
-			
+
 			virtual std::string GetName() const { return NAME; }
 		};
 
@@ -676,7 +674,6 @@ namespace Frosty
 				}
 			}
 			CWeapon(const CWeapon& org) { FY_CORE_ASSERT(false, "Copy constructor in CWeapon called."); }
-			
 			bool operator!=(const CWeapon& org) { return Level != org.Level; }
 			
 			virtual std::string GetName() const { return NAME; }
@@ -766,8 +763,8 @@ namespace Frosty
 		{
 			static std::string NAME;
 
-			int MaxPossibleHealth{ 20 };						// Max health an entity can upgrade to
-			int MaxHealth{ 5 };									// Max health an entity can currently have
+			int MaxPossibleHealth{ 20 };								// Max health an entity can upgrade to
+			int MaxHealth{ 5 };											// Max health an entity can currently have
 			int CurrentHealth{ 5 };
 
 			CHealth() = default;
@@ -995,7 +992,7 @@ namespace Frosty
 			CLootable() = default;
 			CLootable(LootType type) : Type(type) {}
 			CLootable(const CLootable& org) { FY_CORE_ASSERT(false, "Copy constructor in CLootable called."); }
-			
+
 			virtual std::string GetName() const { return NAME; }
 		};
 
@@ -1092,7 +1089,7 @@ namespace Frosty
 			CGUI() = default;
 			CGUI(UILayout& layout) : Layout(layout) {  }
 			CGUI(const CGUI& org) { FY_CORE_ASSERT(false, "Copy constructor in CGUI called."); }
-			
+
 			virtual std::string GetName() const { return NAME; }
 		};
 
@@ -1188,5 +1185,4 @@ namespace Frosty
 
 	}
 }
-
 #endif // !ECS_HPP

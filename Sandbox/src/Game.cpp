@@ -83,15 +83,14 @@ namespace MCS
 		//Bow Offset
 		auto& weapon = world->CreateEntity({ -0.7f, 2.3f, 0.2f }, { 0.0f, 60.0f, 0.0f }, { 1.f, 1.f, 1.f });
 		auto& weaponHandler = Frosty::AssetManager::GetWeaponHandler("Weapons");
-		Frosty::Weapon loadedWeapon = weaponHandler->GetAPlayerWeapon(1, 3);
+		Frosty::Weapon loadedWeapon = weaponHandler->GetAPlayerWeapon(3, 3);
 		world->AddComponent<Frosty::ECS::CWeapon>(weapon, loadedWeapon, true);	
 		auto& weaponComp = world->GetComponent<Frosty::ECS::CWeapon>(weapon);
-		weaponComp.Level = 3;
-		auto& weaponMesh = world->AddComponent<Frosty::ECS::CMesh>(weapon, Frosty::AssetManager::GetMesh("Bow"));
+		
+		auto& weaponMesh = world->AddComponent<Frosty::ECS::CMesh>(weapon, Frosty::AssetManager::GetMesh("sword"));
 		auto& weaponMat = world->AddComponent<Frosty::ECS::CMaterial>(weapon, Frosty::AssetManager::GetShader("Texture2D"));
 		weaponMat.DiffuseTexture = Frosty::AssetManager::GetTexture2D("bow_lvl1_diffuse");
 		weaponMat.NormalTexture = Frosty::AssetManager::GetTexture2D("bow_normal");
-
 
 		// PLAYER
 		//auto& player = world->CreateEntity({ 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 2.0f, 2.0f, 2.0f } );
