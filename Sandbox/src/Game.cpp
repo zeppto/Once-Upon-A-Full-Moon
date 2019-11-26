@@ -98,24 +98,18 @@ namespace MCS
 		auto& torch = world->CreateEntity({ 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f });
 		auto& torchComp = world->AddComponent<Frosty::ECS::CLight>(torch, Frosty::ECS::CLight::LightType::Point, 1.f, glm::vec3(0.99f, 0.9f, 0.8f), 15.f, &playerTransform, glm::vec3(0.f, 5.f, 0.f));
 
-		// WITCH CIRCLE
-		auto& witchCircle = world->CreateEntity({ -80.0f, 0.1f, -15.4f }, { 0.0f, 0.0f, 0.0f }, { 2.0f, 2.0f, 2.0f });
-		world->AddComponent<Frosty::ECS::CMesh>(witchCircle, Frosty::AssetManager::GetMesh("hexCircle"));
-		auto& material = world->AddComponent<Frosty::ECS::CMaterial>(witchCircle, Frosty::AssetManager::GetShader("Texture2D"));
-		material.DiffuseTexture = Frosty::AssetManager::GetTexture2D("mashRoomCirkel");
-		world->AddComponent<Frosty::ECS::CPhysics>(witchCircle, Frosty::AssetManager::GetBoundingBox("hexCircle"), 0.f);
-		world->AddComponent<Frosty::ECS::CWitchCircle>(witchCircle);
-		world->AddComponent<Frosty::ECS::CHealth>(witchCircle, 200, 0);
-		auto& barComp = world->AddComponent<Frosty::ECS::CHealthBar>(witchCircle, glm::vec3(0.0f, 20.0f, -5.0f), Frosty::AssetManager::GetMesh("UIPlane"), Frosty::AssetManager::GetShader("HealthBar"), Frosty::AssetManager::GetTexture2D("yellow"));
-		auto& lightComp = world->AddComponent<Frosty::ECS::CLight>(witchCircle, Frosty::ECS::CLight::LightType::Point, 5.f, glm::vec3(0.1f, 1.f, 0.5f));
-		lightComp.Radius = 5.f;
-		auto& witchcircleParticleComp = world->AddComponent<Frosty::ECS::CParticleSystem>(witchCircle, "ParticlesHorizontal", "particle", 20, glm::vec3(0.4f, 0.1f, 0.55f), glm::vec3(0.0f, 1.0f, 1.0f), 1.0f, 0.0f);
-		witchcircleParticleComp.EmitCount = 10;
-		witchcircleParticleComp.StaticColor = false;
-		witchcircleParticleComp.RandomStartPos = true;
-		witchcircleParticleComp.RandomDirection = true;
-		witchcircleParticleComp.AlwaysFaceCamera = true;
-		witchcircleParticleComp.MaxLifetime = 1.f;
+		//			FOR EMMMA			//
+		//// WITCH CIRCLE
+		//auto& witchCircle = world->CreateEntity({ -80.0f, 0.1f, -15.4f }, { 0.0f, 0.0f, 0.0f }, { 2.0f, 2.0f, 2.0f });
+		//world->AddComponent<Frosty::ECS::CMesh>(witchCircle, Frosty::AssetManager::GetMesh("hexCircle"));
+		//auto& material = world->AddComponent<Frosty::ECS::CMaterial>(witchCircle, Frosty::AssetManager::GetShader("Texture2D"));
+		//material.DiffuseTexture = Frosty::AssetManager::GetTexture2D("mashRoomCirkel");
+		//world->AddComponent<Frosty::ECS::CPhysics>(witchCircle, Frosty::AssetManager::GetBoundingBox("hexCircle"), 0.f);
+		//world->AddComponent<Frosty::ECS::CWitchCircle>(witchCircle);
+		//world->AddComponent<Frosty::ECS::CHealth>(witchCircle, 200, 0);
+		//auto& barComp = world->AddComponent<Frosty::ECS::CHealthBar>(witchCircle, glm::vec3(0.0f, 20.0f, -5.0f), Frosty::AssetManager::GetMesh("UIPlane"), Frosty::AssetManager::GetShader("HealthBar"), Frosty::AssetManager::GetTexture2D("yellow"));
+		//auto& lightComp = world->AddComponent<Frosty::ECS::CLight>(witchCircle, Frosty::ECS::CLight::LightType::Point, 5.f, glm::vec3(0.1f, 1.f, 0.5f));
+		//lightComp.Radius = 5.f;
 
 		//Particle System Test
 		auto& ParticleSystem1 = world->CreateEntity();

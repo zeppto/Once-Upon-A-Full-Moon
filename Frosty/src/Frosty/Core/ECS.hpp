@@ -910,7 +910,7 @@ namespace Frosty
 			float BaitTimer{ Frosty::Time::CurrentTime() };
 
 			// WOLFSBANE - poisonous flower, used as currency
-			int CurrentWolfsbane{ 1 };
+			int CurrentWolfsbane{ 0 };
 
 			CInventory() = default;
 			CInventory(const CInventory& org) { FY_CORE_ASSERT(false, "Copy constructor in CInventory called."); }
