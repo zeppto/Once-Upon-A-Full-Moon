@@ -537,30 +537,12 @@ namespace Frosty
 			int Shininess{ 16 };
 			glm::vec2 TextureScale{ 1.0f };
 
-			bool HasTransparency = false;
+			bool HasTransparency{ false };
 
 			CMaterial() = default;
-			CMaterial(const std::shared_ptr<Shader>& shader) : UseShader(shader) { NormalTexture = AssetManager::GetTexture2D("FlatNormal"); }
+			CMaterial(const std::shared_ptr<Shader>& shader, bool hasTransparency = false) : UseShader(shader), HasTransparency(hasTransparency){ NormalTexture = AssetManager::GetTexture2D("FlatNormal"); }
 			CMaterial(const CMaterial& org) { FY_CORE_ASSERT(false, "Copy constructor in CMaterial called."); }
-			CMaterial& operator=(const CMaterial& org)
-			{
-				if (this != &org)
-				{
-					UseShader = org.UseShader;
-					Albedo = org.Albedo;
-					DiffuseTexture = org.DiffuseTexture;
-					SpecularTexture = org.SpecularTexture;
-					NormalTexture = org.NormalTexture;
-					BlendMapTexture = org.BlendMapTexture;
-					BlendTexture1 = org.BlendTexture1;
-					BlendTexture2 = org.BlendTexture2;
-					SpecularStrength = org.SpecularStrength;
-					Shininess = org.Shininess;
-					TextureScale = org.TextureScale;
-				}
-
-				return *this;
-			}
+			
 			bool operator!=(const CMaterial& org) { return  DiffuseTexture != org.DiffuseTexture; }	// This works best for Flatcolor shader. Talk to W-_-W if you have any questions
 			virtual std::string GetName() const { return NAME; }
 		};
