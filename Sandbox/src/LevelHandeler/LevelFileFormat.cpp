@@ -526,7 +526,7 @@ namespace MCS
 							//enemyWeaponCompA.AttackHitboxScale = glm::vec3(10.0f, 6.0f, 4.0f);				// Sword
 							//enemyWeaponCompA.AttackHitboxScale = glm::vec3(4.0f, 6.0f, 4.0f);				// Bite
 							enemyWeaponCompA.AttackHitboxScale = glm::vec3(0.3f);							// Arrow
-							auto& enemy = m_World->AddComponent<Frosty::ECS::CEnemy>(entity, nullptr, &enemyWeaponCompA, fileEntitys.myEntitys.at(i).myEnemy.RunOnHealth);
+							auto& enemy = m_World->AddComponent<Frosty::ECS::CEnemy>(entity, playerTransform, &enemyWeaponCompA, fileEntitys.myEntitys.at(i).myEnemy.RunOnHealth);
 							auto& transform = m_World->GetComponent< Frosty::ECS::CTransform>(entity);
 							enemy.SpawnPosition = transform.Position;
 						}
@@ -543,7 +543,7 @@ namespace MCS
 							//enemyWeaponCompA.AttackHitboxScale = glm::vec3(10.0f, 6.0f, 4.0f);				// Sword
 							enemyWeaponCompA.AttackHitboxScale = glm::vec3(4.0f, 6.0f, 4.0f);				// Bite
 							//enemyWeaponCompA.AttackHitboxScale = glm::vec3(0.3f);
-							auto& enemy = m_World->AddComponent<Frosty::ECS::CEnemy>(entity, nullptr, &enemyWeaponCompA, fileEntitys.myEntitys.at(i).myEnemy.RunOnHealth);
+							auto& enemy = m_World->AddComponent<Frosty::ECS::CEnemy>(entity, playerTransform, &enemyWeaponCompA, fileEntitys.myEntitys.at(i).myEnemy.RunOnHealth);
 							auto& transform = m_World->GetComponent< Frosty::ECS::CTransform>(entity);
 							enemy.SpawnPosition = transform.Position;
 						}
