@@ -278,7 +278,6 @@ namespace Frosty
 		if (s_SceneData->PointLights.find(entity->Id) != s_SceneData->PointLights.end())
 		{
 			s_SceneData->PointLights.erase(entity->Id);
-
 		}
 		else if (s_SceneData->DirectionalLights.find(entity->Id) != s_SceneData->DirectionalLights.end())
 		{
