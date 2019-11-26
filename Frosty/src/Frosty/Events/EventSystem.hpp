@@ -19,7 +19,7 @@ namespace Frosty
 		SpawnItem,
 		PickUpAttempt, PickUp,
 		BaitPlaced, ExitCurrentLevel,
-		SaveLevel, CreateLevel, OpenLevel, CreatEntity, 
+		SaveLevel, CreateLevel, OpenLevel, CreatEntity, UpdatePlayerCoordsPos, UpdateCurrentRoom,
 		LoadBoolMap, InitiateGridMap, ActivateWitchCircle, UpgradeWeapon, PlayAnim, HealAbility
 	};
 

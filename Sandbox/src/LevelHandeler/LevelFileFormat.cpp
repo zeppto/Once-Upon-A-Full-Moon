@@ -8,7 +8,6 @@
 
 namespace MCS
 {
-
 	LevelFileFormat::LevelFileFormat()
 	{
 		m_World = Frosty::Application::Get().GetWorld().get();
@@ -720,8 +719,6 @@ namespace MCS
 			FY_INFO("Did not fined a plain for {0}", fileName);
 		}
 	}
-
-
 
 	void LevelFileFormat::LoadBoolMap(std::string fileName)
 	{

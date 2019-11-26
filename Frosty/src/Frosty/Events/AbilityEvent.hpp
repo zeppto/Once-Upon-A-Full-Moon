@@ -195,6 +195,37 @@ namespace Frosty
 		unsigned int m_EntityType;
 	};
 
+
+	class UpdatePlayerRoomCoordEvent : public BaseEvent
+	{
+	public:
+		UpdatePlayerRoomCoordEvent(const glm::ivec2& Coords) : m_Coords(Coords) { }
+
+		const glm::ivec2& GetCoords() const { return m_Coords; }
+
+
+		EVENT_TYPE(UpdatePlayerCoordsPos)
+
+	private:
+		glm::ivec2 m_Coords;
+	};
+
+
+
+	class UpdateCurrentRoomEvent : public BaseEvent
+	{
+	public:
+		UpdateCurrentRoomEvent(const std::string& CurrentRoom) : m_CurrentRoom(CurrentRoom) {}
+
+		inline const std::string& GetCurrentRoom() { return m_CurrentRoom; }
+
+		EVENT_TYPE(UpdateCurrentRoom)
+
+	private:
+		std::string m_CurrentRoom;
+	};
+
+
 	class InitiateGridEvent : public BaseEvent
 	{
 	public:

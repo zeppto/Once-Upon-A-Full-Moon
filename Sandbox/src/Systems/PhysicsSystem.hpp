@@ -3,6 +3,7 @@
 
 namespace Frosty { class BoolMapLoadedEvent; }
 namespace Frosty { class BoolMap; }
+namespace Frosty { class UpdateCurrentRoomEvent; }
 
 namespace MCS
 {
@@ -25,6 +26,7 @@ namespace MCS
 		virtual std::string GetInfo() const override;
 
 		void OnLoadBoolMapEvent(Frosty::BoolMapLoadedEvent& e);
+		//void OnUpdateCurrentRoomEvent(Frosty::UpdateCurrentRoomEvent& e);
 
 	private:
 		void CheckCollision(size_t index);

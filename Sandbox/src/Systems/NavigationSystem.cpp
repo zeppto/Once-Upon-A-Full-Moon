@@ -58,6 +58,9 @@ namespace MCS
 		case Frosty::EventType::InitiateGridMap:
 			OnInitiateGridMap(static_cast<Frosty::InitiateGridEvent&>(e));
 			break;
+		case Frosty::EventType::UpdateCurrentRoom:
+			OnUpdateCurrentRoomEvent(static_cast<Frosty::UpdateCurrentRoomEvent&>(e));
+			break;
 		default:
 			break;
 		}
@@ -154,6 +157,11 @@ namespace MCS
 		m_Pathfinding.reset(FY_NEW Pathfinding());
 		m_Pathfinding->Init(m_Grid.get());
 	}
+
+	void NavigationSystem::OnUpdateCurrentRoomEvent(Frosty::UpdateCurrentRoomEvent& e)
+{
+		m_CurrentActiveGridMap = Frosty::AssetManager::GetGridMap(e.GetCurrentRoom());
+}
 
 	void NavigationSystem::OnInitiateGridMap(Frosty::InitiateGridEvent& e)
 	{

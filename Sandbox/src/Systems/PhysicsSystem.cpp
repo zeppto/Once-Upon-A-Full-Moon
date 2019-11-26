@@ -52,6 +52,10 @@ namespace MCS
 		case Frosty::EventType::LoadBoolMap:
 			OnLoadBoolMapEvent(static_cast<Frosty::BoolMapLoadedEvent&>(e));
 			break;
+
+		//case Frosty::EventType::UpdateCurrentRoom:
+		//	OnUpdateCurrentRoomEvent(static_cast<Frosty::UpdateCurrentRoomEvent&>(e));
+		//	break;
 		}
 	}
 
@@ -133,6 +137,12 @@ namespace MCS
 	{
 		int o = 0;
 	}
+
+	//void PhysicsSystem::OnUpdateCurrentRoomEvent(Frosty::UpdateCurrentRoomEvent& e)
+	//{
+	//	m_CurrentActiveBoolMap = Frosty::AssetManager::GetBoolMap(e.GetCurrentRoom());
+	//}
+
 
 	void PhysicsSystem::CheckCollision(size_t index)
 	{

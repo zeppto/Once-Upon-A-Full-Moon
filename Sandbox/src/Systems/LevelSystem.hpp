@@ -4,13 +4,13 @@
 #include "LevelHandeler/LevelsHardCoded.hpp"
 #include "LevelHandeler/LevelFileFormat.hpp"
 
+namespace Frosty { class BoolMap; }
 namespace Frosty { class ExitLevelEvent; }
 namespace Frosty { class SaveLevelEvent; }
-namespace Frosty { class CreateLevelEvent; }
 namespace Frosty { class OpenLevelEvent; }
+namespace Frosty { class CreateLevelEvent; }
 namespace Frosty { class CreatEntityEvent; }
-namespace Frosty { class BoolMap; }
-
+namespace Frosty { class UpdatePlayerRoomCoordEvent; }
 namespace MCS
 {
 	class LevelSystem : public Frosty::ECS::BaseSystem
@@ -34,6 +34,7 @@ namespace MCS
 		void OnCreateLevelEvent(Frosty::CreateLevelEvent& e);
 		void OnOpenLevelEvent(Frosty::OpenLevelEvent& e);
 		void OnCreatEntityEvent(Frosty::CreatEntityEvent& e);
+		void OnPlayerUpdateCoordEvent(Frosty::UpdatePlayerRoomCoordEvent& e);
 
 
 	private:
@@ -42,7 +43,14 @@ namespace MCS
 		std::array<Frosty::ECS::CTransform*, Frosty::ECS::MAX_ENTITIES_PER_COMPONENT> m_Transform;
 
 		MapGenerator m_Map;
-		glm::ivec2 m_PlayerPos = { 10, 15 };//{ 10, 15 };
+		
+		bool m_CurrentRoomBool = true;
+		std::string m_FirstRoom{ "" }; //False
+		std::string m_SecondRoom{ "" }; //True
+
+		glm::ivec2 m_PlayerCoords = { 10, 15 };//{ 10, 15 };
+		glm::ivec2 m_OtherRoom = { -1, -1 };
+
 		//map.generateMap();
 		Room m_CurrentRoome;// = map.getRoom(glm::ivec2(11, 15));
 		bool m_Start = true;
@@ -55,6 +63,13 @@ namespace MCS
 		bool m_NextLevel = false;
 		int m_EntrensSide = -1;
 		float m_TempTimer = 0;
+
+
+		bool m_LoadMapBool = false;
+		Frosty::ECS::CTransform* m_PlayerTransformLoadComponent;
+		int m_LoadExitDir = -1;
+		std::string m_LoadFileName = "";
+		int m_MapRotation = 0;
 
 
 		//int rotation = 0;

@@ -8,6 +8,7 @@
 #include "Pathfinding/Pathfinding.hpp"
 
 namespace Frosty { class InitiateGridEvent; }
+namespace Frosty { class UpdateCurrentRoomEvent; }
 
 namespace MCS
 {
@@ -33,6 +34,7 @@ namespace MCS
 
 	private:
 		void OnInitiateGridMap(Frosty::InitiateGridEvent& e);
+		void OnUpdateCurrentRoomEvent(Frosty::UpdateCurrentRoomEvent& e);
 		void LookAtPoint(const glm::vec3& point, size_t index);
 
 		void HandlePathfinding(size_t index);
@@ -50,6 +52,7 @@ namespace MCS
 		//std::unique_ptr<GridMap> m_GridMap;
 		std::unique_ptr<Frosty::Grid> m_Grid;
 		std::unique_ptr<Pathfinding> m_Pathfinding;
+		std::shared_ptr<Frosty::Grid> m_CurrentActiveGridMap;
 
 	};
 }
