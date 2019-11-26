@@ -542,8 +542,26 @@ namespace Frosty
 			CMaterial() = default;
 			CMaterial(const std::shared_ptr<Shader>& shader) : UseShader(shader) { NormalTexture = AssetManager::GetTexture2D("FlatNormal"); }
 			CMaterial(const CMaterial& org) { FY_CORE_ASSERT(false, "Copy constructor in CMaterial called."); }
-			bool operator!=(const CMaterial& org) { return Albedo != org.Albedo; }	// This works best for Flatcolor shader. Talk to W-_-W if you have any questions
-			
+			CMaterial& operator=(const CMaterial& org)
+			{
+				if (this != &org)
+				{
+					UseShader = org.UseShader;
+					Albedo = org.Albedo;
+					DiffuseTexture = org.DiffuseTexture;
+					SpecularTexture = org.SpecularTexture;
+					NormalTexture = org.NormalTexture;
+					BlendMapTexture = org.BlendMapTexture;
+					BlendTexture1 = org.BlendTexture1;
+					BlendTexture2 = org.BlendTexture2;
+					SpecularStrength = org.SpecularStrength;
+					Shininess = org.Shininess;
+					TextureScale = org.TextureScale;
+				}
+
+				return *this;
+			}
+			bool operator!=(const CMaterial& org) { return  DiffuseTexture != org.DiffuseTexture; }	// This works best for Flatcolor shader. Talk to W-_-W if you have any questions
 			virtual std::string GetName() const { return NAME; }
 		};
 
@@ -674,8 +692,37 @@ namespace Frosty
 				}
 			}
 			CWeapon(const CWeapon& org) { FY_CORE_ASSERT(false, "Copy constructor in CWeapon called."); }
-			bool operator!=(const CWeapon& org) { return Level != org.Level; }
-			
+			CWeapon& operator=(const CWeapon& org)
+			{
+				if (this != &org)
+				{
+					Type = org.Type;
+					Level = org.Level;
+					MaxAttackRange = org.MaxAttackRange;
+					MinAttackRange = org.MinAttackRange;
+					Damage = org.Damage;
+					CriticalHit = org.CriticalHit;
+					CriticalHitChance = org.CriticalHitChance;
+					LVL1AttackCooldown = org.LVL1AttackCooldown;
+					LVL2AttackCooldown = org.LVL2AttackCooldown;
+					LVL3AttackCooldown = org.LVL3AttackCooldown;
+					LVL1AttackCooldownTimer = org.LVL1AttackCooldownTimer;
+					LVL2AttackCooldownTimer = org.LVL2AttackCooldownTimer;
+					LVL3AttackCooldownTimer = org.LVL3AttackCooldownTimer;
+					Lifetime = org.Lifetime;
+					AttackHitboxScale = org.AttackHitboxScale;
+					FireCriticalHitChance = org.FireCriticalHitChance;
+					EarthDamage = org.EarthDamage;
+					WindSpeed = org.WindSpeed;
+					WaterHealing = org.WaterHealing;
+					IsFullyUpgraded = org.IsFullyUpgraded;
+					ProjectileSpeed = org.ProjectileSpeed;
+				}
+
+
+				return *this;
+			}
+			bool operator!=(const CWeapon& org) { return Level != org.Level && Type != Type; }
 			virtual std::string GetName() const { return NAME; }
 		};
 
@@ -715,7 +762,7 @@ namespace Frosty
 			int MoveRightKey{ FY_KEY_D };
 			int MoveBackKey{ FY_KEY_S };
 			int DashKey{ FY_KEY_LEFT_SHIFT };
-			int LVL1Attack{ FY_MOUSE_BUTTON_RIGHT };
+			int LVL1Attack{ FY_MOUSE_BUTTON_LEFT };
 			int LVL2Attack{ FY_MOUSE_BUTTON_RIGHT };
 			int LVL3Attack{ FY_KEY_SPACE };
 

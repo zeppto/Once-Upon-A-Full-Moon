@@ -357,6 +357,8 @@ namespace MCS
 		itemMat.DiffuseTexture = Frosty::AssetManager::GetTexture2D("sword_lvl2_diffuse");
 		itemMat.NormalTexture = Frosty::AssetManager::GetTexture2D("sword_normal");
 
+		auto& weaponHandler = Frosty::AssetManager::GetWeaponHandler("Weapons");
+		Frosty::Weapon loadedWeapon;
 		//add wolfsbain and bait as items to be dropt by chest!
 		//Also Add Non-Temporary Meshes for case 1-4.
 		switch (m_RandItem)
@@ -388,7 +390,9 @@ namespace MCS
 			itemMat.DiffuseTexture = Frosty::AssetManager::GetTexture2D("sword_lvl1_diffuse");
 			itemMat.NormalTexture = Frosty::AssetManager::GetTexture2D("sword_normal");
 			m_World->AddComponent<Frosty::ECS::CPhysics>(item, Frosty::AssetManager::GetBoundingBox("sword"), 6.0f);
-			m_World->AddComponent<Frosty::ECS::CWeapon>(item, Frosty::ECS::CWeapon::WeaponType::Sword, 1, 1.f);
+			//auto& weaponHandler = Frosty::AssetManager::GetWeaponHandler("Weapons");
+			loadedWeapon = weaponHandler->GetWeaponByTypeAndLevel(Frosty::Weapon::WeaponType::Sword, 1, 1);
+			m_World->AddComponent<Frosty::ECS::CWeapon>(item, loadedWeapon);
 			break;
 		case 6:
 			m_World->AddComponent<Frosty::ECS::CLootable>(item, Frosty::ECS::CLootable::LootType::Sword2);
@@ -396,7 +400,9 @@ namespace MCS
 			itemMat.DiffuseTexture = Frosty::AssetManager::GetTexture2D("sword_lvl2_diffuse");
 			itemMat.NormalTexture = Frosty::AssetManager::GetTexture2D("sword_normal");
 			m_World->AddComponent<Frosty::ECS::CPhysics>(item, Frosty::AssetManager::GetBoundingBox("sword"), 6.0f);
-			m_World->AddComponent<Frosty::ECS::CWeapon>(item, Frosty::ECS::CWeapon::WeaponType::Sword, 1, 1.f);
+			//auto& weaponHandler = Frosty::AssetManager::GetWeaponHandler("Weapons");
+			loadedWeapon = weaponHandler->GetWeaponByTypeAndLevel(Frosty::Weapon::WeaponType::Sword, 2, 2);
+			m_World->AddComponent<Frosty::ECS::CWeapon>(item, loadedWeapon);
 			break;
 		case 7:
 			m_World->AddComponent<Frosty::ECS::CLootable>(item, Frosty::ECS::CLootable::LootType::Sword3);
@@ -404,7 +410,9 @@ namespace MCS
 			itemMat.DiffuseTexture = Frosty::AssetManager::GetTexture2D("sword_lvl3_diffuse");
 			itemMat.NormalTexture = Frosty::AssetManager::GetTexture2D("sword_normal");
 			m_World->AddComponent<Frosty::ECS::CPhysics>(item, Frosty::AssetManager::GetBoundingBox("sword"), 6.0f);
-			m_World->AddComponent<Frosty::ECS::CWeapon>(item, Frosty::ECS::CWeapon::WeaponType::Sword, 1, 1.f);
+			//auto& weaponHandler = Frosty::AssetManager::GetWeaponHandler("Weapons");
+			loadedWeapon = weaponHandler->GetWeaponByTypeAndLevel(Frosty::Weapon::WeaponType::Sword, 3, 3);
+			m_World->AddComponent<Frosty::ECS::CWeapon>(item, loadedWeapon);
 			break;
 		case 8:
 			m_World->AddComponent<Frosty::ECS::CLootable>(item, Frosty::ECS::CLootable::LootType::Bow1);
@@ -412,7 +420,9 @@ namespace MCS
 			itemMat.DiffuseTexture = Frosty::AssetManager::GetTexture2D("bow_lvl1_diffuse");
 			itemMat.NormalTexture = Frosty::AssetManager::GetTexture2D("bow_normal");
 			m_World->AddComponent<Frosty::ECS::CPhysics>(item, Frosty::AssetManager::GetBoundingBox("Bow"), 6.0f);
-			m_World->AddComponent<Frosty::ECS::CWeapon>(item, Frosty::ECS::CWeapon::WeaponType::Bow, 1, 1.f);
+			//auto& weaponHandler = Frosty::AssetManager::GetWeaponHandler("Weapons");
+			loadedWeapon = weaponHandler->GetWeaponByTypeAndLevel(Frosty::Weapon::WeaponType::Bow, 1, 1);
+			m_World->AddComponent<Frosty::ECS::CWeapon>(item, loadedWeapon);
 			break;
 		case 9:
 			m_World->AddComponent<Frosty::ECS::CLootable>(item, Frosty::ECS::CLootable::LootType::Bow2);
@@ -420,7 +430,9 @@ namespace MCS
 			itemMat.DiffuseTexture = Frosty::AssetManager::GetTexture2D("bow_lvl2_diffuse");
 			itemMat.NormalTexture = Frosty::AssetManager::GetTexture2D("bow_normal");
 			m_World->AddComponent<Frosty::ECS::CPhysics>(item, Frosty::AssetManager::GetBoundingBox("Bow"), 6.0f);
-			m_World->AddComponent<Frosty::ECS::CWeapon>(item, Frosty::ECS::CWeapon::WeaponType::Bow, 1, 1.f);
+			//auto& weaponHandler = Frosty::AssetManager::GetWeaponHandler("Weapons");
+			loadedWeapon = weaponHandler->GetWeaponByTypeAndLevel(Frosty::Weapon::WeaponType::Bow, 2, 2);
+			m_World->AddComponent<Frosty::ECS::CWeapon>(item, loadedWeapon);
 			break;
 		case 10:
 			m_World->AddComponent<Frosty::ECS::CLootable>(item, Frosty::ECS::CLootable::LootType::Bow3);
@@ -428,7 +440,9 @@ namespace MCS
 			itemMat.DiffuseTexture = Frosty::AssetManager::GetTexture2D("bow_lvl3_diffuse");
 			itemMat.NormalTexture = Frosty::AssetManager::GetTexture2D("bow_normal");
 			m_World->AddComponent<Frosty::ECS::CPhysics>(item, Frosty::AssetManager::GetBoundingBox("Bow"), 6.0f);
-			m_World->AddComponent<Frosty::ECS::CWeapon>(item, Frosty::ECS::CWeapon::WeaponType::Bow, 1, 1.f);
+			//auto& weaponHandler = Frosty::AssetManager::GetWeaponHandler("Weapons");
+			loadedWeapon = weaponHandler->GetWeaponByTypeAndLevel(Frosty::Weapon::WeaponType::Bow, 3, 3);
+			m_World->AddComponent<Frosty::ECS::CWeapon>(item, loadedWeapon);
 			break;
 		default:
 			break;

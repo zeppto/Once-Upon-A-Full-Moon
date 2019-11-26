@@ -993,8 +993,6 @@ namespace MCS
 		// Swap CWeapon
 		if ((m_World->HasComponent<Frosty::ECS::CWeapon>(playerWeapon)) && (m_World->HasComponent<Frosty::ECS::CWeapon>(lootWeapon)))
 		{
-			if ((m_World->GetComponent<Frosty::ECS::CWeapon>(playerWeapon) != m_World->GetComponent<Frosty::ECS::CWeapon>(lootWeapon)))
-			{
 				// Swap loot type in lootWeapon depending on playerWeapon
 				SwapLootType(playerWeapon, lootWeapon);
 
@@ -1006,7 +1004,7 @@ namespace MCS
 				// Only switch CMesh and CMaterial when weapon stats have been swapped
 				SwapMesh(playerWeapon, lootWeapon);
 				SwapMaterial(playerWeapon, lootWeapon);
-			}
+				Frosty::Renderer::SwapEntity(playerWeapon, lootWeapon);
 		}
 	}
 
