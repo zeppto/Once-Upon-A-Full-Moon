@@ -128,7 +128,8 @@ namespace MCS
 		}
 		if (m_Enemy[index]->CurrentState == Frosty::ECS::CEnemy::State::Reset)
 		{
-			if (glm::distance(m_Transform[index]->Position, m_Enemy[index]->SpawnPosition) <= 0.8f)
+			//if (Frosty::Time::GetFrameCount() % 60 == 0) FY_INFO("Distance to spawn position: ({0})", glm::distance(m_Transform[index]->Position, m_Enemy[index]->SpawnPosition));
+			if (glm::distance(m_Transform[index]->Position, m_Enemy[index]->SpawnPosition) <= 2.0f)
 			{
 				m_Enemy[index]->CurrentState = Frosty::ECS::CEnemy::State::Idle;
 				m_Health[index]->CurrentHealth = m_Health[index]->MaxHealth;
@@ -136,7 +137,7 @@ namespace MCS
 			}
 			else
 			{
-				//if (Frosty::Time::GetFrameCount() % 20 == 0) FY_INFO("Reset");
+				if (Frosty::Time::GetFrameCount() % 60 == 0) FY_INFO("Reset");
 				return;
 			}
 		}
@@ -145,7 +146,7 @@ namespace MCS
 		if (m_Health[index]->CurrentHealth <= m_Health[index]->MaxHealth * m_Enemy[index]->RunOnHealth)
 		{
 			m_Enemy[index]->CurrentState = Frosty::ECS::CEnemy::State::Escape;
-			//if (Frosty::Time::GetFrameCount() % 20 == 0) FY_INFO("Escape");
+			if (Frosty::Time::GetFrameCount() % 60 == 0) FY_INFO("Escape");
 			return;
 		}
 
@@ -153,7 +154,7 @@ namespace MCS
 		if (glm::distance(m_Transform[index]->Position, m_Enemy[index]->Target->Position) > m_Enemy[index]->SightRange)
 		{
 			m_Enemy[index]->CurrentState = Frosty::ECS::CEnemy::State::Idle;
-			//if (Frosty::Time::GetFrameCount() % 20 == 0) FY_INFO("Idle");
+			if (Frosty::Time::GetFrameCount() % 60 == 0) FY_INFO("Idle");
 			return;
 		}
 
@@ -161,7 +162,7 @@ namespace MCS
 		if (glm::distance(m_Transform[index]->Position, m_Enemy[index]->Target->Position) <= m_Enemy[index]->Weapon->MaxAttackRange)
 		{
 			m_Enemy[index]->CurrentState = Frosty::ECS::CEnemy::State::Attack;
-			//if (Frosty::Time::GetFrameCount() % 20 == 0) FY_INFO("Attack");
+			if (Frosty::Time::GetFrameCount() % 60 == 0) FY_INFO("Attack");
 
 			//if (glm::distance(m_Transform[index]->Position, m_Enemy[index]->Target->Position) < m_Enemy[index]->Weapon->MinAttackRange)
 			//{
@@ -178,7 +179,7 @@ namespace MCS
 			if (!stopChase)
 			{
 				m_Enemy[index]->CurrentState = Frosty::ECS::CEnemy::State::Chase;
-				//if (Frosty::Time::GetFrameCount() % 20 == 0) FY_INFO("Chase");
+				if (Frosty::Time::GetFrameCount() % 60 == 0) FY_INFO("Chase");
 			}
 		}
 	}
@@ -262,12 +263,17 @@ namespace MCS
 		if (bossComp.ActiveAbility == Frosty::ECS::CBoss::AbilityState::None)
 		{
 			//int randomNr = rand() % 2;
-			int randomNr = 1;
-			if (randomNr == 0 && (Frosty::Time::CurrentTime() - bossComp.LeapCooldownTime >= bossComp.LeapInterval) &&
-				glm::distance(m_Transform[index]->Position, m_Enemy[index]->Target->Position) <= bossComp.ChargeDistance)
+			int randomNr = 0;
+			if (randomNr == 0 && (Frosty::Time::CurrentTime() - bossComp.LeapCooldownTime >= bossComp.LeapInterval))
 			{
 				// Leap
-				bossComp.ActiveAbility = Frosty::ECS::CBoss::AbilityState::Leap;
+				if (glm::distance(m_Transform[index]->Position, m_Enemy[index]->Target->Position) <= bossComp.LeapMaxDistance &&
+					glm::distance(m_Transform[index]->Position, m_Enemy[index]->Target->Position) >= bossComp.LeapMinDistance)
+				{
+					bossComp.LeapTargetPosition = m_Enemy[index]->Target->Position;
+					physComp.Direction = glm::normalize(bossComp.LeapTargetPosition - m_Transform[index]->Position);
+					bossComp.ActiveAbility = Frosty::ECS::CBoss::AbilityState::Leap;
+				}
 			}
 			else if (randomNr == 1 && (Frosty::Time::CurrentTime() - bossComp.ChargeCooldownTime >= bossComp.ChargeInterval))
 			{
@@ -289,6 +295,16 @@ namespace MCS
 
 		if (bossComp.ActiveAbility == Frosty::ECS::CBoss::AbilityState::Leap)
 		{
+			physComp.SpeedMultiplier = 8.0f;
+
+			if (glm::distance(m_Transform[index]->Position, bossComp.LeapTargetPosition) <= 1.0f)
+			{
+				// Leap completed
+				physComp.SpeedMultiplier = 1.0f;
+				bossComp.LeapCooldownTime = Frosty::Time::CurrentTime();
+				bossComp.ActiveAbility = Frosty::ECS::CBoss::AbilityState::None;
+				m_Transform[index]->Position = bossComp.LeapTargetPosition;
+			}
 			return true;
 		}
 		else if (bossComp.ActiveAbility == Frosty::ECS::CBoss::AbilityState::Charge)
