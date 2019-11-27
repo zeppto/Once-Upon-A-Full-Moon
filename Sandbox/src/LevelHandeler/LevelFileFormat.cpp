@@ -386,6 +386,8 @@ namespace MCS
 					//0 = Transform
 					existingFile.read((char*)& fileEntitys.myEntitys.at(i).myTransform, sizeof(Level_Transform));
 
+
+
 					//temp cross
 					//if (fileEntitys.myEntitys.at(i).myTransform.Scale.x == 270)
 					//{
@@ -411,8 +413,8 @@ namespace MCS
 						if (fileEntitys.myEntitys.at(i).MyComponents.at(10).HaveComponent || !fileEntitys.myEntitys.at(i).MyComponents.at(1).HaveComponent)
 						{
 							float savedX = fileEntitys.myEntitys.at(i).myTransform.Scale.x;
-							fileEntitys.myEntitys.at(i).myTransform.Scale.x = fileEntitys.myEntitys.at(i).myTransform.Scale.z;
-							fileEntitys.myEntitys.at(i).myTransform.Scale.z = savedX;
+							fileEntitys.myEntitys.at(i).myTransform.Scale.x = fileEntitys.myEntitys.at(i).myTransform.Scale.z *1.25;
+							fileEntitys.myEntitys.at(i).myTransform.Scale.z = savedX * 1.25;
 						}
 						else
 						{
@@ -423,6 +425,13 @@ namespace MCS
 					{
 						tempRotation.y += rotation;
 					}
+
+
+	/*				if (fileEntitys.myEntitys.at(i).MyComponents.at(10).HaveComponent)
+					{
+						fileEntitys.myEntitys.at(i).myTransform.Scale.x *= 1.25;
+							fileEntitys.myEntitys.at(i).myTransform.Scale.z *= 1.25;
+					}*/
 
 					auto& entity = m_World->CreateEntity(glm::vec3(matrix[3].x, matrix[3].y, matrix[3].z), tempRotation, fileEntitys.myEntitys.at(i).myTransform.Scale, fileEntitys.myEntitys.at(i).myTransform.IsStatic);
 					auto& newlyTreansform = m_World->GetComponent<Frosty::ECS::CTransform>(entity);
@@ -441,8 +450,16 @@ namespace MCS
 						//}
 						//for in game
 						//if(!fileEntitys.myEntitys.at(i).MyComponents.at(10).HaveComponent)
-						m_World->AddComponent<Frosty::ECS::CMesh>(entity,
-							Frosty::AssetManager::GetMesh(fileEntitys.myEntitys.at(i).myMesh.MeshName));
+
+
+						if (!fileEntitys.myEntitys.at(i).MyComponents.at(10).HaveComponent)
+						{
+
+							m_World->AddComponent<Frosty::ECS::CMesh>(entity,
+								Frosty::AssetManager::GetMesh(fileEntitys.myEntitys.at(i).myMesh.MeshName));
+						}
+
+
 
 						//std::string meshName = fileEntitys.myEntitys.at(i).myMesh.MeshName;
 						//if (meshName.find("hexCircle") != std::string::npos)
@@ -550,6 +567,8 @@ namespace MCS
 						physics.MaxSpeed = fileEntitys.myEntitys.at(i).myPhysics.MaxSpeed;
 						physics.Speed = fileEntitys.myEntitys.at(i).myPhysics.Speed;
 						physics.SpeedMultiplier = fileEntitys.myEntitys.at(i).myPhysics.SpeedMultiplier;
+
+
 						//physics.Velocity = fileEntitys.myEntitys.at(i).myPhysics.Velocity;
 					}
 					//6 = Enemy
@@ -745,6 +764,7 @@ namespace MCS
 					{
 						existingFile.read((char*)& fileEntitys.myEntitys.at(i).myLevelExit, sizeof(Level_LevelExit));
 						int newExit = fileEntitys.myEntitys.at(i).myLevelExit.ExitDirection;
+						
 						if (rotation == 270)
 						{
 							if (fileEntitys.myEntitys.at(i).myLevelExit.ExitDirection == 0)
@@ -779,6 +799,7 @@ namespace MCS
 								newExit = 0;
 						}
 						m_World->AddComponent<Frosty::ECS::CLevelExit>(entity, newExit);
+						
 					}
 					//11 = DropItem
 					if (fileEntitys.myEntitys.at(i).MyComponents.at(11).HaveComponent)

@@ -211,7 +211,7 @@ namespace MCS
 
 				if (weapon.Type == Frosty::Weapon::WeaponType::Sword)
 				{
-					m_World->AddComponent<Frosty::ECS::CMesh>(item, Frosty::AssetManager::GetMesh("sword"), true);
+					m_World->AddComponent<Frosty::ECS::CMesh>(item, Frosty::AssetManager::GetMesh("sword"));
 					material.NormalTexture = Frosty::AssetManager::GetTexture2D("sword_normal");
 					m_World->AddComponent<Frosty::ECS::CPhysics>(item, Frosty::AssetManager::GetBoundingBox("sword"), transform.Scale, weapon.ProjectileSpeed);
 					
@@ -239,12 +239,12 @@ namespace MCS
 
 					if (weapon.Level == 1)
 					{
-						loot.Weapon = Frosty::ECS::CLootable::WeaponType::Bow3;
+						loot.Weapon = Frosty::ECS::CLootable::WeaponType::Bow1;
 						material.DiffuseTexture = Frosty::AssetManager::GetTexture2D("bow_lvl1_diffuse");
 					}
 					else if (weapon.Level == 2)
 					{
-						loot.Weapon = Frosty::ECS::CLootable::WeaponType::Bow3;
+						loot.Weapon = Frosty::ECS::CLootable::WeaponType::Bow2;
 						material.DiffuseTexture = Frosty::AssetManager::GetTexture2D("bow_lvl2_diffuse");
 					}
 					else if (weapon.Level == 3)
@@ -258,7 +258,7 @@ namespace MCS
 			case 6:
 				// Bait
 				transform.Scale = glm::vec3(1.f, 1.f, 1.f);
-				m_World->AddComponent<Frosty::ECS::CMesh>(item, Frosty::AssetManager::GetMesh("meat"), true);
+				m_World->AddComponent<Frosty::ECS::CMesh>(item, Frosty::AssetManager::GetMesh("meat"));
 				material.DiffuseTexture = Frosty::AssetManager::GetTexture2D("meat");
 				light.Color = glm::vec3(1.f, 0.5f, 1.f);
 				loot.Type = Frosty::ECS::CLootable::LootType::Bait;
