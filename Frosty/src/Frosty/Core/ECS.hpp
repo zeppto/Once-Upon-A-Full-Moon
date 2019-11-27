@@ -902,7 +902,7 @@ namespace Frosty
 			bool Active{ false };
 			float CurrentCooldown{ 0.0f };
 			float DistanceDashed{ 0.0f };
-			float SpeedMultiplier{ 7.0f };
+			float SpeedMultiplier{ 6.0f };
 
 			CDash() = default;
 			CDash(const CDash& org) { FY_CORE_ASSERT(false, "Copy constructor in CDash called."); }
