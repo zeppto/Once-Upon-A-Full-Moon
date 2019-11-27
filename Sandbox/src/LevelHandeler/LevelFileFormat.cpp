@@ -83,14 +83,14 @@ namespace MCS
 			else
 				myComponents.MyComponents.at(2).HaveComponent = false;
 			//Follow
-			if (m_World->HasComponent<Frosty::ECS::CFollow>(entity))
-			{
-				myComponents.MyComponents.at(3).HaveComponent = true;
-				//under construction
-				auto& follow = m_World->GetComponent<Frosty::ECS::CFollow>(entity);
-				myComponents.myFollow.StopDistance = follow.StopDistance;
-			}
-			else
+			//if (m_World->HasComponent<Frosty::ECS::CFollow>(entity))
+			//{
+			//	myComponents.MyComponents.at(3).HaveComponent = true;
+			//	//under construction
+			//	auto& follow = m_World->GetComponent<Frosty::ECS::CFollow>(entity);
+			//	myComponents.myFollow.StopDistance = follow.StopDistance;
+			//}
+			//else
 				myComponents.MyComponents.at(3).HaveComponent = false;
 			//Light
 			if (m_World->HasComponent<Frosty::ECS::CLight>(entity))
@@ -517,11 +517,11 @@ namespace MCS
 					//3 = Follow
 					if (fileEntitys.myEntitys.at(i).MyComponents.at(3).HaveComponent)
 					{
-						existingFile.read((char*)& fileEntitys.myEntitys.at(i).myFollow, sizeof(Level_Follow));
-						auto& follow = m_World->AddComponent<Frosty::ECS::CFollow>(entity, playerTransform);
+						//existingFile.read((char*)& fileEntitys.myEntitys.at(i).myFollow, sizeof(Level_Follow));
+						//auto& follow = m_World->AddComponent<Frosty::ECS::CFollow>(entity, playerTransform);
 						//For edeting old level
 						//auto& follow = m_World->AddComponent<Frosty::ECS::CFollow>(entity);// , playerTransform);
-						follow.StopDistance = fileEntitys.myEntitys.at(i).myFollow.StopDistance;
+						//follow.StopDistance = fileEntitys.myEntitys.at(i).myFollow.StopDistance;
 						//under construction
 					}
 					//4 = Light
@@ -543,11 +543,9 @@ namespace MCS
 						}
 						existingFile.read((char*)& fileEntitys.myEntitys.at(i).myPhysics, sizeof(Level_Physics));
 						physCounter++;
-						auto& physics = m_World->AddComponent<Frosty::ECS::CPhysics>(entity);
-						if (fileEntitys.myEntitys.at(i).MyComponents.at(1).HaveComponent)
-							physics.BoundingBox = Frosty::AssetManager::GetBoundingBox(fileEntitys.myEntitys.at(i).myMesh.MeshName);
-						else
-							physics.BoundingBox = Frosty::AssetManager::GetBoundingBox("pCube1");
+						auto& physics = m_World->AddComponent<Frosty::ECS::CPhysics>(entity,
+							Frosty::AssetManager::GetBoundingBox(fileEntitys.myEntitys.at(i).MyComponents.at(1).HaveComponent ?
+								fileEntitys.myEntitys.at(i).myMesh.MeshName : "pCube1"), newlyTreansform.Scale);
 						physics.Direction = fileEntitys.myEntitys.at(i).myPhysics.Direction;
 						physics.MaxSpeed = fileEntitys.myEntitys.at(i).myPhysics.MaxSpeed;
 						physics.Speed = fileEntitys.myEntitys.at(i).myPhysics.Speed;
@@ -621,7 +619,7 @@ namespace MCS
 								//weaponMat.DiffuseTexture = Frosty::AssetManager::GetTexture2D("bow_lvl1_diffuse");
 								//weaponMat.NormalTexture = Frosty::AssetManager::GetTexture2D("bow_normal");
 							}
-							if(isMelle == 1)
+							if (isMelle == 1)
 								loadedWeapon = weaponHandler->GetWeaponByTypeAndLevel(Frosty::Weapon::WeaponType::Sword, lowLevel, highLevel);
 
 							//if (weaponComp.Type == Frosty::ECS::CWeapon::WeaponType::Bow)

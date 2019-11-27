@@ -213,8 +213,8 @@ namespace MCS
 				{
 					m_World->AddComponent<Frosty::ECS::CMesh>(item, Frosty::AssetManager::GetMesh("sword"), true);
 					material.NormalTexture = Frosty::AssetManager::GetTexture2D("sword_normal");
-					m_World->AddComponent<Frosty::ECS::CPhysics>(item, Frosty::AssetManager::GetBoundingBox("sword"), weapon.ProjectileSpeed);
-
+					m_World->AddComponent<Frosty::ECS::CPhysics>(item, Frosty::AssetManager::GetBoundingBox("sword"), transform.Scale, weapon.ProjectileSpeed);
+					
 					if (weapon.Level == 1)
 					{
 						loot.Weapon = Frosty::ECS::CLootable::WeaponType::Sword1;
@@ -235,7 +235,7 @@ namespace MCS
 				{
 					m_World->AddComponent<Frosty::ECS::CMesh>(item, Frosty::AssetManager::GetMesh("Bow"));
 					material.NormalTexture = Frosty::AssetManager::GetTexture2D("bow_normal");
-					m_World->AddComponent<Frosty::ECS::CPhysics>(item, Frosty::AssetManager::GetBoundingBox("Bow"), weapon.ProjectileSpeed);
+					m_World->AddComponent<Frosty::ECS::CPhysics>(item, Frosty::AssetManager::GetBoundingBox("Bow"), transform.Scale, weapon.ProjectileSpeed);
 
 					if (weapon.Level == 1)
 					{

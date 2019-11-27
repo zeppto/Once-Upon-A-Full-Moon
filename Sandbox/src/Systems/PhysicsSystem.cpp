@@ -1,4 +1,3 @@
-
 #include <mcspch.hpp>
 #include "PhysicsSystem.hpp"
 #include "Frosty/Events/AbilityEvent.hpp"
@@ -23,8 +22,10 @@ namespace MCS
 		{
 			//if (i == 2 && Frosty::Time::GetFrameCount() % 100 == 0) FY_INFO("Direction is ({0}, {1}, {2})", m_Physics[i]->Direction.x, m_Physics[i]->Direction.y, m_Physics[i]->Direction.z);
 			//if (i == 2 && Frosty::Time::GetFrameCount() % 10 == 0) FY_INFO("Speed multiplier is ({0})", m_Physics[i]->SpeedMultiplier);
-			m_Transform[i]->Position += m_Physics[i]->Direction * m_Physics[i]->Speed * m_Physics[i]->SpeedMultiplier * Frosty::Time::DeltaTime();
-			CheckCollision(i);
+
+			glm::vec3 changeOffset = m_Physics[i]->Direction * m_Physics[i]->Speed * m_Physics[i]->SpeedMultiplier * Frosty::Time::DeltaTime();
+			m_Transform[i]->Position += changeOffset;
+			if (!m_Transform[i]->IsStatic) CheckCollision(i);
 
 			if (m_Physics[i]->Direction.y > 0.0f)
 			{
@@ -159,15 +160,17 @@ namespace MCS
 
 				if (checkCollision)
 				{
-					bool intersect = false;
+					
 					glm::vec3 finalCenterA = m_Transform[index]->Position + glm::vec3(m_Physics[index]->BoundingBox->pos[0], m_Physics[index]->BoundingBox->pos[1], m_Physics[index]->BoundingBox->pos[2]);
 					glm::vec3 finalCenterB = m_Transform[i]->Position + glm::vec3(m_Physics[i]->BoundingBox->pos[0], m_Physics[i]->BoundingBox->pos[1], m_Physics[i]->BoundingBox->pos[2]);
 					glm::vec3 finalLengthA = glm::vec3(m_Physics[index]->BoundingBox->halfSize[0], m_Physics[index]->BoundingBox->halfSize[1], m_Physics[index]->BoundingBox->halfSize[2]) * m_Transform[index]->Scale;
 					glm::vec3 finalLengthB = glm::vec3(m_Physics[i]->BoundingBox->halfSize[0], m_Physics[i]->BoundingBox->halfSize[1], m_Physics[i]->BoundingBox->halfSize[2]) * m_Transform[i]->Scale;
-					intersect = Frosty::CollisionDetection::AABBIntersect(finalLengthA, finalCenterA, finalLengthB, finalCenterB);
+					bool intersect = Frosty::CollisionDetection::AABBIntersect(finalLengthA, finalCenterA, finalLengthB, finalCenterB);
+					glm::vec3 intersectionPushback(0.0f);
 
+					if (!m_Transform[i]->IsStatic) intersectionPushback = CircleIntersection(index, i);
 
-					if (intersect)
+					if ((intersectionPushback != glm::vec3(0.0f, 0.0f, 0.0f)) || intersect)
 					{
 						// Attack with Player/Enemy/Chest
 						if (m_World->HasComponent<Frosty::ECS::CAttack>(m_Transform[index]->EntityPtr))
@@ -188,6 +191,7 @@ namespace MCS
 										{
 											m_World->AddComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr);
 										}
+										Frosty::EventBus::GetEventBus()->Publish<Frosty::EnemyDeathEvent>(Frosty::EnemyDeathEvent(30));
 									}
 									else
 									{
@@ -259,7 +263,17 @@ namespace MCS
 									}
 								}
 							}
-							if (normalCollisionPushback) m_Transform[index]->Position -= Frosty::CollisionDetection::AABBIntersecPushback(finalLengthA, finalCenterA, finalLengthB, finalCenterB);
+							
+
+							if (m_Transform[i]->IsStatic)
+							{
+								if (normalCollisionPushback && intersect)
+									m_Transform[index]->Position -= Frosty::CollisionDetection::AABBIntersecPushback(finalLengthA, finalCenterA, finalLengthB, finalCenterB);
+							}
+							else
+							{
+								if (normalCollisionPushback) m_Transform[index]->Position -= intersectionPushback;
+							}
 						}
 					}
 				}
@@ -342,5 +356,22 @@ namespace MCS
 				//}
 			}
 		}
+	}
+
+	glm::vec3 PhysicsSystem::CircleIntersection(size_t indexA, size_t indexB)
+	{
+		float dist = glm::distance(m_Transform[indexA]->Position, m_Transform[indexB]->Position);
+		float totalRadius = m_Physics[indexA]->Radius + m_Physics[indexB]->Radius;
+		float diff = dist - totalRadius;
+		//if (indexA == 1 && Frosty::Time::GetFrameCount() % 60 == 0)
+		//{
+		//	FY_INFO("Distance: {0}", dist);
+		//	FY_INFO("Total Radius: {0}", totalRadius);
+		//	FY_INFO("Difference: {0}", diff);
+		//}
+		if (diff <= 0.0f)
+			return m_Physics[indexA]->Direction * diff * -1.0f;
+
+		return glm::vec3(0.0f);
 	}
 }
