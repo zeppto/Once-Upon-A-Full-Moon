@@ -579,31 +579,31 @@ namespace MCS
 							// Diffuse // 
 							ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(10, 10));
 
-							
-				/*			world->AddComponent<Frosty::ECS::CAnimController>(m_SelectedEntity);
 
-							
-							Frosty::ECS::CAnimController& controlComp = world->GetComponent<Frosty::ECS::CAnimController>(m_SelectedEntity);
-							ImGui::SliderFloat("AnimSpeed", &controlComp.animSpeed, 0.f, 100.f);*/
+							/*			world->AddComponent<Frosty::ECS::CAnimController>(m_SelectedEntity);
 
-							//if (ImGui::CollapsingHeader("Animation Controller"))
-							//{
-							//	ImGui::SliderFloat("AnimSpeed", &controlComp.animSpeed, 0.f, 100.f);
-							//	
-							//	if (ImGui::Button("Pick Animation")) ImGui::OpenPopup("Animation menu");
-							//	if (ImGui::BeginPopup("Animation menu"))
-							//	{
-							//		for (auto& it: *Frosty::AssetManager::GetAnimationMap())
-							//		{
-							//			if (ImGui::Button(it.first.c_str())) controlComp.currAnim = &it.second;
-							//		}
-							//		if (ImGui::Button("Close")) ImGui::CloseCurrentPopup();
 
-							//		ImGui::EndPopup();
-							//	}
-							//}
-							//uint32_t selDiffuseID = 0;
-							//comp.DiffuseTexture ? selDiffuseID = comp.DiffuseTexture->GetRenderID() : selDiffuseID = Frosty::AssetManager::GetTexture2D("Checkerboard")->GetRenderID();
+										Frosty::ECS::CAnimController& controlComp = world->GetComponent<Frosty::ECS::CAnimController>(m_SelectedEntity);
+										ImGui::SliderFloat("AnimSpeed", &controlComp.animSpeed, 0.f, 100.f);*/
+
+										//if (ImGui::CollapsingHeader("Animation Controller"))
+										//{
+										//	ImGui::SliderFloat("AnimSpeed", &controlComp.animSpeed, 0.f, 100.f);
+										//	
+										//	if (ImGui::Button("Pick Animation")) ImGui::OpenPopup("Animation menu");
+										//	if (ImGui::BeginPopup("Animation menu"))
+										//	{
+										//		for (auto& it: *Frosty::AssetManager::GetAnimationMap())
+										//		{
+										//			if (ImGui::Button(it.first.c_str())) controlComp.currAnim = &it.second;
+										//		}
+										//		if (ImGui::Button("Close")) ImGui::CloseCurrentPopup();
+
+										//		ImGui::EndPopup();
+										//	}
+										//}
+										//uint32_t selDiffuseID = 0;
+										//comp.DiffuseTexture ? selDiffuseID = comp.DiffuseTexture->GetRenderID() : selDiffuseID = Frosty::AssetManager::GetTexture2D("Checkerboard")->GetRenderID();
 							ImGui::Image(comp.DiffuseTexture ? comp.DiffuseTexture->GetRenderID() : Frosty::AssetManager::GetTexture2D("Checkerboard")->GetRenderID(), ImVec2(64, 64));
 							ImGui::PopStyleVar();
 							if (ImGui::IsItemClicked()) ImGui::OpenPopup("diffuse_texture_selector");
@@ -719,6 +719,11 @@ namespace MCS
 							}
 							ImGui::SameLine();
 							ImGui::Text("Normal");
+						}
+
+						if (comp.HasTransparency)
+						{
+							ImGui::Text("Has transparency");
 						}
 
 						// Add more parameters like texture etc
@@ -932,7 +937,7 @@ namespace MCS
 								comp.UseShader = Frosty::AssetManager::GetShader("Particles");
 								comp.RotateOverLifetime = false;
 							}
-							else if(comp.AlwaysFaceCamera == true) //Was true, changed to false
+							else if (comp.AlwaysFaceCamera == true) //Was true, changed to false
 							{
 								comp.UseShader = Frosty::AssetManager::GetShader("ParticlesHorizontal");
 
@@ -993,7 +998,7 @@ namespace MCS
 						ImGui::Text("Texture");
 						if (!Frosty::Application::Get().GameIsRunning())
 						{
-							ImGui::SliderInt("Particle count", (int*)&comp.MaxParticles, 1, comp.MAX_PARTICLE_COUNT);
+							ImGui::SliderInt("Particle count", (int*)& comp.MaxParticles, 1, comp.MAX_PARTICLE_COUNT);
 						}
 						ImGui::DragFloat3("Rotation", glm::value_ptr(comp.SystemRotation), 0.1f, 0.0f, 0.0f, "%.2f");
 						ImGui::Checkbox("Random direction", &comp.RandomDirection);
@@ -1028,7 +1033,7 @@ namespace MCS
 						ImGui::InputFloat("Start size", &comp.StartParticleSize);
 						ImGui::InputFloat("End size", &comp.EndParticleSize);
 						ImGui::InputFloat("Emit rate", &comp.EmitRate);
-						ImGui::DragInt("Emit count", (int*)&comp.EmitCount, 1, 1, comp.MaxParticles);
+						ImGui::DragInt("Emit count", (int*)& comp.EmitCount, 1, 1, comp.MaxParticles);
 						ImGui::InputFloat("Lifetime", &comp.MaxLifetime);
 						ImGui::SliderFloat("Fade in", &comp.FadeInTreshold, comp.MaxLifetime, 0.0f);
 						ImGui::SliderFloat("Fade out", &comp.FadeTreshold, 0.0f, comp.MaxLifetime);
@@ -1080,7 +1085,7 @@ namespace MCS
 				{
 					if (ImGui::CollapsingHeader("Animation Controller"))
 					{
-						Frosty::ECS::CAnimController * comp = &world->GetComponent<Frosty::ECS::CAnimController>(m_SelectedEntity);
+						Frosty::ECS::CAnimController* comp = &world->GetComponent<Frosty::ECS::CAnimController>(m_SelectedEntity);
 						ImGui::SliderFloat("AnimSpeed", &comp->animSpeed, 0.f, 50.f);
 
 						if (ImGui::Button("Pick Animation")) ImGui::OpenPopup("Animation menu");

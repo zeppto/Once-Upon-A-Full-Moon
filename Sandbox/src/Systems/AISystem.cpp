@@ -271,6 +271,7 @@ namespace MCS
 				if (glm::distance(m_Transform[index]->Position, m_Enemy[index]->Target->Position) <= bossComp.LeapMaxDistance &&
 					glm::distance(m_Transform[index]->Position, m_Enemy[index]->Target->Position) >= bossComp.LeapMinDistance)
 				{
+					Frosty::EventBus::GetEventBus()->Publish <Frosty::PlayAnimEvent>(Frosty::PlayAnimEvent(m_Transform[index]->EntityPtr, 2));
 					bossComp.LeapTargetPosition = m_Enemy[index]->Target->Position;
 					physComp.Direction = glm::normalize(bossComp.LeapTargetPosition - m_Transform[index]->Position);
 					bossComp.ActiveAbility = Frosty::ECS::CBoss::AbilityState::Leap;
@@ -283,6 +284,7 @@ namespace MCS
 				{
 					if (bossComp.ChargeLoadCooldownTime == 0.0f)
 					{
+						Frosty::EventBus::GetEventBus()->Publish <Frosty::PlayAnimEvent>(Frosty::PlayAnimEvent(m_Transform[index]->EntityPtr, 3));
 						physComp.SpeedMultiplier = 0.0f;
 						bossComp.ChargeLoadCooldownTime = Frosty::Time::CurrentTime();
 						bossComp.ChargeTargetPosition = m_Enemy[index]->Target->Position;
@@ -313,12 +315,14 @@ namespace MCS
 			if (Frosty::Time::CurrentTime() - bossComp.ChargeLoadCooldownTime >= bossComp.ChargeLoadTime && bossComp.ChargeTargetPosition != glm::vec3(0.0f))
 			{
 				// Loading charge completed
+				Frosty::EventBus::GetEventBus()->Publish <Frosty::PlayAnimEvent>(Frosty::PlayAnimEvent(m_Transform[index]->EntityPtr, 4));
 				physComp.SpeedMultiplier = 6.0f;
 			}
 
 			bossComp.DistanceCharged += glm::length(physComp.Direction * physComp.Speed * physComp.SpeedMultiplier * Frosty::Time::DeltaTime());
 			if (bossComp.DistanceCharged >= bossComp.ChargeDistance)
 			{
+				Frosty::EventBus::GetEventBus()->Publish <Frosty::PlayAnimEvent>(Frosty::PlayAnimEvent(m_Transform[index]->EntityPtr, 5));
 				bossComp.ActiveAbility = Frosty::ECS::CBoss::AbilityState::None;
 				bossComp.ChargeCooldownTime = Frosty::Time::CurrentTime();
 				physComp.SpeedMultiplier = 1.0f;

@@ -57,6 +57,7 @@ namespace MCS
 		void UpdateHUD(size_t index);
 		void SetPickUpText(size_t index, std::string text);
 		void ResetAllHUDWeaponInfo(size_t index);
+		void OnDamage();
 
 
 	private:

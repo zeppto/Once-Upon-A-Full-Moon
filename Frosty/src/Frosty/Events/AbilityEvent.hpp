@@ -123,6 +123,19 @@ namespace Frosty
 		std::shared_ptr<ECS::Entity> m_PlayerEntity;
 	};
 
+	class EnterNewRoomEvent : public BaseEvent
+	{
+	public:
+		EnterNewRoomEvent(const int totalVisitedRooms) : m_TotalVisitedRooms(totalVisitedRooms) { }
+
+		const int GetTotalvisitedRooms() const { return m_TotalVisitedRooms; }
+
+		EVENT_TYPE(EnterNewRoom)
+
+	private:
+		int m_TotalVisitedRooms = 0;
+	};
+
 	class SaveLevelEvent : public BaseEvent
 	{
 	public:
@@ -248,7 +261,27 @@ namespace Frosty
 
 	private:
 		int m_Points{ 0 };
+	};
 
+	class PlayerDamageEvent : public BaseEvent
+	{
+	public:
+		PlayerDamageEvent() { }
+
+		EVENT_TYPE(PlayerDamage)
+	};
+
+	class DropItemEvent : public BaseEvent
+	{
+	public:
+		DropItemEvent(const std::shared_ptr<ECS::Entity>& entity) : m_Entity(entity) { }
+
+		const std::shared_ptr<ECS::Entity>& GetEntity() const { return m_Entity; }
+
+		EVENT_TYPE(DropItem)
+
+	private:
+		std::shared_ptr<ECS::Entity> m_Entity;
 	};
 }
 

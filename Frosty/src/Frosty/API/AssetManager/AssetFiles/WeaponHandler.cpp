@@ -67,7 +67,7 @@ namespace Frosty
 			weapon.ProjectileSpeed = w.attribute("projectileSpeed").as_float();
 
 
-			m_Weapons.emplace_back(weapon.Type, weapon.Speciality, weapon.Level, weapon.MaxAttackRange, weapon.MaxAttackRange, weapon.Damage, weapon.CriticalHit, weapon.CriticalHitChance, weapon.LVL1AttackCooldown, weapon.LVL2AttackCooldown, weapon.LVL3AttackCooldown, weapon.Lifetime, weapon.AttackHitboxScale, weapon.ProjectileSpeed);
+			m_Weapons.emplace_back(weapon.Type, weapon.Speciality, weapon.Level, weapon.MaxAttackRange, weapon.MinAttackRange, weapon.Damage, weapon.CriticalHit, weapon.CriticalHitChance, weapon.LVL1AttackCooldown, weapon.LVL2AttackCooldown, weapon.LVL3AttackCooldown, weapon.Lifetime, weapon.AttackHitboxScale, weapon.ProjectileSpeed);
 		
 			unsigned int level = w.attribute("level").as_uint();
 			if (level > m_HighestWeaponLevel)

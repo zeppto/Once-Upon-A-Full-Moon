@@ -28,7 +28,6 @@ namespace MCS
 
 	private:
 		void CheckCollision(size_t index);
-		void SpawnItem(size_t index);
 		glm::vec3 CircleIntersection(size_t indexA, size_t indexB);
 
 	private:
