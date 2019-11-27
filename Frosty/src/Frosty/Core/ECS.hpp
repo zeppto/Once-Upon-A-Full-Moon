@@ -744,7 +744,7 @@ namespace Frosty
 			int MoveRightKey{ FY_KEY_D };
 			int MoveBackKey{ FY_KEY_S };
 			int DashKey{ FY_KEY_LEFT_SHIFT };
-			int LVL1Attack{ FY_MOUSE_BUTTON_RIGHT };
+			int LVL1Attack{ FY_MOUSE_BUTTON_LEFT };
 			int LVL2Attack{ FY_MOUSE_BUTTON_RIGHT };
 			int LVL3Attack{ FY_KEY_SPACE };
 
@@ -844,6 +844,7 @@ namespace Frosty
 			float BaitTimer{ Frosty::Time::CurrentTime() };
 
 			// WOLFSBANE - poisonous flower, used as currency
+			int MaxWolfsbaneAmount{ 10 };
 			int CurrentWolfsbane{ 0 };
 
 			CInventory() = default;
@@ -883,7 +884,7 @@ namespace Frosty
 			bool Active{ false };
 			float CurrentCooldown{ 0.0f };
 			float DistanceDashed{ 0.0f };
-			float SpeedMultiplier{ 7.0f };
+			float SpeedMultiplier{ 6.0f };
 
 			CDash() = default;
 			CDash(const CDash& org) { FY_CORE_ASSERT(false, "Copy constructor in CDash called."); }
@@ -1006,14 +1007,18 @@ namespace Frosty
 			static std::string NAME;
 			enum class LootType
 			{
-				HealingPotion, IncHealthPotion, SpeedPotion, SpeedBoot,
-				Sword1, Sword2, Sword3,
-				Bow1, Bow2, Bow3
+				HealingPotion, IncHealthPotion, SpeedPotion, SpeedBoots, Wolfsbane, Bait, Weapon
 			};
+			enum class WeaponType
+			{
+				None, Sword1, Sword2, Sword3, Bow1, Bow2, Bow3
+			};
+
 			LootType Type{ LootType::HealingPotion };
+			WeaponType Weapon{ WeaponType::None };
 
 			CLootable() = default;
-			CLootable(LootType type) : Type(type) {}
+			CLootable(LootType type, WeaponType weapon = WeaponType::None) : Type(type), Weapon(weapon) {}
 			CLootable(const CLootable& org) { FY_CORE_ASSERT(false, "Copy constructor in CLootable called."); }
 
 			virtual std::string GetName() const { return NAME; }
@@ -1074,7 +1079,7 @@ namespace Frosty
 			static std::string NAME;
 
 			bool isSliderControlled{ false };
-			float animSpeed{ 0.0f };
+			float animSpeed{ 1.0f };
 			Animation* currAnim{ nullptr };
 			float dt{ 0.0f };
 			glm::mat4* holdPtr{ nullptr };

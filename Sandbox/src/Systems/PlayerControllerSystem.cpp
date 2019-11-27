@@ -56,11 +56,15 @@ namespace MCS
 
 			if (m_Dash[i]->Active)
 			{
-				m_Dash[i]->DistanceDashed += glm::length(m_Physics[i]->Direction * m_Physics[i]->Speed * m_Physics[i]->SpeedMultiplier * Frosty::Time::DeltaTime());
+				m_Dash[i]->DistanceDashed += glm::length(m_Physics[i]->Direction * m_Physics[i]->Speed * m_Dash[i]->SpeedMultiplier * Frosty::Time::DeltaTime());
 				if (m_Dash[i]->DistanceDashed >= m_Dash[i]->DISTANCE / 1000.0f)
 				{
 					m_Dash[i]->Active = false;
 					m_Dash[i]->DistanceDashed = 0.0f;
+				}
+				else
+				{
+					m_Transform[i]->Position += m_Dash[i]->SpeedMultiplier * glm::normalize(m_Physics[i]->Direction); /*(m_Physics[i]->Direction * m_Physics[i]->Speed) * m_Physics[i]->SpeedMultiplier;*/
 				}
 			}
 			//m_Transform[i]->Position.y = 0.f;
@@ -505,11 +509,27 @@ namespace MCS
 
 		// Create projectile
 		glm::vec3 spawnPos = attackerTransform.Position + (glm::vec3(direction) * 3.0f);
+		spawnPos.y = 5.0f;
 		auto& projectile = m_World->CreateEntity({ spawnPos.x, 1.0f, spawnPos.z }, attackerTransform.Rotation, { 5.0f, 5.0f, 2.0f });
 		m_World->AddComponent<Frosty::ECS::CMesh>(projectile, Frosty::AssetManager::GetMesh("player_arrow"));
 		m_World->AddComponent<Frosty::ECS::CMaterial>(projectile, Frosty::AssetManager::GetShader("FlatColor"));
 		auto& projectilePhysics = m_World->AddComponent<Frosty::ECS::CPhysics>(projectile, Frosty::AssetManager::GetBoundingBox("player_arrow"), weaponComp.ProjectileSpeed);
 		projectilePhysics.Direction = direction;
+
+		auto& particles = m_World->AddComponent<Frosty::ECS::CParticleSystem>(projectile, "Particles", "particle", 30, glm::vec3(0.7f, 0.7f, 1.0f), 12.0f);
+		particles.ParticleSystemDirection = glm::vec3(0.0f, 0.0f, -1.0f);
+		particles.RandomDirection = true;
+		particles.randMainDir = particles.ParticleSystemDirection;
+		particles.randSpread = 0.05f;
+		particles.StartParticleSize = 0.4;
+		particles.EmitCount = 2;
+		particles.EmitRate = 0.05f;
+		particles.MaxLifetime = 1.5f;
+		particles.FadeInTreshold = 1.4f;
+		particles.FadeTreshold = 1.3f;
+		particles.StaticColor = false;
+		particles.SystemEndColor = glm::vec3(0.0f, 0.0f, 1.0f);
+		particles.ParticleSystemStartPos = glm::vec3(0.0f, 0.0f, 1.1f);
 
 		float criticalHit = 0;
 		criticalHit = GenerateCriticalHit(weaponComp.CriticalHit, weaponComp.CriticalHitChance + weaponComp.FireCriticalHitChance);
@@ -544,6 +564,7 @@ namespace MCS
 			}
 
 			glm::vec3 spawnPos = attackerTransform.Position + (glm::vec3(direction) * 3.0f);
+			spawnPos.y = 5.0f;
 			auto& projectile = m_World->CreateEntity({ spawnPos.x, 1.0f, spawnPos.z }, attackerTransform.Rotation, { 5.0f, 5.0f, 2.0f });
 			m_World->AddComponent<Frosty::ECS::CMesh>(projectile, Frosty::AssetManager::GetMesh("player_arrow"));
 			m_World->AddComponent<Frosty::ECS::CMaterial>(projectile, Frosty::AssetManager::GetShader("FlatColor"));
@@ -556,6 +577,22 @@ namespace MCS
 			int totalDamage = int(glm::round(weaponComp.Damage + criticalHit + weaponComp.EarthDamage));
 
 			m_World->AddComponent<Frosty::ECS::CAttack>(projectile, Frosty::ECS::CAttack::AttackType::Range, totalDamage, true, weaponComp.Lifetime);
+
+
+			auto& particles = m_World->AddComponent<Frosty::ECS::CParticleSystem>(projectile, "Particles", "particle", 30, glm::vec3(0.0f, 1.0f, 0.2f), 12.0f);
+			particles.ParticleSystemDirection = glm::vec3(0.0f, 0.0f, -1.0f);
+			particles.RandomDirection = true;
+			particles.randMainDir = particles.ParticleSystemDirection;
+			particles.randSpread = 0.05f;
+			particles.StartParticleSize = 0.4;
+			particles.EmitCount = 2;
+			particles.EmitRate = 0.05f;
+			particles.MaxLifetime = 1.5f;
+			particles.FadeInTreshold = 1.4f;
+			particles.FadeTreshold = 1.3f;
+			particles.StaticColor = false;
+			particles.SystemEndColor = glm::vec3(1.0f, 1.0f, 1.0f);
+			particles.ParticleSystemStartPos = glm::vec3(0.0f, 0.0f, 1.1f);
 		}
 	}
 
@@ -574,6 +611,7 @@ namespace MCS
 
 		// Create projectile
 		glm::vec3 spawnPos = attackerTransform.Position + (glm::vec3(direction) * 3.0f);
+		spawnPos.y = 5.0f;
 		auto& projectile = m_World->CreateEntity({ spawnPos.x, 1.0f, spawnPos.z }, attackerTransform.Rotation, { 5.0f, 5.0f, 2.0f });
 		m_World->AddComponent<Frosty::ECS::CMesh>(projectile, Frosty::AssetManager::GetMesh("player_arrow"));
 		m_World->AddComponent<Frosty::ECS::CMaterial>(projectile, Frosty::AssetManager::GetShader("FlatColor"));
@@ -586,6 +624,21 @@ namespace MCS
 		int totalDamage = int(glm::round(weaponComp.Damage + criticalHit + weaponComp.EarthDamage));
 
 		m_World->AddComponent<Frosty::ECS::CAttack>(projectile, Frosty::ECS::CAttack::AttackType::Range, totalDamage, true, weaponComp.Lifetime, false);
+
+		auto& particles = m_World->AddComponent<Frosty::ECS::CParticleSystem>(projectile, "Particles", "particle", 30, glm::vec3(1.0f, 0.0f, 0.0f), 12.0f);
+		particles.ParticleSystemDirection = glm::vec3(0.0f, 0.0f, -1.0f);
+		particles.RandomDirection = true;
+		particles.randMainDir = particles.ParticleSystemDirection;
+		particles.randSpread = 0.05f;
+		particles.StartParticleSize = 0.4;
+		particles.EmitCount = 2;
+		particles.EmitRate = 0.05f;
+		particles.MaxLifetime = 1.5f;
+		particles.FadeInTreshold = 1.4f;
+		particles.FadeTreshold = 1.3f;
+		particles.StaticColor = false;
+		particles.SystemEndColor = glm::vec3(7.0f, 7.0f, 0.0f);
+		particles.ParticleSystemStartPos = glm::vec3(0.0f, 0.0f, 1.1f);
 	}
 
 	float PlayerControllerSystem::GenerateCriticalHit(float criticalHit, float criticalHitChance)
@@ -747,10 +800,10 @@ namespace MCS
 		auto world = Frosty::Application::Get().GetWorld().get();
 		for (size_t i = 1; i < p_Total; i++)
 		{
-			auto& type = world->GetComponent<Frosty::ECS::CLootable>(e.GetEntity()).Type;
+			auto& loot = world->GetComponent<Frosty::ECS::CLootable>(e.GetEntity());
 			auto& HUD = m_World->GetComponent<Frosty::ECS::CGUI>(m_Transform[i]->EntityPtr);
 
-			if (type == Frosty::ECS::CLootable::LootType::HealingPotion)
+			if (loot.Type == Frosty::ECS::CLootable::LootType::HealingPotion)
 			{
 				if (m_Inventory[i]->CurrentHealingPotions < m_Inventory[i]->MaxHealingPotions)
 				{
@@ -770,7 +823,7 @@ namespace MCS
 				}
 
 			}
-			else if (type == Frosty::ECS::CLootable::LootType::IncHealthPotion)
+			else if (loot.Type == Frosty::ECS::CLootable::LootType::IncHealthPotion)
 			{
 				if (m_Inventory[i]->CurrentIncreaseHPPotions < m_Inventory[i]->MaxIncreaseHPPotions && m_Health[i]->MaxHealth < m_Health[i]->MaxPossibleHealth)
 				{
@@ -789,7 +842,7 @@ namespace MCS
 					SetPickUpText(i, "Can't Pick Up Max Health Increaser");
 				}
 			}
-			else if (type == Frosty::ECS::CLootable::LootType::SpeedPotion)
+			else if (loot.Type == Frosty::ECS::CLootable::LootType::SpeedPotion)
 			{
 				if (m_Inventory[i]->CurrentSpeedPotions < m_Inventory[i]->MaxSpeedPotions)
 				{
@@ -808,7 +861,7 @@ namespace MCS
 					SetPickUpText(i, "Can't Pick Up Speed Potion");
 				}
 			}
-			else if (type == Frosty::ECS::CLootable::LootType::SpeedBoot)
+			else if (loot.Type == Frosty::ECS::CLootable::LootType::SpeedBoots)
 			{
 				if (m_Inventory[i]->CurrentSpeedBoots < m_Inventory[i]->MaxSpeedBoots)
 				{
@@ -836,79 +889,77 @@ namespace MCS
 					SetPickUpText(i, "Can't Pick Up SpeedBoots");
 				}
 			}
-			else if (type == Frosty::ECS::CLootable::LootType::Sword1)
+			else if (loot.Type == Frosty::ECS::CLootable::LootType::Wolfsbane)
 			{
-				FY_INFO("Sword1");
-				SetPickUpText(i, "Picked Up Sword Level 1");
-				SwapWeapon(m_Player[i]->Weapon->EntityPtr, e.GetEntity());
+				if (m_Inventory[i]->CurrentWolfsbane < m_Inventory[i]->MaxWolfsbaneAmount)
+				{
+					m_Inventory[i]->CurrentWolfsbane++;
+					SetPickUpText(i, "+1 Wolfsbane");
 
-				ResetAllHUDWeaponInfo(i);
-				HUD.Layout.sprites.at(1).SetImage("attackMelee");
-				HUD.Layout.sprites.at(2).SetImage("attackMelee1");
-				HUD.Layout.sprites.at(3).SetImage("attackMelee2");
-				HUD.Layout.sprites.at(4).SetImage("attackMelee3");
+					FY_INFO("Wolfsbane in Inventory");
+					FY_INFO("{0} / {1}", m_Inventory[i]->CurrentSpeedPotions, m_Inventory[i]->MaxSpeedPotions);
 
+					if (!world->HasComponent<Frosty::ECS::CDestroy>(e.GetEntity()))
+					{
+						world->AddComponent<Frosty::ECS::CDestroy>(e.GetEntity());
+					}
+				}
+				else
+					SetPickUpText(i, "Can't Pick Up Wolfsbane");
 			}
-			else if (type == Frosty::ECS::CLootable::LootType::Sword2)
+			else if (loot.Type == Frosty::ECS::CLootable::LootType::Bait)
 			{
-				FY_INFO("Sword2");
-				SetPickUpText(i, "Picked Up Sword Level 2");
-				SwapWeapon(m_Player[i]->Weapon->EntityPtr, e.GetEntity());
+				if (m_Inventory[i]->CurrentBaitAmount < m_Inventory[i]->MaxBaitAmount)
+				{
+					m_Inventory[i]->CurrentBaitAmount++;
+					SetPickUpText(i, "+1 Bait");
 
-				ResetAllHUDWeaponInfo(i);
-				HUD.Layout.sprites.at(1).SetImage("attackMelee");
-				HUD.Layout.sprites.at(2).SetImage("attackMelee1");
-				HUD.Layout.sprites.at(3).SetImage("attackMelee2");
-				HUD.Layout.sprites.at(4).SetImage("attackMelee3");
+					FY_INFO("Bait in Inventory");
+					FY_INFO("{0} / {1}", m_Inventory[i]->CurrentSpeedPotions, m_Inventory[i]->MaxSpeedPotions);
+
+					if (!world->HasComponent<Frosty::ECS::CDestroy>(e.GetEntity()))
+					{
+						world->AddComponent<Frosty::ECS::CDestroy>(e.GetEntity());
+					}
+				}
+				else
+					SetPickUpText(i, "Can't Pick Up Bait");
 			}
-			else if (type == Frosty::ECS::CLootable::LootType::Sword3)
+			else if (loot.Type == Frosty::ECS::CLootable::LootType::Weapon)
 			{
-				FY_INFO("Sword3");
-				SetPickUpText(i, "Picked Up Sword Level 3");
+				FY_INFO("Weapon");
 				SwapWeapon(m_Player[i]->Weapon->EntityPtr, e.GetEntity());
-
-				ResetAllHUDWeaponInfo(i);
-				HUD.Layout.sprites.at(1).SetImage("attackMelee");
-				HUD.Layout.sprites.at(2).SetImage("attackMelee1");
-				HUD.Layout.sprites.at(3).SetImage("attackMelee2");
-				HUD.Layout.sprites.at(4).SetImage("attackMelee3");
-			}
-			else if (type == Frosty::ECS::CLootable::LootType::Bow1)
-			{
-				FY_INFO("Arrow1");
-				SetPickUpText(i, "Picked Up Bow Level 1");
-				SwapWeapon(m_Player[i]->Weapon->EntityPtr, e.GetEntity());
-
 				ResetAllHUDWeaponInfo(i);
 
-				HUD.Layout.sprites.at(1).SetImage("attackRanged");
-				HUD.Layout.sprites.at(2).SetImage("attackRanged1");
-				HUD.Layout.sprites.at(3).SetImage("attackRanged2");
-				HUD.Layout.sprites.at(4).SetImage("attackRanged3");
-			}
-			else if (type == Frosty::ECS::CLootable::LootType::Bow2)
-			{
-				FY_INFO("Arrow2");
-				SetPickUpText(i, "Picked Up Bow Level 2");
-				SwapWeapon(m_Player[i]->Weapon->EntityPtr, e.GetEntity());
+				if (loot.Weapon == Frosty::ECS::CLootable::WeaponType::Sword1 || loot.Weapon == Frosty::ECS::CLootable::WeaponType::Sword2 || loot.Weapon == Frosty::ECS::CLootable::WeaponType::Sword3)
+				{
+					if (loot.Weapon == Frosty::ECS::CLootable::WeaponType::Sword1)
+						SetPickUpText(i, "Picked Up Sword Level 1");
+					else if (loot.Weapon == Frosty::ECS::CLootable::WeaponType::Sword2)
+						SetPickUpText(i, "Picked Up Sword Level 2");
+					else if (loot.Weapon == Frosty::ECS::CLootable::WeaponType::Sword3)
+						SetPickUpText(i, "Picked Up Sword Level 3");
 
-				ResetAllHUDWeaponInfo(i);
-				HUD.Layout.sprites.at(1).SetImage("attackRanged");
-				HUD.Layout.sprites.at(2).SetImage("attackRanged1");
-				HUD.Layout.sprites.at(3).SetImage("attackRanged2");
-				HUD.Layout.sprites.at(4).SetImage("attackRanged3");
-			}
-			else if (type == Frosty::ECS::CLootable::LootType::Bow3)
-			{
-				FY_INFO("Arrow3");
-				SetPickUpText(i, "Picked Up Bow Level 3");
-				SwapWeapon(m_Player[i]->Weapon->EntityPtr, e.GetEntity());
+					HUD.Layout.sprites.at(1).SetImage("attackMelee");
+					HUD.Layout.sprites.at(2).SetImage("attackMelee1");
+					HUD.Layout.sprites.at(3).SetImage("attackMelee2");
+					HUD.Layout.sprites.at(4).SetImage("attackMelee3");
+				}
+				else
+				{
+					if (loot.Weapon == Frosty::ECS::CLootable::WeaponType::Bow1)
+						SetPickUpText(i, "Picked Up Bow Level 1");
+					else if (loot.Weapon == Frosty::ECS::CLootable::WeaponType::Bow2)
+						SetPickUpText(i, "Picked Up Bow Level 2");
+					else if (loot.Weapon == Frosty::ECS::CLootable::WeaponType::Bow3)
+						SetPickUpText(i, "Picked Up Bow Level 3");
 
-				ResetAllHUDWeaponInfo(i);
-				HUD.Layout.sprites.at(1).SetImage("attackRanged");
-				HUD.Layout.sprites.at(2).SetImage("attackRanged1");
-				HUD.Layout.sprites.at(3).SetImage("attackRanged2");
-				HUD.Layout.sprites.at(4).SetImage("attackRanged3");
+					HUD.Layout.sprites.at(1).SetImage("attackRanged");
+					HUD.Layout.sprites.at(2).SetImage("attackRanged1");
+					HUD.Layout.sprites.at(3).SetImage("attackRanged2");
+					HUD.Layout.sprites.at(4).SetImage("attackRanged3");
+				}
+
 			}
 		}
 	}
@@ -980,7 +1031,7 @@ namespace MCS
 					// If healing won't exceed health capacity --> directly add heal value to health
 					if (weaponComp.WaterHealing <= (m_Health[i]->MaxHealth - m_Health[i]->CurrentHealth))
 					{
-						m_Health[i]->CurrentHealth += m_Inventory[i]->Heal;
+						m_Health[i]->CurrentHealth += weaponComp.WaterHealing;
 					}
 					// But if healing exceeds health capacity --> max health achieved
 					else
@@ -1019,11 +1070,26 @@ namespace MCS
 		{
 			if ((m_World->GetComponent<Frosty::ECS::CMesh>(playerWeapon)) != (m_World->GetComponent<Frosty::ECS::CMesh>(lootWeapon)))
 			{
+				//Transform must be assigned since parentMatrix(Player) being applied to is the only thing keeping the held weapon from origo.
+				Frosty::ECS::CTransform tempTransform; 
+				tempTransform = m_World->GetComponent<Frosty::ECS::CTransform>(lootWeapon);
+
 				Frosty::ECS::CMesh tempMesh;
 				tempMesh = m_World->GetComponent<Frosty::ECS::CMesh>(playerWeapon);
+				tempMesh.parentMatrix = m_World->GetComponent<Frosty::ECS::CMesh>(playerWeapon).parentMatrix;
+				tempMesh.animOffset = m_World->GetComponent<Frosty::ECS::CMesh>(playerWeapon).animOffset;
 				m_World->GetComponent<Frosty::ECS::CMesh>(playerWeapon) = m_World->GetComponent<Frosty::ECS::CMesh>(lootWeapon);
+				//Make sure it actually ends up in the hand. Default assignment does not do this properly.
+				m_World->GetComponent<Frosty::ECS::CMesh>(playerWeapon).parentMatrix = tempMesh.parentMatrix;
+				m_World->GetComponent<Frosty::ECS::CMesh>(playerWeapon).animOffset = tempMesh.animOffset;
+
+				//Reset it otherwise the opposite object will still be parented.
+				tempMesh.parentMatrix = nullptr;
+				tempMesh.animOffset = nullptr;
 				m_World->GetComponent<Frosty::ECS::CMesh>(lootWeapon) = tempMesh;
 
+				m_World->GetComponent<Frosty::ECS::CTransform>(lootWeapon) = tempTransform;
+				
 			}
 		}
 	}
@@ -1052,20 +1118,21 @@ namespace MCS
 		if (playerWeaponComp.Type == Frosty::ECS::CWeapon::WeaponType::Sword)
 		{
 			if (level == 1)
-				lootComp.Type = Frosty::ECS::CLootable::LootType::Sword1;
+				lootComp.Weapon = Frosty::ECS::CLootable::WeaponType::Sword1;
 			else if (level == 2)
-				lootComp.Type = Frosty::ECS::CLootable::LootType::Sword2;
+				lootComp.Weapon = Frosty::ECS::CLootable::WeaponType::Sword2;
 			else if (level == 3)
-				lootComp.Type = Frosty::ECS::CLootable::LootType::Sword3;
+				lootComp.Weapon = Frosty::ECS::CLootable::WeaponType::Sword3;
+
 		}
 		else if (playerWeaponComp.Type == Frosty::ECS::CWeapon::WeaponType::Bow)
 		{
 			if (level == 1)
-				lootComp.Type = Frosty::ECS::CLootable::LootType::Bow1;
+				lootComp.Weapon = Frosty::ECS::CLootable::WeaponType::Bow1;
 			else if (level == 2)
-				lootComp.Type = Frosty::ECS::CLootable::LootType::Bow2;
+				lootComp.Weapon = Frosty::ECS::CLootable::WeaponType::Bow2;
 			else if (level == 3)
-				lootComp.Type = Frosty::ECS::CLootable::LootType::Bow3;
+				lootComp.Weapon = Frosty::ECS::CLootable::WeaponType::Bow3;
 		}
 	}
 

@@ -52,8 +52,32 @@ void MCS::AnimationSystem::OnUpdate()
 				auto& enemy = m_World->GetComponent<Frosty::ECS::CEnemy>(m_AControllers[i]->EntityPtr);
 				auto& wType = m_World->GetComponent<Frosty::ECS::CEnemy>(m_AControllers[i]->EntityPtr).Weapon->Type;
 
+				if (m_World->HasComponent<Frosty::ECS::CBoss>(m_AControllers[i]->EntityPtr))
+				{
+					if (enemy.CurrentState == Frosty::ECS::CEnemy::State::Chase || enemy.CurrentState == Frosty::ECS::CEnemy::State::Escape
+						|| enemy.CurrentState == Frosty::ECS::CEnemy::State::Reset)
+					{
+						if (m_AControllers[i]->currAnim->GetName() != "Werewolf_Run")
+						{
+							m_AControllers[i]->currAnim = Frosty::AssetManager::GetAnimation("Werewolf_Run");
+							m_AControllers[i]->currAnim->SetIsRepeating(true);
+							m_AControllers[i]->currAnim->SetIsFinished(false);
+							m_AControllers[i]->animSpeed = 1.0;
+						}
+					}
+					else
+					{
+						if (m_AControllers[i]->currAnim->GetName() != "Werewolf_Idle")
+						{
+							m_AControllers[i]->currAnim = Frosty::AssetManager::GetAnimation("Werewolf_Idle");
+							m_AControllers[i]->currAnim->SetIsRepeating(true);
+							m_AControllers[i]->currAnim->SetIsFinished(false);
+							m_AControllers[i]->animSpeed = 1.0;
+						}
+					}
+				}
 				//If it has bite it is a wolf
-				if (wType == Frosty::ECS::CWeapon::WeaponType::Bite)
+				else if (wType == Frosty::ECS::CWeapon::WeaponType::Bite)
 				{
 					if (enemy.CurrentState == Frosty::ECS::CEnemy::State::Chase || enemy.CurrentState == Frosty::ECS::CEnemy::State::Escape 
 						|| enemy.CurrentState == Frosty::ECS::CEnemy::State::Reset)
@@ -288,17 +312,48 @@ void MCS::AnimationSystem::OnPlayAnimEvent(Frosty::PlayAnimEvent& e)
 		{
 			auto& wType = m_World->GetComponent<Frosty::ECS::CEnemy>(e.GetEntity()).Weapon->Type;
 
+			if (m_World->HasComponent<Frosty::ECS::CBoss>(e.GetEntity()))
+			{
+				switch (*id)
+				{
+				case 0:
+					BeginNewAnim(controller, "Werewolf_Death");
+					controller->animSpeed = 1.0f;
+					break;
+				case 1:
+					BeginNewAnim(controller, "Werewolf_Attack1");
+					controller->animSpeed = 1.0f;
+					break;
+				case 2:
+					//Leap
+					BeginNewAnim(controller, "Werewolf_Attack2");
+					controller->animSpeed = 2.0f;
+					break;
+				case 3:
+					BeginNewAnim(controller, "Werewolf_Charge_Prepare");
+					controller->animSpeed = 2.0f;
+					break;
+				case 4:
+					BeginNewAnim(controller, "Werewolf_Run");
+					controller->animSpeed = 2.0f;
+				case 5:
+					controller->animSpeed = 1.0f;
+
+				}
+			}
 			//If it has bite it is a wolf
-			if (wType == Frosty::ECS::CWeapon::WeaponType::Bite)
+			else if (wType == Frosty::ECS::CWeapon::WeaponType::Bite)
 			{
 				switch (*id)
 				{
 				case 0:
 					BeginNewAnim(controller, "Wolf_Death");
 					controller->animSpeed = 1.0f;
+					break;
 				case 1:
 					BeginNewAnim(controller, "Wolf_Attack");
 					controller->animSpeed = 1.0f;
+					break;
 				}
 			}
 			else
@@ -307,14 +362,17 @@ void MCS::AnimationSystem::OnPlayAnimEvent(Frosty::PlayAnimEvent& e)
 				switch (*id)
 				{
 				case 0:
-					BeginNewAnim(controller, "Wolf_Death");
+					BeginNewAnim(controller, "Cultist_Death");
 					controller->animSpeed = 1.0f;
+					break;
 				case 1:
 					BeginNewAnim(controller, "Cultist_Attack1");
 					controller->animSpeed = 1.0f;
+					break;
 				case 2:
 					BeginNewAnim(controller, "Cultist_Attack2");
 					controller->animSpeed = 2.0f;
+					break;
 				}
 				UpdateAnimOffset(controller);
 			}

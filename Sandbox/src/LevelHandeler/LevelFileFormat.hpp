@@ -240,7 +240,9 @@ namespace MCS
 	struct Level_rememberedEntitys
 	{
 		glm::ivec2 myRoomId = { 0, 0 };
-		std::vector<int> removeEnemy;
+		std::vector<int> removeChest;
+		std::vector<int> removeWitchCirkel;
+		//not in use
 		std::vector<int> existingIDs;
 		std::vector<int> killedIds;
 		float timePlayerLeft;
