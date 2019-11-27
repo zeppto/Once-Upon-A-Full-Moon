@@ -36,6 +36,12 @@ namespace MCS
 			//		else if (bossComp.ActiveAbility == Frosty::ECS::CBoss::AbilityState::Charge) FY_INFO("AbilityState::Charge");
 			//	}
 			//}
+
+			//Boss Timer
+			if (Frosty::Time::CurrentTime() - BossTimer >= BossSpawnTime)
+			{
+				SpawnBoss();
+			}
 		}
 	}
 
@@ -351,5 +357,9 @@ namespace MCS
 
 
 		return false;
+	}
+	void AISystem::SpawnBoss()
+	{
+		//Spawn boss here
 	}
 }
