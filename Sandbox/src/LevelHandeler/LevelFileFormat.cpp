@@ -75,8 +75,10 @@ namespace MCS
 				std::string meshName = myComponents.myMesh.MeshName;
 				myComponents.myMaterial.HasTransparency = material.HasTransparency;
 
-				//if (m_World->HasComponent<Frosty::ECS::CMesh>(entity) && meshName.find("tree") != std::string::npos)
-				//	myComponents.myMaterial.HasTransparency = true;
+				/*if (m_World->HasComponent<Frosty::ECS::CMesh>(entity) && meshName.find("tree") != std::string::npos)
+					myComponents.myMaterial.HasTransparency = true;
+				if (m_World->HasComponent<Frosty::ECS::CMesh>(entity) && meshName.find("Tree") != std::string::npos)
+					myComponents.myMaterial.HasTransparency = true;*/
 			}
 			else
 				myComponents.MyComponents.at(2).HaveComponent = false;
@@ -484,9 +486,15 @@ namespace MCS
 						//	}
 						//	strcpy_s(fileEntitys.myEntitys.at(i).myMaterial.UseShaderName, "Animation");
 						//}
+						bool hasTransparency = false;
+						std::string meshName = fileEntitys.myEntitys.at(i).myMaterial.DiffuseTextureName;
+						if (m_World->HasComponent<Frosty::ECS::CMesh>(entity) && meshName.find("tree") != std::string::npos)
+							hasTransparency = true;
+						if (m_World->HasComponent<Frosty::ECS::CMesh>(entity) && meshName.find("Tree") != std::string::npos)
+							hasTransparency = true;
 
 						auto& material = m_World->AddComponent<Frosty::ECS::CMaterial>(entity,
-							Frosty::AssetManager::GetShader(fileEntitys.myEntitys.at(i).myMaterial.UseShaderName));
+							Frosty::AssetManager::GetShader(fileEntitys.myEntitys.at(i).myMaterial.UseShaderName), hasTransparency);
 						material.Albedo = fileEntitys.myEntitys.at(i).myMaterial.Albedo;
 						if ((std::string)fileEntitys.myEntitys.at(i).myMaterial.DiffuseTextureName != "")
 							material.DiffuseTexture = Frosty::AssetManager::GetTexture2D(fileEntitys.myEntitys.at(i).myMaterial.DiffuseTextureName);
@@ -503,6 +511,8 @@ namespace MCS
 						material.SpecularStrength = fileEntitys.myEntitys.at(i).myMaterial.SpecularStrength;
 						material.Shininess = fileEntitys.myEntitys.at(i).myMaterial.Shininess;
 						material.TextureScale = fileEntitys.myEntitys.at(i).myMaterial.TextureScale;
+						material.HasTransparency = fileEntitys.myEntitys.at(i).myMaterial.HasTransparency;
+					
 					}
 					//3 = Follow
 					if (fileEntitys.myEntitys.at(i).MyComponents.at(3).HaveComponent)
