@@ -552,7 +552,7 @@ namespace Frosty
 
 	void Renderer::AddToRenderer(ECS::CMaterial* mat, ECS::CMesh* mesh, ECS::CTransform* transform)
 	{
-		if (mat->UseShader->GetName() != "Animation"|| mat->UseShader->GetName() != "FlatColor")
+		if (mat->UseShader->GetName() != "Animation")
 		{
 			std::unordered_map<std::string, std::shared_ptr<ShaderData>>* ShaderMap = &s_ShaderMap;
 			//std::unordered_map<std::string, std::shared_ptr<ShaderData>>* ShaderMap = nullptr;
