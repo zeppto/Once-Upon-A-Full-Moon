@@ -591,7 +591,7 @@ namespace MCS
 			particles.RandomDirection = true;
 			particles.randMainDir = particles.ParticleSystemDirection;
 			particles.randSpread = 0.05f;
-			particles.StartParticleSize = 0.4;
+			particles.StartParticleSize = 0.4f;
 			particles.EmitCount = 2;
 			particles.EmitRate = 0.05f;
 			particles.MaxLifetime = 1.5f;
@@ -1447,7 +1447,7 @@ namespace MCS
 			}
 
 			//Bait
-			timer = m_Inventory[index]->BaitTimer;
+			/*timer = m_Inventory[index]->BaitTimer;
 			dif = (CurrentTime - timer);
 			cooldown = m_Inventory[index]->BaitCooldown - dif;
 
@@ -1467,7 +1467,7 @@ namespace MCS
 					HUD.Layout.sprites.at(11).SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
 				}
 
-			}
+			}*/
 
 			//Speed boots
 			int bootSpriteID = 14;

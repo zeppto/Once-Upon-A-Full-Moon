@@ -36,6 +36,12 @@ namespace MCS
 			//		else if (bossComp.ActiveAbility == Frosty::ECS::CBoss::AbilityState::Charge) FY_INFO("AbilityState::Charge");
 			//	}
 			//}
+
+			//Boss Timer
+			if (Frosty::Time::CurrentTime() - BossTimer >= BossSpawnTime)
+			{
+				SpawnBoss();
+			}
 		}
 	}
 
@@ -221,6 +227,19 @@ namespace MCS
 				auto& physComp = m_World->AddComponent<Frosty::ECS::CPhysics>(attack, Frosty::AssetManager::GetBoundingBox("pSphere1"), attackTransform.Scale, 20.0f);
 				m_World->AddComponent<Frosty::ECS::CAttack>(attack, Frosty::ECS::CAttack::AttackType::Range, (int)m_Enemy[index]->Weapon->Damage, false, m_Enemy[index]->Weapon->Lifetime);
 				physComp.Direction = direction;
+
+				auto& particles = m_World->AddComponent<Frosty::ECS::CParticleSystem>(attack, "Particles", "particle", 30, glm::vec3(1.0f, 0.0f, 0.0f), 4.0f);
+				particles.ParticleSystemDirection = glm::vec3(0.0f, 0.0f, -1.0f);
+				particles.randMainDir = particles.ParticleSystemDirection;
+				particles.StartParticleSize = 2.5f;
+				particles.EndParticleSize = 0.4f;
+				particles.EmitCount = 1;
+				particles.EmitRate = 0.1f;
+				particles.MaxLifetime = 2.0f;
+				particles.FadeInTreshold = 1.7f;
+				particles.FadeTreshold = 0.6f;
+				particles.StaticColor = false;
+				particles.SystemEndColor = glm::vec3(0.6f, 0.4f, 0.0f);
 			}
 			else
 			{
@@ -339,5 +358,9 @@ namespace MCS
 
 
 		return false;
+	}
+	void AISystem::SpawnBoss()
+	{
+		//Spawn boss here
 	}
 }
