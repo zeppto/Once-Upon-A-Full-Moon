@@ -21,6 +21,7 @@ namespace MCS
 	private:
 		int32_t Pathfinding::GetDistance(CellNode* nodeA, CellNode* nodeB) const;
 		glm::vec3 Pathfinding::RetracePath(CellNode* startNode, CellNode* targetNode);
+		bool ExistsInClosedSet(const std::vector<CellNode>& closedSet, CellNode* findNode);
 
 	private:
 		Grid* m_Grid{ nullptr };

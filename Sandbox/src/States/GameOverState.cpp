@@ -35,16 +35,16 @@ namespace MCS
 	{
 		switch (e.GetEventType())
 		{
-		//case Frosty::EventType:::
-		//	OnPickUpEvent(static_cast<Frosty::PickUpEvent&>(e));
-		//	break;
-		//case Frosty::EventType::UpgradeWeapon:
-		//	OnUpgradeWeaponEvent();
-		//	break;
+		case Frosty::EventType::GameOver:
+			OnGameOverEvent();
+			break;
+		case Frosty::EventType::Win:
+			OnGameWinEvent();
+			break;
 		}
 	}
 
-	void GameOverState::InitiateGameOverGui()
+	void GameOverState::OnGameOverEvent()
 	{
 		auto& world = Frosty::Application::Get().GetWorld();
 
@@ -55,32 +55,23 @@ namespace MCS
 		world->AddComponent<Frosty::ECS::CGUI>(m_GameOverGui, UILayout);
 	}
 
-	void GameOverState::InitiateGameWinGui()
+	void GameOverState::OnGameWinEvent()
 	{
 		auto& world = Frosty::Application::Get().GetWorld();
 
-		m_GameWinGui = m_App->Get().GetWorld()->CreateEntity();
-		Frosty::UILayout UILayout2(2, 0);
-		UILayout2.AddText(glm::vec2(550.0f, 525.f), "Victory", glm::vec3(1.0f, 1.0f, 0.0f), 1.0f);
-		UILayout2.AddText(glm::vec2(590.0f, 400.0f), "Exit", glm::vec3(1.0f, 1.0f, 0.0f), 1.0f);
-		world->AddComponent<Frosty::ECS::CGUI>(m_GameWinGui, UILayout2);
+		m_GameOverGui = m_App->Get().GetWorld()->CreateEntity();
+		Frosty::UILayout UILayout(2, 0);
+		UILayout.AddText(glm::vec2(550.0f, 525.f), "Victory", glm::vec3(1.0f, 0.0f, 0.0f), 1.0f);
+		UILayout.AddText(glm::vec2(590.0f, 400.0f), "Exit", glm::vec3(1.0f, 1.0f, 0.0f), 1.0f);
+		world->AddComponent<Frosty::ECS::CGUI>(m_GameOverGui, UILayout);
 	}
-	
+
 	void GameOverState::DeleteGameOverGui()
 	{
 		auto& world = Frosty::Application::Get().GetWorld();
 		if (!world->HasComponent<Frosty::ECS::CDestroy>(m_GameOverGui))
 		{
 			world->AddComponent<Frosty::ECS::CDestroy>(m_GameOverGui);
-		}
-	}
-	
-	void GameOverState::DeleteGameWinGui()
-	{
-		auto& world = Frosty::Application::Get().GetWorld();
-		if (!world->HasComponent<Frosty::ECS::CDestroy>(m_GameWinGui))
-		{
-			world->AddComponent<Frosty::ECS::CDestroy>(m_GameWinGui);
 		}
 	}
 }

@@ -25,6 +25,7 @@ namespace MCS
 		void HandleAttack(size_t index);
 		void LookAtPoint(const glm::vec3& point, size_t index);
 		bool HandleBossAbilities(size_t index);
+		void SpawnBoss();
 
 	private:
 		Frosty::World* m_World{ nullptr };
@@ -33,6 +34,8 @@ namespace MCS
 		std::array<Frosty::ECS::CEnemy*, Frosty::ECS::MAX_ENTITIES_PER_COMPONENT> m_Enemy;
 		std::array<Frosty::ECS::CHealth*, Frosty::ECS::MAX_ENTITIES_PER_COMPONENT> m_Health;
 
+		float BossSpawnTime{ 10.f };
+		float BossTimer{ Frosty::Time::CurrentTime() };
 	};
 }
 

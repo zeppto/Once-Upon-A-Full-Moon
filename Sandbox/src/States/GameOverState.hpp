@@ -13,6 +13,9 @@ namespace MCS
 		virtual void OnInput() override;
 		virtual void OnUpdate() override;
 		void OnEvent(Frosty::BaseEvent& e);
+
+		void OnGameOverEvent();
+		void OnGameWinEvent();
 	private:
 		void InitiateGameOverGui();
 		void InitiateGameWinGui();
@@ -22,7 +25,6 @@ namespace MCS
 	private:
 		Frosty::Application* m_App = nullptr;
 		std::shared_ptr<Frosty::ECS::Entity> m_GameOverGui;
-		std::shared_ptr<Frosty::ECS::Entity> m_GameWinGui;
 	};
 }
 #endif

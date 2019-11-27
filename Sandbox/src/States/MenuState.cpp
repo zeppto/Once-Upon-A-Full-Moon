@@ -12,7 +12,6 @@
 #include "Systems/PhysicsSystem.hpp"
 #include "Systems/PlayerControllerSystem.hpp"
 
-#include "Systems/FollowSystem.hpp"
 #include "Systems/AttackSystem.hpp"
 #include "Systems/CombatSystem.hpp"
 #include "Systems/DestroySystem.hpp"
@@ -50,7 +49,7 @@ namespace MCS
 		if (!m_App->MenuLoaded())
 		{
 			auto& world = Frosty::Application::Get().GetWorld();
-
+			// Add systems
 			world->AddSystem<LevelSystem>();
 			world->AddSystem<CameraSystem>();
 			world->AddSystem<LightSystem>();
@@ -58,17 +57,15 @@ namespace MCS
 			world->AddSystem<RenderSystem>();
 			world->AddSystem<PlayerControllerSystem>();
 			world->AddSystem<PhysicsSystem>();
-			world->AddSystem<FollowSystem>();
 			world->AddSystem<AttackSystem>();
 			world->AddSystem<CombatSystem>();
 			world->AddSystem<DestroySystem>();
 			world->AddSystem<HealthBarSystem>();
 			world->AddSystem<AISystem>();
-
 			Frosty::ECS::BaseSystem* retSystem = world->AddSystem<NavigationSystem>();
 			NavigationSystem* navSystem = dynamic_cast<NavigationSystem*>(retSystem);
-
 			retSystem = world->AddSystem<ParticleSystem>();
+
 			ParticleSystem* particleSystem = dynamic_cast<ParticleSystem*>(retSystem);
 
 			world->AddSystem<BossBehaviorSystem>();

@@ -75,20 +75,22 @@ namespace MCS
 				std::string meshName = myComponents.myMesh.MeshName;
 				myComponents.myMaterial.HasTransparency = material.HasTransparency;
 
-				//if (m_World->HasComponent<Frosty::ECS::CMesh>(entity) && meshName.find("tree") != std::string::npos)
-				//	myComponents.myMaterial.HasTransparency = true;
+				/*if (m_World->HasComponent<Frosty::ECS::CMesh>(entity) && meshName.find("tree") != std::string::npos)
+					myComponents.myMaterial.HasTransparency = true;
+				if (m_World->HasComponent<Frosty::ECS::CMesh>(entity) && meshName.find("Tree") != std::string::npos)
+					myComponents.myMaterial.HasTransparency = true;*/
 			}
 			else
 				myComponents.MyComponents.at(2).HaveComponent = false;
 			//Follow
-			if (m_World->HasComponent<Frosty::ECS::CFollow>(entity))
-			{
-				myComponents.MyComponents.at(3).HaveComponent = true;
-				//under construction
-				auto& follow = m_World->GetComponent<Frosty::ECS::CFollow>(entity);
-				myComponents.myFollow.StopDistance = follow.StopDistance;
-			}
-			else
+			//if (m_World->HasComponent<Frosty::ECS::CFollow>(entity))
+			//{
+			//	myComponents.MyComponents.at(3).HaveComponent = true;
+			//	//under construction
+			//	auto& follow = m_World->GetComponent<Frosty::ECS::CFollow>(entity);
+			//	myComponents.myFollow.StopDistance = follow.StopDistance;
+			//}
+			//else
 				myComponents.MyComponents.at(3).HaveComponent = false;
 			//Light
 			if (m_World->HasComponent<Frosty::ECS::CLight>(entity))
@@ -484,9 +486,15 @@ namespace MCS
 						//	}
 						//	strcpy_s(fileEntitys.myEntitys.at(i).myMaterial.UseShaderName, "Animation");
 						//}
+						bool hasTransparency = false;
+						std::string meshName = fileEntitys.myEntitys.at(i).myMaterial.DiffuseTextureName;
+						if (m_World->HasComponent<Frosty::ECS::CMesh>(entity) && meshName.find("tree") != std::string::npos)
+							hasTransparency = true;
+						if (m_World->HasComponent<Frosty::ECS::CMesh>(entity) && meshName.find("Tree") != std::string::npos)
+							hasTransparency = true;
 
 						auto& material = m_World->AddComponent<Frosty::ECS::CMaterial>(entity,
-							Frosty::AssetManager::GetShader(fileEntitys.myEntitys.at(i).myMaterial.UseShaderName));
+							Frosty::AssetManager::GetShader(fileEntitys.myEntitys.at(i).myMaterial.UseShaderName), hasTransparency);
 						material.Albedo = fileEntitys.myEntitys.at(i).myMaterial.Albedo;
 						if ((std::string)fileEntitys.myEntitys.at(i).myMaterial.DiffuseTextureName != "")
 							material.DiffuseTexture = Frosty::AssetManager::GetTexture2D(fileEntitys.myEntitys.at(i).myMaterial.DiffuseTextureName);
@@ -503,15 +511,17 @@ namespace MCS
 						material.SpecularStrength = fileEntitys.myEntitys.at(i).myMaterial.SpecularStrength;
 						material.Shininess = fileEntitys.myEntitys.at(i).myMaterial.Shininess;
 						material.TextureScale = fileEntitys.myEntitys.at(i).myMaterial.TextureScale;
+						material.HasTransparency = fileEntitys.myEntitys.at(i).myMaterial.HasTransparency;
+					
 					}
 					//3 = Follow
 					if (fileEntitys.myEntitys.at(i).MyComponents.at(3).HaveComponent)
 					{
-						existingFile.read((char*)& fileEntitys.myEntitys.at(i).myFollow, sizeof(Level_Follow));
-						auto& follow = m_World->AddComponent<Frosty::ECS::CFollow>(entity, playerTransform);
+						//existingFile.read((char*)& fileEntitys.myEntitys.at(i).myFollow, sizeof(Level_Follow));
+						//auto& follow = m_World->AddComponent<Frosty::ECS::CFollow>(entity, playerTransform);
 						//For edeting old level
 						//auto& follow = m_World->AddComponent<Frosty::ECS::CFollow>(entity);// , playerTransform);
-						follow.StopDistance = fileEntitys.myEntitys.at(i).myFollow.StopDistance;
+						//follow.StopDistance = fileEntitys.myEntitys.at(i).myFollow.StopDistance;
 						//under construction
 					}
 					//4 = Light
@@ -533,11 +543,9 @@ namespace MCS
 						}
 						existingFile.read((char*)& fileEntitys.myEntitys.at(i).myPhysics, sizeof(Level_Physics));
 						physCounter++;
-						auto& physics = m_World->AddComponent<Frosty::ECS::CPhysics>(entity);
-						if (fileEntitys.myEntitys.at(i).MyComponents.at(1).HaveComponent)
-							physics.BoundingBox = Frosty::AssetManager::GetBoundingBox(fileEntitys.myEntitys.at(i).myMesh.MeshName);
-						else
-							physics.BoundingBox = Frosty::AssetManager::GetBoundingBox("pCube1");
+						auto& physics = m_World->AddComponent<Frosty::ECS::CPhysics>(entity,
+							Frosty::AssetManager::GetBoundingBox(fileEntitys.myEntitys.at(i).MyComponents.at(1).HaveComponent ?
+								fileEntitys.myEntitys.at(i).myMesh.MeshName : "pCube1"), newlyTreansform.Scale);
 						physics.Direction = fileEntitys.myEntitys.at(i).myPhysics.Direction;
 						physics.MaxSpeed = fileEntitys.myEntitys.at(i).myPhysics.MaxSpeed;
 						physics.Speed = fileEntitys.myEntitys.at(i).myPhysics.Speed;
@@ -611,7 +619,7 @@ namespace MCS
 								//weaponMat.DiffuseTexture = Frosty::AssetManager::GetTexture2D("bow_lvl1_diffuse");
 								//weaponMat.NormalTexture = Frosty::AssetManager::GetTexture2D("bow_normal");
 							}
-							if(isMelle == 1)
+							if (isMelle == 1)
 								loadedWeapon = weaponHandler->GetWeaponByTypeAndLevel(Frosty::Weapon::WeaponType::Sword, lowLevel, highLevel);
 
 							//if (weaponComp.Type == Frosty::ECS::CWeapon::WeaponType::Bow)
