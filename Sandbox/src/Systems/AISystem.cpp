@@ -137,7 +137,7 @@ namespace MCS
 			}
 			else
 			{
-				if (Frosty::Time::GetFrameCount() % 60 == 0) FY_INFO("Reset");
+				//if (Frosty::Time::GetFrameCount() % 60 == 0) FY_INFO("Reset");
 				return;
 			}
 		}
@@ -146,7 +146,7 @@ namespace MCS
 		if (m_Health[index]->CurrentHealth <= m_Health[index]->MaxHealth * m_Enemy[index]->RunOnHealth)
 		{
 			m_Enemy[index]->CurrentState = Frosty::ECS::CEnemy::State::Escape;
-			if (Frosty::Time::GetFrameCount() % 60 == 0) FY_INFO("Escape");
+			//if (Frosty::Time::GetFrameCount() % 60 == 0) FY_INFO("Escape");
 			return;
 		}
 
@@ -154,7 +154,7 @@ namespace MCS
 		if (glm::distance(m_Transform[index]->Position, m_Enemy[index]->Target->Position) > m_Enemy[index]->SightRange)
 		{
 			m_Enemy[index]->CurrentState = Frosty::ECS::CEnemy::State::Idle;
-			if (Frosty::Time::GetFrameCount() % 60 == 0) FY_INFO("Idle");
+			//if (Frosty::Time::GetFrameCount() % 60 == 0) FY_INFO("Idle");
 			return;
 		}
 
@@ -162,7 +162,7 @@ namespace MCS
 		if (glm::distance(m_Transform[index]->Position, m_Enemy[index]->Target->Position) <= m_Enemy[index]->Weapon->MaxAttackRange)
 		{
 			m_Enemy[index]->CurrentState = Frosty::ECS::CEnemy::State::Attack;
-			if (Frosty::Time::GetFrameCount() % 60 == 0) FY_INFO("Attack");
+			//if (Frosty::Time::GetFrameCount() % 60 == 0) FY_INFO("Attack");
 
 			//if (glm::distance(m_Transform[index]->Position, m_Enemy[index]->Target->Position) < m_Enemy[index]->Weapon->MinAttackRange)
 			//{
@@ -179,7 +179,7 @@ namespace MCS
 			if (!stopChase)
 			{
 				m_Enemy[index]->CurrentState = Frosty::ECS::CEnemy::State::Chase;
-				if (Frosty::Time::GetFrameCount() % 60 == 0) FY_INFO("Chase");
+				//if (Frosty::Time::GetFrameCount() % 60 == 0) FY_INFO("Chase");
 			}
 		}
 	}
@@ -212,12 +212,13 @@ namespace MCS
 
 			// Create Attack (BB)
 			auto& attack = m_World->CreateEntity({ spawnPos.x, 3.0f, spawnPos.z }, m_Transform[index]->Rotation, m_Enemy[index]->Weapon->AttackHitboxScale);
+			auto& attackTransform = m_World->GetComponent<Frosty::ECS::CTransform>(attack);
 			if (m_Enemy[index]->Weapon->Type == Frosty::ECS::CWeapon::WeaponType::Bow)
 			{
 				Frosty::EventBus::GetEventBus()->Publish <Frosty::PlayAnimEvent>(Frosty::PlayAnimEvent(m_Transform[index]->EntityPtr, 2));
 				m_World->AddComponent<Frosty::ECS::CMesh>(attack, Frosty::AssetManager::GetMesh("pSphere1"));
 				m_World->AddComponent<Frosty::ECS::CMaterial>(attack, Frosty::AssetManager::GetShader("FlatColor"));
-				auto& physComp = m_World->AddComponent<Frosty::ECS::CPhysics>(attack, Frosty::AssetManager::GetBoundingBox("pSphere1"), 20.0f);
+				auto& physComp = m_World->AddComponent<Frosty::ECS::CPhysics>(attack, Frosty::AssetManager::GetBoundingBox("pSphere1"), attackTransform.Scale, 20.0f);
 				m_World->AddComponent<Frosty::ECS::CAttack>(attack, Frosty::ECS::CAttack::AttackType::Range, (int)m_Enemy[index]->Weapon->Damage, false, m_Enemy[index]->Weapon->Lifetime);
 				physComp.Direction = direction;
 			}
@@ -226,7 +227,7 @@ namespace MCS
 				Frosty::EventBus::GetEventBus()->Publish <Frosty::PlayAnimEvent>(Frosty::PlayAnimEvent(m_Transform[index]->EntityPtr, 1));
 				m_World->AddComponent<Frosty::ECS::CMesh>(attack, Frosty::AssetManager::GetMesh("pCube1"));						// Remove later
 				m_World->AddComponent<Frosty::ECS::CMaterial>(attack, Frosty::AssetManager::GetShader("FlatColor"));			// Remove later
-				m_World->AddComponent<Frosty::ECS::CPhysics>(attack, Frosty::AssetManager::GetBoundingBox("pCube1"), 0.0f);
+				m_World->AddComponent<Frosty::ECS::CPhysics>(attack, Frosty::AssetManager::GetBoundingBox("pCube1"), attackTransform.Scale, 0.0f);
 				m_World->AddComponent<Frosty::ECS::CAttack>(attack, Frosty::ECS::CAttack::AttackType::Melee, (int)m_Enemy[index]->Weapon->Damage, false, m_Enemy[index]->Weapon->Lifetime);
 			}
 

@@ -495,11 +495,9 @@ namespace MCS
 					{
 						existingFile.read((char*)& fileEntitys.myEntitys.at(i).myPhysics, sizeof(Level_Physics));
 						physCounter++;
-						auto& physics = m_World->AddComponent<Frosty::ECS::CPhysics>(entity);
-						if (fileEntitys.myEntitys.at(i).MyComponents.at(1).HaveComponent)
-							physics.BoundingBox = Frosty::AssetManager::GetBoundingBox(fileEntitys.myEntitys.at(i).myMesh.MeshName);
-						else
-							physics.BoundingBox = Frosty::AssetManager::GetBoundingBox("pCube1");
+						auto& physics = m_World->AddComponent<Frosty::ECS::CPhysics>(entity,
+							Frosty::AssetManager::GetBoundingBox(fileEntitys.myEntitys.at(i).MyComponents.at(1).HaveComponent ?
+								fileEntitys.myEntitys.at(i).myMesh.MeshName : "pCube1"), newlyTreansform.Scale);
 						physics.Direction = fileEntitys.myEntitys.at(i).myPhysics.Direction;
 						physics.MaxSpeed = fileEntitys.myEntitys.at(i).myPhysics.MaxSpeed;
 						physics.Speed = fileEntitys.myEntitys.at(i).myPhysics.Speed;
@@ -543,7 +541,7 @@ namespace MCS
 							//enemyWeaponCompA.AttackHitboxScale = glm::vec3(10.0f, 6.0f, 4.0f);				// Sword
 							enemyWeaponCompA.AttackHitboxScale = glm::vec3(4.0f, 6.0f, 4.0f);				// Bite
 							//enemyWeaponCompA.AttackHitboxScale = glm::vec3(0.3f);
-							auto& enemy = m_World->AddComponent<Frosty::ECS::CEnemy>(entity, playerTransform, &enemyWeaponCompA, fileEntitys.myEntitys.at(i).myEnemy.RunOnHealth);
+							auto& enemy = m_World->AddComponent<Frosty::ECS::CEnemy>(entity, playerTransform, &enemyWeaponCompA);
 							auto& transform = m_World->GetComponent< Frosty::ECS::CTransform>(entity);
 							enemy.SpawnPosition = transform.Position;
 						}

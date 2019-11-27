@@ -16,16 +16,19 @@ namespace MCS
 
 	void Grid::Reset()
 	{
-		if (!m_DrawGizmos) return;
-
 		for (size_t i = 0; i < m_DynamicOccupiedNodes.size(); i++)
 		{
-			auto& cellMat = m_World->GetComponent<Frosty::ECS::CMaterial>(m_World->GetEntityManager()->GetEntityById(m_DynamicOccupiedNodes[i]->CellEntityID));
-			cellMat.DiffuseTexture = Frosty::AssetManager::GetTexture2D("green_square");
+			if (m_DrawGizmos)
+			{
+				auto& cellMat = m_World->GetComponent<Frosty::ECS::CMaterial>(m_World->GetEntityManager()->GetEntityById(m_DynamicOccupiedNodes[i]->CellEntityID));
+				cellMat.DiffuseTexture = Frosty::AssetManager::GetTexture2D("green_square");
+			}
 			m_DynamicOccupiedNodes[i]->Walkable = true;
 			m_DynamicOccupiedNodes[i] = nullptr;
 		}
 		m_DynamicOccupiedNodes.clear();
+
+		if (!m_DrawGizmos) return;
 
 		for (size_t i = 0; i < m_PathNodes.size(); i++)
 		{
@@ -80,7 +83,9 @@ namespace MCS
 
 	void Grid::SetNodeUnwalkable(const glm::vec3& worldPoint)
 	{
-		WorldPointToNode(worldPoint).Walkable = false;
+		auto& cellNode = WorldPointToNode(worldPoint);
+		cellNode.Walkable = false;
+		m_DynamicOccupiedNodes.emplace_back(&cellNode);
 	}
 
 	void Grid::DrawTargetCell(Frosty::ECS::CTransform* transform)
@@ -105,7 +110,7 @@ namespace MCS
 		{
 			auto& cellMat = m_World->GetComponent<Frosty::ECS::CMaterial>(m_World->GetEntityManager()->GetEntityById(enemyNode.CellEntityID));
 			cellMat.DiffuseTexture = Frosty::AssetManager::GetTexture2D("purple_square");
-			m_DynamicOccupiedNodes.emplace_back(&enemyNode);
+			
 		}
 	}
 

@@ -315,7 +315,7 @@ void MCS::AnimationSystem::UpdateAnimOffset(Frosty::ECS::CAnimController* ctrl)
 		auto& wEntity = m_World->GetComponent<Frosty::ECS::CPlayer>(ctrl->EntityPtr).Weapon->EntityPtr;
 
 		m_World->GetComponent<Frosty::ECS::CMesh>(wEntity).animOffset = ctrl->currAnim->getHoldingJoint();
-		Frosty::Renderer::UpdateCMesh(wEntity->Id, &m_World->GetComponent<Frosty::ECS::CMesh>(wEntity));
+		Frosty::Renderer::UpdateCMesh((int)wEntity->Id, &m_World->GetComponent<Frosty::ECS::CMesh>(wEntity));
 	}
 	else
 	{
@@ -323,6 +323,6 @@ void MCS::AnimationSystem::UpdateAnimOffset(Frosty::ECS::CAnimController* ctrl)
 		auto& wEntity = m_World->GetComponent<Frosty::ECS::CEnemy>(ctrl->EntityPtr).Weapon->EntityPtr;
 
 		m_World->GetComponent<Frosty::ECS::CMesh>(wEntity).animOffset = ctrl->currAnim->getHoldingJoint();
-		Frosty::Renderer::UpdateCMesh(wEntity->Id, &m_World->GetComponent<Frosty::ECS::CMesh>(wEntity));
+		Frosty::Renderer::UpdateCMesh((int)wEntity->Id, &m_World->GetComponent<Frosty::ECS::CMesh>(wEntity));
 	}
 }

@@ -161,7 +161,7 @@ namespace MCS
 					if (ImGui::MenuItem("Physics", "", &toggles[5]))
 					{
 						if (!world->HasComponent<Frosty::ECS::CPhysics>(m_SelectedEntity))
-							world->AddComponent<Frosty::ECS::CPhysics>(m_SelectedEntity, Frosty::AssetManager::GetBoundingBox("pCube1"));
+							world->AddComponent<Frosty::ECS::CPhysics>(m_SelectedEntity, Frosty::AssetManager::GetBoundingBox("pCube1"), glm::vec3(1.0f));
 						else
 							world->RemoveComponent<Frosty::ECS::CPhysics>(m_SelectedEntity);
 					}
