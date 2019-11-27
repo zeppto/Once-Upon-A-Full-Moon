@@ -159,7 +159,7 @@ namespace Frosty
 		// "deadend_chests_IsStatick_t_p_e_r_h";
 
 
-		SaveFile("straightRoad_chests_IsStatick_t_p_e_r_h");
+		//SaveFile("straightRoad_chests_IsStatick_t_p_e_r_h");
 		//LoadFile("TestGmap.Gmap");
 
 

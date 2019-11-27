@@ -161,6 +161,7 @@ namespace MCS
 	void NavigationSystem::OnUpdateCurrentRoomEvent(Frosty::UpdateCurrentRoomEvent& e)
 {
 		m_CurrentActiveGridMap = Frosty::AssetManager::GetGridMap(e.GetCurrentRoom());
+
 }
 
 	void NavigationSystem::OnInitiateGridMap(Frosty::InitiateGridEvent& e)

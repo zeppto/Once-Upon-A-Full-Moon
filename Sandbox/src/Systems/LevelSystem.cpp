@@ -30,11 +30,11 @@ namespace MCS
 
 			if (m_CurrentRoomBool)
 			{
-				m_FirstRoom = m_LoadFileName;
+				m_ThisRoomName = m_LoadFileName;
 			}
 			else
 			{
-				m_SecondRoom = m_LoadFileName;
+				m_OtherRoomName = m_LoadFileName;
 			}
 
 			m_PlayerTransformLoadComponent = nullptr;
@@ -95,7 +95,7 @@ namespace MCS
 		//	Level::MoveToNewRoom(m_CurrentRoome.sideExits[0], m_CurrentRoome.sideExits[1], m_CurrentRoome.sideExits[2], m_CurrentRoome.sideExits[3]);
 			m_LevelFileFormat.OpenFromFile("deadend_chests_IsStatick_t_p_e_r_h", !m_CurrentRoomBool,m_PlayerCoords, playerTransform, rotate);
 
-			m_FirstRoom = "deadend_chests_IsStatick_t_p_e_r_h";
+			m_ThisRoomName = "deadend_chests_IsStatick_t_p_e_r_h";
 			m_Start = false;
 			//m_LevelFileFormat.LoadBoolMap("deadend_chests_IsStatick_t_p_e_r_h");
 		}
@@ -737,14 +737,21 @@ namespace MCS
 			m_CurrentRoomBool = m_World->GetCurrentRoom();
 			if (m_CurrentRoomBool)
 			{
-				Frosty::EventBus::GetEventBus()->Publish<Frosty::UpdateCurrentRoomEvent>(Frosty::UpdateCurrentRoomEvent(m_SecondRoom));
+				Frosty::EventBus::GetEventBus()->Publish<Frosty::UpdateCurrentRoomEvent>(Frosty::UpdateCurrentRoomEvent(m_OtherRoomName));
 			}
 			else
 			{
-				Frosty::EventBus::GetEventBus()->Publish<Frosty::UpdateCurrentRoomEvent>(Frosty::UpdateCurrentRoomEvent(m_FirstRoom));
+				Frosty::EventBus::GetEventBus()->Publish<Frosty::UpdateCurrentRoomEvent>(Frosty::UpdateCurrentRoomEvent(m_ThisRoomName));
 			}
 		}
 		m_PlayerCoords = e.GetCoords();
+	}
+
+	void LevelSystem::FlipRoomNames()
+	{
+		std::string temp = m_ThisRoomName;
+		m_ThisRoomName = m_OtherRoomName;
+		m_OtherRoomName = m_ThisRoomName;
 	}
 
 }

@@ -37,6 +37,8 @@ namespace MCS
 		void OnCreatEntityEvent(Frosty::CreatEntityEvent& e);
 		void OnPlayerUpdateCoordEvent(Frosty::UpdatePlayerRoomCoordEvent& e);
 
+		void FlipRoomNames();
+
 
 	private:
 		Frosty::World* m_World;
@@ -46,8 +48,8 @@ namespace MCS
 		MapGenerator m_Map;
 		
 		bool m_CurrentRoomBool = true;
-		std::string m_FirstRoom{ "" }; //False
-		std::string m_SecondRoom{ "" }; //True
+		std::string m_ThisRoomName{ "" }; //False
+		std::string m_OtherRoomName{ "" }; //True
 
 		glm::ivec2 m_PlayerCoords = { 10, 15 };//{ 10, 15 };
 		glm::ivec2 m_OtherRoom = { -1, -1 };
