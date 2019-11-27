@@ -15,6 +15,19 @@ namespace MCS
 
 	}
 
+	void LevelSystem::OnStart()
+	{
+		if (m_CreatNewRoom)
+		{
+			int rotation = 0;
+			std::string fileName = m_Map.getRoomTextur(m_PlayerPos, &rotation);
+			//PlayerTranform.Position = Level::MoveToNewRoom(m_CurrentRoome.sideExits[0], m_CurrentRoome.sideExits[1],
+			//	m_CurrentRoome.sideExits[2], m_CurrentRoome.sideExits[3], ExitSide.ExitDirection);
+			m_LevelFileFormat.OpenFromFile(fileName, m_PlayerPos, m_PlayerTransform, rotation);
+			m_CreatNewRoom = false;
+		}
+	}
+
 	void LevelSystem::OnEvent(Frosty::BaseEvent& e)
 	{
 		switch (e.GetEventType())
@@ -33,6 +46,9 @@ namespace MCS
 			break;
 		case Frosty::EventType::CreatEntity:
 			OnCreatEntityEvent(static_cast<Frosty::CreatEntityEvent&>(e));
+			break;
+		case Frosty::EventType::BossSpawned:
+			OnBossSpawnedEvent(static_cast<Frosty::BossSpawnedEvent&>(e));
 			break;
 		default:
 			break;
@@ -138,6 +154,8 @@ namespace MCS
 
 	void LevelSystem::OnExitLevelEvent(Frosty::ExitLevelEvent& e)
 	{
+		if (m_BossSpawned) return;
+
 		auto& ExitTranform = m_World->GetComponent<Frosty::ECS::CTransform>(e.GetExitEntity());
 		//auto& ExitBBox = m_World->GetComponent<Frosty::ECS::CPhysics>(e.GetExitEntity());
 		auto& ExitSide = m_World->GetComponent<Frosty::ECS::CLevelExit>(e.GetExitEntity());
@@ -212,15 +230,19 @@ namespace MCS
 		//m_NextLevel = true;
 		//m_TempTimer = 0;
 
-		int rotation = 0;
-		std::string fileName = m_Map.getRoomTextur(m_PlayerPos, &rotation);
+		m_PlayerTransform = playerTransform;
+
+		//int rotation = 0;
+		//std::string fileName = m_Map.getRoomTextur(m_PlayerPos, &rotation);
 		//PlayerTranform.Position = Level::Room(m_CurrentRoome.sideExits[0], m_CurrentRoome.sideExits[1], 
 		//	m_CurrentRoome.sideExits[2], m_CurrentRoome.sideExits[3], texture, rotation, ExitSide.ExitDirection);
 		PlayerTranform.Position = Level::MoveToNewRoom(m_CurrentRoome.sideExits[0], m_CurrentRoome.sideExits[1],
 			m_CurrentRoome.sideExits[2], m_CurrentRoome.sideExits[3], ExitSide.ExitDirection);
-		m_LevelFileFormat.OpenFromFile(fileName, m_PlayerPos, playerTransform, rotation);
+		//m_LevelFileFormat.OpenFromFile(fileName, m_PlayerPos, playerTransform, rotation);
+		m_CreatNewRoom = true;
 
 	}
+	
 	void LevelSystem::OnSaveLevelEvent(Frosty::SaveLevelEvent& e)
 	{
 		for (size_t i = 1; i < p_Total; i++)
@@ -251,6 +273,7 @@ namespace MCS
 		}
 		m_LevelFileFormat.SaveToFile(m_RoomType);
 	}
+	
 	void LevelSystem::OnCreateLevelEvent(Frosty::CreateLevelEvent& e)
 	{
 		for (size_t i = 1; i < p_Total; i++)
@@ -310,6 +333,7 @@ namespace MCS
 		else
 			m_RoomType = "unknown";
 	}
+	
 	void LevelSystem::OnOpenLevelEvent(Frosty::OpenLevelEvent& e)
 	{
 		Frosty::ECS::CTransform* playerTransform = nullptr;
@@ -365,6 +389,7 @@ namespace MCS
 		m_RoomType = e.GetFilename();
 		m_LevelFileFormat.OpenFromFile(m_RoomType, m_PlayerPos, playerTransform);
 	}
+	
 	void LevelSystem::OnCreatEntityEvent(Frosty::CreatEntityEvent& e)
 	{
 		//Enemy
@@ -695,6 +720,11 @@ namespace MCS
 			m_World->AddComponent<Frosty::ECS::CHealthBar>(enemyA, glm::vec3(0.0f, 10.0f, 0.0f));
 			m_World->AddComponent<Frosty::ECS::CDropItem>(enemyA);
 		}
+	}
+	
+	void LevelSystem::OnBossSpawnedEvent(Frosty::BossSpawnedEvent& e)
+	{
+		m_BossSpawned = true;
 	}
 }
 

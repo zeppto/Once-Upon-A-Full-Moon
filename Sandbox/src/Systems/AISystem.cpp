@@ -15,8 +15,8 @@ namespace MCS
 		p_Signature.set(Frosty::ECS::getComponentTypeID<Frosty::ECS::CEnemy>(), true);
 		p_Signature.set(Frosty::ECS::getComponentTypeID<Frosty::ECS::CHealth>(), true);
 
-		int minMinute = 4;
-		int maxMinute = 6;
+		int minMinute = 3;
+		int maxMinute = 5;
 
 		int spawnMinute = rand() % (maxMinute - minMinute + 1) + minMinute;
 		BossSpawnTime = spawnMinute * 60.0f + 20.0f;
@@ -411,5 +411,7 @@ namespace MCS
 		m_World->AddComponent<Frosty::ECS::CBoss>(boss);
 
 		m_BossSpawned = true;
+
+		Frosty::EventBus::GetEventBus()->Publish<Frosty::BossSpawnedEvent>(Frosty::BossSpawnedEvent());
 	}
 }

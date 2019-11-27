@@ -314,6 +314,14 @@ namespace Frosty
 
 		EVENT_TYPE(Win)
 	};
+
+	class BossSpawnedEvent : public BaseEvent
+	{
+	public:
+		BossSpawnedEvent() { }
+
+		EVENT_TYPE(BossSpawned)
+	};
 }
 
 #endif // !ABILITY_EVENT_HPP

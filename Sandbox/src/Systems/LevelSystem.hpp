@@ -10,6 +10,7 @@ namespace Frosty { class CreateLevelEvent; }
 namespace Frosty { class OpenLevelEvent; }
 namespace Frosty { class CreatEntityEvent; }
 namespace Frosty { class BoolMap; }
+namespace Frosty { class BossSpawnedEvent; }
 
 namespace MCS
 {
@@ -20,6 +21,7 @@ namespace MCS
 
 	public:
 		virtual void Init() override;
+		virtual void OnStart() override;
 		virtual void OnUpdate() override;
 		virtual void OnEvent(Frosty::BaseEvent& e) override;
 
@@ -34,6 +36,7 @@ namespace MCS
 		void OnCreateLevelEvent(Frosty::CreateLevelEvent& e);
 		void OnOpenLevelEvent(Frosty::OpenLevelEvent& e);
 		void OnCreatEntityEvent(Frosty::CreatEntityEvent& e);
+		void OnBossSpawnedEvent(Frosty::BossSpawnedEvent& e);
 
 
 	private:
@@ -55,7 +58,9 @@ namespace MCS
 		bool m_NextLevel = false;
 		int m_EntrensSide = -1;
 		float m_TempTimer = 0;
-
+		Frosty::ECS::CTransform* m_PlayerTransform = nullptr;
+		bool m_CreatNewRoom = false;
+		bool m_BossSpawned{ false };
 
 		//int rotation = 0;
 		//std::string texture = map.getRoomTextur(glm::ivec2(11, 15), &rotation);
