@@ -502,7 +502,7 @@ namespace Frosty
 			static std::string NAME;
 			CTransform* Target{ nullptr };
 			glm::vec3 Front{ 0.0f, 0.0f, -1.0f };
-			glm::vec3 Background{ 0.2f };
+			glm::vec3 Background{ 0.12f, 0.23f, 0.005f };
 			float FieldOfView{ 40.0f };
 			float Near{ 0.03f };
 			float Far{ 1000.0f };

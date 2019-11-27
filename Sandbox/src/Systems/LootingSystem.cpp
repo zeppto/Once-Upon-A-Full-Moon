@@ -161,6 +161,7 @@ namespace MCS
 			auto& light = m_World->AddComponent<Frosty::ECS::CLight>(item, Frosty::ECS::CLight::LightType::Point, 3.f, glm::vec3(1.f, 1.f, 1.f), 2.f);
 			auto& loot = m_World->AddComponent<Frosty::ECS::CLootable>(item);
 
+			randomValue = 6;
 			switch (randomValue)
 			{
 			case 0:
@@ -247,12 +248,12 @@ namespace MCS
 
 					if (weapon.Level == 1)
 					{
-						loot.Weapon = Frosty::ECS::CLootable::WeaponType::Bow3;
+						loot.Weapon = Frosty::ECS::CLootable::WeaponType::Bow1;
 						material.DiffuseTexture = Frosty::AssetManager::GetTexture2D("bow_lvl1_diffuse");
 					}
 					else if (weapon.Level == 2)
 					{
-						loot.Weapon = Frosty::ECS::CLootable::WeaponType::Bow3;
+						loot.Weapon = Frosty::ECS::CLootable::WeaponType::Bow2;
 						material.DiffuseTexture = Frosty::AssetManager::GetTexture2D("bow_lvl2_diffuse");
 					}
 					else if (weapon.Level == 3)

@@ -21,7 +21,6 @@ namespace MCS
 		{
 			if (glm::distance(m_Transform[m_CurrentActiveWC]->Position, m_WitchCircle[m_CurrentActiveWC]->Enchanter->Position) <= 2.f)
 			{
-
 				auto& witchCircleHealth = m_World->GetComponent<Frosty::ECS::CHealth>(m_WitchCircle[m_CurrentActiveWC]->EntityPtr);
 				auto& witchCircleHealthBar = m_World->GetComponent<Frosty::ECS::CHealthBar>(m_WitchCircle[m_CurrentActiveWC]->EntityPtr);
 
@@ -41,7 +40,6 @@ namespace MCS
 				}
 				else if (witchCircleHealth.CurrentHealth >= witchCircleHealth.MaxHealth)
 				{
-					m_WitchCircle[m_CurrentActiveWC]->Deployed = true;
 					RemoveHealthBar();
 
 					// Send event to generate an element
@@ -173,6 +171,7 @@ namespace MCS
 				m_World->AddComponent<Frosty::ECS::CDestroy>(witchCircleHealthBar.Background->EntityPtr);
 			}
 			witchCircleHealthBar.Background = nullptr;
+			m_WitchCircle[m_CurrentActiveWC]->Enchanter = nullptr;
 			witchCircleHealth.CurrentHealth = 0;
 			m_CurrentActiveWC = 0;
 		}
@@ -191,6 +190,7 @@ namespace MCS
 		//m_World->RemoveComponent<Frosty::ECS::CLight>(m_WitchCircle[m_CurrentActiveWC]->EntityPtr);
 		//m_World->RemoveComponent<Frosty::ECS::CParticleSystem>(m_WitchCircle[m_CurrentActiveWC]->EntityPtr);
 
+		auto& witchCircleHealth = m_World->GetComponent<Frosty::ECS::CHealth>(m_WitchCircle[m_CurrentActiveWC]->EntityPtr);
 		auto& witchCircleHealthBar = m_World->GetComponent<Frosty::ECS::CHealthBar>(m_WitchCircle[m_CurrentActiveWC]->EntityPtr);
 	
 		// Remove healthbar (witchCircle + background)
@@ -203,8 +203,12 @@ namespace MCS
 				m_World->AddComponent<Frosty::ECS::CDestroy>(witchCircleHealthBar.Background->EntityPtr);
 			}
 
-			witchCircleHealthBar.UseShader = Frosty::AssetManager::GetShader("FlatColor");
-			witchCircleHealthBar.BarOffset = glm::vec3(0.f, -5.f, 0.f);
+			//witchCircleHealthBar.UseShader = Frosty::AssetManager::GetShader("FlatColor");
+			//witchCircleHealthBar.BarOffset = glm::vec3(0.f, -5.f, 0.f);
+			m_WitchCircle[m_CurrentActiveWC]->Enchanter = nullptr;
+			m_WitchCircle[m_CurrentActiveWC]->Deployed = true;
+			witchCircleHealth.CurrentHealth = 0;
+
 			m_CurrentActiveWC = 0;
 		}
 	}

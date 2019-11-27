@@ -181,9 +181,12 @@ namespace MCS
 							{
 								auto& light = m_World->GetComponent<Frosty::ECS::CLight>(m_Transform[i]->EntityPtr);
 								if (light.Type == Frosty::ECS::CLight::LightType::Point)
-									if (!m_World->HasComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr))
+									if (!m_World->HasComponent<Frosty::ECS::CPlayer>(light.Origin->EntityPtr))
 									{
-										m_World->AddComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr);
+										if (!m_World->HasComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr))
+										{
+											m_World->AddComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr);
+										}
 									}
 							}
 						}
@@ -343,10 +346,12 @@ namespace MCS
 						{
 							auto& light = m_World->GetComponent<Frosty::ECS::CLight>(m_Transform[i]->EntityPtr);
 							if (light.Type == Frosty::ECS::CLight::LightType::Point)
+							{
 								if (!m_World->HasComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr))
 								{
 									m_World->AddComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr);
 								}
+							}
 						}
 					}
 					//else remove weapon if it isent player weapon
