@@ -150,9 +150,9 @@ namespace MCS
 			int randomValue;
 
 			if (m_World->HasComponent<Frosty::ECS::CEnemy>(e.GetEntity()))
-				randomValue = rand() % 6;
+				randomValue = rand() % 5;
 			else
-				randomValue = rand() % 7;
+				randomValue = rand() % 6;
 
 			Frosty::Weapon weapon;
 			auto& item = m_World->CreateEntity(entityTransform.Position, { 0.0f, 0.0f, 0.0f }, { 3.f, 3.f, 3.f });
@@ -161,7 +161,6 @@ namespace MCS
 			auto& light = m_World->AddComponent<Frosty::ECS::CLight>(item, Frosty::ECS::CLight::LightType::Point, 3.f, glm::vec3(1.f, 1.f, 1.f), 2.f);
 			auto& loot = m_World->AddComponent<Frosty::ECS::CLootable>(item);
 
-			randomValue = 6;
 			switch (randomValue)
 			{
 			case 0:
@@ -201,14 +200,6 @@ namespace MCS
 				loot.Type = Frosty::ECS::CLootable::LootType::Wolfsbane;
 				break;
 			case 5:
-				// Bait
-				transform.Scale = glm::vec3(1.f, 1.f, 1.f);
-				m_World->AddComponent<Frosty::ECS::CMesh>(item, Frosty::AssetManager::GetMesh("meat"));
-				material.DiffuseTexture = Frosty::AssetManager::GetTexture2D("meat");
-				light.Color = glm::vec3(1.f, 0.5f, 1.f);
-				loot.Type = Frosty::ECS::CLootable::LootType::Bait;
-				break;
-			case 6:
 				// Weapon
 				transform.Rotation = glm::vec3(130.f, 90.f, 0.f);
 				light.Color = glm::vec3(1.f, 1.f, 0.5f);
@@ -262,6 +253,14 @@ namespace MCS
 						material.DiffuseTexture = Frosty::AssetManager::GetTexture2D("bow_lvl3_diffuse");
 					}
 				}
+				break;
+			case 6:
+				// Bait
+				transform.Scale = glm::vec3(1.f, 1.f, 1.f);
+				m_World->AddComponent<Frosty::ECS::CMesh>(item, Frosty::AssetManager::GetMesh("meat"));
+				material.DiffuseTexture = Frosty::AssetManager::GetTexture2D("meat");
+				light.Color = glm::vec3(1.f, 0.5f, 1.f);
+				loot.Type = Frosty::ECS::CLootable::LootType::Bait;
 				break;
 			default:
 				break;
