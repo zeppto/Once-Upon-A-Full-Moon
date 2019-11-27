@@ -506,11 +506,27 @@ namespace MCS
 
 		// Create projectile
 		glm::vec3 spawnPos = attackerTransform.Position + (glm::vec3(direction) * 3.0f);
+		spawnPos.y = 5.0f;
 		auto& projectile = m_World->CreateEntity({ spawnPos.x, 1.0f, spawnPos.z }, attackerTransform.Rotation, { 5.0f, 5.0f, 2.0f });
 		m_World->AddComponent<Frosty::ECS::CMesh>(projectile, Frosty::AssetManager::GetMesh("player_arrow"));
 		m_World->AddComponent<Frosty::ECS::CMaterial>(projectile, Frosty::AssetManager::GetShader("FlatColor"));
 		auto& projectilePhysics = m_World->AddComponent<Frosty::ECS::CPhysics>(projectile, Frosty::AssetManager::GetBoundingBox("player_arrow"), weaponComp.ProjectileSpeed);
 		projectilePhysics.Direction = direction;
+
+		auto& particles = m_World->AddComponent<Frosty::ECS::CParticleSystem>(projectile, "Particles", "particle", 30, glm::vec3(0.7f, 0.7f, 1.0f), 12.0f);
+		particles.ParticleSystemDirection = glm::vec3(0.0f, 0.0f, -1.0f);
+		particles.RandomDirection = true;
+		particles.randMainDir = particles.ParticleSystemDirection;
+		particles.randSpread = 0.05f;
+		particles.StartParticleSize = 0.4;
+		particles.EmitCount = 2;
+		particles.EmitRate = 0.05f;
+		particles.MaxLifetime = 1.5f;
+		particles.FadeInTreshold = 1.4f;
+		particles.FadeTreshold = 1.3f;
+		particles.StaticColor = false;
+		particles.SystemEndColor = glm::vec3(0.0f, 0.0f, 1.0f);
+		particles.ParticleSystemStartPos = glm::vec3(0.0f, 0.0f, 1.1f);
 
 		float criticalHit = 0;
 		criticalHit = GenerateCriticalHit(weaponComp.CriticalHit, weaponComp.CriticalHitChance + weaponComp.FireCriticalHitChance);
@@ -545,6 +561,7 @@ namespace MCS
 			}
 
 			glm::vec3 spawnPos = attackerTransform.Position + (glm::vec3(direction) * 3.0f);
+			spawnPos.y = 5.0f;
 			auto& projectile = m_World->CreateEntity({ spawnPos.x, 1.0f, spawnPos.z }, attackerTransform.Rotation, { 5.0f, 5.0f, 2.0f });
 			m_World->AddComponent<Frosty::ECS::CMesh>(projectile, Frosty::AssetManager::GetMesh("player_arrow"));
 			m_World->AddComponent<Frosty::ECS::CMaterial>(projectile, Frosty::AssetManager::GetShader("FlatColor"));
@@ -557,6 +574,22 @@ namespace MCS
 			int totalDamage = int(glm::round(weaponComp.Damage + criticalHit + weaponComp.EarthDamage));
 
 			m_World->AddComponent<Frosty::ECS::CAttack>(projectile, Frosty::ECS::CAttack::AttackType::Range, totalDamage, true, weaponComp.Lifetime);
+
+
+			auto& particles = m_World->AddComponent<Frosty::ECS::CParticleSystem>(projectile, "Particles", "particle", 30, glm::vec3(0.0f, 1.0f, 0.2f), 12.0f);
+			particles.ParticleSystemDirection = glm::vec3(0.0f, 0.0f, -1.0f);
+			particles.RandomDirection = true;
+			particles.randMainDir = particles.ParticleSystemDirection;
+			particles.randSpread = 0.05f;
+			particles.StartParticleSize = 0.4;
+			particles.EmitCount = 2;
+			particles.EmitRate = 0.05f;
+			particles.MaxLifetime = 1.5f;
+			particles.FadeInTreshold = 1.4f;
+			particles.FadeTreshold = 1.3f;
+			particles.StaticColor = false;
+			particles.SystemEndColor = glm::vec3(1.0f, 1.0f, 1.0f);
+			particles.ParticleSystemStartPos = glm::vec3(0.0f, 0.0f, 1.1f);
 		}
 	}
 
@@ -575,6 +608,7 @@ namespace MCS
 
 		// Create projectile
 		glm::vec3 spawnPos = attackerTransform.Position + (glm::vec3(direction) * 3.0f);
+		spawnPos.y = 5.0f;
 		auto& projectile = m_World->CreateEntity({ spawnPos.x, 1.0f, spawnPos.z }, attackerTransform.Rotation, { 5.0f, 5.0f, 2.0f });
 		m_World->AddComponent<Frosty::ECS::CMesh>(projectile, Frosty::AssetManager::GetMesh("player_arrow"));
 		m_World->AddComponent<Frosty::ECS::CMaterial>(projectile, Frosty::AssetManager::GetShader("FlatColor"));
@@ -587,6 +621,21 @@ namespace MCS
 		int totalDamage = int(glm::round(weaponComp.Damage + criticalHit + weaponComp.EarthDamage));
 
 		m_World->AddComponent<Frosty::ECS::CAttack>(projectile, Frosty::ECS::CAttack::AttackType::Range, totalDamage, true, weaponComp.Lifetime, false);
+
+		auto& particles = m_World->AddComponent<Frosty::ECS::CParticleSystem>(projectile, "Particles", "particle", 30, glm::vec3(1.0f, 0.0f, 0.0f), 12.0f);
+		particles.ParticleSystemDirection = glm::vec3(0.0f, 0.0f, -1.0f);
+		particles.RandomDirection = true;
+		particles.randMainDir = particles.ParticleSystemDirection;
+		particles.randSpread = 0.05f;
+		particles.StartParticleSize = 0.4;
+		particles.EmitCount = 2;
+		particles.EmitRate = 0.05f;
+		particles.MaxLifetime = 1.5f;
+		particles.FadeInTreshold = 1.4f;
+		particles.FadeTreshold = 1.3f;
+		particles.StaticColor = false;
+		particles.SystemEndColor = glm::vec3(7.0f, 7.0f, 0.0f);
+		particles.ParticleSystemStartPos = glm::vec3(0.0f, 0.0f, 1.1f);
 	}
 
 	float PlayerControllerSystem::GenerateCriticalHit(float criticalHit, float criticalHitChance)
