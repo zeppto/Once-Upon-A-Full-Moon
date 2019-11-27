@@ -11,8 +11,6 @@
 #include "AssetFiles/TrueTypeFile.hpp"
 #include"AssetFiles/WeaponHandler.hpp"
 
-
-
 #include <Luna/include/Reader.h>
 
 #include"KeyLabel.hpp"
@@ -29,8 +27,6 @@
 
 #define MAT_NAME "Mat_" //(followed by a number)
 #define MAT_NAME_FOLLOW ":"
-
-class Grid;
 
 namespace Frosty
 {
@@ -83,7 +79,6 @@ namespace Frosty
 		static std::map<std::string, std::shared_ptr<Luna::BoundingBox>> s_BoundingBoxes;
 		static std::map<std::string, std::shared_ptr<TrueTypeFile>> s_TruefontTypes;
 		static std::map<std::string, std::shared_ptr<WeaponHandler>> s_WeaponHandler;
-		static std::map<std::string, std::shared_ptr<Grid>> s_Grid;
 
 		static std::unordered_map <std::string, std::list<TextureFile**>> s_TextureWatchList;
 

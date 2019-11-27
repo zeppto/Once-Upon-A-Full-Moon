@@ -122,6 +122,7 @@ namespace MCS
 			{
 				attackComp.AttackedEntities.emplace_back(it->first->Id);
 				m_Health[it->second]->CurrentHealth -= attackComp.Damage;
+				Frosty::EventBus::GetEventBus()->Publish<Frosty::PlayerDamageEvent>(Frosty::PlayerDamageEvent());
 			}
 		}
 		else if (m_World->HasComponent<Frosty::ECS::CEnemy>(it->first))
@@ -153,7 +154,7 @@ namespace MCS
 				// Handle boss death differently
 			}
 			else
-			{
+			{     
 				// Basic Enemy
 				if (!m_World->HasComponent<Frosty::ECS::CDestroy>(it->first))
 				{

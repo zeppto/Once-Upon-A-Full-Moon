@@ -10,6 +10,7 @@ namespace Frosty { class CreateLevelEvent; }
 namespace Frosty { class OpenLevelEvent; }
 namespace Frosty { class CreatEntityEvent; }
 namespace Frosty { class BoolMap; }
+namespace Frosty { class ResetEvent; }
 
 namespace MCS
 {
@@ -34,6 +35,7 @@ namespace MCS
 		void OnCreateLevelEvent(Frosty::CreateLevelEvent& e);
 		void OnOpenLevelEvent(Frosty::OpenLevelEvent& e);
 		void OnCreatEntityEvent(Frosty::CreatEntityEvent& e);
+		void OnResetEvent(Frosty::ResetEvent& e);
 
 
 	private:

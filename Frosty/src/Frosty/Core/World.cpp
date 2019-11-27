@@ -52,16 +52,24 @@ namespace Frosty
 				m_Systems[i]->OnUpdate();
 			}
 		}
+		/*for (size_t i = 1; i < m_TotalSystems; i++)
+		{
+			m_Systems[i]->OnUpdate();
+		}*/
 	}
 
 	void World::OnEvent(BaseEvent& e)
 	{
-		if (!m_GamePaused)
+		/*if (!m_GamePaused)
 		{
 			for (size_t i = 1; i < m_TotalSystems; i++)
 			{
 				m_Systems[i]->OnEvent(e);
 			}
+		}*/
+		for (size_t i = 1; i < m_TotalSystems; i++)
+		{
+			m_Systems[i]->OnEvent(e);
 		}
 	}
 

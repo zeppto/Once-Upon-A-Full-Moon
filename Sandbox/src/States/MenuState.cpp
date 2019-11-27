@@ -46,7 +46,7 @@ namespace MCS
 	{
 		m_App = &Frosty::Application::Get();
 		m_App->PushOverlay(FY_NEW(MenuLayer));
-
+		
 		if (!m_App->MenuLoaded())
 		{
 			auto& world = Frosty::Application::Get().GetWorld();
@@ -67,6 +67,7 @@ namespace MCS
 
 			Frosty::ECS::BaseSystem* retSystem = world->AddSystem<NavigationSystem>();
 			NavigationSystem* navSystem = dynamic_cast<NavigationSystem*>(retSystem);
+
 			retSystem = world->AddSystem<ParticleSystem>();
 			ParticleSystem* particleSystem = dynamic_cast<ParticleSystem*>(retSystem);
 

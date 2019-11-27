@@ -1,6 +1,8 @@
 #ifndef GAMESTATE_HPP
 #define GAMESTATE_HPP
 
+namespace Frosty { class GetEntityAttemptEvent; }
+
 namespace MCS
 {
 	class GameState : public Frosty::State
@@ -22,7 +24,7 @@ namespace MCS
 		void InitiateObjects();
 		void SetPlayer();
 		//void DeletePlayer();
-		void DeleteLight();	
+		void DeleteLight();
 
 	private:
 		Frosty::Application* m_App = nullptr;

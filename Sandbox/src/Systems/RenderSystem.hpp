@@ -26,7 +26,7 @@ namespace MCS
 		std::array<Frosty::ECS::CTransform*, Frosty::ECS::MAX_ENTITIES_PER_COMPONENT> m_Transform;
 		std::array<Frosty::ECS::CMesh*, Frosty::ECS::MAX_ENTITIES_PER_COMPONENT> m_Meshes;
 		std::array<Frosty::ECS::CMaterial*, Frosty::ECS::MAX_ENTITIES_PER_COMPONENT> m_Materials;
-		std::array<Frosty::ECS::CAnimController*, Frosty::ECS::MAX_ENTITIES_PER_COMPONENT> m_Anims;
+		//std::array<Frosty::ECS::CAnimController*, Frosty::ECS::MAX_ENTITIES_PER_COMPONENT> m_Anims;
 
 	};
 }

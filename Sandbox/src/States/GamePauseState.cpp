@@ -48,8 +48,10 @@ namespace MCS
 				FY_INFO("MENU STAGE NEXT");
 				auto& world = Frosty::Application::Get().GetWorld();
 
+				Frosty::EventBus::GetEventBus()->Publish<Frosty::ResetEvent>(Frosty::ResetEvent());
 				world->PauseGame();
 				m_App->GetStateMachine().AddState(Frosty::StateRef(FY_NEW(MenuState)), true);
+				FY_INFO("RESET");
 			}
 		}*/
 		else if (x > 920.f && x < 1000.0f && y > 350.0f && y < 400.0f)

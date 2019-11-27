@@ -34,6 +34,9 @@ namespace MCS
 		case Frosty::EventType::CreatEntity:
 			OnCreatEntityEvent(static_cast<Frosty::CreatEntityEvent&>(e));
 			break;
+		case Frosty::EventType::Reset:
+			OnResetEvent(static_cast<Frosty::ResetEvent&>(e));
+			break;
 		default:
 			break;
 		}
@@ -61,9 +64,9 @@ namespace MCS
 			int rotate;
 			m_Map.getRoomTextur(m_PlayerPos, &rotate);
 			Level::MoveToNewRoom(m_CurrentRoome.sideExits[0], m_CurrentRoome.sideExits[1], m_CurrentRoome.sideExits[2], m_CurrentRoome.sideExits[3]);
-			m_LevelFileFormat.OpenFromFile("deadend_chests_IsStatick_t_p_e_r_h", m_PlayerPos, playerTransform, rotate);
+			m_LevelFileFormat.OpenFromFile("deadend_chests_IsStatick_t_p_e_r_h_a", m_PlayerPos, playerTransform, rotate);
 			m_Start = false;
-			//m_LevelFileFormat.LoadBoolMap("deadend_chests_IsStatick_t_p_e_r_h");
+			m_LevelFileFormat.LoadBoolMap("deadend_chests_IsStatick_t_p_e_r_h_a");
 		}
 	}
 
@@ -675,6 +678,27 @@ namespace MCS
 			m_World->AddComponent<Frosty::ECS::CHealthBar>(enemyA, glm::vec3(0.0f, 10.0f, 0.0f));
 			m_World->AddComponent<Frosty::ECS::CDropItem>(enemyA);
 		}
+	}
+	void LevelSystem::OnResetEvent(Frosty::ResetEvent & e)
+	{
+		for (size_t i = 1; i < p_Total; i++)
+		{
+			if (!m_World->HasComponent<Frosty::ECS::CWeapon>(m_Transform[i]->EntityPtr))
+			{
+				
+					if (!m_World->HasComponent<Frosty::ECS::CGUI>(m_Transform[i]->EntityPtr))
+					{
+						if (!m_World->HasComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr))
+						{
+							m_World->AddComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr);
+						}
+					}
+				
+			}
+		}
+		m_Start = true;
+		m_PlayerPos = { 10, 15 };
+		//visited rom reset missing!
 	}
 }
 
