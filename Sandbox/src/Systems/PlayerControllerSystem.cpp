@@ -520,7 +520,7 @@ namespace MCS
 		m_World->AddComponent<Frosty::ECS::CMesh>(projectile, Frosty::AssetManager::GetMesh("player_arrow"));
 		m_World->AddComponent<Frosty::ECS::CMaterial>(projectile, Frosty::AssetManager::GetShader("Texture2D"));
 		m_World->GetComponent<Frosty::ECS::CMaterial>(projectile).DiffuseTexture = Frosty::AssetManager::GetTexture2D("arrow_diffuse");
-		auto& projectilePhysics = m_World->AddComponent<Frosty::ECS::CPhysics>(projectile, Frosty::AssetManager::GetBoundingBox("player_arrow"), weaponComp.ProjectileSpeed);
+		auto& projectilePhysics = m_World->AddComponent<Frosty::ECS::CPhysics>(projectile, Frosty::AssetManager::GetBoundingBox("player_arrow"), projectileTransform.Scale, weaponComp.ProjectileSpeed);
 		projectilePhysics.Direction = direction;
 
 		auto& particles = m_World->AddComponent<Frosty::ECS::CParticleSystem>(projectile, "Particles", "particle", 30, glm::vec3(0.7f, 0.7f, 1.0f), 12.0f);
@@ -577,7 +577,7 @@ namespace MCS
 			m_World->AddComponent<Frosty::ECS::CMesh>(projectile, Frosty::AssetManager::GetMesh("player_arrow"));
 			m_World->AddComponent<Frosty::ECS::CMaterial>(projectile, Frosty::AssetManager::GetShader("Texture2D"));
 			m_World->GetComponent<Frosty::ECS::CMaterial>(projectile).DiffuseTexture = Frosty::AssetManager::GetTexture2D("arrow_diffuse");
-			auto& projectilePhysics = m_World->AddComponent<Frosty::ECS::CPhysics>(projectile, Frosty::AssetManager::GetBoundingBox("player_arrow"), weaponComp.ProjectileSpeed);
+			auto& projectilePhysics = m_World->AddComponent<Frosty::ECS::CPhysics>(projectile, Frosty::AssetManager::GetBoundingBox("player_arrow"), projectileTransform.Scale, weaponComp.ProjectileSpeed);
 			projectilePhysics.Direction = direction;
 
 			float criticalHit = 0;
@@ -626,7 +626,7 @@ namespace MCS
 		m_World->AddComponent<Frosty::ECS::CMesh>(projectile, Frosty::AssetManager::GetMesh("player_arrow"));
 		m_World->AddComponent<Frosty::ECS::CMaterial>(projectile, Frosty::AssetManager::GetShader("Texture2D"));
 		m_World->GetComponent<Frosty::ECS::CMaterial>(projectile).DiffuseTexture = Frosty::AssetManager::GetTexture2D("arrow_diffuse");
-		auto& projectilePhysics = m_World->AddComponent<Frosty::ECS::CPhysics>(projectile, Frosty::AssetManager::GetBoundingBox("player_arrow"), weaponComp.ProjectileSpeed);
+		auto& projectilePhysics = m_World->AddComponent<Frosty::ECS::CPhysics>(projectile, Frosty::AssetManager::GetBoundingBox("player_arrow"),projectileTransform.Scale, weaponComp.ProjectileSpeed);
 		projectilePhysics.Direction = direction;
 
 		float criticalHit = 0;
