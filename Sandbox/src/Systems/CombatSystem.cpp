@@ -148,10 +148,12 @@ namespace MCS
 			if (m_World->HasComponent<Frosty::ECS::CPlayer>(it->first))
 			{
 				// Handle player death differently
+				Frosty::EventBus::GetEventBus()->Publish<Frosty::GameoverEvent>(Frosty::GameoverEvent());
 			}
 			else if (m_World->HasComponent<Frosty::ECS::CBoss>(it->first))
 			{
 				// Handle boss death differently
+				Frosty::EventBus::GetEventBus()->Publish<Frosty::WinEvent>(Frosty::WinEvent());
 			}
 			else
 			{     
