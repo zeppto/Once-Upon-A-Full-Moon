@@ -167,7 +167,7 @@ namespace MCS
 
 				if (!m_World->HasComponent<Frosty::ECS::CDestroy>(enemyComp.Weapon->EntityPtr))
 				{
-					m_World->GetComponent<Frosty::ECS::CDestroy>(enemyComp.Weapon->EntityPtr);
+					m_World->AddComponent<Frosty::ECS::CDestroy>(enemyComp.Weapon->EntityPtr);
 				}
 			}
 		}

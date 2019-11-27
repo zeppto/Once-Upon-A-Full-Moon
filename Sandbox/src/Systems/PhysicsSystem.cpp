@@ -165,11 +165,12 @@ namespace MCS
 					glm::vec3 finalCenterB = m_Transform[i]->Position + glm::vec3(m_Physics[i]->BoundingBox->pos[0], m_Physics[i]->BoundingBox->pos[1], m_Physics[i]->BoundingBox->pos[2]);
 					glm::vec3 finalLengthA = glm::vec3(m_Physics[index]->BoundingBox->halfSize[0], m_Physics[index]->BoundingBox->halfSize[1], m_Physics[index]->BoundingBox->halfSize[2]) * m_Transform[index]->Scale;
 					glm::vec3 finalLengthB = glm::vec3(m_Physics[i]->BoundingBox->halfSize[0], m_Physics[i]->BoundingBox->halfSize[1], m_Physics[i]->BoundingBox->halfSize[2]) * m_Transform[i]->Scale;
-					//intersect = Frosty::CollisionDetection::AABBIntersect(finalLengthA, finalCenterA, finalLengthB, finalCenterB);
+					bool intersect = Frosty::CollisionDetection::AABBIntersect(finalLengthA, finalCenterA, finalLengthB, finalCenterB);
+					glm::vec3 intersectionPushback(0.0f);
 
-					glm::vec3 intersectionPushback = CircleIntersection(index, i);
+					if (!m_Transform[i]->IsStatic) intersectionPushback = CircleIntersection(index, i);
 
-					if (intersectionPushback != glm::vec3(0.0f, 0.0f, 0.0f))
+					if ((intersectionPushback != glm::vec3(0.0f, 0.0f, 0.0f)) || intersect)
 					{
 						// Attack with Player/Enemy/Chest
 						if (m_World->HasComponent<Frosty::ECS::CAttack>(m_Transform[index]->EntityPtr))
@@ -266,7 +267,8 @@ namespace MCS
 
 							if (m_Transform[i]->IsStatic)
 							{
-								if (normalCollisionPushback) m_Transform[index]->Position -= Frosty::CollisionDetection::AABBIntersecPushback(finalLengthA, finalCenterA, finalLengthB, finalCenterB);
+								if (normalCollisionPushback && intersect)
+									m_Transform[index]->Position -= Frosty::CollisionDetection::AABBIntersecPushback(finalLengthA, finalCenterA, finalLengthB, finalCenterB);
 							}
 							else
 							{

@@ -253,7 +253,7 @@ namespace Frosty
 	class EnemyDeathEvent : public BaseEvent
 	{
 	public:
-		EnemyDeathEvent(int points) { }
+		EnemyDeathEvent(int points) : m_Points(points) { }
 
 		int GetPoints() { return m_Points; }
 
