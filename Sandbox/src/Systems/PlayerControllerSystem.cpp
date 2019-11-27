@@ -86,6 +86,9 @@ namespace MCS
 		case Frosty::EventType::HealAbility:
 			OnHealAbilityEvent();
 			break;
+		case Frosty::EventType::EnemyDeath:
+			OnEnemyDeathEvent(static_cast<Frosty::EnemyDeathEvent&>(e));
+			break;
 		case Frosty::EventType::PlayerDamage:
 			OnDamage();
 			break;
@@ -426,10 +429,10 @@ namespace MCS
 		glm::vec3 spawnPos = attackerTransform.Position + (glm::vec3(direction) * 4.0f);
 		glm::vec3 spawnScale = glm::vec3(10.0f, 6.0f, 4.0f);
 		auto& sword = m_World->CreateEntity({ spawnPos.x, 3.0f, spawnPos.z }, attackerTransform.Rotation, spawnScale);
-
+		auto& swordTransform = m_World->GetComponent<Frosty::ECS::CTransform>(sword);
 		m_World->AddComponent<Frosty::ECS::CMesh>(sword, Frosty::AssetManager::GetMesh("pCube1"));
 		m_World->AddComponent<Frosty::ECS::CMaterial>(sword, Frosty::AssetManager::GetShader("FlatColor"));
-		m_World->AddComponent<Frosty::ECS::CPhysics>(sword, Frosty::AssetManager::GetBoundingBox("pCube1"));
+		m_World->AddComponent<Frosty::ECS::CPhysics>(sword, Frosty::AssetManager::GetBoundingBox("pCube1"), swordTransform.Scale);
 
 		float criticalHit = 0;
 		criticalHit = GenerateCriticalHit(weaponComp.CriticalHit, weaponComp.CriticalHitChance + weaponComp.FireCriticalHitChance);
@@ -451,10 +454,11 @@ namespace MCS
 
 		glm::vec3 spawnScale = glm::vec3(10.0f, 6.0f, 10.0f);
 		auto& sword = m_World->CreateEntity({ spawnPos.x, 3.0f, spawnPos.z }, { 0.f, 0.f, 0.f }, spawnScale);
+		auto& swordTransform = m_World->GetComponent<Frosty::ECS::CTransform>(sword);
 
 		m_World->AddComponent<Frosty::ECS::CMesh>(sword, Frosty::AssetManager::GetMesh("pCube1"));
 		m_World->AddComponent<Frosty::ECS::CMaterial>(sword, Frosty::AssetManager::GetShader("FlatColor"));
-		m_World->AddComponent<Frosty::ECS::CPhysics>(sword, Frosty::AssetManager::GetBoundingBox("pCube1"));
+		m_World->AddComponent<Frosty::ECS::CPhysics>(sword, Frosty::AssetManager::GetBoundingBox("pCube1"), swordTransform.Scale);
 
 		float criticalHit = 0;
 		criticalHit = GenerateCriticalHit(weaponComp.CriticalHit, weaponComp.CriticalHitChance + weaponComp.FireCriticalHitChance);
@@ -481,10 +485,11 @@ namespace MCS
 		glm::vec3 spawnPos = attackerTransform.Position + (glm::vec3(direction) * 5.0f);
 		glm::vec3 spawnScale = glm::vec3(2.0f, 6.0f, 10.0f);
 		auto& sword = m_World->CreateEntity({ spawnPos.x, 3.0f, spawnPos.z }, attackerTransform.Rotation, spawnScale);
+		auto& swordTransform = m_World->GetComponent<Frosty::ECS::CTransform>(sword);
 
 		m_World->AddComponent<Frosty::ECS::CMesh>(sword, Frosty::AssetManager::GetMesh("pCube1"));
 		m_World->AddComponent<Frosty::ECS::CMaterial>(sword, Frosty::AssetManager::GetShader("FlatColor"));
-		m_World->AddComponent<Frosty::ECS::CPhysics>(sword, Frosty::AssetManager::GetBoundingBox("pCube1"));
+		m_World->AddComponent<Frosty::ECS::CPhysics>(sword, Frosty::AssetManager::GetBoundingBox("pCube1"), swordTransform.Scale);
 
 		float criticalHit = 0;
 		criticalHit = GenerateCriticalHit(weaponComp.CriticalHit, weaponComp.CriticalHitChance + weaponComp.FireCriticalHitChance);
@@ -511,6 +516,7 @@ namespace MCS
 		glm::vec3 spawnPos = attackerTransform.Position + (glm::vec3(direction) * 3.0f);
 		spawnPos.y = 5.0f;
 		auto& projectile = m_World->CreateEntity({ spawnPos.x, 1.0f, spawnPos.z }, attackerTransform.Rotation, { 5.0f, 5.0f, 2.0f });
+		auto& projectileTransform = m_World->GetComponent<Frosty::ECS::CTransform>(projectile);
 		m_World->AddComponent<Frosty::ECS::CMesh>(projectile, Frosty::AssetManager::GetMesh("player_arrow"));
 		m_World->AddComponent<Frosty::ECS::CMaterial>(projectile, Frosty::AssetManager::GetShader("Texture2D"));
 		m_World->GetComponent<Frosty::ECS::CMaterial>(projectile).DiffuseTexture = Frosty::AssetManager::GetTexture2D("arrow_diffuse");
@@ -522,7 +528,7 @@ namespace MCS
 		particles.RandomDirection = true;
 		particles.randMainDir = particles.ParticleSystemDirection;
 		particles.randSpread = 0.05f;
-		particles.StartParticleSize = 0.4;
+		particles.StartParticleSize = 0.4f;
 		particles.EmitCount = 2;
 		particles.EmitRate = 0.05f;
 		particles.MaxLifetime = 1.5f;
@@ -567,6 +573,7 @@ namespace MCS
 			glm::vec3 spawnPos = attackerTransform.Position + (glm::vec3(direction) * 3.0f);
 			spawnPos.y = 5.0f;
 			auto& projectile = m_World->CreateEntity({ spawnPos.x, 1.0f, spawnPos.z }, attackerTransform.Rotation, { 5.0f, 5.0f, 2.0f });
+			auto& projectileTransform = m_World->GetComponent<Frosty::ECS::CTransform>(projectile);
 			m_World->AddComponent<Frosty::ECS::CMesh>(projectile, Frosty::AssetManager::GetMesh("player_arrow"));
 			m_World->AddComponent<Frosty::ECS::CMaterial>(projectile, Frosty::AssetManager::GetShader("Texture2D"));
 			m_World->GetComponent<Frosty::ECS::CMaterial>(projectile).DiffuseTexture = Frosty::AssetManager::GetTexture2D("arrow_diffuse");
@@ -586,7 +593,7 @@ namespace MCS
 			particles.RandomDirection = true;
 			particles.randMainDir = particles.ParticleSystemDirection;
 			particles.randSpread = 0.05f;
-			particles.StartParticleSize = 0.4;
+			particles.StartParticleSize = 0.4f;
 			particles.EmitCount = 2;
 			particles.EmitRate = 0.05f;
 			particles.MaxLifetime = 1.5f;
@@ -615,6 +622,7 @@ namespace MCS
 		glm::vec3 spawnPos = attackerTransform.Position + (glm::vec3(direction) * 3.0f);
 		spawnPos.y = 5.0f;
 		auto& projectile = m_World->CreateEntity({ spawnPos.x, 1.0f, spawnPos.z }, attackerTransform.Rotation, { 5.0f, 5.0f, 2.0f });
+		auto& projectileTransform = m_World->GetComponent<Frosty::ECS::CTransform>(projectile);
 		m_World->AddComponent<Frosty::ECS::CMesh>(projectile, Frosty::AssetManager::GetMesh("player_arrow"));
 		m_World->AddComponent<Frosty::ECS::CMaterial>(projectile, Frosty::AssetManager::GetShader("Texture2D"));
 		m_World->GetComponent<Frosty::ECS::CMaterial>(projectile).DiffuseTexture = Frosty::AssetManager::GetTexture2D("arrow_diffuse");
@@ -633,7 +641,7 @@ namespace MCS
 		particles.RandomDirection = true;
 		particles.randMainDir = particles.ParticleSystemDirection;
 		particles.randSpread = 0.05f;
-		particles.StartParticleSize = 0.4;
+		particles.StartParticleSize = 0.4f;
 		particles.EmitCount = 2;
 		particles.EmitRate = 0.05f;
 		particles.MaxLifetime = 1.5f;
@@ -1044,6 +1052,11 @@ namespace MCS
 				}
 			}
 		}
+	}
+
+	void PlayerControllerSystem::OnEnemyDeathEvent(Frosty::EnemyDeathEvent& e)
+	{
+		m_Player[1]->Score += e.GetPoints();
 	}
 
 	void PlayerControllerSystem::SwapWeapon(const std::shared_ptr<Frosty::ECS::Entity>& playerWeapon, const std::shared_ptr<Frosty::ECS::Entity>& lootWeapon)

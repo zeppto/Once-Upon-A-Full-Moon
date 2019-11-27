@@ -158,9 +158,18 @@ namespace MCS
 			else
 			{     
 				// Basic Enemy
+				auto& enemyComp = m_World->GetComponent<Frosty::ECS::CEnemy>(it->first);
+
 				if (!m_World->HasComponent<Frosty::ECS::CDestroy>(it->first))
 				{
 					m_World->AddComponent<Frosty::ECS::CDestroy>(it->first);
+				}
+				Frosty::EventBus::GetEventBus()->Publish<Frosty::EnemyDeathEvent>(Frosty::EnemyDeathEvent(enemyComp.Weapon->Level * 100));
+
+
+				if (!m_World->HasComponent<Frosty::ECS::CDestroy>(enemyComp.Weapon->EntityPtr))
+				{
+					m_World->AddComponent<Frosty::ECS::CDestroy>(enemyComp.Weapon->EntityPtr);
 				}
 			}
 		}

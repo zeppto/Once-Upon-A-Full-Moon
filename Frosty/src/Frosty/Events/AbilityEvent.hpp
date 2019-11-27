@@ -250,6 +250,19 @@ namespace Frosty
 		EVENT_TYPE(HealAbility)
 	};
 
+	class EnemyDeathEvent : public BaseEvent
+	{
+	public:
+		EnemyDeathEvent(int points) : m_Points(points) { }
+
+		int GetPoints() { return m_Points; }
+
+		EVENT_TYPE(EnemyDeath)
+
+	private:
+		int m_Points{ 0 };
+	};
+
 	class PlayerDamageEvent : public BaseEvent
 	{
 	public:
