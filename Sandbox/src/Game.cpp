@@ -288,7 +288,7 @@ namespace MCS
 
 		uiLayout.AddSprite(hpPotionSprite, glm::vec2(1, 1), "hpPotion", glm::vec4(1.0f));// 9
 		uiLayout.AddSprite(spPotionSprite, glm::vec2(1, 1), "spPotion", glm::vec4(1.0f));// 10
-		uiLayout.AddSprite(baitSprite, glm::vec2(1, 1), "bait", glm::vec4(1.0f));// 11
+		uiLayout.AddSprite(baitSprite, glm::vec2(0, 0), "bait", glm::vec4(1.0f));// 11
 		uiLayout.AddSprite(wolfsbainSprite, glm::vec2(1, 1), "wolfsbane", glm::vec4(1.0f));// 12
 
 		////Need to change this sprite to a "dodge" sprite ////
