@@ -547,12 +547,12 @@ namespace Frosty
 		vertexArray->Unbind();
 		shader->UnBind();
 	}
-
+	 
 	int counter = 0;
 
 	void Renderer::AddToRenderer(ECS::CMaterial* mat, ECS::CMesh* mesh, ECS::CTransform* transform)
 	{
-		if (mat->UseShader->GetName() != "Animation")
+		if (mat->UseShader->GetName() != "Animation"|| mat->UseShader->GetName() != "FlatColor")
 		{
 			std::unordered_map<std::string, std::shared_ptr<ShaderData>>* ShaderMap = &s_ShaderMap;
 			//std::unordered_map<std::string, std::shared_ptr<ShaderData>>* ShaderMap = nullptr;
