@@ -283,7 +283,7 @@ namespace Frosty
 	private:
 		std::shared_ptr<ECS::Entity> m_Entity;
 	};
-
+	
 	class DamageEvent : public BaseEvent
 	{
 	public:
@@ -297,6 +297,22 @@ namespace Frosty
 	private:
 		std::shared_ptr<ECS::Entity> m_Entity;
 		float m_Damage;
+	};
+
+	class GameoverEvent : public BaseEvent
+	{
+	public:
+		GameoverEvent() { }
+
+		EVENT_TYPE(GameOver)
+	};
+
+	class WinEvent : public BaseEvent
+	{
+	public:
+		WinEvent() { }
+
+		EVENT_TYPE(Win)
 	};
 }
 

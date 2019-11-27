@@ -837,11 +837,11 @@ namespace Frosty
 		{
 			static std::string NAME;
 			static const int COOLDOWN = 3000;
-			static const int DISTANCE = 16000;
+			static const int DISTANCE = 5000;
 			bool Active{ false };
 			float CurrentCooldown{ 0.0f };
 			float DistanceDashed{ 0.0f };
-			float SpeedMultiplier{ 6.0f };
+			float SpeedMultiplier{ 3.0f };
 
 			CDash() = default;
 			CDash(const CDash& org) { FY_CORE_ASSERT(false, "Copy constructor in CDash called."); }

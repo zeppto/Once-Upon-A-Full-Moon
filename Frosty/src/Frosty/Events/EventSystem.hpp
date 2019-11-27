@@ -20,7 +20,7 @@ namespace Frosty
 		PickUpAttempt, PickUp,
 		BaitPlaced, ExitCurrentLevel, EnterNewRoom,
 		SaveLevel, CreateLevel, OpenLevel, CreatEntity, EnemyDeath,
-		LoadBoolMap, InitiateGridMap, ActivateWitchCircle, UpgradeWeapon, PlayAnim, HealAbility, PlayerDamage, DropItem, Damage
+		LoadBoolMap, InitiateGridMap, ActivateWitchCircle, UpgradeWeapon, PlayAnim, HealAbility, PlayerDamage, DropItem, GameOver, Win, Damage
 	};
 
 #define EVENT_TYPE(type) static EventType GetStaticType() { return EventType::##type; }\
