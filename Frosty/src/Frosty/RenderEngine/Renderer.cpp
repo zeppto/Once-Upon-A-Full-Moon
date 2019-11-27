@@ -16,7 +16,7 @@ namespace Frosty
 	std::vector<Renderer::RenderPassData>  Renderer::s_RenderPas;
 
 	int Renderer::s_TotalNrOfFrames;
-	bool Renderer::s_DistanceCulling;
+	bool Renderer::s_DistanceCulling = true;
 
 	void Renderer::Init()
 	{
