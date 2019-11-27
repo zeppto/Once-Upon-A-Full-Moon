@@ -742,7 +742,7 @@ namespace Frosty
 			float RunOnHealth{ 0.0f };
 
 			CEnemy() = default;
-			CEnemy(CTransform* target, CWeapon* weapon = nullptr, float runOnHealth = 0.0f) : Target(target), Weapon(weapon), RunOnHealth(runOnHealth) { }
+			CEnemy(CTransform* target, CWeapon* weapon, float runOnHealth = 0.0f) : Target(target), Weapon(weapon), RunOnHealth(runOnHealth) { }
 			CEnemy(const CEnemy& org) { FY_CORE_ASSERT(false, "Copy constructor in CEnemy called."); }
 
 			virtual std::string GetName() const { return NAME; }
@@ -1006,7 +1006,7 @@ namespace Frosty
 			// Abilities
 			int32_t LeapDamage{ 3 };
 			float LeapChance{ 25.0f };
-			float LeapInterval{ 2.5f };
+			float LeapInterval{ 6.5f };
 			float LeapCooldownTime{ Frosty::Time::CurrentTime() };
 			glm::vec3 LeapTargetPosition{ 0.0f };
 			float LeapMaxDistance{ 35.0f };
@@ -1014,7 +1014,7 @@ namespace Frosty
 			//
 			int32_t ChargeDamage{ 9 };
 			float ChargeChance{ 15.0f };
-			float ChargeInterval{ 2.0f };
+			float ChargeInterval{ 5.0f };
 			float ChargeCooldownTime{ Frosty::Time::CurrentTime() };
 			float ChargeDistance{ 25.0f };
 			float DistanceCharged{ 0.0f };

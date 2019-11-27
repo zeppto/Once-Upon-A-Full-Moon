@@ -227,6 +227,7 @@ namespace MCS
 										bossComp.LeapCooldownTime = Frosty::Time::CurrentTime();
 										bossComp.ActiveAbility = Frosty::ECS::CBoss::AbilityState::None;
 										bossComp.LeapTargetPosition = glm::vec3(0.0f);
+										Frosty::EventBus::GetEventBus()->Publish<Frosty::DamageEvent>(Frosty::DamageEvent(m_Transform[i]->EntityPtr, bossComp.LeapDamage));
 									}
 									bool normalCollisionPushback = false;
 								}
@@ -247,6 +248,7 @@ namespace MCS
 										bossComp.ChargeTargetPosition = glm::vec3(0.0f);
 										bossComp.ChargeLoadCooldownTime = 0.0f;
 										normalCollisionPushback = false;
+										Frosty::EventBus::GetEventBus()->Publish<Frosty::DamageEvent>(Frosty::DamageEvent(m_Transform[i]->EntityPtr, bossComp.ChargeDamage));
 									}
 									else if (m_World->HasComponent<Frosty::ECS::CEnemy>(m_Transform[i]->EntityPtr))
 									{
