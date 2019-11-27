@@ -1088,11 +1088,77 @@ namespace MCS
 		{
 			// Swap loot type in lootWeapon depending on playerWeapon
 			SwapLootType(playerWeapon, lootWeapon);
+			
+			auto& playerWeaponComp = m_World->GetComponent<Frosty::ECS::CWeapon>(playerWeapon);
+			auto& lootWeaponComp = m_World->GetComponent<Frosty::ECS::CWeapon>(lootWeapon);
 
-			Frosty::ECS::CWeapon tempWeapon;
-			tempWeapon = m_World->GetComponent<Frosty::ECS::CWeapon>(playerWeapon);
-			m_World->GetComponent<Frosty::ECS::CWeapon>(playerWeapon) = m_World->GetComponent<Frosty::ECS::CWeapon>(lootWeapon);
-			m_World->GetComponent<Frosty::ECS::CWeapon>(lootWeapon) = tempWeapon;
+			Frosty::ECS::CWeapon::WeaponType type = playerWeaponComp.Type;
+			uint8_t level = playerWeaponComp.Level;
+			std::string speciality = playerWeaponComp.Speciality;
+			float maxAttackRange = playerWeaponComp.MaxAttackRange;
+			float minAttackRange = playerWeaponComp.MinAttackRange;
+			float damage = playerWeaponComp.Damage;
+			float criticalHit = playerWeaponComp.CriticalHit;
+			float criticalHitChance = playerWeaponComp.CriticalHitChance;
+			float lvl1Cooldown = playerWeaponComp.LVL1AttackCooldown;
+			float lvl2Cooldown = playerWeaponComp.LVL2AttackCooldown;
+			float lvl3Cooldown = playerWeaponComp.LVL3AttackCooldown;
+			float lifetime = playerWeaponComp.Lifetime;
+			glm::vec3 attackHitboxScale = playerWeaponComp.AttackHitboxScale;
+			float fire = playerWeaponComp.FireCriticalHitChance;
+			float earth = playerWeaponComp.EarthDamage;
+			float wind = playerWeaponComp.WindSpeed;
+			int water = playerWeaponComp.WaterHealing;
+			bool upgraded = playerWeaponComp.IsFullyUpgraded;
+			float projectileSpeed = playerWeaponComp.ProjectileSpeed;
+			
+			playerWeaponComp.Type = lootWeaponComp.Type;
+			playerWeaponComp.Level = lootWeaponComp.Level;
+			playerWeaponComp.Speciality = lootWeaponComp.Speciality;
+			playerWeaponComp.MaxAttackRange = lootWeaponComp.MaxAttackRange;
+			playerWeaponComp.MinAttackRange = lootWeaponComp.MinAttackRange;
+			playerWeaponComp.Damage = lootWeaponComp.Damage;
+			playerWeaponComp.CriticalHit = lootWeaponComp.CriticalHit;
+			playerWeaponComp.CriticalHitChance = lootWeaponComp.CriticalHitChance;
+			playerWeaponComp.LVL1AttackCooldown = lootWeaponComp.LVL1AttackCooldown;
+			playerWeaponComp.LVL2AttackCooldown = lootWeaponComp.LVL2AttackCooldown;
+			playerWeaponComp.LVL3AttackCooldown = lootWeaponComp.LVL3AttackCooldown;
+			playerWeaponComp.Lifetime = lootWeaponComp.Lifetime;
+			playerWeaponComp.AttackHitboxScale = lootWeaponComp.AttackHitboxScale;
+			playerWeaponComp.FireCriticalHitChance = lootWeaponComp.FireCriticalHitChance;
+			playerWeaponComp.EarthDamage = lootWeaponComp.EarthDamage;
+			playerWeaponComp.WindSpeed = lootWeaponComp.WindSpeed;
+			playerWeaponComp.WaterHealing = lootWeaponComp.WaterHealing;
+			playerWeaponComp.IsFullyUpgraded = lootWeaponComp.IsFullyUpgraded;
+			playerWeaponComp.ProjectileSpeed = lootWeaponComp.ProjectileSpeed;
+
+			lootWeaponComp.Type = type;
+			lootWeaponComp.Level = level;
+			lootWeaponComp.Speciality = speciality;
+			lootWeaponComp.MaxAttackRange = maxAttackRange;
+			lootWeaponComp.MinAttackRange = minAttackRange;
+			lootWeaponComp.Damage;
+			lootWeaponComp.CriticalHit;
+			lootWeaponComp.CriticalHitChance = lootWeaponComp.CriticalHitChance;
+			lootWeaponComp.LVL1AttackCooldown = lvl1Cooldown;
+			lootWeaponComp.LVL2AttackCooldown = lvl2Cooldown;
+			lootWeaponComp.LVL3AttackCooldown = lvl3Cooldown;
+			lootWeaponComp.Lifetime = lifetime;
+			lootWeaponComp.AttackHitboxScale = attackHitboxScale;
+			lootWeaponComp.FireCriticalHitChance = fire;
+			lootWeaponComp.EarthDamage = earth;
+			lootWeaponComp.WindSpeed = wind;
+			lootWeaponComp.WaterHealing = water;
+			lootWeaponComp.IsFullyUpgraded = upgraded;
+			lootWeaponComp.ProjectileSpeed = projectileSpeed;
+
+
+			//Frosty::ECS::CWeapon tempWeapon;
+			//tempWeapon = m_World->GetComponent<Frosty::ECS::CWeapon>(playerWeapon);
+			//m_World->GetComponent<Frosty::ECS::CWeapon>(playerWeapon) = m_World->GetComponent<Frosty::ECS::CWeapon>(lootWeapon);
+			//m_World->GetComponent<Frosty::ECS::CWeapon>(lootWeapon) = tempWeapon;
+
+
 
 			// Only switch CMesh and CMaterial when weapon stats have been swapped
 			SwapMesh(playerWeapon, lootWeapon);
@@ -1111,23 +1177,37 @@ namespace MCS
 				//Transform must be assigned since parentMatrix(Player) being applied to is the only thing keeping the held weapon from origo.
 				Frosty::ECS::CTransform tempTransform; 
 				tempTransform = m_World->GetComponent<Frosty::ECS::CTransform>(lootWeapon);
+				auto& playerWeaponComp = m_World->GetComponent<Frosty::ECS::CMesh>(playerWeapon);
+				auto& lootWeaponComp = m_World->GetComponent<Frosty::ECS::CMesh>(lootWeapon);
 
-				Frosty::ECS::CMesh tempMesh;
-				tempMesh = m_World->GetComponent<Frosty::ECS::CMesh>(playerWeapon);
-				tempMesh.parentMatrix = m_World->GetComponent<Frosty::ECS::CMesh>(playerWeapon).parentMatrix;
-				tempMesh.animOffset = m_World->GetComponent<Frosty::ECS::CMesh>(playerWeapon).animOffset;
-				m_World->GetComponent<Frosty::ECS::CMesh>(playerWeapon) = m_World->GetComponent<Frosty::ECS::CMesh>(lootWeapon);
-				//Make sure it actually ends up in the hand. Default assignment does not do this properly.
-				m_World->GetComponent<Frosty::ECS::CMesh>(playerWeapon).parentMatrix = tempMesh.parentMatrix;
-				m_World->GetComponent<Frosty::ECS::CMesh>(playerWeapon).animOffset = tempMesh.animOffset;
+				std::shared_ptr<Frosty::VertexArray>& mesh = playerWeaponComp.Mesh;
+				bool renderMesh = playerWeaponComp.RenderMesh;
+				//glm::mat4* parentMatrix = playerWeaponComp.parentMatrix;
+				//glm::mat4* animOffset = playerWeaponComp.animOffset;
+
+				playerWeaponComp.Mesh = lootWeaponComp.Mesh;
+				playerWeaponComp.RenderMesh = lootWeaponComp.RenderMesh;
+
+				lootWeaponComp.Mesh = mesh;
+				lootWeaponComp.RenderMesh = renderMesh;
+
+
+				//Frosty::ECS::CMesh tempMesh;
+				//tempMesh = m_World->GetComponent<Frosty::ECS::CMesh>(playerWeapon);
+				//tempMesh.parentMatrix = m_World->GetComponent<Frosty::ECS::CMesh>(playerWeapon).parentMatrix;
+				//tempMesh.animOffset = m_World->GetComponent<Frosty::ECS::CMesh>(playerWeapon).animOffset;
+				//m_World->GetComponent<Frosty::ECS::CMesh>(playerWeapon) = m_World->GetComponent<Frosty::ECS::CMesh>(lootWeapon);
+				//
+				////Make sure it actually ends up in the hand. Default assignment does not do this properly.
+				//m_World->GetComponent<Frosty::ECS::CMesh>(playerWeapon).parentMatrix = tempMesh.parentMatrix;
+				//m_World->GetComponent<Frosty::ECS::CMesh>(playerWeapon).animOffset = tempMesh.animOffset;
 
 				//Reset it otherwise the opposite object will still be parented.
-				tempMesh.parentMatrix = nullptr;
-				tempMesh.animOffset = nullptr;
-				m_World->GetComponent<Frosty::ECS::CMesh>(lootWeapon) = tempMesh;
+				//tempMesh.parentMatrix = nullptr;
+				//tempMesh.animOffset = nullptr;
+				//m_World->GetComponent<Frosty::ECS::CMesh>(lootWeapon) = tempMesh;
 
-				m_World->GetComponent<Frosty::ECS::CTransform>(lootWeapon) = tempTransform;
-				
+				//m_World->GetComponent<Frosty::ECS::CTransform>(lootWeapon) = tempTransform;
 			}
 		}
 	}
@@ -1139,10 +1219,53 @@ namespace MCS
 		{
 			if ((m_World->GetComponent<Frosty::ECS::CMaterial>(playerWeapon)) != (m_World->GetComponent<Frosty::ECS::CMaterial>(lootWeapon)))
 			{
-				Frosty::ECS::CMaterial tempMaterial;
-				tempMaterial = m_World->GetComponent<Frosty::ECS::CMaterial>(playerWeapon);
-				m_World->GetComponent<Frosty::ECS::CMaterial>(playerWeapon) = m_World->GetComponent<Frosty::ECS::CMaterial>(lootWeapon);
-				m_World->GetComponent<Frosty::ECS::CMaterial>(lootWeapon) = tempMaterial;
+				auto& playerWeaponComp = m_World->GetComponent<Frosty::ECS::CMaterial>(playerWeapon);
+				auto& lootWeaponComp = m_World->GetComponent<Frosty::ECS::CMaterial>(lootWeapon);
+
+				std::shared_ptr<Frosty::Shader>& shader = playerWeaponComp.UseShader;
+				glm::vec4 albedo = playerWeaponComp.Albedo;
+				std::shared_ptr<Frosty::Texture2D> diffuseTex = playerWeaponComp.DiffuseTexture;
+				std::shared_ptr<Frosty::Texture2D> specularTex = playerWeaponComp.SpecularTexture;
+				std::shared_ptr<Frosty::Texture2D> normalTex = playerWeaponComp.NormalTexture;
+				std::shared_ptr<Frosty::Texture2D> blendMapTex = playerWeaponComp.BlendMapTexture;
+				std::shared_ptr<Frosty::Texture2D> blendTex1 = playerWeaponComp.BlendTexture1;
+				std::shared_ptr<Frosty::Texture2D> blendTex2 = playerWeaponComp.BlendTexture2;
+				float specStrength = playerWeaponComp.SpecularStrength;
+				int shininess = playerWeaponComp.Shininess;
+				glm::vec2 texScale = playerWeaponComp.TextureScale;
+				bool transparency = playerWeaponComp.HasTransparency;
+
+				playerWeaponComp.UseShader = lootWeaponComp.UseShader;
+				playerWeaponComp.Albedo = lootWeaponComp.Albedo;
+				playerWeaponComp.DiffuseTexture = lootWeaponComp.DiffuseTexture;
+				playerWeaponComp.SpecularTexture = lootWeaponComp.SpecularTexture;
+				playerWeaponComp.NormalTexture = lootWeaponComp.NormalTexture;
+				playerWeaponComp.BlendMapTexture = lootWeaponComp.BlendMapTexture;
+				playerWeaponComp.BlendTexture1 = lootWeaponComp.BlendTexture1;
+				playerWeaponComp.BlendTexture2 = lootWeaponComp.BlendTexture2;
+				playerWeaponComp.SpecularStrength = lootWeaponComp.SpecularStrength;
+				playerWeaponComp.Shininess = lootWeaponComp.Shininess;
+				playerWeaponComp.TextureScale = lootWeaponComp.TextureScale;
+				playerWeaponComp.HasTransparency = lootWeaponComp.HasTransparency;
+
+				lootWeaponComp.UseShader = shader;
+				lootWeaponComp.Albedo = albedo;
+				lootWeaponComp.DiffuseTexture = diffuseTex;
+				lootWeaponComp.SpecularTexture = specularTex;
+				lootWeaponComp.NormalTexture = normalTex;
+				lootWeaponComp.BlendMapTexture = blendMapTex;
+				lootWeaponComp.BlendTexture1 = blendTex1;
+				lootWeaponComp.BlendTexture2 = blendTex2;
+				lootWeaponComp.SpecularStrength = specStrength;
+				lootWeaponComp.Shininess = shininess;
+				lootWeaponComp.TextureScale = texScale;
+				lootWeaponComp.HasTransparency = transparency;
+
+
+				//Frosty::ECS::CMaterial tempMaterial;
+				//tempMaterial = m_World->GetComponent<Frosty::ECS::CMaterial>(playerWeapon);
+				//m_World->GetComponent<Frosty::ECS::CMaterial>(playerWeapon) = m_World->GetComponent<Frosty::ECS::CMaterial>(lootWeapon);
+				//m_World->GetComponent<Frosty::ECS::CMaterial>(lootWeapon) = tempMaterial;
 			}
 		}
 	}

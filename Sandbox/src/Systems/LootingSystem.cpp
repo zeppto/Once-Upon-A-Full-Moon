@@ -154,6 +154,7 @@ namespace MCS
 			else
 				randomValue = rand() % 6;
 
+			randomValue = 5;
 			Frosty::Weapon weapon;
 			auto& item = m_World->CreateEntity(entityTransform.Position, { 0.0f, 0.0f, 0.0f }, { 3.f, 3.f, 3.f });
 			auto& transform = m_World->GetComponent<Frosty::ECS::CTransform>(item);
@@ -273,11 +274,11 @@ namespace MCS
 	{
 		auto& weaponHandler = Frosty::AssetManager::GetWeaponHandler("Weapons");
 
-		if (m_TotalRoomsVisited < 3)
-			return weaponHandler->GetAPlayerWeapon(1, 1);
-		else if (m_TotalRoomsVisited < 6)
-			return weaponHandler->GetAPlayerWeapon(1, 2);
-		
-		return weaponHandler->GetAPlayerWeapon(1, 3);
+		//if (m_TotalRoomsVisited < 3)
+		//	return weaponHandler->GetAPlayerWeapon(1, 3);
+		//else if (m_TotalRoomsVisited < 6)
+		//	return weaponHandler->GetAPlayerWeapon(1, 3);
+		//
+		return weaponHandler->GetAPlayerWeapon(2, 3);
 	}
 }
