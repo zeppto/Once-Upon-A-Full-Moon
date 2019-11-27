@@ -517,7 +517,7 @@ namespace MCS
 					//3 = Follow
 					if (fileEntitys.myEntitys.at(i).MyComponents.at(3).HaveComponent)
 					{
-						//existingFile.read((char*)& fileEntitys.myEntitys.at(i).myFollow, sizeof(Level_Follow));
+						existingFile.read((char*)& fileEntitys.myEntitys.at(i).myFollow, sizeof(Level_Follow));
 						//auto& follow = m_World->AddComponent<Frosty::ECS::CFollow>(entity, playerTransform);
 						//For edeting old level
 						//auto& follow = m_World->AddComponent<Frosty::ECS::CFollow>(entity);// , playerTransform);
