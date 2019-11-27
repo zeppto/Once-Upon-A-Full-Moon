@@ -89,9 +89,9 @@ namespace MCS
 
 		// WEAPON 1
 		//Sword Offset
-		//auto& weapon = world->CreateEntity({ -0.7f, 2.1f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 1.f, 1.f, 1.f });
+		auto& weapon = world->CreateEntity({ -0.7f, 2.1f, 0.80f }, { 0.0f, 0.0f, 0.0f }, { 1.f, 1.f, 1.f });
 		//Bow Offset
-		auto& weapon = world->CreateEntity({ -0.7f, 2.3f, 0.2f }, { 0.0f, 60.0f, 0.0f }, { 1.f, 1.f, 1.f });
+	/*	auto& weapon = world->CreateEntity({ -0.7f, 2.3f, 0.2f }, { 0.0f, 60.0f, 0.0f }, { 1.f, 1.f, 1.f });*/
 		auto& weaponHandler = Frosty::AssetManager::GetWeaponHandler("Weapons");
 		Frosty::Weapon loadedWeapon = weaponHandler->GetAPlayerWeapon(1, 1);
 		world->AddComponent<Frosty::ECS::CWeapon>(weapon, loadedWeapon, true);

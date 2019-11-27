@@ -1017,11 +1017,26 @@ namespace MCS
 		{
 			if ((m_World->GetComponent<Frosty::ECS::CMesh>(playerWeapon)) != (m_World->GetComponent<Frosty::ECS::CMesh>(lootWeapon)))
 			{
+				//Transform must be assigned since parentMatrix(Player) being applied to is the only thing keeping the held weapon from origo.
+				Frosty::ECS::CTransform tempTransform; 
+				tempTransform = m_World->GetComponent<Frosty::ECS::CTransform>(lootWeapon);
+
 				Frosty::ECS::CMesh tempMesh;
 				tempMesh = m_World->GetComponent<Frosty::ECS::CMesh>(playerWeapon);
+				tempMesh.parentMatrix = m_World->GetComponent<Frosty::ECS::CMesh>(playerWeapon).parentMatrix;
+				tempMesh.animOffset = m_World->GetComponent<Frosty::ECS::CMesh>(playerWeapon).animOffset;
 				m_World->GetComponent<Frosty::ECS::CMesh>(playerWeapon) = m_World->GetComponent<Frosty::ECS::CMesh>(lootWeapon);
+				//Make sure it actually ends up in the hand. Default assignment does not do this properly.
+				m_World->GetComponent<Frosty::ECS::CMesh>(playerWeapon).parentMatrix = tempMesh.parentMatrix;
+				m_World->GetComponent<Frosty::ECS::CMesh>(playerWeapon).animOffset = tempMesh.animOffset;
+
+				//Reset it otherwise the opposite object will still be parented.
+				tempMesh.parentMatrix = nullptr;
+				tempMesh.animOffset = nullptr;
 				m_World->GetComponent<Frosty::ECS::CMesh>(lootWeapon) = tempMesh;
 
+				m_World->GetComponent<Frosty::ECS::CTransform>(lootWeapon) = tempTransform;
+				
 			}
 		}
 	}
