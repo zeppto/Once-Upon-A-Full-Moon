@@ -430,13 +430,10 @@ namespace MCS
 		glm::vec3 spawnScale = glm::vec3(10.0f, 6.0f, 4.0f);
 		auto& sword = m_World->CreateEntity({ spawnPos.x, 3.0f, spawnPos.z }, attackerTransform.Rotation, spawnScale);
 		auto& swordTransform = m_World->GetComponent<Frosty::ECS::CTransform>(sword);
-		m_World->AddComponent<Frosty::ECS::CMesh>(sword, Frosty::AssetManager::GetMesh("pCube1"));
-		m_World->AddComponent<Frosty::ECS::CMaterial>(sword, Frosty::AssetManager::GetShader("FlatColor"));
 		m_World->AddComponent<Frosty::ECS::CPhysics>(sword, Frosty::AssetManager::GetBoundingBox("pCube1"), swordTransform.Scale);
 
 		float criticalHit = 0;
 		criticalHit = GenerateCriticalHit(weaponComp.CriticalHit, weaponComp.CriticalHitChance + weaponComp.FireCriticalHitChance);
-
 		int totalDamage = int(glm::round(weaponComp.Damage + criticalHit + weaponComp.EarthDamage));
 
 		m_World->AddComponent<Frosty::ECS::CAttack>(sword, Frosty::ECS::CAttack::AttackType::Melee, totalDamage, true); // <-- true in the end because it's a friendly attack
@@ -455,9 +452,6 @@ namespace MCS
 		glm::vec3 spawnScale = glm::vec3(10.0f, 6.0f, 10.0f);
 		auto& sword = m_World->CreateEntity({ spawnPos.x, 3.0f, spawnPos.z }, { 0.f, 0.f, 0.f }, spawnScale);
 		auto& swordTransform = m_World->GetComponent<Frosty::ECS::CTransform>(sword);
-
-		m_World->AddComponent<Frosty::ECS::CMesh>(sword, Frosty::AssetManager::GetMesh("pCube1"));
-		m_World->AddComponent<Frosty::ECS::CMaterial>(sword, Frosty::AssetManager::GetShader("FlatColor"));
 		m_World->AddComponent<Frosty::ECS::CPhysics>(sword, Frosty::AssetManager::GetBoundingBox("pCube1"), swordTransform.Scale);
 
 		float criticalHit = 0;
@@ -486,9 +480,6 @@ namespace MCS
 		glm::vec3 spawnScale = glm::vec3(2.0f, 6.0f, 10.0f);
 		auto& sword = m_World->CreateEntity({ spawnPos.x, 3.0f, spawnPos.z }, attackerTransform.Rotation, spawnScale);
 		auto& swordTransform = m_World->GetComponent<Frosty::ECS::CTransform>(sword);
-
-		m_World->AddComponent<Frosty::ECS::CMesh>(sword, Frosty::AssetManager::GetMesh("pCube1"));
-		m_World->AddComponent<Frosty::ECS::CMaterial>(sword, Frosty::AssetManager::GetShader("FlatColor"));
 		m_World->AddComponent<Frosty::ECS::CPhysics>(sword, Frosty::AssetManager::GetBoundingBox("pCube1"), swordTransform.Scale);
 
 		float criticalHit = 0;
@@ -768,8 +759,9 @@ namespace MCS
 				m_keyPressed = true;
 				Frosty::EventBus::GetEventBus()->Publish<Frosty::PickUpAttemptEvent>(Frosty::PickUpAttemptEvent(m_Player[index]->EntityPtr));
 
+				auto& weaponComp = m_World->GetComponent<Frosty::ECS::CWeapon>(m_Player[index]->Weapon->EntityPtr);
 				// CheckWitchCircle
-				if (m_Inventory[index]->CurrentWolfsbane > 0)
+				if (m_Inventory[index]->CurrentWolfsbane > 0 && !weaponComp.IsFullyUpgraded)
 				{
 					// Send event to start the hexCircle timer (send the one requesting the enchantment)
 					Frosty::EventBus::GetEventBus()->Publish<Frosty::ActivateWitchCircleEvent>(Frosty::ActivateWitchCircleEvent(m_Player[index]->EntityPtr));
@@ -942,13 +934,15 @@ namespace MCS
 				SwapWeapon(m_Player[i]->Weapon->EntityPtr, e.GetEntity());
 				ResetAllHUDWeaponInfo(i);
 
-				if (loot.Weapon == Frosty::ECS::CLootable::WeaponType::Sword1 || loot.Weapon == Frosty::ECS::CLootable::WeaponType::Sword2 || loot.Weapon == Frosty::ECS::CLootable::WeaponType::Sword3)
+				auto& playerWeapon = m_World->GetComponent<Frosty::ECS::CWeapon>(m_Player[i]->Weapon->EntityPtr);
+				
+				if (playerWeapon.Type == Frosty::ECS::CWeapon::WeaponType::Sword)
 				{
-					if (loot.Weapon == Frosty::ECS::CLootable::WeaponType::Sword1)
+					if (playerWeapon.Level == 1)
 						SetPickUpText(i, "Picked Up Sword Level 1");
-					else if (loot.Weapon == Frosty::ECS::CLootable::WeaponType::Sword2)
+					else if (playerWeapon.Level == 2)
 						SetPickUpText(i, "Picked Up Sword Level 2");
-					else if (loot.Weapon == Frosty::ECS::CLootable::WeaponType::Sword3)
+					else if (playerWeapon.Level == 3)
 						SetPickUpText(i, "Picked Up Sword Level 3");
 
 					HUD.Layout.sprites.at(1).SetImage("attackMelee");
@@ -956,13 +950,13 @@ namespace MCS
 					HUD.Layout.sprites.at(3).SetImage("attackMelee2");
 					HUD.Layout.sprites.at(4).SetImage("attackMelee3");
 				}
-				else
+				else if(playerWeapon.Type == Frosty::ECS::CWeapon::WeaponType::Bow)
 				{
-					if (loot.Weapon == Frosty::ECS::CLootable::WeaponType::Bow1)
+					if (playerWeapon.Level == 1)
 						SetPickUpText(i, "Picked Up Bow Level 1");
-					else if (loot.Weapon == Frosty::ECS::CLootable::WeaponType::Bow2)
+					else if (playerWeapon.Level == 2)
 						SetPickUpText(i, "Picked Up Bow Level 2");
-					else if (loot.Weapon == Frosty::ECS::CLootable::WeaponType::Bow3)
+					else if (playerWeapon.Level == 3)
 						SetPickUpText(i, "Picked Up Bow Level 3");
 
 					HUD.Layout.sprites.at(1).SetImage("attackRanged");
@@ -970,7 +964,35 @@ namespace MCS
 					HUD.Layout.sprites.at(3).SetImage("attackRanged2");
 					HUD.Layout.sprites.at(4).SetImage("attackRanged3");
 				}
-
+				
+				//if (loot.Weapon == Frosty::ECS::CLootable::WeaponType::Sword1 || loot.Weapon == Frosty::ECS::CLootable::WeaponType::Sword2 || loot.Weapon == Frosty::ECS::CLootable::WeaponType::Sword3)
+				//{
+				//	if (loot.Weapon == Frosty::ECS::CLootable::WeaponType::Sword1)
+				//		SetPickUpText(i, "Picked Up Sword Level 1");
+				//	else if (loot.Weapon == Frosty::ECS::CLootable::WeaponType::Sword2)
+				//		SetPickUpText(i, "Picked Up Sword Level 2");
+				//	else if (loot.Weapon == Frosty::ECS::CLootable::WeaponType::Sword3)
+				//		SetPickUpText(i, "Picked Up Sword Level 3");
+				//
+				//	HUD.Layout.sprites.at(1).SetImage("attackMelee");
+				//	HUD.Layout.sprites.at(2).SetImage("attackMelee1");
+				//	HUD.Layout.sprites.at(3).SetImage("attackMelee2");
+				//	HUD.Layout.sprites.at(4).SetImage("attackMelee3");
+				//}
+				//else
+				//{
+				//	if (loot.Weapon == Frosty::ECS::CLootable::WeaponType::Bow1)
+				//		SetPickUpText(i, "Picked Up Bow Level 1");
+				//	else if (loot.Weapon == Frosty::ECS::CLootable::WeaponType::Bow2)
+				//		SetPickUpText(i, "Picked Up Bow Level 2");
+				//	else if (loot.Weapon == Frosty::ECS::CLootable::WeaponType::Bow3)
+				//		SetPickUpText(i, "Picked Up Bow Level 3");
+				//
+				//	HUD.Layout.sprites.at(1).SetImage("attackRanged");
+				//	HUD.Layout.sprites.at(2).SetImage("attackRanged1");
+				//	HUD.Layout.sprites.at(3).SetImage("attackRanged2");
+				//	HUD.Layout.sprites.at(4).SetImage("attackRanged3");
+				//}
 			}
 		}
 	}
