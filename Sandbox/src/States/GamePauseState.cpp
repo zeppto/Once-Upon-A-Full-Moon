@@ -2,6 +2,8 @@
 #include "MenuState.hpp"
 #include "GameState.hpp"
 #include "GamePauseState.hpp"
+#include "Frosty/Events/AbilityEvent.hpp"
+#include "Frosty/Events/EventSystem.hpp"
 
 namespace MCS
 {

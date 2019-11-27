@@ -15,6 +15,11 @@ namespace MCS
 		virtual void OnInput() override;
 		virtual void OnUpdate() override;
 
+		void OnEvent(Frosty::BaseEvent& e);
+
+		void OnGameOverEvent();
+		void OnGameWinEvent();
+
 		void DeletePlayer();
 		std::shared_ptr<Frosty::ECS::Entity> GetPlayer();
 	private:

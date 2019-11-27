@@ -1,26 +1,28 @@
 #include "mcspch.hpp"
+#include "MenuState.hpp"
 #include "GameState.hpp"
-#include "GamePauseState.hpp"
-#include "GameOverState.hpp"
+#include "GameWinState.hpp"
+#include "Frosty/Events/AbilityEvent.hpp"
+#include "Frosty/Events/EventSystem.hpp"
 
 namespace MCS
 {
-	GameOverState::GameOverState()
+	GameWinState::GameWinState()
 	{
 		m_App = &Frosty::Application::Get();
-		OnGameOverEvent();
+		OnGameWinEvent();
 	}
 
-	GameOverState::~GameOverState()
+	GameWinState::~GameWinState()
 	{
-		DeleteGameOverGui();
+		DeleteGameWinGui();
 	}
 
-	void GameOverState::Initiate()
+	void GameWinState::Initiate()
 	{
 	}
 
-	void GameOverState::OnInput()
+	void GameWinState::OnInput()
 	{
 		float x = Frosty::InputManager::GetMouseX();
 		float y = Frosty::InputManager::GetMouseY();
@@ -35,27 +37,27 @@ namespace MCS
 		}
 	}
 
-	void GameOverState::OnUpdate()
+	void GameWinState::OnUpdate()
 	{
 	}
 
-	void GameOverState::OnGameOverEvent()
+	void GameWinState::OnGameWinEvent()
 	{
 		auto& world = Frosty::Application::Get().GetWorld();
 
-		m_GameOverGui = m_App->Get().GetWorld()->CreateEntity();
+		m_GameWinGui = m_App->Get().GetWorld()->CreateEntity();
 		Frosty::UILayout UILayout(2, 0);
 		UILayout.AddText(glm::vec2(550.0f, 525.f), "Game Over", glm::vec3(1.0f, 0.0f, 0.0f), 1.0f);
 		UILayout.AddText(glm::vec2(590.0f, 400.0f), "Exit", glm::vec3(1.0f, 1.0f, 0.0f), 1.0f);
-		world->AddComponent<Frosty::ECS::CGUI>(m_GameOverGui, UILayout);
+		world->AddComponent<Frosty::ECS::CGUI>(m_GameWinGui, UILayout);
 	}
 
-	void GameOverState::DeleteGameOverGui()
+	void GameWinState::DeleteGameWinGui()
 	{
 		auto& world = Frosty::Application::Get().GetWorld();
-		if (!world->HasComponent<Frosty::ECS::CDestroy>(m_GameOverGui))
+		if (!world->HasComponent<Frosty::ECS::CDestroy>(m_GameWinGui))
 		{
-			world->AddComponent<Frosty::ECS::CDestroy>(m_GameOverGui);
+			world->AddComponent<Frosty::ECS::CDestroy>(m_GameWinGui);
 		}
 	}
 }
