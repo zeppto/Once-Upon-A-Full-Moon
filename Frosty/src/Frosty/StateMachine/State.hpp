@@ -12,7 +12,8 @@ namespace Frosty
 		virtual void OnInput() = 0;
 		virtual void OnUpdate() = 0;
 		virtual void OnLastUpdate() { }
-		
+		virtual void OnEvent() { }
+
 		virtual void Pause() { }
 		virtual void Resume() { }
 	};

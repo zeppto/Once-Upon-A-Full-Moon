@@ -77,6 +77,15 @@ namespace Frosty
 		std::shared_ptr<ECS::Entity> m_Entity;
 	};
 
+	class ResetEvent : public BaseEvent
+	{
+	public:
+		ResetEvent() { }
+
+		EVENT_TYPE(Reset)
+	private:
+	};
+
 	class BaitPlacedEvent : public BaseEvent
 	{
 	public:
@@ -146,7 +155,6 @@ namespace Frosty
 	private:
 	};
 
-
 	class BoolMapLoadedEvent : public BaseEvent
 	{
 	public:
@@ -159,7 +167,6 @@ namespace Frosty
 	private:
 		std::shared_ptr <BoolMap> m_BoolMap;
 	};
-
 
 	class CreateLevelEvent : public BaseEvent
 	{
@@ -323,5 +330,4 @@ namespace Frosty
 		EVENT_TYPE(BossSpawned)
 	};
 }
-
 #endif // !ABILITY_EVENT_HPP

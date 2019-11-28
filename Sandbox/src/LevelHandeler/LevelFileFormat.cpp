@@ -427,11 +427,11 @@ namespace MCS
 					}
 
 
-	/*				if (fileEntitys.myEntitys.at(i).MyComponents.at(10).HaveComponent)
+					if (fileEntitys.myEntitys.at(i).MyComponents.at(10).HaveComponent)
 					{
 						fileEntitys.myEntitys.at(i).myTransform.Scale.x *= 1.25;
 							fileEntitys.myEntitys.at(i).myTransform.Scale.z *= 1.25;
-					}*/
+					}
 
 					auto& entity = m_World->CreateEntity(glm::vec3(matrix[3].x, matrix[3].y, matrix[3].z), tempRotation, fileEntitys.myEntitys.at(i).myTransform.Scale, fileEntitys.myEntitys.at(i).myTransform.IsStatic);
 					auto& newlyTreansform = m_World->GetComponent<Frosty::ECS::CTransform>(entity);
@@ -554,11 +554,8 @@ namespace MCS
 					//5 = Physics
 					if (fileEntitys.myEntitys.at(i).MyComponents.at(5).HaveComponent)
 					{
-						if (!fileEntitys.myEntitys.at(i).MyComponents.at(1).HaveComponent)
-						{
-							int t = 0;
-						}
 						existingFile.read((char*)& fileEntitys.myEntitys.at(i).myPhysics, sizeof(Level_Physics));
+
 						physCounter++;
 						auto& physics = m_World->AddComponent<Frosty::ECS::CPhysics>(entity,
 							Frosty::AssetManager::GetBoundingBox(fileEntitys.myEntitys.at(i).MyComponents.at(1).HaveComponent ?
@@ -639,7 +636,9 @@ namespace MCS
 								//weaponMat.NormalTexture = Frosty::AssetManager::GetTexture2D("bow_normal");
 							}
 							if (isMelle == 1)
+							{
 								loadedWeapon = weaponHandler->GetWeaponByTypeAndLevel(Frosty::Weapon::WeaponType::Sword, lowLevel, highLevel);
+							}
 
 							//if (weaponComp.Type == Frosty::ECS::CWeapon::WeaponType::Bow)
 							//{
@@ -694,19 +693,19 @@ namespace MCS
 						health.CurrentHealth = fileEntitys.myEntitys.at(i).myHealth.CurrentHealth;
 						health.MaxHealth = fileEntitys.myEntitys.at(i).myHealth.MaxHealth;
 						health.MaxPossibleHealth = fileEntitys.myEntitys.at(i).myHealth.MaxPossibleHealth;
-						if (fileEntitys.myEntitys.at(i).MyComponents.at(6).HaveComponent)
-						{
-							if (m_VisitedRooms.size() < 2)
-							{
-								health.CurrentHealth -= health.CurrentHealth * 0.4;
-								health.MaxHealth -= health.MaxHealth * 0.4;
-							}
-							if (m_VisitedRooms.size() < 4)
-							{
-								health.CurrentHealth -= health.CurrentHealth * 0.2;
-								health.MaxHealth -= health.MaxHealth * 0.2;
-							}
-						}
+						//if (fileEntitys.myEntitys.at(i).MyComponents.at(6).HaveComponent)
+						//{
+						//	if (m_VisitedRooms.size() < 2)
+						//	{
+						//		health.CurrentHealth -= health.CurrentHealth * 0.4;
+						//		health.MaxHealth -= health.MaxHealth * 0.4;
+						//	}
+						//	if (m_VisitedRooms.size() < 4)
+						//	{
+						//		health.CurrentHealth -= health.CurrentHealth * 0.2;
+						//		health.MaxHealth -= health.MaxHealth * 0.2;
+						//	}
+						//}
 
 						if (fileEntitys.myEntitys.at(i).MyComponents.at(12).HaveComponent)
 						{
