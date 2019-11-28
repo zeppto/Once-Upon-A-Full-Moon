@@ -28,6 +28,7 @@ namespace Frosty
 	std::map<std::string, std::shared_ptr<TrueTypeFile>> AssetManager::s_TruefontTypes;
 	std::map<std::string, std::shared_ptr<WeaponHandler>> AssetManager::s_WeaponHandler;
 	std::map<std::string, std::shared_ptr<Grid>> AssetManager::s_Grid;
+	std::map<std::string, std::shared_ptr<BoolMap>> AssetManager::s_BoolMaps;
 
 	std::vector<std::string> AssetManager::s_FilePath_Vector;
 
@@ -62,9 +63,9 @@ namespace Frosty
 			switch (TempFileInfo.Type)
 			{
 			case JPG :
-
 				returnValue = LoadGraphicFile(TempFileInfo);
 				break;
+
 			case PNG:
 				returnValue = LoadGraphicFile(TempFileInfo);
 				break;
@@ -74,9 +75,7 @@ namespace Frosty
 				break;
 
 			case LUNA:
-
 				returnValue = LoadLunaFile(TempFileInfo);
-
 				break;
 
 			case TTF:
@@ -88,6 +87,10 @@ namespace Frosty
 
 			case GRID:
 				returnValue = LoadGrid(TempFileInfo);
+				break;
+
+			case BMAP:
+				returnValue = LoadBoolMap(TempFileInfo);
 				break;
 
 			default:
@@ -242,6 +245,20 @@ namespace Frosty
 			FY_CORE_WARN("Mesh: {0}, Is already loaded", MetaData.TagName);
 		}
 		return returnValue;
+	}
+
+	bool AssetManager::AddBoolMap(const FileMetaData& MetaData)
+	{
+		if (TextureLoaded(MetaData.FileName))
+		{
+			FY_CORE_INFO("BoolMap: {0}, Is already loaded", MetaData.FileName);
+			return false;
+		}
+		else
+		{
+			s_BoolMaps.emplace(MetaData.FileName, FY_NEW BoolMap(MetaData));
+		}
+		return true;
 	}
 
 	bool AssetManager::AddTexture(const FileMetaData& MetaData)
@@ -636,6 +653,22 @@ namespace Frosty
 		return returnValue;
 	}
 
+	bool AssetManager::BoolMapLoaded(const std::string& FileName)
+	{
+		bool returnValue = false;
+
+		std::map<std::string, std::shared_ptr<BoolMap>>::iterator it;
+		for (it = s_BoolMaps.begin(); it != s_BoolMaps.end() && returnValue == false; it++)
+		{
+			if (it->first == FileName)
+			{
+				returnValue = true;
+			}
+		}
+
+		return returnValue;
+	}
+
 	bool AssetManager::LoadLunaFile(const FileMetaData& FileNameInformation, const bool& Reload)
 	{
 
@@ -964,6 +997,10 @@ namespace Frosty
 		{
 			return GRID;
 		}
+		else if (fileType == FILE_TYPE_BOOLMAP)
+		{
+			return BMAP;
+		}
 
 
 		return -1;
@@ -982,6 +1019,22 @@ namespace Frosty
 				LoadFile(dirEntry.path().string());
 			}
 		}
+	}
+
+	bool AssetManager::LoadBoolMap(const FileMetaData& FileNameInformation, const bool& Reload)
+	{
+		bool returnValue = false;
+		if (AddBoolMap(FileNameInformation))
+		{
+
+			std::shared_ptr<BoolMap> ptr = GetBoolMap(FileNameInformation.FileName);
+
+			if (ptr->LoadMap(FileNameInformation.FullFilePath))
+			{
+				returnValue = true;
+			}
+		}
+		return returnValue;
 	}
 
 	void AssetManager::ConnectWatchList()

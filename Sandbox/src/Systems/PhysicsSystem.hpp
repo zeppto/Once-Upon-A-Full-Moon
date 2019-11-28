@@ -37,6 +37,8 @@ namespace MCS
 
 		Frosty::World* m_World = nullptr;
 
+		std::shared_ptr<Frosty::BoolMap> m_Test_BoolMap;
+
 		unsigned int m_RandItem = 0;
 	};
 }

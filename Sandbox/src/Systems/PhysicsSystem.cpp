@@ -3,7 +3,7 @@
 #include "PhysicsSystem.hpp"
 #include "Frosty/Events/AbilityEvent.hpp"
 #include "Frosty/API/AssetManager/AssetManager.hpp"
-#include"Frosty/Core/BoolMap/BoolMap.hpp"
+#include "Frosty/API/AssetManager/AssetFiles/BoolMap.hpp"
 
 namespace MCS
 {
@@ -15,6 +15,10 @@ namespace MCS
 
 		p_Signature.set(Frosty::ECS::getComponentTypeID<Frosty::ECS::CTransform>(), true);
 		p_Signature.set(Frosty::ECS::getComponentTypeID<Frosty::ECS::CPhysics>(), true);
+
+		m_Test_BoolMap = Frosty::AssetManager::GetBoolMap("crossroad_chests_IsStatick");
+
+		int o = 0;
 	}
 
 	void PhysicsSystem::OnUpdate()

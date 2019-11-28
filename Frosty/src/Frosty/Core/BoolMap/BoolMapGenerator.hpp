@@ -1,6 +1,6 @@
 #ifndef BOOLMAPGENERATOR_HPP
 #define BOOLMAPGENERATOR_HPP
-#include"BoolMap.hpp"
+#include<Frosty/API/AssetManager/AssetFiles/BoolMap.hpp>
 #include<Frosty/RenderEngine/VertexArray.hpp>
 #define DEFAULT_BOOLMAP_WIDTH 300
 #define DEFAULT_BOOLMAP_HEIGHT 300
