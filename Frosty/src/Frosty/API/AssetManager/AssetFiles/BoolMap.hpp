@@ -2,6 +2,18 @@
 #define BOOLMAP
 #include "AssetFile.hpp"
 
+
+//File info
+/*
+1. Width
+2. Heigth
+3. Pix/Coord ratio
+4. BitmapCount
+5. BitMap
+*/
+
+
+
 namespace Frosty {
 
 	class BoolMap : public AssetFile
@@ -18,10 +30,12 @@ namespace Frosty {
 		//May not be needed
 		uint32_t m_BitMapCount;
 
-		std::string m_FileName;
+		//std::string m_FileName;
 
 		//	std::shared_ptr<bool[]> m_BoolMap;
 		std::shared_ptr<uint64_t[]> m_BitMap;
+
+		static int s_SavedMapCount;
 
 	public:
 
@@ -33,7 +47,7 @@ namespace Frosty {
 
 		BoolMap& operator= (const BoolMap& other);
 
-		bool SaveMap(const std::string& FilePath, const std::string& FileName = "");
+		bool SaveMap(const std::string& FileName = "");
 		bool LoadMap(const std::string& FilePath);
 
 		bool CheckCollition(const glm::vec3& LocalPos) const;

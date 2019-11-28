@@ -840,8 +840,6 @@ namespace MCS
 
 						TestMap[fileEntitys.myEntitys.at(i).myMesh.MeshName].Transforms.emplace_back(TempMat);
 					}
-
-
 				}
 
 

@@ -9,20 +9,22 @@
 
 namespace Frosty
 {
-	BoolMap::BoolMap(const FileMetaData& metaData) : 
-		m_FileName(""),
+	int BoolMap::s_SavedMapCount = 0;
+
+	BoolMap::BoolMap(const FileMetaData& metaData) :
+		//	m_FileName(""),
 		m_BitMap(0),
 		m_PixWidth(0),
 		m_PixHeight(0),
 		m_PixCoordRatio(0),
 		m_BitMapCount(0),
 		m_CoordWidth(0),
-		m_CoordHeight(0), 
+		m_CoordHeight(0),
 		AssetFile(metaData)
 	{
 	}
 	BoolMap::BoolMap(const uint16_t& Width, const uint16_t& Height, const uint8_t PixRatio, std::shared_ptr<uint64_t[]> BitMap, const uint32_t& BitmapCount) :
-		m_FileName(""),
+		//	m_FileName(""),
 		m_BitMap(BitMap),
 		m_PixWidth(Width),
 		m_PixHeight(Height),
@@ -56,7 +58,7 @@ namespace Frosty
 			m_PixHeight = other.m_PixHeight;
 			//	m_BoolMap = other.m_BoolMap;
 			m_BitMapCount = other.m_BitMapCount;
-			m_FileName = other.m_FileName;
+			//m_FileName = other.m_FileName;
 			m_CoordHeight = other.m_CoordHeight;
 			m_CoordWidth = other.m_CoordWidth;
 			m_BitMap = other.m_BitMap;
@@ -111,24 +113,62 @@ namespace Frosty
 		return returnValue;
 	}
 
-	bool BoolMap::SaveMap(const std::string& FilePath, const std::string& FileName)
+	bool BoolMap::SaveMap(const std::string& FileName)
 	{
 		bool returnValue = false;
-
-		std::FILE* File;
-		//File.open(FilePath + "/" + FileName);
-
-		//std::string filePath = FilePath + "/" + FileName + ".bmap";
-		std::string filePath = FileName + ".bmap";
-
-		File = fopen(filePath.c_str(), "w");
-		size_t Test = fwrite(&m_BitMap[0], sizeof(uint64_t), m_BitMapCount, File);
-		if (Test == m_BitMapCount)
+		if(m_CoordWidth && m_CoordHeight)
 		{
-			returnValue = true;
+			//File Name/Location
+		std::string filePath;
+		if (m_MetaData.FullFilePath == "")
+		{
+			m_MetaData.FileExtentionName = ".bmap";
+			if (FileName != "")
+			{
+				filePath = FileName + m_MetaData.FileExtentionName;
+				m_MetaData.FileName = filePath;
+			}
+			else
+			{
+				filePath = "BoolMap_" + std::to_string(s_SavedMapCount++);
+				m_MetaData.FileName = filePath;
+			}
+			filePath += m_MetaData.FileExtentionName;
+		}
+		else
+		{
+			filePath = m_MetaData.FullFilePath;
 		}
 
+
+
+		//Saving the file
+
+		std::FILE* File;
+		File = fopen(filePath.c_str(), "w");
+
+		if (File != nullptr)
+		{
+
+
+			FY_CORE_ASSERT(fwrite(&m_CoordWidth, sizeof(uint16_t), 1, File),"Could not write Width for Boolmap: {0}",filePath);
+			FY_CORE_ASSERT(fwrite(&m_CoordHeight, sizeof(uint16_t), 1, File),"Could not write Heigth for Boolmap: {0}",filePath);
+			FY_CORE_ASSERT(fwrite(&m_PixCoordRatio, sizeof(uint8_t), 1, File),"Could not write Pix/Coord ratio for Boolmap: {0}",filePath);
+			FY_CORE_ASSERT(fwrite(&m_BitMapCount, sizeof(uint32_t), 1, File),"Could not write BitmapCount for Boolmap: {0}",filePath);
+
+			size_t Test = fwrite(&m_BitMap[0], sizeof(uint64_t), m_BitMapCount, File);
+			if (Test != m_BitMapCount)
+			{
+				FY_CORE_ASSERT(0, "Could not save Boolmap: {0}", filePath);
+			}
+			returnValue = true;
+		}
 		fclose(File);
+	}
+		else
+		{
+			FY_CORE_WARN("Cannot save a map with 0 values in width or heigth {0}", FileName);
+		}
 
 		return returnValue;
 	}
