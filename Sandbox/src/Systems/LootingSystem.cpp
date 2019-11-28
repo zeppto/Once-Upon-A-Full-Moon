@@ -154,10 +154,11 @@ namespace MCS
 			else
 				randomValue = rand() % 6;
 
+
 			Frosty::Weapon weapon;
 			auto& item = m_World->CreateEntity(entityTransform.Position, { 0.0f, 0.0f, 0.0f }, { 3.f, 3.f, 3.f });
 			auto& transform = m_World->GetComponent<Frosty::ECS::CTransform>(item);
-			auto& material = m_World->AddComponent<Frosty::ECS::CMaterial>(item, Frosty::AssetManager::GetShader("Texture2D"));
+			auto& material = m_World->AddComponent<Frosty::ECS::CMaterial>(item, Frosty::AssetManager::GetShader("Texture2D"), true);
 			auto& light = m_World->AddComponent<Frosty::ECS::CLight>(item, Frosty::ECS::CLight::LightType::Point, 3.f, glm::vec3(1.f, 1.f, 1.f), 2.f);
 			auto& loot = m_World->AddComponent<Frosty::ECS::CLootable>(item);
 
@@ -165,21 +166,21 @@ namespace MCS
 			{
 			case 0:
 				// Healing Position
-				m_World->AddComponent<Frosty::ECS::CMesh>(item, Frosty::AssetManager::GetMesh("pPlane1"), true);
+				m_World->AddComponent<Frosty::ECS::CMesh>(item, Frosty::AssetManager::GetMesh("pPlane1"));
 				material.DiffuseTexture = Frosty::AssetManager::GetTexture2D("hpPotion");
 				light.Color = glm::vec3(1.f, 0.f, 0.f);
 				loot.Type = Frosty::ECS::CLootable::LootType::HealingPotion;
 				break;
 			case 1:
 				// Increase Health Potion
-				m_World->AddComponent<Frosty::ECS::CMesh>(item, Frosty::AssetManager::GetMesh("pPlane1"), true);
+				m_World->AddComponent<Frosty::ECS::CMesh>(item, Frosty::AssetManager::GetMesh("pPlane1"));
 				material.DiffuseTexture = Frosty::AssetManager::GetTexture2D("highlightHeart");
 				light.Color = glm::vec3(1.f, 0.f, 0.f);
 				loot.Type = Frosty::ECS::CLootable::LootType::IncHealthPotion;
 				break;
 			case 2:
 				// Speed Potion
-				m_World->AddComponent<Frosty::ECS::CMesh>(item, Frosty::AssetManager::GetMesh("pPlane1"), true);
+				m_World->AddComponent<Frosty::ECS::CMesh>(item, Frosty::AssetManager::GetMesh("pPlane1"));
 				material.DiffuseTexture = Frosty::AssetManager::GetTexture2D("spPotion");
 				light.Color = glm::vec3(0.f, 0.f, 1.f);
 				loot.Type = Frosty::ECS::CLootable::LootType::SpeedPotion;
@@ -187,14 +188,14 @@ namespace MCS
 			case 3:
 				// Speed Boots
 				transform.Scale = glm::vec3(5.5f, 7.f, 5.5f);
-				m_World->AddComponent<Frosty::ECS::CMesh>(item, Frosty::AssetManager::GetMesh("pPlane1"), true);
+				m_World->AddComponent<Frosty::ECS::CMesh>(item, Frosty::AssetManager::GetMesh("pPlane1"));
 				material.DiffuseTexture = Frosty::AssetManager::GetTexture2D("speedBoots");
 				light.Color = glm::vec3(0.f, 1.f, 0.f);
 				loot.Type = Frosty::ECS::CLootable::LootType::SpeedBoots;
 				break;
 			case 4:
 				// Wolfsbane
-				m_World->AddComponent<Frosty::ECS::CMesh>(item, Frosty::AssetManager::GetMesh("pPlane1"), true);
+				m_World->AddComponent<Frosty::ECS::CMesh>(item, Frosty::AssetManager::GetMesh("pPlane1"));
 				material.DiffuseTexture = Frosty::AssetManager::GetTexture2D("wolfsbane");
 				light.Color = glm::vec3(0.8f, 0.f, 1.f);
 				loot.Type = Frosty::ECS::CLootable::LootType::Wolfsbane;

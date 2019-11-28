@@ -16,7 +16,7 @@ namespace Frosty
 	std::vector<Renderer::RenderPassData>  Renderer::s_RenderPas;
 
 	int Renderer::s_TotalNrOfFrames;
-	bool Renderer::s_DistanceCulling = true;
+	bool Renderer::s_DistanceCulling = false;
 
 	void Renderer::Init()
 	{
@@ -644,7 +644,7 @@ namespace Frosty
 		if (mat->UseShader->GetName() != "Animation")
 		{
 
-			//std::unordered_map<std::string, std::shared_ptr<ShaderData>>* ShaderMap = nullptr;
+			//std::unordered_map<std::string, std::shared_ptr<ShaderData>>* ShaderMap = nullptr;saw
 
 			// at(0) will be for dept sampling for shadow map
 			int RenderPassID = 0;
