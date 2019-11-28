@@ -60,6 +60,7 @@ namespace MCS
 		float m_TempTimer = 0;
 		Frosty::ECS::CTransform* m_PlayerTransform = nullptr;
 		bool m_CreatNewRoom = false;
+		bool m_LodeNamedRoom = false;
 		bool m_BossSpawned{ false };
 
 		//int rotation = 0;

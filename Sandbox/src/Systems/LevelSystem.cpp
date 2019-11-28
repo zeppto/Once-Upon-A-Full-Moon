@@ -26,6 +26,11 @@ namespace MCS
 			m_LevelFileFormat.OpenFromFile(fileName, m_PlayerPos, m_PlayerTransform, rotation);
 			m_CreatNewRoom = false;
 		}
+		if (m_LodeNamedRoom)
+		{
+			m_LevelFileFormat.OpenFromFile(m_RoomType, m_PlayerPos);
+			m_LodeNamedRoom = false;
+		}
 	}
 
 	void LevelSystem::OnEvent(Frosty::BaseEvent& e)
@@ -377,6 +382,13 @@ namespace MCS
 								}
 							}
 						}
+						else
+						{
+							if (!m_World->HasComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr))
+							{
+								m_World->AddComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr);
+							}
+						}
 					}
 					//else remove weapon if it isent player weapon
 				}
@@ -386,8 +398,9 @@ namespace MCS
 				}
 			}
 		}
+		m_LodeNamedRoom = true;
 		m_RoomType = e.GetFilename();
-		m_LevelFileFormat.OpenFromFile(m_RoomType, m_PlayerPos, playerTransform);
+		//m_LevelFileFormat.OpenFromFile(m_RoomType, m_PlayerPos, playerTransform);
 	}
 	
 	void LevelSystem::OnCreatEntityEvent(Frosty::CreatEntityEvent& e)
