@@ -42,6 +42,11 @@ namespace MCS
 				m_App->GetStateMachine().AddState(Frosty::StateRef(FY_NEW(GameState)), true);
 			}
 		}
+		else if (Frosty::InputManager::IsKeyPressed(FY_KEY_ESCAPE))
+		{
+			FY_INFO("GAME STAGE NEXT");
+			m_App->GetStateMachine().AddState(Frosty::StateRef(FY_NEW(GameState)), true);
+		}
 		/*else if (x > 750.f && x < 1240.0f && y > 450.0f && y < 500.0f)
 		{
 			if (Frosty::InputManager::IsMouseButtonPressed(FY_MOUSE_BUTTON_LEFT))
