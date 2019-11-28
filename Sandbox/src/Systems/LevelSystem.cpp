@@ -15,6 +15,19 @@ namespace MCS
 
 	}
 
+	void LevelSystem::OnStart()
+	{
+		if (m_CreatNewRoom)
+		{
+			int rotation = 0;
+			std::string fileName = m_Map.getRoomTextur(m_PlayerPos, &rotation);
+			//PlayerTranform.Position = Level::MoveToNewRoom(m_CurrentRoome.sideExits[0], m_CurrentRoome.sideExits[1],
+			//	m_CurrentRoome.sideExits[2], m_CurrentRoome.sideExits[3], ExitSide.ExitDirection);
+			m_LevelFileFormat.OpenFromFile(fileName, m_PlayerPos, m_PlayerTransform, rotation);
+			m_CreatNewRoom = false;
+		}
+	}
+
 	void LevelSystem::OnEvent(Frosty::BaseEvent& e)
 	{
 		switch (e.GetEventType())
@@ -36,6 +49,9 @@ namespace MCS
 			break;
 		case Frosty::EventType::Reset:
 			OnResetEvent(static_cast<Frosty::ResetEvent&>(e));
+			break;
+		case Frosty::EventType::BossSpawned:
+			OnBossSpawnedEvent(static_cast<Frosty::BossSpawnedEvent&>(e));
 			break;
 		default:
 			break;
@@ -141,6 +157,8 @@ namespace MCS
 
 	void LevelSystem::OnExitLevelEvent(Frosty::ExitLevelEvent& e)
 	{
+		if (m_BossSpawned) return;
+
 		auto& ExitTranform = m_World->GetComponent<Frosty::ECS::CTransform>(e.GetExitEntity());
 		//auto& ExitBBox = m_World->GetComponent<Frosty::ECS::CPhysics>(e.GetExitEntity());
 		auto& ExitSide = m_World->GetComponent<Frosty::ECS::CLevelExit>(e.GetExitEntity());
@@ -184,9 +202,12 @@ namespace MCS
 							{
 								auto& light = m_World->GetComponent<Frosty::ECS::CLight>(m_Transform[i]->EntityPtr);
 								if (light.Type == Frosty::ECS::CLight::LightType::Point)
-									if (!m_World->HasComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr))
+									if (!m_World->HasComponent<Frosty::ECS::CPlayer>(light.Origin->EntityPtr))
 									{
-										m_World->AddComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr);
+										if (!m_World->HasComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr))
+										{
+											m_World->AddComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr);
+										}
 									}
 							}
 						}
@@ -212,15 +233,19 @@ namespace MCS
 		//m_NextLevel = true;
 		//m_TempTimer = 0;
 
-		int rotation = 0;
-		std::string fileName = m_Map.getRoomTextur(m_PlayerPos, &rotation);
+		m_PlayerTransform = playerTransform;
+
+		//int rotation = 0;
+		//std::string fileName = m_Map.getRoomTextur(m_PlayerPos, &rotation);
 		//PlayerTranform.Position = Level::Room(m_CurrentRoome.sideExits[0], m_CurrentRoome.sideExits[1], 
 		//	m_CurrentRoome.sideExits[2], m_CurrentRoome.sideExits[3], texture, rotation, ExitSide.ExitDirection);
 		PlayerTranform.Position = Level::MoveToNewRoom(m_CurrentRoome.sideExits[0], m_CurrentRoome.sideExits[1],
 			m_CurrentRoome.sideExits[2], m_CurrentRoome.sideExits[3], ExitSide.ExitDirection);
-		m_LevelFileFormat.OpenFromFile(fileName, m_PlayerPos, playerTransform, rotation);
+		//m_LevelFileFormat.OpenFromFile(fileName, m_PlayerPos, playerTransform, rotation);
+		m_CreatNewRoom = true;
 
 	}
+	
 	void LevelSystem::OnSaveLevelEvent(Frosty::SaveLevelEvent& e)
 	{
 		for (size_t i = 1; i < p_Total; i++)
@@ -251,6 +276,7 @@ namespace MCS
 		}
 		m_LevelFileFormat.SaveToFile(m_RoomType);
 	}
+	
 	void LevelSystem::OnCreateLevelEvent(Frosty::CreateLevelEvent& e)
 	{
 		for (size_t i = 1; i < p_Total; i++)
@@ -310,6 +336,7 @@ namespace MCS
 		else
 			m_RoomType = "unknown";
 	}
+	
 	void LevelSystem::OnOpenLevelEvent(Frosty::OpenLevelEvent& e)
 	{
 		Frosty::ECS::CTransform* playerTransform = nullptr;
@@ -346,10 +373,12 @@ namespace MCS
 						{
 							auto& light = m_World->GetComponent<Frosty::ECS::CLight>(m_Transform[i]->EntityPtr);
 							if (light.Type == Frosty::ECS::CLight::LightType::Point)
+							{
 								if (!m_World->HasComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr))
 								{
 									m_World->AddComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr);
 								}
+							}
 						}
 					}
 					//else remove weapon if it isent player weapon
@@ -363,6 +392,7 @@ namespace MCS
 		m_RoomType = e.GetFilename();
 		m_LevelFileFormat.OpenFromFile(m_RoomType, m_PlayerPos, playerTransform);
 	}
+	
 	void LevelSystem::OnCreatEntityEvent(Frosty::CreatEntityEvent& e)
 	{
 		//Enemy
@@ -694,27 +724,31 @@ namespace MCS
 			m_World->AddComponent<Frosty::ECS::CDropItem>(enemyA);
 		}
 	}
+
 	void LevelSystem::OnResetEvent(Frosty::ResetEvent & e)
 	{
 		for (size_t i = 1; i < p_Total; i++)
 		{
 			if (!m_World->HasComponent<Frosty::ECS::CWeapon>(m_Transform[i]->EntityPtr))
 			{
-				
-					if (!m_World->HasComponent<Frosty::ECS::CGUI>(m_Transform[i]->EntityPtr))
+
+				if (!m_World->HasComponent<Frosty::ECS::CGUI>(m_Transform[i]->EntityPtr))
+				{
+					if (!m_World->HasComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr))
 					{
-						if (!m_World->HasComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr))
-						{
-							m_World->AddComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr);
-						}
+						m_World->AddComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr);
 					}
-				
+				}
+
 			}
 		}
 		m_Start = true;
 		m_PlayerPos = { 10, 15 };
 		//visited rom reset missing!
 	}
+
+	void LevelSystem::OnBossSpawnedEvent(Frosty::BossSpawnedEvent& e)
+	{
+		m_BossSpawned = true;
+	}
 }
-
-

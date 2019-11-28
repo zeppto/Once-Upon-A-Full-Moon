@@ -290,6 +290,21 @@ namespace Frosty
 	private:
 		std::shared_ptr<ECS::Entity> m_Entity;
 	};
+	
+	class DamageEvent : public BaseEvent
+	{
+	public:
+		DamageEvent(const std::shared_ptr<ECS::Entity>& entity, float damage) : m_Entity(entity), m_Damage(damage) { }
+
+		const std::shared_ptr<ECS::Entity>& GetEntity() const { return m_Entity; }
+		float GetDamage() const { return m_Damage; }
+
+		EVENT_TYPE(Damage)
+
+	private:
+		std::shared_ptr<ECS::Entity> m_Entity;
+		float m_Damage;
+	};
 
 	class GameoverEvent : public BaseEvent
 	{
@@ -298,12 +313,21 @@ namespace Frosty
 
 		EVENT_TYPE(GameOver)
 	};
+
 	class WinEvent : public BaseEvent
 	{
 	public:
 		WinEvent() { }
 
 		EVENT_TYPE(Win)
+	};
+
+	class BossSpawnedEvent : public BaseEvent
+	{
+	public:
+		BossSpawnedEvent() { }
+
+		EVENT_TYPE(BossSpawned)
 	};
 }
 #endif // !ABILITY_EVENT_HPP

@@ -430,13 +430,10 @@ namespace MCS
 		glm::vec3 spawnScale = glm::vec3(10.0f, 6.0f, 4.0f);
 		auto& sword = m_World->CreateEntity({ spawnPos.x, 3.0f, spawnPos.z }, attackerTransform.Rotation, spawnScale);
 		auto& swordTransform = m_World->GetComponent<Frosty::ECS::CTransform>(sword);
-		m_World->AddComponent<Frosty::ECS::CMesh>(sword, Frosty::AssetManager::GetMesh("pCube1"));
-		m_World->AddComponent<Frosty::ECS::CMaterial>(sword, Frosty::AssetManager::GetShader("FlatColor"));
 		m_World->AddComponent<Frosty::ECS::CPhysics>(sword, Frosty::AssetManager::GetBoundingBox("pCube1"), swordTransform.Scale);
 
 		float criticalHit = 0;
 		criticalHit = GenerateCriticalHit(weaponComp.CriticalHit, weaponComp.CriticalHitChance + weaponComp.FireCriticalHitChance);
-
 		int totalDamage = int(glm::round(weaponComp.Damage + criticalHit + weaponComp.EarthDamage));
 
 		m_World->AddComponent<Frosty::ECS::CAttack>(sword, Frosty::ECS::CAttack::AttackType::Melee, totalDamage, true); // <-- true in the end because it's a friendly attack
@@ -455,9 +452,6 @@ namespace MCS
 		glm::vec3 spawnScale = glm::vec3(10.0f, 6.0f, 10.0f);
 		auto& sword = m_World->CreateEntity({ spawnPos.x, 3.0f, spawnPos.z }, { 0.f, 0.f, 0.f }, spawnScale);
 		auto& swordTransform = m_World->GetComponent<Frosty::ECS::CTransform>(sword);
-
-		m_World->AddComponent<Frosty::ECS::CMesh>(sword, Frosty::AssetManager::GetMesh("pCube1"));
-		m_World->AddComponent<Frosty::ECS::CMaterial>(sword, Frosty::AssetManager::GetShader("FlatColor"));
 		m_World->AddComponent<Frosty::ECS::CPhysics>(sword, Frosty::AssetManager::GetBoundingBox("pCube1"), swordTransform.Scale);
 
 		float criticalHit = 0;
@@ -486,9 +480,6 @@ namespace MCS
 		glm::vec3 spawnScale = glm::vec3(2.0f, 6.0f, 10.0f);
 		auto& sword = m_World->CreateEntity({ spawnPos.x, 3.0f, spawnPos.z }, attackerTransform.Rotation, spawnScale);
 		auto& swordTransform = m_World->GetComponent<Frosty::ECS::CTransform>(sword);
-
-		m_World->AddComponent<Frosty::ECS::CMesh>(sword, Frosty::AssetManager::GetMesh("pCube1"));
-		m_World->AddComponent<Frosty::ECS::CMaterial>(sword, Frosty::AssetManager::GetShader("FlatColor"));
 		m_World->AddComponent<Frosty::ECS::CPhysics>(sword, Frosty::AssetManager::GetBoundingBox("pCube1"), swordTransform.Scale);
 
 		float criticalHit = 0;
@@ -768,8 +759,9 @@ namespace MCS
 				m_keyPressed = true;
 				Frosty::EventBus::GetEventBus()->Publish<Frosty::PickUpAttemptEvent>(Frosty::PickUpAttemptEvent(m_Player[index]->EntityPtr));
 
+				auto& weaponComp = m_World->GetComponent<Frosty::ECS::CWeapon>(m_Player[index]->Weapon->EntityPtr);
 				// CheckWitchCircle
-				if (m_Inventory[index]->CurrentWolfsbane > 0)
+				if (m_Inventory[index]->CurrentWolfsbane > 0 && !weaponComp.IsFullyUpgraded)
 				{
 					// Send event to start the hexCircle timer (send the one requesting the enchantment)
 					Frosty::EventBus::GetEventBus()->Publish<Frosty::ActivateWitchCircleEvent>(Frosty::ActivateWitchCircleEvent(m_Player[index]->EntityPtr));
@@ -942,13 +934,15 @@ namespace MCS
 				SwapWeapon(m_Player[i]->Weapon->EntityPtr, e.GetEntity());
 				ResetAllHUDWeaponInfo(i);
 
-				if (loot.Weapon == Frosty::ECS::CLootable::WeaponType::Sword1 || loot.Weapon == Frosty::ECS::CLootable::WeaponType::Sword2 || loot.Weapon == Frosty::ECS::CLootable::WeaponType::Sword3)
+				auto& playerWeapon = m_World->GetComponent<Frosty::ECS::CWeapon>(m_Player[i]->Weapon->EntityPtr);
+				
+				if (playerWeapon.Type == Frosty::ECS::CWeapon::WeaponType::Sword)
 				{
-					if (loot.Weapon == Frosty::ECS::CLootable::WeaponType::Sword1)
+					if (playerWeapon.Level == 1)
 						SetPickUpText(i, "Picked Up Sword Level 1");
-					else if (loot.Weapon == Frosty::ECS::CLootable::WeaponType::Sword2)
+					else if (playerWeapon.Level == 2)
 						SetPickUpText(i, "Picked Up Sword Level 2");
-					else if (loot.Weapon == Frosty::ECS::CLootable::WeaponType::Sword3)
+					else if (playerWeapon.Level == 3)
 						SetPickUpText(i, "Picked Up Sword Level 3");
 
 					HUD.Layout.sprites.at(1).SetImage("attackMelee");
@@ -956,13 +950,13 @@ namespace MCS
 					HUD.Layout.sprites.at(3).SetImage("attackMelee2");
 					HUD.Layout.sprites.at(4).SetImage("attackMelee3");
 				}
-				else
+				else if(playerWeapon.Type == Frosty::ECS::CWeapon::WeaponType::Bow)
 				{
-					if (loot.Weapon == Frosty::ECS::CLootable::WeaponType::Bow1)
+					if (playerWeapon.Level == 1)
 						SetPickUpText(i, "Picked Up Bow Level 1");
-					else if (loot.Weapon == Frosty::ECS::CLootable::WeaponType::Bow2)
+					else if (playerWeapon.Level == 2)
 						SetPickUpText(i, "Picked Up Bow Level 2");
-					else if (loot.Weapon == Frosty::ECS::CLootable::WeaponType::Bow3)
+					else if (playerWeapon.Level == 3)
 						SetPickUpText(i, "Picked Up Bow Level 3");
 
 					HUD.Layout.sprites.at(1).SetImage("attackRanged");
@@ -970,7 +964,35 @@ namespace MCS
 					HUD.Layout.sprites.at(3).SetImage("attackRanged2");
 					HUD.Layout.sprites.at(4).SetImage("attackRanged3");
 				}
-
+				
+				//if (loot.Weapon == Frosty::ECS::CLootable::WeaponType::Sword1 || loot.Weapon == Frosty::ECS::CLootable::WeaponType::Sword2 || loot.Weapon == Frosty::ECS::CLootable::WeaponType::Sword3)
+				//{
+				//	if (loot.Weapon == Frosty::ECS::CLootable::WeaponType::Sword1)
+				//		SetPickUpText(i, "Picked Up Sword Level 1");
+				//	else if (loot.Weapon == Frosty::ECS::CLootable::WeaponType::Sword2)
+				//		SetPickUpText(i, "Picked Up Sword Level 2");
+				//	else if (loot.Weapon == Frosty::ECS::CLootable::WeaponType::Sword3)
+				//		SetPickUpText(i, "Picked Up Sword Level 3");
+				//
+				//	HUD.Layout.sprites.at(1).SetImage("attackMelee");
+				//	HUD.Layout.sprites.at(2).SetImage("attackMelee1");
+				//	HUD.Layout.sprites.at(3).SetImage("attackMelee2");
+				//	HUD.Layout.sprites.at(4).SetImage("attackMelee3");
+				//}
+				//else
+				//{
+				//	if (loot.Weapon == Frosty::ECS::CLootable::WeaponType::Bow1)
+				//		SetPickUpText(i, "Picked Up Bow Level 1");
+				//	else if (loot.Weapon == Frosty::ECS::CLootable::WeaponType::Bow2)
+				//		SetPickUpText(i, "Picked Up Bow Level 2");
+				//	else if (loot.Weapon == Frosty::ECS::CLootable::WeaponType::Bow3)
+				//		SetPickUpText(i, "Picked Up Bow Level 3");
+				//
+				//	HUD.Layout.sprites.at(1).SetImage("attackRanged");
+				//	HUD.Layout.sprites.at(2).SetImage("attackRanged1");
+				//	HUD.Layout.sprites.at(3).SetImage("attackRanged2");
+				//	HUD.Layout.sprites.at(4).SetImage("attackRanged3");
+				//}
 			}
 		}
 	}
@@ -1066,11 +1088,77 @@ namespace MCS
 		{
 			// Swap loot type in lootWeapon depending on playerWeapon
 			SwapLootType(playerWeapon, lootWeapon);
+			
+			auto& playerWeaponComp = m_World->GetComponent<Frosty::ECS::CWeapon>(playerWeapon);
+			auto& lootWeaponComp = m_World->GetComponent<Frosty::ECS::CWeapon>(lootWeapon);
 
-			Frosty::ECS::CWeapon tempWeapon;
-			tempWeapon = m_World->GetComponent<Frosty::ECS::CWeapon>(playerWeapon);
-			m_World->GetComponent<Frosty::ECS::CWeapon>(playerWeapon) = m_World->GetComponent<Frosty::ECS::CWeapon>(lootWeapon);
-			m_World->GetComponent<Frosty::ECS::CWeapon>(lootWeapon) = tempWeapon;
+			Frosty::ECS::CWeapon::WeaponType type = playerWeaponComp.Type;
+			uint8_t level = playerWeaponComp.Level;
+			std::string speciality = playerWeaponComp.Speciality;
+			float maxAttackRange = playerWeaponComp.MaxAttackRange;
+			float minAttackRange = playerWeaponComp.MinAttackRange;
+			float damage = playerWeaponComp.Damage;
+			float criticalHit = playerWeaponComp.CriticalHit;
+			float criticalHitChance = playerWeaponComp.CriticalHitChance;
+			float lvl1Cooldown = playerWeaponComp.LVL1AttackCooldown;
+			float lvl2Cooldown = playerWeaponComp.LVL2AttackCooldown;
+			float lvl3Cooldown = playerWeaponComp.LVL3AttackCooldown;
+			float lifetime = playerWeaponComp.Lifetime;
+			glm::vec3 attackHitboxScale = playerWeaponComp.AttackHitboxScale;
+			float fire = playerWeaponComp.FireCriticalHitChance;
+			float earth = playerWeaponComp.EarthDamage;
+			float wind = playerWeaponComp.WindSpeed;
+			int water = playerWeaponComp.WaterHealing;
+			bool upgraded = playerWeaponComp.IsFullyUpgraded;
+			float projectileSpeed = playerWeaponComp.ProjectileSpeed;
+			
+			playerWeaponComp.Type = lootWeaponComp.Type;
+			playerWeaponComp.Level = lootWeaponComp.Level;
+			playerWeaponComp.Speciality = lootWeaponComp.Speciality;
+			playerWeaponComp.MaxAttackRange = lootWeaponComp.MaxAttackRange;
+			playerWeaponComp.MinAttackRange = lootWeaponComp.MinAttackRange;
+			playerWeaponComp.Damage = lootWeaponComp.Damage;
+			playerWeaponComp.CriticalHit = lootWeaponComp.CriticalHit;
+			playerWeaponComp.CriticalHitChance = lootWeaponComp.CriticalHitChance;
+			playerWeaponComp.LVL1AttackCooldown = lootWeaponComp.LVL1AttackCooldown;
+			playerWeaponComp.LVL2AttackCooldown = lootWeaponComp.LVL2AttackCooldown;
+			playerWeaponComp.LVL3AttackCooldown = lootWeaponComp.LVL3AttackCooldown;
+			playerWeaponComp.Lifetime = lootWeaponComp.Lifetime;
+			playerWeaponComp.AttackHitboxScale = lootWeaponComp.AttackHitboxScale;
+			playerWeaponComp.FireCriticalHitChance = lootWeaponComp.FireCriticalHitChance;
+			playerWeaponComp.EarthDamage = lootWeaponComp.EarthDamage;
+			playerWeaponComp.WindSpeed = lootWeaponComp.WindSpeed;
+			playerWeaponComp.WaterHealing = lootWeaponComp.WaterHealing;
+			playerWeaponComp.IsFullyUpgraded = lootWeaponComp.IsFullyUpgraded;
+			playerWeaponComp.ProjectileSpeed = lootWeaponComp.ProjectileSpeed;
+
+			lootWeaponComp.Type = type;
+			lootWeaponComp.Level = level;
+			lootWeaponComp.Speciality = speciality;
+			lootWeaponComp.MaxAttackRange = maxAttackRange;
+			lootWeaponComp.MinAttackRange = minAttackRange;
+			lootWeaponComp.Damage;
+			lootWeaponComp.CriticalHit;
+			lootWeaponComp.CriticalHitChance = lootWeaponComp.CriticalHitChance;
+			lootWeaponComp.LVL1AttackCooldown = lvl1Cooldown;
+			lootWeaponComp.LVL2AttackCooldown = lvl2Cooldown;
+			lootWeaponComp.LVL3AttackCooldown = lvl3Cooldown;
+			lootWeaponComp.Lifetime = lifetime;
+			lootWeaponComp.AttackHitboxScale = attackHitboxScale;
+			lootWeaponComp.FireCriticalHitChance = fire;
+			lootWeaponComp.EarthDamage = earth;
+			lootWeaponComp.WindSpeed = wind;
+			lootWeaponComp.WaterHealing = water;
+			lootWeaponComp.IsFullyUpgraded = upgraded;
+			lootWeaponComp.ProjectileSpeed = projectileSpeed;
+
+
+			//Frosty::ECS::CWeapon tempWeapon;
+			//tempWeapon = m_World->GetComponent<Frosty::ECS::CWeapon>(playerWeapon);
+			//m_World->GetComponent<Frosty::ECS::CWeapon>(playerWeapon) = m_World->GetComponent<Frosty::ECS::CWeapon>(lootWeapon);
+			//m_World->GetComponent<Frosty::ECS::CWeapon>(lootWeapon) = tempWeapon;
+
+
 
 			// Only switch CMesh and CMaterial when weapon stats have been swapped
 			SwapMesh(playerWeapon, lootWeapon);
@@ -1089,23 +1177,37 @@ namespace MCS
 				//Transform must be assigned since parentMatrix(Player) being applied to is the only thing keeping the held weapon from origo.
 				Frosty::ECS::CTransform tempTransform; 
 				tempTransform = m_World->GetComponent<Frosty::ECS::CTransform>(lootWeapon);
+				auto& playerWeaponComp = m_World->GetComponent<Frosty::ECS::CMesh>(playerWeapon);
+				auto& lootWeaponComp = m_World->GetComponent<Frosty::ECS::CMesh>(lootWeapon);
 
-				Frosty::ECS::CMesh tempMesh;
-				tempMesh = m_World->GetComponent<Frosty::ECS::CMesh>(playerWeapon);
-				tempMesh.parentMatrix = m_World->GetComponent<Frosty::ECS::CMesh>(playerWeapon).parentMatrix;
-				tempMesh.animOffset = m_World->GetComponent<Frosty::ECS::CMesh>(playerWeapon).animOffset;
-				m_World->GetComponent<Frosty::ECS::CMesh>(playerWeapon) = m_World->GetComponent<Frosty::ECS::CMesh>(lootWeapon);
-				//Make sure it actually ends up in the hand. Default assignment does not do this properly.
-				m_World->GetComponent<Frosty::ECS::CMesh>(playerWeapon).parentMatrix = tempMesh.parentMatrix;
-				m_World->GetComponent<Frosty::ECS::CMesh>(playerWeapon).animOffset = tempMesh.animOffset;
+				std::shared_ptr<Frosty::VertexArray>& mesh = playerWeaponComp.Mesh;
+				bool renderMesh = playerWeaponComp.RenderMesh;
+				//glm::mat4* parentMatrix = playerWeaponComp.parentMatrix;
+				//glm::mat4* animOffset = playerWeaponComp.animOffset;
+
+				playerWeaponComp.Mesh = lootWeaponComp.Mesh;
+				playerWeaponComp.RenderMesh = lootWeaponComp.RenderMesh;
+
+				lootWeaponComp.Mesh = mesh;
+				lootWeaponComp.RenderMesh = renderMesh;
+
+
+				//Frosty::ECS::CMesh tempMesh;
+				//tempMesh = m_World->GetComponent<Frosty::ECS::CMesh>(playerWeapon);
+				//tempMesh.parentMatrix = m_World->GetComponent<Frosty::ECS::CMesh>(playerWeapon).parentMatrix;
+				//tempMesh.animOffset = m_World->GetComponent<Frosty::ECS::CMesh>(playerWeapon).animOffset;
+				//m_World->GetComponent<Frosty::ECS::CMesh>(playerWeapon) = m_World->GetComponent<Frosty::ECS::CMesh>(lootWeapon);
+				//
+				////Make sure it actually ends up in the hand. Default assignment does not do this properly.
+				//m_World->GetComponent<Frosty::ECS::CMesh>(playerWeapon).parentMatrix = tempMesh.parentMatrix;
+				//m_World->GetComponent<Frosty::ECS::CMesh>(playerWeapon).animOffset = tempMesh.animOffset;
 
 				//Reset it otherwise the opposite object will still be parented.
-				tempMesh.parentMatrix = nullptr;
-				tempMesh.animOffset = nullptr;
-				m_World->GetComponent<Frosty::ECS::CMesh>(lootWeapon) = tempMesh;
+				//tempMesh.parentMatrix = nullptr;
+				//tempMesh.animOffset = nullptr;
+				//m_World->GetComponent<Frosty::ECS::CMesh>(lootWeapon) = tempMesh;
 
-				m_World->GetComponent<Frosty::ECS::CTransform>(lootWeapon) = tempTransform;
-				
+				//m_World->GetComponent<Frosty::ECS::CTransform>(lootWeapon) = tempTransform;
 			}
 		}
 	}
@@ -1117,10 +1219,53 @@ namespace MCS
 		{
 			if ((m_World->GetComponent<Frosty::ECS::CMaterial>(playerWeapon)) != (m_World->GetComponent<Frosty::ECS::CMaterial>(lootWeapon)))
 			{
-				Frosty::ECS::CMaterial tempMaterial;
-				tempMaterial = m_World->GetComponent<Frosty::ECS::CMaterial>(playerWeapon);
-				m_World->GetComponent<Frosty::ECS::CMaterial>(playerWeapon) = m_World->GetComponent<Frosty::ECS::CMaterial>(lootWeapon);
-				m_World->GetComponent<Frosty::ECS::CMaterial>(lootWeapon) = tempMaterial;
+				auto& playerWeaponComp = m_World->GetComponent<Frosty::ECS::CMaterial>(playerWeapon);
+				auto& lootWeaponComp = m_World->GetComponent<Frosty::ECS::CMaterial>(lootWeapon);
+
+				std::shared_ptr<Frosty::Shader>& shader = playerWeaponComp.UseShader;
+				glm::vec4 albedo = playerWeaponComp.Albedo;
+				std::shared_ptr<Frosty::Texture2D> diffuseTex = playerWeaponComp.DiffuseTexture;
+				std::shared_ptr<Frosty::Texture2D> specularTex = playerWeaponComp.SpecularTexture;
+				std::shared_ptr<Frosty::Texture2D> normalTex = playerWeaponComp.NormalTexture;
+				std::shared_ptr<Frosty::Texture2D> blendMapTex = playerWeaponComp.BlendMapTexture;
+				std::shared_ptr<Frosty::Texture2D> blendTex1 = playerWeaponComp.BlendTexture1;
+				std::shared_ptr<Frosty::Texture2D> blendTex2 = playerWeaponComp.BlendTexture2;
+				float specStrength = playerWeaponComp.SpecularStrength;
+				int shininess = playerWeaponComp.Shininess;
+				glm::vec2 texScale = playerWeaponComp.TextureScale;
+				bool transparency = playerWeaponComp.HasTransparency;
+
+				playerWeaponComp.UseShader = lootWeaponComp.UseShader;
+				playerWeaponComp.Albedo = lootWeaponComp.Albedo;
+				playerWeaponComp.DiffuseTexture = lootWeaponComp.DiffuseTexture;
+				playerWeaponComp.SpecularTexture = lootWeaponComp.SpecularTexture;
+				playerWeaponComp.NormalTexture = lootWeaponComp.NormalTexture;
+				playerWeaponComp.BlendMapTexture = lootWeaponComp.BlendMapTexture;
+				playerWeaponComp.BlendTexture1 = lootWeaponComp.BlendTexture1;
+				playerWeaponComp.BlendTexture2 = lootWeaponComp.BlendTexture2;
+				playerWeaponComp.SpecularStrength = lootWeaponComp.SpecularStrength;
+				playerWeaponComp.Shininess = lootWeaponComp.Shininess;
+				playerWeaponComp.TextureScale = lootWeaponComp.TextureScale;
+				playerWeaponComp.HasTransparency = lootWeaponComp.HasTransparency;
+
+				lootWeaponComp.UseShader = shader;
+				lootWeaponComp.Albedo = albedo;
+				lootWeaponComp.DiffuseTexture = diffuseTex;
+				lootWeaponComp.SpecularTexture = specularTex;
+				lootWeaponComp.NormalTexture = normalTex;
+				lootWeaponComp.BlendMapTexture = blendMapTex;
+				lootWeaponComp.BlendTexture1 = blendTex1;
+				lootWeaponComp.BlendTexture2 = blendTex2;
+				lootWeaponComp.SpecularStrength = specStrength;
+				lootWeaponComp.Shininess = shininess;
+				lootWeaponComp.TextureScale = texScale;
+				lootWeaponComp.HasTransparency = transparency;
+
+
+				//Frosty::ECS::CMaterial tempMaterial;
+				//tempMaterial = m_World->GetComponent<Frosty::ECS::CMaterial>(playerWeapon);
+				//m_World->GetComponent<Frosty::ECS::CMaterial>(playerWeapon) = m_World->GetComponent<Frosty::ECS::CMaterial>(lootWeapon);
+				//m_World->GetComponent<Frosty::ECS::CMaterial>(lootWeapon) = tempMaterial;
 			}
 		}
 	}
@@ -1213,8 +1358,16 @@ namespace MCS
 			//Temp Health
 			//HUD.Layout.texts.at(5).SetText(std::string(std::to_string((int)m_Health[index]->CurrentHealth) + "/" + std::to_string((int)m_Health[index]->MaxHealth)));
 
-			int nrOfFilledHearts = m_Health[index]->CurrentHealth / 4;
-			int nrOfHeartQuadrants = m_Health[index]->CurrentHealth % 4;
+			int currentHealth = 0;
+
+			if (m_Health[index]->CurrentHealth > 0)
+			{
+				currentHealth = m_Health[index]->CurrentHealth;
+			}
+
+
+			int nrOfFilledHearts = currentHealth / 4;
+			int nrOfHeartQuadrants = currentHealth % 4;
 
 			int healthSpriteID = 19;
 			for (int i = 0; i < nrOfFilledHearts && nrOfFilledHearts <= m_Health[index]->MaxHealth; i++)
@@ -1260,8 +1413,8 @@ namespace MCS
 				}
 			}
 
-			int nrOfEmptyHearts = (m_Health[index]->MaxHealth - m_Health[index]->CurrentHealth) / 4;
-			healthSpriteID = 19 + m_Health[index]->CurrentHealth / 4;
+			int nrOfEmptyHearts = (m_Health[index]->MaxHealth - currentHealth) / 4;
+			healthSpriteID = 19 + currentHealth / 4;
 
 			if (nrOfHeartQuadrants > 0)
 			{
@@ -1450,7 +1603,7 @@ namespace MCS
 			}
 
 			//Bait
-			/*timer = m_Inventory[index]->BaitTimer;
+			timer = m_Inventory[index]->BaitTimer;
 			dif = (CurrentTime - timer);
 			cooldown = m_Inventory[index]->BaitCooldown - dif;
 
@@ -1470,7 +1623,7 @@ namespace MCS
 					HUD.Layout.sprites.at(11).SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
 				}
 
-			}*/
+			}
 
 			//Speed boots
 			int bootSpriteID = 14;

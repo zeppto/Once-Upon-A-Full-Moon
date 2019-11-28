@@ -855,10 +855,24 @@ namespace MCS
 				}
 				if (world->HasComponent<Frosty::ECS::CEnemy>(m_SelectedEntity))
 				{
-					if (ImGui::CollapsingHeader("Enemy Attack"))
+					if (ImGui::CollapsingHeader("Enemy"))
 					{
 						auto& comp = world->GetComponent<Frosty::ECS::CEnemy>(m_SelectedEntity);
 						ImGui::BeginChild("CEnemy", ImVec2(EDITOR_INSPECTOR_WIDTH, 105), true);
+						//if (ImGui::Button("Weapon")) ImGui::OpenPopup("camera_target_select_popup");
+						//ImGui::SameLine();
+						//comp.Target ? ImGui::TextUnformatted(("Entity (" + std::to_string(comp.Weapon->EntityPtr->Id) + ")").c_str()) : ImGui::TextUnformatted("None");
+						//if (ImGui::BeginPopup("weapon_select_popup"))
+						//{
+						//	ImGui::Separator();
+						//	for (auto& entity : *world->GetEntityManager())
+						//	{
+						//		if (entity != m_SelectedEntity)
+						//		{
+						//		}
+						//	}
+						//	ImGui::EndPopup();
+						//}
 						ImGui::DragFloat3("SpawnPosition", glm::value_ptr(comp.SpawnPosition), 0.0f, 0.0f, 0.0f, "%.2f");
 						ImGui::InputFloat("RunOnHealth", &comp.RunOnHealth, 1.0f, 10.0f, 0);
 						ImGui::EndChild();

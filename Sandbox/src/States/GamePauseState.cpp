@@ -25,7 +25,6 @@ namespace MCS
 	{
 		m_App = &Frosty::Application::Get();
 		m_App->PushOverlay(FY_NEW(GamePauseLayer));
-
 		InitiateGui();
 	}
 

@@ -1,6 +1,8 @@
 #ifndef AI_SYSTEM_HPP
 #define AI_SYSTEM_HPP
 
+namespace Frosty { class InitiateGridEvent; }
+
 namespace MCS
 {
 	class AISystem : public Frosty::ECS::BaseSystem
@@ -14,6 +16,7 @@ namespace MCS
 
 		virtual void Init() override;
 		virtual void OnUpdate() override;
+		void OnEvent(Frosty::BaseEvent& e);
 
 		virtual void AddComponent(const std::shared_ptr<Frosty::ECS::Entity> & entity) override;
 		virtual void RemoveEntity(const std::shared_ptr<Frosty::ECS::Entity> & entity) override;
@@ -21,6 +24,7 @@ namespace MCS
 		virtual std::string GetInfo() const override;
 
 	private:
+		void OnInitiateGridMap(Frosty::InitiateGridEvent& e);
 		void CheckState(size_t index);
 		void HandleAttack(size_t index);
 		void LookAtPoint(const glm::vec3& point, size_t index);
@@ -34,8 +38,12 @@ namespace MCS
 		std::array<Frosty::ECS::CEnemy*, Frosty::ECS::MAX_ENTITIES_PER_COMPONENT> m_Enemy;
 		std::array<Frosty::ECS::CHealth*, Frosty::ECS::MAX_ENTITIES_PER_COMPONENT> m_Health;
 
-		float BossSpawnTime{ 10.f };
+		// Temporary for extern test
+		bool m_BossSpawned{ false };
+		float BossSpawnTime{ 20.f };
 		float BossTimer{ Frosty::Time::CurrentTime() };
+		glm::vec3 m_BossSpawn{ 0.0f };
+		Frosty::ECS::CTransform* m_PlayerTransform;
 	};
 }
 

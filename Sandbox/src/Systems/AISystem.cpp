@@ -14,6 +14,13 @@ namespace MCS
 		p_Signature.set(Frosty::ECS::getComponentTypeID<Frosty::ECS::CTransform>(), true);
 		p_Signature.set(Frosty::ECS::getComponentTypeID<Frosty::ECS::CEnemy>(), true);
 		p_Signature.set(Frosty::ECS::getComponentTypeID<Frosty::ECS::CHealth>(), true);
+
+		int minMinute = 3;
+		int maxMinute = 5;
+
+		int spawnMinute = rand() % (maxMinute - minMinute + 1) + minMinute;
+		BossSpawnTime = spawnMinute * 60.0f + 20.0f;
+		//BossSpawnTime = 20.0f;
 	}
 
 	void AISystem::OnUpdate()
@@ -40,8 +47,20 @@ namespace MCS
 			//Boss Timer
 			if (Frosty::Time::CurrentTime() - BossTimer >= BossSpawnTime)
 			{
-				SpawnBoss();
+				if (!m_BossSpawned) SpawnBoss();
 			}
+		}
+	}
+
+	void AISystem::OnEvent(Frosty::BaseEvent& e)
+	{
+		switch (e.GetEventType())
+		{
+		case Frosty::EventType::InitiateGridMap:
+			OnInitiateGridMap(static_cast<Frosty::InitiateGridEvent&>(e));
+			break;
+		default:
+			break;
 		}
 	}
 
@@ -124,6 +143,12 @@ namespace MCS
 		return retInfo.str();
 	}
 	
+	void AISystem::OnInitiateGridMap(Frosty::InitiateGridEvent& e)
+	{
+		m_BossSpawn = m_Enemy[1]->SpawnPosition;
+		m_PlayerTransform = m_Enemy[1]->Target;
+	}
+
 	void AISystem::CheckState(size_t index)
 	{
 		// Reset (Should not happen if boss)
@@ -282,9 +307,8 @@ namespace MCS
 
 		if (bossComp.ActiveAbility == Frosty::ECS::CBoss::AbilityState::None)
 		{
-			//int randomNr = rand() % 2;
-			int randomNr = 0;
-			if (randomNr == 0 && (Frosty::Time::CurrentTime() - bossComp.LeapCooldownTime >= bossComp.LeapInterval))
+			int randomNr = rand() % 100 +1;
+			if (randomNr <= bossComp.LeapChance && (Frosty::Time::CurrentTime() - bossComp.LeapCooldownTime >= bossComp.LeapInterval))
 			{
 				// Leap
 				if (glm::distance(m_Transform[index]->Position, m_Enemy[index]->Target->Position) <= bossComp.LeapMaxDistance &&
@@ -296,7 +320,7 @@ namespace MCS
 					bossComp.ActiveAbility = Frosty::ECS::CBoss::AbilityState::Leap;
 				}
 			}
-			else if (randomNr == 1 && (Frosty::Time::CurrentTime() - bossComp.ChargeCooldownTime >= bossComp.ChargeInterval))
+			else if (randomNr >= (100.0f - bossComp.ChargeChance) && (Frosty::Time::CurrentTime() - bossComp.ChargeCooldownTime >= bossComp.ChargeInterval))
 			{
 				// Charge
 				if (glm::distance(m_Transform[index]->Position, m_Enemy[index]->Target->Position) <= bossComp.ChargeDistance)
@@ -359,8 +383,35 @@ namespace MCS
 
 		return false;
 	}
+	
 	void AISystem::SpawnBoss()
 	{
-		//Spawn boss here
+		// Boss Weapon
+		auto& bossWeapon = m_World->CreateEntity({ 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 1.0f, 1.0f, 1.0f });
+		auto& bossWeaponComp = m_World->AddComponent<Frosty::ECS::CWeapon>(bossWeapon, Frosty::ECS::CWeapon::WeaponType::Sword, 1, 4.0f);
+		bossWeaponComp.LVL1AttackCooldown = 3.0f;
+		bossWeaponComp.MaxAttackRange = 10.0f;
+		bossWeaponComp.MinAttackRange = 0.0f;
+		bossWeaponComp.AttackHitboxScale = glm::vec3(12.0f, 6.0f, 5.0f);
+
+		// Boss
+		auto& boss = m_World->CreateEntity(m_BossSpawn, { 0.0f, 0.0f, 0.0f }, { 2.0f, 2.0f, 2.0f });
+		auto& bossTransform = m_World->GetComponent<Frosty::ECS::CTransform>(boss);
+		m_World->AddComponent<Frosty::ECS::CAnimController>(boss).currAnim = Frosty::AssetManager::GetAnimation("Werewolf_Idle");
+		m_World->AddComponent<Frosty::ECS::CMesh>(boss, Frosty::AssetManager::GetMesh("Werewolf"));
+		auto& bossMat = m_World->AddComponent<Frosty::ECS::CMaterial>(boss, Frosty::AssetManager::GetShader("Animation"));
+		bossMat.DiffuseTexture = Frosty::AssetManager::GetTexture2D("Werewolf_Diffuse");
+		bossMat.NormalTexture = Frosty::AssetManager::GetTexture2D("Werewolf_defaultMat_Normal");
+		m_World->AddComponent<Frosty::ECS::CPhysics>(boss, Frosty::AssetManager::GetBoundingBox("Werewolf"), bossTransform.Scale, 14.0f);
+		auto& enemyComp = m_World->AddComponent<Frosty::ECS::CEnemy>(boss, m_PlayerTransform, &bossWeaponComp);
+		enemyComp.SpawnPosition = m_BossSpawn;
+		m_World->AddComponent<Frosty::ECS::CHealth>(boss, 50);
+		m_World->AddComponent<Frosty::ECS::CHealthBar>(boss, glm::vec3(0.0f, 10.0f, 0.0f));
+		m_World->AddComponent<Frosty::ECS::CDropItem>(boss);
+		m_World->AddComponent<Frosty::ECS::CBoss>(boss);
+
+		m_BossSpawned = true;
+
+		Frosty::EventBus::GetEventBus()->Publish<Frosty::BossSpawnedEvent>(Frosty::BossSpawnedEvent());
 	}
 }
