@@ -154,7 +154,6 @@ namespace MCS
 			else
 				randomValue = rand() % 6;
 
-			randomValue = 5;
 			Frosty::Weapon weapon;
 			auto& item = m_World->CreateEntity(entityTransform.Position, { 0.0f, 0.0f, 0.0f }, { 3.f, 3.f, 3.f });
 			auto& transform = m_World->GetComponent<Frosty::ECS::CTransform>(item);

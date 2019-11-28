@@ -1358,8 +1358,16 @@ namespace MCS
 			//Temp Health
 			//HUD.Layout.texts.at(5).SetText(std::string(std::to_string((int)m_Health[index]->CurrentHealth) + "/" + std::to_string((int)m_Health[index]->MaxHealth)));
 
-			int nrOfFilledHearts = m_Health[index]->CurrentHealth / 4;
-			int nrOfHeartQuadrants = m_Health[index]->CurrentHealth % 4;
+			int currentHealth = 0;
+
+			if (m_Health[index]->CurrentHealth > 0)
+			{
+				currentHealth = m_Health[index]->CurrentHealth;
+			}
+
+
+			int nrOfFilledHearts = currentHealth / 4;
+			int nrOfHeartQuadrants = currentHealth % 4;
 
 			int healthSpriteID = 19;
 			for (int i = 0; i < nrOfFilledHearts && nrOfFilledHearts <= m_Health[index]->MaxHealth; i++)
@@ -1405,8 +1413,8 @@ namespace MCS
 				}
 			}
 
-			int nrOfEmptyHearts = (m_Health[index]->MaxHealth - m_Health[index]->CurrentHealth) / 4;
-			healthSpriteID = 19 + m_Health[index]->CurrentHealth / 4;
+			int nrOfEmptyHearts = (m_Health[index]->MaxHealth - currentHealth) / 4;
+			healthSpriteID = 19 + currentHealth / 4;
 
 			if (nrOfHeartQuadrants > 0)
 			{
@@ -1595,7 +1603,7 @@ namespace MCS
 			}
 
 			//Bait
-			/*timer = m_Inventory[index]->BaitTimer;
+			timer = m_Inventory[index]->BaitTimer;
 			dif = (CurrentTime - timer);
 			cooldown = m_Inventory[index]->BaitCooldown - dif;
 
@@ -1615,7 +1623,7 @@ namespace MCS
 					HUD.Layout.sprites.at(11).SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
 				}
 
-			}*/
+			}
 
 			//Speed boots
 			int bootSpriteID = 14;
