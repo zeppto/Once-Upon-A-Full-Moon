@@ -52,6 +52,9 @@ namespace MCS
 		case Frosty::EventType::CreatEntity:
 			OnCreatEntityEvent(static_cast<Frosty::CreatEntityEvent&>(e));
 			break;
+		case Frosty::EventType::Reset:
+			OnResetEvent(static_cast<Frosty::ResetEvent&>(e));
+			break;
 		case Frosty::EventType::BossSpawned:
 			OnBossSpawnedEvent(static_cast<Frosty::BossSpawnedEvent&>(e));
 			break;
@@ -734,11 +737,31 @@ namespace MCS
 			m_World->AddComponent<Frosty::ECS::CDropItem>(enemyA);
 		}
 	}
-	
+
+	void LevelSystem::OnResetEvent(Frosty::ResetEvent & e)
+	{
+		for (size_t i = 1; i < p_Total; i++)
+		{
+			if (!m_World->HasComponent<Frosty::ECS::CWeapon>(m_Transform[i]->EntityPtr))
+			{
+
+				if (!m_World->HasComponent<Frosty::ECS::CGUI>(m_Transform[i]->EntityPtr))
+				{
+					if (!m_World->HasComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr))
+					{
+						m_World->AddComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr);
+					}
+				}
+
+			}
+		}
+		m_Start = true;
+		m_PlayerPos = { 10, 15 };
+		//visited rom reset missing!
+	}
+
 	void LevelSystem::OnBossSpawnedEvent(Frosty::BossSpawnedEvent& e)
 	{
 		m_BossSpawned = true;
 	}
 }
-
-
