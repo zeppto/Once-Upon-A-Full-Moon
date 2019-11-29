@@ -839,7 +839,7 @@ namespace MCS
 					{
 						m_Health[i]->MaxHealth = m_Health[i]->MaxPossibleHealth;
 					}
-					m_Health[i]->CurrentHealth += 1;
+					m_Health[i]->CurrentHealth += 4;
 					SetPickUpText(i, "Max Health Increased");
 
 					FY_INFO("Max Health Increased");
