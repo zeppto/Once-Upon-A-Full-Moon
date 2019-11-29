@@ -47,7 +47,7 @@ namespace MCS
 			//Boss Timer
 			if (Frosty::Time::CurrentTime() - BossTimer >= BossSpawnTime)
 			{
-				if (!m_BossSpawned) SpawnBoss();
+				//if (!m_BossSpawned) SpawnBoss();
 			}
 		}
 	}

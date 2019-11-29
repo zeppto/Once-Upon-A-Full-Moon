@@ -250,7 +250,7 @@ namespace MCS
 		m_CreatNewRoom = true;
 
 	}
-	
+
 	void LevelSystem::OnSaveLevelEvent(Frosty::SaveLevelEvent& e)
 	{
 		for (size_t i = 1; i < p_Total; i++)
@@ -281,7 +281,7 @@ namespace MCS
 		}
 		m_LevelFileFormat.SaveToFile(m_RoomType);
 	}
-	
+
 	void LevelSystem::OnCreateLevelEvent(Frosty::CreateLevelEvent& e)
 	{
 		for (size_t i = 1; i < p_Total; i++)
@@ -341,7 +341,7 @@ namespace MCS
 		else
 			m_RoomType = "unknown";
 	}
-	
+
 	void LevelSystem::OnOpenLevelEvent(Frosty::OpenLevelEvent& e)
 	{
 		Frosty::ECS::CTransform* playerTransform = nullptr;
@@ -405,7 +405,7 @@ namespace MCS
 		m_RoomType = e.GetFilename();
 		//m_LevelFileFormat.OpenFromFile(m_RoomType, m_PlayerPos, playerTransform);
 	}
-	
+
 	void LevelSystem::OnCreatEntityEvent(Frosty::CreatEntityEvent& e)
 	{
 		//Enemy
@@ -738,7 +738,7 @@ namespace MCS
 		}
 	}
 
-	void LevelSystem::OnResetEvent(Frosty::ResetEvent & e)
+	void LevelSystem::OnResetEvent(Frosty::ResetEvent& e)
 	{
 		for (size_t i = 1; i < p_Total; i++)
 		{
