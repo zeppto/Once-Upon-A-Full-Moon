@@ -21,7 +21,8 @@ namespace Frosty
 		BaitPlaced, ExitCurrentLevel,
 		SaveLevel, CreateLevel, OpenLevel, CreatEntity, 
 		LoadBoolMap, InitiateGridMap,
-		PlayAnim
+		PlayAnim,
+		PlayMedia, PlayMediaEntity, PlayMusic
 	};
 
 #define EVENT_TYPE(type) static EventType GetStaticType() { return EventType::##type; }\

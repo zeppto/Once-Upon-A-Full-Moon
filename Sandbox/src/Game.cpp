@@ -25,6 +25,7 @@
 #include "Systems/GUISystem.hpp"
 #include "Systems/AnimationSystem.hpp"
 #include "Systems/AISystem.hpp"
+#include "Systems/MediaSystem.h"
 
 //#include "LevelHandeler/LevelFileFormat.hpp"
 
@@ -56,9 +57,22 @@ namespace MCS
 		world->AddSystem<BossBehaviorSystem>();
 		world->AddSystem<GUISystem>();
 		world->AddSystem<LootingSystem>();
+		world->AddSystem<MediaSystem>();
 
 		world->Awake();
 		particleSystem->AttachGameCamera(&world->GetComponent<Frosty::ECS::CTransform>(world->GetSceneCamera()));
+
+		//auto& testEntity = world->CreateEntity();
+		//auto& musicTest = world->AddComponent<Frosty::ECS::CMediaManager>(mediaTest);
+		//musicTest.SoundEngine = irrklang::createIrrKlangDevice();
+		///*world->AddComponent<Frosty::ECS::CMediaManager>(mediaTest).SoundEngine = irrklang::createIrrKlangDevice();*/
+		//world->GetComponent<Frosty::ECS::CMediaManager>(mediaTest).SoundEngine->play2D(
+		//	"assets/music/menusong.mp3", 
+		//	true, 
+		//	false, 
+		//	false, 
+		//	ESM_AUTO_DETECT,
+		//	false);
 
 		// SCENE 1
 		// PLANE

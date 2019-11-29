@@ -7,6 +7,7 @@
 #include "Frosty/Core/MouseButtonCodes.h"
 #include "Frosty/API/AssetManager/AssetFiles/Animation.hpp"
 #include "Frosty/API/AssetManager/AssetManager.hpp"
+#include "Frosty/API/MediaManager.h"
 #include "Frosty/UI/UIText.h"
 #include "Frosty/UI/UISprite.h"
 #include "Frosty/UI/UILayout.hpp"
@@ -142,14 +143,14 @@ namespace Frosty
 #pragma region Settings
 
 		// Let's define a maximum number of unique components:
-		constexpr std::size_t MAX_COMPONENTS{ 23 };
+		constexpr std::size_t MAX_COMPONENTS{ 24 };
 
 		// Let's define a maximum number of entities that
 		// can have the same component type:
 		constexpr std::size_t MAX_ENTITIES_PER_COMPONENT{ 30024 };
 
 		// Defining the maximum nr of systems
-		constexpr std::size_t MAX_SYSTEMS{ 20 };
+		constexpr std::size_t MAX_SYSTEMS{ 21 };
 
 #pragma endregion Settings
 
@@ -1392,6 +1393,30 @@ namespace Frosty
 			virtual std::string GetName() const { return NAME; }
 		};
 
+		struct CMediaManager : public BaseComponent
+		{
+			static std::string NAME;
+
+			ISoundEngine* SoundEngine;
+			ISound* Sound;
+			ISound* Music;
+
+			CMediaManager() = default;
+			CMediaManager(const CMediaManager& org) { FY_CORE_ASSERT(false, "Copy constructor in CMediaManager called."); }
+			CMediaManager& operator=(const CMediaManager& org)
+			{
+				if (this != &org)
+				{
+					SoundEngine = org.SoundEngine;
+					Sound = org.Sound;
+					Music = org.Music;
+				}
+				return *this;
+			}
+
+			virtual std::string GetName() const { return NAME; }
+		};
+
 		static std::string GetComponentName(size_t i)
 		{
 			switch (i)
@@ -1419,6 +1444,7 @@ namespace Frosty
 			case 20:	return "LevelExit";
 			case 21:	return "GUI";
 			case 22:	return "AnimController";
+			case 23:	return "MediaManager";
 			default:	return "";
 			}
 		}
