@@ -759,13 +759,8 @@ namespace MCS
 				m_keyPressed = true;
 				Frosty::EventBus::GetEventBus()->Publish<Frosty::PickUpAttemptEvent>(Frosty::PickUpAttemptEvent(m_Player[index]->EntityPtr));
 
-				auto& weaponComp = m_World->GetComponent<Frosty::ECS::CWeapon>(m_Player[index]->Weapon->EntityPtr);
-				// CheckWitchCircle
-				if (m_Inventory[index]->CurrentWolfsbane > 0 && !weaponComp.IsFullyUpgraded)
-				{
-					// Send event to start the hexCircle timer (send the one requesting the enchantment)
-					Frosty::EventBus::GetEventBus()->Publish<Frosty::ActivateWitchCircleEvent>(Frosty::ActivateWitchCircleEvent(m_Player[index]->EntityPtr));
-				}
+				// Send event to start the hexCircle timer (send the one requesting the enchantment)
+				Frosty::EventBus::GetEventBus()->Publish<Frosty::ActivateWitchCircleEvent>(Frosty::ActivateWitchCircleEvent(m_Player[index]->EntityPtr));
 			}
 		}
 		else if (m_keyPressed)
@@ -830,7 +825,17 @@ namespace MCS
 			{
 				if (m_Inventory[i]->CurrentIncreaseHPPotions < m_Inventory[i]->MaxIncreaseHPPotions && m_Health[i]->MaxHealth < m_Health[i]->MaxPossibleHealth)
 				{
-					m_Health[i]->MaxHealth += m_Inventory[i]->IncreaseHP;
+					// If increse HP won't exceed maximum health capacity --> directly increase health capacity 
+					if (m_Inventory[i]->IncreaseHP <= (m_Health[i]->MaxPossibleHealth - m_Health[i]->MaxHealth))
+					{
+						m_Health[i]->MaxHealth += m_Inventory[i]->IncreaseHP;
+					}
+					// But if increase HP exceeds maximum health capacity --> max possible health achieved
+					else
+					{
+						m_Health[i]->MaxHealth = m_Health[i]->MaxPossibleHealth;
+					}
+					m_Health[i]->CurrentHealth += 1;
 					SetPickUpText(i, "Max Health Increased");
 
 					FY_INFO("Max Health Increased");
@@ -1180,7 +1185,7 @@ namespace MCS
 				auto& playerWeaponComp = m_World->GetComponent<Frosty::ECS::CMesh>(playerWeapon);
 				auto& lootWeaponComp = m_World->GetComponent<Frosty::ECS::CMesh>(lootWeapon);
 
-				std::shared_ptr<Frosty::VertexArray>& mesh = playerWeaponComp.Mesh;
+				std::shared_ptr<Frosty::VertexArray> mesh = playerWeaponComp.Mesh;
 				bool renderMesh = playerWeaponComp.RenderMesh;
 				//glm::mat4* parentMatrix = playerWeaponComp.parentMatrix;
 				//glm::mat4* animOffset = playerWeaponComp.animOffset;
@@ -1190,7 +1195,6 @@ namespace MCS
 
 				lootWeaponComp.Mesh = mesh;
 				lootWeaponComp.RenderMesh = renderMesh;
-
 
 				//Frosty::ECS::CMesh tempMesh;
 				//tempMesh = m_World->GetComponent<Frosty::ECS::CMesh>(playerWeapon);
@@ -1699,7 +1703,6 @@ namespace MCS
 
 			HUD.Layout.texts.at(6).SetText(text);
 			m_Player[index]->PickUpTextTimer = Frosty::Time::CurrentTime();
-
 		}
 	}
 

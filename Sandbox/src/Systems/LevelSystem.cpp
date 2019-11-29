@@ -727,5 +727,3 @@ namespace MCS
 		m_BossSpawned = true;
 	}
 }
-
-

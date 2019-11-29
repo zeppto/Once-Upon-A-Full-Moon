@@ -143,15 +143,33 @@ namespace MCS
 	void WitchCircleSystem::OnActiveWitchCircleEvent(Frosty::ActivateWitchCircleEvent& e)
 	{
 		auto& enchanter = e.GetEntity();
-		auto& enchanterTransform = m_World->GetComponent<Frosty::ECS::CTransform>(enchanter);
 
 		for (size_t i = 1; i < p_Total && m_CurrentActiveWC == 0; i++)
 		{
+			auto& enchanterTransform = m_World->GetComponent<Frosty::ECS::CTransform>(enchanter);
+			
 			// If enchanter is within reach --> activate the hexcircle
 			if (glm::distance(m_Transform[i]->Position, enchanterTransform.Position) <= 2.f && !m_WitchCircle[i]->Deployed)
 			{
-				m_CurrentActiveWC = i;
-				m_WitchCircle[i]->Enchanter = &enchanterTransform;
+				if (m_World->HasComponent<Frosty::ECS::CPlayer>(enchanter))
+				{
+					auto& playerComp = m_World->GetComponent<Frosty::ECS::CPlayer>(enchanter);
+					auto& inventoryComp = m_World->GetComponent<Frosty::ECS::CInventory>(enchanter);
+
+					if (inventoryComp.CurrentWolfsbane > 0)
+					{
+						auto& weaponComp = m_World->GetComponent<Frosty::ECS::CWeapon>(playerComp.Weapon->EntityPtr);
+						if (!weaponComp.IsFullyUpgraded)
+						{
+							m_CurrentActiveWC = i;
+							m_WitchCircle[i]->Enchanter = &enchanterTransform;
+						}
+						else
+							SetHUDText(enchanter, "Weapon Is Fully Upgraded");
+					}
+					else
+						SetHUDText(enchanter, "Not Enough Wolfsbane");
+				}
 			}
 		}
 	}
@@ -210,6 +228,18 @@ namespace MCS
 			witchCircleHealth.CurrentHealth = 0;
 
 			m_CurrentActiveWC = 0;
+		}
+	}
+
+	void WitchCircleSystem::SetHUDText(const std::shared_ptr<Frosty::ECS::Entity>& entity, std::string text)
+	{
+		if (m_World->HasComponent<Frosty::ECS::CGUI>(entity) && m_World->HasComponent<Frosty::ECS::CPlayer>(entity))
+		{
+			auto& playerComp = m_World->GetComponent<Frosty::ECS::CPlayer>(entity);
+			auto& HUD = m_World->GetComponent<Frosty::ECS::CGUI>(entity);
+
+			HUD.Layout.texts.at(6).SetText(text);
+			playerComp.PickUpTextTimer = Frosty::Time::CurrentTime();
 		}
 	}
 }
