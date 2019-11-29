@@ -22,10 +22,11 @@ namespace MCS
 		Frosty::EventBus::GetEventBus()->Subscribe<GameState, Frosty::BaseEvent>(this, &GameState::OnEvent);
 		if (!m_App->GameLoaded())
 		{
-			InitiateLight();
 			SetPlayer();
 			m_App->SetGameLoad(true);
 		}
+		
+		//InitiateLight();
 		world->PlayGame();
 	}
 
@@ -46,9 +47,9 @@ namespace MCS
 	{
 		if (Frosty::InputManager::IsKeyPressed(FY_KEY_ESCAPE))
 		{
-			FY_INFO("GAME PAUSE STAGE NEXT");
 			auto& world = Frosty::Application::Get().GetWorld();
 			world->PauseGame();
+			FY_INFO("GAME PAUSE STAGE NEXT");
 			m_App->GetStateMachine().AddState(Frosty::StateRef(FY_NEW(GamePauseState)));
 		}
 	}
@@ -82,14 +83,6 @@ namespace MCS
 		auto& world = Frosty::Application::Get().GetWorld();
 		m_App->GetStateMachine().AddState(Frosty::StateRef(FY_NEW(GameWinState)), true);
 		world->PauseGame();
-	}
-
-	void GameState::InitiateLight()
-	{
-		auto& world = Frosty::Application::Get().GetWorld();
-		m_Light = world->CreateEntity({ 0.0f, 0.0f, 0.0f }, { 120.0f, 8.0f, -10.0f });
-		auto& DLight = world->AddComponent<Frosty::ECS::CLight>(m_Light, Frosty::ECS::CLight::LightType::Directional, 0.9f, glm::vec3(0.5f, 0.6f, 1.f));
-		DLight.Direction = glm::vec3(-1.0f, -0.8, -1.0);
 	}
 
 	void GameState::InitiateObjects()

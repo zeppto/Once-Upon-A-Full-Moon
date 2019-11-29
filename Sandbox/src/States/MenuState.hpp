@@ -18,9 +18,12 @@ namespace MCS
 		void InitiateSystems();
 		void InitiateObjects();
 		void InitiateButtons();
+		void InitiateLight();
+		void InitiateTorch();
 	private:
 		Frosty::Application* m_App = nullptr;
 		std::shared_ptr<Frosty::ECS::Entity> m_MenuGui;
+		std::shared_ptr<Frosty::ECS::Entity> m_Player;
 	};
 }
 #endif
