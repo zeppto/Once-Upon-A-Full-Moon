@@ -9,18 +9,24 @@ namespace MCS
 	void AttackSystem::Init()
 	{
 		p_Signature.set(Frosty::ECS::getComponentTypeID<Frosty::ECS::CAttack>(), true);
+
+		m_World = Frosty::Application::Get().GetWorld().get();
 	}
 
 	void AttackSystem::OnUpdate()
 	{
 		for (size_t i = 1; i < p_Total; i++)
 		{
-			if (Frosty::Time::CurrentTime() - m_Attack[i]->LifetimeTimer >= m_Attack[i]->Lifetime)
+			if (m_Attack[i]->Type == Frosty::ECS::CAttack::AttackType::Melee && Frosty::Time::CurrentTime() - m_Attack[i]->LifetimeTimer >= 0.1f && !m_World->HasComponent<Frosty::ECS::CPhysics>(m_Attack[i]->EntityPtr))
 			{
-				auto& world = Frosty::Application::Get().GetWorld();
-				if (!world->HasComponent<Frosty::ECS::CDestroy>(m_Attack[i]->EntityPtr))
+				auto& attackTransform = m_World->GetComponent<Frosty::ECS::CTransform>(m_Attack[i]->EntityPtr);
+				m_World->AddComponent<Frosty::ECS::CPhysics>(m_Attack[i]->EntityPtr, Frosty::AssetManager::GetBoundingBox("pCube1"), attackTransform.Scale);
+			}
+			else if (Frosty::Time::CurrentTime() - m_Attack[i]->LifetimeTimer >= m_Attack[i]->Lifetime && m_World->HasComponent<Frosty::ECS::CPhysics>(m_Attack[i]->EntityPtr))
+			{
+				if (!m_World->HasComponent<Frosty::ECS::CDestroy>(m_Attack[i]->EntityPtr))
 				{
-					world->AddComponent<Frosty::ECS::CDestroy>(m_Attack[i]->EntityPtr);
+					m_World->AddComponent<Frosty::ECS::CDestroy>(m_Attack[i]->EntityPtr);
 				}
 			}
 		}

@@ -247,6 +247,9 @@ namespace MCS
 
 	void PlayerControllerSystem::HandleMovement(size_t index)
 	{
+		auto& animController = m_World->GetComponent<Frosty::ECS::CAnimController>(m_Player[index]->EntityPtr);
+
+
 		if (Frosty::InputManager::IsKeyReleased(m_Player[index]->MoveForwardKey) || Frosty::InputManager::IsKeyReleased(m_Player[index]->MoveBackKey))
 		{
 			m_Physics[index]->Direction.z = 0.0f;
@@ -257,39 +260,42 @@ namespace MCS
 			m_Physics[index]->Direction.x = 0.0f;
 			//m_Physics[index]->Velocity.x = 0.0f;
 		}
-
-		if (Frosty::InputManager::IsKeyPressed(m_Player[index]->MoveForwardKey))
+	
+		if (!animController.isBusy)
 		{
-			m_Physics[index]->Direction.z = -1.0f;
-		}
-		else if (Frosty::InputManager::IsKeyPressed(m_Player[index]->MoveBackKey))
-		{
-			m_Physics[index]->Direction.z = 1.0f;
-		}
-		if (Frosty::InputManager::IsKeyPressed(m_Player[index]->MoveLeftKey))
-		{
-			m_Physics[index]->Direction.x = -1.0f;
-		}
-		else if (Frosty::InputManager::IsKeyPressed(m_Player[index]->MoveRightKey))
-		{
-			m_Physics[index]->Direction.x = 1.0f;
-		}
-
-		if (glm::length(m_Physics[index]->Direction) > 0.0f)
-		{
-			//m_Physics[index]->Velocity = glm::normalize(m_Physics[index]->Direction) * m_Physics[index]->Speed * m_Physics[index]->SpeedMultiplier;
-			m_Physics[index]->Direction = glm::normalize(m_Physics[index]->Direction);
-
-			if (Frosty::InputManager::IsKeyPressed(m_Player[index]->DashKey))
+			if (Frosty::InputManager::IsKeyPressed(m_Player[index]->MoveForwardKey))
 			{
-				// Check if entity has CDash component before publishing
-				if (m_Dash[index]->CurrentCooldown <= 0.0f)
+				m_Physics[index]->Direction.z = -1.0f;
+			}
+			else if (Frosty::InputManager::IsKeyPressed(m_Player[index]->MoveBackKey))
+			{
+				m_Physics[index]->Direction.z = 1.0f;
+			}
+			if (Frosty::InputManager::IsKeyPressed(m_Player[index]->MoveLeftKey))
+			{
+				m_Physics[index]->Direction.x = -1.0f;
+			}
+			else if (Frosty::InputManager::IsKeyPressed(m_Player[index]->MoveRightKey))
+			{
+				m_Physics[index]->Direction.x = 1.0f;
+			}
+
+			if (glm::length(m_Physics[index]->Direction) > 0.0f)
+			{
+				//m_Physics[index]->Velocity = glm::normalize(m_Physics[index]->Direction) * m_Physics[index]->Speed * m_Physics[index]->SpeedMultiplier;
+				m_Physics[index]->Direction = glm::normalize(m_Physics[index]->Direction);
+
+				if (Frosty::InputManager::IsKeyPressed(m_Player[index]->DashKey))
 				{
-					m_Dash[index]->Active = true;
-					Frosty::EventBus::GetEventBus()->Publish<Frosty::DashEvent>(Frosty::DashEvent(m_Player[index]->EntityPtr));
-					//m_Physics[index]->Velocity *= m_Dash[index]->SpeedMultiplier;
-					m_Physics[index]->SpeedMultiplier = m_Dash[index]->SpeedMultiplier;
-					m_Dash[index]->CurrentCooldown = m_Dash[index]->COOLDOWN / 1000.0f;
+					// Check if entity has CDash component before publishing
+					if (m_Dash[index]->CurrentCooldown <= 0.0f)
+					{
+						m_Dash[index]->Active = true;
+						Frosty::EventBus::GetEventBus()->Publish<Frosty::DashEvent>(Frosty::DashEvent(m_Player[index]->EntityPtr));
+						//m_Physics[index]->Velocity *= m_Dash[index]->SpeedMultiplier;
+						m_Physics[index]->SpeedMultiplier = m_Dash[index]->SpeedMultiplier;
+						m_Dash[index]->CurrentCooldown = m_Dash[index]->COOLDOWN / 1000.0f;
+					}
 				}
 			}
 		}
@@ -431,7 +437,6 @@ namespace MCS
 		glm::vec3 spawnScale = glm::vec3(10.0f, 6.0f, 4.0f);
 		auto& sword = m_World->CreateEntity({ spawnPos.x, 3.0f, spawnPos.z }, attackerTransform.Rotation, spawnScale);
 		auto& swordTransform = m_World->GetComponent<Frosty::ECS::CTransform>(sword);
-		m_World->AddComponent<Frosty::ECS::CPhysics>(sword, Frosty::AssetManager::GetBoundingBox("pCube1"), swordTransform.Scale);
 
 		float criticalHit = 0;
 		criticalHit = GenerateCriticalHit(weaponComp.CriticalHit, weaponComp.CriticalHitChance + weaponComp.FireCriticalHitChance);
@@ -453,7 +458,6 @@ namespace MCS
 		glm::vec3 spawnScale = glm::vec3(10.0f, 6.0f, 10.0f);
 		auto& sword = m_World->CreateEntity({ spawnPos.x, 3.0f, spawnPos.z }, { 0.f, 0.f, 0.f }, spawnScale);
 		auto& swordTransform = m_World->GetComponent<Frosty::ECS::CTransform>(sword);
-		m_World->AddComponent<Frosty::ECS::CPhysics>(sword, Frosty::AssetManager::GetBoundingBox("pCube1"), swordTransform.Scale);
 
 		float criticalHit = 0;
 		criticalHit = GenerateCriticalHit(weaponComp.CriticalHit, weaponComp.CriticalHitChance + weaponComp.FireCriticalHitChance);
@@ -481,7 +485,6 @@ namespace MCS
 		glm::vec3 spawnScale = glm::vec3(2.0f, 6.0f, 10.0f);
 		auto& sword = m_World->CreateEntity({ spawnPos.x, 3.0f, spawnPos.z }, attackerTransform.Rotation, spawnScale);
 		auto& swordTransform = m_World->GetComponent<Frosty::ECS::CTransform>(sword);
-		m_World->AddComponent<Frosty::ECS::CPhysics>(sword, Frosty::AssetManager::GetBoundingBox("pCube1"), swordTransform.Scale);
 
 		float criticalHit = 0;
 		criticalHit = GenerateCriticalHit(weaponComp.CriticalHit, weaponComp.CriticalHitChance + weaponComp.FireCriticalHitChance);
@@ -836,7 +839,7 @@ namespace MCS
 					{
 						m_Health[i]->MaxHealth = m_Health[i]->MaxPossibleHealth;
 					}
-					m_Health[i]->CurrentHealth += 1;
+					m_Health[i]->CurrentHealth += 4;
 					SetPickUpText(i, "Max Health Increased");
 
 					FY_INFO("Max Health Increased");
