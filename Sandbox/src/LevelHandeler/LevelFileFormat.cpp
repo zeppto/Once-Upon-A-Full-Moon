@@ -340,42 +340,6 @@ namespace MCS
 
 			for (int i = 0; i < heder.NrOfEntitys; i++)
 			{
-				//to Fix my problen
-				//if (i < 735)
-				//{
-				//	fileEntitys.myEntitys.at(i).MyComponents.resize(heder.NrOfComponents);
-				//	for (int j = 0; j < heder.NrOfComponents; j++)
-				//		existingFile.read((char*)& fileEntitys.myEntitys.at(i).MyComponents.at(j).HaveComponent, sizeof(bool));
-				//	for (int j = 0; j < heder.NrOfComponents; j++)
-				//	{
-				//		if (fileEntitys.myEntitys.at(i).MyComponents.at(j).HaveComponent)
-				//		{
-				//
-				//			if (j == 0)
-				//				existingFile.read((char*)& fileEntitys.myEntitys.at(i).myTransform, sizeof(Level_Transform));
-				//			if (j == 1)
-				//				existingFile.read((char*)& fileEntitys.myEntitys.at(i).myMesh, sizeof(Level_Mesh));
-				//			if (j == 2)
-				//				existingFile.read((char*)& fileEntitys.myEntitys.at(i).myMaterial, sizeof(Level_Material));
-				//			if (j == 3)
-				//				existingFile.read((char*)& fileEntitys.myEntitys.at(i).myFollow, sizeof(Level_Follow));
-				//			if (j == 4)
-				//				existingFile.read((char*)& fileEntitys.myEntitys.at(i).myLight, sizeof(Level_Light));
-				//			if (j == 5)
-				//				existingFile.read((char*)& fileEntitys.myEntitys.at(i).myPhysics, sizeof(Level_Physics));
-				//			if (j == 6)
-				//				existingFile.read((char*)& fileEntitys.myEntitys.at(i).myEnemy, sizeof(Level_Enemy));
-				//			if (j == 7)
-				//				existingFile.read((char*)& fileEntitys.myEntitys.at(i).myHealth, sizeof(Level_Health));
-				//			if (j == 8)
-				//				existingFile.read((char*)& fileEntitys.myEntitys.at(i).myHealthBar, sizeof(Level_HealthBar));
-				//			if (j == 9)
-				//				existingFile.read((char*)& fileEntitys.myEntitys.at(i).myParticleSystem, sizeof(Level_ParticleSystem));
-				//			if (j == 10)
-				//				existingFile.read((char*)& fileEntitys.myEntitys.at(i).myLevelExit, sizeof(Level_LevelExit));
-				//		}
-				//	}
-				//}
 
 				fileEntitys.myEntitys.at(i).MyComponents.resize(m_Header.NrOfComponents);
 				for (int j = 0; j < heder.NrOfComponents; j++)
@@ -386,6 +350,7 @@ namespace MCS
 				{
 					//0 = Transform
 					existingFile.read((char*)& fileEntitys.myEntitys.at(i).myTransform, sizeof(Level_Transform));
+
 					glm::mat4 matrix(1.0f);
 					matrix = glm::rotate(matrix, glm::radians((float)rotation), glm::vec3(0, 1, 0));
 					matrix = glm::translate(matrix, fileEntitys.myEntitys.at(i).myTransform.Position);
@@ -704,52 +669,6 @@ namespace MCS
 					}
 				}
 			}
-
-			//to remove "enemys" or chest m.m to control the number and randomize pos
-			//int enteredRoomId = -1;
-			//for (int i = 0; i < m_VisitedRooms.size(); i++)
-			//{
-			//	if (m_VisitedRooms.at(i).myRoomId == roomId)
-			//	{
-			//		enteredRoomId = i;
-			//	}
-			//}
-			//if (enteredRoomId != -1)
-			//{
-			//	for (int i = 0; i < m_VisitedRooms.at(enteredRoomId).removeEnemy.size(); i++)
-			//	{
-			//		if (!m_World->HasComponent<Frosty::ECS::CDestroy>(m_Enemys.at(m_VisitedRooms.at(enteredRoomId).removeEnemy.at(i))))
-			//		{
-			//			m_World->AddComponent<Frosty::ECS::CDestroy>(m_Enemys.at(m_VisitedRooms.at(enteredRoomId).removeEnemy.at(i)));
-			//		}
-			//		std::shared_ptr<Frosty::ECS::Entity> temp = m_Enemys.at(m_VisitedRooms.at(enteredRoomId).removeEnemy.at(i));
-			//		m_Enemys.at(m_VisitedRooms.at(enteredRoomId).removeEnemy.at(i)) = m_Enemys.at(m_Enemys.size() - 1 - i);
-			//		m_Enemys.back() = temp;
-			//	}
-			//}
-			//else
-			//{
-			//	int nrToHave = rand() % 3;
-			//	Level_rememberedEntitys rEntitys;
-			//	rEntitys.myRoomId = roomId;
-			//	//temp nr of 
-			//	if (m_Enemys.size() >= nrToHave)
-			//	{
-			//		for (int i = 0; i < m_Enemys.size() - nrToHave; i++)
-			//		{
-			//			int rnd = rand() % (m_Enemys.size() - i);
-			//			if (!m_World->HasComponent<Frosty::ECS::CDestroy>(m_Enemys.at(rnd)))
-			//			{
-			//				rEntitys.removeEnemy.push_back(rnd);
-			//				m_World->AddComponent<Frosty::ECS::CDestroy>(m_Enemys.at(rnd));
-			//			}
-			//			std::shared_ptr<Frosty::ECS::Entity> temp = m_Enemys.at(rnd);
-			//			m_Enemys.at(rnd) = m_Enemys.at(m_Enemys.size() - 1 - i);
-			//			m_Enemys.back() = temp;
-			//		}
-			//	}
-			//	m_VisitedRooms.push_back(rEntitys);
-			//}
 		}
 		else
 		{
@@ -798,9 +717,6 @@ namespace MCS
 				if (fileEntitys.myEntitys.at(i).MyComponents.at(0).HaveComponent)
 				{
 					existingFile.read((char*)& fileEntitys.myEntitys.at(i).myTransform, sizeof(Level_Transform));
-
-
-
 				}
 
 
@@ -808,33 +724,37 @@ namespace MCS
 				if (fileEntitys.myEntitys.at(i).MyComponents.at(1).HaveComponent)
 				{
 					existingFile.read((char*)& fileEntitys.myEntitys.at(i).myMesh, sizeof(Level_Mesh));
-
-					if (!TestMap.count(fileEntitys.myEntitys.at(i).myMesh.MeshName))
+					if (!fileEntitys.myEntitys.at(i).MyComponents.at(6).HaveComponent &&
+						!fileEntitys.myEntitys.at(i).MyComponents.at(10).HaveComponent &&
+						!fileEntitys.myEntitys.at(i).MyComponents.at(11).HaveComponent &&
+						!fileEntitys.myEntitys.at(i).MyComponents.at(12).HaveComponent)
 					{
-						Frosty::VABatch Temp;
-						//Change to ptr
-						Temp.VertexArrayObj = Frosty::AssetManager::GetMesh(fileEntitys.myEntitys.at(i).myMesh.MeshName);
+						if (!TestMap.count(fileEntitys.myEntitys.at(i).myMesh.MeshName))
+						{
+							Frosty::VABatch Temp;
+							//Change to ptr
+							Temp.VertexArrayObj = Frosty::AssetManager::GetMesh(fileEntitys.myEntitys.at(i).myMesh.MeshName);
 
+							glm::mat4 TempMat(1.0f);
+							glm::vec3 Offset(150.0f, 0.0f, 150.0f);
+							TempMat = glm::translate(TempMat, fileEntitys.myEntitys.at(i).myTransform.Position + Offset);
+							TempMat = glm::rotate(TempMat, glm::radians(fileEntitys.myEntitys.at(i).myTransform.Rotation.y), glm::vec3(0.0f, 1.0f, 0.0f));
+							TempMat = glm::scale(TempMat, fileEntitys.myEntitys.at(i).myTransform.Scale);
+							Temp.Transforms.emplace_back(TempMat);
+							TestMap[fileEntitys.myEntitys.at(i).myMesh.MeshName] = Temp;
+						}
+						else
+						{
 
-						glm::mat4 TempMat(1.0f);
-						glm::vec3 Offset(150.0f, 0.0f, 150.0f);
-						TempMat = glm::translate(TempMat, fileEntitys.myEntitys.at(i).myTransform.Position + Offset);
-						TempMat = glm::rotate(TempMat, glm::radians(fileEntitys.myEntitys.at(i).myTransform.Rotation.y), glm::vec3(0.0f, 1.0f, 0.0f));
-						TempMat = glm::scale(TempMat, fileEntitys.myEntitys.at(i).myTransform.Scale);
-						Temp.Transforms.emplace_back(TempMat);
-						TestMap[fileEntitys.myEntitys.at(i).myMesh.MeshName] = Temp;
-					}
-					else
-					{
+							glm::mat4 TempMat(1.0f);
 
-						glm::mat4 TempMat(1.0f);
+							glm::vec3 Offset(150.0f, 0.0f, 150.0f);
+							TempMat = glm::translate(TempMat, fileEntitys.myEntitys.at(i).myTransform.Position + Offset);
+							TempMat = glm::rotate(TempMat, glm::radians(fileEntitys.myEntitys.at(i).myTransform.Rotation.y), glm::vec3(0.0f, 1.0f, 0.0f));
+							TempMat = glm::scale(TempMat, fileEntitys.myEntitys.at(i).myTransform.Scale);
 
-						glm::vec3 Offset(150.0f, 0.0f, 150.0f);
-						TempMat = glm::translate(TempMat, fileEntitys.myEntitys.at(i).myTransform.Position + Offset);
-						TempMat = glm::rotate(TempMat, glm::radians(fileEntitys.myEntitys.at(i).myTransform.Rotation.y), glm::vec3(0.0f, 1.0f, 0.0f));
-						TempMat = glm::scale(TempMat, fileEntitys.myEntitys.at(i).myTransform.Scale);
-
-						TestMap[fileEntitys.myEntitys.at(i).myMesh.MeshName].Transforms.emplace_back(TempMat);
+							TestMap[fileEntitys.myEntitys.at(i).myMesh.MeshName].Transforms.emplace_back(TempMat);
+						}
 					}
 				}
 
@@ -870,9 +790,9 @@ namespace MCS
 					existingFile.read((char*)& fileEntitys.myEntitys.at(i).myWitchCircle, sizeof(Level_WitchCircle));
 
 				}
+
 			}
 			existingFile.close();
-
 		}
 
 

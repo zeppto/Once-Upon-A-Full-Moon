@@ -65,7 +65,7 @@ namespace Frosty
 			
 			void main()
 			{
-				fsOutCol = vec4( 255, 255, 0.0f, 255 ); 
+				fsOutCol = vec4( 1.0f, 0.0f, 0.0f, 1.0f ); 
 			}
 		)";
 

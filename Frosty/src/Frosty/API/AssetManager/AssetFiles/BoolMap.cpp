@@ -144,7 +144,7 @@ namespace Frosty
 		//Saving the file
 
 		std::FILE* File;
-		File = fopen(filePath.c_str(), "w");
+		File = fopen(filePath.c_str(), "w+");
 
 		if (File != nullptr)
 		{
@@ -163,6 +163,8 @@ namespace Frosty
 			}
 			returnValue = true;
 		}
+
+
 		fclose(File);
 	}
 		else
@@ -197,6 +199,7 @@ namespace Frosty
 		
 		if (File != nullptr)
 		{
+
 
 			FY_CORE_ASSERT(fread(&m_CoordWidth, sizeof(uint16_t), 1, File), "Could not read Width for Boolmap: {0}", filePath);
 			FY_CORE_ASSERT(fread(&m_CoordHeight, sizeof(uint16_t), 1, File), "Could not read Heigth for Boolmap: {0}", filePath);
