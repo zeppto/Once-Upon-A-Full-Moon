@@ -71,6 +71,7 @@ namespace MCS
 		Frosty::World* m_World{ nullptr };
 
 		bool m_keyPressed{ false };
+
 	};
 }
 #endif // !PLAYER_CONTROLLER_SYSTEM_HPP

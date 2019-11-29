@@ -617,7 +617,7 @@ namespace MCS
 		m_World->AddComponent<Frosty::ECS::CMesh>(projectile, Frosty::AssetManager::GetMesh("player_arrow"));
 		m_World->AddComponent<Frosty::ECS::CMaterial>(projectile, Frosty::AssetManager::GetShader("Texture2D"));
 		m_World->GetComponent<Frosty::ECS::CMaterial>(projectile).DiffuseTexture = Frosty::AssetManager::GetTexture2D("arrow_diffuse");
-		auto& projectilePhysics = m_World->AddComponent<Frosty::ECS::CPhysics>(projectile, Frosty::AssetManager::GetBoundingBox("player_arrow"),projectileTransform.Scale, weaponComp.ProjectileSpeed);
+		auto& projectilePhysics = m_World->AddComponent<Frosty::ECS::CPhysics>(projectile, Frosty::AssetManager::GetBoundingBox("player_arrow"), projectileTransform.Scale, weaponComp.ProjectileSpeed);
 		projectilePhysics.Direction = direction;
 
 		float criticalHit = 0;
@@ -935,7 +935,7 @@ namespace MCS
 				ResetAllHUDWeaponInfo(i);
 
 				auto& playerWeapon = m_World->GetComponent<Frosty::ECS::CWeapon>(m_Player[i]->Weapon->EntityPtr);
-				
+
 				if (playerWeapon.Type == Frosty::ECS::CWeapon::WeaponType::Sword)
 				{
 					if (playerWeapon.Level == 1)
@@ -950,7 +950,7 @@ namespace MCS
 					HUD.Layout.sprites.at(3).SetImage("attackMelee2");
 					HUD.Layout.sprites.at(4).SetImage("attackMelee3");
 				}
-				else if(playerWeapon.Type == Frosty::ECS::CWeapon::WeaponType::Bow)
+				else if (playerWeapon.Type == Frosty::ECS::CWeapon::WeaponType::Bow)
 				{
 					if (playerWeapon.Level == 1)
 						SetPickUpText(i, "Picked Up Bow Level 1");
@@ -964,35 +964,8 @@ namespace MCS
 					HUD.Layout.sprites.at(3).SetImage("attackRanged2");
 					HUD.Layout.sprites.at(4).SetImage("attackRanged3");
 				}
-				
-				//if (loot.Weapon == Frosty::ECS::CLootable::WeaponType::Sword1 || loot.Weapon == Frosty::ECS::CLootable::WeaponType::Sword2 || loot.Weapon == Frosty::ECS::CLootable::WeaponType::Sword3)
-				//{
-				//	if (loot.Weapon == Frosty::ECS::CLootable::WeaponType::Sword1)
-				//		SetPickUpText(i, "Picked Up Sword Level 1");
-				//	else if (loot.Weapon == Frosty::ECS::CLootable::WeaponType::Sword2)
-				//		SetPickUpText(i, "Picked Up Sword Level 2");
-				//	else if (loot.Weapon == Frosty::ECS::CLootable::WeaponType::Sword3)
-				//		SetPickUpText(i, "Picked Up Sword Level 3");
-				//
-				//	HUD.Layout.sprites.at(1).SetImage("attackMelee");
-				//	HUD.Layout.sprites.at(2).SetImage("attackMelee1");
-				//	HUD.Layout.sprites.at(3).SetImage("attackMelee2");
-				//	HUD.Layout.sprites.at(4).SetImage("attackMelee3");
-				//}
-				//else
-				//{
-				//	if (loot.Weapon == Frosty::ECS::CLootable::WeaponType::Bow1)
-				//		SetPickUpText(i, "Picked Up Bow Level 1");
-				//	else if (loot.Weapon == Frosty::ECS::CLootable::WeaponType::Bow2)
-				//		SetPickUpText(i, "Picked Up Bow Level 2");
-				//	else if (loot.Weapon == Frosty::ECS::CLootable::WeaponType::Bow3)
-				//		SetPickUpText(i, "Picked Up Bow Level 3");
-				//
-				//	HUD.Layout.sprites.at(1).SetImage("attackRanged");
-				//	HUD.Layout.sprites.at(2).SetImage("attackRanged1");
-				//	HUD.Layout.sprites.at(3).SetImage("attackRanged2");
-				//	HUD.Layout.sprites.at(4).SetImage("attackRanged3");
-				//}
+
+
 			}
 		}
 	}
@@ -1004,6 +977,9 @@ namespace MCS
 		// If player weapon is NOT fully upgraded --> proceed
 		if (!weaponComp.IsFullyUpgraded)
 		{
+			auto& HUD = m_World->GetComponent<Frosty::ECS::CGUI>(m_Transform[p_Total - 1]->EntityPtr);
+
+
 			// Each element is represented by a number 0-3 (Fire, Earth, Wind, Water)
 			std::vector<int> elements;
 			elements.reserve(4);
@@ -1024,20 +1000,54 @@ namespace MCS
 			switch (elements[randomElement])
 			{
 			case 0:
-				if (weaponComp.FireCriticalHitChance == 0.f)	weaponComp.FireCriticalHitChance += 0.1f;
+				if (weaponComp.FireCriticalHitChance == 0.f)
+				{
+					weaponComp.FireCriticalHitChance += 0.1f;
+					HUD.Layout.sprites.at(6).SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+					HUD.Layout.sprites.at(6).SetTranslateSprite(glm::vec2(960 / 1.5f, (540 / 1.5f) + 200));
+					HUD.Layout.sprites.at(6).SetScaleSprite(glm::vec2(1.5, 1.5));
+					m_Player[p_Total - 1]->ElementDisplayTimer = Frosty::Time::CurrentTime();
+					SetPickUpText(p_Total - 1, "Fire");
+				}
 				break;
 			case 1:
-				if (weaponComp.EarthDamage == 0.f)	weaponComp.EarthDamage += 1.f;
+				if (weaponComp.EarthDamage == 0.f)
+				{
+					weaponComp.EarthDamage += 1.f;
+					HUD.Layout.sprites.at(5).SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+					HUD.Layout.sprites.at(5).SetTranslateSprite(glm::vec2(960 / 1.5f, (540 / 1.5f) + 200));
+					HUD.Layout.sprites.at(5).SetScaleSprite(glm::vec2(1.5, 1.5));
+					m_Player[p_Total - 1]->ElementDisplayTimer = Frosty::Time::CurrentTime();
+					SetPickUpText(p_Total - 1, "Earth");
+				}
 				break;
 			case 2:
-				if (weaponComp.WindSpeed == 0.f)	weaponComp.WindSpeed += 0.4f;
+				if (weaponComp.WindSpeed == 0.f)
+				{
+					weaponComp.WindSpeed += 0.4f;
+					HUD.Layout.sprites.at(8).SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+					HUD.Layout.sprites.at(8).SetTranslateSprite(glm::vec2(960 / 1.5f, (540 / 1.5f) + 200));
+					HUD.Layout.sprites.at(8).SetScaleSprite(glm::vec2(1.5, 1.5));
+					m_Player[p_Total - 1]->ElementDisplayTimer = Frosty::Time::CurrentTime();
+					SetPickUpText(p_Total - 1, "Wind");
+				}
 				break;
 			case 3:
-				if (weaponComp.WaterHealing == 0)	weaponComp.WaterHealing += 1;
+				if (weaponComp.WaterHealing == 0)
+				{
+					weaponComp.WaterHealing += 1;
+					HUD.Layout.sprites.at(7).SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+					HUD.Layout.sprites.at(7).SetTranslateSprite(glm::vec2(960 / 1.5f, (540 / 1.5f) + 200));
+					HUD.Layout.sprites.at(7).SetScaleSprite(glm::vec2(1.5, 1.5));
+					m_Player[p_Total - 1]->ElementDisplayTimer = Frosty::Time::CurrentTime();
+					SetPickUpText(p_Total - 1, "Water");
+				}
 				break;
 			default:
 				break;
 			}
+
+			m_Player[p_Total - 1]->ElementMoveTimer = Frosty::Time::CurrentTime();
 
 			auto& inventoryComp = m_World->GetComponent<Frosty::ECS::CInventory>(m_Player[p_Total - 1]->EntityPtr);
 			inventoryComp.CurrentWolfsbane--;
@@ -1045,6 +1055,10 @@ namespace MCS
 			// If all four elements are upgraded --> weapon becomes fully upgraded
 			if (weaponComp.FireCriticalHitChance != 0.f && weaponComp.EarthDamage != 0.f && weaponComp.WindSpeed != 0.f && weaponComp.WaterHealing != 0)
 				weaponComp.IsFullyUpgraded = true;
+
+
+
+
 		}
 	}
 
@@ -1088,7 +1102,7 @@ namespace MCS
 		{
 			// Swap loot type in lootWeapon depending on playerWeapon
 			SwapLootType(playerWeapon, lootWeapon);
-			
+
 			auto& playerWeaponComp = m_World->GetComponent<Frosty::ECS::CWeapon>(playerWeapon);
 			auto& lootWeaponComp = m_World->GetComponent<Frosty::ECS::CWeapon>(lootWeapon);
 
@@ -1111,7 +1125,7 @@ namespace MCS
 			int water = playerWeaponComp.WaterHealing;
 			bool upgraded = playerWeaponComp.IsFullyUpgraded;
 			float projectileSpeed = playerWeaponComp.ProjectileSpeed;
-			
+
 			playerWeaponComp.Type = lootWeaponComp.Type;
 			playerWeaponComp.Level = lootWeaponComp.Level;
 			playerWeaponComp.Speciality = lootWeaponComp.Speciality;
@@ -1175,7 +1189,7 @@ namespace MCS
 			if ((m_World->GetComponent<Frosty::ECS::CMesh>(playerWeapon)) != (m_World->GetComponent<Frosty::ECS::CMesh>(lootWeapon)))
 			{
 				//Transform must be assigned since parentMatrix(Player) being applied to is the only thing keeping the held weapon from origo.
-				Frosty::ECS::CTransform tempTransform; 
+				Frosty::ECS::CTransform tempTransform;
 				tempTransform = m_World->GetComponent<Frosty::ECS::CTransform>(lootWeapon);
 				auto& playerWeaponComp = m_World->GetComponent<Frosty::ECS::CMesh>(playerWeapon);
 				auto& lootWeaponComp = m_World->GetComponent<Frosty::ECS::CMesh>(lootWeapon);
@@ -1302,6 +1316,22 @@ namespace MCS
 		if (m_World->HasComponent<Frosty::ECS::CGUI>(m_Transform[index]->EntityPtr))
 		{
 			auto& HUD = m_World->GetComponent<Frosty::ECS::CGUI>(m_Transform[index]->EntityPtr);
+
+			if (Frosty::InputManager::IsKeyPressed(FY_KEY_P))
+			{
+				auto& weaponComp = (m_World->GetComponent<Frosty::ECS::CWeapon>(m_Player[index]->Weapon->EntityPtr));
+				weaponComp.FireCriticalHitChance += 0.1f;
+				HUD.Layout.sprites.at(6).SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+				HUD.Layout.sprites.at(6).SetTranslateSprite(glm::vec2(960 / 1.5f, (540 / 1.5f) + 200));
+				HUD.Layout.sprites.at(6).SetScaleSprite(glm::vec2(1.5, 1.5));
+				m_Player[index]->ElementDisplayTimer = Frosty::Time::CurrentTime();
+
+				SetPickUpText(index, "tjena");
+
+
+			}
+
+
 			//Items
 			HUD.Layout.texts.at(0).SetText(std::string(std::to_string(m_Inventory[index]->CurrentHealingPotions) + "/" + std::string(std::to_string(m_Inventory[index]->MaxHealingPotions))));
 			HUD.Layout.texts.at(1).SetText(std::string(std::to_string(m_Inventory[index]->CurrentSpeedPotions) + "/" + std::string(std::to_string(m_Inventory[index]->MaxSpeedBoots))));
@@ -1429,10 +1459,9 @@ namespace MCS
 					HUD.Layout.sprites.at(healthSpriteID).SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
 					healthSpriteID++;
 				}
-
 			}
 
-				//Pickup Text
+			//Pickup Text
 			if (Frosty::Time::CurrentTime() - m_Player[index]->PickUpTextTimer >= m_Player[index]->PickUpTextTime)
 			{
 				HUD.Layout.texts.at(6).SetText("");
@@ -1459,14 +1488,12 @@ namespace MCS
 				{
 					HUD.Layout.texts.at(7).SetText(std::string(""));
 					HUD.Layout.sprites.at(4).SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
-
 				}
 			}
 			else
 			{
 				HUD.Layout.texts.at(14).SetText(std::string(""));
 				HUD.Layout.sprites.at(4).SetColorSprite(glm::vec4(0.1f, 0.1f, 0.1f, 0.50f));
-
 			}
 
 			if (weapon->Level >= 2)
@@ -1483,14 +1510,11 @@ namespace MCS
 					int cooldown2 = (int)((cooldown - cooldown1) * 10);
 					HUD.Layout.texts.at(8).SetText(std::string(std::to_string(cooldown1) + "." + std::to_string(cooldown2)));
 					HUD.Layout.sprites.at(3).SetColorSprite(glm::vec4(0.1f, 0.1f, 0.1f, 0.90f));
-
-
 				}
 				else
 				{
 					HUD.Layout.texts.at(8).SetText(std::string(""));
 					HUD.Layout.sprites.at(3).SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
-
 				}
 			}
 			else
@@ -1514,22 +1538,17 @@ namespace MCS
 					int cooldown2 = (int)((cooldown - cooldown1) * 10);
 					HUD.Layout.texts.at(9).SetText(std::string(std::to_string(cooldown1) + "." + std::to_string(cooldown2)));
 					HUD.Layout.sprites.at(2).SetColorSprite(glm::vec4(0.1f, 0.1f, 0.1f, 0.90f));
-
-
 				}
 				else
 				{
 					HUD.Layout.texts.at(9).SetText(std::string(""));
 					HUD.Layout.sprites.at(2).SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
-
 				}
-
 			}
 			else
 			{
 				HUD.Layout.texts.at(16).SetText(std::string(""));
 				HUD.Layout.sprites.at(2).SetColorSprite(glm::vec4(0.1f, 0.1f, 0.1f, 0.50f));
-
 			}
 
 
@@ -1636,10 +1655,42 @@ namespace MCS
 
 			//Elemental
 
+			if (Frosty::Time::CurrentTime() - m_Player[index]->ElementDisplayTimer < m_Player[index]->ElementDisplayTime)
+			{
+				m_Player[index]->ElementMoveTimer = Frosty::Time::CurrentTime();
+				
+			}
+
 			//Earth
 			if (m_Player[index]->Weapon->EarthDamage > 0.0f)
 			{
-				HUD.Layout.sprites.at(5).SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+
+				float timeLeft = Frosty::Time::CurrentTime() - m_Player[index]->ElementMoveTimer;
+				if (timeLeft <= m_Player[index]->ElementMoveTime && timeLeft >= 0)
+				{
+					float percentage = (Frosty::Time::CurrentTime() - m_Player[index]->ElementMoveTimer) / m_Player[index]->ElementMoveTime;
+
+
+					glm::vec2 posA{ 960 / 1.5f, (540 / 1.5f) + 100 };
+					glm::vec2 posB{ 30,30 };
+					glm::vec2 posDif = posA - posB;
+
+					glm::vec2 scaleA{ 1.5, 1.5 };
+					glm::vec2 scaleB{ 0.5, 0.5 };
+					glm::vec2 scaleDif = scaleA - scaleB;
+
+					HUD.Layout.sprites.at(5).SetTranslateSprite(posA - posDif * percentage);
+					HUD.Layout.sprites.at(5).SetScaleSprite(scaleA - scaleDif * percentage);
+
+
+				}
+				else
+				{
+					HUD.Layout.sprites.at(5).SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+					HUD.Layout.sprites.at(5).SetTranslateSprite(glm::vec2(30, 30));
+					HUD.Layout.sprites.at(5).SetScaleSprite(glm::vec2(0.5, 0.5));
+				}
+
 			}
 			else
 			{
@@ -1648,7 +1699,31 @@ namespace MCS
 			//Fire
 			if (m_Player[index]->Weapon->FireCriticalHitChance > 0.0f)
 			{
-				HUD.Layout.sprites.at(6).SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+				float timeLeft = Frosty::Time::CurrentTime() - m_Player[index]->ElementMoveTimer;
+				if (timeLeft <= m_Player[index]->ElementMoveTime && timeLeft >= 0)
+				{
+					float percentage = (Frosty::Time::CurrentTime() - m_Player[index]->ElementMoveTimer) / m_Player[index]->ElementMoveTime;
+
+
+					glm::vec2 posA{ 960 / 1.5f, (540 / 1.5f) + 100 };
+					glm::vec2 posB{ 50,30 };
+					glm::vec2 posDif = posA - posB;
+
+					glm::vec2 scaleA{ 1.5, 1.5 };
+					glm::vec2 scaleB{ 0.5, 0.5 };
+					glm::vec2 scaleDif = scaleA - scaleB;
+
+					HUD.Layout.sprites.at(6).SetTranslateSprite(posA - posDif * percentage);
+					HUD.Layout.sprites.at(6).SetScaleSprite(scaleA - scaleDif * percentage);
+
+
+				}
+				else
+				{
+					HUD.Layout.sprites.at(6).SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+					HUD.Layout.sprites.at(6).SetTranslateSprite(glm::vec2(50, 30));
+					HUD.Layout.sprites.at(6).SetScaleSprite(glm::vec2(0.5, 0.5));
+				}
 			}
 			else
 			{
@@ -1657,7 +1732,31 @@ namespace MCS
 			//Water
 			if (m_Player[index]->Weapon->WaterHealing > 0.0f)
 			{
-				HUD.Layout.sprites.at(7).SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+				float timeLeft = Frosty::Time::CurrentTime() - m_Player[index]->ElementMoveTimer;
+				if (timeLeft <= m_Player[index]->ElementMoveTime && timeLeft >= 0)
+				{
+					float percentage = (Frosty::Time::CurrentTime() - m_Player[index]->ElementMoveTimer) / m_Player[index]->ElementMoveTime;
+
+
+					glm::vec2 posA{ 960 / 1.5f, (540 / 1.5f) + 100 };
+					glm::vec2 posB{ 70,30 };
+					glm::vec2 posDif = posA - posB;
+
+					glm::vec2 scaleA{ 1.5, 1.5 };
+					glm::vec2 scaleB{ 0.5, 0.5 };
+					glm::vec2 scaleDif = scaleA - scaleB;
+
+					HUD.Layout.sprites.at(7).SetTranslateSprite(posA - posDif * percentage);
+					HUD.Layout.sprites.at(7).SetScaleSprite(scaleA - scaleDif * percentage);
+
+
+				}
+				else
+				{
+					HUD.Layout.sprites.at(7).SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+					HUD.Layout.sprites.at(7).SetTranslateSprite(glm::vec2(70, 30));
+					HUD.Layout.sprites.at(7).SetScaleSprite(glm::vec2(0.5, 0.5));
+				}
 			}
 			else
 			{
@@ -1666,7 +1765,31 @@ namespace MCS
 			//Wind
 			if (m_Player[index]->Weapon->WindSpeed > 0.0f)
 			{
-				HUD.Layout.sprites.at(8).SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+				float timeLeft = Frosty::Time::CurrentTime() - m_Player[index]->ElementMoveTimer;
+				if (timeLeft <= m_Player[index]->ElementMoveTime && timeLeft >= 0)
+				{
+					float percentage = (Frosty::Time::CurrentTime() - m_Player[index]->ElementMoveTimer) / m_Player[index]->ElementMoveTime;
+
+
+					glm::vec2 posA{ 960 / 1.5f, (540 / 1.5f) + 100 };
+					glm::vec2 posB{ 90,30 };
+					glm::vec2 posDif = posA - posB;
+
+					glm::vec2 scaleA{ 1.5, 1.5 };
+					glm::vec2 scaleB{ 0.5, 0.5 };
+					glm::vec2 scaleDif = scaleA - scaleB;
+
+					HUD.Layout.sprites.at(8).SetTranslateSprite(posA - posDif * percentage);
+					HUD.Layout.sprites.at(8).SetScaleSprite(scaleA - scaleDif * percentage);
+
+
+				}
+				else
+				{
+					HUD.Layout.sprites.at(8).SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+					HUD.Layout.sprites.at(8).SetTranslateSprite(glm::vec2(90, 30));
+					HUD.Layout.sprites.at(8).SetScaleSprite(glm::vec2(0.5, 0.5));
+				}
 			}
 			else
 			{
@@ -1677,18 +1800,18 @@ namespace MCS
 			float timeLeft = Frosty::Time::CurrentTime() - m_Player[index]->DamageEffectTimer;
 			if (timeLeft <= m_Player[index]->DamageEffectTime && timeLeft >= 0)
 			{
-				float percentage = m_Player[index]->DamageEffectTime / (Frosty::Time::CurrentTime() - m_Player[index]->DamageEffectTimer);
+				float percentage = m_Player[index]->ElementMoveTime / (Frosty::Time::CurrentTime() - m_Player[index]->ElementMoveTimer);
 				percentage /= 100;
 
 				if (m_Health[index]->CurrentHealth <= 4 && percentage <= 0.75)
 				{
 					percentage = 0.75;
 				}
-				HUD.Layout.sprites.at(0).SetColorSprite(glm::vec4(1.0f* percentage, 0.0f, 0.0f, 0.75f));
+				HUD.Layout.sprites.at(0).SetColorSprite(glm::vec4(1.0f * percentage, 0.0f, 0.0f, 0.75f));
 
-				
+
 			}
-			else if(m_Health[index]->CurrentHealth <= 4)
+			else if (m_Health[index]->CurrentHealth <= 4)
 			{
 				HUD.Layout.sprites.at(0).SetColorSprite(glm::vec4(0.75f, 0.0f, 0.0f, 0.75f));
 			}

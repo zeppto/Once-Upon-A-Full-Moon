@@ -713,11 +713,20 @@ namespace Frosty
 			int DropBaitKey{ FY_KEY_Q };
 
 			int Score{ 0 };
+			
 			float PickUpTextTime{ 2.0f };
 			float PickUpTextTimer{ Frosty::Time::CurrentTime() };
 
 			float DamageEffectTime{ 2.0f };
 			float DamageEffectTimer{ Frosty::Time::CurrentTime() };
+
+			float ElementMoveTime{ 1.0f };
+			float ElementMoveTimer{ Frosty::Time::CurrentTime() };
+
+			float ElementDisplayTime{ 2.0f };
+			float ElementDisplayTimer{ Frosty::Time::CurrentTime() };
+			
+			
 
 			CPlayer() = default;
 			CPlayer(CWeapon* weapon) : Weapon(weapon) { }
@@ -804,7 +813,7 @@ namespace Frosty
 
 			// WOLFSBANE - poisonous flower, used as currency
 			int MaxWolfsbaneAmount{ 10 };
-			int CurrentWolfsbane{ 0 };
+			int CurrentWolfsbane{ 10 };
 
 			CInventory() = default;
 			CInventory(const CInventory& org) { FY_CORE_ASSERT(false, "Copy constructor in CInventory called."); }
@@ -1072,6 +1081,7 @@ namespace Frosty
 			std::shared_ptr<Shader> SpriteShader;
 
 			UILayout Layout;
+
 
 			CGUI() = default;
 			CGUI(UILayout& layout) : Layout(layout) {  }
