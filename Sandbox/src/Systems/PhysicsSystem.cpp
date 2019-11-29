@@ -16,7 +16,7 @@ namespace MCS
 		p_Signature.set(Frosty::ECS::getComponentTypeID<Frosty::ECS::CTransform>(), true);
 		p_Signature.set(Frosty::ECS::getComponentTypeID<Frosty::ECS::CPhysics>(), true);
 
-		m_Test_BoolMap = Frosty::AssetManager::GetBoolMap("crossroad_chests_IsStatick");
+		//m_Test_BoolMap = Frosty::AssetManager::GetBoolMap("crossroad_chests_IsStatick");
 
 		int o = 0;
 	}

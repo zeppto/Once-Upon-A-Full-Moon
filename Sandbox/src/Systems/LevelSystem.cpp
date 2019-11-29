@@ -97,7 +97,7 @@ namespace MCS
 
 			m_ThisRoomName = "deadend_chests_IsStatick_t_p_e_r_h";
 			m_Start = false;
-			//m_LevelFileFormat.LoadBoolMap("deadend_chests_IsStatick_t_p_e_r_h");
+			m_LevelFileFormat.LoadBoolMap("deadend_chests_IsStatick_t_p_e_r_h");
 		}
 	}
 

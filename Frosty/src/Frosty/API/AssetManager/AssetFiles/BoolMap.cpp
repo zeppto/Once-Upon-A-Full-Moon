@@ -122,18 +122,17 @@ namespace Frosty
 		std::string filePath;
 		if (m_MetaData.FullFilePath == "")
 		{
-			m_MetaData.FileExtentionName = ".bmap";
+			m_MetaData.FileExtentionName = "bmap";
 			if (FileName != "")
 			{
-				filePath = FileName + m_MetaData.FileExtentionName;
-				m_MetaData.FileName = filePath;
+				filePath = FileName;
 			}
 			else
 			{
 				filePath = "BoolMap_" + std::to_string(s_SavedMapCount++);
-				m_MetaData.FileName = filePath;
 			}
-			filePath += m_MetaData.FileExtentionName;
+			m_MetaData.FileName = filePath;
+			filePath += "." + m_MetaData.FileExtentionName;
 		}
 		else
 		{
@@ -149,6 +148,7 @@ namespace Frosty
 
 		if (File != nullptr)
 		{
+
 
 
 			FY_CORE_ASSERT(fwrite(&m_CoordWidth, sizeof(uint16_t), 1, File),"Could not write Width for Boolmap: {0}",filePath);
@@ -178,40 +178,64 @@ namespace Frosty
 
 		bool returnValue = false;
 
+
+
+		std::string filePath;
+
+		if (FilePath != "")
+		{
+			filePath = FilePath;
+		}
+		else
+		{
+			filePath = m_MetaData.FullFilePath;
+		}
+
 		std::FILE* File;
-		//File.open(FilePath + "/" + FileName);
 
-	//	std::string filePath = FilePath;
-
-
-
-	//	int bitSize = std::ceil((texSize / 64.0f));
-		std::shared_ptr<uint64_t[]> bitMap(FY_NEW uint64_t[m_BitMapCount]);
-
-		File = fopen(FilePath.c_str(), "r");
-		size_t Test = fread(&bitMap[0], sizeof(uint64_t), m_BitMapCount, File);
-
-		if (Test == m_BitMapCount)
+		File = fopen(filePath.c_str(), "r");
+		
+		if (File != nullptr)
 		{
-			returnValue = true;
-		}
 
-		fclose(File);
-		uint8_t status = remove(FilePath.c_str());
+			FY_CORE_ASSERT(fread(&m_CoordWidth, sizeof(uint16_t), 1, File), "Could not read Width for Boolmap: {0}", filePath);
+			FY_CORE_ASSERT(fread(&m_CoordHeight, sizeof(uint16_t), 1, File), "Could not read Heigth for Boolmap: {0}", filePath);
+			FY_CORE_ASSERT(fread(&m_PixCoordRatio, sizeof(uint8_t), 1, File), "Could not read Pix/Coord ratio for Boolmap: {0}", filePath);
+			FY_CORE_ASSERT(fread(&m_BitMapCount, sizeof(uint32_t), 1, File), "Could not read BitmapCount for Boolmap: {0}", filePath);
 
 
-		for (uint32_t i = 0; i < m_BitMapCount; i++)
-		{
-			if (bitMap[i] != m_BitMap[i])
+
+			//	int bitSize = std::ceil((texSize / 64.0f));
+
+
+			std::shared_ptr<uint64_t[]> bitMap(FY_NEW uint64_t[m_BitMapCount]);
+
+			//Testing
+			//size_t testCount = fread(&bitMap[0], sizeof(uint64_t), m_BitMapCount, File);
+			size_t testCount = fread(&m_BitMap[0], sizeof(uint64_t), m_BitMapCount, File);
+			if (testCount != m_BitMapCount)
 			{
-				int nein = 0;
+				FY_CORE_ASSERT(0, "Could not load Boolmap: {0}", filePath);
 			}
-		}
+			else
+			{
+				returnValue = true;
+			}
 
+
+			//Testing
+			//for (uint32_t i = 0; i < m_BitMapCount; i++)
+			//{
+			//	if (bitMap[i] != m_BitMap[i])
+			//	{
+			//		int nein = 0;
+			//	}
+			//}
+
+		}
+		fclose(File);
 
 		return returnValue;
-
-		return false;
 	}
 }
 
