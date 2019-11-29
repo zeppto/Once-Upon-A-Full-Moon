@@ -83,10 +83,11 @@ namespace Frosty
 				m_World->BeginScene();
 			}
 			//Simon move this
+			//NO :P
 			glm::ivec4 viewP(m_Window->GetViewport());
 			glViewport(viewP.x, viewP.y, viewP.z, viewP.w);
-			Renderer::RenderScene();
 
+			Renderer::RenderScene();
 			m_World->Render();
 
 			Renderer::EndScene();

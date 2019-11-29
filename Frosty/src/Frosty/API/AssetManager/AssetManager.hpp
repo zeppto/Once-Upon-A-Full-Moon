@@ -56,6 +56,12 @@ namespace Frosty
 		int joints[4] = { 0 };
 	};
 
+	struct Triangle
+	{
+		std::vector<Luna::Index> indices;
+
+	};
+
 	class AssetManager
 	{
 	public:		//Variables
@@ -88,6 +94,8 @@ namespace Frosty
 
 		friend class Application;
 		using directory_iterator = std::filesystem::directory_iterator;
+
+		static std::vector<Luna::Vertex>* s_CurrentVertexArray;
 
 	public:		//Functions
 		static AssetManager* Get();
@@ -140,6 +148,7 @@ namespace Frosty
 		static std::vector<std::string> GetTexturesNames();
 		static std::vector<std::string> GetBoundingBoxNames();
 
+
 	private:	//Functions
 
 		inline static void Delete() { if (s_Instance != nullptr) { delete s_Instance; } }
@@ -175,7 +184,7 @@ namespace Frosty
 
 
 		// Meshes
-		static bool AddMesh(const FileMetaData& MetaData,const std::vector<Luna::Vertex>& vertices, const std::vector<Luna::Index>& indices);
+		static bool AddMesh(const FileMetaData& MetaData, std::vector<Luna::Vertex>& vertices, std::vector<Luna::Index>& indices);
 		//Animation is TEMPORARY!
 		static bool AddAnimatedMesh(const FileMetaData& MetaData, const std::vector<AnimVert>& vertices, const std::vector<Luna::Index>& indices, Luna::Animation& temp);
 
@@ -188,8 +197,10 @@ namespace Frosty
 
 		static std::vector<AnimVert> MakeAnimVerts(Luna::Reader& tmpFile);
 		static bool AddAnimation(Animation& Animation);
-		static bool AddBoundingbox(const FileMetaData& MetaData,const Luna::BoundingBox& Boundinbox);
+		static bool AddBoundingbox(const FileMetaData& MetaData, const Luna::BoundingBox& Boundinbox);
 
+		static void SortIndexArray(std::vector<Luna::Vertex>& vertices, std::vector<Luna::Index>& indices);
+		static int CompareTriangles(const void* a, const void* b); //For qSort
 
 	};
 }
