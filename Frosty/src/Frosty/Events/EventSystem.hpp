@@ -18,9 +18,10 @@ namespace Frosty
 		ArrowHit, Dash, CheckCollision, Collision, BasicAttack, 
 		SpawnItem,
 		PickUpAttempt, PickUp,
+		Reset,
 		BaitPlaced, ExitCurrentLevel, EnterNewRoom,
-		SaveLevel, CreateLevel, OpenLevel, CreatEntity, 
-		LoadBoolMap, InitiateGridMap, ActivateWitchCircle, UpgradeWeapon, PlayAnim, HealAbility, PlayerDamage, DropItem
+		SaveLevel, CreateLevel, OpenLevel, CreatEntity, EnemyDeath, BossSpawned,
+		LoadBoolMap, InitiateGridMap, ActivateWitchCircle, UpgradeWeapon, PlayAnim, HealAbility, PlayerDamage, DropItem, GameOver, Win, Damage
 	};
 
 #define EVENT_TYPE(type) static EventType GetStaticType() { return EventType::##type; }\

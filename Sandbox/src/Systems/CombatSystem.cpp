@@ -25,6 +25,9 @@ namespace MCS
 		case Frosty::EventType::Collision:
 			OnCollisionEvent(static_cast<Frosty::CollisionEvent&>(e));
 			break;
+		case Frosty::EventType::Damage:
+			OnDamageEvent(static_cast<Frosty::DamageEvent&>(e));
+			break;
 		default:
 			break;
 		}
@@ -148,17 +151,31 @@ namespace MCS
 			if (m_World->HasComponent<Frosty::ECS::CPlayer>(it->first))
 			{
 				// Handle player death differently
+				Frosty::EventBus::GetEventBus()->Publish<Frosty::GameoverEvent>(Frosty::GameoverEvent());
 			}
 			else if (m_World->HasComponent<Frosty::ECS::CBoss>(it->first))
 			{
 				// Handle boss death differently
+				Frosty::EventBus::GetEventBus()->Publish<Frosty::WinEvent>(Frosty::WinEvent());
 			}
 			else
 			{     
 				// Basic Enemy
+				auto& enemyComp = m_World->GetComponent<Frosty::ECS::CEnemy>(it->first);
+
 				if (!m_World->HasComponent<Frosty::ECS::CDestroy>(it->first))
 				{
 					m_World->AddComponent<Frosty::ECS::CDestroy>(it->first);
+				}
+				Frosty::EventBus::GetEventBus()->Publish<Frosty::EnemyDeathEvent>(Frosty::EnemyDeathEvent(enemyComp.Weapon->Level * 100));
+				Frosty::EventBus::GetEventBus()->Publish<Frosty::DropItemEvent>(Frosty::DropItemEvent(it->first));
+
+				if (enemyComp.Weapon->EntityPtr != nullptr)
+				{
+					if (!m_World->HasComponent<Frosty::ECS::CDestroy>(enemyComp.Weapon->EntityPtr))
+					{
+						m_World->AddComponent<Frosty::ECS::CDestroy>(enemyComp.Weapon->EntityPtr);
+					}
 				}
 			}
 		}
@@ -167,6 +184,20 @@ namespace MCS
 		if (m_World->GetComponent<Frosty::ECS::CAttack>(entityA).Destroyable && !m_World->HasComponent<Frosty::ECS::CDestroy>(entityA))
 		{
 			m_World->AddComponent<Frosty::ECS::CDestroy>(entityA);
+		}
+	}
+	void CombatSystem::OnDamageEvent(Frosty::DamageEvent& e)
+	{
+		auto& it = p_EntityMap.find(e.GetEntity());
+
+		if (it == p_EntityMap.end()) return;
+
+		m_Health[it->second]->CurrentHealth -= e.GetDamage();
+
+		// Check if the attack killed the target (Maybe move this to another system that handles basic enemy, boss and player death differently)
+		if (m_Health[it->second]->CurrentHealth <= 0)
+		{
+			// Handle player death differently
 		}
 	}
 }

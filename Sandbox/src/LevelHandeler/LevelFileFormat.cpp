@@ -83,14 +83,14 @@ namespace MCS
 			else
 				myComponents.MyComponents.at(2).HaveComponent = false;
 			//Follow
-			if (m_World->HasComponent<Frosty::ECS::CFollow>(entity))
-			{
-				myComponents.MyComponents.at(3).HaveComponent = true;
-				//under construction
-				auto& follow = m_World->GetComponent<Frosty::ECS::CFollow>(entity);
-				myComponents.myFollow.StopDistance = follow.StopDistance;
-			}
-			else
+			//if (m_World->HasComponent<Frosty::ECS::CFollow>(entity))
+			//{
+			//	myComponents.MyComponents.at(3).HaveComponent = true;
+			//	//under construction
+			//	auto& follow = m_World->GetComponent<Frosty::ECS::CFollow>(entity);
+			//	myComponents.myFollow.StopDistance = follow.StopDistance;
+			//}
+			//else
 				myComponents.MyComponents.at(3).HaveComponent = false;
 			//Light
 			if (m_World->HasComponent<Frosty::ECS::CLight>(entity))
@@ -386,6 +386,8 @@ namespace MCS
 					//0 = Transform
 					existingFile.read((char*)& fileEntitys.myEntitys.at(i).myTransform, sizeof(Level_Transform));
 
+
+
 					//temp cross
 					//if (fileEntitys.myEntitys.at(i).myTransform.Scale.x == 270)
 					//{
@@ -411,8 +413,8 @@ namespace MCS
 						if (fileEntitys.myEntitys.at(i).MyComponents.at(10).HaveComponent || !fileEntitys.myEntitys.at(i).MyComponents.at(1).HaveComponent)
 						{
 							float savedX = fileEntitys.myEntitys.at(i).myTransform.Scale.x;
-							fileEntitys.myEntitys.at(i).myTransform.Scale.x = fileEntitys.myEntitys.at(i).myTransform.Scale.z;
-							fileEntitys.myEntitys.at(i).myTransform.Scale.z = savedX;
+							fileEntitys.myEntitys.at(i).myTransform.Scale.x = fileEntitys.myEntitys.at(i).myTransform.Scale.z *1.25;
+							fileEntitys.myEntitys.at(i).myTransform.Scale.z = savedX * 1.25;
 						}
 						else
 						{
@@ -422,6 +424,13 @@ namespace MCS
 					else if (rotation == 180)
 					{
 						tempRotation.y += rotation;
+					}
+
+
+					if (fileEntitys.myEntitys.at(i).MyComponents.at(10).HaveComponent)
+					{
+						fileEntitys.myEntitys.at(i).myTransform.Scale.x *= 1.25;
+							fileEntitys.myEntitys.at(i).myTransform.Scale.z *= 1.25;
 					}
 
 					auto& entity = m_World->CreateEntity(glm::vec3(matrix[3].x, matrix[3].y, matrix[3].z), tempRotation, fileEntitys.myEntitys.at(i).myTransform.Scale, fileEntitys.myEntitys.at(i).myTransform.IsStatic);
@@ -441,8 +450,16 @@ namespace MCS
 						//}
 						//for in game
 						//if(!fileEntitys.myEntitys.at(i).MyComponents.at(10).HaveComponent)
-						m_World->AddComponent<Frosty::ECS::CMesh>(entity,
-							Frosty::AssetManager::GetMesh(fileEntitys.myEntitys.at(i).myMesh.MeshName));
+
+
+						if (!fileEntitys.myEntitys.at(i).MyComponents.at(10).HaveComponent)
+						{
+
+							m_World->AddComponent<Frosty::ECS::CMesh>(entity,
+								Frosty::AssetManager::GetMesh(fileEntitys.myEntitys.at(i).myMesh.MeshName));
+						}
+
+
 
 						//std::string meshName = fileEntitys.myEntitys.at(i).myMesh.MeshName;
 						//if (meshName.find("hexCircle") != std::string::npos)
@@ -518,10 +535,10 @@ namespace MCS
 					if (fileEntitys.myEntitys.at(i).MyComponents.at(3).HaveComponent)
 					{
 						existingFile.read((char*)& fileEntitys.myEntitys.at(i).myFollow, sizeof(Level_Follow));
-						auto& follow = m_World->AddComponent<Frosty::ECS::CFollow>(entity, playerTransform);
+						//auto& follow = m_World->AddComponent<Frosty::ECS::CFollow>(entity, playerTransform);
 						//For edeting old level
 						//auto& follow = m_World->AddComponent<Frosty::ECS::CFollow>(entity);// , playerTransform);
-						follow.StopDistance = fileEntitys.myEntitys.at(i).myFollow.StopDistance;
+						//follow.StopDistance = fileEntitys.myEntitys.at(i).myFollow.StopDistance;
 						//under construction
 					}
 					//4 = Light
@@ -537,21 +554,18 @@ namespace MCS
 					//5 = Physics
 					if (fileEntitys.myEntitys.at(i).MyComponents.at(5).HaveComponent)
 					{
-						if (!fileEntitys.myEntitys.at(i).MyComponents.at(1).HaveComponent)
-						{
-							int t = 0;
-						}
 						existingFile.read((char*)& fileEntitys.myEntitys.at(i).myPhysics, sizeof(Level_Physics));
+
 						physCounter++;
-						auto& physics = m_World->AddComponent<Frosty::ECS::CPhysics>(entity);
-						if (fileEntitys.myEntitys.at(i).MyComponents.at(1).HaveComponent)
-							physics.BoundingBox = Frosty::AssetManager::GetBoundingBox(fileEntitys.myEntitys.at(i).myMesh.MeshName);
-						else
-							physics.BoundingBox = Frosty::AssetManager::GetBoundingBox("pCube1");
+						auto& physics = m_World->AddComponent<Frosty::ECS::CPhysics>(entity,
+							Frosty::AssetManager::GetBoundingBox(fileEntitys.myEntitys.at(i).MyComponents.at(1).HaveComponent ?
+								fileEntitys.myEntitys.at(i).myMesh.MeshName : "pCube1"), newlyTreansform.Scale);
 						physics.Direction = fileEntitys.myEntitys.at(i).myPhysics.Direction;
 						physics.MaxSpeed = fileEntitys.myEntitys.at(i).myPhysics.MaxSpeed;
 						physics.Speed = fileEntitys.myEntitys.at(i).myPhysics.Speed;
 						physics.SpeedMultiplier = fileEntitys.myEntitys.at(i).myPhysics.SpeedMultiplier;
+
+
 						//physics.Velocity = fileEntitys.myEntitys.at(i).myPhysics.Velocity;
 					}
 					//6 = Enemy
@@ -621,8 +635,10 @@ namespace MCS
 								//weaponMat.DiffuseTexture = Frosty::AssetManager::GetTexture2D("bow_lvl1_diffuse");
 								//weaponMat.NormalTexture = Frosty::AssetManager::GetTexture2D("bow_normal");
 							}
-							if(isMelle == 1)
+							if (isMelle == 1)
+							{
 								loadedWeapon = weaponHandler->GetWeaponByTypeAndLevel(Frosty::Weapon::WeaponType::Sword, lowLevel, highLevel);
+							}
 
 							//if (weaponComp.Type == Frosty::ECS::CWeapon::WeaponType::Bow)
 							//{
@@ -677,19 +693,19 @@ namespace MCS
 						health.CurrentHealth = fileEntitys.myEntitys.at(i).myHealth.CurrentHealth;
 						health.MaxHealth = fileEntitys.myEntitys.at(i).myHealth.MaxHealth;
 						health.MaxPossibleHealth = fileEntitys.myEntitys.at(i).myHealth.MaxPossibleHealth;
-						if (fileEntitys.myEntitys.at(i).MyComponents.at(6).HaveComponent)
-						{
-							if (m_VisitedRooms.size() < 2)
-							{
-								health.CurrentHealth -= health.CurrentHealth * 0.4;
-								health.MaxHealth -= health.MaxHealth * 0.4;
-							}
-							if (m_VisitedRooms.size() < 4)
-							{
-								health.CurrentHealth -= health.CurrentHealth * 0.2;
-								health.MaxHealth -= health.MaxHealth * 0.2;
-							}
-						}
+						//if (fileEntitys.myEntitys.at(i).MyComponents.at(6).HaveComponent)
+						//{
+						//	if (m_VisitedRooms.size() < 2)
+						//	{
+						//		health.CurrentHealth -= health.CurrentHealth * 0.4;
+						//		health.MaxHealth -= health.MaxHealth * 0.4;
+						//	}
+						//	if (m_VisitedRooms.size() < 4)
+						//	{
+						//		health.CurrentHealth -= health.CurrentHealth * 0.2;
+						//		health.MaxHealth -= health.MaxHealth * 0.2;
+						//	}
+						//}
 
 						if (fileEntitys.myEntitys.at(i).MyComponents.at(12).HaveComponent)
 						{
@@ -747,6 +763,7 @@ namespace MCS
 					{
 						existingFile.read((char*)& fileEntitys.myEntitys.at(i).myLevelExit, sizeof(Level_LevelExit));
 						int newExit = fileEntitys.myEntitys.at(i).myLevelExit.ExitDirection;
+						
 						if (rotation == 270)
 						{
 							if (fileEntitys.myEntitys.at(i).myLevelExit.ExitDirection == 0)
@@ -781,6 +798,7 @@ namespace MCS
 								newExit = 0;
 						}
 						m_World->AddComponent<Frosty::ECS::CLevelExit>(entity, newExit);
+						
 					}
 					//11 = DropItem
 					if (fileEntitys.myEntitys.at(i).MyComponents.at(11).HaveComponent)

@@ -15,6 +15,14 @@ namespace MCS
 	void MapGenerator::generateMap()
 	{
 		glm::ivec2 startPos = glm::ivec2(0);
+		
+		for (int i = 0; i < 30; i++)
+		{
+			for (int j = 0; j < 30; j++)
+			{
+				m_TileMap[i][j] = Room();
+			}
+		}
 
 		//start pos
 		startPos = glm::ivec2(10, 15);

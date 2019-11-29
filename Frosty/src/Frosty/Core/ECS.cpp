@@ -9,7 +9,6 @@ namespace Frosty
 		std::string CMesh::NAME = "Mesh";
 		std::string CCamera::NAME = "Camera";
 		std::string CMaterial::NAME = "Material";
-		std::string CFollow::NAME = "Follow";
 		std::string CLight::NAME = "Light";
 		std::string CPhysics::NAME = "Physics";
 		std::string CWeapon::NAME = "Weapon";

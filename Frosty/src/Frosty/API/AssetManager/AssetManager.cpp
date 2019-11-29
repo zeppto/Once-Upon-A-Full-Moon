@@ -7,12 +7,16 @@
 #include <io.h>
 #include <stdio.h>
 #include <direct.h>
+
+
 namespace Frosty
 {
 
 	bool AssetManager::s_AutoLoad = true;
 	AssetManager* AssetManager::s_Instance = nullptr;
 	uint16_t AssetManager::s_Total_Nr_Assets = 0;
+
+ std::vector<Luna::Vertex>* AssetManager::s_CurrentVertexArray = nullptr;
 
 	std::unordered_map<std::string, Mesh> AssetManager::s_Meshes;
 	std::unordered_map<std::string, Animation> AssetManager::s_Animations;
@@ -45,7 +49,7 @@ namespace Frosty
 
 	AssetManager::~AssetManager()
 	{
-
+		
 	}
 
 	bool AssetManager::LoadFile(const std::string& FullFilePath, const std::string& TagName)
@@ -150,11 +154,13 @@ namespace Frosty
 		ConnectWatchList();
 	}
 
-	bool AssetManager::AddMesh(const FileMetaData& MetaData, const std::vector<Luna::Vertex>& vertices, const std::vector<Luna::Index>& indices)
+	bool AssetManager::AddMesh(const FileMetaData& MetaData,  std::vector<Luna::Vertex>& vertices,  std::vector<Luna::Index>& indices)
 	{
 		bool returnValue = false;
 		if (!MeshLoaded(MetaData.TagName))
 		{
+			SortIndexArray(vertices, indices);
+
 			// Vertex Array
 			s_VertexArrays.emplace(MetaData.TagName, VertexArray::Create());
 
@@ -389,6 +395,84 @@ namespace Frosty
 			FY_CORE_WARN("BoundingBox: {0}, Is already loaded", MetaData.TagName);
 		}
 		return returnValue;
+	}
+
+	void AssetManager::SortIndexArray( std::vector<Luna::Vertex>& vertices,  std::vector<Luna::Index>& indices)
+	{
+		std::vector<Triangle> triangles;
+		int size = indices.size()/3;
+		triangles.resize(size);
+
+		for (int i = 0; i < size; i++)
+		{
+			triangles.at(i).indices.resize(3);
+			triangles.at(i).indices.at(0) = indices.at(i*3);
+			triangles.at(i).indices.at(1) = indices.at(i*3+1);
+			triangles.at(i).indices.at(2) = indices.at(i*3+2);;
+		}
+
+		s_CurrentVertexArray = &vertices;
+
+		std::qsort(&triangles[0], size, sizeof(Triangle), CompareTriangles);
+
+		for (int i = 0; i < size; i++)
+		{
+			indices.at(i*3) = triangles.at(i).indices.at(0);
+			indices.at(i*3+1) = triangles.at(i).indices.at(1);
+			indices.at(i*3+2) = triangles.at(i).indices.at(2);
+		}
+	}
+
+	int AssetManager::CompareTriangles(const void* a, const void* b)
+	{
+		Triangle triangleA = *(Triangle*)a;
+		Triangle triangleB = *(Triangle*)b;
+
+
+		unsigned int indexPosA1 = triangleA.indices.at(0).vertIndex;
+		unsigned int indexPosA2 = triangleA.indices.at(0).vertIndex;
+		unsigned int indexPosA3 = triangleA.indices.at(0).vertIndex;
+
+		float YposA1 = s_CurrentVertexArray->at(indexPosA1).position[1];
+		float YposA2 = s_CurrentVertexArray->at(indexPosA2).position[1];
+		float YposA3 = s_CurrentVertexArray->at(indexPosA2).position[1];
+
+		float YposA = (YposA1 + YposA2 + YposA3);
+
+		unsigned int indexPosB1 = triangleB.indices.at(0).vertIndex;
+		unsigned int indexPosB2 = triangleB.indices.at(0).vertIndex;
+		unsigned int indexPosb3 = triangleB.indices.at(0).vertIndex;
+
+		float YposB1 = s_CurrentVertexArray->at(indexPosB1).position[1];
+		float YposB2 = s_CurrentVertexArray->at(indexPosB2).position[1];
+		float YposB3 = s_CurrentVertexArray->at(indexPosB2).position[1];
+
+		float YposB = (YposB1 + YposB2 + YposA3);
+
+
+/*
+		Luna::Index indexA = *(Luna::Index*)a;
+		Luna::Index indexB = *(Luna::Index*)b;
+		
+		unsigned int indexPosA = indexA.vertIndex;
+		unsigned int indexPosB = indexB.vertIndex;
+
+
+		float YposA = s_CurrentVertexArray->at(indexPosA).position[1];
+		float YposB = s_CurrentVertexArray->at(indexPosB).position[1];*/
+
+		if (YposA < YposB)
+		{
+			return -1;
+		}
+		else if(YposA > YposB)
+		{
+			return 1;
+		}
+		else
+		{
+			return 0;
+		}
 	}
 
 	std::vector<std::string> AssetManager::GetMeshNames()
