@@ -168,6 +168,7 @@ namespace MCS
 					m_World->AddComponent<Frosty::ECS::CDestroy>(it->first);
 				}
 				Frosty::EventBus::GetEventBus()->Publish<Frosty::EnemyDeathEvent>(Frosty::EnemyDeathEvent(enemyComp.Weapon->Level * 100));
+				Frosty::EventBus::GetEventBus()->Publish<Frosty::DropItemEvent>(Frosty::DropItemEvent(it->first));
 
 				if (enemyComp.Weapon->EntityPtr != nullptr)
 				{

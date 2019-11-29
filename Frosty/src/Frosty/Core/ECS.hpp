@@ -619,6 +619,8 @@ namespace Frosty
 			float LVL2AttackCooldown{ 2.0f };
 			float LVL3AttackCooldown{ 3.0f };
 
+			bool animPlaying = false;
+
 			float LVL1AttackCooldownTimer{ Frosty::Time::CurrentTime() };
 			float LVL2AttackCooldownTimer{ Frosty::Time::CurrentTime() };
 			float LVL3AttackCooldownTimer{ Frosty::Time::CurrentTime() };
