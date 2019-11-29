@@ -278,6 +278,7 @@ namespace MCS
 		if (glm::length(m_Physics[index]->Direction) > 0.0f)
 		{
 			//m_Physics[index]->Velocity = glm::normalize(m_Physics[index]->Direction) * m_Physics[index]->Speed * m_Physics[index]->SpeedMultiplier;
+			m_Physics[index]->Direction = glm::normalize(m_Physics[index]->Direction);
 
 			if (Frosty::InputManager::IsKeyPressed(m_Player[index]->DashKey))
 			{

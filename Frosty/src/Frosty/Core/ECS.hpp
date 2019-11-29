@@ -1004,23 +1004,27 @@ namespace Frosty
 			AbilityState ActiveAbility{ AbilityState::None };
 
 			// Abilities
-			int32_t LeapDamage{ 3 };
+			int16_t LeapDamage{ 0 };
 			float LeapChance{ 25.0f };
-			float LeapInterval{ 6.5f };
+			float LeapMaxDistance{ 30.0f };
+			float LeapMinDistance{ 15.0f };
+			float LeapInterval{ 2.5f };			// How often the boss can _try_ for a leap
+			float LeapIntervalTime{ Frosty::Time::CurrentTime() };
+			float LeapCooldown{ 6.5f };			// The cool down of the ability
 			float LeapCooldownTime{ Frosty::Time::CurrentTime() };
 			glm::vec3 LeapTargetPosition{ 0.0f };
-			float LeapMaxDistance{ 35.0f };
-			float LeapMinDistance{ 15.0f };
 			//
-			int32_t ChargeDamage{ 9 };
+			int16_t ChargeDamage{ 0 };
 			float ChargeChance{ 15.0f };
-			float ChargeInterval{ 5.0f };
-			float ChargeCooldownTime{ Frosty::Time::CurrentTime() };
 			float ChargeDistance{ 25.0f };
-			float DistanceCharged{ 0.0f };
 			float ChargeLoadTime{ 1.5f };
-			float ChargeLoadCooldownTime{ 0.0f };
 			float ChargeHangTime{ 0.75f };
+			float ChargeInterval{ 1.7f };		// How often the boss can _try_ for a charge
+			float ChargeIntervalTime{ Frosty::Time::CurrentTime() };
+			float ChargeCooldown{ 5.0f };		// The cool down of the ability
+			float ChargeCooldownTime{ Frosty::Time::CurrentTime() };
+			float DistanceCharged{ 0.0f };
+			float ChargeLoadCooldownTime{ 0.0f };
 			glm::vec3 ChargeTargetPosition{ 0.0f };
 
 

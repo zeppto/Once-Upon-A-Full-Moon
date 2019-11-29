@@ -185,13 +185,14 @@ namespace MCS
 			m_World->AddComponent<Frosty::ECS::CDestroy>(entityA);
 		}
 	}
+	
 	void CombatSystem::OnDamageEvent(Frosty::DamageEvent& e)
 	{
 		auto& it = p_EntityMap.find(e.GetEntity());
 
 		if (it == p_EntityMap.end()) return;
 
-		m_Health[it->second]->CurrentHealth -= e.GetDamage();
+		m_Health[it->second]->CurrentHealth -= (int)e.GetDamage();
 
 		// Check if the attack killed the target (Maybe move this to another system that handles basic enemy, boss and player death differently)
 		if (m_Health[it->second]->CurrentHealth <= 0)
