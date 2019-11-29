@@ -9,6 +9,7 @@ namespace Frosty
 	class StateMachine
 	{
 	public:
+		StateMachine() = default;
 		virtual ~StateMachine();
 		StateMachine(const StateMachine& obj) = delete;
 

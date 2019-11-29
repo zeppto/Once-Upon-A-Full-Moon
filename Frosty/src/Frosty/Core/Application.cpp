@@ -52,7 +52,16 @@ namespace Frosty
 			/// Frame Start
 			Time::OnUpdate();
 
+			m_StateMachine.ProcessStateChanges();
+
+			if (m_CallInput)
+			{
+				m_StateMachine.GetActiveState()->OnInput();
+				m_CallInput = false;
+			}
+
 			m_EditorCamera.OnUpdate();
+			m_StateMachine.GetActiveState()->OnUpdate();
 			for (Layer* layer : m_LayerHandler)
 			{
 				layer->OnUpdate();
@@ -145,6 +154,26 @@ namespace Frosty
 		if (maximize) m_Window->ActivateEditorMode();
 	}
 
+	bool Application::MenuLoaded()
+	{
+		return m_MenuLoaded;
+	}
+
+	bool Application::GameLoaded()
+	{
+		return m_GameLoaded;
+	}
+
+	void Application::SetMenuLoad(bool menuLoad)
+	{
+		m_MenuLoaded = menuLoad;
+	}
+
+	void Application::SetGameLoad(bool gameLoad)
+	{
+		m_GameLoaded = gameLoad;
+	}
+
 	void Application::OnEvent(BaseEvent& e)
 	{
 		switch (e.GetEventType())
@@ -157,6 +186,12 @@ namespace Frosty
 			break;
 		case EventType::KeyReleased:
 			OnKeyReleasedEvent(static_cast<KeyReleasedEvent&>(e));
+			break;
+		case Frosty::EventType::MouseButtonPressed:
+			OnMousePressedEvent(static_cast<MouseButtonPressedEvent&>(e));
+			break;
+		case Frosty::EventType::MouseButtonReleased:
+			OnMouseReleasedEvent(static_cast<MouseButtonReleasedEvent&>(e));
 			break;
 		default:
 			break;
@@ -189,10 +224,11 @@ namespace Frosty
 
 	void Application::OnKeyPressedEvent(KeyPressedEvent& e)
 	{
-		if (e.GetKeyCode() == FY_KEY_ESCAPE)
+		m_CallInput = true;
+		/*if (e.GetKeyCode() == FY_KEY_ESCAPE)
 		{
 			m_Running = false;
-		}
+		}*/
 		if ((InputManager::IsKeyPressed(FY_KEY_LEFT_CONTROL) || InputManager::IsKeyPressed(FY_KEY_RIGHT_CONTROL)) && e.GetKeyCode() == FY_KEY_P && m_CanPrintInfo)
 		{
 			m_World->PrintWorld();
@@ -202,9 +238,20 @@ namespace Frosty
 
 	void Application::OnKeyReleasedEvent(KeyReleasedEvent& e)
 	{
+		m_CallInput = true;
 		if (e.GetKeyCode() == FY_KEY_P)
 		{
 			m_CanPrintInfo = true;
 		}
+	}
+
+	void Application::OnMousePressedEvent(MouseButtonPressedEvent & e)
+	{
+		m_CallInput = true;
+	}
+
+	void Application::OnMouseReleasedEvent(MouseButtonReleasedEvent & e)
+	{
+		m_CallInput = true;
 	}
 }
