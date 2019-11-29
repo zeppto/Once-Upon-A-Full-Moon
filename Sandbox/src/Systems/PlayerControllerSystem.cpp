@@ -518,7 +518,7 @@ namespace MCS
 		particles.ParticleSystemDirection = glm::vec3(0.0f, 0.0f, -1.0f);
 		particles.RandomDirection = true;
 		particles.randMainDir = particles.ParticleSystemDirection;
-		particles.randSpread = 0.05f;
+		particles.randSpread = 0.005f;
 		particles.StartParticleSize = 0.4f;
 		particles.EmitCount = 2;
 		particles.EmitRate = 0.05f;
