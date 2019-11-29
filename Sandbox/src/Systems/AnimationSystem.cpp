@@ -331,7 +331,7 @@ void MCS::AnimationSystem::OnPlayAnimEvent(Frosty::PlayAnimEvent& e)
 				case 2:
 					//Leap
 					BeginNewAnim(controller, "Werewolf_Attack2");
-					controller->animSpeed = 2.0f;
+					controller->animSpeed = 1.5f;
 					break;
 				case 3:
 					BeginNewAnim(controller, "Werewolf_Charge_Prepare");

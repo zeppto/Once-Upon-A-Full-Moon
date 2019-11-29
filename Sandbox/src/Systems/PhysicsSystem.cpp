@@ -25,6 +25,12 @@ namespace MCS
 
 			glm::vec3 changeOffset = m_Physics[i]->Direction * m_Physics[i]->Speed * m_Physics[i]->SpeedMultiplier * Frosty::Time::DeltaTime();
 			m_Transform[i]->Position += changeOffset;
+
+			//if (m_World->HasComponent<Frosty::ECS::CPlayer>(m_Transform[i]->EntityPtr) && m_Physics[i]->Direction.y > 0.0f)
+			//{
+			//	__debugbreak();
+			//}
+
 			if (!m_Transform[i]->IsStatic) CheckCollision(i);
 
 			if (m_Physics[i]->Direction.y > 0.0f)
@@ -228,10 +234,10 @@ namespace MCS
 									}
 
 									// Reset charge attributes
-									Frosty::EventBus::GetEventBus()->Publish<Frosty::ResetBossAbilitiesEvent>(Frosty::ResetBossAbilitiesEvent(m_Transform[i]->EntityPtr));
+									Frosty::EventBus::GetEventBus()->Publish<Frosty::ResetBossAbilitiesEvent>(Frosty::ResetBossAbilitiesEvent(m_Transform[index]->EntityPtr));
 									bool normalCollisionPushback = false;
 								}
-								else if (bossComp.ActiveAbility == Frosty::ECS::CBoss::AbilityState::Charge)
+								else if (bossComp.ActiveAbility == Frosty::ECS::CBoss::AbilityState::Charge && m_Physics[index]->SpeedMultiplier != 0.0f)
 								{
 									if (m_World->HasComponent<Frosty::ECS::CPlayer>(m_Transform[i]->EntityPtr))
 									{
@@ -240,10 +246,13 @@ namespace MCS
 										m_Physics[i]->HangTime = bossComp.ChargeHangTime;
 										m_Physics[i]->SpeedMultiplier = 0.5f;
 										Frosty::EventBus::GetEventBus()->Publish<Frosty::DamageEvent>(Frosty::DamageEvent(m_Transform[i]->EntityPtr, bossComp.ChargeDamage));
+										FY_INFO("Charge hits player!");
 									}
 
 									// Reset charge attributes
-									Frosty::EventBus::GetEventBus()->Publish<Frosty::ResetBossAbilitiesEvent>(Frosty::ResetBossAbilitiesEvent(m_Transform[i]->EntityPtr));
+									FY_INFO("First: {0}", bossComp.ActiveAbility);
+									Frosty::EventBus::GetEventBus()->Publish<Frosty::ResetBossAbilitiesEvent>(Frosty::ResetBossAbilitiesEvent(m_Transform[index]->EntityPtr));
+									FY_INFO("Second: {0}", bossComp.ActiveAbility);
 									normalCollisionPushback = false;
 								}
 							}
