@@ -785,10 +785,6 @@ namespace MCS
 			for (int i = 0; i < testHeder.NrOfEntitys; i++)
 			{
 
-				bool MeshAdded = false;
-				std::vector<std::string> AddedMeshes;
-				std::unordered_map<std::string, Frosty::VABatch> TestMap;
-
 				fileEntitys.myEntitys.at(i).MyComponents.resize(m_Header.NrOfComponents);
 				for (int j = 0; j < testHeder.NrOfComponents; j++)
 				{

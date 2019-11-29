@@ -2,7 +2,8 @@
 #include"BoolMapGenerator.hpp"
 #include "Glad/glad.h"
 
-
+#define STB_IMAGE_WRITE_IMPLEMENTATION
+#include<stb_image_write.h>
 #define BUFFER_OFFSET(i) ((char *)nullptr + (i))
 
 namespace Frosty
@@ -74,7 +75,7 @@ namespace Frosty
 		glGenTextures(1, &s_Texture);
 		glBindTexture(GL_TEXTURE_2D, s_Texture);
 		//glGenerateMipmap(GL_TEXTURE_2D);
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB8, (s_Settings.Width * s_Settings.Pix_Cord_Ratio), (s_Settings.Height * s_Settings.Pix_Cord_Ratio), 0, GL_RGB, GL_FLOAT, NULL);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, (s_Settings.Width * s_Settings.Pix_Cord_Ratio), (s_Settings.Height * s_Settings.Pix_Cord_Ratio), 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
@@ -191,6 +192,31 @@ namespace Frosty
 			VABatchIt++;
 		}
 
+
+
+
+
+
+		const size_t bytesPerPixel = 3;	// RGB
+		const size_t imageSizeInBytes = bytesPerPixel * size_t(TmpWidth) * size_t(TmpHeight);
+		//int texSize = TmpWidth * TmpHeight * 3 * 4;
+		BYTE* pixels = static_cast<BYTE*>(malloc(imageSizeInBytes));
+		//uint8_t* tempintPtr = FY_NEW uint8_t[texSize];
+		glPixelStorei(GL_PACK_ALIGNMENT, 1);
+		glReadPixels(0, 0, TmpWidth, TmpHeight, GL_RGB, GL_UNSIGNED_BYTE, pixels);
+
+		std::string tempstr(("Test.jpg"));
+		int check = stbi_write_jpg(tempstr.c_str(), TmpWidth, TmpHeight, 3, pixels, 100);
+
+		free(pixels);
+		//delete tempintPtr;
+
+
+
+
+
+
+
 		int texSize = (unsigned int)TmpWidth * (unsigned int)TmpHeight;
 
 		float* tempFloatPtr = FY_NEW float[texSize];
@@ -251,7 +277,7 @@ namespace Frosty
 	//	glDeleteTextures(1, &s_Texture);
 		s_VABatch.erase(s_VABatch.begin(), s_VABatch.end());
 		s_ModelBatch.erase(s_ModelBatch.begin(), s_ModelBatch.end());
-		s_BoundBatch.erase(s_BoundBatch.begin(), s_BoundBatch.end()); 
+		s_BoundBatch.erase(s_BoundBatch.begin(), s_BoundBatch.end());
 
 //		return std::shared_ptr<BoolMap>(FY_NEW BoolMap(TmpWidth, TmpHeight, s_Settings.Pix_Cord_Ratio, tmpMap, bitMap));
 		return std::shared_ptr<BoolMap>(FY_NEW BoolMap(TmpWidth, TmpHeight, s_Settings.Pix_Cord_Ratio, bitMap, bitmapCount));
