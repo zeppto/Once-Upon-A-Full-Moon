@@ -450,9 +450,9 @@ namespace MCS
 		//particel.ParticleSystemStartPos = glm::vec3(0, 0.03f, 0);
 
 //ifdef FY_DEBUG
-		PushLayer(FY_NEW InspectorLayer());
+		//PushLayer(FY_NEW InspectorLayer());
 		//else
-				//Application::Get().StartGame(true);
+				Application::Get().StartGame(true);
 		//endif // FY_DEBUG
 	}
 
