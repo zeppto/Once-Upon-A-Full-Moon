@@ -273,19 +273,38 @@ namespace Frosty
 		}
 
 
+		std::shared_ptr<bool[]> tempBools(FY_NEW bool[texSize]);
+		for (unsigned int i = 0; i < unsigned int(texSize); i++)
+		{
+			if (tempFloatPtr[i] > 0.5)
+			{
+				tempBools[i] = true;
+			}
+			else
+			{
+				tempBools[i] = false;
+			}
+		}
+
+
 		delete[]tempFloatPtr;
+
+		//Testing BoolMap
+		std::shared_ptr<BoolMap> tempBoolMap = std::shared_ptr<BoolMap>(FY_NEW BoolMap(TmpWidth, TmpHeight, s_Settings.Pix_Cord_Ratio, bitMap, bitmapCount));
+		tempBoolMap->AddBoolMap(tempBools);
+
 
 
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		glBindTexture(GL_TEXTURE_2D, 0);
 		glDeleteFramebuffers(1, &s_GBuffer);
-	//	glDeleteTextures(1, &s_Texture);
+		glDeleteTextures(1, &s_Texture);
 		s_VABatch.erase(s_VABatch.begin(), s_VABatch.end());
 		s_ModelBatch.erase(s_ModelBatch.begin(), s_ModelBatch.end());
 		s_BoundBatch.erase(s_BoundBatch.begin(), s_BoundBatch.end());
 
-//		return std::shared_ptr<BoolMap>(FY_NEW BoolMap(TmpWidth, TmpHeight, s_Settings.Pix_Cord_Ratio, tmpMap, bitMap));
-		return std::shared_ptr<BoolMap>(FY_NEW BoolMap(TmpWidth, TmpHeight, s_Settings.Pix_Cord_Ratio, bitMap, bitmapCount));
+		//return std::shared_ptr<BoolMap>(FY_NEW BoolMap(TmpWidth, TmpHeight, s_Settings.Pix_Cord_Ratio, bitMap, bitmapCount));
+		return tempBoolMap;
 	}
 
 

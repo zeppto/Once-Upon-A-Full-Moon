@@ -20,6 +20,7 @@ namespace Frosty
 		m_BitMapCount(0),
 		m_CoordWidth(0),
 		m_CoordHeight(0),
+		m_BoolMap(nullptr),
 		AssetFile(metaData)
 	{
 	}
@@ -32,6 +33,7 @@ namespace Frosty
 		m_BitMapCount(BitmapCount),
 		m_CoordWidth(Width / PixRatio),
 		m_CoordHeight(Height / PixRatio),
+		m_BoolMap(nullptr),
 		AssetFile()
 	{}
 
@@ -44,6 +46,7 @@ namespace Frosty
 		m_CoordWidth(other.m_CoordWidth),
 		m_CoordHeight(other.m_CoordHeight),
 		m_PixCoordRatio(other.m_PixCoordRatio),
+		m_BoolMap(m_BoolMap),
 		AssetFile(other.m_MetaData)
 	{
 
@@ -73,8 +76,14 @@ namespace Frosty
 		if (m_CoordWidth >= LocalPos.x && 0 <= LocalPos.x && LocalPos.z >= 0 && LocalPos.z <= m_CoordHeight)
 		{
 
-			int xx = static_cast<int>((LocalPos.x * m_PixCoordRatio) - 1);
-			int zz = static_cast<int>(((LocalPos.z * m_PixCoordRatio) - 1) * m_PixWidth);
+			//int xx = static_cast<int>((LocalPos.x * m_PixCoordRatio) - 1);
+			//int zz = static_cast<int>(((LocalPos.z * m_PixCoordRatio) - 1) * m_PixWidth);
+
+
+			uint32_t xx = static_cast<uint32_t>(LocalPos.x) * m_PixCoordRatio;
+			uint32_t zz = (static_cast<uint32_t>(LocalPos.z)* m_PixCoordRatio)* m_PixWidth;;
+
+
 
 			if (xx < 0)
 			{
@@ -85,26 +94,28 @@ namespace Frosty
 				zz = 0;
 			}
 
-			int pos = xx + zz;
+			
 
-			//	bool test = m_BoolMap[pos];
+			uint32_t pos = xx + zz;
+		//	FY_CORE_INFO("{0}", pos);
+			////	bool test = m_BoolMap[pos];
 
-			int div = static_cast<int>(pos / 64);
-			int mod = static_cast<int>(pos % 64);
-
-
-			uint64_t bitmapVal = m_BitMap[div];
-
-			uint64_t kk = 1;
-			uint64_t modVal = kk << (63 - mod);
+			//int div = static_cast<int>(pos / 64);
+			//int mod = static_cast<int>(pos % 64);
 
 
-			if (bitmapVal & modVal)
-			{
-				returnValue = true;
-			}
+			//uint64_t bitmapVal = m_BitMap[div];
 
-			//	returnValue =  m_BoolMap[pos];
+			//uint64_t kk = 1;
+			//uint64_t modVal = kk << (63 - mod);
+
+
+			//if (bitmapVal & modVal)
+			//{
+			//	returnValue = true;
+			//}
+
+			returnValue =  m_BoolMap[pos];
 		}
 		else
 		{
@@ -162,6 +173,18 @@ namespace Frosty
 				FY_CORE_ASSERT(0, "Could not save Boolmap: {0}", filePath);
 			}
 			returnValue = true;
+
+
+			if (m_BoolMap != nullptr)
+			{
+
+				Test = fwrite(&m_BoolMap[0], sizeof(bool), (m_PixWidth * m_PixHeight), File);
+				if (Test != (m_PixWidth * m_PixHeight))
+				{
+					FY_CORE_ASSERT(0, "Could not save Boolmap: {0}", filePath);
+				}
+			}
+
 		}
 
 
@@ -225,6 +248,15 @@ namespace Frosty
 				returnValue = true;
 			}
 
+
+			//Temp Test
+			m_BoolMap = std::shared_ptr<bool[]>(FY_NEW bool[(m_PixWidth * m_PixHeight)]);
+			testCount = fread(&m_BoolMap[0], sizeof(bool), (m_PixWidth * m_PixHeight), File);
+
+			if (testCount != (m_PixWidth * m_PixHeight))
+			{
+				FY_CORE_ASSERT(0, "Could not load Boolmap: {0}", filePath);
+			}
 
 			//Testing
 			//for (uint32_t i = 0; i < m_BitMapCount; i++)

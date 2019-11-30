@@ -32,7 +32,7 @@ namespace Frosty {
 
 		//std::string m_FileName;
 
-		//	std::shared_ptr<bool[]> m_BoolMap;
+		std::shared_ptr<bool[]> m_BoolMap;
 		std::shared_ptr<uint64_t[]> m_BitMap;
 
 		static int s_SavedMapCount;
@@ -44,6 +44,9 @@ namespace Frosty {
 		//BoolMap(const uint16_t& Width, const uint16_t& Height, const uint8_t PixRatio,std::shared_ptr<bool[]>& Boolmap, std::shared_ptr<uint64_t[]> BitMap);
 		BoolMap(const uint16_t& Width, const uint16_t& Height, const uint8_t PixRatio, std::shared_ptr<uint64_t[]> BitMap, const uint32_t& BitmapCount);
 		BoolMap(const BoolMap& other);
+
+		//Temp Func
+		inline void AddBoolMap(const std::shared_ptr<bool[]>& bMap) { m_BoolMap = bMap; }
 
 		BoolMap& operator= (const BoolMap& other);
 

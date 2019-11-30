@@ -182,8 +182,8 @@ namespace MCS
 					checkCollision = false;
 					glm::vec3 tempPos = m_Transform[index]->Position + glm::vec3(150.0f, 0.0f, 150.0f);
 
-					//tempPos = glm::vec3(300.0f - tempPos.x, 0.0f, 300.0f - tempPos.z);
-					tempPos = glm::vec3(tempPos.x, 0.0f, 300.0f - tempPos.z);
+				//	tempPos = glm::vec3(300.0f - tempPos.x, 0.0f, 300.0f - tempPos.z);
+					tempPos = glm::vec3(tempPos.x, 0.0f,tempPos.z);
 
 
 					bool testBool = m_Test_BoolMap->CheckCollision(tempPos);
