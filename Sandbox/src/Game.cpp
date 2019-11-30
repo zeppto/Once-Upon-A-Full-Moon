@@ -105,8 +105,17 @@ namespace MCS
 		}
 
 
+
+		//TestPlane
+		auto& testPlane = world->CreateEntity({ 0.0f, 0.2f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 300.0f, 1.0f, 300.0f });
+		world->AddComponent<Frosty::ECS::CMesh>(testPlane, Frosty::AssetManager::GetMesh("pPlane1"));
+		auto& TestPlaneMaterial = world->AddComponent<Frosty::ECS::CMaterial>(testPlane, Frosty::AssetManager::GetShader("Texture2D"));
+		TestPlaneMaterial.DiffuseTexture = Frosty::AssetManager::GetTexture2D("Test");
+
+
+
 		// PLAYER
-		auto& player = world->CreateEntity({ -104.0f, 0.0f, -15.4f }, { 0.0f, 0.0f, 0.0f }, { 2.0f, 2.0f, 2.0f });
+		auto& player = world->CreateEntity({ -60.0f, 0.0f, -15.4f }, { 0.0f, 0.0f, 0.0f }, { 2.0f, 2.0f, 2.0f });
 		auto& playerTransform = world->GetComponent<Frosty::ECS::CTransform>(player);
 		world->AddComponent<Frosty::ECS::CAnimController>(player).currAnim = Frosty::AssetManager::GetAnimation("Scarlet_Idle");
 		auto& animation = world->GetComponent<Frosty::ECS::CAnimController>(player);
@@ -118,7 +127,7 @@ namespace MCS
 		playerMat.SpecularTexture = Frosty::AssetManager::GetTexture2D("Scarlet_specular");
 		world->AddComponent<Frosty::ECS::CPlayer>(player, &weaponComp);	// <-- Give player a weapon
 		//weaponTransform.Position += playerTransform.Position;//Check this
-		world->AddComponent<Frosty::ECS::CPhysics>(player, Frosty::AssetManager::GetBoundingBox("Scarlet"), 60.0f);
+		world->AddComponent<Frosty::ECS::CPhysics>(player, Frosty::AssetManager::GetBoundingBox("Scarlet"), 20.0f);
 		world->AddComponent<Frosty::ECS::CDash>(player);
 		world->AddComponent<Frosty::ECS::CHealth>(player, 20);
 		world->AddComponent<Frosty::ECS::CInventory>(player);

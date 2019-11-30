@@ -67,7 +67,7 @@ namespace Frosty
 		return *this;
 	}
 
-	bool BoolMap::CheckCollition(const glm::vec3& LocalPos) const
+	bool BoolMap::CheckCollision(const glm::vec3& LocalPos) const
 	{
 		bool returnValue = false;
 		if (m_CoordWidth >= LocalPos.x && 0 <= LocalPos.x && LocalPos.z >= 0 && LocalPos.z <= m_CoordHeight)
@@ -199,19 +199,19 @@ namespace Frosty
 		
 		if (File != nullptr)
 		{
-
+			m_BitMap.reset();
 
 			FY_CORE_ASSERT(fread(&m_CoordWidth, sizeof(uint16_t), 1, File), "Could not read Width for Boolmap: {0}", filePath);
 			FY_CORE_ASSERT(fread(&m_CoordHeight, sizeof(uint16_t), 1, File), "Could not read Heigth for Boolmap: {0}", filePath);
 			FY_CORE_ASSERT(fread(&m_PixCoordRatio, sizeof(uint8_t), 1, File), "Could not read Pix/Coord ratio for Boolmap: {0}", filePath);
 			FY_CORE_ASSERT(fread(&m_BitMapCount, sizeof(uint32_t), 1, File), "Could not read BitmapCount for Boolmap: {0}", filePath);
 
-
-
+			m_PixWidth = m_CoordWidth * m_PixCoordRatio;
+			m_PixHeight = m_CoordHeight * m_PixCoordRatio;
 			//	int bitSize = std::ceil((texSize / 64.0f));
 
 
-			std::shared_ptr<uint64_t[]> bitMap(FY_NEW uint64_t[m_BitMapCount]);
+			 m_BitMap = std::shared_ptr<uint64_t[]>(FY_NEW uint64_t[m_BitMapCount]);
 
 			//Testing
 			//size_t testCount = fread(&bitMap[0], sizeof(uint64_t), m_BitMapCount, File);

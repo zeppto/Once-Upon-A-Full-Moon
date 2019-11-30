@@ -50,7 +50,7 @@ namespace Frosty {
 		bool SaveMap(const std::string& FileName = "");
 		bool LoadMap(const std::string& FilePath);
 
-		bool CheckCollition(const glm::vec3& LocalPos) const;
+		bool CheckCollision(const glm::vec3& LocalPos) const;
 
 		inline const uint16_t& GetPixWidth() { return m_PixWidth; }
 		inline const uint16_t& GetPixHeight() { return m_PixHeight; }

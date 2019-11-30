@@ -90,7 +90,7 @@ namespace Frosty
 				break;
 
 			case BMAP:
-				//returnValue = LoadBoolMap(TempFileInfo);
+				returnValue = LoadBoolMap(TempFileInfo);
 				break;
 
 			default:

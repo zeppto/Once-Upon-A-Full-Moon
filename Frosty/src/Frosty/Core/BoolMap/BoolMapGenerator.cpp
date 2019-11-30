@@ -264,10 +264,10 @@ namespace Frosty
 				bitmapCount++;
 			}
 
-			//if (tempFloatPtr[i] > 0.5)
-			//{
-			//	int j = 0;
-			//}
+			if (tempFloatPtr[i] > 0.5)
+			{
+				int j = 0;
+			}
 
 			currentInt = (tempFloatPtr[i] > 0.001) ? (currentInt << 1) + 1 : currentInt << 1;
 		}

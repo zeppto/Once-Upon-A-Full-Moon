@@ -16,7 +16,7 @@ namespace MCS
 		p_Signature.set(Frosty::ECS::getComponentTypeID<Frosty::ECS::CTransform>(), true);
 		p_Signature.set(Frosty::ECS::getComponentTypeID<Frosty::ECS::CPhysics>(), true);
 
-		//m_Test_BoolMap = Frosty::AssetManager::GetBoolMap("crossroad_chests_IsStatick");
+		m_Test_BoolMap = Frosty::AssetManager::GetBoolMap("deadend_chests_IsStatick_t_p_e_r_h");
 
 		int o = 0;
 	}
@@ -170,6 +170,32 @@ namespace MCS
 				{
 					checkCollision = true;
 				}
+
+
+				//Test
+				if (( m_World->HasComponent<Frosty::ECS::CPlayer>(m_Transform[index]->EntityPtr)))
+				{
+
+					if(m_World->HasComponent<Frosty::ECS::CInventory>(m_Transform[index]->EntityPtr))
+					{ 
+
+					checkCollision = false;
+					glm::vec3 tempPos = m_Transform[index]->Position + glm::vec3(150.0f, 0.0f, 150.0f);
+
+					//tempPos = glm::vec3(300.0f - tempPos.x, 0.0f, 300.0f - tempPos.z);
+					tempPos = glm::vec3(tempPos.x, 0.0f, 300.0f - tempPos.z);
+
+
+					bool testBool = m_Test_BoolMap->CheckCollision(tempPos);
+
+					if (testBool)
+					{
+						FY_INFO("1");
+					}
+					}
+				}
+
+
 
 				if (checkCollision)
 				{
