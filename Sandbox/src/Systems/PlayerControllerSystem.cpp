@@ -539,6 +539,24 @@ namespace MCS
 		int totalDamage = int(glm::round(weaponComp.Damage + criticalHit + weaponComp.EarthDamage));
 
 		m_World->AddComponent<Frosty::ECS::CAttack>(projectile, Frosty::ECS::CAttack::AttackType::Range, totalDamage, true, weaponComp.Lifetime);
+		auto& attack = m_World->GetComponent<Frosty::ECS::CAttack>(projectile);
+
+		if (weaponComp.FireCriticalHitChance > 0.0f)
+		{
+			CreateFireEffect(attack, spawnPos, attackerTransform.Rotation);
+		}
+		if (weaponComp.EarthDamage > 0.0f)
+		{
+			CreateEarthEffect(attack, spawnPos, attackerTransform.Rotation);
+		}
+		if (weaponComp.WindSpeed > 0.0f)
+		{
+			CreateWindEffect(attack, spawnPos, attackerTransform.Rotation);
+		}
+		if (weaponComp.WaterHealing > 0.0f)
+		{
+			CreateWaterEffect(attack, spawnPos, attackerTransform.Rotation);
+		}
 	}
 
 	void PlayerControllerSystem::CreateLVL2Projectile(const std::shared_ptr<Frosty::ECS::Entity>& weaponCarrier, const std::shared_ptr<Frosty::ECS::Entity>& weapon)
@@ -581,7 +599,7 @@ namespace MCS
 			int totalDamage = int(glm::round(weaponComp.Damage + criticalHit + weaponComp.EarthDamage));
 
 			m_World->AddComponent<Frosty::ECS::CAttack>(projectile, Frosty::ECS::CAttack::AttackType::Range, totalDamage, true, weaponComp.Lifetime);
-
+			auto& attack = m_World->GetComponent<Frosty::ECS::CAttack>(projectile);
 
 			auto& particles = m_World->AddComponent<Frosty::ECS::CParticleSystem>(projectile, "Particles", "particle", 30, glm::vec3(0.0f, 1.0f, 0.2f), 12.0f);
 			particles.ParticleSystemDirection = glm::vec3(0.0f, 0.0f, -1.0f);
@@ -597,6 +615,23 @@ namespace MCS
 			particles.StaticColor = false;
 			particles.SystemEndColor = glm::vec3(1.0f, 1.0f, 1.0f);
 			particles.ParticleSystemStartPos = glm::vec3(0.0f, 0.0f, 1.1f);
+
+			if (weaponComp.FireCriticalHitChance > 0.0f)
+			{
+				CreateFireEffect(attack, spawnPos, attackerTransform.Rotation);
+			}
+			if (weaponComp.EarthDamage > 0.0f)
+			{
+				CreateEarthEffect(attack, spawnPos, attackerTransform.Rotation);
+			}
+			if (weaponComp.WindSpeed > 0.0f)
+			{
+				CreateWindEffect(attack, spawnPos, attackerTransform.Rotation);
+			}
+			if (weaponComp.WaterHealing > 0.0f)
+			{
+				CreateWaterEffect(attack, spawnPos, attackerTransform.Rotation);
+			}
 		}
 	}
 
@@ -630,6 +665,7 @@ namespace MCS
 		int totalDamage = int(glm::round(weaponComp.Damage + criticalHit + weaponComp.EarthDamage));
 
 		m_World->AddComponent<Frosty::ECS::CAttack>(projectile, Frosty::ECS::CAttack::AttackType::Range, totalDamage, true, weaponComp.Lifetime, false);
+		auto& attack = m_World->GetComponent<Frosty::ECS::CAttack>(projectile);
 
 		auto& particles = m_World->AddComponent<Frosty::ECS::CParticleSystem>(projectile, "Particles", "particle", 30, glm::vec3(1.0f, 0.0f, 0.0f), 12.0f);
 		particles.ParticleSystemDirection = glm::vec3(0.0f, 0.0f, -1.0f);
@@ -645,6 +681,111 @@ namespace MCS
 		particles.StaticColor = false;
 		particles.SystemEndColor = glm::vec3(7.0f, 7.0f, 0.0f);
 		particles.ParticleSystemStartPos = glm::vec3(0.0f, 0.0f, 1.1f);
+
+		if (weaponComp.FireCriticalHitChance > 0.0f)
+		{
+			CreateFireEffect(attack, spawnPos, attackerTransform.Rotation);
+		}
+		if (weaponComp.EarthDamage > 0.0f)
+		{
+			CreateEarthEffect(attack, spawnPos, attackerTransform.Rotation);
+		}
+		if (weaponComp.WindSpeed > 0.0f)
+		{
+			CreateWindEffect(attack, spawnPos, attackerTransform.Rotation);
+		}
+		if (weaponComp.WaterHealing > 0.0f)
+		{
+			CreateWaterEffect(attack, spawnPos, attackerTransform.Rotation);
+		}
+	}
+
+	void PlayerControllerSystem::CreateFireEffect(Frosty::ECS::CAttack& attack, glm::vec3 spawnPos, glm::vec3 rotation)
+	{
+		auto& fireEffect = m_World->CreateEntity({ spawnPos.x, 1.0f, spawnPos.z }, rotation, { 5.0f, 5.0f, 2.0f });
+
+		auto& fireParticles = m_World->AddComponent<Frosty::ECS::CParticleSystem>(fireEffect, "Particles", "particle", 30, glm::vec3(1.0f, 0.0f, 0.0f), 12.0f);
+		fireParticles.ParticleSystemDirection = glm::vec3(0.0f, 0.0f, -1.0f);
+		fireParticles.RandomDirection = true;
+		fireParticles.randMainDir = fireParticles.ParticleSystemDirection;
+		fireParticles.randSpread = 0.05f;
+		fireParticles.StartParticleSize = 0.4f;
+		fireParticles.EmitCount = 2;
+		fireParticles.EmitRate = 0.05f;
+		fireParticles.MaxLifetime = 1.5f;
+		fireParticles.FadeInTreshold = 1.4f;
+		fireParticles.FadeTreshold = 1.3f;
+		fireParticles.StaticColor = false;
+		fireParticles.SystemEndColor = glm::vec3(0.0f, 0.0f, 1.0f);
+		fireParticles.ParticleSystemStartPos = glm::vec3(0.0f, 0.0f, 1.1f);
+
+		attack.FireEffect = fireEffect;
+	}
+
+	void PlayerControllerSystem::CreateEarthEffect(Frosty::ECS::CAttack& attack, glm::vec3 spawnPos, glm::vec3 rotation)
+	{
+		auto& earthEffect = m_World->CreateEntity({ spawnPos.x, 1.0f, spawnPos.z }, rotation, { 5.0f, 5.0f, 2.0f });
+
+		auto& earthParticles = m_World->AddComponent<Frosty::ECS::CParticleSystem>(earthEffect, "Particles", "particleSmoke", 30, glm::vec3(0.5f, 0.5f, 0.1f), 12.0f);
+		earthParticles.ParticleSystemDirection = glm::vec3(0.0f, 0.0f, -1.0f);
+		earthParticles.RandomDirection = true;
+		earthParticles.randMainDir = earthParticles.ParticleSystemDirection;
+		earthParticles.randSpread = 0.05f;
+		earthParticles.StartParticleSize = 2.4f;
+		earthParticles.EmitCount = 2;
+		earthParticles.EmitRate = 0.05f;
+		earthParticles.MaxLifetime = 1.5f;
+		earthParticles.FadeInTreshold = 1.4f;
+		earthParticles.FadeTreshold = 1.3f;
+		earthParticles.StaticColor = false;
+		earthParticles.SystemEndColor = glm::vec3(0.0f, 0.0f, 1.0f);
+		earthParticles.ParticleSystemStartPos = glm::vec3(0.0f, 0.0f, 1.1f);
+
+		attack.EarthEffect = earthEffect;
+	}
+
+	void PlayerControllerSystem::CreateWindEffect(Frosty::ECS::CAttack& attack, glm::vec3 spawnPos, glm::vec3 rotation)
+	{
+		auto& windEffect = m_World->CreateEntity({ spawnPos.x, 1.0f, spawnPos.z }, rotation, { 5.0f, 5.0f, 2.0f });
+
+		auto& windParticles = m_World->AddComponent<Frosty::ECS::CParticleSystem>(windEffect, "Particles", "particle", 30, glm::vec3(0.0f, 1.0f, 0.0f), 12.0f);
+		windParticles.ParticleSystemDirection = glm::vec3(0.0f, 0.0f, -1.0f);
+		windParticles.RandomDirection = true;
+		windParticles.randMainDir = windParticles.ParticleSystemDirection;
+		windParticles.randSpread = 0.05f;
+		windParticles.StartParticleSize = 0.4f;
+		windParticles.EmitCount = 2;
+		windParticles.EmitRate = 0.05f;
+		windParticles.MaxLifetime = 1.5f;
+		windParticles.FadeInTreshold = 1.4f;
+		windParticles.FadeTreshold = 1.3f;
+		windParticles.StaticColor = false;
+		windParticles.SystemEndColor = glm::vec3(0.0f, 0.0f, 1.0f);
+		windParticles.ParticleSystemStartPos = glm::vec3(0.0f, 0.0f, 1.1f);
+
+		attack.WindEffect = windEffect;
+	}
+
+	void PlayerControllerSystem::CreateWaterEffect(Frosty::ECS::CAttack& attack, glm::vec3 spawnPos, glm::vec3 rotation)
+	{
+		auto& waterEffect = m_World->CreateEntity({ spawnPos.x, 1.0f, spawnPos.z }, rotation, { 5.0f, 5.0f, 2.0f });
+
+		auto& waterParticles = m_World->AddComponent<Frosty::ECS::CParticleSystem>(waterEffect, "Particles", "particle", 30, glm::vec3(0.0f, 0.0f, 1.0f), 12.0f);
+		waterParticles.ParticleSystemDirection = glm::vec3(0.0f, 0.0f, -1.0f);
+		waterParticles.RandomDirection = true;
+		waterParticles.randMainDir = waterParticles.ParticleSystemDirection;
+		waterParticles.randSpread = 0.05f;
+		waterParticles.StartParticleSize = 0.4f;
+		waterParticles.EmitCount = 2;
+		waterParticles.EmitRate = 0.05f;
+		waterParticles.MaxLifetime = 1.5f;
+		waterParticles.FadeInTreshold = 1.4f;
+		waterParticles.FadeTreshold = 1.3f;
+		waterParticles.StaticColor = false;
+		waterParticles.SystemEndColor = glm::vec3(0.0f, 0.0f, 1.0f);
+		waterParticles.ParticleSystemStartPos = glm::vec3(0.0f, 0.0f, 1.1f);
+
+		attack.WaterEffect = waterEffect;
 	}
 
 	float PlayerControllerSystem::GenerateCriticalHit(float criticalHit, float criticalHitChance)

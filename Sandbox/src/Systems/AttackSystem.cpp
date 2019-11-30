@@ -17,6 +17,35 @@ namespace MCS
 	{
 		for (size_t i = 1; i < p_Total; i++)
 		{
+			if (m_Attack[i]->FireEffect)
+			{
+				auto& fireTransform = m_World->GetComponent<Frosty::ECS::CTransform>(m_Attack[i]->FireEffect);
+				auto& attackTransform = m_World->GetComponent<Frosty::ECS::CTransform>(m_Attack[i]->EntityPtr);
+				fireTransform.Position = attackTransform.Position;
+				fireTransform.Rotation = attackTransform.Rotation;
+			}
+			if (m_Attack[i]->EarthEffect)
+			{
+				auto& earthTransform = m_World->GetComponent<Frosty::ECS::CTransform>(m_Attack[i]->EarthEffect);
+				auto& attackTransform = m_World->GetComponent<Frosty::ECS::CTransform>(m_Attack[i]->EntityPtr);
+				earthTransform.Position = attackTransform.Position;
+				earthTransform.Rotation = attackTransform.Rotation;
+			}
+			if (m_Attack[i]->WindEffect)
+			{
+				auto& windTransform = m_World->GetComponent<Frosty::ECS::CTransform>(m_Attack[i]->WindEffect);
+				auto& attackTransform = m_World->GetComponent<Frosty::ECS::CTransform>(m_Attack[i]->EntityPtr);
+				windTransform.Position = attackTransform.Position;
+				windTransform.Rotation = attackTransform.Rotation;
+			}
+			if (m_Attack[i]->WaterEffect)
+			{
+				auto& waterTransform = m_World->GetComponent<Frosty::ECS::CTransform>(m_Attack[i]->WaterEffect);
+				auto& attackTransform = m_World->GetComponent<Frosty::ECS::CTransform>(m_Attack[i]->EntityPtr);
+				waterTransform.Position = attackTransform.Position;
+				waterTransform.Rotation = attackTransform.Rotation;
+			}
+
 			if (m_Attack[i]->Type == Frosty::ECS::CAttack::AttackType::Melee && Frosty::Time::CurrentTime() - m_Attack[i]->LifetimeTimer >= 0.1f && !m_World->HasComponent<Frosty::ECS::CPhysics>(m_Attack[i]->EntityPtr))
 			{
 				auto& attackTransform = m_World->GetComponent<Frosty::ECS::CTransform>(m_Attack[i]->EntityPtr);
@@ -27,6 +56,22 @@ namespace MCS
 				if (!m_World->HasComponent<Frosty::ECS::CDestroy>(m_Attack[i]->EntityPtr))
 				{
 					m_World->AddComponent<Frosty::ECS::CDestroy>(m_Attack[i]->EntityPtr);
+					if (m_Attack[i]->FireEffect)
+					{
+						m_World->AddComponent<Frosty::ECS::CDestroy>(m_Attack[i]->FireEffect);
+					}
+					if (m_Attack[i]->EarthEffect)
+					{
+						m_World->AddComponent<Frosty::ECS::CDestroy>(m_Attack[i]->EarthEffect);
+					}
+					if (m_Attack[i]->WindEffect)
+					{
+						m_World->AddComponent<Frosty::ECS::CDestroy>(m_Attack[i]->WindEffect);
+					}
+					if (m_Attack[i]->WaterEffect)
+					{
+						m_World->AddComponent<Frosty::ECS::CDestroy>(m_Attack[i]->WaterEffect);
+					}
 				}
 			}
 		}

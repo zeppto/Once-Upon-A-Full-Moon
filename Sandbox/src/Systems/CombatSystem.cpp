@@ -181,8 +181,25 @@ namespace MCS
 		}
 
 		// Check if attack should be destroyed on hit
-		if (m_World->GetComponent<Frosty::ECS::CAttack>(entityA).Destroyable && !m_World->HasComponent<Frosty::ECS::CDestroy>(entityA))
+		auto& attackComp = m_World->GetComponent<Frosty::ECS::CAttack>(entityA);
+		if (attackComp.Destroyable && !m_World->HasComponent<Frosty::ECS::CDestroy>(entityA))
 		{
+			if (attackComp.FireEffect)
+			{
+				m_World->AddComponent<Frosty::ECS::CDestroy>(attackComp.FireEffect);
+			}
+			if (attackComp.EarthEffect)
+			{
+				m_World->AddComponent<Frosty::ECS::CDestroy>(attackComp.EarthEffect);
+			}
+			if (attackComp.WindEffect)
+			{
+				m_World->AddComponent<Frosty::ECS::CDestroy>(attackComp.WindEffect);
+			}
+			if (attackComp.WaterEffect)
+			{
+				m_World->AddComponent<Frosty::ECS::CDestroy>(attackComp.WaterEffect);
+			}
 			m_World->AddComponent<Frosty::ECS::CDestroy>(entityA);
 		}
 	}
