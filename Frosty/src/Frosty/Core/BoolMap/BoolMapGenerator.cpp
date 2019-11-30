@@ -248,8 +248,8 @@ namespace Frosty
 		//}
 
 
-		int32_t bitmapCount = -1;
 		//bitmap
+		int32_t bitmapCount = -1;
 		uint64_t currentInt = 0;
 
 		for (unsigned int i = 0; i < unsigned int(texSize); i++)
@@ -264,34 +264,34 @@ namespace Frosty
 				bitmapCount++;
 			}
 
-			if (tempFloatPtr[i] > 0.5)
-			{
-				int j = 0;
-			}
+			//if (tempFloatPtr[i] > 0.5)
+			//{
+			//	int j = 0;
+			//}
 
 			currentInt = (tempFloatPtr[i] > 0.001) ? (currentInt << 1) + 1 : currentInt << 1;
 		}
 
 
-		std::shared_ptr<bool[]> tempBools(FY_NEW bool[texSize]);
-		for (unsigned int i = 0; i < unsigned int(texSize); i++)
-		{
-			if (tempFloatPtr[i] > 0.5)
-			{
-				tempBools[i] = true;
-			}
-			else
-			{
-				tempBools[i] = false;
-			}
-		}
+		//std::shared_ptr<bool[]> tempBools(FY_NEW bool[texSize]);
+		//for (unsigned int i = 0; i < unsigned int(texSize); i++)
+		//{
+		//	if (tempFloatPtr[i] > 0.5)
+		//	{
+		//		tempBools[i] = true;
+		//	}
+		//	else
+		//	{
+		//		tempBools[i] = false;
+		//	}
+		//}
 
 
 		delete[]tempFloatPtr;
 
-		//Testing BoolMap
-		std::shared_ptr<BoolMap> tempBoolMap = std::shared_ptr<BoolMap>(FY_NEW BoolMap(TmpWidth, TmpHeight, s_Settings.Pix_Cord_Ratio, bitMap, bitmapCount));
-		tempBoolMap->AddBoolMap(tempBools);
+		////Testing BoolMap
+		//std::shared_ptr<BoolMap> tempBoolMap = std::shared_ptr<BoolMap>(FY_NEW BoolMap(TmpWidth, TmpHeight, s_Settings.Pix_Cord_Ratio, bitMap, bitmapCount));
+		//tempBoolMap->AddBoolMap(tempBools);
 
 
 
@@ -303,8 +303,8 @@ namespace Frosty
 		s_ModelBatch.erase(s_ModelBatch.begin(), s_ModelBatch.end());
 		s_BoundBatch.erase(s_BoundBatch.begin(), s_BoundBatch.end());
 
-		//return std::shared_ptr<BoolMap>(FY_NEW BoolMap(TmpWidth, TmpHeight, s_Settings.Pix_Cord_Ratio, bitMap, bitmapCount));
-		return tempBoolMap;
+		return std::shared_ptr<BoolMap>(FY_NEW BoolMap(TmpWidth, TmpHeight, s_Settings.Pix_Cord_Ratio, bitMap, bitmapCount));
+		//return tempBoolMap;
 	}
 
 

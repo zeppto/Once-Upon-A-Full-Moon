@@ -45,7 +45,7 @@ namespace Frosty {
 		BoolMap(const uint16_t& Width, const uint16_t& Height, const uint8_t PixRatio, std::shared_ptr<uint64_t[]> BitMap, const uint32_t& BitmapCount);
 		BoolMap(const BoolMap& other);
 
-		//Temp Func
+		//Temp Func (For Debugging)
 		inline void AddBoolMap(const std::shared_ptr<bool[]>& bMap) { m_BoolMap = bMap; }
 
 		BoolMap& operator= (const BoolMap& other);
