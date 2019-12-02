@@ -16,6 +16,70 @@ namespace MCS
 
 	void CombatSystem::OnUpdate()
 	{
+		for (size_t i = 1; i < p_Total; i++)
+		{
+			// So dirty. Dirty boi. Witch circle should probably not have health.
+			if (!m_World->HasComponent<Frosty::ECS::CWitchCircle>(m_Health[i]->EntityPtr))
+			{
+				// Check if the attack killed the target (Maybe move this to another system that handles basic enemy, boss and player death differently)
+				if (m_Health[i]->CurrentHealth <= 0)
+				{
+					if (m_Health[i]->DeathTimer != 0)
+					{
+						//Check if timer started
+						if (m_Health[i]->DeathTimer != -500)
+						{
+							//Get animation duration.
+							float duration = m_World->GetComponent<Frosty::ECS::CAnimController>(m_Health[i]->EntityPtr).currAnim->GetAnimation().duration;
+							if (Frosty::Time::CurrentTime() - m_Health[i]->DeathTimer >= duration)
+							{
+								m_Health[i]->DeathTimer = 0;
+							}
+						}
+						else
+						{
+							// Start the death timer
+							m_Health[i]->DeathTimer = Frosty::Time::CurrentTime();
+							Frosty::EventBus::GetEventBus()->Publish<Frosty::PlayAnimEvent>(Frosty::PlayAnimEvent(m_Health[i]->EntityPtr, 0));
+						}
+					}
+					else
+					{
+						if (m_World->HasComponent<Frosty::ECS::CPlayer>(m_Health[i]->EntityPtr))
+						{
+							// Handle player death differently
+							Frosty::EventBus::GetEventBus()->Publish<Frosty::GameoverEvent>(Frosty::GameoverEvent());
+						}
+						else if (m_World->HasComponent<Frosty::ECS::CBoss>(m_Health[i]->EntityPtr))
+						{
+							// Handle boss death differently
+							Frosty::EventBus::GetEventBus()->Publish<Frosty::WinEvent>(Frosty::WinEvent());
+						}
+						else
+						{
+							// Basic Enemy
+							auto& enemyComp = m_World->GetComponent<Frosty::ECS::CEnemy>(m_Health[i]->EntityPtr);
+
+							if (!m_World->HasComponent<Frosty::ECS::CDestroy>(m_Health[i]->EntityPtr))
+							{
+								m_World->AddComponent<Frosty::ECS::CDestroy>(m_Health[i]->EntityPtr);
+							}
+							Frosty::EventBus::GetEventBus()->Publish<Frosty::EnemyDeathEvent>(Frosty::EnemyDeathEvent(enemyComp.Weapon->Level * 100));
+							Frosty::EventBus::GetEventBus()->Publish<Frosty::DropItemEvent>(Frosty::DropItemEvent(m_Health[i]->EntityPtr));
+
+							if (enemyComp.Weapon->EntityPtr != nullptr)
+							{
+								if (!m_World->HasComponent<Frosty::ECS::CDestroy>(enemyComp.Weapon->EntityPtr))
+								{
+									m_World->AddComponent<Frosty::ECS::CDestroy>(enemyComp.Weapon->EntityPtr);
+								}
+							}
+						}
+
+					}
+				}
+			}
+		}
 	}
 
 	void CombatSystem::OnEvent(Frosty::BaseEvent& e)
@@ -141,41 +205,6 @@ namespace MCS
 
 					// Send event to heal Player
 					Frosty::EventBus::GetEventBus()->Publish<Frosty::HealAbilityEvent>(Frosty::HealAbilityEvent());
-				}
-			}
-		}
-
-		// Check if the attack killed the target (Maybe move this to another system that handles basic enemy, boss and player death differently)
-		if (m_Health[it->second]->CurrentHealth <= 0)
-		{
-			if (m_World->HasComponent<Frosty::ECS::CPlayer>(it->first))
-			{
-				// Handle player death differently
-				Frosty::EventBus::GetEventBus()->Publish<Frosty::GameoverEvent>(Frosty::GameoverEvent());
-			}
-			else if (m_World->HasComponent<Frosty::ECS::CBoss>(it->first))
-			{
-				// Handle boss death differently
-				Frosty::EventBus::GetEventBus()->Publish<Frosty::WinEvent>(Frosty::WinEvent());
-			}
-			else
-			{     
-				// Basic Enemy
-				auto& enemyComp = m_World->GetComponent<Frosty::ECS::CEnemy>(it->first);
-
-				if (!m_World->HasComponent<Frosty::ECS::CDestroy>(it->first))
-				{
-					m_World->AddComponent<Frosty::ECS::CDestroy>(it->first);
-				}
-				Frosty::EventBus::GetEventBus()->Publish<Frosty::EnemyDeathEvent>(Frosty::EnemyDeathEvent(enemyComp.Weapon->Level * 100));
-				Frosty::EventBus::GetEventBus()->Publish<Frosty::DropItemEvent>(Frosty::DropItemEvent(it->first));
-
-				if (enemyComp.Weapon->EntityPtr != nullptr)
-				{
-					if (!m_World->HasComponent<Frosty::ECS::CDestroy>(enemyComp.Weapon->EntityPtr))
-					{
-						m_World->AddComponent<Frosty::ECS::CDestroy>(enemyComp.Weapon->EntityPtr);
-					}
 				}
 			}
 		}

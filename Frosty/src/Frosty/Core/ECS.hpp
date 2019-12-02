@@ -731,7 +731,7 @@ namespace Frosty
 			static std::string NAME;
 			static const int RESET_DISTANCE = 60;
 
-			enum class State { Idle, Escape, Attack, Chase, Reset };
+			enum class State { Idle, Escape, Attack, Chase, Reset, Dead };
 			State CurrentState{ State::Idle };
 
 			CWeapon* Weapon{ nullptr };
@@ -757,6 +757,8 @@ namespace Frosty
 			int MaxPossibleHealth{ 40 };								// Max health an entity can upgrade to
 			int MaxHealth{ 5 };											// Max health an entity can currently have
 			int CurrentHealth{ 5 };
+
+			float DeathTimer{ -500.0f };
 
 			CHealth() = default;
 			CHealth(int health) : MaxHealth(health), CurrentHealth(health) {};

@@ -31,15 +31,25 @@ namespace MCS
 			// Get the point on our terrain
 			glm::vec3 point3D = ScreenToTerrainPoint();
 
-			// Look at point
-			LookAtPoint(point3D, i);
-
-			// Input
-			if (!m_Dash[i]->Active)
+			//Is player dead?
+			if (m_Health[i]->CurrentHealth > 0)
 			{
-				HandleMovement(i);
-				HandleAttack(i);
-				HandleInventory(i);
+				// Look at point
+				LookAtPoint(point3D, i);
+
+				// Input
+				if (!m_Dash[i]->Active)
+				{
+					HandleMovement(i);
+					HandleAttack(i);
+					HandleInventory(i);
+				}
+			}
+			//No movement if dead
+			else
+			{
+				m_Physics[i]->SpeedMultiplier = 0.0f;
+				m_Physics[i]->Direction = glm::vec3(0.0f);
 			}
 		}
 	}
