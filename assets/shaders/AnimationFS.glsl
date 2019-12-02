@@ -28,7 +28,8 @@ uniform sampler2D u_NormalTexture;
 
 uniform vec3 u_CameraPosition;
 uniform int u_Shininess;
-
+uniform vec4 u_ObjectColor;
+uniform float u_Flash;
 
 in vec3 v_FragPosition;
 in vec2 v_TextureCoords;
@@ -62,7 +63,7 @@ void main()
 		result += CalculateDirectionalLight(u_DirectionalLights[i], normal);
 	}
 
-	color = vec4(result * diffuseTexture.rgb, 1.0);
+	color = vec4(result * diffuseTexture.rgb, 1.0) + u_Flash;
 }
 
 vec3 CalculatePointLight(PointLight light, vec3 normal)

@@ -16,6 +16,30 @@ namespace MCS
 
 	void CombatSystem::OnUpdate()
 	{
+		// Damage flash effect set in OnCollisionEvent()
+		// Damage flash effect reset
+
+		for (int i = 1; i < p_Total; i++)
+		{
+			auto& entity = m_Transform[i]->EntityPtr;
+
+			if (m_World->HasComponent<Frosty::ECS::CEnemy>(entity))
+			{
+				auto& enemy = m_World->GetComponent<Frosty::ECS::CEnemy>(entity);
+
+				if (m_World->HasComponent<Frosty::ECS::CMaterial>(entity))
+				{
+					auto& enemyMaterial = m_World->GetComponent<Frosty::ECS::CMaterial>(entity);
+
+					float testTime = (Frosty::Time::CurrentTime() - enemy.DamageEffectTimer);
+					//kan bli optimeserat
+					if (testTime > enemy.DamageEffectTime)
+					{					
+						enemyMaterial.Flash = 0.0f;
+					}
+				}
+			}
+		}
 	}
 
 	void CombatSystem::OnEvent(Frosty::BaseEvent& e)
@@ -126,10 +150,14 @@ namespace MCS
 				attackComp.AttackedEntities.emplace_back(it->first->Id);
 				m_Health[it->second]->CurrentHealth -= attackComp.Damage;
 				Frosty::EventBus::GetEventBus()->Publish<Frosty::PlayerDamageEvent>(Frosty::PlayerDamageEvent());
+
+				//////////
 			}
 		}
 		else if (m_World->HasComponent<Frosty::ECS::CEnemy>(it->first))
 		{
+
+
 			auto& enemyComp = m_World->GetComponent<Frosty::ECS::CEnemy>(it->first);
 			if (enemyComp.CurrentState != Frosty::ECS::CEnemy::State::Reset)
 			{
@@ -141,6 +169,15 @@ namespace MCS
 
 					// Send event to heal Player
 					Frosty::EventBus::GetEventBus()->Publish<Frosty::HealAbilityEvent>(Frosty::HealAbilityEvent());
+
+					////////////
+
+					if (m_World->HasComponent<Frosty::ECS::CMaterial>(it->first))
+					{
+						auto& enemyMaterial = m_World->GetComponent<Frosty::ECS::CMaterial>(it->first);
+						enemyMaterial.Flash = 1.0f;
+						enemyComp.DamageEffectTimer = Frosty::Time::CurrentTime();
+					}
 				}
 			}
 		}

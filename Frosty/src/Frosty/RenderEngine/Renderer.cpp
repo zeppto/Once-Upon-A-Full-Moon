@@ -826,7 +826,8 @@ namespace Frosty
 
 			mat->UseShader->UploadUniformFloat3("u_CameraPosition", s_SceneData->GameCamera.CameraPosition);
 			mat->UseShader->UploadUniformInt("u_Shininess", mat->Shininess);
-
+			mat->UseShader->UploadUniformFloat4("u_ObjectColor", mat->Albedo);
+			mat->UseShader->UploadUniformFloat("u_Flash", mat->Flash);
 
 			// Point Lights
 			mat->UseShader->UploadUniformInt("u_TotalPointLights", (int)s_SceneData->PointLights.size());

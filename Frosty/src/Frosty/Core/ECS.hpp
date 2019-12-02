@@ -533,6 +533,7 @@ namespace Frosty
 			std::shared_ptr<Texture2D> BlendTexture1;
 			std::shared_ptr<Texture2D> BlendTexture2;
 
+			float Flash{ 0.0f };
 			float SpecularStrength{ 0.5f };
 			int Shininess{ 16 };
 			glm::vec2 TextureScale{ 1.0f };
@@ -741,6 +742,9 @@ namespace Frosty
 
 			float RunOnHealth{ 0.0f };
 
+			float DamageEffectTime{ 0.05f };
+			float DamageEffectTimer{ Frosty::Time::CurrentTime() };
+
 			CEnemy() = default;
 			CEnemy(CTransform* target, CWeapon* weapon, float runOnHealth = 0.0f) : Target(target), Weapon(weapon), RunOnHealth(runOnHealth) { }
 			CEnemy(const CEnemy& org) { FY_CORE_ASSERT(false, "Copy constructor in CEnemy called."); }
@@ -862,6 +866,7 @@ namespace Frosty
 		struct CParticleSystem : public BaseComponent
 		{
 			static std::string NAME;
+			//CTransform* Target{ nullptr };
 
 			struct Particle
 			{
