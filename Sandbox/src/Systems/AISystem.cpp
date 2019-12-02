@@ -47,7 +47,7 @@ namespace MCS
 			//Boss Timer
 			if (Frosty::Time::CurrentTime() - BossTimer >= BossSpawnTime)
 			{
-				if (!m_BossSpawned) SpawnBoss();
+				//if (!m_BossSpawned) SpawnBoss();
 			}
 		}
 	}
@@ -58,6 +58,9 @@ namespace MCS
 		{
 		case Frosty::EventType::InitiateGridMap:
 			OnInitiateGridMap(static_cast<Frosty::InitiateGridEvent&>(e));
+			break;
+		case Frosty::EventType::ResetBoss:
+			OnResetBossAbilities(static_cast<Frosty::ResetBossAbilitiesEvent&>(e));
 			break;
 		default:
 			break;
@@ -341,8 +344,8 @@ namespace MCS
 		if (bossComp.ActiveAbility == Frosty::ECS::CBoss::AbilityState::None)
 		{
 			bool abilityCastSuccess = false;
-			//int randomNr = rand() % 100 +1;
-			int randomNr = 90;
+			int randomNr = rand() % 100 +1;
+			//int randomNr = 90;
 			if (Frosty::Time::CurrentTime() - bossComp.LeapCooldownTime >= bossComp.LeapCooldown &&
 				Frosty::Time::CurrentTime() - bossComp.LeapIntervalTime >= bossComp.LeapInterval)
 			{
@@ -384,13 +387,13 @@ namespace MCS
 					}
 				}
 
-				//bossComp.ChargeIntervalTime = Frosty::Time::CurrentTime();
+				bossComp.ChargeIntervalTime = Frosty::Time::CurrentTime();
 			}
 		}
 
 		if (bossComp.ActiveAbility == Frosty::ECS::CBoss::AbilityState::Leap)
 		{
-			physComp.SpeedMultiplier = 8.0f;
+			physComp.SpeedMultiplier = 3.0f;
 
 			if (glm::distance(m_Transform[index]->Position, bossComp.LeapTargetPosition) <= 1.0f)
 			{
@@ -409,7 +412,7 @@ namespace MCS
 				{
 					// Loading charge completed
 					Frosty::EventBus::GetEventBus()->Publish <Frosty::PlayAnimEvent>(Frosty::PlayAnimEvent(m_Transform[index]->EntityPtr, 4));
-					physComp.SpeedMultiplier = 6.0f;
+					physComp.SpeedMultiplier = 4.0f;
 				}
 
 				bossComp.DistanceCharged += glm::length(physComp.Direction * physComp.Speed * physComp.SpeedMultiplier * Frosty::Time::DeltaTime());

@@ -41,6 +41,11 @@ namespace MCS
 		void CreateLVL2Projectile(const std::shared_ptr<Frosty::ECS::Entity>& weaponCarrier, const std::shared_ptr<Frosty::ECS::Entity>& weapon);
 		void CreateLVL3Projectile(const std::shared_ptr<Frosty::ECS::Entity>& weaponCarrier, const std::shared_ptr<Frosty::ECS::Entity>& weapon);
 
+		void CreateFireEffect(Frosty::ECS::CAttack& attack, glm::vec3 spawnPos, glm::vec3 rotation);
+		void CreateEarthEffect(Frosty::ECS::CAttack& attack, glm::vec3 spawnPos, glm::vec3 rotation);
+		void CreateWindEffect(Frosty::ECS::CAttack& attack, glm::vec3 spawnPos, glm::vec3 rotation);
+		void CreateWaterEffect(Frosty::ECS::CAttack& attack, glm::vec3 spawnPos, glm::vec3 rotation);
+
 		float GenerateCriticalHit(float criticalHit, float criticalHitChance);
 
 		void HandleInventory(size_t index);

@@ -29,6 +29,7 @@ namespace MCS
 		void OnActiveWitchCircleEvent(Frosty::ActivateWitchCircleEvent& e);
 		void ResetHealthBar();
 		void RemoveHealthBar();
+		void SetHUDText(const std::shared_ptr<Frosty::ECS::Entity>& entity, std::string text);
 
 	private:
 		std::array<Frosty::ECS::CTransform*, Frosty::ECS::MAX_ENTITIES_PER_COMPONENT> m_Transform;

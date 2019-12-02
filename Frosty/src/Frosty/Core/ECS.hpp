@@ -672,6 +672,12 @@ namespace Frosty
 		{
 			static std::string NAME;
 
+			//Particle system effects from enchanting
+			std::shared_ptr<Entity> FireEffect{ nullptr };
+			std::shared_ptr<Entity> EarthEffect{ nullptr };
+			std::shared_ptr<Entity> WindEffect{ nullptr };
+			std::shared_ptr<Entity> WaterEffect{ nullptr };
+
 			std::vector<EntityID> AttackedEntities;
 
 			enum class AttackType { Melee, Range };
@@ -718,6 +724,8 @@ namespace Frosty
 
 			float DamageEffectTime{ 2.0f };
 			float DamageEffectTimer{ Frosty::Time::CurrentTime() };
+
+
 
 			CPlayer() = default;
 			CPlayer(CWeapon* weapon) : Weapon(weapon) { }
@@ -947,7 +955,11 @@ namespace Frosty
 			std::shared_ptr<Shader> UseShader;
 			std::shared_ptr<Texture2D> Texture;
 
-			CParticleSystem() = default; //Should never be initialized empty!
+			CParticleSystem() //Should never be initialized empty!
+			{
+				Particles.resize(MaxParticles);
+			}
+
 			CParticleSystem(const std::string shaderName, const std::string texName, unsigned int maxParticles, const glm::vec3& color, float particleSpeed)
 				: ShaderName(shaderName), TextureName(texName), MaxParticles(maxParticles), SystemStartColor(color), SystemEndColor(color), Speed(particleSpeed)
 			{
