@@ -101,7 +101,7 @@ namespace MCS
 			m_CurrentRoomBool = m_World->GetCurrentRoom();
 			//	Level::MoveToNewRoom(m_CurrentRoome.sideExits[0], m_CurrentRoome.sideExits[1], m_CurrentRoome.sideExits[2], m_CurrentRoome.sideExits[3]);
 			m_LevelFileFormat.OpenFromFile("deadend_chests_IsStatick_t_p_e_r_h", !m_CurrentRoomBool, m_PlayerCoords, playerTransform, rotate);
-
+			
 
 			m_T_Room.RoomName = "deadend_chests_IsStatick_t_p_e_r_h";
 			m_T_Room.Rotation = rotate;

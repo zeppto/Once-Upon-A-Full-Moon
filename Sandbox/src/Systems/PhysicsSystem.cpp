@@ -178,22 +178,67 @@ namespace MCS
 					if (m_World->HasComponent<Frosty::ECS::CInventory>(m_Transform[index]->EntityPtr))
 					{
 
-						//checkCollision = false;
+
+						checkCollision = false;
+						if (m_World->HasComponent<Frosty::ECS::CLevelExit>(m_Transform[i]->EntityPtr))
+						{
+							checkCollision = true;
+						}
+
 						if (m_Current_BoolMap != nullptr)
 						{
+							
 							glm::vec3 tempPos = m_Transform[index]->Position + glm::vec3(150.0f, 0.0f, 150.0f);
 
-							//	tempPos = glm::vec3(300.0f - tempPos.x, 0.0f, 300.0f - tempPos.z);
-							tempPos = glm::vec3(tempPos.x, 0.0f, tempPos.z);
+							float tempX = glm::floor(std::abs(tempPos.x));
+							int intXcoord = static_cast<int>(tempX) % 300;
+							float newXcoord = static_cast<float>(intXcoord) + (std::abs(tempPos.x) - tempX);
 
+							if (tempPos.x < 0.0f)
+							{
+								newXcoord = 300.0f - newXcoord;
+							}
 
-							bool testBool = m_Current_BoolMap->CheckCollision(tempPos);
+							float tempZ = glm::floor(std::abs(tempPos.z));
+							int intZcoord = static_cast<int>(tempZ) % 300;
+							float newZcoord = static_cast<float>(intZcoord) + (std::abs(tempPos.z) - tempZ);
+
+							if (tempPos.z < 0.0f)
+							{
+								newZcoord = 300.0f - newZcoord;
+							}
+
+							if (m_Room_Rotation != 0.0f)
+							{
+								if (m_Room_Rotation == 90.0f)
+								{
+									float temp = newXcoord;
+									newXcoord = 300.0f - newZcoord;
+									newZcoord = temp;
+								}
+								else if (m_Room_Rotation == 180.0f)
+								{
+									newXcoord = 300.0f - newXcoord;
+									newZcoord = 300.0f - newZcoord;
+								}
+								else if (m_Room_Rotation == 270.0f)
+								{
+									float temp = newXcoord;
+									newXcoord = newZcoord;
+									newZcoord = 300.0f - temp;
+								}
+							}
+
+							bool testBool = m_Current_BoolMap->CheckCollision(glm::vec3(newXcoord, 0.0f, newZcoord));
+
 
 							if (testBool)
 							{
 								FY_INFO("1");
 							}
 						}
+
+
 					}
 				}
 
@@ -207,6 +252,8 @@ namespace MCS
 					glm::vec3 finalLengthA = glm::vec3(m_Physics[index]->BoundingBox->halfSize[0], m_Physics[index]->BoundingBox->halfSize[1], m_Physics[index]->BoundingBox->halfSize[2]) * m_Transform[index]->Scale;
 					glm::vec3 finalLengthB = glm::vec3(m_Physics[i]->BoundingBox->halfSize[0], m_Physics[i]->BoundingBox->halfSize[1], m_Physics[i]->BoundingBox->halfSize[2]) * m_Transform[i]->Scale;
 					intersect = Frosty::CollisionDetection::AABBIntersect(finalLengthA, finalCenterA, finalLengthB, finalCenterB);
+
+
 
 
 					if (intersect)
