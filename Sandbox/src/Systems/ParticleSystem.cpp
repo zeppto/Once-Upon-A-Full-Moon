@@ -164,11 +164,6 @@ namespace MCS
 		}
 	}
 
-	void ParticleSystem::ChangeParticlesTexture(Frosty::ECS::CParticleSystem & particleSystem, std::string textureName)
-	{
-
-	}
-
 	void ParticleSystem::UpdateParticleSystem(size_t systemIndex)
 	{
 		m_ParticleSystem[systemIndex]->Timer -= Frosty::Time::DeltaTime(); //Update internal timer
@@ -238,13 +233,13 @@ namespace MCS
 				m_ParticleSystem[systemIndex]->Particles[i].StartSize = m_ParticleSystem[systemIndex]->StartParticleSize;
 			}
 		}
-		if (m_ParticleSystem[systemIndex]->Particles[0].Speed != m_ParticleSystem[systemIndex]->Speed) //Temporary if we're gonna have physics, drag or random speeds
-		{
-			for (uint32_t i = 0; i < m_ParticleSystem[systemIndex]->MaxParticles; i++)
-			{
-				m_ParticleSystem[systemIndex]->Particles[i].Speed = m_ParticleSystem[systemIndex]->Speed;
-			}
-		}
+		//if (m_ParticleSystem[systemIndex]->Particles[0].Speed != m_ParticleSystem[systemIndex]->Speed) //Temporary if we're gonna have physics, drag or random speeds
+		//{
+		//	for (uint32_t i = 0; i < m_ParticleSystem[systemIndex]->MaxParticles; i++)
+		//	{
+		//		m_ParticleSystem[systemIndex]->Particles[i].Speed = m_ParticleSystem[systemIndex]->Speed;
+		//	}
+		//}
 
 		if (m_ParticleSystem[systemIndex]->Preview)
 		{
@@ -293,7 +288,16 @@ namespace MCS
 		Frosty::ECS::CParticleSystem::Particle& p = m_ParticleSystem[systemIndex]->Particles[index];
 
 		p.CamDistance = glm::length2(glm::vec3(p.Position) - m_CameraTransform->Position);
-		p.Position += (p.Direction * p.Speed) * Frosty::Time::DeltaTime();
+		if (m_ParticleSystem[systemIndex]->HasGravity)
+		{
+			p.Direction += m_ParticleSystem[systemIndex]->ParticleWeight * glm::vec4(0.0f, -1.0f, 0.0f, 1.0f) * Frosty::Time::DeltaTime();
+			glm::normalize(p.Direction);
+			p.Position += (p.Direction * p.Speed) * Frosty::Time::DeltaTime();
+		}
+		else
+		{
+			p.Position += (p.Direction * p.Speed) * Frosty::Time::DeltaTime();
+		}
 
 		//Fade in
 		if (m_ParticleSystem[systemIndex]->FadeInTreshold < p.MaxLifetime) {
@@ -380,6 +384,7 @@ namespace MCS
 			p.Direction.z = randDir.z;
 		}
 		p.Color = p.StartColor;
+		p.Speed = m_ParticleSystem[systemIndex]->Speed; //TODO: StartSpeed
 	}
 
 	void ParticleSystem::UpdateGpuData(size_t systemIndex, size_t index, uint32_t particleCount)
@@ -421,7 +426,6 @@ namespace MCS
 			}
 		}
 
-		//m_ParticleSystem[systemIndex]->LastUsedParticle = 0;
 		return 0; // All particles taken, override the first one
 	}
 

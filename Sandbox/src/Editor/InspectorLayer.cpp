@@ -1016,6 +1016,8 @@ namespace MCS
 						}
 						ImGui::DragFloat3("Rotation", glm::value_ptr(comp.SystemRotation), 0.1f, 0.0f, 0.0f, "%.2f");
 						ImGui::Checkbox("Random direction", &comp.RandomDirection);
+						ImGui::SameLine();
+						ImGui::Checkbox("Gravity", &comp.HasGravity);
 						if (comp.RandomDirection == false)
 						{
 							ImGui::DragFloat3("Direction", glm::value_ptr(comp.ParticleSystemDirection), 0.1f, 0.0f, 0.0f, "%.2f");
@@ -1024,6 +1026,10 @@ namespace MCS
 						{
 							ImGui::InputFloat("Spread", &comp.randSpread);
 							ImGui::DragFloat3("Main direction", glm::value_ptr(comp.randMainDir), 0.1f, 0.0f, 0.0, "%.2f");
+						}
+						if (comp.HasGravity)
+						{
+							ImGui::InputFloat("Weight", &comp.ParticleWeight);
 						}
 						ImGui::Checkbox("Random start position", &comp.RandomStartPos);
 						if (comp.RandomStartPos == false)
