@@ -16,9 +16,7 @@ namespace MCS
 		p_Signature.set(Frosty::ECS::getComponentTypeID<Frosty::ECS::CTransform>(), true);
 		p_Signature.set(Frosty::ECS::getComponentTypeID<Frosty::ECS::CPhysics>(), true);
 
-		m_Test_BoolMap = Frosty::AssetManager::GetBoolMap("deadend_chests_IsStatick_t_p_e_r_h");
-
-		int o = 0;
+	//	m_Current_BoolMap = Frosty::AssetManager::GetBoolMap("deadend_chests_IsStatick_t_p_e_r_h");
 	}
 
 	void PhysicsSystem::OnUpdate()
@@ -57,9 +55,9 @@ namespace MCS
 			OnLoadBoolMapEvent(static_cast<Frosty::BoolMapLoadedEvent&>(e));
 			break;
 
-		//case Frosty::EventType::UpdateCurrentRoom:
-		//	OnUpdateCurrentRoomEvent(static_cast<Frosty::UpdateCurrentRoomEvent&>(e));
-		//	break;
+		case Frosty::EventType::UpdateCurrentRoom:
+			OnUpdateCurrentRoomEvent(static_cast<Frosty::UpdateCurrentRoomEvent&>(e));
+			break;
 		}
 	}
 
@@ -142,10 +140,11 @@ namespace MCS
 		int o = 0;
 	}
 
-	//void PhysicsSystem::OnUpdateCurrentRoomEvent(Frosty::UpdateCurrentRoomEvent& e)
-	//{
-	//	m_CurrentActiveBoolMap = Frosty::AssetManager::GetBoolMap(e.GetCurrentRoom());
-	//}
+	void PhysicsSystem::OnUpdateCurrentRoomEvent(Frosty::UpdateCurrentRoomEvent& e)
+	{
+		m_Current_BoolMap = Frosty::AssetManager::GetBoolMap(e.GetCurrentRoom());
+		m_Room_Rotation = e.GetRotation();
+	}
 
 
 	void PhysicsSystem::CheckCollision(size_t index)
@@ -176,22 +175,25 @@ namespace MCS
 				if (( m_World->HasComponent<Frosty::ECS::CPlayer>(m_Transform[index]->EntityPtr)))
 				{
 
-					if(m_World->HasComponent<Frosty::ECS::CInventory>(m_Transform[index]->EntityPtr))
-					{ 
-
-					checkCollision = false;
-					glm::vec3 tempPos = m_Transform[index]->Position + glm::vec3(150.0f, 0.0f, 150.0f);
-
-				//	tempPos = glm::vec3(300.0f - tempPos.x, 0.0f, 300.0f - tempPos.z);
-					tempPos = glm::vec3(tempPos.x, 0.0f,tempPos.z);
-
-
-					bool testBool = m_Test_BoolMap->CheckCollision(tempPos);
-
-					if (testBool)
+					if (m_World->HasComponent<Frosty::ECS::CInventory>(m_Transform[index]->EntityPtr))
 					{
-						FY_INFO("1");
-					}
+
+						//checkCollision = false;
+						if (m_Current_BoolMap != nullptr)
+						{
+							glm::vec3 tempPos = m_Transform[index]->Position + glm::vec3(150.0f, 0.0f, 150.0f);
+
+							//	tempPos = glm::vec3(300.0f - tempPos.x, 0.0f, 300.0f - tempPos.z);
+							tempPos = glm::vec3(tempPos.x, 0.0f, tempPos.z);
+
+
+							bool testBool = m_Current_BoolMap->CheckCollision(tempPos);
+
+							if (testBool)
+							{
+								FY_INFO("1");
+							}
+						}
 					}
 				}
 

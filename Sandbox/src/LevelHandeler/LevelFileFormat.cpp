@@ -354,8 +354,8 @@ namespace MCS
 					glm::mat4 matrix(1.0f);
 					matrix = glm::rotate(matrix, glm::radians((float)rotation), glm::vec3(0, 1, 0));
 					matrix = glm::translate(matrix, fileEntitys.myEntitys.at(i).myTransform.Position);
-					matrix = glm::rotate(matrix, fileEntitys.myEntitys.at(i).myTransform.Rotation.x, glm::vec3(1, 0, 0));
-					matrix = glm::rotate(matrix, fileEntitys.myEntitys.at(i).myTransform.Rotation.y, glm::vec3(0, 1, 0));
+					matrix = glm::rotate(matrix, fileEntitys.myEntitys.at(i).myTransform.Rotation.x , glm::vec3(1, 0, 0));
+					matrix = glm::rotate(matrix, fileEntitys.myEntitys.at(i).myTransform.Rotation.y , glm::vec3(0, 1, 0));
 					matrix = glm::rotate(matrix, fileEntitys.myEntitys.at(i).myTransform.Rotation.z, glm::vec3(0, 0, 1));
 					//matrix = glm::scale(matrix, tranform.Scale);
 					//temp ( becuse hitbox rotition dosent exist)
@@ -729,6 +729,7 @@ namespace MCS
 						!fileEntitys.myEntitys.at(i).MyComponents.at(11).HaveComponent &&
 						!fileEntitys.myEntitys.at(i).MyComponents.at(12).HaveComponent)
 					{
+
 						if (!TestMap.count(fileEntitys.myEntitys.at(i).myMesh.MeshName))
 						{
 							Frosty::VABatch Temp;
@@ -737,11 +738,16 @@ namespace MCS
 
 							glm::mat4 TempMat(1.0f);
 							glm::vec3 Offset(150.0f, 0.0f, 150.0f);
+
 							TempMat = glm::translate(TempMat, fileEntitys.myEntitys.at(i).myTransform.Position + Offset);
 							TempMat = glm::rotate(TempMat, glm::radians(fileEntitys.myEntitys.at(i).myTransform.Rotation.y), glm::vec3(0.0f, 1.0f, 0.0f));
 							TempMat = glm::scale(TempMat, fileEntitys.myEntitys.at(i).myTransform.Scale);
 							Temp.Transforms.emplace_back(TempMat);
-							TestMap[fileEntitys.myEntitys.at(i).myMesh.MeshName] = Temp;
+
+							if (fileEntitys.myEntitys.at(i).myTransform.Scale != glm::vec3(300.0f, 1.0f, 300.0f))
+							{
+								TestMap[fileEntitys.myEntitys.at(i).myMesh.MeshName] = Temp;
+							}
 						}
 						else
 						{
@@ -749,11 +755,15 @@ namespace MCS
 							glm::mat4 TempMat(1.0f);
 
 							glm::vec3 Offset(150.0f, 0.0f, 150.0f);
+
 							TempMat = glm::translate(TempMat, fileEntitys.myEntitys.at(i).myTransform.Position + Offset);
 							TempMat = glm::rotate(TempMat, glm::radians(fileEntitys.myEntitys.at(i).myTransform.Rotation.y), glm::vec3(0.0f, 1.0f, 0.0f));
 							TempMat = glm::scale(TempMat, fileEntitys.myEntitys.at(i).myTransform.Scale);
 
-							TestMap[fileEntitys.myEntitys.at(i).myMesh.MeshName].Transforms.emplace_back(TempMat);
+							if (fileEntitys.myEntitys.at(i).myTransform.Scale != glm::vec3(300.0f, 1.0f, 300.0f))
+							{
+								TestMap[fileEntitys.myEntitys.at(i).myMesh.MeshName].Transforms.emplace_back(TempMat);
+							}
 						}
 					}
 				}

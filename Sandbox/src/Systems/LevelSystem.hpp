@@ -13,6 +13,10 @@ namespace Frosty { class CreatEntityEvent; }
 namespace Frosty { class UpdatePlayerRoomCoordEvent; }
 namespace MCS
 {
+
+	
+
+
 	class LevelSystem : public Frosty::ECS::BaseSystem
 	{
 	public:
@@ -30,6 +34,14 @@ namespace MCS
 		virtual std::string GetInfo() const override;
 
 	private:
+
+		struct RoomInfo
+		{
+			std::string RoomName{""};
+			int Rotation;
+		};
+
+
 		void OnExitLevelEvent(Frosty::ExitLevelEvent& e);
 		void OnSaveLevelEvent(Frosty::SaveLevelEvent& e);
 		void OnCreateLevelEvent(Frosty::CreateLevelEvent& e);
@@ -46,10 +58,16 @@ namespace MCS
 		std::array<Frosty::ECS::CTransform*, Frosty::ECS::MAX_ENTITIES_PER_COMPONENT> m_Transform;
 
 		MapGenerator m_Map;
-		
+
+		//Canvas
 		bool m_CurrentRoomBool = true;
-		std::string m_ThisRoomName{ "" }; //False
-		std::string m_OtherRoomName{ "" }; //True
+		//std::string m_ThisRoomName{ "" }; //False
+		//std::string m_OtherRoomName{ "" }; //True
+		//float m_RoomRotation {0.0f};
+
+		RoomInfo m_T_Room;
+		RoomInfo m_O_Room;
+
 
 		glm::ivec2 m_PlayerCoords = { 10, 15 };//{ 10, 15 };
 		glm::ivec2 m_OtherRoom = { -1, -1 };

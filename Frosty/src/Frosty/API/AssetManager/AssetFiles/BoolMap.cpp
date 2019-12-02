@@ -79,21 +79,19 @@ namespace Frosty
 			//int zz = static_cast<int>(((LocalPos.z * m_PixCoordRatio)) * m_PixWidth);
 
 
-			uint32_t xx = static_cast<uint32_t>((LocalPos.x * m_PixCoordRatio));
-			uint32_t zz = static_cast<uint32_t>((LocalPos.z * m_PixCoordRatio))* m_PixWidth;
+			uint64_t xx = static_cast<uint64_t>((LocalPos.x * m_PixCoordRatio));
+			uint64_t zz = static_cast<uint64_t>((LocalPos.z * m_PixCoordRatio)) * m_PixWidth;
 			
-			uint32_t pos = xx + zz;
+			uint64_t pos = xx + zz;
 
 		//	FY_CORE_INFO("{0}", pos);
 
-			int div = static_cast<int>(pos / 64);
-			int mod = static_cast<int>(pos % 64);
+			uint64_t div = static_cast<uint64_t>(pos / 64);
+			uint64_t mod = static_cast<uint64_t>(pos % 64);
 
 
 			uint64_t bitmapVal = m_BitMap[div];
-
-			uint64_t kk = 1;
-			uint64_t modVal = 1 << (63 - mod);
+			uint64_t modVal = (uint64_t)1 << ((uint64_t)63 - mod);
 
 
 			if (bitmapVal & modVal)

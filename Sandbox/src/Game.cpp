@@ -107,10 +107,10 @@ namespace MCS
 
 
 		//TestPlane
-		auto& testPlane = world->CreateEntity({ 0.0f, 0.2f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 300.0f, 1.0f, 300.0f });
+		auto& testPlane = world->CreateEntity({ 0.0f, 0.2f, 0.0f }, { 0.0f, -90.0f, 0.0f }, { 300.0f, 1.0f, 300.0f });
 		world->AddComponent<Frosty::ECS::CMesh>(testPlane, Frosty::AssetManager::GetMesh("pPlane1"));
 		auto& TestPlaneMaterial = world->AddComponent<Frosty::ECS::CMaterial>(testPlane, Frosty::AssetManager::GetShader("Texture2D"));
-		TestPlaneMaterial.DiffuseTexture = Frosty::AssetManager::GetTexture2D("Test");
+		TestPlaneMaterial.DiffuseTexture = Frosty::AssetManager::GetTexture2D("deadend_chests_IsStatick_t_p_e_r_h");
 
 
 

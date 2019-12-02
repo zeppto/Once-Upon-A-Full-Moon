@@ -215,14 +215,16 @@ namespace Frosty
 	class UpdateCurrentRoomEvent : public BaseEvent
 	{
 	public:
-		UpdateCurrentRoomEvent(const std::string& CurrentRoom) : m_CurrentRoom(CurrentRoom) {}
+		UpdateCurrentRoomEvent(const std::string& CurrentRoom, const int& rotation) : m_CurrentRoom(CurrentRoom), m_Rotation(rotation){}
 
 		inline const std::string& GetCurrentRoom() { return m_CurrentRoom; }
+		inline const int& GetRotation() { return m_Rotation; }
 
 		EVENT_TYPE(UpdateCurrentRoom)
 
 	private:
 		std::string m_CurrentRoom;
+		int m_Rotation;
 	};
 
 

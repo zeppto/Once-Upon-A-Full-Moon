@@ -116,6 +116,10 @@ namespace Frosty
 		GLint locationMM = glGetUniformLocation(s_RenderProgramID, "u_ModelMat");
 		glUniformMatrix4fv(locationVO, 1, GL_FALSE, &s_ViewOrtho[0][0]);
 
+		glEnable(GL_CULL_FACE);
+		glCullFace(GL_FRONT);
+		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+
 		//Render
 
 		//ModelBatch
