@@ -25,7 +25,7 @@ void MCS::AnimationSystem::OnUpdate()
 				if (!m_World->GetComponent<Frosty::ECS::CDash>(m_AControllers[i]->EntityPtr).Active)
 				{
 					auto& physics = m_World->GetComponent<Frosty::ECS::CPhysics>(m_AControllers[i]->EntityPtr);
-					if (physics.Direction.x != 0.0f || physics.Direction.y != 0.0f || physics.Direction.z != 0.0f)
+					if (physics.Direction.x != 0.0f || physics.Direction.z != 0.0f)
 					{
 						if (m_AControllers[i]->currAnim->GetName() != "Scarlet_Run")
 						{
@@ -33,6 +33,10 @@ void MCS::AnimationSystem::OnUpdate()
 							m_AControllers[i]->animSpeed = 0.7f;
 							UpdateAnimOffset(m_AControllers[i]);
 						}
+					}
+					else if (physics.Direction.y != 0.0f)
+					{
+						//Scarlet is stunned!
 					}
 					else
 					{
@@ -327,7 +331,7 @@ void MCS::AnimationSystem::OnPlayAnimEvent(Frosty::PlayAnimEvent& e)
 				case 2:
 					//Leap
 					BeginNewAnim(controller, "Werewolf_Attack2");
-					controller->animSpeed = 2.0f;
+					controller->animSpeed = 1.5f;
 					break;
 				case 3:
 					BeginNewAnim(controller, "Werewolf_Charge_Prepare");
@@ -367,11 +371,11 @@ void MCS::AnimationSystem::OnPlayAnimEvent(Frosty::PlayAnimEvent& e)
 					break;
 				case 1:
 					BeginNewAnim(controller, "Cultist_Attack1");
-					controller->animSpeed = 1.0f;
+					controller->animSpeed = 1.7f;
 					break;
 				case 2:
 					BeginNewAnim(controller, "Cultist_Attack2");
-					controller->animSpeed = 2.0f;
+					controller->animSpeed = 3.0f;
 					break;
 				}
 				UpdateAnimOffset(controller);
