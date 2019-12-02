@@ -19,8 +19,8 @@ namespace MCS
 		int maxMinute = 5;
 
 		int spawnMinute = rand() % (maxMinute - minMinute + 1) + minMinute;
-		BossSpawnTime = spawnMinute * 60.0f + 20.0f;
-		//BossSpawnTime = 30.0f;
+		//BossSpawnTime = spawnMinute * 60.0f + 20.0f;
+		BossSpawnTime = 10.0f;
 	}
 
 	void AISystem::OnUpdate()
@@ -183,6 +183,13 @@ namespace MCS
 				//if (Frosty::Time::GetFrameCount() % 60 == 0) FY_INFO("Reset");
 				return;
 			}
+		}
+
+		//Dead
+		if (m_Health[index]->CurrentHealth <= 0)
+		{
+			m_Enemy[index]->CurrentState = Frosty::ECS::CEnemy::State::Dead;
+			return;
 		}
 
 		// Escape
@@ -444,7 +451,7 @@ namespace MCS
 		auto& enemyComp = m_World->AddComponent<Frosty::ECS::CEnemy>(boss, m_PlayerTransform, &bossWeaponComp);
 		enemyComp.SpawnPosition = m_BossSpawn;
 		enemyComp.SightRange = 300.0f;
-		m_World->AddComponent<Frosty::ECS::CHealth>(boss, 50);
+		m_World->AddComponent<Frosty::ECS::CHealth>(boss, 1);
 		m_World->AddComponent<Frosty::ECS::CHealthBar>(boss, glm::vec3(0.0f, 10.0f, 0.0f));
 		m_World->AddComponent<Frosty::ECS::CDropItem>(boss);
 		m_World->AddComponent<Frosty::ECS::CBoss>(boss);

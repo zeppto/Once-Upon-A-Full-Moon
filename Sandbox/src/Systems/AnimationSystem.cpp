@@ -340,6 +340,8 @@ void MCS::AnimationSystem::OnPlayAnimEvent(Frosty::PlayAnimEvent& e)
 				case 4:
 					BeginNewAnim(controller, "Werewolf_Run");
 					controller->animSpeed = 2.0f;
+					controller->currAnim->SetIsRepeating(true);
+					controller->isBusy = false;
 				case 5:
 					controller->animSpeed = 1.0f;
 
@@ -385,7 +387,7 @@ void MCS::AnimationSystem::OnPlayAnimEvent(Frosty::PlayAnimEvent& e)
 	else
 	{
 		FY_FATAL("AN ANIM EVENT WAS PUBLISHED ON ENTITY: {0}" ,e.GetEntity()->Id);
-		FY_FATAL("WITHOUT HAVING AN ANIMCONTROLLER COMPONENT! WHY WOULD YOU DO THAT?? WHAT IS W R O N G WITH YOU!!???");
+		FY_FATAL("WITHOUT HAVING AN ANIMCONTROLLER COMPONENT! ");
 	}
 }
 
