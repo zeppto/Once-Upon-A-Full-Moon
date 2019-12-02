@@ -25,6 +25,7 @@
 #include "Systems/AnimationSystem.hpp"
 #include "Systems/AISystem.hpp"
 #include "Systems/WitchCircleSystem.hpp"
+#include "Systems/MediaSystem.h"
 
 namespace MCS
 {
@@ -118,6 +119,7 @@ namespace MCS
 		world->AddSystem<GUISystem>();
 		world->AddSystem<LootingSystem>();
 		world->AddSystem<WitchCircleSystem>();
+		world->AddSystem<MediaSystem>();
 
 		world->Awake();
 		particleSystem->AttachGameCamera(&world->GetComponent<Frosty::ECS::CTransform>(world->GetSceneCamera()));
