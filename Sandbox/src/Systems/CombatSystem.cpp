@@ -25,6 +25,9 @@ namespace MCS
 		case Frosty::EventType::Collision:
 			OnCollisionEvent(static_cast<Frosty::CollisionEvent&>(e));
 			break;
+		case Frosty::EventType::Damage:
+			OnDamageEvent(static_cast<Frosty::DamageEvent&>(e));
+			break;
 		default:
 			break;
 		}
@@ -128,6 +131,7 @@ namespace MCS
 				//Frosty::EventBus::GetEventBus()->Publish<Frosty::PlayMusicEvent>(Frosty::PlayMusicEvent("assets/music/mainmenu.mp3", 1.0f));
 				attackComp.AttackedEntities.emplace_back(it->first->Id);
 				m_Health[it->second]->CurrentHealth -= attackComp.Damage;
+				Frosty::EventBus::GetEventBus()->Publish<Frosty::PlayerDamageEvent>(Frosty::PlayerDamageEvent());
 			}
 		}
 		else if (m_World->HasComponent<Frosty::ECS::CEnemy>(it->first))
@@ -146,6 +150,9 @@ namespace MCS
 					//Frosty::EventBus::GetEventBus()->Publish<Frosty::PlayMediaEvent>(Frosty::PlayMediaEvent(fileName, 1.0f, true, 0));
 					attackComp.AttackedEntities.emplace_back(it->first->Id);
 					m_Health[it->second]->CurrentHealth -= attackComp.Damage;
+
+					// Send event to heal Player
+					Frosty::EventBus::GetEventBus()->Publish<Frosty::HealAbilityEvent>(Frosty::HealAbilityEvent());
 				}
 			}
 		}
@@ -156,25 +163,71 @@ namespace MCS
 			if (m_World->HasComponent<Frosty::ECS::CPlayer>(it->first))
 			{
 				// Handle player death differently
+				Frosty::EventBus::GetEventBus()->Publish<Frosty::GameoverEvent>(Frosty::GameoverEvent());
 			}
 			else if (m_World->HasComponent<Frosty::ECS::CBoss>(it->first))
 			{
 				// Handle boss death differently
+				Frosty::EventBus::GetEventBus()->Publish<Frosty::WinEvent>(Frosty::WinEvent());
 			}
 			else
-			{
+			{     
 				// Basic Enemy
+				auto& enemyComp = m_World->GetComponent<Frosty::ECS::CEnemy>(it->first);
+
 				if (!m_World->HasComponent<Frosty::ECS::CDestroy>(it->first))
 				{
 					m_World->AddComponent<Frosty::ECS::CDestroy>(it->first);
+				}
+				Frosty::EventBus::GetEventBus()->Publish<Frosty::EnemyDeathEvent>(Frosty::EnemyDeathEvent(enemyComp.Weapon->Level * 100));
+				Frosty::EventBus::GetEventBus()->Publish<Frosty::DropItemEvent>(Frosty::DropItemEvent(it->first));
+
+				if (enemyComp.Weapon->EntityPtr != nullptr)
+				{
+					if (!m_World->HasComponent<Frosty::ECS::CDestroy>(enemyComp.Weapon->EntityPtr))
+					{
+						m_World->AddComponent<Frosty::ECS::CDestroy>(enemyComp.Weapon->EntityPtr);
+					}
 				}
 			}
 		}
 
 		// Check if attack should be destroyed on hit
-		if (m_World->GetComponent<Frosty::ECS::CAttack>(entityA).Destroyable && !m_World->HasComponent<Frosty::ECS::CDestroy>(entityA))
+		auto& attackComp = m_World->GetComponent<Frosty::ECS::CAttack>(entityA);
+		if (attackComp.Destroyable && !m_World->HasComponent<Frosty::ECS::CDestroy>(entityA))
 		{
+			if (attackComp.FireEffect)
+			{
+				m_World->AddComponent<Frosty::ECS::CDestroy>(attackComp.FireEffect);
+			}
+			if (attackComp.EarthEffect)
+			{
+				m_World->AddComponent<Frosty::ECS::CDestroy>(attackComp.EarthEffect);
+			}
+			if (attackComp.WindEffect)
+			{
+				m_World->AddComponent<Frosty::ECS::CDestroy>(attackComp.WindEffect);
+			}
+			if (attackComp.WaterEffect)
+			{
+				m_World->AddComponent<Frosty::ECS::CDestroy>(attackComp.WaterEffect);
+			}
 			m_World->AddComponent<Frosty::ECS::CDestroy>(entityA);
+		}
+	}
+	
+	void CombatSystem::OnDamageEvent(Frosty::DamageEvent& e)
+	{
+		auto& it = p_EntityMap.find(e.GetEntity());
+
+		if (it == p_EntityMap.end()) return;
+
+		m_Health[it->second]->CurrentHealth -= (int)e.GetDamage();
+
+		// Check if the attack killed the target (Maybe move this to another system that handles basic enemy, boss and player death differently)
+		if (m_Health[it->second]->CurrentHealth <= 0)
+		{
+			// Handle player death differently
 		}
 	}
 }

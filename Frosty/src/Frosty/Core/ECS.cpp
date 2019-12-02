@@ -9,7 +9,6 @@ namespace Frosty
 		std::string CMesh::NAME = "Mesh";
 		std::string CCamera::NAME = "Camera";
 		std::string CMaterial::NAME = "Material";
-		std::string CFollow::NAME = "Follow";
 		std::string CLight::NAME = "Light";
 		std::string CPhysics::NAME = "Physics";
 		std::string CWeapon::NAME = "Weapon";
@@ -25,9 +24,10 @@ namespace Frosty
 		std::string CLootable::NAME = "Lootable";
 		std::string CDropItem::NAME = "DropItem";
 		std::string CBoss::NAME = "Boss";
+		std::string CAnimController::NAME = "AnimController";
 		std::string CLevelExit::NAME = "Level Exit";
 		std::string CGUI::NAME = "GUI";
-		std::string CAnimController::NAME = "AnimController";
 		std::string CMediaManager::NAME = "MediaManager";
+		std::string CWitchCircle::NAME = "WitchCircle";
 	}
 }

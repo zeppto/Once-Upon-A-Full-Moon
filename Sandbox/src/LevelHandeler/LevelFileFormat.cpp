@@ -75,20 +75,22 @@ namespace MCS
 				std::string meshName = myComponents.myMesh.MeshName;
 				myComponents.myMaterial.HasTransparency = material.HasTransparency;
 
-				//if (m_World->HasComponent<Frosty::ECS::CMesh>(entity) && meshName.find("tree") != std::string::npos)
-				//	myComponents.myMaterial.HasTransparency = true;
+				/*if (m_World->HasComponent<Frosty::ECS::CMesh>(entity) && meshName.find("tree") != std::string::npos)
+					myComponents.myMaterial.HasTransparency = true;
+				if (m_World->HasComponent<Frosty::ECS::CMesh>(entity) && meshName.find("Tree") != std::string::npos)
+					myComponents.myMaterial.HasTransparency = true;*/
 			}
 			else
 				myComponents.MyComponents.at(2).HaveComponent = false;
 			//Follow
-			if (m_World->HasComponent<Frosty::ECS::CFollow>(entity))
-			{
-				myComponents.MyComponents.at(3).HaveComponent = true;
-				//under construction
-				auto& follow = m_World->GetComponent<Frosty::ECS::CFollow>(entity);
-				myComponents.myFollow.StopDistance = follow.StopDistance;
-			}
-			else
+			//if (m_World->HasComponent<Frosty::ECS::CFollow>(entity))
+			//{
+			//	myComponents.MyComponents.at(3).HaveComponent = true;
+			//	//under construction
+			//	auto& follow = m_World->GetComponent<Frosty::ECS::CFollow>(entity);
+			//	myComponents.myFollow.StopDistance = follow.StopDistance;
+			//}
+			//else
 				myComponents.MyComponents.at(3).HaveComponent = false;
 			//Light
 			if (m_World->HasComponent<Frosty::ECS::CLight>(entity))
@@ -113,7 +115,6 @@ namespace MCS
 				myComponents.myPhysics.Speed = physics.Speed;
 				//myComponents.myPhysics.Velocity = physics.Velocity;
 				myComponents.myPhysics.SpeedMultiplier = physics.SpeedMultiplier;
-
 			}
 			else
 				myComponents.MyComponents.at(5).HaveComponent = false;
@@ -207,6 +208,22 @@ namespace MCS
 			}
 			else
 				myComponents.MyComponents.at(11).HaveComponent = false;
+			//WitchCircle
+			if (m_World->HasComponent<Frosty::ECS::CWitchCircle>(entity))
+			{
+				myComponents.MyComponents.at(12).HaveComponent = true;
+				m_World->GetComponent<Frosty::ECS::CWitchCircle>(entity);
+			}
+			else
+				myComponents.MyComponents.at(12).HaveComponent = false;
+			//AnimController
+			if (m_World->HasComponent<Frosty::ECS::CAnimController>(entity))
+			{
+				myComponents.MyComponents.at(13).HaveComponent = true;
+				m_World->GetComponent<Frosty::ECS::CAnimController>(entity);
+			}
+			else
+				myComponents.MyComponents.at(13).HaveComponent = false;
 			m_Entitys.myEntitys.push_back(myComponents);
 		}
 	}
@@ -280,9 +297,16 @@ namespace MCS
 					case 10:
 						myFile.write((const char*)& m_Entitys.myEntitys.at(i).myLevelExit, sizeof(Level_LevelExit));
 						break;
-						//10 = LevelExit
+						//11 = DropItem
 					case 11:
 						myFile.write((const char*)& m_Entitys.myEntitys.at(i).myDropItem, sizeof(Level_DropItem));
+						break;
+						//12 = WitchCircle
+					case 12:
+						myFile.write((const char*)& m_Entitys.myEntitys.at(i).myWitchCircle, sizeof(Level_WitchCircle));
+						break;
+					case 13:
+						myFile.write((const char*)& m_Entitys.myEntitys.at(i).myAnimController, sizeof(Level_AnimController));
 						break;
 					default:
 						break;
@@ -304,7 +328,8 @@ namespace MCS
 		existingFile.open("../../../assets/levels/" + fileName + ".lvl", std::ios::binary);
 		Level_Header heder;
 		Level_Entitys fileEntitys;
-		std::vector<std::shared_ptr<Frosty::ECS::Entity>> m_Enemys;
+		std::vector<std::shared_ptr<Frosty::ECS::Entity>> m_Chests;
+		std::vector<std::shared_ptr<Frosty::ECS::Entity>> m_WitchCirkel;
 		FY_INFO("Opend file {0}", fileName);
 
 		if (existingFile.good())
@@ -360,6 +385,20 @@ namespace MCS
 				{
 					//0 = Transform
 					existingFile.read((char*)& fileEntitys.myEntitys.at(i).myTransform, sizeof(Level_Transform));
+
+
+
+					//temp cross
+					//if (fileEntitys.myEntitys.at(i).myTransform.Scale.x == 270)
+					//{
+					//	fileEntitys.myEntitys.at(i).myTransform.Scale.x = 110.0f;
+					//	fileEntitys.myEntitys.at(i).myTransform.Position.x = -81.0f;
+					//}
+					//if (fileEntitys.myEntitys.at(i).myTransform.Scale.z == 270)
+					//{
+					//	fileEntitys.myEntitys.at(i).myTransform.Scale.z = 110;
+					//}
+
 					glm::mat4 matrix(1.0f);
 					matrix = glm::rotate(matrix, glm::radians((float)rotation), glm::vec3(0, 1, 0));
 					matrix = glm::translate(matrix, fileEntitys.myEntitys.at(i).myTransform.Position);
@@ -374,8 +413,8 @@ namespace MCS
 						if (fileEntitys.myEntitys.at(i).MyComponents.at(10).HaveComponent || !fileEntitys.myEntitys.at(i).MyComponents.at(1).HaveComponent)
 						{
 							float savedX = fileEntitys.myEntitys.at(i).myTransform.Scale.x;
-							fileEntitys.myEntitys.at(i).myTransform.Scale.x = fileEntitys.myEntitys.at(i).myTransform.Scale.z;
-							fileEntitys.myEntitys.at(i).myTransform.Scale.z = savedX;
+							fileEntitys.myEntitys.at(i).myTransform.Scale.x = fileEntitys.myEntitys.at(i).myTransform.Scale.z *1.25;
+							fileEntitys.myEntitys.at(i).myTransform.Scale.z = savedX * 1.25;
 						}
 						else
 						{
@@ -386,6 +425,14 @@ namespace MCS
 					{
 						tempRotation.y += rotation;
 					}
+
+
+					if (fileEntitys.myEntitys.at(i).MyComponents.at(10).HaveComponent)
+					{
+						fileEntitys.myEntitys.at(i).myTransform.Scale.x *= 1.25;
+							fileEntitys.myEntitys.at(i).myTransform.Scale.z *= 1.25;
+					}
+
 					auto& entity = m_World->CreateEntity(glm::vec3(matrix[3].x, matrix[3].y, matrix[3].z), tempRotation, fileEntitys.myEntitys.at(i).myTransform.Scale, fileEntitys.myEntitys.at(i).myTransform.IsStatic);
 					auto& newlyTreansform = m_World->GetComponent<Frosty::ECS::CTransform>(entity);
 					if (newlyTreansform.Scale == glm::vec3(300.0f, 1.0f, 300.0f))
@@ -396,10 +443,24 @@ namespace MCS
 					if (fileEntitys.myEntitys.at(i).MyComponents.at(1).HaveComponent)
 					{
 						existingFile.read((char*)& fileEntitys.myEntitys.at(i).myMesh, sizeof(Level_Mesh));
+						std::string meshName = fileEntitys.myEntitys.at(i).myMesh.MeshName;
+						//if (meshName.find("tiledGround") != std::string::npos)
+						//{
+						//	strcpy_s(fileEntitys.myEntitys.at(i).myMesh.MeshName, "pPlane1");
+						//}
 						//for in game
 						//if(!fileEntitys.myEntitys.at(i).MyComponents.at(10).HaveComponent)
-						m_World->AddComponent<Frosty::ECS::CMesh>(entity,
-							Frosty::AssetManager::GetMesh(fileEntitys.myEntitys.at(i).myMesh.MeshName));
+
+
+						if (!fileEntitys.myEntitys.at(i).MyComponents.at(10).HaveComponent)
+						{
+
+							m_World->AddComponent<Frosty::ECS::CMesh>(entity,
+								Frosty::AssetManager::GetMesh(fileEntitys.myEntitys.at(i).myMesh.MeshName));
+						}
+
+
+
 						//std::string meshName = fileEntitys.myEntitys.at(i).myMesh.MeshName;
 						//if (meshName.find("hexCircle") != std::string::npos)
 						//{
@@ -428,8 +489,29 @@ namespace MCS
 					if (fileEntitys.myEntitys.at(i).MyComponents.at(2).HaveComponent)
 					{
 						existingFile.read((char*)& fileEntitys.myEntitys.at(i).myMaterial, sizeof(Level_Material));
+
+						//if (fileEntitys.myEntitys.at(i).MyComponents.at(6).HaveComponent)
+						//{
+						//	std::string meshName = fileEntitys.myEntitys.at(i).myMesh.MeshName;
+						//	if (meshName.find("Wolf") != std::string::npos)
+						//	{
+						//		m_World->AddComponent<Frosty::ECS::CAnimController>(entity).currAnim = Frosty::AssetManager::GetAnimation("Wolf_Idle");
+						//	}
+						//	else if (meshName.find("Cultist") != std::string::npos)
+						//	{
+						//		m_World->AddComponent<Frosty::ECS::CAnimController>(entity).currAnim = Frosty::AssetManager::GetAnimation("Cultist_Idle");
+						//	}
+						//	strcpy_s(fileEntitys.myEntitys.at(i).myMaterial.UseShaderName, "Animation");
+						//}
+						bool hasTransparency = false;
+						std::string meshName = fileEntitys.myEntitys.at(i).myMaterial.DiffuseTextureName;
+						if (m_World->HasComponent<Frosty::ECS::CMesh>(entity) && meshName.find("tree") != std::string::npos)
+							hasTransparency = true;
+						if (m_World->HasComponent<Frosty::ECS::CMesh>(entity) && meshName.find("Tree") != std::string::npos)
+							hasTransparency = true;
+
 						auto& material = m_World->AddComponent<Frosty::ECS::CMaterial>(entity,
-							Frosty::AssetManager::GetShader(fileEntitys.myEntitys.at(i).myMaterial.UseShaderName));
+							Frosty::AssetManager::GetShader(fileEntitys.myEntitys.at(i).myMaterial.UseShaderName), hasTransparency);
 						material.Albedo = fileEntitys.myEntitys.at(i).myMaterial.Albedo;
 						if ((std::string)fileEntitys.myEntitys.at(i).myMaterial.DiffuseTextureName != "")
 							material.DiffuseTexture = Frosty::AssetManager::GetTexture2D(fileEntitys.myEntitys.at(i).myMaterial.DiffuseTextureName);
@@ -446,15 +528,17 @@ namespace MCS
 						material.SpecularStrength = fileEntitys.myEntitys.at(i).myMaterial.SpecularStrength;
 						material.Shininess = fileEntitys.myEntitys.at(i).myMaterial.Shininess;
 						material.TextureScale = fileEntitys.myEntitys.at(i).myMaterial.TextureScale;
+						material.HasTransparency = fileEntitys.myEntitys.at(i).myMaterial.HasTransparency;
+					
 					}
 					//3 = Follow
 					if (fileEntitys.myEntitys.at(i).MyComponents.at(3).HaveComponent)
 					{
 						existingFile.read((char*)& fileEntitys.myEntitys.at(i).myFollow, sizeof(Level_Follow));
-						auto& follow = m_World->AddComponent<Frosty::ECS::CFollow>(entity, playerTransform);
+						//auto& follow = m_World->AddComponent<Frosty::ECS::CFollow>(entity, playerTransform);
 						//For edeting old level
 						//auto& follow = m_World->AddComponent<Frosty::ECS::CFollow>(entity);// , playerTransform);
-						follow.StopDistance = fileEntitys.myEntitys.at(i).myFollow.StopDistance;
+						//follow.StopDistance = fileEntitys.myEntitys.at(i).myFollow.StopDistance;
 						//under construction
 					}
 					//4 = Light
@@ -470,17 +554,18 @@ namespace MCS
 					//5 = Physics
 					if (fileEntitys.myEntitys.at(i).MyComponents.at(5).HaveComponent)
 					{
-						physCounter++;
 						existingFile.read((char*)& fileEntitys.myEntitys.at(i).myPhysics, sizeof(Level_Physics));
-						auto& physics = m_World->AddComponent<Frosty::ECS::CPhysics>(entity);
-						if (fileEntitys.myEntitys.at(i).MyComponents.at(1).HaveComponent)
-							physics.BoundingBox = Frosty::AssetManager::GetBoundingBox(fileEntitys.myEntitys.at(i).myMesh.MeshName);
-						else
-							physics.BoundingBox = Frosty::AssetManager::GetBoundingBox("pCube1");
+
+						physCounter++;
+						auto& physics = m_World->AddComponent<Frosty::ECS::CPhysics>(entity,
+							Frosty::AssetManager::GetBoundingBox(fileEntitys.myEntitys.at(i).MyComponents.at(1).HaveComponent ?
+								fileEntitys.myEntitys.at(i).myMesh.MeshName : "pCube1"), newlyTreansform.Scale);
 						physics.Direction = fileEntitys.myEntitys.at(i).myPhysics.Direction;
 						physics.MaxSpeed = fileEntitys.myEntitys.at(i).myPhysics.MaxSpeed;
 						physics.Speed = fileEntitys.myEntitys.at(i).myPhysics.Speed;
 						physics.SpeedMultiplier = fileEntitys.myEntitys.at(i).myPhysics.SpeedMultiplier;
+
+
 						//physics.Velocity = fileEntitys.myEntitys.at(i).myPhysics.Velocity;
 					}
 					//6 = Enemy
@@ -490,42 +575,115 @@ namespace MCS
 						existingFile.read((char*)& fileEntitys.myEntitys.at(i).myEnemy, sizeof(Level_Enemy));
 						std::string meshName = fileEntitys.myEntitys.at(i).myMesh.MeshName;
 						auto& enemyWeaponA = m_World->CreateEntity({ 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 1.0f, 1.0f, 1.0f });
+						auto& weaponHandler = Frosty::AssetManager::GetWeaponHandler("Weapons");
+						Frosty::Weapon loadedWeapon;
+						int lowLevel = 1;
+						int highLevel = 1;
+						if (m_VisitedRooms.size() < 2)
+						{
+							lowLevel = 1;
+							highLevel = 1;
+						}
+						else if (m_VisitedRooms.size() < 4)
+						{
+							lowLevel = 1;
+							highLevel = 2;
+						}
+						else if (m_VisitedRooms.size() < 5)
+						{
+							lowLevel = 2;
+							highLevel = 2;
+						}
+						else if (m_VisitedRooms.size() < 7)
+						{
+							lowLevel = 2;
+							highLevel = 3;
+						}
+						else if (m_VisitedRooms.size() > 6)
+						{
+							lowLevel = 3;
+							highLevel = 3;
+						}
+						else
+						{
+							lowLevel = 1;
+							highLevel = 3;
+						}
 						if (meshName.find("Cultist") != std::string::npos)
 						{
-							//world->AddComponent<Frosty::ECS::CMesh>(weapon, Frosty::AssetManager::GetMesh("pCube1"));
-							//world->AddComponent<Frosty::ECS::CMaterial>(weapon, Frosty::AssetManager::GetShader("FlatColor"));
-							auto& enemyWeaponCompA = m_World->AddComponent<Frosty::ECS::CWeapon>(enemyWeaponA, Frosty::ECS::CWeapon::WeaponType::Bow, 1, 1.0f);
-							enemyWeaponCompA.LVL1AttackCooldown = 3.0f;
-							//enemyWeaponCompA.MaxAttackRange = 5.0f;
-							//enemyWeaponCompA.MinAttackRange = 0.0f;
-							enemyWeaponCompA.MaxAttackRange = 22.0f;
-							enemyWeaponCompA.MinAttackRange = 18.0f;
-							//enemyWeaponCompA.AttackHitboxScale = glm::vec3(10.0f, 6.0f, 4.0f);				// Sword
-							//enemyWeaponCompA.AttackHitboxScale = glm::vec3(4.0f, 6.0f, 4.0f);				// Bite
-							enemyWeaponCompA.AttackHitboxScale = glm::vec3(0.3f);							// Arrow
-							auto& enemy = m_World->AddComponent<Frosty::ECS::CEnemy>(entity, playerTransform, &enemyWeaponCompA, fileEntitys.myEntitys.at(i).myEnemy.RunOnHealth);
-							auto& transform = m_World->GetComponent< Frosty::ECS::CTransform>(entity);
-							enemy.SpawnPosition = transform.Position;
+							////world->AddComponent<Frosty::ECS::CMesh>(weapon, Frosty::AssetManager::GetMesh("pCube1"));
+							////world->AddComponent<Frosty::ECS::CMaterial>(weapon, Frosty::AssetManager::GetShader("FlatColor"));
+							//auto& enemyWeaponCompA = m_World->AddComponent<Frosty::ECS::CWeapon>(enemyWeaponA, Frosty::ECS::CWeapon::WeaponType::Bow, 1, 1.0f);
+							//enemyWeaponCompA.LVL1AttackCooldown = 3.0f;
+							////enemyWeaponCompA.MaxAttackRange = 5.0f;
+							////enemyWeaponCompA.MinAttackRange = 0.0f;
+							//enemyWeaponCompA.MaxAttackRange = 22.0f;
+							//enemyWeaponCompA.MinAttackRange = 18.0f;
+							////enemyWeaponCompA.AttackHitboxScale = glm::vec3(10.0f, 6.0f, 4.0f);				// Sword
+							////enemyWeaponCompA.AttackHitboxScale = glm::vec3(4.0f, 6.0f, 4.0f);				// Bite
+							//enemyWeaponCompA.AttackHitboxScale = glm::vec3(0.3f);							// Arrow
+							//auto& enemy = m_World->AddComponent<Frosty::ECS::CEnemy>(entity, playerTransform, &enemyWeaponCompA, fileEntitys.myEntitys.at(i).myEnemy.RunOnHealth);
+							//auto& transform = m_World->GetComponent< Frosty::ECS::CTransform>(entity);
+							//enemy.SpawnPosition = transform.Position;
+							int isMelle = rand() % 2;
+							if (isMelle == 0)
+							{
+								loadedWeapon = weaponHandler->GetWeaponByTypeAndLevel(Frosty::Weapon::WeaponType::Bow, lowLevel, highLevel);
+
+								//m_World->AddComponent<Frosty::ECS::CMesh>(enemyWeaponA, Frosty::AssetManager::GetMesh("Bow"));
+								//auto& weaponMat = m_World->AddComponent<Frosty::ECS::CMaterial>(enemyWeaponA, Frosty::AssetManager::GetShader("Texture2D"));
+								//weaponMat.DiffuseTexture = Frosty::AssetManager::GetTexture2D("bow_lvl1_diffuse");
+								//weaponMat.NormalTexture = Frosty::AssetManager::GetTexture2D("bow_normal");
+							}
+							if (isMelle == 1)
+							{
+								loadedWeapon = weaponHandler->GetWeaponByTypeAndLevel(Frosty::Weapon::WeaponType::Sword, lowLevel, highLevel);
+							}
+
+							//if (weaponComp.Type == Frosty::ECS::CWeapon::WeaponType::Bow)
+							//{
+
+							//	weaponMesh = &world->AddComponent<Frosty::ECS::CMesh>(weapon, Frosty::AssetManager::GetMesh("Bow"));
+							//	auto& weaponMat = world->AddComponent<Frosty::ECS::CMaterial>(weapon, Frosty::AssetManager::GetShader("Texture2D"));
+							//	weaponMat.DiffuseTexture = Frosty::AssetManager::GetTexture2D("bow_lvl1_diffuse");
+							//	weaponMat.NormalTexture = Frosty::AssetManager::GetTexture2D("bow_normal");
+							//}
+							//else
+							//{
+
+							//	weaponMesh = &world->AddComponent<Frosty::ECS::CMesh>(weapon, Frosty::AssetManager::GetMesh("sword"));
+							//	auto& weaponMat = world->AddComponent<Frosty::ECS::CMaterial>(weapon, Frosty::AssetManager::GetShader("Texture2D"));
+							//	weaponMat.DiffuseTexture = Frosty::AssetManager::GetTexture2D("sword_lvl1_diffuse");
+							//	weaponMat.NormalTexture = Frosty::AssetManager::GetTexture2D("sword_normal");
+							//}
 						}
 						else if (meshName.find("Wolf") != std::string::npos)
 						{
-							//world->AddComponent<Frosty::ECS::CMesh>(weapon, Frosty::AssetManager::GetMesh("pCube1"));
-							//world->AddComponent<Frosty::ECS::CMaterial>(weapon, Frosty::AssetManager::GetShader("FlatColor"));
-							auto& enemyWeaponCompA = m_World->AddComponent<Frosty::ECS::CWeapon>(enemyWeaponA, Frosty::ECS::CWeapon::WeaponType::Bite, 1, 1.0f);
-							enemyWeaponCompA.LVL1AttackCooldown = 3.0f;
-							enemyWeaponCompA.MaxAttackRange = 5.0f;
-							enemyWeaponCompA.MinAttackRange = 0.0f;
-							//enemyWeaponCompA.MaxAttackRange = 22.0f;
-							//enemyWeaponCompA.MinAttackRange = 18.0f;
-							//enemyWeaponCompA.AttackHitboxScale = glm::vec3(10.0f, 6.0f, 4.0f);				// Sword
-							enemyWeaponCompA.AttackHitboxScale = glm::vec3(4.0f, 6.0f, 4.0f);				// Bite
-							//enemyWeaponCompA.AttackHitboxScale = glm::vec3(0.3f);
-							auto& enemy = m_World->AddComponent<Frosty::ECS::CEnemy>(entity, playerTransform, &enemyWeaponCompA, fileEntitys.myEntitys.at(i).myEnemy.RunOnHealth);
-							auto& transform = m_World->GetComponent< Frosty::ECS::CTransform>(entity);
-							enemy.SpawnPosition = transform.Position;
+							////world->AddComponent<Frosty::ECS::CMesh>(weapon, Frosty::AssetManager::GetMesh("pCube1"));
+							////world->AddComponent<Frosty::ECS::CMaterial>(weapon, Frosty::AssetManager::GetShader("FlatColor"));
+							//auto& enemyWeaponCompA = m_World->AddComponent<Frosty::ECS::CWeapon>(enemyWeaponA, Frosty::ECS::CWeapon::WeaponType::Bite, 1, 1.0f);
+							//enemyWeaponCompA.LVL1AttackCooldown = 3.0f;
+							//enemyWeaponCompA.MaxAttackRange = 5.0f;
+							//enemyWeaponCompA.MinAttackRange = 0.0f;
+							////enemyWeaponCompA.MaxAttackRange = 22.0f;
+							////enemyWeaponCompA.MinAttackRange = 18.0f;
+							////enemyWeaponCompA.AttackHitboxScale = glm::vec3(10.0f, 6.0f, 4.0f);				// Sword
+							//enemyWeaponCompA.AttackHitboxScale = glm::vec3(4.0f, 6.0f, 4.0f);				// Bite
+							////enemyWeaponCompA.AttackHitboxScale = glm::vec3(0.3f);
+
+							//auto& enemy = m_World->AddComponent<Frosty::ECS::CEnemy>(entity, playerTransform, &enemyWeaponCompA, fileEntitys.myEntitys.at(i).myEnemy.RunOnHealth);
+							//auto& transform = m_World->GetComponent< Frosty::ECS::CTransform>(entity);
+							//enemy.SpawnPosition = transform.Position;
+
+
+							loadedWeapon = weaponHandler->GetWeaponByTypeAndLevel(Frosty::Weapon::WeaponType::Bite, lowLevel, highLevel);
+							auto& physics = m_World->GetComponent<Frosty::ECS::CPhysics>(entity);
+							physics.Speed = 10.0f;
 						}
-						//auto& enemy = m_World->AddComponent<Frosty::ECS::CEnemy>(entity, playerTransform, &enemyWeaponCompA, fileEntitys.myEntitys.at(i).myEnemy.RunOnHealth);
-						//enemy.SpawnPosition = fileEntitys.myEntitys.at(i).myEnemy.SpawnPosition;
+						auto& enemyWeaponCompA = m_World->AddComponent<Frosty::ECS::CWeapon>(enemyWeaponA, loadedWeapon);
+						auto& enemy = m_World->AddComponent<Frosty::ECS::CEnemy>(entity, playerTransform, &enemyWeaponCompA, fileEntitys.myEntitys.at(i).myEnemy.RunOnHealth);
+						auto& transform = m_World->GetComponent< Frosty::ECS::CTransform>(entity);
+						enemy.SpawnPosition = transform.Position;
 					}
 					//7 = Health
 					if (fileEntitys.myEntitys.at(i).MyComponents.at(7).HaveComponent)
@@ -535,6 +693,26 @@ namespace MCS
 						health.CurrentHealth = fileEntitys.myEntitys.at(i).myHealth.CurrentHealth;
 						health.MaxHealth = fileEntitys.myEntitys.at(i).myHealth.MaxHealth;
 						health.MaxPossibleHealth = fileEntitys.myEntitys.at(i).myHealth.MaxPossibleHealth;
+						//if (fileEntitys.myEntitys.at(i).MyComponents.at(6).HaveComponent)
+						//{
+						//	if (m_VisitedRooms.size() < 2)
+						//	{
+						//		health.CurrentHealth -= health.CurrentHealth * 0.4;
+						//		health.MaxHealth -= health.MaxHealth * 0.4;
+						//	}
+						//	if (m_VisitedRooms.size() < 4)
+						//	{
+						//		health.CurrentHealth -= health.CurrentHealth * 0.2;
+						//		health.MaxHealth -= health.MaxHealth * 0.2;
+						//	}
+						//}
+
+						if (fileEntitys.myEntitys.at(i).MyComponents.at(12).HaveComponent)
+						{
+							health.CurrentHealth /= 2;
+							health.MaxHealth /= 2;
+						}
+
 					}
 					//8 = HealthBar
 					if (fileEntitys.myEntitys.at(i).MyComponents.at(8).HaveComponent)
@@ -585,6 +763,7 @@ namespace MCS
 					{
 						existingFile.read((char*)& fileEntitys.myEntitys.at(i).myLevelExit, sizeof(Level_LevelExit));
 						int newExit = fileEntitys.myEntitys.at(i).myLevelExit.ExitDirection;
+						
 						if (rotation == 270)
 						{
 							if (fileEntitys.myEntitys.at(i).myLevelExit.ExitDirection == 0)
@@ -619,62 +798,124 @@ namespace MCS
 								newExit = 0;
 						}
 						m_World->AddComponent<Frosty::ECS::CLevelExit>(entity, newExit);
+						
 					}
 					//11 = DropItem
 					if (fileEntitys.myEntitys.at(i).MyComponents.at(11).HaveComponent)
 					{
 						existingFile.read((char*)& fileEntitys.myEntitys.at(i).myDropItem, sizeof(Level_DropItem));
 						m_World->AddComponent<Frosty::ECS::CDropItem>(entity);
-						m_Enemys.push_back(entity);
+						std::string meshName = fileEntitys.myEntitys.at(i).myMesh.MeshName;
+						if (meshName.find("chest") != std::string::npos)
+							m_Chests.push_back(entity);
+					}
+					//12 = WitchCircle
+					if (fileEntitys.myEntitys.at(i).MyComponents.at(12).HaveComponent)
+					{
+						existingFile.read((char*)& fileEntitys.myEntitys.at(i).myWitchCircle, sizeof(Level_WitchCircle));
+						m_World->AddComponent<Frosty::ECS::CWitchCircle>(entity);
+						m_WitchCirkel.push_back(entity);
+					}
+					//13 = AnimController
+					if (fileEntitys.myEntitys.at(i).MyComponents.at(13).HaveComponent)
+					{
+						existingFile.read((char*)& fileEntitys.myEntitys.at(i).myWitchCircle, sizeof(Level_AnimController));
+						std::string meshName = fileEntitys.myEntitys.at(i).myMesh.MeshName;
+						if (meshName.find("Wolf") != std::string::npos)
+						{
+							m_World->AddComponent<Frosty::ECS::CAnimController>(entity).currAnim = Frosty::AssetManager::GetAnimation("Wolf_Idle");
+						}
+						else if (meshName.find("Cultist") != std::string::npos)
+						{
+							m_World->AddComponent<Frosty::ECS::CAnimController>(entity).currAnim = Frosty::AssetManager::GetAnimation("Cultist_Idle");
+						}
+						else
+						{
+
+							m_World->AddComponent<Frosty::ECS::CAnimController>(entity);
+						}
 					}
 				}
 			}
 
 			//to remove "enemys" or chest m.m to control the number and randomize pos
-			//int enteredRoomId = -1;
-			//for (int i = 0; i < m_VisitedRooms.size(); i++)
-			//{
-			//	if (m_VisitedRooms.at(i).myRoomId == roomId)
-			//	{
-			//		enteredRoomId = i;
-			//	}
-			//}
-			//if (enteredRoomId != -1)
-			//{
-			//	for (int i = 0; i < m_VisitedRooms.at(enteredRoomId).removeEnemy.size(); i++)
-			//	{
-			//		if (!m_World->HasComponent<Frosty::ECS::CDestroy>(m_Enemys.at(m_VisitedRooms.at(enteredRoomId).removeEnemy.at(i))))
-			//		{
-			//			m_World->AddComponent<Frosty::ECS::CDestroy>(m_Enemys.at(m_VisitedRooms.at(enteredRoomId).removeEnemy.at(i)));
-			//		}
-			//		std::shared_ptr<Frosty::ECS::Entity> temp = m_Enemys.at(m_VisitedRooms.at(enteredRoomId).removeEnemy.at(i));
-			//		m_Enemys.at(m_VisitedRooms.at(enteredRoomId).removeEnemy.at(i)) = m_Enemys.at(m_Enemys.size() - 1 - i);
-			//		m_Enemys.back() = temp;
-			//	}
-			//}
-			//else
-			//{
-			//	int nrToHave = rand() % 3;
-			//	Level_rememberedEntitys rEntitys;
-			//	rEntitys.myRoomId = roomId;
-			//	//temp nr of 
-			//	if (m_Enemys.size() >= nrToHave)
-			//	{
-			//		for (int i = 0; i < m_Enemys.size() - nrToHave; i++)
-			//		{
-			//			int rnd = rand() % (m_Enemys.size() - i);
-			//			if (!m_World->HasComponent<Frosty::ECS::CDestroy>(m_Enemys.at(rnd)))
-			//			{
-			//				rEntitys.removeEnemy.push_back(rnd);
-			//				m_World->AddComponent<Frosty::ECS::CDestroy>(m_Enemys.at(rnd));
-			//			}
-			//			std::shared_ptr<Frosty::ECS::Entity> temp = m_Enemys.at(rnd);
-			//			m_Enemys.at(rnd) = m_Enemys.at(m_Enemys.size() - 1 - i);
-			//			m_Enemys.back() = temp;
-			//		}
-			//	}
-			//	m_VisitedRooms.push_back(rEntitys);
-			//}
+			int enteredRoomId = -1;
+			for (int i = 0; i < m_VisitedRooms.size(); i++)
+			{
+				if (m_VisitedRooms.at(i).myRoomId == roomId)
+				{
+					enteredRoomId = i;
+				}
+			}
+			if (enteredRoomId != -1)
+			{
+				//removes the number of chests
+				for (int i = 0; i < m_VisitedRooms.at(enteredRoomId).removeChest.size(); i++)
+				{
+					if (!m_World->HasComponent<Frosty::ECS::CDestroy>(m_Chests.at(m_VisitedRooms.at(enteredRoomId).removeChest.at(i))))
+					{
+						m_World->AddComponent<Frosty::ECS::CDestroy>(m_Chests.at(m_VisitedRooms.at(enteredRoomId).removeChest.at(i)));
+					}
+					std::shared_ptr<Frosty::ECS::Entity> temp = m_Chests.at(m_VisitedRooms.at(enteredRoomId).removeChest.at(i));
+					m_Chests.at(m_VisitedRooms.at(enteredRoomId).removeChest.at(i)) = m_Chests.at(m_Chests.size() - 1 - i);
+					m_Chests.back() = temp;
+				}
+				//removes the number of witchCirkels
+				for (int i = 0; i < m_VisitedRooms.at(enteredRoomId).removeWitchCirkel.size(); i++)
+				{
+					if (!m_World->HasComponent<Frosty::ECS::CDestroy>(m_WitchCirkel.at(m_VisitedRooms.at(enteredRoomId).removeWitchCirkel.at(i))))
+					{
+						m_World->AddComponent<Frosty::ECS::CDestroy>(m_WitchCirkel.at(m_VisitedRooms.at(enteredRoomId).removeWitchCirkel.at(i)));
+					}
+					std::shared_ptr<Frosty::ECS::Entity> temp = m_Chests.at(m_VisitedRooms.at(enteredRoomId).removeWitchCirkel.at(i));
+					m_WitchCirkel.at(m_VisitedRooms.at(enteredRoomId).removeWitchCirkel.at(i)) = m_WitchCirkel.at(m_WitchCirkel.size() - 1 - i);
+					m_WitchCirkel.back() = temp;
+				}
+			}
+			else
+			{
+				int nrToHave = rand() % 3;
+				if(roomId == glm::ivec2(10, 15))
+					nrToHave = 2;
+				Level_rememberedEntitys rEntitys;
+				rEntitys.myRoomId = roomId;
+				//removes the number of chests
+				if (m_Chests.size() >= nrToHave)
+				{
+					for (int i = 0; i < m_Chests.size() - nrToHave; i++)
+					{
+						int rnd = rand() % (m_Chests.size() - i);
+						if (!m_World->HasComponent<Frosty::ECS::CDestroy>(m_Chests.at(rnd)))
+						{
+							rEntitys.removeChest.push_back(rnd);
+							m_World->AddComponent<Frosty::ECS::CDestroy>(m_Chests.at(rnd));
+						}
+						std::shared_ptr<Frosty::ECS::Entity> temp = m_Chests.at(rnd);
+						m_Chests.at(rnd) = m_Chests.at(m_Chests.size() - 1 - i);
+						m_Chests.back() = temp;
+					}
+				}
+				//removes the number of witchCirkels
+				nrToHave = rand() % 3;
+				if (nrToHave > 0)
+					nrToHave = 1;
+				if (m_WitchCirkel.size() >= nrToHave && roomId != glm::ivec2(10, 15))
+				{
+					for (int i = 0; i < m_WitchCirkel.size() - nrToHave; i++)
+					{
+						int rnd = rand() % (m_WitchCirkel.size() - i);
+						if (!m_World->HasComponent<Frosty::ECS::CDestroy>(m_WitchCirkel.at(rnd)))
+						{
+							rEntitys.removeWitchCirkel.push_back(rnd);
+							m_World->AddComponent<Frosty::ECS::CDestroy>(m_WitchCirkel.at(rnd));
+						}
+						std::shared_ptr<Frosty::ECS::Entity> temp = m_WitchCirkel.at(rnd);
+						m_WitchCirkel.at(rnd) = m_WitchCirkel.at(m_WitchCirkel.size() - 1 - i);
+						m_WitchCirkel.back() = temp;
+					}
+				}
+				m_VisitedRooms.push_back(rEntitys);
+			}
 		}
 		else
 		{
@@ -706,6 +947,7 @@ namespace MCS
 
 		if (existingFile.good())
 		{
+
 			existingFile.read((char*)& testHeder, sizeof(Level_Header));
 			fileEntitys.myEntitys.resize(testHeder.NrOfEntitys);
 			for (int i = 0; i < testHeder.NrOfEntitys; i++)
@@ -715,8 +957,8 @@ namespace MCS
 				std::vector<std::string> AddedMeshes;
 				std::unordered_map<std::string, Frosty::VABatch> TestMap;
 
-				fileEntitys.myEntitys.at(i).MyComponents.resize(testHeder.NrOfComponents);
-				for (int j = 0; j < m_Header.NrOfComponents; j++)
+				fileEntitys.myEntitys.at(i).MyComponents.resize(m_Header.NrOfComponents);
+				for (int j = 0; j < testHeder.NrOfComponents; j++)
 				{
 					existingFile.read((char*)& fileEntitys.myEntitys.at(i).MyComponents.at(j).HaveComponent, sizeof(bool));
 				}
@@ -794,6 +1036,18 @@ namespace MCS
 				if (fileEntitys.myEntitys.at(i).MyComponents.at(11).HaveComponent)
 				{
 					existingFile.read((char*)& fileEntitys.myEntitys.at(i).myDropItem, sizeof(Level_DropItem));
+
+				}
+				//12 = WitchCircle
+				if (fileEntitys.myEntitys.at(i).MyComponents.at(12).HaveComponent)
+				{
+					existingFile.read((char*)& fileEntitys.myEntitys.at(i).myWitchCircle, sizeof(Level_WitchCircle));
+
+				}
+				//13 = AnimController
+				if (fileEntitys.myEntitys.at(i).MyComponents.at(13).HaveComponent)
+				{
+					existingFile.read((char*)& fileEntitys.myEntitys.at(i).myAnimController, sizeof(Level_AnimController));
 
 				}
 			}

@@ -21,7 +21,7 @@ namespace MCS
 	struct Level_Header
 	{
 		int NrOfEntitys = 0;
-		int NrOfComponents = 12;
+		int NrOfComponents = 14;
 	};
 
 	//Do this per nrOfEntitys and as meny times as nrOfComponents (to make older files have a higer shans of combadebilety) 
@@ -191,6 +191,18 @@ namespace MCS
 		//int ExitDirection = 0;
 	};
 
+	//12 = WitchCircle
+	struct Level_WitchCircle
+	{
+		//emty
+	};
+
+	//13 = AnimController
+	struct Level_AnimController
+	{
+		//emty
+	};
+
 	//n = name
 	//struct Level_
 	//{
@@ -213,6 +225,9 @@ namespace MCS
 		Level_ParticleSystem myParticleSystem;
 		Level_LevelExit myLevelExit;
 		Level_DropItem myDropItem;
+		Level_WitchCircle myWitchCircle;
+		Level_AnimController myAnimController;
+
 
 	};
 
@@ -225,7 +240,9 @@ namespace MCS
 	struct Level_rememberedEntitys
 	{
 		glm::ivec2 myRoomId = { 0, 0 };
-		std::vector<int> removeEnemy;
+		std::vector<int> removeChest;
+		std::vector<int> removeWitchCirkel;
+		//not in use
 		std::vector<int> existingIDs;
 		std::vector<int> killedIds;
 		float timePlayerLeft;

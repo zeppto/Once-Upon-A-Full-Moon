@@ -14,7 +14,8 @@ namespace MCS
 		CellNode targetNode = m_Grid->WorldPointToNode(targetPos);
 
 		std::priority_queue<CellNode> openSet;
-		std::unordered_set<CellNode> closedSet;
+		std::vector<CellNode> closedSet;
+		closedSet.reserve(50);
 		openSet.push(startNode);
 		CellNode currentNode = openSet.top();
 
@@ -23,7 +24,8 @@ namespace MCS
 			currentNode = openSet.top();
 			m_Grid->GetNode(currentNode.GridX, currentNode.GridY)->ExistsInOpenSet = false;
 			openSet.pop();
-			closedSet.insert(currentNode);
+			closedSet.emplace_back(currentNode);
+			//closedSet.insert(currentNode);
 
 			if (currentNode == targetNode)
 			{
@@ -35,17 +37,19 @@ namespace MCS
 					tempNode->GCost = 0;
 					openSet.pop();
 				}
-				//for (auto elem : closedSet)
-				//{
-				//	elem.HCost = 0;
-				//	elem.GCost;
-				//}
+				while (!closedSet.empty())
+				{
+					closedSet.back().GCost = 0;
+					closedSet.back().HCost = 0;
+					closedSet.erase(closedSet.begin() + closedSet.size() - 1);
+				}
+
 				return RetracePath(&startNode, &targetNode);
 			}
 
 			for each (CellNode* neighbour in m_Grid->GetNeighbours(&currentNode))
 			{
-				if ((neighbour->Walkable || *neighbour == targetNode) && closedSet.count(*neighbour) == 0)
+				if ((neighbour->Walkable || *neighbour == targetNode) && !ExistsInClosedSet(closedSet, neighbour))
 				{
 					int32_t newMovementCostToNeightbour = currentNode.GCost + GetDistance(&currentNode, neighbour);
 					if (newMovementCostToNeightbour < neighbour->GCost || !neighbour->ExistsInOpenSet)
@@ -100,9 +104,9 @@ namespace MCS
 		while (*currentNode != *startNode)
 		{
 			path.emplace_back(currentNode);
-			//currentNode->HCost = 0;
-			//currentNode->GCost = 0;
 			currentNode = m_Grid->GetNode(currentNode->ParentGridX, currentNode->ParentGridY);
+			currentNode->GCost = 0;
+			currentNode->HCost = 0;
 		}
 
 		std::reverse(path.begin(), path.end());
@@ -110,5 +114,14 @@ namespace MCS
 		m_Grid->DrawPathCells(path);
 
 		return path[0]->WorldPosition;
+	}
+	
+	bool Pathfinding::ExistsInClosedSet(const std::vector<CellNode>& closedSet, CellNode* findNode)
+	{
+		for (size_t i = 0; i < closedSet.size(); i++)
+		{
+			if (closedSet.at(i) == *findNode) return true;
+		}
+		return false;
 	}
 }
