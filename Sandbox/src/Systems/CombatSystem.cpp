@@ -123,10 +123,9 @@ namespace MCS
 				int rand = std::rand() % 4 + 1;
 				std::string str = "assets/sounds/HitSoundCrit" + std::to_string(rand) + ".wav";
 				const char* fileName = str.c_str();
-
-				//Frosty::EventBus::GetEventBus()->Publish<Frosty::PlayMediaEntityEvent>(Frosty::PlayMediaEntityEvent(entityA, fileName, 2.0f, 10.0f, 100.0f, true, 3));
+				Frosty::EventBus::GetEventBus()->Publish<Frosty::PlayMediaEntityEvent>(Frosty::PlayMediaEntityEvent(entityA, fileName, 2.0f, 10.0f, 100.0f, false, 0));
 				//Frosty::EventBus::GetEventBus()->Publish<Frosty::PlayMediaEvent>(Frosty::PlayMediaEvent(fileName, 1.0f, true, 4));
-				Frosty::EventBus::GetEventBus()->Publish<Frosty::PlayMusicEvent>(Frosty::PlayMusicEvent("assets/music/mainmenu.mp3", 1.0f));
+				//Frosty::EventBus::GetEventBus()->Publish<Frosty::PlayMusicEvent>(Frosty::PlayMusicEvent("assets/music/mainmenu.mp3", 1.0f));
 				attackComp.AttackedEntities.emplace_back(it->first->Id);
 				m_Health[it->second]->CurrentHealth -= attackComp.Damage;
 			}
@@ -143,8 +142,8 @@ namespace MCS
 					std::string str = "assets/sounds/HitSoundCrit" + std::to_string(rand) + ".wav";
 					const char* fileName = str.c_str();
 
-					//Frosty::EventBus::GetEventBus()->Publish<Frosty::PlayMediaEntityEvent>(Frosty::PlayMediaEntityEvent(entityA, fileName, 1.0f, 10.0f, 100.0f, true, 7));
-					Frosty::EventBus::GetEventBus()->Publish<Frosty::PlayMediaEvent>(Frosty::PlayMediaEvent(fileName, 1.0f, true, 4));
+					Frosty::EventBus::GetEventBus()->Publish<Frosty::PlayMediaEntityEvent>(Frosty::PlayMediaEntityEvent(entityA, fileName, 1.0f, 10.0f, 100.0f, false, 0));
+					//Frosty::EventBus::GetEventBus()->Publish<Frosty::PlayMediaEvent>(Frosty::PlayMediaEvent(fileName, 1.0f, true, 0));
 					attackComp.AttackedEntities.emplace_back(it->first->Id);
 					m_Health[it->second]->CurrentHealth -= attackComp.Damage;
 				}

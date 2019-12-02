@@ -63,10 +63,10 @@ namespace MCS
 		particleSystem->AttachGameCamera(&world->GetComponent<Frosty::ECS::CTransform>(world->GetSceneCamera()));
 
 		//auto& testEntity = world->CreateEntity();
-		//auto& musicTest = world->AddComponent<Frosty::ECS::CMediaManager>(mediaTest);
+		//auto& musicTest = world->AddComponent<Frosty::ECS::CMediaManager>(testEntity);
 		//musicTest.SoundEngine = irrklang::createIrrKlangDevice();
 		///*world->AddComponent<Frosty::ECS::CMediaManager>(mediaTest).SoundEngine = irrklang::createIrrKlangDevice();*/
-		//world->GetComponent<Frosty::ECS::CMediaManager>(mediaTest).SoundEngine->play2D(
+		//world->GetComponent<Frosty::ECS::CMediaManager>(testEntity).SoundEngine->play2D(
 		//	"assets/music/menusong.mp3", 
 		//	true, 
 		//	false, 
