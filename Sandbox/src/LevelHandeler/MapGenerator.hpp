@@ -42,6 +42,13 @@ namespace MCS
 		int startSide;
 	};
 
+	struct pathOnTile
+	{
+		glm::ivec2 pos;
+		int distensTo;
+		std::vector<glm::ivec2> parantTile;
+	};
+
 
 	class MapGenerator
 	{
@@ -54,6 +61,9 @@ namespace MCS
 		glm::ivec2 posOffset(int i);
 		Room getRoom(glm::ivec2 pos);
 		std::string getRoomTextur(glm::ivec2 pos, int* rotation);
+
+		//for boss
+		std::vector<glm::ivec2> getPathToTargert(glm::ivec2 startPos, glm::ivec2 endPos);
 
 	private:
 		Room m_TileMap[30][30];

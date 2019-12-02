@@ -178,7 +178,6 @@ namespace MCS
 				}
 			}
 
-
 			m_TileMap[pos.x][pos.y].Ocupide = true;
 			m_TileMap[pos.x][pos.y].sideExits[1 + (startSide / 2) * 4 - startSide] = true;
 			numberOfExits = 0;
@@ -211,7 +210,6 @@ namespace MCS
 							numberOfExits++;
 						}
 					}
-
 				}
 			}
 			return true;
@@ -355,4 +353,63 @@ namespace MCS
 			return "deadend_chests_IsStatick_t_p_e_r_h_a";
 		return "deadend_chests_IsStatick_t_p_e_r_h_a";
 	}
+
+	std::vector<glm::ivec2> MapGenerator::getPathToTargert(glm::ivec2 startPos, glm::ivec2 endPos)
+	{
+		pathOnTile pathRooms[30][30];
+		std::vector<glm::ivec2> rooms;
+		pathOnTile startRoom;
+		startRoom.pos = startPos;
+		startRoom.distensTo = 0;
+		//rooms.push_back(startRoom);
+		std::deque<pathOnTile> roomsToGoThrough;
+		roomsToGoThrough.emplace_back(startRoom);
+
+
+		while (roomsToGoThrough.size() > 0)
+		{
+			pathOnTile room = roomsToGoThrough.front();
+			Room currentRoom = getRoom(room.pos);
+			for (int i = 0; i < 4; i++)
+			{
+				if (currentRoom.sideExits[i])
+				{
+					Room neighbor = getRoom(room.pos + posOffset(i));
+					if (neighbor.Ocupide)
+					{
+						pathOnTile newPath;
+						newPath.pos = room.pos + posOffset(i);
+						newPath.distensTo = room.distensTo + 1;
+						newPath.parantTile = room.parantTile;
+						newPath.parantTile.push_back(room.pos);
+						roomsToGoThrough.emplace_back(newPath);
+						//roomsToGoThrough.push_back(newPath);
+
+						if (newPath.pos == endPos)
+						{
+							rooms = newPath.parantTile;
+							rooms.push_back(newPath.pos);
+							return rooms;
+						}
+					}
+				}
+			}
+			roomsToGoThrough.pop_front();
+			//if (room.sideExits[roomToEnter])
+			//{
+			//	tempLastPos = m_BossPos;
+			//	tempPos = m_BossPos;
+			//	if (roomToEnter == 0)
+			//		tempPos += glm::ivec2(0, -1);
+			//	if (roomToEnter == 1)
+			//		tempPos += glm::ivec2(0, 1);
+			//	if (roomToEnter == 2)
+			//		tempPos += glm::ivec2(-1, 0);
+			//	if (roomToEnter == 3)
+			//		tempPos += glm::ivec2(1, 0);
+			//}
+		}
+		return rooms;
+	}
+
 }

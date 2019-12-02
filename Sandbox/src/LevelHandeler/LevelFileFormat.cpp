@@ -936,6 +936,7 @@ namespace MCS
 
 
 	void LevelFileFormat::LoadBoolMap(std::string fileName)
+		 
 	{
 		std::ifstream existingFile;
 		existingFile.open("../../../assets/levels/" + fileName + ".lvl", std::ios::binary);
