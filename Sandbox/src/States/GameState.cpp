@@ -55,6 +55,77 @@ namespace MCS
 
 	void GameState::OnUpdate()
 	{
+		/*
+		// TEMPORARY
+		auto& world = Frosty::Application::Get().GetWorld();
+
+		if (m_CurState == 0)
+		{
+			// Init Room 1
+			for (size_t i = 0; i < 10; i++)
+			{
+				auto& entity = world->CreateEntity();
+				world->AddComponent<Frosty::ECS::CMesh>(entity, Frosty::AssetManager::GetMesh("tree1"));
+				world->AddComponent<Frosty::ECS::CMaterial>(entity, Frosty::AssetManager::GetShader("FlatColor"));
+				world->AddToGroup(entity, true);
+			}
+
+			// Init Room 2
+			for (size_t i = 0; i < 10; i++)
+			{
+				auto& entity = world->CreateEntity();
+				world->AddComponent<Frosty::ECS::CMesh>(entity, Frosty::AssetManager::GetMesh("tree1"));
+				world->AddComponent<Frosty::ECS::CMaterial>(entity, Frosty::AssetManager::GetShader("FlatColor"));
+				world->AddToGroup(entity, false);
+			}
+
+			// Enter Room 2
+			world->ChangeCurrentRoom();
+
+			// Destroy Room 1
+			world->DestroyGroup(false);
+		}
+		else if (m_CurState == 1)
+		{
+			// Init Room 3
+			for (size_t i = 0; i < 10; i++)
+			{
+				auto& entity = world->CreateEntity();
+				world->AddComponent<Frosty::ECS::CMesh>(entity, Frosty::AssetManager::GetMesh("tree1"));
+				world->AddComponent<Frosty::ECS::CMaterial>(entity, Frosty::AssetManager::GetShader("FlatColor"));
+				world->AddToGroup(entity, false);
+			}
+
+			// Enter Room 3
+			world->ChangeCurrentRoom();
+
+			// Enter Room 2
+			world->ChangeCurrentRoom();
+		}
+		else if (m_CurState == 2)
+		{
+			// Destroy Room 3
+			world->DestroyGroup(false);
+		}
+		else if (m_CurState == 3)
+		{
+			// Init Room 1
+			for (size_t i = 0; i < 10; i++)
+			{
+				auto& entity = world->CreateEntity();
+				world->AddComponent<Frosty::ECS::CMesh>(entity, Frosty::AssetManager::GetMesh("tree1"));
+				world->AddComponent<Frosty::ECS::CMaterial>(entity, Frosty::AssetManager::GetShader("FlatColor"));
+				world->AddToGroup(entity, true);
+			}
+
+			// Enter room 1
+			world->ChangeCurrentRoom();
+		}
+
+
+
+
+		m_CurState++;*/
 	}
 
 	void GameState::OnEvent(Frosty::BaseEvent & e)

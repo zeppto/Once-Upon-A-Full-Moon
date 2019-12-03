@@ -20,19 +20,26 @@ namespace MCS
 	{
 		for (size_t i = 1; i < p_Total; i++)
 		{
-			//if (i == 2 && Frosty::Time::GetFrameCount() % 100 == 0) FY_INFO("Direction is ({0}, {1}, {2})", m_Physics[i]->Direction.x, m_Physics[i]->Direction.y, m_Physics[i]->Direction.z);
-			//if (i == 2 && Frosty::Time::GetFrameCount() % 10 == 0) FY_INFO("Speed multiplier is ({0})", m_Physics[i]->SpeedMultiplier);
-
-			glm::vec3 changeOffset = m_Physics[i]->Direction * m_Physics[i]->Speed * m_Physics[i]->SpeedMultiplier * Frosty::Time::DeltaTime();
-			m_Transform[i]->Position += changeOffset;
-
-			//if (m_World->HasComponent<Frosty::ECS::CPlayer>(m_Transform[i]->EntityPtr) && m_Physics[i]->Direction.y > 0.0f)
-			//{
-			//	__debugbreak();
-			//}
-
+			// Movement
+			glm::vec3 movementOffset = m_Physics[i]->Direction * m_Physics[i]->Speed * m_Physics[i]->SpeedMultiplier * Frosty::Time::DeltaTime();
+			m_Transform[i]->Position += movementOffset;
+			
+			// Collision
 			if (!m_Transform[i]->IsStatic) CheckCollision(i);
 
+			// Player slow reset
+			if (m_World->HasComponent<Frosty::ECS::CPlayer>(m_Transform[i]->EntityPtr) && m_Physics[i]->SlowTime > 0.0f)
+			{
+				m_Physics[i]->SlowTime -= Frosty::Time::DeltaTime();
+
+				if (m_Physics[i]->SlowTime <= 0.0f)
+				{
+					m_Physics[i]->SpeedMultiplier += 0.4f;
+					m_Physics[i]->SlowTime = 0.0f;
+				}
+			}
+
+			// Boss charge into player, float up and down
 			if (m_Physics[i]->Direction.y > 0.0f)
 			{
 				m_Physics[i]->HangTime -= Frosty::Time::DeltaTime();
@@ -231,9 +238,11 @@ namespace MCS
 									{
 										// Leap colliding into player, damage the player
 										Frosty::EventBus::GetEventBus()->Publish<Frosty::DamageEvent>(Frosty::DamageEvent(m_Transform[i]->EntityPtr, bossComp.LeapDamage));
+										m_Physics[i]->SpeedMultiplier -= bossComp.LeapSlowAmount;
+										m_Physics[i]->SlowTime = bossComp.LeapSlowCooldown;
 									}
 
-									// Reset charge attributes
+									// Reset leap attributes
 									Frosty::EventBus::GetEventBus()->Publish<Frosty::ResetBossAbilitiesEvent>(Frosty::ResetBossAbilitiesEvent(m_Transform[index]->EntityPtr));
 									bool normalCollisionPushback = false;
 								}
@@ -250,9 +259,7 @@ namespace MCS
 									}
 
 									// Reset charge attributes
-									FY_INFO("First: {0}", bossComp.ActiveAbility);
 									Frosty::EventBus::GetEventBus()->Publish<Frosty::ResetBossAbilitiesEvent>(Frosty::ResetBossAbilitiesEvent(m_Transform[index]->EntityPtr));
-									FY_INFO("Second: {0}", bossComp.ActiveAbility);
 									normalCollisionPushback = false;
 								}
 							}
