@@ -35,11 +35,19 @@ namespace MCS
 			transform = glm::rotate(transform, glm::radians(m_ParticleSystem[i]->SystemRotation.y), { 0.0f, 1.0f, 0.0f });
 			transform = glm::rotate(transform, glm::radians(m_ParticleSystem[i]->SystemRotation.z), { 0.0f, 0.0f, 1.0f });
 
-			glm::mat4 parentTransform = glm::translate(glm::mat4(1.0f), m_Transform[i]->Position);
-			parentTransform = glm::rotate(parentTransform, glm::radians(m_Transform[i]->Rotation.x), { 1.0f, 0.0f, 0.0f });
-			parentTransform = glm::rotate(parentTransform, glm::radians(m_Transform[i]->Rotation.y), { 0.0f, 1.0f, 0.0f });
-			parentTransform = glm::rotate(parentTransform, glm::radians(m_Transform[i]->Rotation.z), { 0.0f, 0.0f, 1.0f });
-			parentTransform = glm::scale(parentTransform, m_Transform[i]->Scale);
+			glm::mat4 parentTransform;
+			if (!m_ParticleSystem[i]->HasGravity)
+			{
+				parentTransform = glm::translate(glm::mat4(1.0f), m_Transform[i]->Position);
+				parentTransform = glm::rotate(parentTransform, glm::radians(m_Transform[i]->Rotation.x), { 1.0f, 0.0f, 0.0f });
+				parentTransform = glm::rotate(parentTransform, glm::radians(m_Transform[i]->Rotation.y), { 0.0f, 1.0f, 0.0f });
+				parentTransform = glm::rotate(parentTransform, glm::radians(m_Transform[i]->Rotation.z), { 0.0f, 0.0f, 1.0f });
+				parentTransform = glm::scale(parentTransform, m_Transform[i]->Scale);
+			}
+			else
+			{
+				parentTransform = glm::mat4(1.0f);
+			}
 
 			transform = parentTransform * transform;
 
@@ -345,7 +353,12 @@ namespace MCS
 			float randLifetime = RandomFloat(m_ParticleSystem[systemIndex]->MaxLifetime, m_ParticleSystem[systemIndex]->MinLifetime);
 			p.MaxLifetime = randLifetime;
 		}
-		if (m_ParticleSystem[systemIndex]->RandomStartPos == false)
+		if (m_ParticleSystem[systemIndex]->HasGravity)
+		{
+			//m_ParticleSystem[systemIndex]->ParticleSystemStartPos = m_Transform[systemIndex]->Position;
+			p.StartPos = glm::vec4(m_Transform[systemIndex]->Position, 1.0f);
+		}
+		else if (m_ParticleSystem[systemIndex]->RandomStartPos == false)
 		{
 			p.StartPos = glm::vec4(m_ParticleSystem[systemIndex]->ParticleSystemStartPos, 1.0f);
 		}
