@@ -738,12 +738,13 @@ namespace Frosty
 		struct CEnemy : public BaseComponent
 		{
 			static std::string NAME;
-			static const int RESET_DISTANCE = 60;
+			static const int RESET_DISTANCE = 1000;
 
 			enum class State { Idle, Escape, Attack, Chase, Reset, Dead };
 			State CurrentState{ State::Idle };
 
 			CWeapon* Weapon{ nullptr };
+			size_t WeaponEntityID{ 0 };
 			CTransform* Target{ nullptr };
 
 			glm::vec3 SpawnPosition{ 0.0f };
@@ -752,8 +753,11 @@ namespace Frosty
 
 			float RunOnHealth{ 0.0f };
 
-			float DamageEffectTime{ 0.05f };
-			float DamageEffectTimer{ Frosty::Time::CurrentTime() };
+			float AttackDelay{ 0.0f };
+			bool AttackInit{ false };
+
+			float FlashTime{ 0.05f };
+			float FlashTimer{ Frosty::Time::CurrentTime() };
 
 			CEnemy() = default;
 			CEnemy(CTransform* target, CWeapon* weapon, float runOnHealth = 0.0f) : Target(target), Weapon(weapon), RunOnHealth(runOnHealth) { }
@@ -800,8 +804,8 @@ namespace Frosty
 
 			// SPEED BOOSTER POTION - boosts speed during a time interval (temp)
 			int MaxSpeedPotions{ 5 };
-			int CurrentSpeedPotions{ 0 };
-			float IncreaseSpeedTemporary{ 0.2f };
+			int CurrentSpeedPotions{ 1 };
+			float IncreaseSpeedTemporary{ 0.5f };
 			float SpeedCooldown{ 5.f };
 			float SpeedTimer{ Frosty::Time::CurrentTime() };
 
@@ -853,10 +857,10 @@ namespace Frosty
 		{
 			static std::string NAME;
 			static const int COOLDOWN = 3000;
-			static const int DISTANCE = 5000;
+			static const int DISTANCE = 7000;
 			bool Active{ false };
 			float CurrentCooldown{ 0.0f };
-			float DistanceDashed{ 0.0f };
+			float DistanceDashed{ 7.0f };
 			float SpeedMultiplier{ 3.0f };
 
 			CDash() = default;
