@@ -10,6 +10,13 @@
 #include <filesystem>
 #include <winsock.h>
 
+// Memory management
+#include <d3d11_4.h>
+#include <dxgi1_6.h>
+#pragma comment(lib, "dxgi.lib")
+#include <psapi.h>
+#include <string>
+
 #include <fstream>
 
 

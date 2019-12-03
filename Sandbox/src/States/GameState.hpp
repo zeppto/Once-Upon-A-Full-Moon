@@ -42,6 +42,9 @@ namespace MCS
 		// Temp
 		//glm::vec3 m_PlayerFirstPos = glm::vec3(-104.0f, 0.0f, -15.4f);
 		//glm::vec3 m_PlayerLastPos = glm::vec3(-104.0f, 0.0f, -15.4f);
+
+		// TEMPORARY
+		int m_CurState{ 0 };
 	};
 }
 #endif

@@ -682,6 +682,7 @@ namespace MCS
 						}
 						auto& enemyWeaponCompA = m_World->AddComponent<Frosty::ECS::CWeapon>(enemyWeaponA, loadedWeapon);
 						auto& enemy = m_World->AddComponent<Frosty::ECS::CEnemy>(entity, playerTransform, &enemyWeaponCompA, fileEntitys.myEntitys.at(i).myEnemy.RunOnHealth);
+						enemy.WeaponEntityID = enemyWeaponCompA.EntityPtr->Id;
 						auto& transform = m_World->GetComponent< Frosty::ECS::CTransform>(entity);
 						enemy.SpawnPosition = transform.Position;
 					}
@@ -831,7 +832,6 @@ namespace MCS
 						}
 						else
 						{
-
 							m_World->AddComponent<Frosty::ECS::CAnimController>(entity);
 						}
 					}
