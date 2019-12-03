@@ -39,6 +39,7 @@ namespace MCS
 		void HandleDistance(size_t index);
 		void HandleEscape(size_t index);
 		void HandleReset(size_t index);
+		void HandleDeath(size_t index);
 
 	private:
 		Frosty::World* m_World{ nullptr };

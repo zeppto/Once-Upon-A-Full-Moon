@@ -56,17 +56,16 @@ namespace Frosty
 		static void SubmitParticles(const std::shared_ptr<Shader>& shader, const std::shared_ptr<VertexArray>& vertexArray, glm::mat4& modelMat, size_t particleCount, float maxLifetime);
 		static void Submit2d(const std::shared_ptr<Shader>& shader, const std::shared_ptr<VertexArray>& vertexArray, const glm::mat4& transform);
 		static void SubmitHealthBar(const std::shared_ptr<Shader>& shader, const std::shared_ptr<VertexArray>& vertexArray, const glm::vec3& translate, const glm::vec3& scale, const glm::vec3& HealthBarSpace);
-		static void AddToRenderer(ECS::CMaterial* mat, ECS::CMesh* mesh, ECS::CTransform* transform);
+		static void AddToRenderer(ECS::CMaterial* mat, ECS::CMesh* mesh, ECS::CTransform* transform, ECS::CAnimController* controller);
 		static void RemoveFromRenderer(const size_t& matID, const std::string& meshName, const size_t& transformID);
 		static void UpdateEntity(const size_t& matID, ECS::CMaterial* mat, const std::string& meshName, std::shared_ptr<VertexArray> vertexArray, const size_t& transformID, ECS::CTransform* transform);
 
 		static void SwapEntity(const std::shared_ptr<ECS::Entity>& EntityA, const std::shared_ptr<ECS::Entity>& EntityB);
 
-
-
 		//Suggestion: Overload this for each individual trait. That way we need not replace everything.
-		static void ChangeEntity(const size_t& OldMatID, ECS::CMaterial* mat, const std::string& OldMeshName, ECS::CMesh* mesh, const size_t& transformID, ECS::CTransform* transform);
-		static void UpdateCMesh(const int& entityID, ECS::CMesh* mesh);
+		static void ChangeEntity(const size_t& OldMatID, ECS::CMaterial* mat, const std::string& OldMeshName, ECS::CMesh* mesh, const size_t& transformID, ECS::CTransform* transform, ECS::CAnimController* controller);
+		static void UpdateCMesh(const size_t& entityID, ECS::CMesh* mesh);
+		static void UpdateCMesh(const size_t& entityID, ECS::CMesh* mesh, ECS::CAnimController * ctrlPtr);
 
 		inline static void Shutdown() { delete s_SceneData; }
 
@@ -81,6 +80,7 @@ namespace Frosty
 		{
 			std::shared_ptr<VertexArray> VertexArray;
 			std::unordered_map<size_t, Frosty::ECS::CTransform*> TransformMap;
+			std::unordered_map<size_t, Frosty::ECS::CAnimController*> AnimMap;
 
 			glm::mat4* parentMatrix = nullptr;
 			const glm::mat4* holdJointTransform = nullptr;

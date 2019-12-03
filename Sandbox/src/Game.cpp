@@ -40,7 +40,12 @@ namespace MCS
 		//state.AddState(Frosty::StateRef(FY_NEW(LoadingState)));
 		state.AddState(Frosty::StateRef(FY_NEW(MenuState)));
 		//Application::Get().StartGame(true);
+
+#ifdef FY_DEBUG
 		PushLayer(FY_NEW InspectorLayer());
+#else
+		Application::Get().StartGame(true);
+#endif
 	}
 
 	Game::~Game()

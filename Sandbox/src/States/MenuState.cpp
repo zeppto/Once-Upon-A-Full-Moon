@@ -134,6 +134,7 @@ namespace MCS
 	/*	auto& weapon = world->CreateEntity({ -0.7f, 2.3f, 0.2f }, { 0.0f, 60.0f, 0.0f }, { 1.f, 1.f, 1.f });*/
 		auto& weaponHandler = Frosty::AssetManager::GetWeaponHandler("Weapons");
 		Frosty::Weapon loadedWeapon = weaponHandler->GetAPlayerWeapon(1, 1);
+		//Frosty::Weapon loadedWeapon = weaponHandler->GetWeaponByTypeAndLevel(Frosty::Weapon::WeaponType::Sword, 3, 3);
 		world->AddComponent<Frosty::ECS::CWeapon>(weapon, loadedWeapon, true);
 		auto& weaponComp = world->GetComponent<Frosty::ECS::CWeapon>(weapon);
 		Frosty::ECS::CMesh* weaponMesh;
@@ -158,10 +159,12 @@ namespace MCS
 		auto& player = world->CreateEntity({ -104.0f, 0.0f, -15.4f }, { 0.0f, 0.0f, 0.0f }, { 2.0f, 2.0f, 2.0f });
 		//auto& player = world->CreateEntity({ -90.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 2.0f, 2.0f, 2.0f });
 		auto& playerTransform = world->GetComponent<Frosty::ECS::CTransform>(player);
+		world->AddComponent<Frosty::ECS::CMesh>(player, Frosty::AssetManager::GetMesh("Scarlet"));
+
 		world->AddComponent<Frosty::ECS::CAnimController>(player).currAnim = Frosty::AssetManager::GetAnimation("Scarlet_Idle");
 		auto& animation = world->GetComponent<Frosty::ECS::CAnimController>(player);
 		animation.animSpeed = 0.7f;
-		world->AddComponent<Frosty::ECS::CMesh>(player, Frosty::AssetManager::GetMesh("Scarlet"));
+
 		auto& playerMat = world->AddComponent<Frosty::ECS::CMaterial>(player, Frosty::AssetManager::GetShader("Animation"));
 		playerMat.DiffuseTexture = Frosty::AssetManager::GetTexture2D("Scarlet_diffuse");
 		playerMat.NormalTexture = Frosty::AssetManager::GetTexture2D("Scarlet_normal");

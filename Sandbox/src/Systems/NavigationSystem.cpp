@@ -45,6 +45,9 @@ namespace MCS
 			case Frosty::ECS::CEnemy::State::Reset:
 				HandleReset(i);
 				break;
+			case Frosty::ECS::CEnemy::State::Dead:
+				HandleDeath(i);
+				break;
 			default:
 				break;
 			}
@@ -262,5 +265,10 @@ namespace MCS
 
 		// Rotate towards target (cell)
 		LookAtPoint(cellTarget, index);
+	}
+	void NavigationSystem::HandleDeath(size_t index)
+	{
+		m_Physics[index]->SpeedMultiplier = 0.0f;
+		/*m_Physics[index]->Direction = glm::vec3(0.0f);*/
 	}
 }
