@@ -637,6 +637,13 @@ namespace Frosty
 			int WaterHealing{ 0 };							// Water (+ Heal)
 			bool IsFullyUpgraded{ false };
 
+			//For HUD
+			bool HasDoneFireSprite{ false };
+			bool HasDoneEarthSprite{ false };
+			bool HasDoneWindSprite{ false };
+			bool HasDoneWaterSprite{ false };
+
+
 			// Special Attribute for Bow
 			float ProjectileSpeed{ 0.f };
 
@@ -813,7 +820,7 @@ namespace Frosty
 
 			// WOLFSBANE - poisonous flower, used as currency
 			int MaxWolfsbaneAmount{ 10 };
-			int CurrentWolfsbane{ 10 };
+			int CurrentWolfsbane{ 0 };
 
 			CInventory() = default;
 			CInventory(const CInventory& org) { FY_CORE_ASSERT(false, "Copy constructor in CInventory called."); }

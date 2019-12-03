@@ -244,7 +244,7 @@ namespace MCS
 
 		//Picked up
 		//uiLayout.AddText(glm::vec2(550, 425), "+ 1 Health Potion", glm::vec3(1.0f, 1.0f, 1.0f), 0.75f);
-		uiLayout.AddText(glm::vec2(550, 425), "", glm::vec3(1.0f, 1.0f, 0.75f), 0.75f); //6
+		uiLayout.AddText(glm::vec2(960 / 1.5f, 425), "", glm::vec3(1.0f, 1.0f, 0.75f), 0.75f); //6
 
 		//Attack cooldown
 		uiLayout.AddText(glm::vec2(35, 134), "", glm::vec3(1.0f, 1.0f, 1.0f), 0.65f); //7

@@ -1002,45 +1002,58 @@ namespace MCS
 			case 0:
 				if (weaponComp.FireCriticalHitChance == 0.f)
 				{
+
 					weaponComp.FireCriticalHitChance += 0.1f;
 					HUD.Layout.sprites.at(6).SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
-					HUD.Layout.sprites.at(6).SetTranslateSprite(glm::vec2(960 / 1.5f, (540 / 1.5f) + 200));
-					HUD.Layout.sprites.at(6).SetScaleSprite(glm::vec2(1.5, 1.5));
+					//HUD.Layout.sprites.at(6).SetTranslateSprite(glm::vec2(960 / 1.5f, (540 / 1.5f) + 500));
+					//HUD.Layout.sprites.at(6).SetScaleSprite(glm::vec2(1.5, 1.5));
 					m_Player[p_Total - 1]->ElementDisplayTimer = Frosty::Time::CurrentTime();
-					SetPickUpText(p_Total - 1, "Fire");
+					SetPickUpText(p_Total - 1, "Chance of double damage");
+
+
 				}
 				break;
 			case 1:
 				if (weaponComp.EarthDamage == 0.f)
 				{
 					weaponComp.EarthDamage += 1.f;
+
 					HUD.Layout.sprites.at(5).SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
-					HUD.Layout.sprites.at(5).SetTranslateSprite(glm::vec2(960 / 1.5f, (540 / 1.5f) + 200));
-					HUD.Layout.sprites.at(5).SetScaleSprite(glm::vec2(1.5, 1.5));
+					//HUD.Layout.sprites.at(5).SetTranslateSprite(glm::vec2(960 / 1.5f, (540 / 1.5f) + 500));
+					//HUD.Layout.sprites.at(5).SetScaleSprite(glm::vec2(1.5, 1.5));
 					m_Player[p_Total - 1]->ElementDisplayTimer = Frosty::Time::CurrentTime();
-					SetPickUpText(p_Total - 1, "Earth");
+					SetPickUpText(p_Total - 1, "Increased damage");
+
+
 				}
 				break;
 			case 2:
 				if (weaponComp.WindSpeed == 0.f)
 				{
 					weaponComp.WindSpeed += 0.4f;
+
 					HUD.Layout.sprites.at(8).SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
-					HUD.Layout.sprites.at(8).SetTranslateSprite(glm::vec2(960 / 1.5f, (540 / 1.5f) + 200));
-					HUD.Layout.sprites.at(8).SetScaleSprite(glm::vec2(1.5, 1.5));
+					//HUD.Layout.sprites.at(8).SetTranslateSprite(glm::vec2(960 / 1.5f, (540 / 1.5f) + 500));
+					//HUD.Layout.sprites.at(8).SetScaleSprite(glm::vec2(1.5, 1.5));
 					m_Player[p_Total - 1]->ElementDisplayTimer = Frosty::Time::CurrentTime();
-					SetPickUpText(p_Total - 1, "Wind");
+					SetPickUpText(p_Total - 1, "Increased attack speed");
+
+
 				}
 				break;
 			case 3:
 				if (weaponComp.WaterHealing == 0)
 				{
 					weaponComp.WaterHealing += 1;
+
 					HUD.Layout.sprites.at(7).SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
-					HUD.Layout.sprites.at(7).SetTranslateSprite(glm::vec2(960 / 1.5f, (540 / 1.5f) + 200));
-					HUD.Layout.sprites.at(7).SetScaleSprite(glm::vec2(1.5, 1.5));
+					//HUD.Layout.sprites.at(7).SetTranslateSprite(glm::vec2(960 / 1.5f, (540 / 1.5f) + 500));
+					//HUD.Layout.sprites.at(7).SetScaleSprite(glm::vec2(1.5, 1.5));
 					m_Player[p_Total - 1]->ElementDisplayTimer = Frosty::Time::CurrentTime();
-					SetPickUpText(p_Total - 1, "Water");
+					SetPickUpText(p_Total - 1, "Chance of heal on hit");
+
+
+
 				}
 				break;
 			default:
@@ -1317,19 +1330,19 @@ namespace MCS
 		{
 			auto& HUD = m_World->GetComponent<Frosty::ECS::CGUI>(m_Transform[index]->EntityPtr);
 
-			if (Frosty::InputManager::IsKeyPressed(FY_KEY_P))
-			{
-				auto& weaponComp = (m_World->GetComponent<Frosty::ECS::CWeapon>(m_Player[index]->Weapon->EntityPtr));
-				weaponComp.FireCriticalHitChance += 0.1f;
-				HUD.Layout.sprites.at(6).SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
-				HUD.Layout.sprites.at(6).SetTranslateSprite(glm::vec2(960 / 1.5f, (540 / 1.5f) + 200));
-				HUD.Layout.sprites.at(6).SetScaleSprite(glm::vec2(1.5, 1.5));
-				m_Player[index]->ElementDisplayTimer = Frosty::Time::CurrentTime();
+			//if (Frosty::InputManager::IsKeyPressed(FY_KEY_P))
+			//{
+			//	/*auto& weaponComp = (m_World->GetComponent<Frosty::ECS::CWeapon>(m_Player[index]->Weapon->EntityPtr));
+			//	weaponComp.FireCriticalHitChance += 0.1f;
+			//	HUD.Layout.sprites.at(6).SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+			//	HUD.Layout.sprites.at(6).SetTranslateSprite(glm::vec2(960 / 1.5f, (540 / 1.5f) + 200));
+			//	HUD.Layout.sprites.at(6).SetScaleSprite(glm::vec2(1.5, 1.5));
+			//	m_Player[index]->ElementDisplayTimer = Frosty::Time::CurrentTime();
 
-				SetPickUpText(index, "tjena");
+			//	SetPickUpText(index, "tjena");*/
 
-
-			}
+			//	Frosty::EventBus::GetEventBus()->Publish<Frosty::UpgradeWeaponEvent>(Frosty::UpgradeWeaponEvent());
+			//}
 
 
 			//Items
@@ -1658,7 +1671,7 @@ namespace MCS
 			if (Frosty::Time::CurrentTime() - m_Player[index]->ElementDisplayTimer < m_Player[index]->ElementDisplayTime)
 			{
 				m_Player[index]->ElementMoveTimer = Frosty::Time::CurrentTime();
-				
+
 			}
 
 			//Earth
@@ -1666,12 +1679,13 @@ namespace MCS
 			{
 
 				float timeLeft = Frosty::Time::CurrentTime() - m_Player[index]->ElementMoveTimer;
-				if (timeLeft <= m_Player[index]->ElementMoveTime && timeLeft >= 0)
+
+				if (timeLeft <= m_Player[index]->ElementMoveTime && timeLeft >= 0 && !m_Player[index]->Weapon->HasDoneEarthSprite)
 				{
 					float percentage = (Frosty::Time::CurrentTime() - m_Player[index]->ElementMoveTimer) / m_Player[index]->ElementMoveTime;
 
 
-					glm::vec2 posA{ 960 / 1.5f, (540 / 1.5f) + 100 };
+					glm::vec2 posA{ 960 / 1.5f, (540 / 1.5f) + 150 };
 					glm::vec2 posB{ 30,30 };
 					glm::vec2 posDif = posA - posB;
 
@@ -1689,6 +1703,7 @@ namespace MCS
 					HUD.Layout.sprites.at(5).SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
 					HUD.Layout.sprites.at(5).SetTranslateSprite(glm::vec2(30, 30));
 					HUD.Layout.sprites.at(5).SetScaleSprite(glm::vec2(0.5, 0.5));
+					m_Player[index]->Weapon->HasDoneEarthSprite = true;
 				}
 
 			}
@@ -1696,16 +1711,17 @@ namespace MCS
 			{
 				HUD.Layout.sprites.at(5).SetColorSprite(glm::vec4(0.1f, 0.1f, 0.1f, 0.50f));
 			}
+
 			//Fire
 			if (m_Player[index]->Weapon->FireCriticalHitChance > 0.0f)
 			{
 				float timeLeft = Frosty::Time::CurrentTime() - m_Player[index]->ElementMoveTimer;
-				if (timeLeft <= m_Player[index]->ElementMoveTime && timeLeft >= 0)
+				if (timeLeft <= m_Player[index]->ElementMoveTime && timeLeft >= 0 && !m_Player[index]->Weapon->HasDoneFireSprite)
 				{
 					float percentage = (Frosty::Time::CurrentTime() - m_Player[index]->ElementMoveTimer) / m_Player[index]->ElementMoveTime;
 
 
-					glm::vec2 posA{ 960 / 1.5f, (540 / 1.5f) + 100 };
+					glm::vec2 posA{ 960 / 1.5f, (540 / 1.5f) + 150 };
 					glm::vec2 posB{ 50,30 };
 					glm::vec2 posDif = posA - posB;
 
@@ -1723,6 +1739,7 @@ namespace MCS
 					HUD.Layout.sprites.at(6).SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
 					HUD.Layout.sprites.at(6).SetTranslateSprite(glm::vec2(50, 30));
 					HUD.Layout.sprites.at(6).SetScaleSprite(glm::vec2(0.5, 0.5));
+					m_Player[index]->Weapon->HasDoneFireSprite = true;
 				}
 			}
 			else
@@ -1733,12 +1750,12 @@ namespace MCS
 			if (m_Player[index]->Weapon->WaterHealing > 0.0f)
 			{
 				float timeLeft = Frosty::Time::CurrentTime() - m_Player[index]->ElementMoveTimer;
-				if (timeLeft <= m_Player[index]->ElementMoveTime && timeLeft >= 0)
+				if (timeLeft <= m_Player[index]->ElementMoveTime && timeLeft >= 0 && !m_Player[index]->Weapon->HasDoneWaterSprite)
 				{
 					float percentage = (Frosty::Time::CurrentTime() - m_Player[index]->ElementMoveTimer) / m_Player[index]->ElementMoveTime;
 
 
-					glm::vec2 posA{ 960 / 1.5f, (540 / 1.5f) + 100 };
+					glm::vec2 posA{ 960 / 1.5f, (540 / 1.5f) + 150 };
 					glm::vec2 posB{ 70,30 };
 					glm::vec2 posDif = posA - posB;
 
@@ -1756,6 +1773,7 @@ namespace MCS
 					HUD.Layout.sprites.at(7).SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
 					HUD.Layout.sprites.at(7).SetTranslateSprite(glm::vec2(70, 30));
 					HUD.Layout.sprites.at(7).SetScaleSprite(glm::vec2(0.5, 0.5));
+					m_Player[index]->Weapon->HasDoneWaterSprite = true;
 				}
 			}
 			else
@@ -1766,12 +1784,12 @@ namespace MCS
 			if (m_Player[index]->Weapon->WindSpeed > 0.0f)
 			{
 				float timeLeft = Frosty::Time::CurrentTime() - m_Player[index]->ElementMoveTimer;
-				if (timeLeft <= m_Player[index]->ElementMoveTime && timeLeft >= 0)
+				if (timeLeft <= m_Player[index]->ElementMoveTime && timeLeft >= 0 && !m_Player[index]->Weapon->HasDoneWindSprite)
 				{
 					float percentage = (Frosty::Time::CurrentTime() - m_Player[index]->ElementMoveTimer) / m_Player[index]->ElementMoveTime;
 
 
-					glm::vec2 posA{ 960 / 1.5f, (540 / 1.5f) + 100 };
+					glm::vec2 posA{ 960 / 1.5f, (540 / 1.5f) + 150 };
 					glm::vec2 posB{ 90,30 };
 					glm::vec2 posDif = posA - posB;
 
@@ -1789,6 +1807,7 @@ namespace MCS
 					HUD.Layout.sprites.at(8).SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
 					HUD.Layout.sprites.at(8).SetTranslateSprite(glm::vec2(90, 30));
 					HUD.Layout.sprites.at(8).SetScaleSprite(glm::vec2(0.5, 0.5));
+					m_Player[index]->Weapon->HasDoneWindSprite = true;
 				}
 			}
 			else
@@ -1824,11 +1843,17 @@ namespace MCS
 
 	void PlayerControllerSystem::SetPickUpText(size_t index, std::string text)
 	{
+
+	
+		float posX = (960 / 1.5f) - (text.size()/2) * 11;
+
 		if (m_World->HasComponent<Frosty::ECS::CGUI>(m_Transform[index]->EntityPtr))
 		{
 			auto& HUD = m_World->GetComponent<Frosty::ECS::CGUI>(m_Transform[index]->EntityPtr);
 
 			HUD.Layout.texts.at(6).SetText(text);
+			HUD.Layout.texts.at(6).SetPosition(glm::vec2(posX, HUD.Layout.texts.at(6).GetPosition().y));
+
 			m_Player[index]->PickUpTextTimer = Frosty::Time::CurrentTime();
 
 		}
