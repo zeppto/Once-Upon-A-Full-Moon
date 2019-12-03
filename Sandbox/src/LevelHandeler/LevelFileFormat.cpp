@@ -413,8 +413,8 @@ namespace MCS
 						if (fileEntitys.myEntitys.at(i).MyComponents.at(10).HaveComponent || !fileEntitys.myEntitys.at(i).MyComponents.at(1).HaveComponent)
 						{
 							float savedX = fileEntitys.myEntitys.at(i).myTransform.Scale.x;
-							fileEntitys.myEntitys.at(i).myTransform.Scale.x = fileEntitys.myEntitys.at(i).myTransform.Scale.z *1.25;
-							fileEntitys.myEntitys.at(i).myTransform.Scale.z = savedX * 1.25;
+							fileEntitys.myEntitys.at(i).myTransform.Scale.x = fileEntitys.myEntitys.at(i).myTransform.Scale.z *1.25f;
+							fileEntitys.myEntitys.at(i).myTransform.Scale.z = savedX * 1.25f;
 						}
 						else
 						{

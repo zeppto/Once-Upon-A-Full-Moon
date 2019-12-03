@@ -45,10 +45,10 @@ namespace MCS
 			//}
 
 			//Boss Timer
-			if (Frosty::Time::CurrentTime() - BossTimer >= BossSpawnTime)
-			{
-				//if (!m_BossSpawned) SpawnBoss();
-			}
+			//if (Frosty::Time::CurrentTime() - BossTimer >= BossSpawnTime)
+			//{
+			//	if (!m_BossSpawned) SpawnBoss();
+			//}
 		}
 	}
 
@@ -61,6 +61,9 @@ namespace MCS
 			break;
 		case Frosty::EventType::ResetBoss:
 			OnResetBossAbilities(static_cast<Frosty::ResetBossAbilitiesEvent&>(e));
+			break;
+		case Frosty::EventType::SpawnBoss:
+			OnSpawnBossEvent(static_cast<Frosty::SpawnBossEvent&>(e));
 			break;
 		default:
 			break;
@@ -159,6 +162,11 @@ namespace MCS
 		if (it == p_EntityMap.end()) return;
 
 		ResetBossAbilities(it->second);
+	}
+
+	void AISystem::OnSpawnBossEvent(Frosty::SpawnBossEvent& e)
+	{
+		if (!m_BossSpawned) SpawnBoss();
 	}
 
 	void AISystem::CheckState(size_t index)

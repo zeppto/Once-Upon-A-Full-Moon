@@ -55,8 +55,18 @@ namespace MCS
 			if (m_LoosEndsRooms.size() > 0)
 			{
 				if (generateRoom(m_LoosEndsRooms.at(0).pos, m_LoosEndsRooms.at(0).startSide, nrToGenerate - i > m_LoosEndsRooms.size()))
+				{
+					if (m_LoosEndsRooms.size() == 1 || i == nrToGenerate - 1)
+					{
+						m_LastCreatedRoom = m_LoosEndsRooms.at(0).pos;
+					}
 					i++;
+				}
 				m_LoosEndsRooms.erase(m_LoosEndsRooms.begin());
+			}
+			else
+			{
+				i++;
 			}
 		}
 		//nrToGenerate--;
@@ -236,6 +246,11 @@ namespace MCS
 		return m_TileMap[pos.x][pos.y];
 	}
 
+	glm::ivec2 MapGenerator::getLastCreatedLevelPos()
+	{
+		return m_LastCreatedRoom;
+	}
+
 	std::string MapGenerator::getRoomTextur(glm::ivec2 pos, int* rotation)
 	{
 		//enum RoomType
@@ -361,7 +376,12 @@ namespace MCS
 		pathOnTile startRoom;
 		startRoom.pos = startPos;
 		startRoom.distensTo = 0;
-		//rooms.push_back(startRoom);
+		pathRooms[startRoom.pos.x][startRoom.pos.y].distensTo = startRoom.distensTo;
+		for (int j = 0; j < 4; j++)
+		{
+			Room theStartRoom = getRoom(startRoom.pos);
+			pathRooms[startRoom.pos.x][startRoom.pos.y].sideExits[j] = theStartRoom.sideExits[j];
+		}
 		std::deque<pathOnTile> roomsToGoThrough;
 		roomsToGoThrough.emplace_back(startRoom);
 
@@ -380,34 +400,31 @@ namespace MCS
 						pathOnTile newPath;
 						newPath.pos = room.pos + posOffset(i);
 						newPath.distensTo = room.distensTo + 1;
-						newPath.parantTile = room.parantTile;
-						newPath.parantTile.push_back(room.pos);
-						roomsToGoThrough.emplace_back(newPath);
-						//roomsToGoThrough.push_back(newPath);
+						if (pathRooms[newPath.pos.x][newPath.pos.y].distensTo == -1)
+						{
+							pathRooms[newPath.pos.x][newPath.pos.y].distensTo = newPath.distensTo;
+							for (int j = 0; j < 4; j++)
+							{
+								newPath.sideExits[j] = neighbor.sideExits[j];
+								pathRooms[newPath.pos.x][newPath.pos.y].sideExits[j] = neighbor.sideExits[j];
+							}
+							newPath.parantTile = room.parantTile;
+							newPath.parantTile.push_back(room.pos);
 
+							roomsToGoThrough.emplace_back(newPath);
+
+						}
 						if (newPath.pos == endPos)
 						{
 							rooms = newPath.parantTile;
 							rooms.push_back(newPath.pos);
+
 							return rooms;
 						}
 					}
 				}
 			}
 			roomsToGoThrough.pop_front();
-			//if (room.sideExits[roomToEnter])
-			//{
-			//	tempLastPos = m_BossPos;
-			//	tempPos = m_BossPos;
-			//	if (roomToEnter == 0)
-			//		tempPos += glm::ivec2(0, -1);
-			//	if (roomToEnter == 1)
-			//		tempPos += glm::ivec2(0, 1);
-			//	if (roomToEnter == 2)
-			//		tempPos += glm::ivec2(-1, 0);
-			//	if (roomToEnter == 3)
-			//		tempPos += glm::ivec2(1, 0);
-			//}
 		}
 		return rooms;
 	}

@@ -1,7 +1,7 @@
 #ifndef AI_SYSTEM_HPP
 #define AI_SYSTEM_HPP
 
-namespace Frosty { class InitiateGridEvent; class ResetBossAbilitiesEvent; }
+namespace Frosty { class InitiateGridEvent; class ResetBossAbilitiesEvent; class SpawnBossEvent;}
 
 namespace MCS
 {
@@ -26,6 +26,7 @@ namespace MCS
 	private:
 		void OnInitiateGridMap(Frosty::InitiateGridEvent& e);
 		void OnResetBossAbilities(Frosty::ResetBossAbilitiesEvent& e);
+		void OnSpawnBossEvent(Frosty::SpawnBossEvent& e);
 		void CheckState(size_t index);
 		void HandleAttack(size_t index);
 		void LookAtPoint(const glm::vec3& point, size_t index);

@@ -44,8 +44,9 @@ namespace MCS
 
 	struct pathOnTile
 	{
-		glm::ivec2 pos;
-		int distensTo;
+		glm::ivec2 pos = { 0, 0 };
+		int distensTo = -1;
+		bool sideExits[4] = { false };
 		std::vector<glm::ivec2> parantTile;
 	};
 
@@ -60,6 +61,7 @@ namespace MCS
 		bool generateRoom(glm::ivec2 startPos, int startSide, bool notLastBatc);
 		glm::ivec2 posOffset(int i);
 		Room getRoom(glm::ivec2 pos);
+		glm::ivec2 getLastCreatedLevelPos();
 		std::string getRoomTextur(glm::ivec2 pos, int* rotation);
 
 		//for boss
@@ -68,6 +70,7 @@ namespace MCS
 	private:
 		Room m_TileMap[30][30];
 		std::vector<RoomOnTile> m_LoosEndsRooms;
+		glm::ivec2 m_LastCreatedRoom;
 	};
 }
 

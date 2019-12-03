@@ -343,5 +343,17 @@ namespace Frosty
 		std::shared_ptr<ECS::Entity> m_Boss;
 
 	};
+
+	class SpawnBossEvent : public BaseEvent
+	{
+	public:
+		SpawnBossEvent() { }
+
+
+		EVENT_TYPE(SpawnBoss)
+
+	private:
+
+	};
 }
 #endif // !ABILITY_EVENT_HPP
