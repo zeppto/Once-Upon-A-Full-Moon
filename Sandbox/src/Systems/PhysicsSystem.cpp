@@ -188,24 +188,26 @@ namespace MCS
 						if (m_Current_BoolMap != nullptr)
 						{
 							
-							glm::vec3 tempPos = m_Transform[index]->Position + glm::vec3(150.0f, 0.0f, 150.0f);
+					
+
+							glm::vec3 tempPos = m_Transform[index]->Position + glm::vec3(static_cast<float>((m_Current_BoolMap->GetCoordWidth() >> 1)), 0.0f, static_cast<float>(m_Current_BoolMap->GetCoordHeight() >> 1));
 
 							float tempX = glm::floor(std::abs(tempPos.x));
-							int intXcoord = static_cast<int>(tempX) % 300;
+							int intXcoord = static_cast<int>(tempX) % m_Current_BoolMap->GetCoordWidth();
 							float newXcoord = static_cast<float>(intXcoord) + (std::abs(tempPos.x) - tempX);
 
 							if (tempPos.x < 0.0f)
 							{
-								newXcoord = 300.0f - newXcoord;
+								newXcoord = static_cast<float>(m_Current_BoolMap->GetCoordWidth()) - newXcoord;
 							}
 
 							float tempZ = glm::floor(std::abs(tempPos.z));
-							int intZcoord = static_cast<int>(tempZ) % 300;
+							int intZcoord = static_cast<int>(tempZ) % m_Current_BoolMap->GetCoordHeight();
 							float newZcoord = static_cast<float>(intZcoord) + (std::abs(tempPos.z) - tempZ);
 
 							if (tempPos.z < 0.0f)
 							{
-								newZcoord = 300.0f - newZcoord;
+								newZcoord = static_cast<float>(m_Current_BoolMap->GetCoordHeight()) - newZcoord;
 							}
 
 							if (m_Room_Rotation != 0.0f)
