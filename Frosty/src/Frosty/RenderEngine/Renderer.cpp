@@ -131,8 +131,12 @@ namespace Frosty
 						shaderData->Shader->UploadUniformFloat("u_SpecularStrength", materialData->Material->SpecularStrength);
 
 					}
-					else if (shaderData->Shader->GetName() == "Texture2D" || shaderData->Shader->GetName() == "BlendShader"
-						|| shaderData->Shader->GetName() == "Animation")
+					else if (shaderData->Shader->GetName() == "Animation")
+					{
+						shaderData->Shader->UploadUniformFloat("u_Flash", materialData->Material->Flash);
+						shaderData->Shader->UploadUniformFloat2("u_TextureCoordScale", materialData->Material->TextureScale);
+					}
+					else if (shaderData->Shader->GetName() == "Texture2D" || shaderData->Shader->GetName() == "BlendShader")
 					{
 						shaderData->Shader->UploadUniformFloat2("u_TextureCoordScale", materialData->Material->TextureScale);
 					}

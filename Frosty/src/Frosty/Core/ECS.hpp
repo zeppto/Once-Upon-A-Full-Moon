@@ -804,7 +804,7 @@ namespace Frosty
 
 			// SPEED BOOSTER POTION - boosts speed during a time interval (temp)
 			int MaxSpeedPotions{ 5 };
-			int CurrentSpeedPotions{ 1 };
+			int CurrentSpeedPotions{ 0 };
 			float IncreaseSpeedTemporary{ 0.5f };
 			float SpeedCooldown{ 5.f };
 			float SpeedTimer{ Frosty::Time::CurrentTime() };
