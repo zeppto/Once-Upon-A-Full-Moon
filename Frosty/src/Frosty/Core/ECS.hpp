@@ -885,7 +885,6 @@ namespace Frosty
 		struct CParticleSystem : public BaseComponent
 		{
 			static std::string NAME;
-			//CTransform* Target{ nullptr };
 
 			struct Particle
 			{
@@ -936,6 +935,7 @@ namespace Frosty
 			glm::vec3 ParticleSystemStartPos{ 0.0f, 0.0f, 0.0f };
 			float EmitRate{ 0.1f };
 			uint32_t EmitCount{ 1 };
+			float ParticleWeight{ 1.0f };
 			float Speed{ 1.0f };
 			float MinLifetime{ 3.0f };
 			float MaxLifetime{ 3.0f };
@@ -945,6 +945,10 @@ namespace Frosty
 			float randSpread{ 1.5f };
 			glm::vec3 randMainDir{ 0.0f, 1.0f, 0.0f };
 
+			bool Loop{ true };
+			int32_t TimesPlayed = -1;
+
+			bool HasGravity{ false };
 			bool RotateOverLifetime{ false };
 			bool StaticColor{ true };
 			bool RandomLifetimes{ false };
