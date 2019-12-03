@@ -831,7 +831,6 @@ namespace MCS
 						}
 						else
 						{
-
 							m_World->AddComponent<Frosty::ECS::CAnimController>(entity);
 						}
 					}

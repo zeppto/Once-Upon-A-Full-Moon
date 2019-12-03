@@ -322,9 +322,20 @@ namespace MCS
 
 									if (world->HasComponent<Frosty::ECS::CMaterial>(m_SelectedEntity))
 									{
-										Frosty::Renderer::ChangeEntity(m_SelectedEntity->Id, &world->GetComponent<Frosty::ECS::CMaterial>(m_SelectedEntity),
-											oldMeshName, &world->GetComponent<Frosty::ECS::CMesh>(m_SelectedEntity),
-											m_SelectedEntity->Id, &world->GetComponent<Frosty::ECS::CTransform>(m_SelectedEntity));
+										if (!world->HasComponent<Frosty::ECS::CAnimController>(m_SelectedEntity))
+										{
+											Frosty::Renderer::ChangeEntity(m_SelectedEntity->Id, &world->GetComponent<Frosty::ECS::CMaterial>(m_SelectedEntity),
+												oldMeshName, &world->GetComponent<Frosty::ECS::CMesh>(m_SelectedEntity),
+												m_SelectedEntity->Id, &world->GetComponent<Frosty::ECS::CTransform>(m_SelectedEntity),nullptr);
+										}
+										else
+										{
+											Frosty::Renderer::ChangeEntity(m_SelectedEntity->Id, &world->GetComponent<Frosty::ECS::CMaterial>(m_SelectedEntity),
+												oldMeshName, &world->GetComponent<Frosty::ECS::CMesh>(m_SelectedEntity),
+												m_SelectedEntity->Id, &world->GetComponent<Frosty::ECS::CTransform>(m_SelectedEntity),
+												&world->GetComponent<Frosty::ECS::CAnimController>(m_SelectedEntity));
+										}
+										
 									}
 								}
 							}
@@ -393,9 +404,18 @@ namespace MCS
 									//Updates the renderer
 									if (world->HasComponent<Frosty::ECS::CMesh>(m_SelectedEntity))
 									{
-										Frosty::Renderer::ChangeEntity(m_SelectedEntity->Id, &world->GetComponent<Frosty::ECS::CMaterial>(m_SelectedEntity),
-											world->GetComponent<Frosty::ECS::CMesh>(m_SelectedEntity).Mesh->GetName(), &world->GetComponent<Frosty::ECS::CMesh>(m_SelectedEntity),
-											m_SelectedEntity->Id, &world->GetComponent<Frosty::ECS::CTransform>(m_SelectedEntity));
+										if (!world->HasComponent<Frosty::ECS::CAnimController>(m_SelectedEntity))
+										{
+											Frosty::Renderer::ChangeEntity(m_SelectedEntity->Id, &world->GetComponent<Frosty::ECS::CMaterial>(m_SelectedEntity),
+												world->GetComponent<Frosty::ECS::CMesh>(m_SelectedEntity).Mesh->GetName(), &world->GetComponent<Frosty::ECS::CMesh>(m_SelectedEntity),
+												m_SelectedEntity->Id, &world->GetComponent<Frosty::ECS::CTransform>(m_SelectedEntity), nullptr);
+										}
+										else
+										{
+											Frosty::Renderer::ChangeEntity(m_SelectedEntity->Id, &world->GetComponent<Frosty::ECS::CMaterial>(m_SelectedEntity),
+												world->GetComponent<Frosty::ECS::CMesh>(m_SelectedEntity).Mesh->GetName(), &world->GetComponent<Frosty::ECS::CMesh>(m_SelectedEntity),
+												m_SelectedEntity->Id, &world->GetComponent<Frosty::ECS::CTransform>(m_SelectedEntity), &world->GetComponent<Frosty::ECS::CAnimController>(m_SelectedEntity));
+										}
 									}
 								}
 							}
