@@ -39,9 +39,12 @@ namespace Frosty
 
 
 	public:
-		Animation() : AssetFile(FileMetaData()) {
+		Animation() : m_Mesh_Id(-1), AssetFile(FileMetaData()) {
+			
 			isRepeating = true;
 			isFinished = false;
+			m_HoldingJoint = nullptr;
+			glm::vec3 m_HoldingJointOffset = glm::vec3(0.0f);
 		}
 		Animation(const FileMetaData& MetaData, const uint16_t& MeshId, Luna::Animation LuAni, const bool& HasSkeleton = false)
 			:m_Mesh_Id(MeshId), m_Has_Skeleton(HasSkeleton), AssetFile(MetaData), m_Animation(LuAni)
@@ -53,6 +56,7 @@ namespace Frosty
 				m_SkinData.jTrans[i] = glm::mat4(1.0f);
 			}
 			m_HoldingJoint = nullptr;
+			glm::vec3 m_HoldingJointOffset = glm::vec3(0.0f);
 		}
 		virtual ~Animation();
 

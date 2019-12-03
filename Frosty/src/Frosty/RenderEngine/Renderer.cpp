@@ -3,7 +3,6 @@
 #include "Frosty/Core/ECS.hpp"
 #include "Frosty/API/AssetManager/AssetManager.hpp"
 #include "Frosty/Core/Application.hpp"
-//
 #include <glad/glad.h>
 
 namespace Frosty
@@ -69,6 +68,14 @@ namespace Frosty
 					RenderCommand::EnableBackfaceCulling();
 					culling = true;
 				}
+				else if (shaderData->Shader->GetName() == "Animation")
+				{
+					shaderData->Shader->AssignUniformBlock("a_jointDataBlock");
+					glEnable(GL_BLEND);
+					glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+					RenderCommand::EnableBackfaceCulling();
+					culling = true;
+				}
 				else if (shaderData->Shader->GetName() == "FlatColor")
 				{
 					RenderCommand::EnableBackfaceCulling();
@@ -124,7 +131,8 @@ namespace Frosty
 						shaderData->Shader->UploadUniformFloat("u_SpecularStrength", materialData->Material->SpecularStrength);
 
 					}
-					else if (shaderData->Shader->GetName() == "Texture2D" || shaderData->Shader->GetName() == "BlendShader")
+					else if (shaderData->Shader->GetName() == "Texture2D" || shaderData->Shader->GetName() == "BlendShader"
+						|| shaderData->Shader->GetName() == "Animation")
 					{
 						shaderData->Shader->UploadUniformFloat2("u_TextureCoordScale", materialData->Material->TextureScale);
 					}
@@ -195,6 +203,27 @@ namespace Frosty
 							{
 								nrOfDrawnedObjs++;
 								shaderData->Shader->UploadUniformMat4("u_Transform", meshData->TransformMap.at(TransformIt.first)->ModelMatrix);
+								if (shaderData->Shader->GetName() == "Animation")
+								{
+									if (meshData->AnimMap.find(TransformIt.first) != meshData->AnimMap.end())
+									{
+										void* skinDataPtr = nullptr;
+										int nrOfBones = 0;
+										auto& controller = meshData->AnimMap.at(TransformIt.first);
+										if (controller->currAnim != nullptr)
+										{
+											controller->currAnim->CalculateAnimMatrix(&controller->dt);
+											controller->currAnim->GetSkinData(skinDataPtr, nrOfBones);
+											meshData->VertexArray->GetUniformBuffer()->BindUpdate(skinDataPtr, nrOfBones);
+
+											controller->dt += Frosty::Time::DeltaTime() * controller->animSpeed;
+										}
+										else
+										{
+											FY_FATAL("ANIMCONROLLER HAS NO CURRENTANIM");
+										}
+									}
+								}
 								RenderCommand::Draw2D(meshData->VertexArray);
 
 							}
@@ -216,7 +245,7 @@ namespace Frosty
 				}
 				glUseProgram(0);
 
-				if (shaderData->Shader->GetName() == "Texture2D")
+				if (shaderData->Shader->GetName() == "Texture2D" || shaderData->Shader->GetName() == "Animation")
 				{
 					glDisable(GL_BLEND);
 					RenderCommand::DisableBackfaceCulling();
@@ -639,78 +668,80 @@ namespace Frosty
 	//	}
 	//}	
 
-	void Renderer::AddToRenderer(ECS::CMaterial* mat, ECS::CMesh* mesh, ECS::CTransform* transform)
+	void Renderer::AddToRenderer(ECS::CMaterial* mat, ECS::CMesh* mesh, ECS::CTransform* transform, ECS::CAnimController* controller)
 	{
-		if (mat->UseShader->GetName() != "Animation")
+
+		//std::unordered_map<std::string, std::shared_ptr<ShaderData>>* ShaderMap = nullptr;saw
+
+		// at(0) will be for dept sampling for shadow map
+		int RenderPassID = 0;
+		if (mat->HasTransparency)
 		{
-
-			//std::unordered_map<std::string, std::shared_ptr<ShaderData>>* ShaderMap = nullptr;saw
-
-			// at(0) will be for dept sampling for shadow map
-			int RenderPassID = 0;
-			if (mat->HasTransparency)
-			{
-				RenderPassID = 2;
-			}
-			else
-			{
-				RenderPassID = 1;
-			}
-
-
-			counter++;
-			//Set up IDs
-			size_t matID = transform->EntityPtr->Id; //Works but can be improved whith a real material ID
-			std::string meshID = mesh->Mesh->GetName();
-			size_t transformID = transform->EntityPtr->Id;
-
-
-			//Check if the shader key is already in the map, if not add it.
-			std::string ShaderName = mat->UseShader->GetName();
-			if (s_RenderPas.at(RenderPassID).ShaderMap.find(mat->UseShader->GetName()) == s_RenderPas.at(RenderPassID).ShaderMap.end())
-			{
-				s_RenderPas.at(RenderPassID).ShaderMap.emplace(mat->UseShader->GetName(), FY_NEW ShaderData);
-
-			}
-			auto& shaderData = s_RenderPas.at(RenderPassID).ShaderMap.at(ShaderName);
-			shaderData->Shader = mat->UseShader;
-
-
-
-			//Check if the material key is already in the map, if not add it.
-			if (shaderData->MaterialMap.find(matID) == shaderData->MaterialMap.end())
-			{
-				shaderData->MaterialMap.emplace(matID, FY_NEW MaterialData);
-			}
-			auto& materialData = shaderData->MaterialMap.at(matID);
-			materialData->Material = mat;
-
-			//Add the material to the MaterialLookUpMap
-			s_MaterialLookUpMap.emplace(transformID, &shaderData->MaterialMap);
-
-			//Check if the mesh key is already in the map, if not add it.
-			if (materialData->MeshMap.find(meshID) == materialData->MeshMap.end())
-			{
-				materialData->MeshMap.emplace(meshID, FY_NEW  MeshData);
-			}
-			auto& meshData = materialData->MeshMap.at(meshID);
-			meshData->VertexArray = mesh->Mesh;
-			meshData->TransformMap.emplace(transformID, transform);
-			if (mesh->parentMatrix != nullptr)
-			{
-				meshData->parentMatrix = mesh->parentMatrix;
-				meshData->holdJointTransform = mesh->animOffset;
-			}
-
-			//Add the mesh to the MeshLookUpMap
-			s_MeshLookUpMap.emplace(transformID, &materialData->MeshMap);
-
-			//Add the tranform to the TransformLookUpMap
-			auto& transformMap = meshData->TransformMap;
-			s_TransformLookUpMap.emplace(transformID, &transformMap);
-
-			s_RenderPas.at(RenderPassID).ShaderMap; //For debugging
+			RenderPassID = 2;
 		}
+		else
+		{
+			RenderPassID = 1;
+		}
+
+
+		counter++;
+		//Set up IDs
+		size_t matID = transform->EntityPtr->Id; //Works but can be improved whith a real material ID
+		std::string meshID = mesh->Mesh->GetName();
+		size_t transformID = transform->EntityPtr->Id;
+
+
+		//Check if the shader key is already in the map, if not add it.
+		std::string ShaderName = mat->UseShader->GetName();
+		if (s_RenderPas.at(RenderPassID).ShaderMap.find(mat->UseShader->GetName()) == s_RenderPas.at(RenderPassID).ShaderMap.end())
+		{
+			s_RenderPas.at(RenderPassID).ShaderMap.emplace(mat->UseShader->GetName(), FY_NEW ShaderData);
+
+		}
+		auto& shaderData = s_RenderPas.at(RenderPassID).ShaderMap.at(ShaderName);
+		shaderData->Shader = mat->UseShader;
+
+
+
+		//Check if the material key is already in the map, if not add it.
+		if (shaderData->MaterialMap.find(matID) == shaderData->MaterialMap.end())
+		{
+			shaderData->MaterialMap.emplace(matID, FY_NEW MaterialData);
+		}
+		auto& materialData = shaderData->MaterialMap.at(matID);
+		materialData->Material = mat;
+
+		//Add the material to the MaterialLookUpMap
+		s_MaterialLookUpMap.emplace(transformID, &shaderData->MaterialMap);
+
+		//Check if the mesh key is already in the map, if not add it.
+		if (materialData->MeshMap.find(meshID) == materialData->MeshMap.end())
+		{
+			materialData->MeshMap.emplace(meshID, FY_NEW  MeshData);
+		}
+		auto& meshData = materialData->MeshMap.at(meshID);
+		meshData->VertexArray = mesh->Mesh;
+		meshData->TransformMap.emplace(transformID, transform);
+
+		if (mesh->parentMatrix != nullptr)
+		{
+			meshData->parentMatrix = mesh->parentMatrix;
+			meshData->holdJointTransform = mesh->animOffset;
+		}
+
+		if (controller != nullptr)
+		{	
+			meshData->AnimMap.emplace(transformID, controller);
+		}
+		//Add the mesh to the MeshLookUpMap
+		s_MeshLookUpMap.emplace(transformID, &materialData->MeshMap);
+
+		//Add the tranform to the TransformLookUpMap
+		auto& transformMap = meshData->TransformMap;
+		s_TransformLookUpMap.emplace(transformID, &transformMap);
+
+		s_RenderPas.at(RenderPassID).ShaderMap; //For debugging
 	}
 
 	void Renderer::RemoveFromRenderer(const size_t& matID, const std::string& meshName, const size_t& transformID)
@@ -780,12 +811,24 @@ namespace Frosty
 		ECS::CMaterial* matA = &world->GetComponent<ECS::CMaterial>(EntityA);
 		ECS::CMaterial* matB = &world->GetComponent<ECS::CMaterial>(EntityB);
 
-		ChangeEntity(EntityA->Id, matA, meshB->Mesh->GetName(), meshA, EntityA->Id, &world->GetComponent<ECS::CTransform>(EntityA));
-		ChangeEntity(EntityB->Id, matB, meshA->Mesh->GetName(), meshB, EntityB->Id, &world->GetComponent<ECS::CTransform>(EntityB));
+		ECS::CAnimController* controllerA = nullptr;
+		ECS::CAnimController* controllerB = nullptr;
 
+		if (world->HasComponent<ECS::CAnimController>(EntityA))
+		{
+			ECS::CAnimController* controllerA = &world->GetComponent<ECS::CAnimController>(EntityA);
+		}
+
+		if (world->HasComponent<ECS::CAnimController>(EntityB))
+		{
+			ECS::CAnimController* controllerB = &world->GetComponent<ECS::CAnimController>(EntityB);
+		}
+
+		ChangeEntity(EntityA->Id, matA, meshB->Mesh->GetName(), meshA, EntityA->Id, &world->GetComponent<ECS::CTransform>(EntityA), controllerA);
+		ChangeEntity(EntityB->Id, matB, meshA->Mesh->GetName(), meshB, EntityB->Id, &world->GetComponent<ECS::CTransform>(EntityB), controllerB);
 	}
 
-	void Renderer::ChangeEntity(const size_t& OldMatID, ECS::CMaterial* mat, const std::string& OldMeshName, ECS::CMesh* mesh, const size_t& transformID, ECS::CTransform* transform)
+	void Renderer::ChangeEntity(const size_t& OldMatID, ECS::CMaterial* mat, const std::string& OldMeshName, ECS::CMesh* mesh, const size_t& transformID, ECS::CTransform* transform, ECS::CAnimController* newController)
 	{
 		//Not the best but it works
 
@@ -795,15 +838,11 @@ namespace Frosty
 			RemoveFromRenderer(OldMatID, OldMeshName, transformID);
 
 			//Add new
-			if (mat->UseShader->GetName() != "Animation")
-			{
-				AddToRenderer(mat, mesh, transform);
-			}
-
+			AddToRenderer(mat, mesh, transform, newController);
 		}
 	}
 
-	void Renderer::UpdateCMesh(const int& entityID, ECS::CMesh* mesh)
+	void Renderer::UpdateCMesh(const size_t& entityID, ECS::CMesh* mesh)
 	{
 		if (s_MeshLookUpMap.find(entityID) != s_MeshLookUpMap.end())
 		{
@@ -813,73 +852,21 @@ namespace Frosty
 		}
 	}
 
-	void Renderer::AnimSubmit(ECS::CMaterial* mat, const std::shared_ptr<VertexArray>& vertexArray, const glm::mat4& transform, ECS::CAnimController* controller)
+	void Renderer::UpdateCMesh(const size_t& entityID, ECS::CMesh* mesh, ECS::CAnimController* ctrlPtr)
 	{
-		if (controller->currAnim != nullptr)
+		if (s_MeshLookUpMap.find(entityID) != s_MeshLookUpMap.end())
 		{
-
-
-			mat->UseShader->Bind();
-			mat->UseShader->UploadUniformMat4("u_ViewProjection", s_SceneData->GameCamera.ViewProjectionMatrix);
-			mat->UseShader->UploadUniformMat4("u_Transform", transform);
-			mat->UseShader->AssignUniformBlock("a_jointDataBlock");
-
-			mat->UseShader->UploadUniformFloat3("u_CameraPosition", s_SceneData->GameCamera.CameraPosition);
-			mat->UseShader->UploadUniformInt("u_Shininess", mat->Shininess);
-			mat->UseShader->UploadUniformFloat4("u_ObjectColor", mat->Albedo);
-			mat->UseShader->UploadUniformFloat("u_Flash", mat->Flash);
-
-			// Point Lights
-			mat->UseShader->UploadUniformInt("u_TotalPointLights", (int)s_SceneData->PointLights.size());
-			int PointLI = 0;
-			for (auto& PLightIt : s_SceneData->PointLights)
+			auto& meshData = s_MeshLookUpMap.at(entityID)->at(mesh->Mesh->GetName());
+			meshData->parentMatrix = mesh->parentMatrix;
+			//If it already exists replace. If not emplace.
+			if (meshData->AnimMap.find(entityID) != meshData->AnimMap.end())
 			{
-
-				mat->UseShader->UploadUniformFloat3Array("u_PointLights[" + std::to_string(PointLI) + "].Color", s_SceneData->PointLights[PLightIt.first].PointLight->Color);
-				mat->UseShader->UploadUniformFloat3Array("u_PointLights[" + std::to_string(PointLI) + "].Position", s_SceneData->PointLights[PLightIt.first].Transform->Position);
-				mat->UseShader->UploadUniformFloatArray("u_PointLights[" + std::to_string(PointLI) + "].Radius", s_SceneData->PointLights[PLightIt.first].PointLight->Radius);
-				mat->UseShader->UploadUniformFloatArray("u_PointLights[" + std::to_string(PointLI) + "].Strength", s_SceneData->PointLights[PLightIt.first].PointLight->Strength);
-				PointLI++;
+				meshData->AnimMap.at(entityID) = ctrlPtr;
 			}
-
-			// Directional Lights
-			mat->UseShader->UploadUniformInt("u_TotalDirectionalLights", (int)s_SceneData->DirectionalLights.size());
-			int DirectLI = 0;
-			for (auto& DLightIt : s_SceneData->DirectionalLights)
+			else
 			{
-				mat->UseShader->UploadUniformFloat3Array("u_DirectionalLights[" + std::to_string(DirectLI) + "].Color", s_SceneData->DirectionalLights[DLightIt.first].DirectionalLight->Color);
-				mat->UseShader->UploadUniformFloat3Array("u_DirectionalLights[" + std::to_string(DirectLI) + "].Direction", s_SceneData->DirectionalLights[DLightIt.first].DirectionalLight->Direction);
-				mat->UseShader->UploadUniformFloatArray("u_DirectionalLights[" + std::to_string(DirectLI) + "].Strength", s_SceneData->DirectionalLights[DLightIt.first].DirectionalLight->Strength);
-				DirectLI++;
+				meshData->AnimMap.emplace(entityID, ctrlPtr);
 			}
-
-			void* skinDataPtr = nullptr;
-			int nrOfBones = 0;
-			controller->currAnim->CalculateAnimMatrix(&controller->dt);
-			controller->currAnim->GetSkinData(skinDataPtr, nrOfBones);
-
-			//this shit don't need to go all the way up to animation system if we just do it in RenderScene()
-			glm::mat4* temp = controller->currAnim->getHoldingJoint();
-			if (temp != nullptr)
-			{
-				//Will not work since animated is not included.
-				if (s_MaterialLookUpMap.find(mat->EntityPtr->Id) != s_MaterialLookUpMap.end())
-				{
-					auto& meshData = s_MeshLookUpMap.at(mat->EntityPtr->Id)->at(vertexArray->GetName());
-					meshData->holdJointTransform = temp;
-				}
-			}
-
-			vertexArray->GetUniformBuffer()->BindUpdate(skinDataPtr, nrOfBones);
-
-			vertexArray->Bind();
-			RenderCommand::EnableBackfaceCulling();
-			RenderCommand::Draw2D(vertexArray);
-			controller->dt += Frosty::Time::DeltaTime() * controller->animSpeed;
-		}
-		else
-		{
-			FY_FATAL("ANIMCONROLLER HAS NO CURRENTANIM");
 		}
 	}
 }

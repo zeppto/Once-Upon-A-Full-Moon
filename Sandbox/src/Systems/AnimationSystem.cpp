@@ -164,19 +164,9 @@ void MCS::AnimationSystem::AddComponent(const std::shared_ptr<Frosty::ECS::Entit
 		m_Transform[p_Total] = &m_World->GetComponent<Frosty::ECS::CTransform>(entity);
 		m_AControllers[p_Total] = &m_World->GetComponent<Frosty::ECS::CAnimController>(entity);
 
-		//if (m_AControllers[p_Total]->currAnim->getHoldingJoint() != nullptr)
-		//{
-		//	auto& weapPos = m_World->GetComponent<Frosty::ECS::CTransform>(m_Player[p_Total]->Weapon->EntityPtr);
-		//	auto& playerPos = m_World->GetComponent<Frosty::ECS::CTransform>(m_Player[p_Total]->EntityPtr);
-
-		//	//NOTE we DO want to change the value of the parent matrix pointer and NOT replace it with another pointer.
-		//	//If we don't Renderer won't be able to catch updates as AddToRenderer is only run once.
-		//	//Parent it.
-		//	m_World->GetComponent<Frosty::ECS::CMesh>(m_Player[p_Total]->Weapon->EntityPtr).parentMatrix = m_Transform[p_Total]->GetModelMatrix();
-		//	//Save the joint translation
-		//	m_World->GetComponent<Frosty::ECS::CMesh>(m_Player[p_Total]->Weapon->EntityPtr).animOffset = m_AControllers[p_Total]->currAnim->getHoldingJoint();
-
-		//}
+		//Ensure all things with animControllers have them properly mapped in the renderer.
+		//If it crashes here please ensure you add Animcontroller component after the mesh.
+		Frosty::Renderer::UpdateCMesh(entity->Id, &m_World->GetComponent<Frosty::ECS::CMesh>(entity), &m_World->GetComponent<Frosty::ECS::CAnimController>(entity));
 
 		p_Total++;
 	}
@@ -214,26 +204,28 @@ void MCS::AnimationSystem::UpdateEntityComponent(const std::shared_ptr<Frosty::E
 
 		m_Transform[it->second] = transformPtr;
 		m_AControllers[it->second] = animPtr;
+		//Special for animation system:
+		Frosty::Renderer::UpdateCMesh(entity->Id, &m_World->GetComponent<Frosty::ECS::CMesh>(entity), &m_World->GetComponent<Frosty::ECS::CAnimController>(entity));
 	}
 }
 
 void MCS::AnimationSystem::Render()
 {
-	for (size_t i = 1; i < p_Total; i++)
-	{
-		auto& mesh = m_World->GetComponent<Frosty::ECS::CMesh>(m_Transform[i]->EntityPtr).Mesh;
-		auto& material = m_World->GetComponent<Frosty::ECS::CMaterial>(m_Transform[i]->EntityPtr);
+	//for (size_t i = 1; i < p_Total; i++)
+	//{
+	//	auto& mesh = m_World->GetComponent<Frosty::ECS::CMesh>(m_Transform[i]->EntityPtr).Mesh;
+	//	auto& material = m_World->GetComponent<Frosty::ECS::CMaterial>(m_Transform[i]->EntityPtr);
 
-		material.DiffuseTexture->Bind(0);
-		material.NormalTexture->Bind(1);
-	/*	material.SpecularTexture->Bind(2);*/
+	//	material.DiffuseTexture->Bind(0);
+	//	material.NormalTexture->Bind(1);
+	///*	material.SpecularTexture->Bind(2);*/
 
-		Frosty::Renderer::AnimSubmit(&material, mesh, m_Transform[i]->ModelMatrix, m_AControllers[i]);
+	//	Frosty::Renderer::AnimSubmit(&material, mesh, m_Transform[i]->ModelMatrix, m_AControllers[i]);
 
-		material.DiffuseTexture->Unbind();
-		material.NormalTexture->Unbind();
-		//material.SpecularTexture->Unbind();
-	}
+	//	material.DiffuseTexture->Unbind();
+	//	material.NormalTexture->Unbind();
+	//	//material.SpecularTexture->Unbind();
+	//}
 }
 
 std::string MCS::AnimationSystem::GetInfo() const
