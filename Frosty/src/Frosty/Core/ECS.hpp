@@ -63,6 +63,8 @@ namespace Frosty
 				}
 			}
 
+			if (index == -1) __debugbreak();
+
 			return index;
 		}
 
@@ -279,8 +281,9 @@ namespace Frosty
 				return true;
 			}
 
-			inline void AddToGroup(uint64_t groupId, const std::shared_ptr<Entity>& entity)
+			inline void AddToGroup(uint32_t groupId, const std::shared_ptr<Entity>& entity)
 			{
+				entity->GroupId = groupId;
 				m_EntityGroups[groupId].emplace_back(entity);
 			}
 

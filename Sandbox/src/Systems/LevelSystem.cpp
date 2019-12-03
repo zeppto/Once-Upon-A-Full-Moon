@@ -97,6 +97,9 @@ namespace MCS
 			m_LevelFileFormat.OpenFromFile("deadend_chests_IsStatick_t_p_e_r_h", !m_CurrentRoomBool, m_PlayerCoords, playerTransform, rotate);
 			
 			m_T_Room.RoomName = "deadend_chests_IsStatick_t_p_e_r_h";
+
+			auto& jj = Frosty::AssetManager::GetBoolMap("deadend_chests_IsStatick_t_p_e_r_h");
+
 			m_T_Room.Rotation = rotate;
 			Frosty::EventBus::GetEventBus()->Publish<Frosty::UpdateCurrentRoomEvent>(Frosty::UpdateCurrentRoomEvent(m_T_Room.RoomName, m_T_Room.Rotation));
 
@@ -739,6 +742,7 @@ namespace MCS
 	{
 		if (m_PlayerCoords != e.GetCoords())
 		{
+			FY_INFO("Changed Room");
 			m_OtherRoom = m_PlayerCoords;
 			FlipRoomNames();
 			m_World->ChangeCurrentRoom();

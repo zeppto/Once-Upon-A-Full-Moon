@@ -117,7 +117,7 @@ namespace Frosty
 	private:
 		// Scene Declarations
 		std::unique_ptr<Scene> m_Scene;
-		size_t m_CurrentRoom{ 0 };
+		uint32_t m_CurrentRoom{ 0 };
 
 		// System Declarations 
 		std::array<std::unique_ptr<ECS::BaseSystem>, ECS::MAX_SYSTEMS> m_Systems;
