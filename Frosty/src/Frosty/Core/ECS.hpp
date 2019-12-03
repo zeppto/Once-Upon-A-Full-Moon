@@ -146,7 +146,7 @@ namespace Frosty
 
 		// Let's define a maximum number of entities that
 		// can have the same component type:
-		constexpr std::size_t MAX_ENTITIES_PER_COMPONENT{ 30024 };
+		constexpr std::size_t MAX_ENTITIES_PER_COMPONENT{ 1024 };
 
 		// Defining the maximum nr of systems
 		constexpr std::size_t MAX_SYSTEMS{ 20 };
@@ -279,8 +279,9 @@ namespace Frosty
 				return true;
 			}
 
-			inline void AddToGroup(uint64_t groupId, const std::shared_ptr<Entity>& entity)
+			inline void AddToGroup(uint32_t groupId, const std::shared_ptr<Entity>& entity)
 			{
+				entity->GroupId = groupId;
 				m_EntityGroups[groupId].emplace_back(entity);
 			}
 
@@ -583,6 +584,8 @@ namespace Frosty
 			float Speed{ 0.0f };
 			float SpeedMultiplier{ 1.f };						// Used in combination with Speed Boost Potion
 			float HangTime{ 0.0f };
+			glm::vec3 RotateTowards{ 0.0f };
+			float SlowTime{ Frosty::Time::CurrentTime() };
 
 			CPhysics() = default;
 			CPhysics(const std::shared_ptr<Luna::BoundingBox>& bb, const glm::vec3& scale, float speed = 0.0f) : BoundingBox(bb), Speed(speed)
@@ -620,7 +623,7 @@ namespace Frosty
 			float LVL2AttackCooldown{ 2.0f };
 			float LVL3AttackCooldown{ 3.0f };
 
-			bool animPlaying = false;
+			bool AnimPlaying{ false };
 
 			float LVL1AttackCooldownTimer{ Frosty::Time::CurrentTime() };
 			float LVL2AttackCooldownTimer{ Frosty::Time::CurrentTime() };
@@ -964,7 +967,6 @@ namespace Frosty
 			{
 				Particles.resize(MaxParticles);
 			}
-
 			CParticleSystem(const std::string shaderName, const std::string texName, unsigned int maxParticles, const glm::vec3& color, float particleSpeed)
 				: ShaderName(shaderName), TextureName(texName), MaxParticles(maxParticles), SystemStartColor(color), SystemEndColor(color), Speed(particleSpeed)
 			{
@@ -1034,6 +1036,8 @@ namespace Frosty
 			float LeapCooldown{ 6.5f };			// The cool down of the ability
 			float LeapCooldownTime{ Frosty::Time::CurrentTime() };
 			glm::vec3 LeapTargetPosition{ 0.0f };
+			float LeapSlowAmount{ 0.4f };
+			float LeapSlowCooldown{ 1.5f };
 			//
 			int16_t ChargeDamage{ 0 };
 			float ChargeChance{ 15.0f };

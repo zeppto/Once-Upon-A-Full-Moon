@@ -107,11 +107,9 @@ namespace MCS
 		world->AddSystem<DestroySystem>();
 		world->AddSystem<HealthBarSystem>();
 		world->AddSystem<AISystem>();
+		world->AddSystem<NavigationSystem>();
 
-		Frosty::ECS::BaseSystem* retSystem = world->AddSystem<NavigationSystem>();
-		NavigationSystem* navSystem = dynamic_cast<NavigationSystem*>(retSystem);
-
-		retSystem = world->AddSystem<ParticleSystem>();
+		Frosty::ECS::BaseSystem* retSystem = world->AddSystem<ParticleSystem>();
 		ParticleSystem* particleSystem = dynamic_cast<ParticleSystem*>(retSystem);
 
 		world->AddSystem<BossBehaviorSystem>();
@@ -360,6 +358,9 @@ namespace MCS
 
 		//uiLayout.AddSprite(glm::vec2(25.0f + testOffset * 0, 620.0f), glm::vec2(1, 1), "higlightHart", glm::vec4(1.0f));
 		world->AddComponent<Frosty::ECS::CGUI>(player, uiLayout);
+
+
+
 	}
 
 	void MenuState::InitiateButtons()
