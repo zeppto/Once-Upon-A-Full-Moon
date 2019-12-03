@@ -179,7 +179,22 @@ namespace MCS
 		{
 			for (uint32_t i = 0; i < m_ParticleSystem[systemIndex]->EmitCount; i++)
 			{
-				ResetParticle(systemIndex, FindUnusedParticle(systemIndex));
+				uint32_t unusedParticle = FindUnusedParticle(systemIndex);
+				if (!m_ParticleSystem[systemIndex]->Loop)
+				{
+					if (unusedParticle == 0)
+					{
+						m_ParticleSystem[systemIndex]->TimesPlayed += 1;
+					}
+					if (m_ParticleSystem[systemIndex]->TimesPlayed < 1)
+					{
+						ResetParticle(systemIndex, unusedParticle);
+					}
+				}
+				else
+				{
+					ResetParticle(systemIndex, unusedParticle);
+				}
 			}
 			m_ParticleSystem[systemIndex]->Timer = m_ParticleSystem[systemIndex]->EmitRate;
 		}
@@ -222,6 +237,7 @@ namespace MCS
 			{
 				UpdateGpuData(systemIndex, i);
 			}
+			m_ParticleSystem[systemIndex]->LastUsedParticle = m_ParticleSystem[systemIndex]->MaxParticles; //To not read outside of buffer when downsizing
 		}
 		if (glm::vec3(m_ParticleSystem[systemIndex]->Particles[0].StartColor) != m_ParticleSystem[systemIndex]->SystemStartColor) //Still very temporary solution to determine if data needs updating
 		{
@@ -256,7 +272,22 @@ namespace MCS
 			{
 				for (uint32_t i = 0; i < m_ParticleSystem[systemIndex]->EmitCount; i++)
 				{
-					ResetParticle(systemIndex, FindUnusedParticle(systemIndex));
+					uint32_t unusedParticle = FindUnusedParticle(systemIndex);
+					if (!m_ParticleSystem[systemIndex]->Loop)
+					{
+						if (unusedParticle == 0)
+						{
+							m_ParticleSystem[systemIndex]->TimesPlayed += 1;
+						}
+						if (m_ParticleSystem[systemIndex]->TimesPlayed < 1)
+						{
+							ResetParticle(systemIndex, unusedParticle);
+						}
+					}
+					else
+					{
+						ResetParticle(systemIndex, unusedParticle);
+					}
 				}
 				m_ParticleSystem[systemIndex]->Timer = m_ParticleSystem[systemIndex]->EmitRate;
 			}

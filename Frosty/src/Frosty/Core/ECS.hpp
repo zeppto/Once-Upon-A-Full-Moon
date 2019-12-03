@@ -938,6 +938,9 @@ namespace Frosty
 			float randSpread{ 1.5f };
 			glm::vec3 randMainDir{ 0.0f, 1.0f, 0.0f };
 
+			bool Loop{ true };
+			int32_t TimesPlayed = -1;
+
 			bool HasGravity{ false };
 			bool RotateOverLifetime{ false };
 			bool StaticColor{ true };

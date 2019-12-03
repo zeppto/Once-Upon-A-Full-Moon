@@ -941,7 +941,20 @@ namespace MCS
 						auto& comp = world->GetComponent<Frosty::ECS::CParticleSystem>(m_SelectedEntity);
 						ImGui::BeginChild("CParticleSystem", ImVec2(EDITOR_INSPECTOR_WIDTH, 560), true);
 						ImGui::Text("Active particles: %i", comp.ParticleCount);
-						ImGui::Checkbox("Preview", &comp.Preview);
+						if (comp.Loop)
+						{
+							ImGui::Checkbox("Preview", &comp.Preview);
+							ImGui::SameLine();
+						}
+						else
+						{
+							if (ImGui::Button("Play", ImVec2(40, 25)))
+							{
+								comp.Preview = true;
+								comp.TimesPlayed = -1;
+							}
+						}
+						ImGui::Checkbox("Loop", &comp.Loop);
 						ImGui::SameLine();
 						ImGui::Checkbox("Face camera", &comp.AlwaysFaceCamera);
 						if (ImGui::IsItemClicked())
