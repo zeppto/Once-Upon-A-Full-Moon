@@ -123,12 +123,32 @@ namespace MCS
 			auto& attackComp = m_World->GetComponent<Frosty::ECS::CAttack>(entityA);
 			if (Frosty::utils::BinarySearch(attackComp.AttackedEntities, it->first->Id) == -1)
 			{
-				int rand = std::rand() % 6 + 1;
-				std::string str = "assets/sounds/ArrowHit" + std::to_string(rand) + ".wav";
-				const char* fileName = str.c_str();
-				Frosty::EventBus::GetEventBus()->Publish<Frosty::PlayMediaEntityEvent>(Frosty::PlayMediaEntityEvent(entityA, fileName, 2.0f, 10.0f, 100.0f, false, 0));
-				//Frosty::EventBus::GetEventBus()->Publish<Frosty::PlayMediaEvent>(Frosty::PlayMediaEvent(fileName, 1.0f, true, 4));
-				//Frosty::EventBus::GetEventBus()->Publish<Frosty::PlayMusicEvent>(Frosty::PlayMusicEvent("assets/music/mainmenu.mp3", 1.0f));
+				int rand = 0;
+				// Cultist with sword
+				if (attackComp.Type == Frosty::ECS::CAttack::AttackType::Melee)
+				{
+					rand = std::rand() % 4 + 1;
+					std::string str = "assets/sounds/HitSoundCrit" + std::to_string(rand) + ".wav";
+					const char* fileName = str.c_str();
+					Frosty::EventBus::GetEventBus()->Publish<Frosty::PlayMediaEntityEvent>(Frosty::PlayMediaEntityEvent(entityA, fileName, 1.0f, 10.0f, 100.0f, false, 0));
+				}
+				// Cultist with bow
+				else if (attackComp.Type == Frosty::ECS::CAttack::AttackType::Range)
+				{
+					rand = std::rand() % 6 + 1;
+					std::string str = "assets/sounds/ArrowHit" + std::to_string(rand) + ".wav";
+					const char* fileName = str.c_str();
+					Frosty::EventBus::GetEventBus()->Publish<Frosty::PlayMediaEntityEvent>(Frosty::PlayMediaEntityEvent(entityA, fileName, 2.0f, 10.0f, 100.0f, false, 0));
+				}
+				// Wolf bite
+				else
+				{
+					rand = std::rand() % 4 + 1;
+					std::string str = "assets/sounds/HitSoundCrit" + std::to_string(rand) + ".wav";
+					const char* fileName = str.c_str();
+					Frosty::EventBus::GetEventBus()->Publish<Frosty::PlayMediaEntityEvent>(Frosty::PlayMediaEntityEvent(entityA, fileName, 1.0f, 10.0f, 100.0f, false, 0));
+				}
+
 				attackComp.AttackedEntities.emplace_back(it->first->Id);
 				m_Health[it->second]->CurrentHealth -= attackComp.Damage;
 				Frosty::EventBus::GetEventBus()->Publish<Frosty::PlayerDamageEvent>(Frosty::PlayerDamageEvent());
@@ -142,23 +162,21 @@ namespace MCS
 				auto& attackComp = m_World->GetComponent<Frosty::ECS::CAttack>(entityA);
 				if (Frosty::utils::BinarySearch(attackComp.AttackedEntities, it->first->Id) == -1)
 				{
-					auto& player_WeaponType = m_World->GetComponent<Frosty::ECS::CPlayer>(e.GetEntityB()).Weapon->Type;
-					const char* fileName;
 					int rand = 0;
-					if (player_WeaponType == Frosty::ECS::CWeapon::WeaponType::Sword)
+					if (attackComp.Type == Frosty::ECS::CAttack::AttackType::Melee) // Is player using a bow or a sword?
 					{
 						rand = std::rand() % 4 + 1;
 						std::string str = "assets/sounds/HitSoundCrit" + std::to_string(rand) + ".wav";
-						fileName = str.c_str();
+						const char* fileName = str.c_str();
+						Frosty::EventBus::GetEventBus()->Publish<Frosty::PlayMediaEntityEvent>(Frosty::PlayMediaEntityEvent(entityA, fileName, 1.0f, 10.0f, 100.0f, false, 0));
 					}
 					else
 					{
 						rand = std::rand() % 6 + 1;
 						std::string str = "assets/sounds/ArrowHit" + std::to_string(rand) + ".wav";
-						fileName = str.c_str();
+						const char* fileName = str.c_str();
+						Frosty::EventBus::GetEventBus()->Publish<Frosty::PlayMediaEntityEvent>(Frosty::PlayMediaEntityEvent(entityA, fileName, 1.0f, 10.0f, 100.0f, false, 0));
 					}
-
-					Frosty::EventBus::GetEventBus()->Publish<Frosty::PlayMediaEntityEvent>(Frosty::PlayMediaEntityEvent(entityA, fileName, 1.0f, 10.0f, 100.0f, false, 0));
 
 					// For some realism, wolf will randomly growl from being hit sometimes
 					auto& enemy_WeaponType = m_World->GetComponent<Frosty::ECS::CEnemy>(e.GetEntityB()).Weapon->Type;

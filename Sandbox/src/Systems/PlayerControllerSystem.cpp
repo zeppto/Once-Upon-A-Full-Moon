@@ -292,6 +292,12 @@ namespace MCS
 					{
 						m_Dash[index]->Active = true;
 						Frosty::EventBus::GetEventBus()->Publish<Frosty::DashEvent>(Frosty::DashEvent(m_Player[index]->EntityPtr));
+						
+						int rand = std::rand() % 3 + 1;
+						std::string str = "assets/sounds/DodgePrassel" + std::to_string(rand) + ".wav";
+						const char* fileName = str.c_str();
+						Frosty::EventBus::GetEventBus()->Publish<Frosty::PlayMediaEntityEvent>(Frosty::PlayMediaEntityEvent(m_Player[index]->EntityPtr, fileName, 3.0f, 10.0f, 100.0f, false, 0));
+
 						//m_Physics[index]->Velocity *= m_Dash[index]->SpeedMultiplier;
 						m_Physics[index]->SpeedMultiplier = m_Dash[index]->SpeedMultiplier;
 						m_Dash[index]->CurrentCooldown = m_Dash[index]->COOLDOWN / 1000.0f;
@@ -346,7 +352,11 @@ namespace MCS
 		// Audio setup
 		int rand = std::rand() % 3 + 1;
 		std::string str = "assets/sounds/SwooshLight" + std::to_string(rand) + ".wav";
+		std::string bowSounds[2] = { "Short", "Long" };
+		rand = std::rand() % 2 + 1;
+		std::string bowStr = "assets/sounds/BowDraw" + bowSounds[rand - 1] + ".wav";
 		const char* fileName = str.c_str();
+		const char* fileName_Bow = bowStr.c_str();
 
 		if (Frosty::Time::CurrentTime() - weaponComp.LVL1AttackCooldownTimer >= weaponComp.LVL1AttackCooldown - weaponComp.WindSpeed)
 		{
@@ -358,7 +368,7 @@ namespace MCS
 				CreateLVL1BoundingBox(weaponCarrier, weaponComp.EntityPtr);
 				break;
 			case Frosty::ECS::CWeapon::WeaponType::Bow:
-				Frosty::EventBus::GetEventBus()->Publish<Frosty::PlayMediaEntityEvent>(Frosty::PlayMediaEntityEvent(weaponCarrier, "assets/sounds/BowDrawShort.wav", 2.0f, 30.0f, 100.0f, false, 0));
+				Frosty::EventBus::GetEventBus()->Publish<Frosty::PlayMediaEntityEvent>(Frosty::PlayMediaEntityEvent(weaponCarrier, fileName_Bow, 2.0f, 30.0f, 100.0f, false, 0));
 				Frosty::EventBus::GetEventBus()->Publish <Frosty::PlayAnimEvent>(Frosty::PlayAnimEvent(weaponCarrier, 4));
 				CreateLVL1Projectile(weaponCarrier, weaponComp.EntityPtr);
 				break;
@@ -381,7 +391,11 @@ namespace MCS
 		// Audio setup
 		int rand = std::rand() % 3 + 1;
 		std::string str = "assets/sounds/SwooshLight" + std::to_string(rand) + ".wav";
+		std::string bowSounds[2] = { "Short", "Long" };
+		rand = std::rand() % 2 + 1;
+		std::string bowStr = "assets/sounds/BowDraw" + bowSounds[rand - 1] + ".wav";
 		const char* fileName = str.c_str();
+		const char* fileName_Bow = bowStr.c_str();
 
 		if (Frosty::Time::CurrentTime() - weaponComp.LVL2AttackCooldownTimer >= weaponComp.LVL2AttackCooldown - weaponComp.WindSpeed)
 		{
@@ -393,6 +407,7 @@ namespace MCS
 				CreateLVL2BoundingBox(weaponCarrier, weaponComp.EntityPtr);
 				break;
 			case Frosty::ECS::CWeapon::WeaponType::Bow:
+				Frosty::EventBus::GetEventBus()->Publish<Frosty::PlayMediaEntityEvent>(Frosty::PlayMediaEntityEvent(weaponCarrier, fileName_Bow, 2.0f, 30.0f, 100.0f, false, 0));
 				Frosty::EventBus::GetEventBus()->Publish <Frosty::PlayAnimEvent>(Frosty::PlayAnimEvent(weaponCarrier, 4));
 				CreateLVL2Projectile(weaponCarrier, weaponComp.EntityPtr);
 				break;
@@ -415,7 +430,11 @@ namespace MCS
 		// Audio setup
 		int rand = std::rand() % 3 + 1;
 		std::string str = "assets/sounds/SwooshLight" + std::to_string(rand) + ".wav";
+		std::string bowSounds[2] = { "Short", "Long" };
+		rand = std::rand() % 2 + 1;
+		std::string bowStr = "assets/sounds/BowDraw" + bowSounds[rand - 1] + ".wav";
 		const char* fileName = str.c_str();
+		const char* fileName_Bow = bowStr.c_str();
 
 		if (Frosty::Time::CurrentTime() - weaponComp.LVL3AttackCooldownTimer >= weaponComp.LVL3AttackCooldown - weaponComp.WindSpeed)
 		{
@@ -427,6 +446,7 @@ namespace MCS
 				CreateLVL3BoundingBox(weaponCarrier, weaponComp.EntityPtr);
 				break;
 			case Frosty::ECS::CWeapon::WeaponType::Bow:
+				Frosty::EventBus::GetEventBus()->Publish<Frosty::PlayMediaEntityEvent>(Frosty::PlayMediaEntityEvent(weaponCarrier, fileName_Bow, 2.0f, 30.0f, 100.0f, false, 0));
 				Frosty::EventBus::GetEventBus()->Publish <Frosty::PlayAnimEvent>(Frosty::PlayAnimEvent(weaponCarrier, 4));
 				CreateLVL3Projectile(weaponCarrier, weaponComp.EntityPtr);
 				break;
@@ -1118,6 +1138,12 @@ namespace MCS
 					HUD.Layout.sprites.at(2).SetImage("attackMelee1");
 					HUD.Layout.sprites.at(3).SetImage("attackMelee2");
 					HUD.Layout.sprites.at(4).SetImage("attackMelee3");
+					
+					// Audio setup
+					int rand = std::rand() % 2 + 1;
+					std::string str = "assets/sounds/WeaponPickup" + std::to_string(rand) + ".wav";
+					const char* fileName = str.c_str();
+					Frosty::EventBus::GetEventBus()->Publish<Frosty::PlayMediaEntityEvent>(Frosty::PlayMediaEntityEvent(loot.EntityPtr, fileName, 2.0f, 30.0f, 100.0f, false, 0));
 				}
 				else if(playerWeapon.Type == Frosty::ECS::CWeapon::WeaponType::Bow)
 				{
@@ -1132,6 +1158,13 @@ namespace MCS
 					HUD.Layout.sprites.at(2).SetImage("attackRanged1");
 					HUD.Layout.sprites.at(3).SetImage("attackRanged2");
 					HUD.Layout.sprites.at(4).SetImage("attackRanged3");
+
+					// Audio setup
+					std::string bowSounds[2] = { "Short", "Long" };
+					int rand = std::rand() % 2 + 1;
+					std::string bowStr = "assets/sounds/BowDraw" + bowSounds[rand - 1] + ".wav";
+					const char* fileName_Bow = bowStr.c_str();
+					Frosty::EventBus::GetEventBus()->Publish<Frosty::PlayMediaEntityEvent>(Frosty::PlayMediaEntityEvent(loot.EntityPtr, fileName_Bow, 2.0f, 30.0f, 100.0f, false, 0));
 				}
 				
 				//if (loot.Weapon == Frosty::ECS::CLootable::WeaponType::Sword1 || loot.Weapon == Frosty::ECS::CLootable::WeaponType::Sword2 || loot.Weapon == Frosty::ECS::CLootable::WeaponType::Sword3)
