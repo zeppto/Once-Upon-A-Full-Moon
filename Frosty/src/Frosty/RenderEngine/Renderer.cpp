@@ -116,20 +116,18 @@ namespace Frosty
 					DirectLI++;
 				}
 
-				if (shaderData->Shader->GetName() == "HeatMap")
+				// LightIndex
+				for (int i = 0; i < int(s_ForwardPlus.GetLightIndexList().size()); i++)
 				{
-					// LightIndex
-					for (int i = 0; i < int(s_ForwardPlus.GetLightIndexList().size()); i++)
-					{
-						shaderData->Shader->UploadUniformInt(("forwardPlus.LightIndexList[" + std::to_string(i) + "]").c_str(), s_ForwardPlus.GetLightIndexList().at(i));
-					}
-
-					// CellLightInfo
-					for (int i = 0; i < s_ForwardPlus.GetNrOfGrids(); i++)
-					{
-						shaderData->Shader->UploadUniformFloat2(("forwardPlus.CellLightInfo[" + std::to_string(i) + "]").c_str(), s_ForwardPlus.GetCellLightInfoAt(i));
-					}
+					shaderData->Shader->UploadUniformInt(("forwardPlus.LightIndexList[" + std::to_string(i) + "]").c_str(), s_ForwardPlus.GetLightIndexList().at(i));
 				}
+
+				// CellLightInfo
+				for (int i = 0; i < s_ForwardPlus.GetNrOfGrids(); i++)
+				{
+					shaderData->Shader->UploadUniformFloat2(("forwardPlus.CellLightInfo[" + std::to_string(i) + "]").c_str(), s_ForwardPlus.GetCellLightInfoAt(i));
+				}
+
 				for (auto& MaterialIt : shaderData->MaterialMap)
 				{
 					nrOfMaterials++;

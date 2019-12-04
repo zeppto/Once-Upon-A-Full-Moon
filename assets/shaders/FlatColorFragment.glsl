@@ -21,6 +21,13 @@ struct DirectionalLight
 uniform int u_TotalDirectionalLights;
 uniform DirectionalLight u_DirectionalLights[10];
 
+struct ForwardPlus
+{
+	int LightIndexList[3000];
+	vec2 CellLightInfo[256];
+};
+uniform ForwardPlus forwardPlus;
+
 uniform vec3 u_CameraPosition;
 uniform vec4 u_ObjectColor;
 uniform float u_SpecularStrength;
@@ -28,6 +35,7 @@ uniform int u_Shininess;
 
 in vec3 v_FragPosition;
 in vec3 v_Normal;
+in vec4 v_MVP_Position;
 
 vec3 CalculatePointLight(PointLight light);
 vec3 CalculateDirectionalLight(DirectionalLight light);
@@ -36,10 +44,18 @@ void main()
 {
 	vec3 result = vec3(0.0, 0.0, 0.0);
 
-	// PointLights
-	for (int i = 0; i < u_TotalPointLights; i++)
+	
+	vec3 NDC = v_MVP_Position.xyz / v_MVP_Position.w;					// Perspective divide/normalize
+	vec2 viewportCoord = NDC.xy * 0.5 + 0.5;							// NDC is -1 to 1 in GL. scale for 0 to 1
+	vec2 viewportPixelCoord;
+	int cellLocation = int(16 * floor(16 * viewportCoord.y) + floor(16 * viewportCoord.x));
+	if (cellLocation >= 0 && cellLocation <= 255)
 	{
-		result += CalculatePointLight(u_PointLights[i]);
+		// CellLocation x = offset		CellLocation y = size
+		for(int i = int(forwardPlus.CellLightInfo[cellLocation].x); i < int(forwardPlus.CellLightInfo[cellLocation].x) + int(forwardPlus.CellLightInfo[cellLocation].y); i++)
+		{
+			result += CalculatePointLight(u_PointLights[forwardPlus.LightIndexList[i]]);
+		}
 	}
 
 	// DirectionalLights
