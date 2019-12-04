@@ -355,5 +355,18 @@ namespace Frosty
 	private:
 
 	};
+
+	class BossFearEffectEvent : public BaseEvent
+	{
+	public:
+		BossFearEffectEvent(glm::ivec2 bossDirection) : m_Direction(bossDirection) {}
+
+		glm::ivec2 GetDirectionToBoss() { return m_Direction; }
+
+		EVENT_TYPE(BossFearEffect)
+
+	private:
+		glm::ivec2 m_Direction;
+	};
 }
 #endif // !ABILITY_EVENT_HPP

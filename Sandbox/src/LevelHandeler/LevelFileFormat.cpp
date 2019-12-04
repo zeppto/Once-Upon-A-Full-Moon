@@ -871,6 +871,14 @@ namespace MCS
 					m_WitchCirkel.at(m_VisitedRooms.at(enteredRoomId).removeWitchCirkel.at(i)) = m_WitchCirkel.at(m_WitchCirkel.size() - 1 - i);
 					m_WitchCirkel.back() = temp;
 				}
+				//add existing meat
+				for (int i = 0; i < m_VisitedRooms.at(enteredRoomId).addedBait.size(); i++)
+				{
+					auto& bait = m_World->CreateEntity(m_VisitedRooms.at(enteredRoomId).addedBait.at(i));
+					m_World->AddComponent<Frosty::ECS::CMesh>(bait, Frosty::AssetManager::GetMesh("meat"));
+					auto& material = m_World->AddComponent<Frosty::ECS::CMaterial>(bait, Frosty::AssetManager::GetShader("Texture2D"));
+					material.DiffuseTexture = Frosty::AssetManager::GetTexture2D("meat");
+				}
 			}
 			else
 			{
@@ -1081,6 +1089,35 @@ namespace MCS
 		bool k = ABoolMap->CheckCollition(glm::vec3(1.0f, 0.0f, 1.0f));
 		ABoolMap->SaveMap("", "BoolMap");
 		ABoolMap->LoadMap("BoolMap.bmap");
+	}
+	int LevelFileFormat::NumberOfRoomsVisited()
+	{
+		return m_VisitedRooms.size();
+	}
+	bool LevelFileFormat::AddBaitToMap(glm::vec3 baitPos, glm::ivec2 room)
+	{
+		for (int i = 0; i < m_VisitedRooms.size(); i++)
+		{
+			if (m_VisitedRooms.at(i).myRoomId == room)
+			{
+				m_VisitedRooms.at(i).addedBait.push_back(baitPos);
+				return true;
+			}
+		}
+		return false;
+	}
+	int LevelFileFormat::RemoveAllBaitInRoom(glm::ivec2 room)
+	{
+		int toReturn = 0;
+		for (int i = 0; i < m_VisitedRooms.size(); i++)
+		{
+			if (m_VisitedRooms.at(i).myRoomId == room)
+			{
+				toReturn = m_VisitedRooms.at(i).addedBait.size();
+				m_VisitedRooms.at(i).addedBait.clear();
+			}
+		}
+		return toReturn;
 	}
 }
 

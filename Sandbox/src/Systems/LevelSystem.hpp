@@ -12,6 +12,7 @@ namespace Frosty { class CreatEntityEvent; }
 namespace Frosty { class BoolMap; }
 namespace Frosty { class ResetEvent; }
 namespace Frosty { class BossSpawnedEvent; }
+namespace Frosty { class BaitPlacedEvent; }
 
 struct bossRememberdPath
 {
@@ -46,6 +47,7 @@ namespace MCS
 		void OnCreatEntityEvent(Frosty::CreatEntityEvent& e);
 		void OnResetEvent(Frosty::ResetEvent& e);
 		void OnBossSpawnedEvent(Frosty::BossSpawnedEvent& e);
+		void OnBaitPlacedEvent(Frosty::BaitPlacedEvent& e);
 
 		void randomBossMovment();
 	private:
@@ -61,11 +63,14 @@ namespace MCS
 		float m_BossTimer = 0.0f;
 		//needs balensing m_BossRoomTimer 
 		//float m_BossRoomTimer = 40.0f;
-		float m_BossRoomTimer = 2.0f; //in sec
-		float m_BossFollowTimer = 0.5f; //in min
+		float m_BossRoomTimer = 100.0f; //in sec (max)
+		float m_BossFollowTimer = 2.0f; //in min
 
+		float m_BossHawol = 0.0f;
 		float m_BossStartTimer = 10.0f;
 		bossRememberdPath m_BossRememberdPath;
+		std::vector<glm::ivec2> m_RoomswhithBait;
+
 		//temp bools
 		bool m_haveStartedMoving = false;
 

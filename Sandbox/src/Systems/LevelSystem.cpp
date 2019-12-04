@@ -57,6 +57,9 @@ namespace MCS
 		case Frosty::EventType::BossSpawned:
 			OnBossSpawnedEvent(static_cast<Frosty::BossSpawnedEvent&>(e));
 			break;
+		case Frosty::EventType::BaitPlaced:
+			OnBaitPlacedEvent(static_cast<Frosty::BaitPlacedEvent&>(e));
+			break;
 		default:
 			break;
 		}
@@ -96,36 +99,58 @@ namespace MCS
 			if (!m_haveStartedMoving)
 			{
 				FY_INFO("The boss have started moving {0}", "!");
-				FY_INFO("The boss starts on ({0}, {1})", m_BossPos.x, m_BossPos.y);
 				Room chekRoom = m_Map.getRoom(m_BossPos);
 				if (!chekRoom.Ocupide)
 				{
 					m_BossPos = m_Map.getLastCreatedLevelPos();
 				}
+				FY_INFO("The boss starts on ({0}, {1})", m_BossPos.x, m_BossPos.y);
 				m_haveStartedMoving = true;
 			}
 
 			if (time > m_BossTimer)
 			{
-				m_BossTimer = time + m_BossRoomTimer;
+				float estematedBossRoomTime;
+				if (m_LevelFileFormat.NumberOfRoomsVisited() != 0)
+				{
+					estematedBossRoomTime = ((Frosty::Time::CurrentTime() - m_StartTimer + 50.0f) / m_LevelFileFormat.NumberOfRoomsVisited() / 2);
+					if(estematedBossRoomTime > m_BossRoomTimer)
+						estematedBossRoomTime = m_BossRoomTimer;
+				}
+				else
+				{
+					estematedBossRoomTime = m_BossRoomTimer;
+				}
+
+				m_BossTimer = time + estematedBossRoomTime;
+				FY_INFO("It takes {0} sec until boss moves", estematedBossRoomTime);
 				if (m_PlayerPos != m_BossPos)
 				{
-					int moveToPlayerChanse = rand() % 100;
-					FY_INFO("The boss hase {0} % chans to move to player", time /((m_BossFollowTimer *60.0f)/100.0f));
-					if (moveToPlayerChanse < time/((m_BossFollowTimer * 60.0f) / 100.0f))
+					if (m_RoomswhithBait.size() > 0)
 					{
-						FY_INFO("The boss knowes wher you are and moves");
+						//follow bait
+						FY_INFO("The boss is following bait");
 						Room bossCurrentRoom = m_Map.getRoom(m_BossPos);
-						glm::ivec2 expectedBossPos = glm::ivec2(-1,-1);
+						glm::ivec2 expectedBossPos = glm::ivec2(-1, -1);
 						if (m_BossRememberdPath.pathToGo.size() > m_BossRememberdPath.lastTile)
 							expectedBossPos = m_BossRememberdPath.pathToGo.at(m_BossRememberdPath.lastTile - 1);
-						//the boss follows player
-						if (m_BossRememberdPath.expectedPlayerPos != m_PlayerPos || m_BossPos != expectedBossPos)
+						//the boss follows bait
+						for (int i = 0; i < m_RoomswhithBait.size(); i++)
 						{
-							m_BossRememberdPath.pathToGo = m_Map.getPathToTargert(m_BossPos, m_PlayerPos);
-							m_BossRememberdPath.lastTile = 1;
-							m_BossRememberdPath.expectedPlayerPos = m_PlayerPos;
-
+							if (m_BossRememberdPath.expectedPlayerPos != m_RoomswhithBait.at(i) || m_BossPos != expectedBossPos)
+							{
+								bossRememberdPath baitTarget;
+								baitTarget.pathToGo = m_Map.getPathToTargert(m_BossPos, m_RoomswhithBait.at(i));
+								baitTarget.lastTile = 1;
+								baitTarget.expectedPlayerPos = m_RoomswhithBait.at(i);
+								if (baitTarget.pathToGo.size() - baitTarget.lastTile < m_BossRememberdPath.pathToGo.size() - m_BossRememberdPath.lastTile || m_BossRememberdPath.pathToGo.size() - m_BossRememberdPath.lastTile == 0)
+								{
+									FY_INFO("The boss found a closer bait");
+									m_BossRememberdPath.pathToGo = baitTarget.pathToGo;
+									m_BossRememberdPath.lastTile = baitTarget.lastTile;
+									m_BossRememberdPath.expectedPlayerPos = baitTarget.expectedPlayerPos;
+								}
+							}
 						}
 						if (m_BossRememberdPath.pathToGo.size() > m_BossRememberdPath.lastTile)
 						{
@@ -133,28 +158,94 @@ namespace MCS
 							m_BossRememberdPath.lastTile++;
 							FY_INFO("The boss is moving to ({0}, {1})", m_BossPos.x, m_BossPos.y);
 							FY_INFO("");
-	
+
 						}
 						else
 						{
 							FY_INFO("Somthing is wrong and the boss did don't move");
 							FY_INFO("");
 						}
+						if (m_BossRememberdPath.expectedPlayerPos == m_BossPos)
+						{
+							int timeToEate = (5.0f * m_LevelFileFormat.RemoveAllBaitInRoom(m_BossPos));
+							m_BossTimer += timeToEate;
+							for (int i = 0; i < m_RoomswhithBait.size(); i++)
+							{
+								if (m_RoomswhithBait.at(i) == m_BossPos)
+									m_RoomswhithBait.erase(m_RoomswhithBait.begin() + i);
+							}
+							FY_INFO("The boss found the bait! and is eating for {0} sec", timeToEate);
+							FY_INFO("");
+						}
+
+						if (m_BossPos == m_PlayerPos)
+						{
+							Frosty::EventBus::GetEventBus()->Publish<Frosty::SpawnBossEvent>(Frosty::SpawnBossEvent());
+							FY_INFO("The boss found the player!");
+							FY_INFO("");
+						}
 					}
 					else
 					{
-						FY_INFO("The boss lost track of you and is serching");
-						randomBossMovment();
-						FY_INFO("");
-					}
+						//ther is no bait so move to player
+						int moveToPlayerChanse = rand() % 100;
+						FY_INFO("The boss hase {0} % chans to move to player", time / ((m_BossFollowTimer * 60.0f) / 100.0f));
+						if (moveToPlayerChanse < time / ((m_BossFollowTimer * 60.0f) / 100.0f))
+						{
+							FY_INFO("The boss knowes wher you are and moves");
+							Room bossCurrentRoom = m_Map.getRoom(m_BossPos);
+							glm::ivec2 expectedBossPos = glm::ivec2(-1, -1);
+							if (m_BossRememberdPath.pathToGo.size() > m_BossRememberdPath.lastTile)
+								expectedBossPos = m_BossRememberdPath.pathToGo.at(m_BossRememberdPath.lastTile - 1);
+							//the boss follows player
+							if (m_BossRememberdPath.expectedPlayerPos != m_PlayerPos || m_BossPos != expectedBossPos)
+							{
+								m_BossRememberdPath.pathToGo = m_Map.getPathToTargert(m_BossPos, m_PlayerPos);
+								m_BossRememberdPath.lastTile = 1;
+								m_BossRememberdPath.expectedPlayerPos = m_PlayerPos;
 
-					if (m_BossPos == m_PlayerPos)
-					{
-						Frosty::EventBus::GetEventBus()->Publish<Frosty::SpawnBossEvent>(Frosty::SpawnBossEvent());
-						FY_INFO("The boss found the player!");
-						FY_INFO("");
+							}
+							if (m_BossRememberdPath.pathToGo.size() > m_BossRememberdPath.lastTile)
+							{
+								m_BossPos = m_BossRememberdPath.pathToGo.at(m_BossRememberdPath.lastTile);
+								m_BossRememberdPath.lastTile++;
+								FY_INFO("The boss is moving to ({0}, {1})", m_BossPos.x, m_BossPos.y);
+								FY_INFO("");
+
+							}
+							else
+							{
+								FY_INFO("Somthing is wrong and the boss did don't move");
+								FY_INFO("");
+							}
+						}
+						else
+						{
+							FY_INFO("The boss lost track of you and is serching");
+							randomBossMovment();
+							FY_INFO("");
+						}
+
+						if (m_BossPos == m_PlayerPos)
+						{
+							Frosty::EventBus::GetEventBus()->Publish<Frosty::SpawnBossEvent>(Frosty::SpawnBossEvent());
+							FY_INFO("The boss found the player!");
+							FY_INFO("");
+						}
 					}
 				}
+			}
+
+			//howel
+			if(time > m_BossHawol && m_PlayerPos != m_BossPos)
+			{
+				FY_INFO("The boss haoweld");
+				FY_INFO("");
+				int nextHawol = (rand() % 10) + 20;
+				m_BossHawol = time + nextHawol;
+				glm::vec2 direction = m_BossPos - m_PlayerPos;
+
+				Frosty::EventBus::GetEventBus()->Publish<Frosty::BossFearEffectEvent>(Frosty::BossFearEffectEvent(direction));
 			}
 		}
 	}
@@ -300,6 +391,8 @@ namespace MCS
 			m_PlayerPos += glm::ivec2(-1, 0);
 		if (ExitSide.ExitDirection == 3)
 			m_PlayerPos += glm::ivec2(1, 0);
+		FY_INFO("The player moved to ({0}, {1})", m_PlayerPos.x, m_PlayerPos.y);
+		FY_INFO("");
 
 		m_CurrentRoome = m_Map.getRoom(m_PlayerPos);
 		//m_EntrensSide = ExitSide.ExitDirection;
@@ -831,6 +924,28 @@ namespace MCS
 	void LevelSystem::OnBossSpawnedEvent(Frosty::BossSpawnedEvent& e)
 	{
 		m_BossSpawned = true;
+	}
+	void LevelSystem::OnBaitPlacedEvent(Frosty::BaitPlacedEvent& e)
+	{
+		auto& baitTransform = m_World->GetComponent<Frosty::ECS::CTransform>(e.GetEntity());
+		if (m_LevelFileFormat.AddBaitToMap(baitTransform.Position, m_PlayerPos))
+		{
+			FY_INFO("bait is now saved");
+		}
+		else
+		{
+			FY_INFO("culdent save bait");
+		}
+		bool alradyExist = false;
+		for (int i = 0; i < m_RoomswhithBait.size(); i++)
+		{
+			if (m_RoomswhithBait.at(i) == m_PlayerPos)
+				alradyExist = true;
+		}
+		if (!alradyExist)
+		{
+			m_RoomswhithBait.push_back(m_PlayerPos);
+		}
 	}
 	void LevelSystem::randomBossMovment()
 	{

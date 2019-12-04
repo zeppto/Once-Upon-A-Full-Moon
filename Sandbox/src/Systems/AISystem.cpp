@@ -44,11 +44,11 @@ namespace MCS
 			//	}
 			//}
 
-			//Boss Timer For Debug
-			if (Frosty::Time::CurrentTime() - BossTimer >= BossSpawnTime)
-			{
-				if (!m_BossSpawned) SpawnBoss();
-			}
+			////Boss Timer For Debug
+			//if (Frosty::Time::CurrentTime() - BossTimer >= BossSpawnTime)
+			//{
+			//	if (!m_BossSpawned) SpawnBoss();
+			//}
 		}
 	}
 
@@ -484,8 +484,8 @@ namespace MCS
 		// Boss
 		auto& boss = m_World->CreateEntity(m_BossSpawn, { 0.0f, 0.0f, 0.0f }, { 1.5f, 1.5f, 1.5f });
 		auto& bossTransform = m_World->GetComponent<Frosty::ECS::CTransform>(boss);
-		m_World->AddComponent<Frosty::ECS::CAnimController>(boss).currAnim = Frosty::AssetManager::GetAnimation("Werewolf_Idle");
 		m_World->AddComponent<Frosty::ECS::CMesh>(boss, Frosty::AssetManager::GetMesh("Werewolf"));
+		m_World->AddComponent<Frosty::ECS::CAnimController>(boss).currAnim = Frosty::AssetManager::GetAnimation("Werewolf_Idle");
 		auto& bossMat = m_World->AddComponent<Frosty::ECS::CMaterial>(boss, Frosty::AssetManager::GetShader("Animation"));
 		bossMat.DiffuseTexture = Frosty::AssetManager::GetTexture2D("Werewolf_Diffuse");
 		bossMat.NormalTexture = Frosty::AssetManager::GetTexture2D("Werewolf_defaultMat_Normal");
