@@ -150,121 +150,131 @@ namespace MCS
 			int randomValue;
 
 			if (m_World->HasComponent<Frosty::ECS::CEnemy>(e.GetEntity()))
+			{
 				randomValue = rand() % 5;
+				int dropItemChanse = rand() % 2;
+				if (dropItemChanse == 0)
+					randomValue = -1;
+			}
 			else
 				randomValue = rand() % 6;
 			
-			Frosty::Weapon weapon;
-			auto& item = m_World->CreateEntity(entityTransform.Position, { 0.0f, 0.0f, 0.0f }, { 3.f, 3.f, 3.f });
-			auto& transform = m_World->GetComponent<Frosty::ECS::CTransform>(item);
-			auto& material = m_World->AddComponent<Frosty::ECS::CMaterial>(item, Frosty::AssetManager::GetShader("Texture2D"), true);
-			auto& light = m_World->AddComponent<Frosty::ECS::CLight>(item, Frosty::ECS::CLight::LightType::Point, 3.f, glm::vec3(1.f, 1.f, 1.f), 2.f);
-			auto& loot = m_World->AddComponent<Frosty::ECS::CLootable>(item);
-
-			switch (randomValue)
+			if (randomValue != -1)
 			{
-			case 0:
-				// Healing Position
-				m_World->AddComponent<Frosty::ECS::CMesh>(item, Frosty::AssetManager::GetMesh("pPlane1"));
-				material.DiffuseTexture = Frosty::AssetManager::GetTexture2D("hpPotion");
-				light.Color = glm::vec3(1.f, 0.f, 0.f);
-				loot.Type = Frosty::ECS::CLootable::LootType::HealingPotion;
-				break;
-			case 1:
-				// Increase Health Potion
-				m_World->AddComponent<Frosty::ECS::CMesh>(item, Frosty::AssetManager::GetMesh("pPlane1"));
-				material.DiffuseTexture = Frosty::AssetManager::GetTexture2D("highlightHeart");
-				light.Color = glm::vec3(1.f, 0.f, 0.f);
-				loot.Type = Frosty::ECS::CLootable::LootType::IncHealthPotion;
-				break;
-			case 2:
-				// Speed Potion
-				m_World->AddComponent<Frosty::ECS::CMesh>(item, Frosty::AssetManager::GetMesh("pPlane1"));
-				material.DiffuseTexture = Frosty::AssetManager::GetTexture2D("spPotion");
-				light.Color = glm::vec3(0.f, 0.f, 1.f);
-				loot.Type = Frosty::ECS::CLootable::LootType::SpeedPotion;
-				break;
-			case 3:
-				// Speed Boots
-				transform.Scale = glm::vec3(5.5f, 7.f, 5.5f);
-				m_World->AddComponent<Frosty::ECS::CMesh>(item, Frosty::AssetManager::GetMesh("pPlane1"));
-				material.DiffuseTexture = Frosty::AssetManager::GetTexture2D("speedBoots");
-				light.Color = glm::vec3(0.f, 1.f, 0.f);
-				loot.Type = Frosty::ECS::CLootable::LootType::SpeedBoots;
-				break;
-			case 4:
-				// Wolfsbane
-				m_World->AddComponent<Frosty::ECS::CMesh>(item, Frosty::AssetManager::GetMesh("pPlane1"));
-				material.DiffuseTexture = Frosty::AssetManager::GetTexture2D("wolfsbane");
-				light.Color = glm::vec3(0.8f, 0.f, 1.f);
-				loot.Type = Frosty::ECS::CLootable::LootType::Wolfsbane;
-				break;
-			case 5:
-				// Weapon
-				transform.Rotation = glm::vec3(130.f, 90.f, 0.f);
-				light.Color = glm::vec3(1.f, 1.f, 0.5f);
-				light.Radius = 5.f;
-				loot.Type = Frosty::ECS::CLootable::LootType::Weapon;
 
-				weapon = GenerateWeapon();
-				m_World->AddComponent<Frosty::ECS::CWeapon>(item, weapon);
+				Frosty::Weapon weapon;
+				auto& item = m_World->CreateEntity(entityTransform.Position + glm::vec3(0.0f, 0.3f, 0.0f), { 0.0f, 0.0f, 0.0f }, { 3.f, 3.f, 3.f });
+				auto& transform = m_World->GetComponent<Frosty::ECS::CTransform>(item);
+				auto& material = m_World->AddComponent<Frosty::ECS::CMaterial>(item, Frosty::AssetManager::GetShader("Texture2D"), true);
+				auto& light = m_World->AddComponent<Frosty::ECS::CLight>(item, Frosty::ECS::CLight::LightType::Point, 3.f, glm::vec3(1.f, 1.f, 1.f), 2.f);
+				auto& loot = m_World->AddComponent<Frosty::ECS::CLootable>(item);
 
-				if (weapon.Type == Frosty::Weapon::WeaponType::Sword)
+
+				switch (randomValue)
 				{
-					m_World->AddComponent<Frosty::ECS::CMesh>(item, Frosty::AssetManager::GetMesh("sword"));
-					material.NormalTexture = Frosty::AssetManager::GetTexture2D("sword_normal");
-					m_World->AddComponent<Frosty::ECS::CPhysics>(item, Frosty::AssetManager::GetBoundingBox("sword"), transform.Scale, weapon.ProjectileSpeed);
-					
-					if (weapon.Level == 1)
-					{
-						loot.Weapon = Frosty::ECS::CLootable::WeaponType::Sword1;
-						material.DiffuseTexture = Frosty::AssetManager::GetTexture2D("sword_lvl1_diffuse");
-					}
-					else if (weapon.Level == 2)
-					{
-						loot.Weapon = Frosty::ECS::CLootable::WeaponType::Sword2;
-						material.DiffuseTexture = Frosty::AssetManager::GetTexture2D("sword_lvl2_diffuse");
-					}
-					else if (weapon.Level == 3)
-					{
-						loot.Weapon = Frosty::ECS::CLootable::WeaponType::Sword3;
-						material.DiffuseTexture = Frosty::AssetManager::GetTexture2D("sword_lvl3_diffuse");
-					}
-				}
-				else if (weapon.Type == Frosty::Weapon::WeaponType::Bow)
-				{
-					m_World->AddComponent<Frosty::ECS::CMesh>(item, Frosty::AssetManager::GetMesh("Bow"));
-					material.NormalTexture = Frosty::AssetManager::GetTexture2D("bow_normal");
-					m_World->AddComponent<Frosty::ECS::CPhysics>(item, Frosty::AssetManager::GetBoundingBox("Bow"), transform.Scale, weapon.ProjectileSpeed);
+				case 0:
+					// Healing Position
+					m_World->AddComponent<Frosty::ECS::CMesh>(item, Frosty::AssetManager::GetMesh("pPlane1"));
+					material.DiffuseTexture = Frosty::AssetManager::GetTexture2D("hpPotion");
+					light.Color = glm::vec3(1.f, 0.f, 0.f);
+					loot.Type = Frosty::ECS::CLootable::LootType::HealingPotion;
+					break;
+				case 1:
+					// Increase Health Potion
+					m_World->AddComponent<Frosty::ECS::CMesh>(item, Frosty::AssetManager::GetMesh("pPlane1"));
+					material.DiffuseTexture = Frosty::AssetManager::GetTexture2D("highlightHeart");
+					light.Color = glm::vec3(1.f, 0.f, 0.f);
+					loot.Type = Frosty::ECS::CLootable::LootType::IncHealthPotion;
+					break;
+				case 2:
+					// Speed Potion
+					m_World->AddComponent<Frosty::ECS::CMesh>(item, Frosty::AssetManager::GetMesh("pPlane1"));
+					material.DiffuseTexture = Frosty::AssetManager::GetTexture2D("spPotion");
+					light.Color = glm::vec3(0.f, 0.f, 1.f);
+					loot.Type = Frosty::ECS::CLootable::LootType::SpeedPotion;
+					break;
+				case 3:
+					// Speed Boots
+					transform.Scale = glm::vec3(5.5f, 7.f, 5.5f);
+					m_World->AddComponent<Frosty::ECS::CMesh>(item, Frosty::AssetManager::GetMesh("pPlane1"));
+					material.DiffuseTexture = Frosty::AssetManager::GetTexture2D("speedBoots");
+					light.Color = glm::vec3(0.f, 1.f, 0.f);
+					loot.Type = Frosty::ECS::CLootable::LootType::SpeedBoots;
+					break;
+				case 4:
+					// Wolfsbane
+					m_World->AddComponent<Frosty::ECS::CMesh>(item, Frosty::AssetManager::GetMesh("pPlane1"));
+					material.DiffuseTexture = Frosty::AssetManager::GetTexture2D("wolfsbane");
+					light.Color = glm::vec3(0.8f, 0.f, 1.f);
+					loot.Type = Frosty::ECS::CLootable::LootType::Wolfsbane;
+					break;
+				case 5:
+					// Weapon
+					transform.Rotation = glm::vec3(130.f, 90.f, 0.f);
+					light.Color = glm::vec3(1.f, 1.f, 0.5f);
+					light.Radius = 5.f;
+					loot.Type = Frosty::ECS::CLootable::LootType::Weapon;
 
-					if (weapon.Level == 1)
+					weapon = GenerateWeapon();
+					m_World->AddComponent<Frosty::ECS::CWeapon>(item, weapon);
+
+					if (weapon.Type == Frosty::Weapon::WeaponType::Sword)
 					{
-						loot.Weapon = Frosty::ECS::CLootable::WeaponType::Bow1;
-						material.DiffuseTexture = Frosty::AssetManager::GetTexture2D("bow_lvl1_diffuse");
+						m_World->AddComponent<Frosty::ECS::CMesh>(item, Frosty::AssetManager::GetMesh("sword"));
+						material.NormalTexture = Frosty::AssetManager::GetTexture2D("sword_normal");
+						m_World->AddComponent<Frosty::ECS::CPhysics>(item, Frosty::AssetManager::GetBoundingBox("sword"), transform.Scale, weapon.ProjectileSpeed);
+
+						if (weapon.Level == 1)
+						{
+							loot.Weapon = Frosty::ECS::CLootable::WeaponType::Sword1;
+							material.DiffuseTexture = Frosty::AssetManager::GetTexture2D("sword_lvl1_diffuse");
+						}
+						else if (weapon.Level == 2)
+						{
+							loot.Weapon = Frosty::ECS::CLootable::WeaponType::Sword2;
+							material.DiffuseTexture = Frosty::AssetManager::GetTexture2D("sword_lvl2_diffuse");
+						}
+						else if (weapon.Level == 3)
+						{
+							loot.Weapon = Frosty::ECS::CLootable::WeaponType::Sword3;
+							material.DiffuseTexture = Frosty::AssetManager::GetTexture2D("sword_lvl3_diffuse");
+						}
 					}
-					else if (weapon.Level == 2)
+					else if (weapon.Type == Frosty::Weapon::WeaponType::Bow)
 					{
-						loot.Weapon = Frosty::ECS::CLootable::WeaponType::Bow2;
-						material.DiffuseTexture = Frosty::AssetManager::GetTexture2D("bow_lvl2_diffuse");
+						m_World->AddComponent<Frosty::ECS::CMesh>(item, Frosty::AssetManager::GetMesh("Bow"));
+						material.NormalTexture = Frosty::AssetManager::GetTexture2D("bow_normal");
+						m_World->AddComponent<Frosty::ECS::CPhysics>(item, Frosty::AssetManager::GetBoundingBox("Bow"), transform.Scale, weapon.ProjectileSpeed);
+
+						if (weapon.Level == 1)
+						{
+							loot.Weapon = Frosty::ECS::CLootable::WeaponType::Bow1;
+							material.DiffuseTexture = Frosty::AssetManager::GetTexture2D("bow_lvl1_diffuse");
+						}
+						else if (weapon.Level == 2)
+						{
+							loot.Weapon = Frosty::ECS::CLootable::WeaponType::Bow2;
+							material.DiffuseTexture = Frosty::AssetManager::GetTexture2D("bow_lvl2_diffuse");
+						}
+						else if (weapon.Level == 3)
+						{
+							loot.Weapon = Frosty::ECS::CLootable::WeaponType::Bow3;
+							material.DiffuseTexture = Frosty::AssetManager::GetTexture2D("bow_lvl3_diffuse");
+						}
 					}
-					else if (weapon.Level == 3)
-					{
-						loot.Weapon = Frosty::ECS::CLootable::WeaponType::Bow3;
-						material.DiffuseTexture = Frosty::AssetManager::GetTexture2D("bow_lvl3_diffuse");
-					}
+
+					break;
+				case 6:
+					// Bait
+					transform.Scale = glm::vec3(1.f, 1.f, 1.f);
+					m_World->AddComponent<Frosty::ECS::CMesh>(item, Frosty::AssetManager::GetMesh("meat"));
+					material.DiffuseTexture = Frosty::AssetManager::GetTexture2D("meat");
+					light.Color = glm::vec3(1.f, 0.5f, 1.f);
+					loot.Type = Frosty::ECS::CLootable::LootType::Bait;
+					break;
+				default:
+					break;
 				}
-			
-				break;
-			case 6:
-				// Bait
-				transform.Scale = glm::vec3(1.f, 1.f, 1.f);
-				m_World->AddComponent<Frosty::ECS::CMesh>(item, Frosty::AssetManager::GetMesh("meat"));
-				material.DiffuseTexture = Frosty::AssetManager::GetTexture2D("meat");
-				light.Color = glm::vec3(1.f, 0.5f, 1.f);
-				loot.Type = Frosty::ECS::CLootable::LootType::Bait;
-				break;
-			default:
-				break;
 			}
 		}
 	}

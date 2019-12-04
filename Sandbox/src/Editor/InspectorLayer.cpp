@@ -322,9 +322,20 @@ namespace MCS
 
 									if (world->HasComponent<Frosty::ECS::CMaterial>(m_SelectedEntity))
 									{
-										Frosty::Renderer::ChangeEntity(m_SelectedEntity->Id, &world->GetComponent<Frosty::ECS::CMaterial>(m_SelectedEntity),
-											oldMeshName, &world->GetComponent<Frosty::ECS::CMesh>(m_SelectedEntity),
-											m_SelectedEntity->Id, &world->GetComponent<Frosty::ECS::CTransform>(m_SelectedEntity));
+										if (!world->HasComponent<Frosty::ECS::CAnimController>(m_SelectedEntity))
+										{
+											Frosty::Renderer::ChangeEntity(m_SelectedEntity->Id, &world->GetComponent<Frosty::ECS::CMaterial>(m_SelectedEntity),
+												oldMeshName, &world->GetComponent<Frosty::ECS::CMesh>(m_SelectedEntity),
+												m_SelectedEntity->Id, &world->GetComponent<Frosty::ECS::CTransform>(m_SelectedEntity),nullptr);
+										}
+										else
+										{
+											Frosty::Renderer::ChangeEntity(m_SelectedEntity->Id, &world->GetComponent<Frosty::ECS::CMaterial>(m_SelectedEntity),
+												oldMeshName, &world->GetComponent<Frosty::ECS::CMesh>(m_SelectedEntity),
+												m_SelectedEntity->Id, &world->GetComponent<Frosty::ECS::CTransform>(m_SelectedEntity),
+												&world->GetComponent<Frosty::ECS::CAnimController>(m_SelectedEntity));
+										}
+										
 									}
 								}
 							}
@@ -393,9 +404,18 @@ namespace MCS
 									//Updates the renderer
 									if (world->HasComponent<Frosty::ECS::CMesh>(m_SelectedEntity))
 									{
-										Frosty::Renderer::ChangeEntity(m_SelectedEntity->Id, &world->GetComponent<Frosty::ECS::CMaterial>(m_SelectedEntity),
-											world->GetComponent<Frosty::ECS::CMesh>(m_SelectedEntity).Mesh->GetName(), &world->GetComponent<Frosty::ECS::CMesh>(m_SelectedEntity),
-											m_SelectedEntity->Id, &world->GetComponent<Frosty::ECS::CTransform>(m_SelectedEntity));
+										if (!world->HasComponent<Frosty::ECS::CAnimController>(m_SelectedEntity))
+										{
+											Frosty::Renderer::ChangeEntity(m_SelectedEntity->Id, &world->GetComponent<Frosty::ECS::CMaterial>(m_SelectedEntity),
+												world->GetComponent<Frosty::ECS::CMesh>(m_SelectedEntity).Mesh->GetName(), &world->GetComponent<Frosty::ECS::CMesh>(m_SelectedEntity),
+												m_SelectedEntity->Id, &world->GetComponent<Frosty::ECS::CTransform>(m_SelectedEntity), nullptr);
+										}
+										else
+										{
+											Frosty::Renderer::ChangeEntity(m_SelectedEntity->Id, &world->GetComponent<Frosty::ECS::CMaterial>(m_SelectedEntity),
+												world->GetComponent<Frosty::ECS::CMesh>(m_SelectedEntity).Mesh->GetName(), &world->GetComponent<Frosty::ECS::CMesh>(m_SelectedEntity),
+												m_SelectedEntity->Id, &world->GetComponent<Frosty::ECS::CTransform>(m_SelectedEntity), &world->GetComponent<Frosty::ECS::CAnimController>(m_SelectedEntity));
+										}
 									}
 								}
 							}
@@ -941,7 +961,20 @@ namespace MCS
 						auto& comp = world->GetComponent<Frosty::ECS::CParticleSystem>(m_SelectedEntity);
 						ImGui::BeginChild("CParticleSystem", ImVec2(EDITOR_INSPECTOR_WIDTH, 560), true);
 						ImGui::Text("Active particles: %i", comp.ParticleCount);
-						ImGui::Checkbox("Preview", &comp.Preview);
+						if (comp.Loop)
+						{
+							ImGui::Checkbox("Preview", &comp.Preview);
+							ImGui::SameLine();
+						}
+						else
+						{
+							if (ImGui::Button("Play", ImVec2(40, 25)))
+							{
+								comp.Preview = true;
+								comp.TimesPlayed = -1;
+							}
+						}
+						ImGui::Checkbox("Loop", &comp.Loop);
 						ImGui::SameLine();
 						ImGui::Checkbox("Face camera", &comp.AlwaysFaceCamera);
 						if (ImGui::IsItemClicked())
@@ -1016,6 +1049,8 @@ namespace MCS
 						}
 						ImGui::DragFloat3("Rotation", glm::value_ptr(comp.SystemRotation), 0.1f, 0.0f, 0.0f, "%.2f");
 						ImGui::Checkbox("Random direction", &comp.RandomDirection);
+						ImGui::SameLine();
+						ImGui::Checkbox("Gravity", &comp.HasGravity);
 						if (comp.RandomDirection == false)
 						{
 							ImGui::DragFloat3("Direction", glm::value_ptr(comp.ParticleSystemDirection), 0.1f, 0.0f, 0.0f, "%.2f");
@@ -1024,6 +1059,10 @@ namespace MCS
 						{
 							ImGui::InputFloat("Spread", &comp.randSpread);
 							ImGui::DragFloat3("Main direction", glm::value_ptr(comp.randMainDir), 0.1f, 0.0f, 0.0, "%.2f");
+						}
+						if (comp.HasGravity)
+						{
+							ImGui::InputFloat("Weight", &comp.ParticleWeight);
 						}
 						ImGui::Checkbox("Random start position", &comp.RandomStartPos);
 						if (comp.RandomStartPos == false)

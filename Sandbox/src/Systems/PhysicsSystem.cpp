@@ -20,13 +20,26 @@ namespace MCS
 	{
 		for (size_t i = 1; i < p_Total; i++)
 		{
-			//if (i == 2 && Frosty::Time::GetFrameCount() % 100 == 0) FY_INFO("Direction is ({0}, {1}, {2})", m_Physics[i]->Direction.x, m_Physics[i]->Direction.y, m_Physics[i]->Direction.z);
-			//if (i == 2 && Frosty::Time::GetFrameCount() % 10 == 0) FY_INFO("Speed multiplier is ({0})", m_Physics[i]->SpeedMultiplier);
-
-			glm::vec3 changeOffset = m_Physics[i]->Direction * m_Physics[i]->Speed * m_Physics[i]->SpeedMultiplier * Frosty::Time::DeltaTime();
-			m_Transform[i]->Position += changeOffset;
+			// Movement
+			glm::vec3 movementOffset = m_Physics[i]->Direction * m_Physics[i]->Speed * m_Physics[i]->SpeedMultiplier * Frosty::Time::DeltaTime();
+			m_Transform[i]->Position += movementOffset;
+			
+			// Collision
 			if (!m_Transform[i]->IsStatic) CheckCollision(i);
 
+			// Player slow reset
+			if (m_World->HasComponent<Frosty::ECS::CPlayer>(m_Transform[i]->EntityPtr) && m_Physics[i]->SlowTime > 0.0f)
+			{
+				m_Physics[i]->SlowTime -= Frosty::Time::DeltaTime();
+
+				if (m_Physics[i]->SlowTime <= 0.0f)
+				{
+					m_Physics[i]->SpeedMultiplier += 0.4f;
+					m_Physics[i]->SlowTime = 0.0f;
+				}
+			}
+
+			// Boss charge into player, float up and down
 			if (m_Physics[i]->Direction.y > 0.0f)
 			{
 				m_Physics[i]->HangTime -= Frosty::Time::DeltaTime();
@@ -41,6 +54,7 @@ namespace MCS
 			{
 				m_Physics[i]->SpeedMultiplier = 1.0f;
 				m_Physics[i]->Direction = glm::vec3(0.0f);
+				m_Transform[i]->Position.y = 0.0f;
 			}
 		}
 	}
@@ -222,47 +236,31 @@ namespace MCS
 								{
 									if (m_World->HasComponent<Frosty::ECS::CPlayer>(m_Transform[i]->EntityPtr))
 									{
-										// Leap colliding into player
-										m_Physics[index]->SpeedMultiplier = 1.0f;
-										bossComp.LeapCooldownTime = Frosty::Time::CurrentTime();
-										bossComp.ActiveAbility = Frosty::ECS::CBoss::AbilityState::None;
-										bossComp.LeapTargetPosition = glm::vec3(0.0f);
+										// Leap colliding into player, damage the player
 										Frosty::EventBus::GetEventBus()->Publish<Frosty::DamageEvent>(Frosty::DamageEvent(m_Transform[i]->EntityPtr, bossComp.LeapDamage));
+										m_Physics[i]->SpeedMultiplier -= bossComp.LeapSlowAmount;
+										m_Physics[i]->SlowTime = bossComp.LeapSlowCooldown;
 									}
+
+									// Reset leap attributes
+									Frosty::EventBus::GetEventBus()->Publish<Frosty::ResetBossAbilitiesEvent>(Frosty::ResetBossAbilitiesEvent(m_Transform[index]->EntityPtr));
 									bool normalCollisionPushback = false;
 								}
-								else if (bossComp.ActiveAbility == Frosty::ECS::CBoss::AbilityState::Charge)
+								else if (bossComp.ActiveAbility == Frosty::ECS::CBoss::AbilityState::Charge && m_Physics[index]->SpeedMultiplier != 0.0f)
 								{
 									if (m_World->HasComponent<Frosty::ECS::CPlayer>(m_Transform[i]->EntityPtr))
 									{
-										// Charge into a player, push player back
-										// Make the player to float up
+										// Charge into a player, push player up, damage player
 										m_Physics[i]->Direction = glm::vec3(0.0f, 1.0f, 0.0f);
 										m_Physics[i]->HangTime = bossComp.ChargeHangTime;
 										m_Physics[i]->SpeedMultiplier = 0.5f;
-
-										// Reset charge attributes
-										bossComp.DistanceCharged = bossComp.ChargeDistance;
-										m_Physics[index]->SpeedMultiplier = 1.0f;
-										bossComp.ActiveAbility = Frosty::ECS::CBoss::AbilityState::None;
-										bossComp.ChargeTargetPosition = glm::vec3(0.0f);
-										bossComp.ChargeLoadCooldownTime = 0.0f;
-										normalCollisionPushback = false;
 										Frosty::EventBus::GetEventBus()->Publish<Frosty::DamageEvent>(Frosty::DamageEvent(m_Transform[i]->EntityPtr, bossComp.ChargeDamage));
+										FY_INFO("Charge hits player!");
 									}
-									else if (m_World->HasComponent<Frosty::ECS::CEnemy>(m_Transform[i]->EntityPtr))
-									{
-										normalCollisionPushback = false;
-									}
-									else if (m_Transform[i]->IsStatic)
-									{
-										// Charge into a static obstacle
-										bossComp.DistanceCharged = bossComp.ChargeDistance;
-										m_Physics[index]->SpeedMultiplier = 1.0f;
-										bossComp.ActiveAbility = Frosty::ECS::CBoss::AbilityState::None;
-										bossComp.ChargeTargetPosition = glm::vec3(0.0f);
-										bossComp.ChargeLoadCooldownTime = 0.0f;
-									}
+
+									// Reset charge attributes
+									Frosty::EventBus::GetEventBus()->Publish<Frosty::ResetBossAbilitiesEvent>(Frosty::ResetBossAbilitiesEvent(m_Transform[index]->EntityPtr));
+									normalCollisionPushback = false;
 								}
 							}
 							
@@ -362,7 +360,7 @@ namespace MCS
 
 	glm::vec3 PhysicsSystem::CircleIntersection(size_t indexA, size_t indexB)
 	{
-		float dist = glm::distance(m_Transform[indexA]->Position, m_Transform[indexB]->Position);
+		float dist = glm::distance(glm::vec2(m_Transform[indexA]->Position.x, m_Transform[indexA]->Position.z), glm::vec2(m_Transform[indexB]->Position.x, m_Transform[indexB]->Position.z));
 		float totalRadius = m_Physics[indexA]->Radius + m_Physics[indexB]->Radius;
 		float diff = dist - totalRadius;
 		//if (indexA == 1 && Frosty::Time::GetFrameCount() % 60 == 0)

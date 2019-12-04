@@ -13,6 +13,13 @@ namespace Frosty { class BoolMap; }
 namespace Frosty { class ResetEvent; }
 namespace Frosty { class BossSpawnedEvent; }
 
+struct bossRememberdPath
+{
+	std::vector<glm::ivec2> pathToGo;
+	glm::ivec2 expectedPlayerPos = { -1, -1 };
+	int lastTile = 1;
+};
+
 namespace MCS
 {
 	class LevelSystem : public Frosty::ECS::BaseSystem
@@ -41,6 +48,8 @@ namespace MCS
 		Frosty::ECS::CGUI* GetPlayerGUI();
 
 		void OnBossSpawnedEvent(Frosty::BossSpawnedEvent& e);
+
+		void randomBossMovment();
 	private:
 		Frosty::World* m_World;
 
@@ -48,6 +57,21 @@ namespace MCS
 
 		MapGenerator m_Map;
 		glm::ivec2 m_PlayerPos = { 10, 15 };//{ 10, 15 };
+		glm::ivec2 m_BossPos = { 9, 15 };
+		glm::ivec2 m_BossLastRoom = { -1, -1 };
+		float m_StartTimer = 0.0f;
+		float m_BossTimer = 0.0f;
+		//needs balensing m_BossRoomTimer 
+		//float m_BossRoomTimer = 40.0f;
+		float m_BossRoomTimer = 2.0f; //in sec
+		float m_BossFollowTimer = 0.5f; //in min
+
+		float m_BossStartTimer = 10.0f;
+		bossRememberdPath m_BossRememberdPath;
+		//temp bools
+		bool m_haveStartedMoving = false;
+
+
 		//map.generateMap();
 		Room m_CurrentRoome;// = map.getRoom(glm::ivec2(11, 15));
 		bool m_Start = true;

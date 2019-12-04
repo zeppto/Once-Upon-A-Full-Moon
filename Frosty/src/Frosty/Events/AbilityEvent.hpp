@@ -329,5 +329,31 @@ namespace Frosty
 
 		EVENT_TYPE(BossSpawned)
 	};
+
+	class ResetBossAbilitiesEvent : public BaseEvent
+	{
+	public:
+		ResetBossAbilitiesEvent(const std::shared_ptr<ECS::Entity>& boss) : m_Boss(boss) { }
+
+		const std::shared_ptr<ECS::Entity>& GetBoss() const { return m_Boss; }
+
+		EVENT_TYPE(ResetBoss)
+
+	private:
+		std::shared_ptr<ECS::Entity> m_Boss;
+
+	};
+
+	class SpawnBossEvent : public BaseEvent
+	{
+	public:
+		SpawnBossEvent() { }
+
+
+		EVENT_TYPE(SpawnBoss)
+
+	private:
+
+	};
 }
 #endif // !ABILITY_EVENT_HPP

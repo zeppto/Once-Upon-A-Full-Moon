@@ -24,7 +24,6 @@ namespace MCS
 
 		void AttachGameCamera(Frosty::ECS::CTransform* gameCamera) { m_CameraTransform = gameCamera; }
 		void ChangeParticlesStartColor (Frosty::ECS::CParticleSystem& particleSystem, glm::vec3 color);
-		void ChangeParticlesTexture(Frosty::ECS::CParticleSystem& particleSystem, std::string textureName);
 
 	private:
 		void UpdateParticleSystem(size_t systemIndex);

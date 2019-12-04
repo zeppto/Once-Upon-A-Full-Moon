@@ -146,7 +146,7 @@ namespace Frosty
 
 		// Let's define a maximum number of entities that
 		// can have the same component type:
-		constexpr std::size_t MAX_ENTITIES_PER_COMPONENT{ 30024 };
+		constexpr std::size_t MAX_ENTITIES_PER_COMPONENT{ 1024 };
 
 		// Defining the maximum nr of systems
 		constexpr std::size_t MAX_SYSTEMS{ 20 };
@@ -279,8 +279,9 @@ namespace Frosty
 				return true;
 			}
 
-			inline void AddToGroup(uint64_t groupId, const std::shared_ptr<Entity>& entity)
+			inline void AddToGroup(uint32_t groupId, const std::shared_ptr<Entity>& entity)
 			{
+				entity->GroupId = groupId;
 				m_EntityGroups[groupId].emplace_back(entity);
 			}
 
@@ -533,6 +534,7 @@ namespace Frosty
 			std::shared_ptr<Texture2D> BlendTexture1;
 			std::shared_ptr<Texture2D> BlendTexture2;
 
+			float Flash{ 0.0f };
 			float SpecularStrength{ 0.5f };
 			int Shininess{ 16 };
 			glm::vec2 TextureScale{ 1.0f };
@@ -582,6 +584,8 @@ namespace Frosty
 			float Speed{ 0.0f };
 			float SpeedMultiplier{ 1.f };						// Used in combination with Speed Boost Potion
 			float HangTime{ 0.0f };
+			glm::vec3 RotateTowards{ 0.0f };
+			float SlowTime{ Frosty::Time::CurrentTime() };
 
 			CPhysics() = default;
 			CPhysics(const std::shared_ptr<Luna::BoundingBox>& bb, const glm::vec3& scale, float speed = 0.0f) : BoundingBox(bb), Speed(speed)
@@ -618,6 +622,8 @@ namespace Frosty
 			float LVL1AttackCooldown{ 1.0f };
 			float LVL2AttackCooldown{ 2.0f };
 			float LVL3AttackCooldown{ 3.0f };
+
+			bool AnimPlaying{ false };
 
 			float LVL1AttackCooldownTimer{ Frosty::Time::CurrentTime() };
 			float LVL2AttackCooldownTimer{ Frosty::Time::CurrentTime() };
@@ -670,6 +676,12 @@ namespace Frosty
 		{
 			static std::string NAME;
 
+			//Particle system effects from enchanting
+			std::shared_ptr<Entity> FireEffect{ nullptr };
+			std::shared_ptr<Entity> EarthEffect{ nullptr };
+			std::shared_ptr<Entity> WindEffect{ nullptr };
+			std::shared_ptr<Entity> WaterEffect{ nullptr };
+
 			std::vector<EntityID> AttackedEntities;
 
 			enum class AttackType { Melee, Range };
@@ -717,6 +729,8 @@ namespace Frosty
 			float DamageEffectTime{ 2.0f };
 			float DamageEffectTimer{ Frosty::Time::CurrentTime() };
 
+
+
 			CPlayer() = default;
 			CPlayer(CWeapon* weapon) : Weapon(weapon) { }
 			CPlayer(const CPlayer& org) { FY_CORE_ASSERT(false, "Copy constructor in CPlayer called."); }
@@ -727,12 +741,13 @@ namespace Frosty
 		struct CEnemy : public BaseComponent
 		{
 			static std::string NAME;
-			static const int RESET_DISTANCE = 60;
+			static const int RESET_DISTANCE = 1000;
 
-			enum class State { Idle, Escape, Attack, Chase, Reset };
+			enum class State { Idle, Escape, Attack, Chase, Reset, Dead };
 			State CurrentState{ State::Idle };
 
 			CWeapon* Weapon{ nullptr };
+			size_t WeaponEntityID{ 0 };
 			CTransform* Target{ nullptr };
 
 			glm::vec3 SpawnPosition{ 0.0f };
@@ -740,6 +755,12 @@ namespace Frosty
 			float SightRange{ 40.0f };
 
 			float RunOnHealth{ 0.0f };
+
+			float AttackDelay{ 0.0f };
+			bool AttackInit{ false };
+
+			float FlashTime{ 0.05f };
+			float FlashTimer{ Frosty::Time::CurrentTime() };
 
 			CEnemy() = default;
 			CEnemy(CTransform* target, CWeapon* weapon, float runOnHealth = 0.0f) : Target(target), Weapon(weapon), RunOnHealth(runOnHealth) { }
@@ -755,6 +776,8 @@ namespace Frosty
 			int MaxPossibleHealth{ 40 };								// Max health an entity can upgrade to
 			int MaxHealth{ 5 };											// Max health an entity can currently have
 			int CurrentHealth{ 5 };
+
+			float DeathTimer{ -500.0f };
 
 			CHealth() = default;
 			CHealth(int health) : MaxHealth(health), CurrentHealth(health) {};
@@ -785,7 +808,7 @@ namespace Frosty
 			// SPEED BOOSTER POTION - boosts speed during a time interval (temp)
 			int MaxSpeedPotions{ 5 };
 			int CurrentSpeedPotions{ 0 };
-			float IncreaseSpeedTemporary{ 0.2f };
+			float IncreaseSpeedTemporary{ 0.5f };
 			float SpeedCooldown{ 5.f };
 			float SpeedTimer{ Frosty::Time::CurrentTime() };
 
@@ -837,10 +860,10 @@ namespace Frosty
 		{
 			static std::string NAME;
 			static const int COOLDOWN = 3000;
-			static const int DISTANCE = 5000;
+			static const int DISTANCE = 7000;
 			bool Active{ false };
 			float CurrentCooldown{ 0.0f };
-			float DistanceDashed{ 0.0f };
+			float DistanceDashed{ 7.0f };
 			float SpeedMultiplier{ 3.0f };
 
 			CDash() = default;
@@ -912,6 +935,7 @@ namespace Frosty
 			glm::vec3 ParticleSystemStartPos{ 0.0f, 0.0f, 0.0f };
 			float EmitRate{ 0.1f };
 			uint32_t EmitCount{ 1 };
+			float ParticleWeight{ 1.0f };
 			float Speed{ 1.0f };
 			float MinLifetime{ 3.0f };
 			float MaxLifetime{ 3.0f };
@@ -921,6 +945,10 @@ namespace Frosty
 			float randSpread{ 1.5f };
 			glm::vec3 randMainDir{ 0.0f, 1.0f, 0.0f };
 
+			bool Loop{ true };
+			int32_t TimesPlayed = -1;
+
+			bool HasGravity{ false };
 			bool RotateOverLifetime{ false };
 			bool StaticColor{ true };
 			bool RandomLifetimes{ false };
@@ -943,7 +971,10 @@ namespace Frosty
 			std::shared_ptr<Shader> UseShader;
 			std::shared_ptr<Texture2D> Texture;
 
-			CParticleSystem() = default; //Should never be initialized empty!
+			CParticleSystem() //Should never be initialized empty!
+			{
+				Particles.resize(MaxParticles);
+			}
 			CParticleSystem(const std::string shaderName, const std::string texName, unsigned int maxParticles, const glm::vec3& color, float particleSpeed)
 				: ShaderName(shaderName), TextureName(texName), MaxParticles(maxParticles), SystemStartColor(color), SystemEndColor(color), Speed(particleSpeed)
 			{
@@ -1004,23 +1035,29 @@ namespace Frosty
 			AbilityState ActiveAbility{ AbilityState::None };
 
 			// Abilities
-			int32_t LeapDamage{ 3 };
+			int16_t LeapDamage{ 0 };
 			float LeapChance{ 25.0f };
-			float LeapInterval{ 6.5f };
+			float LeapMaxDistance{ 30.0f };
+			float LeapMinDistance{ 15.0f };
+			float LeapInterval{ 2.5f };			// How often the boss can _try_ for a leap
+			float LeapIntervalTime{ Frosty::Time::CurrentTime() };
+			float LeapCooldown{ 6.5f };			// The cool down of the ability
 			float LeapCooldownTime{ Frosty::Time::CurrentTime() };
 			glm::vec3 LeapTargetPosition{ 0.0f };
-			float LeapMaxDistance{ 35.0f };
-			float LeapMinDistance{ 15.0f };
+			float LeapSlowAmount{ 0.4f };
+			float LeapSlowCooldown{ 1.5f };
 			//
-			int32_t ChargeDamage{ 9 };
+			int16_t ChargeDamage{ 0 };
 			float ChargeChance{ 15.0f };
-			float ChargeInterval{ 5.0f };
-			float ChargeCooldownTime{ Frosty::Time::CurrentTime() };
 			float ChargeDistance{ 25.0f };
-			float DistanceCharged{ 0.0f };
 			float ChargeLoadTime{ 1.5f };
-			float ChargeLoadCooldownTime{ 0.0f };
 			float ChargeHangTime{ 0.75f };
+			float ChargeInterval{ 1.7f };		// How often the boss can _try_ for a charge
+			float ChargeIntervalTime{ Frosty::Time::CurrentTime() };
+			float ChargeCooldown{ 5.0f };		// The cool down of the ability
+			float ChargeCooldownTime{ Frosty::Time::CurrentTime() };
+			float DistanceCharged{ 0.0f };
+			float ChargeLoadCooldownTime{ 0.0f };
 			glm::vec3 ChargeTargetPosition{ 0.0f };
 
 

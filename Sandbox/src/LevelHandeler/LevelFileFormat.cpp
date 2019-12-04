@@ -413,8 +413,8 @@ namespace MCS
 						if (fileEntitys.myEntitys.at(i).MyComponents.at(10).HaveComponent || !fileEntitys.myEntitys.at(i).MyComponents.at(1).HaveComponent)
 						{
 							float savedX = fileEntitys.myEntitys.at(i).myTransform.Scale.x;
-							fileEntitys.myEntitys.at(i).myTransform.Scale.x = fileEntitys.myEntitys.at(i).myTransform.Scale.z *1.25;
-							fileEntitys.myEntitys.at(i).myTransform.Scale.z = savedX * 1.25;
+							fileEntitys.myEntitys.at(i).myTransform.Scale.x = fileEntitys.myEntitys.at(i).myTransform.Scale.z *1.25f;
+							fileEntitys.myEntitys.at(i).myTransform.Scale.z = savedX * 1.25f;
 						}
 						else
 						{
@@ -682,6 +682,7 @@ namespace MCS
 						}
 						auto& enemyWeaponCompA = m_World->AddComponent<Frosty::ECS::CWeapon>(enemyWeaponA, loadedWeapon);
 						auto& enemy = m_World->AddComponent<Frosty::ECS::CEnemy>(entity, playerTransform, &enemyWeaponCompA, fileEntitys.myEntitys.at(i).myEnemy.RunOnHealth);
+						enemy.WeaponEntityID = enemyWeaponCompA.EntityPtr->Id;
 						auto& transform = m_World->GetComponent< Frosty::ECS::CTransform>(entity);
 						enemy.SpawnPosition = transform.Position;
 					}
@@ -831,7 +832,6 @@ namespace MCS
 						}
 						else
 						{
-
 							m_World->AddComponent<Frosty::ECS::CAnimController>(entity);
 						}
 					}
@@ -936,6 +936,7 @@ namespace MCS
 
 
 	void LevelFileFormat::LoadBoolMap(std::string fileName)
+		 
 	{
 		std::ifstream existingFile;
 		existingFile.open("../../../assets/levels/" + fileName + ".lvl", std::ios::binary);

@@ -24,6 +24,8 @@ namespace MCS
 
 	private:
 		std::array<Frosty::ECS::CAttack*, Frosty::ECS::MAX_ENTITIES_PER_COMPONENT> m_Attack;
+
+		Frosty::World* m_World{ nullptr };
 	};
 }
 #endif // !WEAPON_SYSTEM_HPP

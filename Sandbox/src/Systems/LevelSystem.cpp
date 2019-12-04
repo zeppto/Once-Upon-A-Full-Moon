@@ -3,7 +3,6 @@
 #include "Frosty/API/AssetManager/AssetManager.hpp"
 #include "Frosty/Events/AbilityEvent.hpp"
 #include "Frosty/Core/BoolMap/BoolMapGenerator.hpp"
-
 namespace MCS
 {
 	const std::string LevelSystem::NAME = "Level";
@@ -87,6 +86,75 @@ namespace MCS
 			m_LevelFileFormat.OpenFromFile("deadend_chests_IsStatick_t_p_e_r_h_a", m_PlayerPos, playerTransform, rotate);
 			m_Start = false;
 			m_LevelFileFormat.LoadBoolMap("deadend_chests_IsStatick_t_p_e_r_h_a");
+			m_StartTimer = Frosty::Time::CurrentTime();
+		}
+
+		float time = Frosty::Time::CurrentTime() - m_StartTimer - m_BossStartTimer;
+		if (time > 0)
+		{
+			if (!m_haveStartedMoving)
+			{
+				FY_INFO("The boss have started moving {0}", "!");
+				FY_INFO("The boss starts on ({0}, {1})", m_BossPos.x, m_BossPos.y);
+				Room chekRoom = m_Map.getRoom(m_BossPos);
+				if (!chekRoom.Ocupide)
+				{
+					m_BossPos = m_Map.getLastCreatedLevelPos();
+				}
+				m_haveStartedMoving = true;
+			}
+
+			if (time > m_BossTimer)
+			{
+				m_BossTimer = time + m_BossRoomTimer;
+				if (m_PlayerPos != m_BossPos)
+				{
+					int moveToPlayerChanse = rand() % 100;
+					FY_INFO("The boss hase {0} % chans to move to player", time /((m_BossFollowTimer *60.0f)/100.0f));
+					if (moveToPlayerChanse < time/((m_BossFollowTimer * 60.0f) / 100.0f))
+					{
+						FY_INFO("The boss knowes wher you are and moves");
+						Room bossCurrentRoom = m_Map.getRoom(m_BossPos);
+						glm::ivec2 expectedBossPos = glm::ivec2(-1,-1);
+						if (m_BossRememberdPath.pathToGo.size() > m_BossRememberdPath.lastTile)
+							expectedBossPos = m_BossRememberdPath.pathToGo.at(m_BossRememberdPath.lastTile - 1);
+						//the boss follows player
+						if (m_BossRememberdPath.expectedPlayerPos != m_PlayerPos || m_BossPos != expectedBossPos)
+						{
+							m_BossRememberdPath.pathToGo = m_Map.getPathToTargert(m_BossPos, m_PlayerPos);
+							m_BossRememberdPath.lastTile = 1;
+							m_BossRememberdPath.expectedPlayerPos = m_PlayerPos;
+
+						}
+						if (m_BossRememberdPath.pathToGo.size() > m_BossRememberdPath.lastTile)
+						{
+							m_BossPos = m_BossRememberdPath.pathToGo.at(m_BossRememberdPath.lastTile);
+							m_BossRememberdPath.lastTile++;
+							FY_INFO("The boss is moving to ({0}, {1})", m_BossPos.x, m_BossPos.y);
+							FY_INFO("");
+	
+						}
+						else
+						{
+							FY_INFO("Somthing is wrong and the boss did don't move");
+							FY_INFO("");
+						}
+					}
+					else
+					{
+						FY_INFO("The boss lost track of you and is serching");
+						randomBossMovment();
+						FY_INFO("");
+					}
+
+					if (m_BossPos == m_PlayerPos)
+					{
+						Frosty::EventBus::GetEventBus()->Publish<Frosty::SpawnBossEvent>(Frosty::SpawnBossEvent());
+						FY_INFO("The boss found the player!");
+						FY_INFO("");
+					}
+				}
+			}
 		}
 	}
 
@@ -249,7 +317,7 @@ namespace MCS
 		m_CreatNewRoom = true;
 
 	}
-	
+
 	void LevelSystem::OnSaveLevelEvent(Frosty::SaveLevelEvent& e)
 	{
 		for (size_t i = 1; i < p_Total; i++)
@@ -280,7 +348,7 @@ namespace MCS
 		}
 		m_LevelFileFormat.SaveToFile(m_RoomType);
 	}
-	
+
 	void LevelSystem::OnCreateLevelEvent(Frosty::CreateLevelEvent& e)
 	{
 		for (size_t i = 1; i < p_Total; i++)
@@ -340,7 +408,7 @@ namespace MCS
 		else
 			m_RoomType = "unknown";
 	}
-	
+
 	void LevelSystem::OnOpenLevelEvent(Frosty::OpenLevelEvent& e)
 	{
 		Frosty::ECS::CTransform* playerTransform = nullptr;
@@ -404,7 +472,7 @@ namespace MCS
 		m_RoomType = e.GetFilename();
 		//m_LevelFileFormat.OpenFromFile(m_RoomType, m_PlayerPos, playerTransform);
 	}
-	
+
 	void LevelSystem::OnCreatEntityEvent(Frosty::CreatEntityEvent& e)
 	{
 		//Enemy
@@ -737,7 +805,7 @@ namespace MCS
 		}
 	}
 
-	void LevelSystem::OnResetEvent(Frosty::ResetEvent & e)
+	void LevelSystem::OnResetEvent(Frosty::ResetEvent& e)
 	{
 		Frosty::ECS::CMesh* weaponMesh = nullptr;
 		Frosty::ECS::CAnimController* animation = nullptr;
@@ -800,7 +868,7 @@ namespace MCS
 								m_GUI->Layout.sprites.at(3).SetImage("attackMelee2");
 								m_GUI->Layout.sprites.at(4).SetImage("attackMelee3");
 							}
-							Frosty::Renderer::ChangeEntity(m_Transform[i]->EntityPtr->Id, &weaponMat, "Sword", &mesh, m_Transform[i]->EntityPtr->Id, m_Transform[i]);
+							Frosty::Renderer::ChangeEntity(m_Transform[i]->EntityPtr->Id, &weaponMat, "Sword", &mesh, m_Transform[i]->EntityPtr->Id, m_Transform[i], nullptr);
 						}
 						weaponMesh = &mesh;
 					}
@@ -824,7 +892,7 @@ namespace MCS
 								m_GUI->Layout.sprites.at(3).SetImage("attackRanged2");
 								m_GUI->Layout.sprites.at(4).SetImage("attackRanged3");
 							}
-							Frosty::Renderer::ChangeEntity(m_Transform[i]->EntityPtr->Id, &weaponMat, "Bow", &mesh, m_Transform[i]->EntityPtr->Id, m_Transform[i]);
+							Frosty::Renderer::ChangeEntity(m_Transform[i]->EntityPtr->Id, &weaponMat, "Bow", &mesh, m_Transform[i]->EntityPtr->Id, m_Transform[i], nullptr);
 						}
 						weaponMesh = &mesh;
 					}
@@ -912,5 +980,57 @@ namespace MCS
 	void LevelSystem::OnBossSpawnedEvent(Frosty::BossSpawnedEvent& e)
 	{
 		m_BossSpawned = true;
+	}
+	void LevelSystem::randomBossMovment()
+	{
+		Room bossCurrentRoom = m_Map.getRoom(m_BossPos);
+		int roomToEnter;
+		bool redoRoom = false;
+		glm::ivec2 tempLastPos = m_BossPos;
+		glm::ivec2 tempPos = m_BossPos;
+		do
+		{
+			redoRoom = false;
+			roomToEnter = rand() % 4;
+			if (bossCurrentRoom.sideExits[roomToEnter])
+			{
+				tempLastPos = m_BossPos;
+				tempPos = m_BossPos;
+				if (roomToEnter == 0)
+					tempPos += glm::ivec2(0, -1);
+				if (roomToEnter == 1)
+					tempPos += glm::ivec2(0, 1);
+				if (roomToEnter == 2)
+					tempPos += glm::ivec2(-1, 0);
+				if (roomToEnter == 3)
+					tempPos += glm::ivec2(1, 0);
+				if (tempPos == m_BossLastRoom)
+				{
+					FY_INFO("The boss want's to go back{0}", "!");
+					int chansToReturn = rand() % 4;
+					if (chansToReturn != 1)
+					{
+						redoRoom = true;
+						FY_INFO("The boss faild to move back :(");
+					}
+					else
+						FY_INFO("The boss succeded in moving back :)");
+				}
+
+				Room tempChek = m_Map.getRoom(tempPos);
+				if (!tempChek.Ocupide)
+				{
+					FY_INFO("wath how? don't do this");
+					redoRoom = true;
+				}
+			}
+			else
+			{
+				FY_INFO("The boss tryed to move but faild! ({0}, {1})", m_BossPos.x, m_BossPos.y);
+			}
+		} while (!bossCurrentRoom.sideExits[roomToEnter] || redoRoom);
+		m_BossPos = tempPos;
+		m_BossLastRoom = tempLastPos;
+		FY_INFO("The boss is moving to ({0}, {1})", m_BossPos.x, m_BossPos.y);
 	}
 }

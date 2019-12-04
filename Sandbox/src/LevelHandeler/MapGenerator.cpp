@@ -55,8 +55,18 @@ namespace MCS
 			if (m_LoosEndsRooms.size() > 0)
 			{
 				if (generateRoom(m_LoosEndsRooms.at(0).pos, m_LoosEndsRooms.at(0).startSide, nrToGenerate - i > m_LoosEndsRooms.size()))
+				{
+					if (m_LoosEndsRooms.size() == 1 || i == nrToGenerate - 1)
+					{
+						m_LastCreatedRoom = m_LoosEndsRooms.at(0).pos;
+					}
 					i++;
+				}
 				m_LoosEndsRooms.erase(m_LoosEndsRooms.begin());
+			}
+			else
+			{
+				i++;
 			}
 		}
 		//nrToGenerate--;
@@ -178,7 +188,6 @@ namespace MCS
 				}
 			}
 
-
 			m_TileMap[pos.x][pos.y].Ocupide = true;
 			m_TileMap[pos.x][pos.y].sideExits[1 + (startSide / 2) * 4 - startSide] = true;
 			numberOfExits = 0;
@@ -211,7 +220,6 @@ namespace MCS
 							numberOfExits++;
 						}
 					}
-
 				}
 			}
 			return true;
@@ -236,6 +244,11 @@ namespace MCS
 	Room MapGenerator::getRoom(glm::ivec2 pos)
 	{
 		return m_TileMap[pos.x][pos.y];
+	}
+
+	glm::ivec2 MapGenerator::getLastCreatedLevelPos()
+	{
+		return m_LastCreatedRoom;
 	}
 
 	std::string MapGenerator::getRoomTextur(glm::ivec2 pos, int* rotation)
@@ -355,4 +368,65 @@ namespace MCS
 			return "deadend_chests_IsStatick_t_p_e_r_h_a";
 		return "deadend_chests_IsStatick_t_p_e_r_h_a";
 	}
+
+	std::vector<glm::ivec2> MapGenerator::getPathToTargert(glm::ivec2 startPos, glm::ivec2 endPos)
+	{
+		pathOnTile pathRooms[30][30];
+		std::vector<glm::ivec2> rooms;
+		pathOnTile startRoom;
+		startRoom.pos = startPos;
+		startRoom.distensTo = 0;
+		pathRooms[startRoom.pos.x][startRoom.pos.y].distensTo = startRoom.distensTo;
+		for (int j = 0; j < 4; j++)
+		{
+			Room theStartRoom = getRoom(startRoom.pos);
+			pathRooms[startRoom.pos.x][startRoom.pos.y].sideExits[j] = theStartRoom.sideExits[j];
+		}
+		std::deque<pathOnTile> roomsToGoThrough;
+		roomsToGoThrough.emplace_back(startRoom);
+
+
+		while (roomsToGoThrough.size() > 0)
+		{
+			pathOnTile room = roomsToGoThrough.front();
+			Room currentRoom = getRoom(room.pos);
+			for (int i = 0; i < 4; i++)
+			{
+				if (currentRoom.sideExits[i])
+				{
+					Room neighbor = getRoom(room.pos + posOffset(i));
+					if (neighbor.Ocupide)
+					{
+						pathOnTile newPath;
+						newPath.pos = room.pos + posOffset(i);
+						newPath.distensTo = room.distensTo + 1;
+						if (pathRooms[newPath.pos.x][newPath.pos.y].distensTo == -1)
+						{
+							pathRooms[newPath.pos.x][newPath.pos.y].distensTo = newPath.distensTo;
+							for (int j = 0; j < 4; j++)
+							{
+								newPath.sideExits[j] = neighbor.sideExits[j];
+								pathRooms[newPath.pos.x][newPath.pos.y].sideExits[j] = neighbor.sideExits[j];
+							}
+							newPath.parantTile = room.parantTile;
+							newPath.parantTile.push_back(room.pos);
+
+							roomsToGoThrough.emplace_back(newPath);
+
+						}
+						if (newPath.pos == endPos)
+						{
+							rooms = newPath.parantTile;
+							rooms.push_back(newPath.pos);
+
+							return rooms;
+						}
+					}
+				}
+			}
+			roomsToGoThrough.pop_front();
+		}
+		return rooms;
+	}
+
 }
