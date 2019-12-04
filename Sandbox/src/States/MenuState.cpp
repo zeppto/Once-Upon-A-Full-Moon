@@ -45,7 +45,7 @@ namespace MCS
 	{
 		m_App = &Frosty::Application::Get();
 		m_App->PushOverlay(FY_NEW(MenuLayer));
-		
+
 		if (!m_App->MenuLoaded())
 		{
 			auto& world = Frosty::Application::Get().GetWorld();
@@ -61,7 +61,30 @@ namespace MCS
 		float x = Frosty::InputManager::GetMouseX();
 		float y = Frosty::InputManager::GetMouseY();
 		//FY_INFO("{0} : {1}", x, y);
-		
+
+
+
+
+
+
+
+
+		//FOR DEBUG DELETE LATER
+		auto& world = Frosty::Application::Get().GetWorld();
+		InitiateObjects();
+		world->PlayGame();
+		m_App->GetStateMachine().AddState(Frosty::StateRef(FY_NEW(GameState)), true);
+
+
+
+
+
+
+
+
+
+
+
 		if (x > 920.0f && x < 1000.0f && y > 550.0f && y < 610.0f)
 		{
 			if (Frosty::InputManager::IsMouseButtonPressed(FY_MOUSE_BUTTON_LEFT))
@@ -194,15 +217,29 @@ namespace MCS
 		//Player HUD
 		Frosty::UILayout uiLayout(21, 29);
 
+		float windowWidth = Frosty::Application::Get().GetWindow().GetWidth();
+		float windowHeight = Frosty::Application::Get().GetWindow().GetHeight();
+
+		float refWidth = 1280;
+		float refHeight = 720;
+
+		/*float widthMultiplier = windowWidth / refWidth;
+		float heightMultiplier = windowHeight / refHeight;*/
+		
+		float widthMultiplier = 1;
+		float heightMultiplier = 1;
+
+
+
 		//Items
 		float padding = 200.0f;
 		float offsetX = 700.0f;
 		float offsetY = 30.0f;
 
 		//Sprites
-		int itemSpriteXOffset = 920;
-		int itemSpriteYOffset = 40;
-		int itemSpritePadding = 110;
+		int itemSpriteXOffset = 920 * widthMultiplier;
+		int itemSpriteYOffset = 40 * heightMultiplier;
+		int itemSpritePadding = 110 * widthMultiplier;
 
 		glm::vec2 hpPotionSprite = glm::vec2(itemSpriteXOffset + itemSpritePadding * 0, itemSpriteYOffset);
 		glm::vec2 spPotionSprite = glm::vec2(itemSpriteXOffset + itemSpritePadding * 1, itemSpriteYOffset);
@@ -210,79 +247,79 @@ namespace MCS
 		glm::vec2 wolfsbainSprite = glm::vec2(itemSpriteXOffset + itemSpritePadding * 3, itemSpriteYOffset);
 
 		//Amount info
-		int itemNrOfXOffset = itemSpriteXOffset - 60;
+		int itemNrOfXOffset = itemSpriteXOffset - 60 * widthMultiplier;
 
-		glm::vec2 hpPotionNrOf = glm::vec2(itemNrOfXOffset + itemSpritePadding * 0, 30.0f);
-		glm::vec2 spPotionNrOf = glm::vec2(itemNrOfXOffset + itemSpritePadding * 1, 30.0f);
-		glm::vec2 baitNrOf = glm::vec2(itemNrOfXOffset + itemSpritePadding * 2, 30.0f);
-		glm::vec2 wolfsbainNrOf = glm::vec2(itemNrOfXOffset + 10 + itemSpritePadding * 3, 30.0f);
+		glm::vec2 hpPotionNrOf = glm::vec2(itemNrOfXOffset + itemSpritePadding * 0 , 30.0f * heightMultiplier);
+		glm::vec2 spPotionNrOf = glm::vec2(itemNrOfXOffset + itemSpritePadding * 1 , 30.0f * heightMultiplier);
+		glm::vec2 baitNrOf = glm::vec2(itemNrOfXOffset + itemSpritePadding * 2 , 30.0f * heightMultiplier);
+		glm::vec2 wolfsbainNrOf = glm::vec2(itemNrOfXOffset + 10 + itemSpritePadding * 3, 30.0f * heightMultiplier);
 
 		//Cooldown
-		int itemCoolDownXOffset = itemSpriteXOffset - 15;
-		int itemCoolDownYOffset = itemSpriteYOffset - 10;
+		int itemCoolDownXOffset = itemSpriteXOffset - 15 * widthMultiplier;
+		int itemCoolDownYOffset = itemSpriteYOffset - 10 * heightMultiplier;
 
-		glm::vec2 hpPotionCooldown = glm::vec2(itemCoolDownXOffset + itemSpritePadding * 0, itemCoolDownYOffset);
-		glm::vec2 spPotionCooldown = glm::vec2(itemCoolDownXOffset + itemSpritePadding * 1, itemCoolDownYOffset);
-		glm::vec2 baitCooldown = glm::vec2(itemCoolDownXOffset + itemSpritePadding * 2, itemCoolDownYOffset);
+		glm::vec2 hpPotionCooldown = glm::vec2(itemCoolDownXOffset + itemSpritePadding * 0 , itemCoolDownYOffset * heightMultiplier);
+		glm::vec2 spPotionCooldown = glm::vec2(itemCoolDownXOffset + itemSpritePadding * 1 , itemCoolDownYOffset * heightMultiplier);
+		glm::vec2 baitCooldown = glm::vec2(itemCoolDownXOffset + itemSpritePadding * 2 , itemCoolDownYOffset) * heightMultiplier;
 
 		//Controls
-		int itemControllXOffset = itemCoolDownXOffset + 8;
-		int itemControllYOffset = itemSpriteYOffset + 40;
+		int itemControllXOffset = itemCoolDownXOffset + 8 * widthMultiplier;
+		int itemControllYOffset = itemSpriteYOffset + 40 * heightMultiplier;
 
 		glm::vec2 hpPotionControl = glm::vec2(itemControllXOffset + itemSpritePadding * 0, itemControllYOffset);
 		glm::vec2 spPotionControl = glm::vec2(itemControllXOffset + itemSpritePadding * 1, itemControllYOffset);
 		glm::vec2 baitControl = glm::vec2(itemControllXOffset + itemSpritePadding * 2, itemControllYOffset);
 
-		uiLayout.AddText(hpPotionNrOf, "1/1", glm::vec3(1.0f, 1.0f, 0.75f), 0.75); //0
-		uiLayout.AddText(spPotionNrOf, "1/1", glm::vec3(1.0f, 1.0f, 0.75f), 0.75); //1
-		uiLayout.AddText(baitNrOf, "1/1", glm::vec3(1.0f, 1.0f, 0.75f), 0.75); //2
-		uiLayout.AddText(wolfsbainNrOf, "1", glm::vec3(1.0f, 1.0f, 0.75f), 0.75); //3
+		uiLayout.AddText(hpPotionNrOf, "1/1", glm::vec3(1.0f, 1.0f, 0.75f), 0.75 * widthMultiplier); //0
+		uiLayout.AddText(spPotionNrOf, "1/1", glm::vec3(1.0f, 1.0f, 0.75f), 0.75 * widthMultiplier); //1
+		uiLayout.AddText(baitNrOf, "1/1", glm::vec3(1.0f, 1.0f, 0.75f), 0.75 * widthMultiplier); //2
+		uiLayout.AddText(wolfsbainNrOf, "1", glm::vec3(1.0f, 1.0f, 0.75f), 0.75 * widthMultiplier); //3
 
 		//Points
-		uiLayout.AddText(glm::vec2(1100, 675), "Points: 100", glm::vec3(1.0f, 1.0f, 0.75f), 0.75f); //4
+		uiLayout.AddText(glm::vec2(1100 * widthMultiplier, 675 * heightMultiplier), "Points: 100", glm::vec3(1.0f, 1.0f, 0.75f), 0.75f * widthMultiplier); //4
 
 		//TempHealth
 		//uiLayout.AddText(glm::vec2(25, 600), "100/100", glm::vec3(1.0f, 1.0f, 0.75f)); //5
-		uiLayout.AddText(glm::vec2(25, 600), "", glm::vec3(1.0f, 1.0f, 0.75f)); //5
+		uiLayout.AddText(glm::vec2(25 * widthMultiplier, 600 * heightMultiplier), "", glm::vec3(1.0f, 1.0f, 0.75f * widthMultiplier)); //5
 
 		//Picked up
 		//uiLayout.AddText(glm::vec2(550, 425), "+ 1 Health Potion", glm::vec3(1.0f, 1.0f, 1.0f), 0.75f);
-		uiLayout.AddText(glm::vec2(960 / 1.5f, 425), "", glm::vec3(1.0f, 1.0f, 0.75f), 0.75f); //6
+		uiLayout.AddText(glm::vec2(windowWidth / 2, 425 * heightMultiplier), "", glm::vec3(1.0f, 1.0f, 0.75f), 0.75f * widthMultiplier); //6 
 
 		//Attack cooldown
-		uiLayout.AddText(glm::vec2(35, 134), "", glm::vec3(1.0f, 1.0f, 1.0f), 0.65f); //7
-		uiLayout.AddText(glm::vec2(90, 105), "", glm::vec3(1.0f, 1.0f, 1.0f), 0.65f); //8
-		uiLayout.AddText(glm::vec2(115, 45), "1.0", glm::vec3(1.0f, 1.0f, 1.0f), 0.65f); //9
+		uiLayout.AddText(glm::vec2(35 * widthMultiplier, 134 * heightMultiplier), "", glm::vec3(1.0f, 1.0f, 1.0f), 0.65f * widthMultiplier); //7
+		uiLayout.AddText(glm::vec2(90 * widthMultiplier, 105 * heightMultiplier), "", glm::vec3(1.0f, 1.0f, 1.0f), 0.65f * widthMultiplier); //8
+		uiLayout.AddText(glm::vec2(115 * widthMultiplier, 45 * heightMultiplier), "1.0", glm::vec3(1.0f, 1.0f, 1.0f), 0.65f * widthMultiplier); //9
 
 		//Dash cooldown
-		uiLayout.AddText(glm::vec2(200, 40), "0.0", glm::vec3(1.0f, 1.0f, 1.0f), 0.65f); //10
+		uiLayout.AddText(glm::vec2(200 * widthMultiplier, 40 * heightMultiplier), "0.0", glm::vec3(1.0f, 1.0f, 1.0f), 0.65f * widthMultiplier); //10
 
 		//Item cooldown
-		float offsetx2 = 50;
-		uiLayout.AddText(hpPotionCooldown, "1.0", glm::vec3(1.0f, 1.0f, 1.0f), 0.75f); //11
-		uiLayout.AddText(spPotionCooldown, "2.0", glm::vec3(1.0f, 1.0f, 1.0f), 0.75f); //12
-		uiLayout.AddText(baitCooldown, "3.0", glm::vec3(1.0f, 1.0f, 1.0f), 0.0f); //13
+		float offsetx2 = 50 * widthMultiplier;
+		uiLayout.AddText(hpPotionCooldown, "1.0", glm::vec3(1.0f, 1.0f, 1.0f), 0.75f * widthMultiplier); //11
+		uiLayout.AddText(spPotionCooldown, "2.0", glm::vec3(1.0f, 1.0f, 1.0f), 0.75f * widthMultiplier); //12
+		uiLayout.AddText(baitCooldown, "3.0", glm::vec3(1.0f, 1.0f, 1.0f), 0.0f * widthMultiplier); //13
 
 		//Controls info
-		float controlsInfoSize = 0.5f;
-		float controlsInfoSize2 = 0.30f;
+		float controlsInfoSize = 0.5f * widthMultiplier;
+		float controlsInfoSize2 = 0.30f * widthMultiplier;
 		//Attacks
-		uiLayout.AddText(glm::vec2(30, 150 + 15), "[SPACE]", glm::vec3(1.0f, 1.0f, 0.75f), controlsInfoSize2); //14
-		uiLayout.AddText(glm::vec2(80, 100 + 35), "[R-MOUSE]", glm::vec3(1.0f, 1.0f, 0.75f), controlsInfoSize2); //15
-		uiLayout.AddText(glm::vec2(105, 40 + 35), "[L-MOUSE]", glm::vec3(1.0f, 1.0f, 0.75f), controlsInfoSize2); //16
+		uiLayout.AddText(glm::vec2(30 * widthMultiplier, 150 * heightMultiplier + 15), "[SPACE]", glm::vec3(1.0f, 1.0f, 0.75f), controlsInfoSize2); //14
+		uiLayout.AddText(glm::vec2(80 * widthMultiplier, 100 * heightMultiplier + 35), "[R-MOUSE]", glm::vec3(1.0f, 1.0f, 0.75f), controlsInfoSize2); //15
+		uiLayout.AddText(glm::vec2(105 * widthMultiplier, 40 * heightMultiplier + 35), "[L-MOUSE]", glm::vec3(1.0f, 1.0f, 0.75f), controlsInfoSize2); //16
 
 		//Dash
-		uiLayout.AddText(glm::vec2(240, 40 + 35), "[SHIFT]", glm::vec3(1.0f, 1.0f, 0.75f), controlsInfoSize2); //17
+		uiLayout.AddText(glm::vec2(240 * widthMultiplier, 40 * heightMultiplier + 35), "[SHIFT]", glm::vec3(1.0f, 1.0f, 0.75f), controlsInfoSize2); //17
 
 		//Items
 		uiLayout.AddText(hpPotionControl, "[1]", glm::vec3(1.0f, 1.0f, 0.75f), controlsInfoSize2); //18
 		uiLayout.AddText(spPotionControl, "[2]", glm::vec3(1.0f, 1.0f, 0.75f), controlsInfoSize2); //19
 		uiLayout.AddText(baitControl, "[Q]", glm::vec3(1.0f, 1.0f, 0.75f), controlsInfoSize2); //20
 
-		uiLayout.AddSprite(glm::vec2(960 / 1.5f, 540 / 1.5f), glm::vec2(16 * 1.6, 9 * 1.6f), "fearEffect", glm::vec4(0.0f, 0.0f, 0.0f, 0.75f)); // 0
+		uiLayout.AddSprite(glm::vec2((windowWidth / 2), (windowHeight / 2)), glm::vec2(16 * 1.6 * windowHeight, 9 * 1.6f * heightMultiplier), "fearEffect", glm::vec4(0.0f, 0.0f, 0.0f, 0.75f)); // 0
 
 		//Weapon
-		glm::vec2 attackScale = glm::vec2(0.75, 0.75);
+		glm::vec2 attackScale = glm::vec2(0.75 * widthMultiplier, 0.75 * heightMultiplier);
 
 		//Unlocked = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f)
 		//Cooldown =  glm::vec4(0.1f, 0.1f, 0.1f, 0.90f)
@@ -290,25 +327,25 @@ namespace MCS
 
 		if (weaponComp.Type == Frosty::ECS::CWeapon::WeaponType::Bow)
 		{
-			uiLayout.AddSprite(glm::vec2(55.0f, 75.0f), glm::vec2(1, 1), "attackRanged", glm::vec4(1.0f));// 1
-			uiLayout.AddSprite(glm::vec2(130, 50.0f), attackScale, "attackRanged1", glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));// 2
-			uiLayout.AddSprite(glm::vec2(105, 110.0f), attackScale, "attackRanged2", glm::vec4(0.1f, 0.1f, 0.1f, 0.50f));// 3
-			uiLayout.AddSprite(glm::vec2(50.0f, 140.0f), attackScale, "attackRanged3", glm::vec4(0.1f, 0.1f, 0.1f, 0.50f));// 4
+			uiLayout.AddSprite(glm::vec2(55.0f * widthMultiplier, 75.0f * heightMultiplier), glm::vec2(widthMultiplier, heightMultiplier), "attackRanged", glm::vec4(1.0f));// 1
+			uiLayout.AddSprite(glm::vec2(130 * widthMultiplier, 50.0f * heightMultiplier), attackScale, "attackRanged1", glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));// 2
+			uiLayout.AddSprite(glm::vec2(105 * widthMultiplier, 110.0f * heightMultiplier), attackScale, "attackRanged2", glm::vec4(0.1f, 0.1f, 0.1f, 0.50f));// 3
+			uiLayout.AddSprite(glm::vec2(50.0f * widthMultiplier, 140.0f * heightMultiplier), attackScale, "attackRanged3", glm::vec4(0.1f, 0.1f, 0.1f, 0.50f));// 4
 
 		}
 		else
 		{
-			uiLayout.AddSprite(glm::vec2(55.0f, 75.0f), glm::vec2(1, 1), "attackMelee", glm::vec4(1.0f));// 1
-			uiLayout.AddSprite(glm::vec2(130, 50.0f), attackScale, "attackMelee1", glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));// 2
-			uiLayout.AddSprite(glm::vec2(105, 110.0f), attackScale, "attackMelee2", glm::vec4(0.1f, 0.1f, 0.1f, 0.50f));// 3
-			uiLayout.AddSprite(glm::vec2(50.0f, 140.0f), attackScale, "attackMelee3", glm::vec4(0.1f, 0.1f, 0.1f, 0.50f));// 4
+			uiLayout.AddSprite(glm::vec2(55.0f * widthMultiplier, 75.0f * heightMultiplier), glm::vec2(widthMultiplier, heightMultiplier), "attackMelee", glm::vec4(1.0f));// 1
+			uiLayout.AddSprite(glm::vec2(130 * widthMultiplier, 50.0f * heightMultiplier), attackScale, "attackMelee1", glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));// 2
+			uiLayout.AddSprite(glm::vec2(105 * widthMultiplier, 110.0f * heightMultiplier), attackScale, "attackMelee2", glm::vec4(0.1f, 0.1f, 0.1f, 0.50f));// 3
+			uiLayout.AddSprite(glm::vec2(50.0f * widthMultiplier, 140.0f * heightMultiplier), attackScale, "attackMelee3", glm::vec4(0.1f, 0.1f, 0.1f, 0.50f));// 4
 		}
 
-		int elementXOffset = 30;
-		int elementyOffset = 30;
-		int elementPadding = 20;
+		int elementXOffset = 30 * widthMultiplier;
+		int elementyOffset = 30 * heightMultiplier;
+		int elementPadding = 20 * widthMultiplier;
 
-		glm::vec2 elementScale = glm::vec2(0.5, 0.5);
+		glm::vec2 elementScale = glm::vec2(0.5 * widthMultiplier, 0.5 * heightMultiplier);
 
 		//Element
 		//Normal
@@ -324,19 +361,19 @@ namespace MCS
 		//uiLayout.AddSprite(glm::vec2(elementXOffset + elementPadding * 2, elementyOffset), elementScale, "elementWaterEmpty", glm::vec4(0.1f, 0.1f, 0.1f, 0.50f));// 7
 		//uiLayout.AddSprite(glm::vec2(elementXOffset + elementPadding * 3, elementyOffset), elementScale, "elementWindEmpty", glm::vec4(0.1f, 0.1f, 0.1f, 0.50f));// 8
 
-		uiLayout.AddSprite(hpPotionSprite, glm::vec2(1, 1), "hpPotion", glm::vec4(1.0f));// 9
-		uiLayout.AddSprite(spPotionSprite, glm::vec2(1, 1), "spPotion", glm::vec4(1.0f));// 10
-		uiLayout.AddSprite(baitSprite, glm::vec2(1, 1), "bait", glm::vec4(1.0f));// 11
-		uiLayout.AddSprite(wolfsbainSprite, glm::vec2(1, 1), "wolfsbane", glm::vec4(1.0f));// 12
+		uiLayout.AddSprite(hpPotionSprite, glm::vec2(1 * widthMultiplier, 1 * heightMultiplier), "hpPotion", glm::vec4(1.0f));// 9
+		uiLayout.AddSprite(spPotionSprite, glm::vec2(1 * widthMultiplier, 1), "spPotion", glm::vec4(1.0f));// 10
+		uiLayout.AddSprite(baitSprite, glm::vec2(1 * widthMultiplier, 1 * heightMultiplier), "bait", glm::vec4(1.0f));// 11
+		uiLayout.AddSprite(wolfsbainSprite, glm::vec2(1 * widthMultiplier, 1 * heightMultiplier), "wolfsbane", glm::vec4(1.0f));// 12
 
 		////Need to change this sprite to a "dodge" sprite ////
-		uiLayout.AddSprite(glm::vec2(215, 45), glm::vec2(1, 1), "attackRanged3", glm::vec4(1.0f));// 13
+		uiLayout.AddSprite(glm::vec2(215 * widthMultiplier, 45 * heightMultiplier), glm::vec2(widthMultiplier, heightMultiplier), "attackRanged3", glm::vec4(1.0f));// 13
 
 		//Speed boot
-		int speedBuffXOffset = 30;
-		int speedBuffYOffset = 650;
-		int speedBuffPadding = 20;
-		glm::vec2 speedBuffScale = glm::vec2(0.75, 0.75);
+		int speedBuffXOffset = 30 * widthMultiplier;
+		int speedBuffYOffset = 650 * heightMultiplier;
+		int speedBuffPadding = 20 * widthMultiplier;
+		glm::vec2 speedBuffScale = glm::vec2(0.75 * widthMultiplier, 0.75 * heightMultiplier);
 
 		uiLayout.AddSprite(glm::vec2(speedBuffXOffset + speedBuffPadding * 0, speedBuffYOffset), speedBuffScale, "speedBoots", glm::vec4(1.0f, 1.0f, 1.0f, 0.0f));// 14
 		uiLayout.AddSprite(glm::vec2(speedBuffXOffset + speedBuffPadding * 1, speedBuffYOffset), speedBuffScale, "speedBoots", glm::vec4(1.0f, 1.0f, 1.0f, 0.0f));// 15
@@ -345,10 +382,10 @@ namespace MCS
 		uiLayout.AddSprite(glm::vec2(speedBuffXOffset + speedBuffPadding * 4, speedBuffYOffset), speedBuffScale, "speedBoots", glm::vec4(1.0f, 1.0f, 1.0f, 0.0f));// 18
 
 		//Health
-		int healthXOffset = 30;
-		int healthYOffset = 680;
-		int healthPadding = 45;
-		glm::vec2 healthScale = glm::vec2(0.75, 0.75);
+		int healthXOffset = 30 * widthMultiplier;
+		int healthYOffset = 680 * heightMultiplier;
+		int healthPadding = 45 * widthMultiplier;
+		glm::vec2 healthScale = glm::vec2(0.75 * widthMultiplier, 0.75 * heightMultiplier);
 
 		uiLayout.AddSprite(glm::vec2(healthXOffset + healthPadding * 0, healthYOffset), healthScale, "Heart_0", glm::vec4(1.0f, 1.0f, 1.0f, 0.0f));// 19
 		uiLayout.AddSprite(glm::vec2(healthXOffset + healthPadding * 1, healthYOffset), healthScale, "Heart_0", glm::vec4(1.0f, 1.0f, 1.0f, 0.0f));// 20

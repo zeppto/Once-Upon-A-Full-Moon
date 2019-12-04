@@ -17,6 +17,8 @@ namespace MCS
 		p_Signature.set(Frosty::ECS::getComponentTypeID<Frosty::ECS::CInventory>(), true);
 
 		m_World = Frosty::Application::Get().GetWorld().get();
+
+
 	}
 
 	void PlayerControllerSystem::OnInput()
@@ -270,7 +272,7 @@ namespace MCS
 			m_Physics[index]->Direction.x = 0.0f;
 			//m_Physics[index]->Velocity.x = 0.0f;
 		}
-	
+
 		if (!animController.isBusy)
 		{
 			if (Frosty::InputManager::IsKeyPressed(m_Player[index]->MoveForwardKey))
@@ -1487,21 +1489,24 @@ namespace MCS
 	{
 		if (m_World->HasComponent<Frosty::ECS::CGUI>(m_Transform[index]->EntityPtr))
 		{
+
+			ScaleHudToScreen(index);
+
 			auto& HUD = m_World->GetComponent<Frosty::ECS::CGUI>(m_Transform[index]->EntityPtr);
 
-			//if (Frosty::InputManager::IsKeyPressed(FY_KEY_P))
-			//{
-			//	/*auto& weaponComp = (m_World->GetComponent<Frosty::ECS::CWeapon>(m_Player[index]->Weapon->EntityPtr));
-			//	weaponComp.FireCriticalHitChance += 0.1f;
-			//	HUD.Layout.sprites.at(6).SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
-			//	HUD.Layout.sprites.at(6).SetTranslateSprite(glm::vec2(960 / 1.5f, (540 / 1.5f) + 200));
-			//	HUD.Layout.sprites.at(6).SetScaleSprite(glm::vec2(1.5, 1.5));
-			//	m_Player[index]->ElementDisplayTimer = Frosty::Time::CurrentTime();
+			if (Frosty::InputManager::IsKeyPressed(FY_KEY_P))
+			{
+				/*auto& weaponComp = (m_World->GetComponent<Frosty::ECS::CWeapon>(m_Player[index]->Weapon->EntityPtr));
+				weaponComp.FireCriticalHitChance += 0.1f;
+				HUD.Layout.sprites.at(6).SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+				HUD.Layout.sprites.at(6).SetTranslateSprite(glm::vec2(960 / 1.5f, (540 / 1.5f) + 200));
+				HUD.Layout.sprites.at(6).SetScaleSprite(glm::vec2(1.5, 1.5));
+				m_Player[index]->ElementDisplayTimer = Frosty::Time::CurrentTime();
 
-			//	SetPickUpText(index, "tjena");*/
+				SetPickUpText(index, "tjena");*/
 
-			//	Frosty::EventBus::GetEventBus()->Publish<Frosty::UpgradeWeaponEvent>(Frosty::UpgradeWeaponEvent());
-			//}
+				Frosty::EventBus::GetEventBus()->Publish<Frosty::UpgradeWeaponEvent>(Frosty::UpgradeWeaponEvent());
+			}
 
 
 			//Items
@@ -1844,12 +1849,12 @@ namespace MCS
 					float percentage = (Frosty::Time::CurrentTime() - m_Player[index]->ElementMoveTimer) / m_Player[index]->ElementMoveTime;
 
 
-					glm::vec2 posA{ 960 / 1.5f, (540 / 1.5f) + 150 };
-					glm::vec2 posB{ 30,30 };
+					glm::vec2 posA{ m_WindowWidth / 2, (m_WindowHeight / 2) + 150 * m_HeightMultiplier };
+					glm::vec2 posB{ 30 * m_WidthMultiplier,30 * m_HeightMultiplier };
 					glm::vec2 posDif = posA - posB;
 
-					glm::vec2 scaleA{ 1.5, 1.5 };
-					glm::vec2 scaleB{ 0.5, 0.5 };
+					glm::vec2 scaleA{ 1.5 * m_WidthMultiplier, 1.5 * m_HeightMultiplier };
+					glm::vec2 scaleB{ 0.5 * m_WidthMultiplier, 0.5 * m_HeightMultiplier };
 					glm::vec2 scaleDif = scaleA - scaleB;
 
 					HUD.Layout.sprites.at(5).SetTranslateSprite(posA - posDif * percentage);
@@ -1860,8 +1865,8 @@ namespace MCS
 				else
 				{
 					HUD.Layout.sprites.at(5).SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
-					HUD.Layout.sprites.at(5).SetTranslateSprite(glm::vec2(30, 30));
-					HUD.Layout.sprites.at(5).SetScaleSprite(glm::vec2(0.5, 0.5));
+					HUD.Layout.sprites.at(5).SetTranslateSprite(glm::vec2(30 * m_WidthMultiplier, 30 * m_HeightMultiplier));
+					HUD.Layout.sprites.at(5).SetScaleSprite(glm::vec2(0.5 * m_WidthMultiplier, 0.5 * m_HeightMultiplier));
 					m_Player[index]->Weapon->HasDoneEarthSprite = true;
 				}
 
@@ -1880,12 +1885,12 @@ namespace MCS
 					float percentage = (Frosty::Time::CurrentTime() - m_Player[index]->ElementMoveTimer) / m_Player[index]->ElementMoveTime;
 
 
-					glm::vec2 posA{ 960 / 1.5f, (540 / 1.5f) + 150 };
-					glm::vec2 posB{ 50,30 };
+					glm::vec2 posA{ m_WindowWidth / 2, (m_WindowHeight / 2) + 150 * m_HeightMultiplier };
+					glm::vec2 posB{ 50 * m_WidthMultiplier,30 * m_HeightMultiplier };
 					glm::vec2 posDif = posA - posB;
 
-					glm::vec2 scaleA{ 1.5, 1.5 };
-					glm::vec2 scaleB{ 0.5, 0.5 };
+					glm::vec2 scaleA{ 1.5 * m_WidthMultiplier, 1.5 * m_HeightMultiplier };
+					glm::vec2 scaleB{ 0.5 * m_WidthMultiplier, 0.5 * m_HeightMultiplier };
 					glm::vec2 scaleDif = scaleA - scaleB;
 
 					HUD.Layout.sprites.at(6).SetTranslateSprite(posA - posDif * percentage);
@@ -1896,8 +1901,8 @@ namespace MCS
 				else
 				{
 					HUD.Layout.sprites.at(6).SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
-					HUD.Layout.sprites.at(6).SetTranslateSprite(glm::vec2(50, 30));
-					HUD.Layout.sprites.at(6).SetScaleSprite(glm::vec2(0.5, 0.5));
+					HUD.Layout.sprites.at(6).SetTranslateSprite(glm::vec2(50 * m_WidthMultiplier, 30 * m_HeightMultiplier));
+					HUD.Layout.sprites.at(6).SetScaleSprite(glm::vec2(0.5 * m_WidthMultiplier, 0.5 * m_HeightMultiplier));
 					m_Player[index]->Weapon->HasDoneFireSprite = true;
 				}
 			}
@@ -1914,12 +1919,12 @@ namespace MCS
 					float percentage = (Frosty::Time::CurrentTime() - m_Player[index]->ElementMoveTimer) / m_Player[index]->ElementMoveTime;
 
 
-					glm::vec2 posA{ 960 / 1.5f, (540 / 1.5f) + 150 };
-					glm::vec2 posB{ 70,30 };
+					glm::vec2 posA{ m_WindowWidth / 2, (m_WindowHeight / 2) + 150 * m_HeightMultiplier };
+					glm::vec2 posB{ 70 * m_WidthMultiplier,30 * m_HeightMultiplier };
 					glm::vec2 posDif = posA - posB;
 
-					glm::vec2 scaleA{ 1.5, 1.5 };
-					glm::vec2 scaleB{ 0.5, 0.5 };
+					glm::vec2 scaleA{ 1.5 * m_WidthMultiplier, 1.5 * m_HeightMultiplier };
+					glm::vec2 scaleB{ 0.5 * m_WidthMultiplier, 0.5 * m_HeightMultiplier };
 					glm::vec2 scaleDif = scaleA - scaleB;
 
 					HUD.Layout.sprites.at(7).SetTranslateSprite(posA - posDif * percentage);
@@ -1930,8 +1935,8 @@ namespace MCS
 				else
 				{
 					HUD.Layout.sprites.at(7).SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
-					HUD.Layout.sprites.at(7).SetTranslateSprite(glm::vec2(70, 30));
-					HUD.Layout.sprites.at(7).SetScaleSprite(glm::vec2(0.5, 0.5));
+					HUD.Layout.sprites.at(7).SetTranslateSprite(glm::vec2(70 * m_WidthMultiplier, 30 * m_HeightMultiplier));
+					HUD.Layout.sprites.at(7).SetScaleSprite(glm::vec2(0.5 * m_WidthMultiplier, 0.5 * m_HeightMultiplier));
 					m_Player[index]->Weapon->HasDoneWaterSprite = true;
 				}
 			}
@@ -1948,12 +1953,12 @@ namespace MCS
 					float percentage = (Frosty::Time::CurrentTime() - m_Player[index]->ElementMoveTimer) / m_Player[index]->ElementMoveTime;
 
 
-					glm::vec2 posA{ 960 / 1.5f, (540 / 1.5f) + 150 };
-					glm::vec2 posB{ 90,30 };
+					glm::vec2 posA{ m_WindowWidth / 2, (m_WindowHeight / 2) + 150 * m_HeightMultiplier };
+					glm::vec2 posB{ 90 * m_WidthMultiplier,30 * m_HeightMultiplier };
 					glm::vec2 posDif = posA - posB;
 
-					glm::vec2 scaleA{ 1.5, 1.5 };
-					glm::vec2 scaleB{ 0.5, 0.5 };
+					glm::vec2 scaleA{ 1.5 * m_WidthMultiplier, 1.5 * m_HeightMultiplier };
+					glm::vec2 scaleB{ 0.5 * m_WidthMultiplier, 0.5 * m_HeightMultiplier };
 					glm::vec2 scaleDif = scaleA - scaleB;
 
 					HUD.Layout.sprites.at(8).SetTranslateSprite(posA - posDif * percentage);
@@ -1964,8 +1969,8 @@ namespace MCS
 				else
 				{
 					HUD.Layout.sprites.at(8).SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
-					HUD.Layout.sprites.at(8).SetTranslateSprite(glm::vec2(90, 30));
-					HUD.Layout.sprites.at(8).SetScaleSprite(glm::vec2(0.5, 0.5));
+					HUD.Layout.sprites.at(8).SetTranslateSprite(glm::vec2(90 * m_WidthMultiplier, 30 * m_HeightMultiplier));
+					HUD.Layout.sprites.at(8).SetScaleSprite(glm::vec2(0.5 * m_WidthMultiplier, 0.5 * m_HeightMultiplier));
 					m_Player[index]->Weapon->HasDoneWindSprite = true;
 				}
 			}
@@ -2003,15 +2008,16 @@ namespace MCS
 	void PlayerControllerSystem::SetPickUpText(size_t index, std::string text)
 	{
 
-	
-		float posX = (960 / 1.5f) - (text.size()/2) * 11;
+
+		float posX = (Frosty::Application::Get().GetWindow().GetWidth() / 2) - (text.size() / 2) * 11 * m_WidthMultiplier;
 
 		if (m_World->HasComponent<Frosty::ECS::CGUI>(m_Transform[index]->EntityPtr))
 		{
 			auto& HUD = m_World->GetComponent<Frosty::ECS::CGUI>(m_Transform[index]->EntityPtr);
 
 			HUD.Layout.texts.at(6).SetText(text);
-			HUD.Layout.texts.at(6).SetPosition(glm::vec2(posX, HUD.Layout.texts.at(6).GetPosition().y));
+			HUD.Layout.texts.at(6).SetScale(glm::vec2(0.75f * m_WidthMultiplier, 0.75f * m_HeightMultiplier));
+			HUD.Layout.texts.at(6).SetPosition(glm::vec2(posX, 425 * m_HeightMultiplier));
 
 			m_Player[index]->PickUpTextTimer = Frosty::Time::CurrentTime();
 		}
@@ -2034,6 +2040,100 @@ namespace MCS
 
 			m_Player[i]->DamageEffectTimer = Frosty::Time::CurrentTime();
 		}
+
+	}
+
+	void PlayerControllerSystem::ScaleHudToScreen(size_t index)
+	{
+		//Get right scale
+		float width = Frosty::Application::Get().GetWindow().GetWidth();
+		float height = Frosty::Application::Get().GetWindow().GetHeight();
+
+
+		if (width == 1280 || height == 720)
+		{
+			int test = 0;
+		}
+		else
+		{
+			int test2= 0;
+
+		}
+		m_WindowWidth = width;
+		m_WindowHeight = height;
+
+		m_WidthMultiplier = m_WindowWidth / 1280;
+		m_HeightMultiplier = m_WindowHeight / 720;
+
+		
+
+
+		if (m_LastWidthtMultiplier == 0 || m_LastHeightMultiplier == 0)
+		{
+
+			
+
+			m_LastWidthtMultiplier = m_WidthMultiplier;
+			m_LastHeightMultiplier = m_HeightMultiplier;
+
+			
+
+		}
+		else
+		{
+		
+
+			m_WidthMultiplier = m_WidthMultiplier / m_LastWidthtMultiplier;
+			m_HeightMultiplier = m_HeightMultiplier / m_LastHeightMultiplier;
+
+			m_LastWidthtMultiplier = m_WindowWidth / 1280;
+			m_LastHeightMultiplier = m_WindowHeight / 720;
+		}
+
+
+
+
+		
+
+		/*if (m_WidthMultiplier != 1 || m_HeightMultiplier != 1)
+		{*/
+			//m_LastWidthtMultiplier = m_WidthMultiplier;
+			//m_LastHeightMultiplier = m_HeightMultiplier;
+
+
+			auto& HUD = m_World->GetComponent<Frosty::ECS::CGUI>(m_Transform[index]->EntityPtr);
+
+			//Texts
+			for (size_t i = 0; i < HUD.Layout.texts.size(); i++)
+			{
+				HUD.Layout.texts.at(i).SetPosition(glm::vec2(HUD.Layout.texts.at(i).GetPosition().x * m_WidthMultiplier, HUD.Layout.texts.at(i).GetPosition().y * m_HeightMultiplier));
+				HUD.Layout.texts.at(i).SetFontScale(HUD.Layout.texts.at(i).GetFontScale() * m_WidthMultiplier);
+			}
+
+			//Sprite
+			for (size_t i = 0; i < HUD.Layout.sprites.size(); i++)
+			{
+				float scaleX = HUD.Layout.sprites.at(i).GetScaleSprite().x;
+				scaleX *= m_WidthMultiplier;
+				
+				float scaleY = HUD.Layout.sprites.at(i).GetScaleSprite().y;
+				scaleY *= m_HeightMultiplier;
+
+				float posX = HUD.Layout.sprites.at(i).GetTranslateSprite().x;
+				posX *= m_WidthMultiplier;
+
+				float posY = HUD.Layout.sprites.at(i).GetTranslateSprite().y;
+				posY *= m_HeightMultiplier;
+
+				//Sprites diasapear when doing this, dont know why...
+			//	HUD.Layout.sprites.at(i).SetScaleSprite(glm::vec2(scaleX, scaleY));
+			//	HUD.Layout.sprites.at(i).SetTranslateSprite(glm::vec2(posX, posY));
+			}
+		//}
+
+
+
+
 
 	}
 }

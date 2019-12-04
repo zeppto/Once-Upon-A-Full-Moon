@@ -63,7 +63,7 @@ namespace MCS
 		void SetPickUpText(size_t index, std::string text);
 		void ResetAllHUDWeaponInfo(size_t index);
 		void OnDamage();
-
+		void ScaleHudToScreen(size_t index);
 
 	private:
 		std::array<Frosty::ECS::CTransform*, Frosty::ECS::MAX_ENTITIES_PER_COMPONENT> m_Transform;
@@ -76,6 +76,14 @@ namespace MCS
 		Frosty::World* m_World{ nullptr };
 
 		bool m_keyPressed{ false };
+
+		float m_HeightMultiplier{ 0.0f };
+		float m_WidthMultiplier{ 0.0f };
+		float m_LastHeightMultiplier{ 0.0f };
+		float m_LastWidthtMultiplier{ 0.0f };
+
+		float m_WindowWidth = { 0.0f };
+		float m_WindowHeight = { 0.0f };
 
 	};
 }
