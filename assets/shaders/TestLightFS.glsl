@@ -1,69 +1,148 @@
-#version 440
+#version 440 core
 
-out vec4 finalColor;
-
-in vec3 worldPos;
-in vec3 fragColor;
+layout(location = 0) out vec4 color;
 
 struct PointLight
 {
-	vec3 position;
-	vec4 color;
-	float strength;
-	vec2 linear_Quadratic;
+	vec3 Color;
+	vec3 Position;
+	float Radius;
+	float Strength;
 };
+uniform int u_TotalPointLights;
+uniform PointLight u_PointLights[10];
 
-struct DirLight
+struct DirectionalLight
 {
-	vec4 color;
-	float strength;
-	vec3 direction;
+	vec3 Color;
+	vec3 Direction;
+	float Strength;
 };
+uniform int u_TotalDirectionalLights;
+uniform DirectionalLight u_DirectionalLights[10];
 
-// MAX 1024 uniforms / shader
-layout(location = 3) uniform uint nrOfPointLights;
-layout(location = 100) uniform uint nrOfDirLights;
-layout(location = 300) uniform PointLight pointLights[2];
-layout(location = 500) uniform DirLight dirLights[2];
-
-vec3 CalcPointLight(PointLight light, vec3 normal, vec3 fragPos)
+struct ForwardPlus
 {
-    vec3 lightDir = normalize(light.position - fragPos);
-    float diff = max(dot(normal, lightDir), 0.0);
-    float distance = length(light.position - fragPos);
-	float attenuation = 1.0 / (1.f + light.linear_Quadratic.x * distance + light.linear_Quadratic.y * (distance * distance));
-	vec3 diffuse = fragColor * light.color.rgb * diff * light.strength * attenuation /*(1.f/distance)*/;
+	int LightIndexList[3000];
+	vec2 CellLightInfo[256];
+};
+uniform ForwardPlus forwardPlus;
 
-	return (diffuse);
-}
+uniform vec3 u_CameraPosition;
+uniform vec4 u_ObjectColor;
+uniform float u_SpecularStrength;
+uniform int u_Shininess;
 
-vec3 CalcDirLight(DirLight light, vec3 normal)
-{
-	vec3 lightDir = normalize(-light.direction);
-	float diff = max(dot(normal, lightDir), 0.0);
-	vec3 diffuse = fragColor * light.color.rgb * diff * light.strength;
+in vec3 v_FragPosition;
+in vec3 v_Normal;
+in vec4 v_MVP_Position;
 
-	return (diffuse);
-}
+vec3 CalculatePointLight(PointLight light);
+vec3 CalculateDirectionalLight(DirectionalLight light);
 
 void main()
 {
-	vec4 ambient = vec4(0.2f, 0.2f, 0.2f, 1.f);
-	vec3 normal = vec3(0.f, 0.f, 1.f);
-	vec3 result;
+	vec3 result = vec3(0.1f, 0.1f, 0.5f);
 
-	// Calc Point Lights
-	for(int i = 0; i < nrOfPointLights; i++)
-	{
-		result += CalcPointLight(pointLights[i], normal, worldPos);
-	}
-	// Calc Dir Lights
-	for(int i = 0; i < nrOfDirLights; i++)
-	{
-		result += CalcDirLight(dirLights[i], normal);
-	}
-	// Add Ambient Light
-	result + vec3(ambient);
+	vec3 NDC = v_MVP_Position.xyz / v_MVP_Position.w;					// Perspective divide/normalize
+	vec2 viewportCoord = NDC.xy * 0.5 + 0.5;							// NDC is -1 to 1 in GL. scale for 0 to 1
+	vec2 viewportPixelCoord;
 
-	finalColor = vec4(result, 1.f);
+	int cellLocation = (16 * int(floor(gl_FragCoord.y / 62.5f))) + int(floor(gl_FragCoord.x / 120.f));	// (gridSize * minY * cellHeight) + minX / cellWidth
+//	int cellLocation = int(16 * floor(16 * viewportCoord.y) + floor(16 * viewportCoord.x));
+	if (cellLocation >= 0 && cellLocation <= 255)
+	{
+		// CellLocation x = offset		CellLocation y = size
+		for(int i = int(forwardPlus.CellLightInfo[cellLocation].x); i < int(forwardPlus.CellLightInfo[cellLocation].x) + int(forwardPlus.CellLightInfo[cellLocation].y); i++)
+		{
+			result += CalculatePointLight(u_PointLights[forwardPlus.LightIndexList[i]]);
+		}
+	}
+	color = vec4(result, 1.f);
+
+
+	// <<< HEAT MAP >>>
+
+//	if (cellLocation >= 0 && cellLocation <= 255)
+//	{
+//		if(forwardPlus.CellLightInfo[cellLocation].y == 1)
+//		{
+//			color = vec4(0.f, 0.5f, 0.f, 1.f);
+//		}
+//		else if (forwardPlus.CellLightInfo[cellLocation].y == 2)
+//		{
+//			color = vec4(0.1f, 0.7f, 0.f, 1.f);
+//		}
+//		else if (forwardPlus.CellLightInfo[cellLocation].y == 3)
+//		{
+//			color = vec4(0.4f, 1.f, 0.f, 1.f);
+//		}
+//		else if (forwardPlus.CellLightInfo[cellLocation].y == 4)
+//		{
+//			color = vec4(0.7f, 1.f, 0.f, 1.f);
+//		}
+//		else if (forwardPlus.CellLightInfo[cellLocation].y == 5)
+//		{
+//			color = vec4(1.f, 1.f, 0.f, 1.f);
+//		}
+//		else if (forwardPlus.CellLightInfo[cellLocation].y == 6)
+//		{
+//			color = vec4(1.f, 0.7f, 0.f, 1.f);
+//		}
+//		else if (forwardPlus.CellLightInfo[cellLocation].y == 7)
+//		{
+//			color = vec4(1.f, 0.4f, 0.f, 1.f);
+//		}
+//		else if (forwardPlus.CellLightInfo[cellLocation].y == 8)
+//		{
+//			color = vec4(1.f, 0.0f, 0.f, 1.f);
+//		}
+//		else if (forwardPlus.CellLightInfo[cellLocation].y == 9)
+//		{
+//			color = vec4(1.f, 0.0f, 0.5f, 1.f);
+//		}
+//		else if (forwardPlus.CellLightInfo[cellLocation].y == 0)
+//		{
+//			color = vec4(0.f, 0.f, 0.f, 1.f);
+//		}
+//	}
+}
+
+
+vec3 CalculatePointLight(PointLight light)
+{
+	// Attenuation
+	float dist = length(light.Position - v_FragPosition);
+	float attenuation = smoothstep(light.Radius * 2, -1, dist);
+
+	// Ambient
+	float ambientStrength = 0.1;
+	vec3 ambient = ambientStrength * light.Color * attenuation;
+
+	// Diffuse
+	vec3 normal = normalize(v_Normal);
+	vec3 lightDir = normalize(light.Position - v_FragPosition);
+	vec3 diffuse = max(dot(normal, lightDir), 0.0) * light.Color * attenuation * light.Strength;
+	
+	// Specular
+	vec3 viewDir = normalize(u_CameraPosition - v_FragPosition);
+	vec3 reflectDir = reflect(-lightDir, normal);
+	float spec = pow(max(dot(viewDir, reflectDir), 0.0), u_Shininess);
+	vec3 specular = u_SpecularStrength * spec * light.Color * attenuation;
+
+	return (ambient + diffuse + specular);
+}
+
+vec3 CalculateDirectionalLight(DirectionalLight light)
+{
+	// Ambient
+	float ambientStrength = 0.1;
+	vec3 ambient = ambientStrength * light.Color;
+
+	// Diffuse
+	vec3 normal = normalize(v_Normal);
+	vec3 lightDir = normalize(-light.Direction);
+	vec3 diffuse = max(dot(normal, lightDir), 0.0) * light.Color * light.Strength;
+
+	return ambient + diffuse;
 }
