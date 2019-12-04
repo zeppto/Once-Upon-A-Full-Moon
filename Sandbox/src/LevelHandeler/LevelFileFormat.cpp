@@ -1092,7 +1092,7 @@ namespace MCS
 	}
 	int LevelFileFormat::NumberOfRoomsVisited()
 	{
-		return m_VisitedRooms.size();
+		return (int)m_VisitedRooms.size();
 	}
 	bool LevelFileFormat::AddBaitToMap(glm::vec3 baitPos, glm::ivec2 room)
 	{
@@ -1113,7 +1113,7 @@ namespace MCS
 		{
 			if (m_VisitedRooms.at(i).myRoomId == room)
 			{
-				toReturn = m_VisitedRooms.at(i).addedBait.size();
+				toReturn = (int)m_VisitedRooms.at(i).addedBait.size();
 				m_VisitedRooms.at(i).addedBait.clear();
 			}
 		}

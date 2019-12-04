@@ -166,7 +166,7 @@ namespace MCS
 						}
 						if (m_BossRememberdPath.expectedPlayerPos == m_BossPos)
 						{
-							int timeToEate = (5.0f * m_LevelFileFormat.RemoveAllBaitInRoom(m_BossPos));
+							float timeToEate = (5.0f * m_LevelFileFormat.RemoveAllBaitInRoom(m_BossPos));
 							m_BossTimer += timeToEate;
 							for (int i = 0; i < m_RoomswhithBait.size(); i++)
 							{
