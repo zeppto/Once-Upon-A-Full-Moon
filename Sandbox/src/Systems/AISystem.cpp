@@ -289,18 +289,19 @@ namespace MCS
 				m_World->AddComponent<Frosty::ECS::CAttack>(attack, Frosty::ECS::CAttack::AttackType::Range, (int)m_Enemy[index]->Weapon->Damage, false, m_Enemy[index]->Weapon->Lifetime);
 				physComp.Direction = direction;
 
-				auto& particles = m_World->AddComponent<Frosty::ECS::CParticleSystem>(attack, "Particles", "particle", 30, glm::vec3(1.0f, 0.0f, 0.0f), 4.0f);
-				particles.ParticleSystemDirection = glm::vec3(0.0f, 0.0f, -1.0f);
+				auto& particles = m_World->AddComponent<Frosty::ECS::CParticleSystem>(attack, "Particles", "particle", 30, glm::vec3(1.0f, 0.0f, 0.0f), 2.0f);
+				particles.ParticleSystemDirection = glm::vec3(-1.0f, 0.0f, 0.0f);
 				particles.randMainDir = particles.ParticleSystemDirection;
 				particles.StartParticleSize = 2.5f;
 				particles.EndParticleSize = 0.4f;
 				particles.EmitCount = 1;
-				particles.EmitRate = 0.1f;
-				particles.MaxLifetime = 2.0f;
-				particles.FadeInTreshold = 1.7f;
-				particles.FadeTreshold = 0.6f;
+				particles.EmitRate = 0.0f; //Emit every frame
+				particles.MaxLifetime = 0.13f;
+				particles.FadeInTreshold = 0.13f;
+				particles.FadeTreshold = 0.02f;
 				particles.StaticColor = false;
 				particles.SystemEndColor = glm::vec3(0.6f, 0.4f, 0.0f);
+				particles.HasGravity = true;
 			}
 			else
 			{
