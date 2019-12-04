@@ -66,7 +66,7 @@ namespace MCS
 
 			if (m_Dash[i]->Active)
 			{
-				m_Dash[i]->DistanceDashed += glm::length(m_Physics[i]->Direction * m_Physics[i]->Speed * m_Dash[i]->SpeedMultiplier * Frosty::Time::DeltaTime());
+				m_Dash[i]->DistanceDashed += glm::length(m_Physics[i]->Direction * (m_Physics[i]->Speed * m_Dash[i]->SpeedMultiplier) * Frosty::Time::DeltaTime());
 				if (m_Dash[i]->DistanceDashed >= m_Dash[i]->DISTANCE / 1000.0f)
 				{
 					m_Dash[i]->Active = false;
@@ -74,7 +74,7 @@ namespace MCS
 				}
 				else
 				{
-					m_Transform[i]->Position += m_Dash[i]->SpeedMultiplier * glm::normalize(m_Physics[i]->Direction); /*(m_Physics[i]->Direction * m_Physics[i]->Speed) * m_Physics[i]->SpeedMultiplier;*/
+					m_Transform[i]->Position += glm::normalize(m_Physics[i]->Direction) * (m_Physics[i]->Speed * m_Dash[i]->SpeedMultiplier) * Frosty::Time::DeltaTime();
 				}
 			}
 			//m_Transform[i]->Position.y = 0.f;
@@ -302,8 +302,6 @@ namespace MCS
 					{
 						m_Dash[index]->Active = true;
 						Frosty::EventBus::GetEventBus()->Publish<Frosty::DashEvent>(Frosty::DashEvent(m_Player[index]->EntityPtr));
-						//m_Physics[index]->Velocity *= m_Dash[index]->SpeedMultiplier;
-						m_Physics[index]->SpeedMultiplier = m_Dash[index]->SpeedMultiplier;
 						m_Dash[index]->CurrentCooldown = m_Dash[index]->COOLDOWN / 1000.0f;
 					}
 				}

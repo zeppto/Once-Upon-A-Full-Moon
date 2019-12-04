@@ -863,7 +863,7 @@ namespace Frosty
 			static const int DISTANCE = 7000;
 			bool Active{ false };
 			float CurrentCooldown{ 0.0f };
-			float DistanceDashed{ 7.0f };
+			float DistanceDashed{ 0.0f };
 			float SpeedMultiplier{ 3.0f };
 
 			CDash() = default;
