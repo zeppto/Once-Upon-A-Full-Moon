@@ -11,11 +11,13 @@ uniform mat4 u_Transform;
 
 out vec3 v_FragPosition;
 out vec3 v_Normal;
+out vec4 v_MVP_Position;
 
 void main()
 {
 	v_FragPosition = vec3(u_Transform * vec4(a_Position, 1.0));
 	v_Normal = mat3(transpose(inverse(u_Transform))) * a_Normal;		// Oldie but goldie
 	//v_Normal = normalize(vec3(u_Transform) * a_Normal);
+	v_MVP_Position = u_ViewProjection * u_Transform * vec4(a_Position, 1.0f);
 	gl_Position = u_ViewProjection * u_Transform * vec4(a_Position, 1.0f);
 }

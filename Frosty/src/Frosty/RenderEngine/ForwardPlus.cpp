@@ -111,12 +111,9 @@ namespace Frosty
 				{
 					//pos.emplace_back(i);
 
-					//for (int j = 0; j < 16; j++)
-					//{
-						m_CellLightsInfo[i].Offset = offsetCounter;		// Find better place, it becomes repetative and uneccesary	~ W-_-W ~
-						size++;
-						m_LightIndexList.emplace_back(counter);
-					//}
+					m_CellLightsInfo[i].Offset = offsetCounter;		// Find better place, it becomes repetative and uneccesary	~ W-_-W ~
+					size++;
+					m_LightIndexList.emplace_back(counter);
 				}
 				counter++;
 			}

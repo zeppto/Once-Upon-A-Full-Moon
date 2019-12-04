@@ -20,6 +20,7 @@ out vec3 v_FragPosition;
 out vec2 v_TextureCoords;
 out vec3 v_Normal;
 out mat3 v_TBN;
+out vec4 v_MVP_Position;
 
 void main()
 {
@@ -48,7 +49,7 @@ void main()
 	vec3 B = normalize(vec3(u_Transform * vec4(a_Bitangent, 0.0)));
 	vec3 N = normalize(vec3(u_Transform * vec4(a_Normal,0.0)));
 	v_TBN = mat3(T, B, N);
-
+	v_MVP_Position = u_ViewProjection * u_Transform * vec4(a_Position, 1.0f);
 	v_TextureCoords = a_TextureCoords;
 	gl_Position = u_ViewProjection * u_Transform * jointTransform * vec4(a_Position,1.0);
 }

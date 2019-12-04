@@ -21,7 +21,14 @@ struct DirectionalLight
 };
 uniform int u_TotalDirectionalLights;
 uniform DirectionalLight u_DirectionalLights[10];
-			
+	
+struct ForwardPlus
+{
+	int LightIndexList[3000];
+	vec2 CellLightInfo[256];
+};
+uniform ForwardPlus forwardPlus;
+
 uniform sampler2D u_DiffuseTexture;
 uniform sampler2D u_SpecularTexture;
 uniform sampler2D u_NormalTexture;
@@ -35,6 +42,7 @@ in vec3 v_FragPosition;
 in vec2 v_TextureCoords;
 in vec3 v_Normal;
 in mat3 v_TBN;
+in vec4 v_MVP_Position;
 
 vec3 CalculatePointLight(PointLight light, vec3 normal);
 vec3 CalculateDirectionalLight(DirectionalLight light, vec3 normal);
@@ -51,11 +59,19 @@ void main()
 	normal = max(normal, normalize(v_Normal));
 	
 	vec3 result = vec3(0.0, 0.0, 0.0);
-	// PointLights
-//	for (int i = 0; i < u_TotalPointLights; i++)
-//	{
-//		result += CalculatePointLight(u_PointLights[i], normal);
-//	}
+
+	vec3 NDC = v_MVP_Position.xyz / v_MVP_Position.w;					// Perspective divide/normalize
+	vec2 viewportCoord = NDC.xy * 0.5 + 0.5;							// NDC is -1 to 1 in GL. scale for 0 to 1
+	vec2 viewportPixelCoord;
+	int cellLocation = int(16 * floor(16 * viewportCoord.y) + floor(16 * viewportCoord.x));
+	if (cellLocation >= 0 && cellLocation <= 255)
+	{
+		// CellLocation x = offset		CellLocation y = size
+		for(int i = int(forwardPlus.CellLightInfo[cellLocation].x); i < int(forwardPlus.CellLightInfo[cellLocation].x) + int(forwardPlus.CellLightInfo[cellLocation].y); i++)
+		{
+			result += CalculatePointLight(u_PointLights[forwardPlus.LightIndexList[i]], normal);
+		}
+	}
 
 	// DirectionalLights
 	for (int i = 0; i < u_TotalDirectionalLights; i++)
