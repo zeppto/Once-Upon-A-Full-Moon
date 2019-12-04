@@ -79,8 +79,6 @@ project "Frosty"
 		"%{prj.name}/src/Frosty/API/PrefabManager/*.h",
 		"%{prj.name}/src/Frosty/Particles/*.cpp",
 		"%{prj.name}/src/Frosty/Particles/*.h",
-		"%{prj.name}/src/Frosty/RenderEngine/ForwardPlus.cpp",
-		"%{prj.name}/src/Frosty/RenderEngine/ForwardPlus.hpp",
 		"%{prj.name}/src/Frosty/StateMachine/States/*.cpp",
 		"%{prj.name}/src/Frosty/StateMachine/States/*.h"
 	}
