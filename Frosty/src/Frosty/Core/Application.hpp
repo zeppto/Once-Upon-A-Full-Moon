@@ -1,6 +1,5 @@
 #ifndef APPLICATION_HPP
 #define APPLICATION_HPP
-
 #include "Frosty/Core/BaseWindow.hpp"
 #include "Frosty/Core/LayerHandler.hpp"
 #include "Frosty/Events/ApplicationEvent.hpp"
@@ -48,7 +47,6 @@ namespace Frosty
 		void StartGame(bool maximize);
 		void StopGame(bool maximize);
 
-		// Temp for StateMaster ...
 		bool MenuLoaded();
 		bool GameLoaded();
 
@@ -64,8 +62,8 @@ namespace Frosty
 		void OnMousePressedEvent(MouseButtonPressedEvent & e);
 		void OnMouseReleasedEvent(MouseButtonReleasedEvent & e);
 
-		void RamUsage();
-		void VramUsage();
+		float RamUsage();
+		float VramUsage();
 
 	private:
 		InputManager m_InputManager;

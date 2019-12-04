@@ -104,9 +104,10 @@ namespace Frosty
 
 			m_Window->OnUpdate();
 
-			
-			//RamUsage();
-			//VramUsage();
+			float ramMemory = RamUsage();
+			float vramMemory = VramUsage();
+			if (ramMemory > 256) FY_CORE_FATAL("{0} MiB RAM committed.", ramMemory);
+			//if (vramMemory > 256) FY_CORE_FATAL("{0} MiB VRAM used.", vramMemory);
 		}
 	}
 
@@ -259,7 +260,7 @@ namespace Frosty
 		m_CallInput = true;
 	}
 	
-	void Application::RamUsage()
+	float Application::RamUsage()
 	{
 		//src: https://docs.microsoft.com/en-us/windows/desktop/api/psapi/ns-psapi-_process_memory_counters
 
@@ -268,8 +269,9 @@ namespace Frosty
 		HANDLE hProcess = OpenProcess(PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, FALSE, currentProcessID);
 
 		if (NULL == hProcess)
-			return;
+			return 0.0f;
 
+		float memoryUsage = 0.0f;
 		PROCESS_MEMORY_COUNTERS pmc{};
 		if (GetProcessMemoryInfo(hProcess, &pmc, sizeof(pmc)))
 		{
@@ -277,21 +279,25 @@ namespace Frosty
 				//The Commit Charge value in bytes for this process.
 				//Commit Charge is the total amount of memory that the memory manager has committed for a running process.
 
-			float memoryUsage = float(pmc.PagefileUsage / 1024.0 / 1024.0); //MiB
+			memoryUsage = float(pmc.PagefileUsage / 1024.0 / 1024.0); //MiB
+			memoryUsage = memoryUsage - VramUsage();
 
-			if (memoryUsage > 256) FY_CORE_FATAL("{0} MiB RAM committed.", memoryUsage);
+			//if (memoryUsage > 256) FY_CORE_FATAL("{0} MiB RAM committed.", memoryUsage);
 		}
 
 		CloseHandle(hProcess);
+
+		return memoryUsage;
 	}
 	
-	void Application::VramUsage()
+	float Application::VramUsage()
 	{
 		IDXGIFactory* dxgifactory = nullptr;
 		HRESULT ret_code = ::CreateDXGIFactory(
 			__uuidof(IDXGIFactory),
 			reinterpret_cast<void**>(&dxgifactory));
 
+		float memoryUsage = 0.0f;
 		if (SUCCEEDED(ret_code))
 		{
 			IDXGIAdapter* dxgiAdapter = nullptr;
@@ -305,9 +311,9 @@ namespace Frosty
 
 					if (SUCCEEDED(dxgiAdapter4->QueryVideoMemoryInfo(0, DXGI_MEMORY_SEGMENT_GROUP_LOCAL, &info)))
 					{
-						float memoryUsage = float(info.CurrentUsage / 1024.0 / 1024.0); //MiB
+						memoryUsage = float(info.CurrentUsage / 1024.0 / 1024.0); //MiB
 
-						if (memoryUsage > 256) FY_CORE_FATAL("{0} MiB VRAM used.", memoryUsage);
+						//if (memoryUsage > 256) FY_CORE_FATAL("{0} MiB VRAM used.", memoryUsage);
 					};
 
 					dxgiAdapter4->Release();
@@ -316,5 +322,7 @@ namespace Frosty
 			}
 			dxgifactory->Release();
 		}
+
+		return memoryUsage;
 	}
 }

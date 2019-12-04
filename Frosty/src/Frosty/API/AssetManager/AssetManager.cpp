@@ -400,10 +400,10 @@ namespace Frosty
 	void AssetManager::SortIndexArray( std::vector<Luna::Vertex>& vertices,  std::vector<Luna::Index>& indices)
 	{
 		std::vector<Triangle> triangles;
-		int size = indices.size()/3;
+		size_t size = indices.size()/3;
 		triangles.resize(size);
 
-		for (int i = 0; i < size; i++)
+		for (size_t i = 0; i < size; i++)
 		{
 			triangles.at(i).indices.resize(3);
 			triangles.at(i).indices.at(0) = indices.at(i*3);
