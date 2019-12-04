@@ -107,10 +107,8 @@ namespace MCS
 		world->AddSystem<DestroySystem>();
 		world->AddSystem<HealthBarSystem>();
 		world->AddSystem<AISystem>();
-
-		Frosty::ECS::BaseSystem* retSystem = world->AddSystem<NavigationSystem>();
-		NavigationSystem* navSystem = dynamic_cast<NavigationSystem*>(retSystem);
-
+		world->AddSystem<NavigationSystem>();
+		
 		Frosty::ECS::BaseSystem* retSystem = world->AddSystem<ParticleSystem>();
 		ParticleSystem* particleSystem = dynamic_cast<ParticleSystem*>(retSystem);
 
@@ -156,8 +154,7 @@ namespace MCS
 		}
 
 		// PLAYER
-		//auto& player = world->CreateEntity({ -104.0f, 0.0f, -15.4f }, { 0.0f, 0.0f, 0.0f }, { 2.0f, 2.0f, 2.0f });
-		auto& player = world->CreateEntity({ 0.f, 0.f, 0.f }, { 0.0f, 0.0f, 0.0f }, { 2.0f, 2.0f, 2.0f });
+		auto& player = world->CreateEntity({ -104.0f, 0.0f, -15.4f }, { 0.0f, 0.0f, 0.0f }, { 2.0f, 2.0f, 2.0f });
 		auto& playerTransform = world->GetComponent<Frosty::ECS::CTransform>(player);
 		world->AddComponent<Frosty::ECS::CAnimController>(player).currAnim = Frosty::AssetManager::GetAnimation("Scarlet_Idle");
 		auto& animation = world->GetComponent<Frosty::ECS::CAnimController>(player);
