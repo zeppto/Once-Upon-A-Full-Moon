@@ -916,7 +916,7 @@ namespace MCS
 					playerWeaponComp.IsFullyUpgraded = false;
 					playerWeaponComp.ProjectileSpeed = lootWeaponComp.ProjectileSpeed;
 
-					weaponID = m_Transform[i]->EntityPtr->Id;
+					weaponID = (int)m_Transform[i]->EntityPtr->Id;
 				}
 			}
 			else if (m_World->HasComponent<Frosty::ECS::CPlayer>(m_Transform[i]->EntityPtr))
