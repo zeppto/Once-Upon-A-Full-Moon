@@ -11,7 +11,6 @@ namespace MCS
 	{
 		m_World = Frosty::Application::Get().GetWorld().get();
 		p_Signature.set(Frosty::ECS::getComponentTypeID<Frosty::ECS::CTransform>(), true);
-
 	}
 
 	void LevelSystem::OnStart()
@@ -808,24 +807,174 @@ namespace MCS
 
 	void LevelSystem::OnResetEvent(Frosty::ResetEvent& e)
 	{
+		Frosty::ECS::CMesh* weaponMesh = nullptr;
+		Frosty::ECS::CAnimController* animation = nullptr;
+		Frosty::ECS::CPlayer* Player = nullptr;
+		Frosty::ECS::CTransform* PlayerT = nullptr;
+		Frosty::ECS::CWeapon* m_Weapon = nullptr;
+		int weaponID = 0;
+
 		for (size_t i = 1; i < p_Total; i++)
 		{
-			if (!m_World->HasComponent<Frosty::ECS::CWeapon>(m_Transform[i]->EntityPtr))
+			if (!m_World->HasComponent<Frosty::ECS::CPlayer>(m_Transform[i]->EntityPtr))
 			{
-
-				if (!m_World->HasComponent<Frosty::ECS::CGUI>(m_Transform[i]->EntityPtr))
+				if (!m_World->HasComponent<Frosty::ECS::CWeapon>(m_Transform[i]->EntityPtr))
+				{
+					if (!m_World->HasComponent<Frosty::ECS::CCamera>(m_Transform[i]->EntityPtr))
+					{
+						if (!m_World->HasComponent<Frosty::ECS::CLight>(m_Transform[i]->EntityPtr))
+						{
+							if (!m_World->HasComponent<Frosty::ECS::CGUI>(m_Transform[i]->EntityPtr))
+							{
+								if (!m_World->HasComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr))
+								{
+									m_World->AddComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr);
+								}
+							}
+						}
+					}
+				}
+				else if (!m_World->GetComponent<Frosty::ECS::CWeapon>(m_Transform[i]->EntityPtr).IsPlayerWeapon)
 				{
 					if (!m_World->HasComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr))
 					{
 						m_World->AddComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr);
 					}
 				}
+				else if (m_World->GetComponent<Frosty::ECS::CWeapon>(m_Transform[i]->EntityPtr).IsPlayerWeapon)
+				{
+					auto& weaponHandler = Frosty::AssetManager::GetWeaponHandler("Weapons");
+					Frosty::Weapon lootWeaponComp = weaponHandler->GetAPlayerWeapon(1, 1);
+					auto& playerWeaponComp = m_World->GetComponent<Frosty::ECS::CWeapon>(m_Transform[i]->EntityPtr);
+					Frosty::ECS::CWeapon::WeaponType type = playerWeaponComp.Type;
 
+					if (lootWeaponComp.Type == Frosty::Weapon::WeaponType::Sword)
+					{
+						playerWeaponComp.Type = Frosty::ECS::CWeapon::WeaponType::Sword;
+						auto& mesh = m_World->GetComponent<Frosty::ECS::CMesh>(m_Transform[i]->EntityPtr);
+						mesh.Mesh = Frosty::AssetManager::GetMesh("sword");
+						auto& weaponMat = m_World->GetComponent<Frosty::ECS::CMaterial>(m_Transform[i]->EntityPtr);
+						weaponMat.UseShader = Frosty::AssetManager::GetShader("Texture2D");
+						weaponMat.DiffuseTexture = Frosty::AssetManager::GetTexture2D("sword_lvl1_diffuse");
+						weaponMat.NormalTexture = Frosty::AssetManager::GetTexture2D("sword_normal");
+
+						if (playerWeaponComp.Type == Frosty::ECS::CWeapon::WeaponType::Sword)
+						{
+							m_GUI = GetPlayerGUI();
+							if (m_GUI != nullptr)
+							{
+								m_GUI->Layout.sprites.at(1).SetImage("attackMelee");
+								m_GUI->Layout.sprites.at(2).SetImage("attackMelee1");
+								m_GUI->Layout.sprites.at(3).SetImage("attackMelee2");
+								m_GUI->Layout.sprites.at(4).SetImage("attackMelee3");
+							}
+							Frosty::Renderer::ChangeEntity(m_Transform[i]->EntityPtr->Id, &weaponMat, "Sword", &mesh, m_Transform[i]->EntityPtr->Id, m_Transform[i], nullptr);
+						}
+						weaponMesh = &mesh;
+					}
+					else if (lootWeaponComp.Type == Frosty::Weapon::WeaponType::Bow)
+					{
+						playerWeaponComp.Type = Frosty::ECS::CWeapon::WeaponType::Bow;
+						auto& mesh = m_World->GetComponent<Frosty::ECS::CMesh>(m_Transform[i]->EntityPtr);
+						mesh.Mesh = Frosty::AssetManager::GetMesh("Bow");
+						auto& weaponMat = m_World->GetComponent<Frosty::ECS::CMaterial>(m_Transform[i]->EntityPtr);
+						weaponMat.UseShader = Frosty::AssetManager::GetShader("Texture2D");
+						weaponMat.DiffuseTexture = Frosty::AssetManager::GetTexture2D("bow_lvl1_diffuse");
+						weaponMat.NormalTexture = Frosty::AssetManager::GetTexture2D("bow_normal");
+
+						if (playerWeaponComp.Type == Frosty::ECS::CWeapon::WeaponType::Bow)
+						{
+							m_GUI = GetPlayerGUI();
+							if (m_GUI != nullptr)
+							{
+								m_GUI->Layout.sprites.at(1).SetImage("attackRanged");
+								m_GUI->Layout.sprites.at(2).SetImage("attackRanged1");
+								m_GUI->Layout.sprites.at(3).SetImage("attackRanged2");
+								m_GUI->Layout.sprites.at(4).SetImage("attackRanged3");
+							}
+							Frosty::Renderer::ChangeEntity(m_Transform[i]->EntityPtr->Id, &weaponMat, "Bow", &mesh, m_Transform[i]->EntityPtr->Id, m_Transform[i], nullptr);
+						}
+						weaponMesh = &mesh;
+					}
+
+					playerWeaponComp.Level = lootWeaponComp.Level;
+					playerWeaponComp.Speciality = lootWeaponComp.Speciality;
+					playerWeaponComp.MaxAttackRange = lootWeaponComp.MaxAttackRange;
+					playerWeaponComp.MinAttackRange = lootWeaponComp.MinAttackRange;
+					playerWeaponComp.Damage = lootWeaponComp.Damage;
+					playerWeaponComp.CriticalHit = lootWeaponComp.CriticalHit;
+					playerWeaponComp.CriticalHitChance = lootWeaponComp.CriticalHitChance;
+					playerWeaponComp.LVL1AttackCooldown = lootWeaponComp.LVL1AttackCooldown;
+					playerWeaponComp.LVL2AttackCooldown = lootWeaponComp.LVL2AttackCooldown;
+					playerWeaponComp.LVL3AttackCooldown = lootWeaponComp.LVL3AttackCooldown;
+					playerWeaponComp.Lifetime = lootWeaponComp.Lifetime;
+					playerWeaponComp.AttackHitboxScale = lootWeaponComp.AttackHitboxScale;
+					playerWeaponComp.FireCriticalHitChance = 0;
+					playerWeaponComp.EarthDamage = 0;
+					playerWeaponComp.WindSpeed = 0;
+					playerWeaponComp.WaterHealing = 0;
+					playerWeaponComp.IsFullyUpgraded = false;
+					playerWeaponComp.ProjectileSpeed = lootWeaponComp.ProjectileSpeed;
+
+					weaponID = m_Transform[i]->EntityPtr->Id;
+				}
+			}
+			else if (m_World->HasComponent<Frosty::ECS::CPlayer>(m_Transform[i]->EntityPtr))
+			{
+				auto& playerTransform = m_World->GetComponent<Frosty::ECS::CTransform>(m_Transform[i]->EntityPtr);
+				Player = &m_World->GetComponent<Frosty::ECS::CPlayer>(m_Transform[i]->EntityPtr);
+				playerTransform.Position = glm::vec3(-104.0f, 0.0f, -15.4f);
+				animation = &m_World->GetComponent<Frosty::ECS::CAnimController>(m_Transform[i]->EntityPtr);
+				PlayerT = &playerTransform;
+				auto& health = m_World->GetComponent<Frosty::ECS::CHealth>(m_Transform[i]->EntityPtr);
+				health.CurrentHealth = 20;
+				health.MaxHealth = 20;
+				health.MaxPossibleHealth = 40;
+				Player->Score = 0;
+
+				auto& playerInventory = m_World->GetComponent<Frosty::ECS::CInventory>(m_Transform[i]->EntityPtr);
+				playerInventory.MaxHealingPotions = 5;
+				playerInventory.CurrentHealingPotions = 0;
+				playerInventory.MaxIncreaseHPPotions = 5;
+				playerInventory.CurrentIncreaseHPPotions = 0;
+				playerInventory.MaxSpeedPotions = 5;
+				playerInventory.CurrentSpeedPotions = 0;
+				playerInventory.MaxSpeedBoots = 5;
+				playerInventory.CurrentSpeedBoots = 0;
+				playerInventory.MaxBaitAmount = 5;
+				playerInventory.CurrentBaitAmount = 0;
+				playerInventory.MaxWolfsbaneAmount = 10;
+				playerInventory.CurrentWolfsbane = 0;
+
+				m_GUI = &m_World->GetComponent<Frosty::ECS::CGUI>(m_Transform[i]->EntityPtr);
+
+				m_GUI->Layout.sprites.at(14).SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 0.0f));
+				m_GUI->Layout.sprites.at(15).SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 0.0f));
+				m_GUI->Layout.sprites.at(16).SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 0.0f));
+				m_GUI->Layout.sprites.at(17).SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 0.0f));
+				m_GUI->Layout.sprites.at(18).SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 0.0f));
 			}
 		}
+
+		weaponMesh->parentMatrix = PlayerT->GetModelMatrix();
+		animation->holdPtr = animation->currAnim->getHoldingJoint();
+		weaponMesh->animOffset = animation->holdPtr;
+		Frosty::Renderer::UpdateCMesh(weaponID, weaponMesh);
+
 		m_Start = true;
 		m_PlayerPos = { 10, 15 };
-		//visited rom reset missing!
+	}
+
+	Frosty::ECS::CGUI* LevelSystem::GetPlayerGUI()
+	{
+		for (int i = 1; i < p_Total; i++)
+		{
+			if (m_World->HasComponent<Frosty::ECS::CPlayer>(m_Transform[i]->EntityPtr))
+			{
+				m_GUI = &m_World->GetComponent<Frosty::ECS::CGUI>(m_Transform[i]->EntityPtr);
+			}
+		}
+		return m_GUI;
 	}
 
 	void LevelSystem::OnBossSpawnedEvent(Frosty::BossSpawnedEvent& e)
