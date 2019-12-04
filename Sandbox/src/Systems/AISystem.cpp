@@ -121,9 +121,12 @@ namespace MCS
 			m_Enemy[it->second] = enemyPtr;
 			m_Health[it->second] = healthPtr;
 
-			auto& weaponEntity = world->GetEntityManager()->GetEntityById(m_Enemy[it->second]->WeaponEntityID);
+			if (m_Enemy[it->second]->WeaponEntityID != 0)
+			{
+				auto& weaponEntity = world->GetEntityManager()->GetEntityById(m_Enemy[it->second]->WeaponEntityID);
 
-			m_Enemy[it->second]->Weapon = &world->GetComponent<Frosty::ECS::CWeapon>(weaponEntity);
+				m_Enemy[it->second]->Weapon = &world->GetComponent<Frosty::ECS::CWeapon>(weaponEntity);
+			}
 		}
 	}
 
