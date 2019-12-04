@@ -33,8 +33,7 @@ namespace MCS
 		{
 			auto& world = Frosty::Application::Get().GetWorld();
 			world->PauseGame();
-			//m_App->GetStateMachine().AddState(Frosty::StateRef(FY_NEW(GamePauseState)));
-			OnGameWinEvent();
+			m_App->GetStateMachine().AddState(Frosty::StateRef(FY_NEW(GamePauseState)));
 		}
 	}
 

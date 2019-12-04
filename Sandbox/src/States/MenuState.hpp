@@ -27,6 +27,7 @@ namespace MCS
 		Frosty::UILayout m_UILayout;
 
 		bool m_ButtonsLoaded = false;
+		bool m_Controls = false;
 	};
 }
 #endif

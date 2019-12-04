@@ -8,12 +8,9 @@ namespace MCS
 	{
 		auto& state = Application::Get().GetStateMachine();
 		state.AddState(Frosty::StateRef(FY_NEW(MenuState)));
-		Application::Get().StartGame(true);
-
-
 
 #ifdef FY_DEBUG
-		//PushLayer(FY_NEW InspectorLayer());
+		PushLayer(FY_NEW InspectorLayer());
 #else
 		Application::Get().StartGame(true);
 #endif

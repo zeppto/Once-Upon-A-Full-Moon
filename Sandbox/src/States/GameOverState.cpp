@@ -89,31 +89,26 @@ namespace MCS
 
 	void GameOverState::OnGameOverEvent()
 	{
-		InitiateGui();
-	}
-
-	void GameOverState::InitiateGui()
-	{
 		auto& world = Frosty::Application::Get().GetWorld();
 		m_GameOverGui = m_App->Get().GetWorld()->CreateEntity();
 
 		m_UILayout = Frosty::UILayout(4, 1);
 
 		std::string GameOver = "Game Over";
-		std::string Return   = "Return to Main Menu";
-		std::string Score    = "HighScore";
-		std::string Exit     = "Exit Game";
+		std::string Return = "Return to Main Menu";
+		std::string Score = "HighScore";
+		std::string Exit = "Exit Game";
 
 		float posX1 = (960 / 1.5f) - (GameOver.size() / 2) * 18;
-		float posX2 = (960 / 1.5f) - (Return.size()   / 2) * 17;
-		float posX3 = (960 / 1.5f) - (Score.size()    / 2) * 17;
-		float posX4 = (960 / 1.5f) - (Exit.size()     / 2) * 17;
+		float posX2 = (960 / 1.5f) - (Return.size() / 2) * 17;
+		float posX3 = (960 / 1.5f) - (Score.size() / 2) * 17;
+		float posX4 = (960 / 1.5f) - (Exit.size() / 2) * 17;
 
 		m_UILayout.AddText(glm::vec2(posX1, 525.f), GameOver, glm::vec3(1.0f, 1.0f, 0.0f), 1.0f);
 		m_UILayout.AddText(glm::vec2(posX2, 400.0f), Return, glm::vec3(1.0f, 1.0f, 0.0f), 1.0f);
 		m_UILayout.AddText(glm::vec2(posX3, 325.0f), Score, glm::vec3(1.0f, 1.0f, 0.0f), 1.0f);
 		m_UILayout.AddText(glm::vec2(posX4, 250.0f), Exit, glm::vec3(0.8f, 0.0f, 0.0f), 1.0f);
-		m_UILayout.AddSprite(glm::vec2(640.0f, 360.0f), glm::vec2(25.6f, 14.4f), "red", glm::vec4(0.2f, 0.2f, 0.2f, 1.0f));
+		m_UILayout.AddSprite(glm::vec2(640.0f, 360.0f), glm::vec2(25.6f, 14.4f), "GameOver", glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
 
 		world->AddComponent<Frosty::ECS::CGUI>(m_GameOverGui, m_UILayout);
 		m_ButtonsLoaded = true;

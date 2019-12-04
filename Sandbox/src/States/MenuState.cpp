@@ -66,28 +66,70 @@ namespace MCS
 		float x = Frosty::InputManager::GetMouseX();
 		float y = Frosty::InputManager::GetMouseY();
 
-		if (x > 910.0f && x < 1005.0f && y > 550.0f && y < 610.0f)
+		if (!m_Controls)
 		{
-			if (Frosty::InputManager::IsMouseButtonPressed(FY_MOUSE_BUTTON_LEFT))
+			if (x > 910.0f && x < 1005.0f && y > 550.0f && y < 610.0f)
 			{
-				auto& world = Frosty::Application::Get().GetWorld();
-				world->PlayGame();
-				m_App->GetStateMachine().AddState(Frosty::StateRef(FY_NEW(GameState)), true);
+				if (Frosty::InputManager::IsMouseButtonPressed(FY_MOUSE_BUTTON_LEFT))
+				{
+					auto& world = Frosty::Application::Get().GetWorld();
+					auto& menuGui = world->GetComponent<Frosty::ECS::CGUI>(m_MenuGui);
+					menuGui.Layout.texts.at(1).SetColor(glm::vec4(0.0f, 0.0f, 1.0f, 0.0f));
+
+					world->PlayGame();
+					m_App->GetStateMachine().AddState(Frosty::StateRef(FY_NEW(GameState)), true);
+				}
+			}
+			else if (x > 860.f && x < 1050.0f && y > 445.0f && y < 500.0f)
+			{
+				if (Frosty::InputManager::IsMouseButtonPressed(FY_MOUSE_BUTTON_LEFT))
+				{
+					auto& world = Frosty::Application::Get().GetWorld();
+					auto& menuGui = world->GetComponent<Frosty::ECS::CGUI>(m_MenuGui);
+					std::string Controls = "Controls";
+					float posX = (960 / 1.5f) - (Controls.size() / 2) * 17;
+
+					menuGui.Layout.texts.at(0).SetText("");
+					menuGui.Layout.texts.at(1).SetText("");
+					menuGui.Layout.texts.at(2).SetText("");
+					menuGui.Layout.texts.at(3).SetText("Back");
+					menuGui.Layout.texts.at(3).SetPosition(glm::vec2(posX, 50.0f));
+					menuGui.Layout.sprites.at(0).SetImage("Controls");
+					menuGui.Layout.sprites.at(0).SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+					m_ButtonsLoaded = false;
+					m_Controls = true;
+				}
+			}
+			else if (x > 910.f && x < 1005.0f && y > 350.0f && y < 390.0f)
+			{
+				if (Frosty::InputManager::IsMouseButtonPressed(FY_MOUSE_BUTTON_LEFT))
+				{
+					Frosty::EventBus::GetEventBus()->Publish<Frosty::WindowCloseEvent>(Frosty::WindowCloseEvent());
+				}
 			}
 		}
-		else if (x > 860.f && x < 1050.0f && y > 445.0f && y < 500.0f)
+		else if (m_Controls)
 		{
-			if (Frosty::InputManager::IsMouseButtonPressed(FY_MOUSE_BUTTON_LEFT))
+			if (x > 860.0f && x < 965.0f && y > 70.0f && y < 120.0f)
 			{
-				FY_INFO("CONTROLS");
-				// New Sprite with new GUI;
-			}
-		}
-		else if (x > 910.f && x < 1005.0f && y > 350.0f && y < 390.0f)
-		{
-			if (Frosty::InputManager::IsMouseButtonPressed(FY_MOUSE_BUTTON_LEFT))
-			{
-				Frosty::EventBus::GetEventBus()->Publish<Frosty::WindowCloseEvent>(Frosty::WindowCloseEvent());
+				if (Frosty::InputManager::IsMouseButtonPressed(FY_MOUSE_BUTTON_LEFT))
+				{
+					auto& world = Frosty::Application::Get().GetWorld();
+					auto& menuGui = world->GetComponent<Frosty::ECS::CGUI>(m_MenuGui);
+					std::string Exit = "Exit";
+					float posX = (960 / 1.5f) - (Exit.size() / 2) * 17;
+
+					menuGui.Layout.texts.at(0).SetText("Main Menu");
+					menuGui.Layout.texts.at(1).SetText("Play");
+					menuGui.Layout.texts.at(2).SetText("Controls");
+					menuGui.Layout.texts.at(3).SetText("Exit");
+					menuGui.Layout.texts.at(3).SetPosition(glm::vec2(posX, 250.0f));
+					menuGui.Layout.sprites.at(0).SetImage("Background");
+					menuGui.Layout.sprites.at(0).SetColorSprite(glm::vec4(0.5f, 0.5f, 0.5f, 1.0f));
+
+					m_ButtonsLoaded = true;
+					m_Controls = false;
+				}
 			}
 		}
 	}
@@ -648,7 +690,7 @@ namespace MCS
 		m_UILayout.AddText(glm::vec2(posX2, 400.0f), Play, glm::vec3(1.0f, 1.0f, 0.0f), 1.0f);
 		m_UILayout.AddText(glm::vec2(posX3, 325.0f), Controls, glm::vec3(1.0f, 1.0f, 0.0f), 1.0f);
 		m_UILayout.AddText(glm::vec2(posX4, 250.0f), Exit, glm::vec3(0.8f, 0.0f, 0.0f), 1.0f);
-		m_UILayout.AddSprite(glm::vec2(640.0f, 360.0f), glm::vec2(25.6f, 14.4f), "red", glm::vec4(0.2f, 0.2f, 0.2f, 1.0f));
+		m_UILayout.AddSprite(glm::vec2(640.0f, 360.0f), glm::vec2(25.6f, 14.4f), "Background", glm::vec4(0.5f, 0.5f, 0.5f, 1.0f));
 
 		world->AddComponent<Frosty::ECS::CGUI>(m_MenuGui, m_UILayout);
 	}

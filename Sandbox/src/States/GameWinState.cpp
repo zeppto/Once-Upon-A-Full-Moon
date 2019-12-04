@@ -88,11 +88,6 @@ namespace MCS
 
 	void GameWinState::OnGameWinEvent()
 	{
-		InitiateGui();
-	}
-
-	void GameWinState::InitiateGui()
-	{
 		auto& world = Frosty::Application::Get().GetWorld();
 		m_GameWinGui = m_App->Get().GetWorld()->CreateEntity();
 
@@ -112,7 +107,7 @@ namespace MCS
 		m_UILayout.AddText(glm::vec2(posX2, 400.0f), Return, glm::vec3(1.0f, 1.0f, 0.0f), 1.0f);
 		m_UILayout.AddText(glm::vec2(posX3, 325.0f), Score, glm::vec3(1.0f, 1.0f, 0.0f), 1.0f);
 		m_UILayout.AddText(glm::vec2(posX4, 250.0f), Exit, glm::vec3(0.8f, 0.0f, 0.0f), 1.0f);
-		m_UILayout.AddSprite(glm::vec2(640.0f, 360.0f), glm::vec2(25.6f, 14.4f), "red", glm::vec4(0.2f, 0.2f, 0.2f, 1.0f));
+		m_UILayout.AddSprite(glm::vec2(640.0f, 360.0f), glm::vec2(25.6f, 14.4f), "GameWin", glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
 
 		world->AddComponent<Frosty::ECS::CGUI>(m_GameWinGui, m_UILayout);
 		m_ButtonsLoaded = true;

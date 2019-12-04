@@ -15,8 +15,6 @@ namespace MCS
 
 		void OnGameOverEvent();
 	private:
-		void InitiateGui();
-	private:
 		Frosty::Application* m_App = nullptr;
 		std::shared_ptr<Frosty::ECS::Entity> m_GameOverGui;
 		Frosty::UILayout m_UILayout;
