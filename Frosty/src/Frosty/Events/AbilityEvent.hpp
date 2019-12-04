@@ -226,19 +226,31 @@ namespace Frosty
 		std::string m_CurrentRoom;
 		int m_Rotation;
 	};
+	
 
+		class SwitchRoomEvent : public BaseEvent
+	{
+	public:
+		SwitchRoomEvent() {}
+		EVENT_TYPE(SwitchRoom)
+
+	private:
+
+	};
 
 	class InitiateGridEvent : public BaseEvent
 	{
 	public:
-		InitiateGridEvent(Frosty::ECS::CTransform* planeTransform) : m_Transform(planeTransform) {}
+		InitiateGridEvent(Frosty::ECS::CTransform* planeTransform, const uint32_t& EntityGroup) : m_Transform(planeTransform), m_EntityGroup(EntityGroup){}
 
 		Frosty::ECS::CTransform* GetTransform() { return m_Transform; }
+		inline const uint32_t& GetEntityGroup() const noexcept { return m_EntityGroup; }
 
 		EVENT_TYPE(InitiateGridMap)
 
 	private:
 		Frosty::ECS::CTransform* m_Transform;
+		uint32_t m_EntityGroup;
 	};
 
 	class ActivateWitchCircleEvent : public BaseEvent

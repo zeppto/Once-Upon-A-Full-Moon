@@ -61,6 +61,9 @@ namespace MCS
 		case Frosty::EventType::UpdateCurrentRoom:
 			OnUpdateCurrentRoomEvent(static_cast<Frosty::UpdateCurrentRoomEvent&>(e));
 			break;
+		case Frosty::EventType::SwitchRoom:
+			OnSwitchRoomEvent(static_cast<Frosty::SwitchRoomEvent&>(e));
+			break;
 		default:
 			break;
 		}
@@ -149,6 +152,7 @@ namespace MCS
 
 	void NavigationSystem::InitiateGridMap(const Frosty::ECS::CTransform& planeTransform)
 	{
+
 		m_Grid.reset(FY_NEW Frosty::Grid());
 		Frosty::Time::StartTimer("Grid::Init()");
 		m_Grid->Init(planeTransform);
@@ -160,12 +164,43 @@ namespace MCS
 
 	void NavigationSystem::OnUpdateCurrentRoomEvent(Frosty::UpdateCurrentRoomEvent& e)
 {
-		m_CurrentActiveGridMap = Frosty::AssetManager::GetGridMap(e.GetCurrentRoom());
+//		m_CurrentActiveGridMap = Frosty::AssetManager::GetGridMap(e.GetCurrentRoom());
 
 }
 
+	void NavigationSystem::OnSwitchRoomEvent(Frosty::SwitchRoomEvent& e)
+	{
+		//std::shared_ptr<Frosty::Grid> tempGrid = m_CurrentActiveGridMap;
+		//std::shared_ptr<Pathfinding> tempPath = m_CurrentActivePathfinding;
+		//m_CurrentActiveGridMap = m_SecondGridMap;
+		//m_CurrentActivePathfinding = m_SecondPathfinding;
+		//m_SecondGridMap = tempGrid;
+		//m_SecondPathfinding = tempPath;
+
+
+		GridMap temp = m_ActiveMap;
+		m_ActiveMap = m_OtherMap;
+		m_OtherMap = temp;
+
+
+	}
+
 	void NavigationSystem::OnInitiateGridMap(Frosty::InitiateGridEvent& e)
 	{
+		//m_SecondGridMap.reset(FY_NEW Frosty::Grid());
+		//m_SecondGridMap->Init(*e.GetTransform());
+		//m_SecondPathfinding.reset(FY_NEW Pathfinding());
+		//m_SecondPathfinding->Init(&*m_SecondGridMap);
+
+
+		m_OtherMap.Grid.reset(FY_NEW Frosty::Grid());
+		m_OtherMap.Grid->Init(*e.GetTransform());
+		m_OtherMap.PathFinder.reset(FY_NEW Pathfinding());
+		m_OtherMap.PathFinder->Init(&*m_OtherMap.Grid);
+		m_OtherMap.EntityUpdateGroup = e.GetEntityGroup();
+
+		FY_INFO("Map Group ID: {0}", m_OtherMap.EntityUpdateGroup);
+
 		m_Grid.reset(FY_NEW Frosty::Grid());
 		Frosty::Time::StartTimer("Grid::Init()");
 		m_Grid->Init(*e.GetTransform());
@@ -204,6 +239,8 @@ namespace MCS
 		}
 		
 		// Find target cell and set velocity
+		if (m_Transform[index]->EntityPtr->Id == 8)
+			int x = 0;
 		glm::vec3 cellTarget = m_Pathfinding->FindPath(m_Transform[index]->Position, m_Enemy[index]->Target->Position);
 		m_Enemy[index]->CellTarget = cellTarget;
 		m_Physics[index]->Direction = glm::normalize(m_Enemy[index]->CellTarget - glm::vec3(m_Transform[index]->Position.x, 0.0f, m_Transform[index]->Position.z));

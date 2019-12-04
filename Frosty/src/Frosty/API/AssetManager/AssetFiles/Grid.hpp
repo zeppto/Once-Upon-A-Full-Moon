@@ -87,7 +87,7 @@ namespace Frosty
 		std::string m_FilePath{ "" };
 
 		// TEMPORARY FOR DEUGGING
-		bool m_DrawGizmos{ false };
+		bool m_DrawGizmos{ 0 };
 		std::vector<CellNode> m_PathNodes;
 	};
 }

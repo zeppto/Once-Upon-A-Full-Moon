@@ -250,7 +250,7 @@ namespace MCS
 		void SaveToFile(std::string fileName);
 		void OpenFromFile(
 			std::string fileName,
-			const bool& OtherRoom,
+			const bool& CurrentGroup,
 			glm::ivec2 roomId = glm::ivec2(0, 0)
 			, Frosty::ECS::CTransform* playerTransform = nullptr,
 			int rotation = 0,

@@ -94,14 +94,13 @@ namespace MCS
 			m_Map.getRoomTextur(m_PlayerCoords, &rotate);
 			m_CurrentRoomBool = m_World->GetCurrentRoom();
 			//	Level::MoveToNewRoom(m_CurrentRoome.sideExits[0], m_CurrentRoome.sideExits[1], m_CurrentRoome.sideExits[2], m_CurrentRoome.sideExits[3]);
-			m_LevelFileFormat.OpenFromFile("deadend_chests_IsStatick_t_p_e_r_h", !m_CurrentRoomBool, m_PlayerCoords, playerTransform, rotate);
+			m_LevelFileFormat.OpenFromFile("deadend_chests_IsStatick_t_p_e_r_h", true, m_PlayerCoords, playerTransform, rotate);
 			
 			m_T_Room.RoomName = "deadend_chests_IsStatick_t_p_e_r_h";
 
-			auto& jj = Frosty::AssetManager::GetBoolMap("deadend_chests_IsStatick_t_p_e_r_h");
-
 			m_T_Room.Rotation = rotate;
 			Frosty::EventBus::GetEventBus()->Publish<Frosty::UpdateCurrentRoomEvent>(Frosty::UpdateCurrentRoomEvent(m_T_Room.RoomName, m_T_Room.Rotation));
+			Frosty::EventBus::GetEventBus()->Publish<Frosty::SwitchRoomEvent>(Frosty::SwitchRoomEvent());
 
 
 			//m_RoomRotation = rotate;
@@ -742,11 +741,12 @@ namespace MCS
 	{
 		if (m_PlayerCoords != e.GetCoords())
 		{
-			FY_INFO("Changed Room");
+		//	FY_INFO("Changed Room");
 			m_OtherRoom = m_PlayerCoords;
 			FlipRoomNames();
 			m_World->ChangeCurrentRoom();
 			Frosty::EventBus::GetEventBus()->Publish<Frosty::UpdateCurrentRoomEvent>(Frosty::UpdateCurrentRoomEvent(m_T_Room.RoomName, m_T_Room.Rotation));
+			Frosty::EventBus::GetEventBus()->Publish<Frosty::SwitchRoomEvent>(Frosty::SwitchRoomEvent());
 		}
 		m_PlayerCoords = e.GetCoords();
 	}

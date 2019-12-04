@@ -9,6 +9,7 @@
 
 namespace Frosty { class InitiateGridEvent; }
 namespace Frosty { class UpdateCurrentRoomEvent; }
+namespace Frosty { class SwitchRoomEvent; }
 
 namespace MCS
 {
@@ -35,6 +36,7 @@ namespace MCS
 	private:
 		void OnInitiateGridMap(Frosty::InitiateGridEvent& e);
 		void OnUpdateCurrentRoomEvent(Frosty::UpdateCurrentRoomEvent& e);
+		void OnSwitchRoomEvent(Frosty::SwitchRoomEvent& e);
 		void LookAtPoint(const glm::vec3& point, size_t index);
 
 		void HandlePathfinding(size_t index);
@@ -52,7 +54,35 @@ namespace MCS
 		//std::unique_ptr<GridMap> m_GridMap;
 		std::unique_ptr<Frosty::Grid> m_Grid;
 		std::unique_ptr<Pathfinding> m_Pathfinding;
-		std::shared_ptr<Frosty::Grid> m_CurrentActiveGridMap;
+
+		std::shared_ptr<Frosty::Grid> m_CurrentActiveGridMap {nullptr};
+		std::shared_ptr<Pathfinding> m_CurrentActivePathfinding {nullptr};
+		uint16_t m_GroupUpdate;
+
+
+		struct GridMap
+		{
+			std::shared_ptr<Frosty::Grid> Grid{ nullptr };
+			std::shared_ptr<Pathfinding> PathFinder{ nullptr };
+			uint16_t EntityUpdateGroup{ (uint16_t)-1 };
+
+			GridMap& operator=(const GridMap& other)
+			{
+				if (&other != this)
+				{
+					Grid = other.Grid;
+					PathFinder = other.PathFinder;
+					EntityUpdateGroup = other.EntityUpdateGroup;
+				}
+				return *this;
+			}
+		};
+
+		GridMap m_ActiveMap;
+		GridMap m_OtherMap;
+		
+		std::shared_ptr<Frosty::Grid> m_SecondGridMap {nullptr};
+		std::shared_ptr<Pathfinding> m_SecondPathfinding {nullptr};
 
 	};
 }

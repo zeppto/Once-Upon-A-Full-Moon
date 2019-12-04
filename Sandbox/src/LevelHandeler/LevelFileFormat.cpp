@@ -308,7 +308,7 @@ namespace MCS
 
 	void LevelFileFormat::OpenFromFile(
 		std::string fileName,
-		const bool& OtherRoom,
+		const bool& CurrentGroup,
 		glm::ivec2 roomId,
 		Frosty::ECS::CTransform* playerTransform,
 		int rotation,
@@ -378,7 +378,7 @@ namespace MCS
 						tempRotation.y += rotation;
 					}
 					auto& entity = m_World->CreateEntity((glm::vec3(matrix[3].x, matrix[3].y, matrix[3].z) + startOffset), tempRotation, fileEntitys.myEntitys.at(i).myTransform.Scale, fileEntitys.myEntitys.at(i).myTransform.IsStatic);
-					m_World->AddToGroup(entity, OtherRoom);
+					m_World->AddToGroup(entity, CurrentGroup);
 					auto& newlyTreansform = m_World->GetComponent<Frosty::ECS::CTransform>(entity);
 					if (newlyTreansform.Scale == glm::vec3(300.0f, 1.0f, 300.0f))
 					{
@@ -667,6 +667,14 @@ namespace MCS
 						existingFile.read((char*)& fileEntitys.myEntitys.at(i).myWitchCircle, sizeof(Level_WitchCircle));
 						m_World->AddComponent<Frosty::ECS::CWitchCircle>(entity);
 					}
+
+
+					if (fileEntitys.myEntitys.at(i).MyComponents.at(6).HaveComponent)
+					{
+						m_World->AddComponent<Frosty::ECS::CDestroy>(entity);
+					}
+
+
 				}
 			}
 		}
@@ -678,7 +686,8 @@ namespace MCS
 
 		if (planeTransform != nullptr)
 		{
-			Frosty::EventBus::GetEventBus()->Publish<Frosty::InitiateGridEvent>(Frosty::InitiateGridEvent(planeTransform));
+			uint32_t EntityGroup = CurrentGroup ? m_World->GetCurrentRoom() : ~m_World->GetCurrentRoom() & (uint32_t)1;
+			Frosty::EventBus::GetEventBus()->Publish<Frosty::InitiateGridEvent>(Frosty::InitiateGridEvent(planeTransform, EntityGroup));
 		}
 		else
 		{
