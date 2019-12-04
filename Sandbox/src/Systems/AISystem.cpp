@@ -19,7 +19,7 @@ namespace MCS
 		int maxMinute = 5;
 
 		int spawnMinute = rand() % (maxMinute - minMinute + 1) + minMinute;
-		BossSpawnTime = spawnMinute * 60.0f + 20.0f;
+		m_BossSpawnTime = spawnMinute * 60.0f + 20.0f;
 		//BossSpawnTime = 50.0f;
 	}
 
@@ -45,9 +45,10 @@ namespace MCS
 			//}
 
 			//Boss Timer For Debug
-			if (Frosty::Time::CurrentTime() - BossTimer >= BossSpawnTime)
+			if (Frosty::Time::CurrentTime() - m_BossTimer >= m_BossSpawnTime)
 			{
-				if (!m_BossSpawned) SpawnBoss();
+				if (!m_BossSpawned)
+					SpawnBoss();
 			}
 		}
 	}
@@ -125,6 +126,8 @@ namespace MCS
 
 			m_Enemy[it->second]->Weapon = &world->GetComponent<Frosty::ECS::CWeapon>(weaponEntity);
 		}
+
+
 	}
 
 	std::string AISystem::GetInfo() const

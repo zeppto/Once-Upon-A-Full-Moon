@@ -71,7 +71,7 @@ namespace MCS
 	
 	CellNode& Grid::WorldPointToNode(const glm::vec3& worldPoint)
 	{
-		glm::vec2 percentage = glm::vec2((worldPoint.x + m_GridWorldSize.x * 0.5f) / m_GridWorldSize.x, (worldPoint.z + m_GridWorldSize.y * 0.5f) / m_GridWorldSize.y);
+		glm::vec2 percentage = glm::vec2((worldPoint.x + m_GridWorldSize.x * 0.5f - m_GridWorldPosition.x) / m_GridWorldSize.x, (worldPoint.z + m_GridWorldSize.y * 0.5f - m_GridWorldPosition.z) / m_GridWorldSize.y);
 		percentage = glm::clamp(percentage, { 0.01f }, { 0.99f });
 
 		uint32_t col = (int)glm::floor(m_GridSize.x * percentage.x);
