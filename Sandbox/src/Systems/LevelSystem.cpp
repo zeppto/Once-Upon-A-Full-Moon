@@ -3,6 +3,7 @@
 #include "Frosty/API/AssetManager/AssetManager.hpp"
 #include "Frosty/Events/AbilityEvent.hpp"
 #include "Frosty/Core/BoolMap/BoolMapGenerator.hpp"
+
 namespace MCS
 {
 	const std::string LevelSystem::NAME = "Level";
@@ -812,6 +813,7 @@ namespace MCS
 		Frosty::ECS::CPlayer* Player = nullptr;
 		Frosty::ECS::CTransform* PlayerT = nullptr;
 		Frosty::ECS::CWeapon* m_Weapon = nullptr;
+		Frosty::ECS::CHealth* m_Health = nullptr;
 		int weaponID = 0;
 
 		for (size_t i = 1; i < p_Total; i++)
@@ -927,6 +929,7 @@ namespace MCS
 				animation = &m_World->GetComponent<Frosty::ECS::CAnimController>(m_Transform[i]->EntityPtr);
 				PlayerT = &playerTransform;
 				auto& health = m_World->GetComponent<Frosty::ECS::CHealth>(m_Transform[i]->EntityPtr);
+				int healthSpriteCounter = health.MaxPossibleHealth;
 				health.CurrentHealth = 20;
 				health.MaxHealth = 20;
 				health.MaxPossibleHealth = 40;
@@ -948,11 +951,10 @@ namespace MCS
 
 				m_GUI = &m_World->GetComponent<Frosty::ECS::CGUI>(m_Transform[i]->EntityPtr);
 
-				m_GUI->Layout.sprites.at(14).SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 0.0f));
-				m_GUI->Layout.sprites.at(15).SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 0.0f));
-				m_GUI->Layout.sprites.at(16).SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 0.0f));
-				m_GUI->Layout.sprites.at(17).SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 0.0f));
-				m_GUI->Layout.sprites.at(18).SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 0.0f));
+				for (int j = 19; j < 19 + (healthSpriteCounter / 4); j++)
+				{
+					m_GUI->Layout.sprites.at(j).SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 0.0f));
+				}
 			}
 		}
 
@@ -981,6 +983,7 @@ namespace MCS
 	{
 		m_BossSpawned = true;
 	}
+
 	void LevelSystem::randomBossMovment()
 	{
 		Room bossCurrentRoom = m_Map.getRoom(m_BossPos);
