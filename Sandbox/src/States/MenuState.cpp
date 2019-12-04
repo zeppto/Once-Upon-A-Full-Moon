@@ -54,34 +54,36 @@ namespace MCS
 			world->PauseGame();
 			m_App->SetMenuLoad(true);
 		}
-		InitiateButtons();
-		//InitiateTorch();
+		if (!m_ButtonsLoaded)
+		{
+			InitiateButtons();
+			m_ButtonsLoaded = true;
+		}
 	}
 
 	void MenuState::OnInput()
 	{
 		float x = Frosty::InputManager::GetMouseX();
 		float y = Frosty::InputManager::GetMouseY();
-		//FY_INFO("{0} : {1}", x, y);
-		
-		if (x > 920.0f && x < 1000.0f && y > 550.0f && y < 610.0f)
+
+		if (x > 910.0f && x < 1005.0f && y > 550.0f && y < 610.0f)
 		{
 			if (Frosty::InputManager::IsMouseButtonPressed(FY_MOUSE_BUTTON_LEFT))
 			{
 				auto& world = Frosty::Application::Get().GetWorld();
-				//InitiateObjects();
 				world->PlayGame();
 				m_App->GetStateMachine().AddState(Frosty::StateRef(FY_NEW(GameState)), true);
 			}
 		}
-		else if (x > 860.f && x < 1040.0f && y > 445.0f && y < 500.0f)
+		else if (x > 860.f && x < 1050.0f && y > 445.0f && y < 500.0f)
 		{
 			if (Frosty::InputManager::IsMouseButtonPressed(FY_MOUSE_BUTTON_LEFT))
 			{
-				FY_INFO("SETTINGS STAGE NEXT");
+				FY_INFO("CONTROLS");
+				// New Sprite with new GUI;
 			}
 		}
-		else if (x > 920.f && x < 1010.0f && y > 350.0f && y < 390.0f)
+		else if (x > 910.f && x < 1005.0f && y > 350.0f && y < 390.0f)
 		{
 			if (Frosty::InputManager::IsMouseButtonPressed(FY_MOUSE_BUTTON_LEFT))
 			{
@@ -92,6 +94,32 @@ namespace MCS
 
 	void MenuState::OnUpdate()
 	{
+		if (m_ButtonsLoaded)
+		{
+			auto& world = Frosty::Application::Get().GetWorld();
+			auto& menuGui = world->GetComponent<Frosty::ECS::CGUI>(m_MenuGui);
+			float x = Frosty::InputManager::GetMouseX();
+			float y = Frosty::InputManager::GetMouseY();
+
+			if (x > 910.0f && x < 1005.0f && y > 550.0f && y < 610.0f)
+			{
+				menuGui.Layout.texts.at(1).SetColor(glm::vec4(0.0f, 1.0f, 0.0f, 0.0f));
+			}
+			else if (x > 860.f && x < 1050.0f && y > 445.0f && y < 500.0f)
+			{
+				menuGui.Layout.texts.at(2).SetColor(glm::vec4(0.0f, 1.0f, 0.0f, 0.0f));
+			}
+			else if (x > 910.f && x < 1005.0f && y > 350.0f && y < 390.0f)
+			{
+				menuGui.Layout.texts.at(3).SetColor(glm::vec4(1.0f, 0.0f, 0.0f, 0.0f));
+			}
+			else
+			{
+				menuGui.Layout.texts.at(1).SetColor(glm::vec4(1.0f, 1.0f, 0.0f, 0.0f));
+				menuGui.Layout.texts.at(2).SetColor(glm::vec4(1.0f, 1.0f, 0.0f, 0.0f));
+				menuGui.Layout.texts.at(3).SetColor(glm::vec4(0.8f, 0.0f, 0.0f, 0.0f));
+			}
+		}
 	}
 
 	void MenuState::InitiateSystems()
@@ -128,7 +156,7 @@ namespace MCS
 		//Sword Offset
 		auto& weapon = world->CreateEntity({ -0.7f, 2.1f, 0.80f }, { 0.0f, 0.0f, 0.0f }, { 1.f, 1.f, 1.f });
 		//Bow Offset
-	/*	auto& weapon = world->CreateEntity({ -0.7f, 2.3f, 0.2f }, { 0.0f, 60.0f, 0.0f }, { 1.f, 1.f, 1.f });*/
+		/*auto& weapon = world->CreateEntity({ -0.7f, 2.3f, 0.2f }, { 0.0f, 60.0f, 0.0f }, { 1.f, 1.f, 1.f });*/
 		auto& weaponHandler = Frosty::AssetManager::GetWeaponHandler("Weapons");
 		Frosty::Weapon loadedWeapon = weaponHandler->GetAPlayerWeapon(1, 1);
 		world->AddComponent<Frosty::ECS::CWeapon>(weapon, loadedWeapon, true);
@@ -184,7 +212,10 @@ namespace MCS
 
 		// TORCH
 		auto& torch = world->CreateEntity({ 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f });
-		world->AddComponent<Frosty::ECS::CLight>(torch, Frosty::ECS::CLight::LightType::Point, 1.f, glm::vec3(0.99f, 0.9f, 0.8f), 15.f, &playerTransform, glm::vec3(0.f, 5.f, 0.f));
+		world->AddComponent<Frosty::ECS::CLight>(torch, Frosty::ECS::CLight::LightType::Point, 1.f, glm::vec3(0.99f, 0.9f, 0.8f), 15.f, &playerTransform, glm::vec3(0.f, 5.f, 0.f));		
+
+		m_Player = player;
+		m_Weapon = weapon;
 
 		//Player HUD
 		Frosty::UILayout uiLayout(21, 29);
@@ -289,7 +320,6 @@ namespace MCS
 			uiLayout.AddSprite(glm::vec2(130, 50.0f), attackScale, "attackRanged1", glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));// 2
 			uiLayout.AddSprite(glm::vec2(105, 110.0f), attackScale, "attackRanged2", glm::vec4(0.1f, 0.1f, 0.1f, 0.50f));// 3
 			uiLayout.AddSprite(glm::vec2(50.0f, 140.0f), attackScale, "attackRanged3", glm::vec4(0.1f, 0.1f, 0.1f, 0.50f));// 4
-
 		}
 		else
 		{
@@ -313,10 +343,10 @@ namespace MCS
 		uiLayout.AddSprite(glm::vec2(elementXOffset + elementPadding * 3, elementyOffset), elementScale, "elementWind", glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));// 8
 
 		//Empty
-	//	uiLayout.AddSprite(glm::vec2(elementXOffset + elementPadding * 0, elementyOffset), elementScale, "elementEarthEmpty", glm::vec4(0.1f, 0.1f, 0.1f, 0.50f));// 5
-	//	uiLayout.AddSprite(glm::vec2(elementXOffset + elementPadding * 1, elementyOffset), elementScale, "elementFireEmpty", glm::vec4(0.1f, 0.1f, 0.1f, 0.50f));// 6
-	//	uiLayout.AddSprite(glm::vec2(elementXOffset + elementPadding * 2, elementyOffset), elementScale, "elementWaterEmpty", glm::vec4(0.1f, 0.1f, 0.1f, 0.50f));// 7
-	//	uiLayout.AddSprite(glm::vec2(elementXOffset + elementPadding * 3, elementyOffset), elementScale, "elementWindEmpty", glm::vec4(0.1f, 0.1f, 0.1f, 0.50f));// 8
+		//	uiLayout.AddSprite(glm::vec2(elementXOffset + elementPadding * 0, elementyOffset), elementScale, "elementEarthEmpty", glm::vec4(0.1f, 0.1f, 0.1f, 0.50f));// 5
+		//	uiLayout.AddSprite(glm::vec2(elementXOffset + elementPadding * 1, elementyOffset), elementScale, "elementFireEmpty", glm::vec4(0.1f, 0.1f, 0.1f, 0.50f));// 6
+		//	uiLayout.AddSprite(glm::vec2(elementXOffset + elementPadding * 2, elementyOffset), elementScale, "elementWaterEmpty", glm::vec4(0.1f, 0.1f, 0.1f, 0.50f));// 7
+		//	uiLayout.AddSprite(glm::vec2(elementXOffset + elementPadding * 3, elementyOffset), elementScale, "elementWindEmpty", glm::vec4(0.1f, 0.1f, 0.1f, 0.50f));// 8
 
 		uiLayout.AddSprite(hpPotionSprite, glm::vec2(1, 1), "hpPotion", glm::vec4(1.0f));// 9
 		uiLayout.AddSprite(spPotionSprite, glm::vec2(1, 1), "spPotion", glm::vec4(1.0f));// 10
@@ -603,14 +633,26 @@ namespace MCS
 		auto& world = Frosty::Application::Get().GetWorld();
 		m_MenuGui = m_App->Get().GetWorld()->CreateEntity();
 
-		Frosty::UILayout UILayout(4, 0);
-		UILayout.AddText(glm::vec2(550.0f, 525.f), "Main Menu", glm::vec3(1.0f, 1.0f, 0.0f), 1.0f);
-		UILayout.AddText(glm::vec2(610.0f, 400.0f), "Play", glm::vec3(1.0f, 1.0f, 0.0f), 1.0f);
-		UILayout.AddText(glm::vec2(575.0f, 325.0f), "Settings", glm::vec3(0.4f, 0.4f, 0.4f), 1.0f);
-		UILayout.AddText(glm::vec2(610.0f, 250.0f), "Exit", glm::vec3(0.8f, 0.0f, 0.0f), 1.0f);
-		world->AddComponent<Frosty::ECS::CGUI>(m_MenuGui, UILayout);
+		m_UILayout = Frosty::UILayout(4, 1);
+		std::string MainMenu = "Main Menu";
+		std::string Play     = "Play";
+		std::string Controls = "Controls";
+		std::string Exit     = "Exit";
+
+		float posX1 = (960 / 1.5f) - (MainMenu.size() / 2) * 21;
+		float posX2 = (960 / 1.5f) - (Play.size()     / 2) * 17;
+		float posX3 = (960 / 1.5f) - (Controls.size() / 2) * 17;
+		float posX4 = (960 / 1.5f) - (Exit.size()     / 2) * 17;
+
+		m_UILayout.AddText(glm::vec2(posX1, 525.f), MainMenu, glm::vec3(1.0f, 1.0f, 0.0f), 1.0f);
+		m_UILayout.AddText(glm::vec2(posX2, 400.0f), Play, glm::vec3(1.0f, 1.0f, 0.0f), 1.0f);
+		m_UILayout.AddText(glm::vec2(posX3, 325.0f), Controls, glm::vec3(1.0f, 1.0f, 0.0f), 1.0f);
+		m_UILayout.AddText(glm::vec2(posX4, 250.0f), Exit, glm::vec3(0.8f, 0.0f, 0.0f), 1.0f);
+		m_UILayout.AddSprite(glm::vec2(640.0f, 360.0f), glm::vec2(25.6f, 14.4f), "red", glm::vec4(0.2f, 0.2f, 0.2f, 1.0f));
+
+		world->AddComponent<Frosty::ECS::CGUI>(m_MenuGui, m_UILayout);
 	}
-	
+
 	void MenuState::InitiateLight()
 	{
 		auto& world = Frosty::Application::Get().GetWorld();
@@ -626,6 +668,5 @@ namespace MCS
 		auto& playerTransform = world->GetComponent<Frosty::ECS::CTransform>(m_Player);
 		auto& torch = world->CreateEntity({ 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f });
 		world->AddComponent<Frosty::ECS::CLight>(torch, Frosty::ECS::CLight::LightType::Point, 1.f, glm::vec3(0.99f, 0.9f, 0.8f), 15.f, &playerTransform, glm::vec3(0.f, 5.f, 0.f));
-
 	}
 }

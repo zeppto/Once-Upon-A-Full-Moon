@@ -15,10 +15,13 @@ namespace MCS
 
 		void OnGameWinEvent();
 	private:
-		void DeleteGameWinGui();
+		void InitiateGui();
 	private:
 		Frosty::Application* m_App = nullptr;
 		std::shared_ptr<Frosty::ECS::Entity> m_GameWinGui;
+		Frosty::UILayout m_UILayout;
+
+		bool m_ButtonsLoaded = false;
 	};
 }
 #endif

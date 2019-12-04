@@ -38,6 +38,8 @@ namespace MCS
 		void OnOpenLevelEvent(Frosty::OpenLevelEvent& e);
 		void OnCreatEntityEvent(Frosty::CreatEntityEvent& e);
 		void OnResetEvent(Frosty::ResetEvent& e);
+		Frosty::ECS::CGUI* GetPlayerGUI();
+
 		void OnBossSpawnedEvent(Frosty::BossSpawnedEvent& e);
 	private:
 		Frosty::World* m_World;
@@ -53,6 +55,8 @@ namespace MCS
 		//type of room (needed for creation of file)
 		std::string m_RoomType = "unknown";
 		LevelFileFormat m_LevelFileFormat;
+
+		Frosty::ECS::CGUI* m_GUI = nullptr;
 
 		//temp
 		bool m_NextLevel = false;
