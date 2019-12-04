@@ -4,6 +4,7 @@
 #include "ComputeCommand.hpp"
 #include "Texture.hpp"
 #include "Frosty/RenderEngine/Shader.hpp"
+#include "ForwardPlus.hpp"
 
 namespace Frosty
 {
@@ -31,6 +32,27 @@ namespace Frosty
 			glm::mat4 ViewProjectionMatrix;
 		};
 
+		struct PointLight
+		{
+			/*glm::vec3 Position;
+			glm::vec3 Color;
+			float Strength;
+			float Radius;*/
+
+			Frosty::ECS::CLight* PointLight;
+			ECS::CTransform* Transform;
+		};
+
+		struct DirectionalLight
+		{
+		/*	glm::vec3 Direction;
+			glm::vec3 Color;
+			float Strength;*/
+
+			Frosty::ECS::CLight* DirectionalLight;
+			ECS::CTransform* Transform;
+		};
+
 		static void Init();
 
 		static void BeginScene();
@@ -49,6 +71,8 @@ namespace Frosty
 
 
 		static void Submit(ECS::CMaterial* mat, const std::shared_ptr<VertexArray>& vertexArray, const glm::mat4& transform);
+		static void SubmitLightUniforms(ECS::CMaterial* mat);
+		static void SubmitForwardPlusUniforms(ECS::CMaterial* mat);
 		static void AnimSubmit(ECS::CMaterial* mat, const std::shared_ptr<VertexArray>& vertexArray, const glm::mat4& transform, ECS::CAnimController* controller);
 		//static void Submit2D(const std::shared_ptr<Shader>& shader, const std::shared_ptr<VertexArray>& vertexArray, std::string& tex, glm::mat4& modelMatrix);
 		static void SubmitText(const std::shared_ptr<Shader>& shader, const std::shared_ptr<VertexArray>& vertexArray, std::string& text, glm::vec2 pos, glm::vec3 color, float scale);
@@ -72,6 +96,8 @@ namespace Frosty
 
 		inline static void SetDistanceCulling(bool& distanceCulling) { s_DistanceCulling = distanceCulling; }
 
+		inline static const GameCameraProps& GetGameCamera() { return s_SceneData->GameCamera; }
+		inline static const std::unordered_map<size_t, PointLight>& GetPointLights() { return s_SceneData->PointLights; }
 
 	private:
 
@@ -113,26 +139,26 @@ namespace Frosty
 		static std::unordered_map<size_t, std::unordered_map<size_t, std::shared_ptr<MaterialData>>*> s_MaterialLookUpMap;
 		static std::vector<RenderPassData> s_RenderPas;
 
-		struct PointLight
-		{
-			glm::vec3 Position;
-			glm::vec3 Color;
-			float Strength;
-			float Radius;
+		//struct PointLight
+		//{
+		//	glm::vec3 Position;
+		//	glm::vec3 Color;
+		//	float Strength;
+		//	float Radius;
 
-			Frosty::ECS::CLight* PointLight;
-			ECS::CTransform* Transform;
-		};
+		//	Frosty::ECS::CLight* PointLight;
+		//	ECS::CTransform* Transform;
+		//};
 
-		struct DirectionalLight
-		{
-			glm::vec3 Direction;
-			glm::vec3 Color;
-			float Strength;
+		//struct DirectionalLight
+		//{
+		//	glm::vec3 Direction;
+		//	glm::vec3 Color;
+		//	float Strength;
 
-			Frosty::ECS::CLight* DirectionalLight;
-			ECS::CTransform* Transform;
-		};
+		//	Frosty::ECS::CLight* DirectionalLight;
+		//	ECS::CTransform* Transform;
+		//};
 
 		struct SceneData
 		{
@@ -147,6 +173,8 @@ namespace Frosty
 
 		static int s_TotalNrOfFrames;
 		static bool s_DistanceCulling;
+
+		static FrustumGrid s_ForwardPlus;
 	};
 }
 #endif // !RENDERER_HPP
