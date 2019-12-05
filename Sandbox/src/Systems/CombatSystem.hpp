@@ -1,7 +1,7 @@
 #ifndef COMBATSYSTEM_HPP
 #define COMBATSYSTEM_HPP
 
-namespace Frosty { class CollisionEvent; }
+namespace Frosty { class CollisionEvent; class DamageEvent; }
 
 namespace MCS
 {
@@ -25,8 +25,10 @@ namespace MCS
 
 	private:
 		void OnCollisionEvent(Frosty::CollisionEvent& e);
+		void OnDamageEvent(Frosty::DamageEvent& e);
 
 	private:
+		Frosty::World* m_World{ nullptr };
 		std::array<Frosty::ECS::CTransform*, Frosty::ECS::MAX_ENTITIES_PER_COMPONENT> m_Transform;
 		std::array<Frosty::ECS::CHealth*, Frosty::ECS::MAX_ENTITIES_PER_COMPONENT> m_Health;
 

@@ -1,8 +1,6 @@
 #ifndef WORLD_HPP
 #define WORLD_HPP
-
 #include "Frosty/API/Scene.hpp"
-#include "Frosty/StateMachine/StateMachine.hpp"
 
 namespace Frosty
 {
@@ -45,7 +43,7 @@ namespace Frosty
 		// Returns the camera entity for the scene (later change this when having multiple scenes)
 		const std::shared_ptr<ECS::Entity>& GetSceneCamera() const { return m_Scene->GetCamera(); }
 		void SetSceneCamera(const std::shared_ptr<ECS::Entity>& entity);
-		void DestroyGroup(int32_t groupId);
+		void DestroyGroup(bool current = true);
 		void HandleDestroyedRoom();
 		size_t GetCurrentRoom() const;
 		void ChangeCurrentRoom();
@@ -70,7 +68,7 @@ namespace Frosty
 		}
 
 		template<typename ComponentType, typename... TArgs>
-		inline ComponentType& AddComponent(std::shared_ptr<ECS::Entity>& entity, TArgs&&... mArgs)
+		inline ComponentType& AddComponent(const std::shared_ptr<ECS::Entity>& entity, TArgs&&... mArgs)
 		{
 			//FY_CORE_ASSERT(cId > -1, "Component was not found!");
 			ComponentType& addedComp = m_Scene->AddComponent<ComponentType>(entity, std::forward<TArgs>(mArgs)...);
@@ -112,13 +110,14 @@ namespace Frosty
 		// Other
 		void PrintWorld();
 
+		bool PauseGame();
+		bool PlayGame();
 	private:
 		void HandleDestroyedEntities();
-
 	private:
 		// Scene Declarations
 		std::unique_ptr<Scene> m_Scene;
-		size_t m_CurrentRoom{ 0 };
+		uint32_t m_CurrentRoom{ 0 };
 
 		// System Declarations 
 		std::array<std::unique_ptr<ECS::BaseSystem>, ECS::MAX_SYSTEMS> m_Systems;
@@ -127,6 +126,7 @@ namespace Frosty
 		std::vector<std::shared_ptr<ECS::Entity>> m_DestroyedEntities;
 		int32_t m_DestroyRoom{ -1 };
 
+		bool m_GamePaused = false;
 	};
 }
 

@@ -16,16 +16,19 @@ namespace MCS
 
 	void Grid::Reset()
 	{
-		if (!m_DrawGizmos) return;
-
 		for (size_t i = 0; i < m_DynamicOccupiedNodes.size(); i++)
 		{
-			auto& cellMat = m_World->GetComponent<Frosty::ECS::CMaterial>(m_World->GetEntityManager()->GetEntityById(m_DynamicOccupiedNodes[i]->CellEntityID));
-			cellMat.DiffuseTexture = Frosty::AssetManager::GetTexture2D("green_square");
+			if (m_DrawGizmos)
+			{
+				auto& cellMat = m_World->GetComponent<Frosty::ECS::CMaterial>(m_World->GetEntityManager()->GetEntityById(m_DynamicOccupiedNodes[i]->CellEntityID));
+				cellMat.DiffuseTexture = Frosty::AssetManager::GetTexture2D("green_square");
+			}
 			m_DynamicOccupiedNodes[i]->Walkable = true;
 			m_DynamicOccupiedNodes[i] = nullptr;
 		}
 		m_DynamicOccupiedNodes.clear();
+
+		if (!m_DrawGizmos) return;
 
 		for (size_t i = 0; i < m_PathNodes.size(); i++)
 		{
@@ -68,19 +71,21 @@ namespace MCS
 	
 	CellNode& Grid::WorldPointToNode(const glm::vec3& worldPoint)
 	{
-		glm::vec2 percentage = glm::vec2((worldPoint.x + m_GridWorldSize.x * 0.5f) / m_GridWorldSize.x, (worldPoint.z + m_GridWorldSize.y * 0.5f) / m_GridWorldSize.y);
+		glm::vec2 percentage = glm::vec2((worldPoint.x + m_GridWorldSize.x * 0.5f - m_GridWorldPosition.x) / m_GridWorldSize.x, (worldPoint.z + m_GridWorldSize.y * 0.5f - m_GridWorldPosition.z) / m_GridWorldSize.y);
 		percentage = glm::clamp(percentage, { 0.01f }, { 0.99f });
 
 		uint32_t col = (int)glm::floor(m_GridSize.x * percentage.x);
 		uint32_t row = (int)glm::floor(m_GridSize.y - m_GridSize.y * percentage.y);
-		uint32_t index = (int)(row * m_GridSize.y) + col;
+		uint32_t index = (int)(row * m_GridSize.x) + col;
 
 		return m_CellNodes[index];
 	}
 
 	void Grid::SetNodeUnwalkable(const glm::vec3& worldPoint)
 	{
-		WorldPointToNode(worldPoint).Walkable = false;
+		auto& cellNode = WorldPointToNode(worldPoint);
+		cellNode.Walkable = false;
+		m_DynamicOccupiedNodes.emplace_back(&cellNode);
 	}
 
 	void Grid::DrawTargetCell(Frosty::ECS::CTransform* transform)
@@ -105,7 +110,7 @@ namespace MCS
 		{
 			auto& cellMat = m_World->GetComponent<Frosty::ECS::CMaterial>(m_World->GetEntityManager()->GetEntityById(enemyNode.CellEntityID));
 			cellMat.DiffuseTexture = Frosty::AssetManager::GetTexture2D("purple_square");
-			m_DynamicOccupiedNodes.emplace_back(&enemyNode);
+			
 		}
 	}
 
@@ -133,7 +138,7 @@ namespace MCS
 			for (int32_t x = 0; x < m_GridSize.x; x++)
 			{
 				worldPoint = worldBottomLeft + glm::vec3(1.0f, 0.0f, 0.0f) * (x * CELL_SIZE + CELL_SIZE * 0.5f) - glm::vec3(0.0f, 0.0f, 1.0f) * (y * CELL_SIZE + CELL_SIZE * 0.5f);
-				walkable = !CheckCollision(worldPoint, CELL_SIZE * 0.5f);
+				walkable = !CheckCollision(worldPoint, CELL_SIZE * 0.25f);
 				m_CellNodes.emplace_back(worldPoint, walkable, x, y);
 			}
 		}

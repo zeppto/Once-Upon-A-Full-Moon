@@ -67,7 +67,7 @@ namespace Frosty
 			weapon.ProjectileSpeed = w.attribute("projectileSpeed").as_float();
 
 
-			m_Weapons.emplace_back(weapon.Type, weapon.Speciality, weapon.Level, weapon.MaxAttackRange, weapon.MaxAttackRange, weapon.Damage, weapon.CriticalHit, weapon.CriticalHitChance, weapon.LVL1AttackCooldown, weapon.LVL2AttackCooldown, weapon.LVL3AttackCooldown, weapon.Lifetime, weapon.AttackHitboxScale, weapon.ProjectileSpeed);
+			m_Weapons.emplace_back(weapon.Type, weapon.Speciality, weapon.Level, weapon.MaxAttackRange, weapon.MinAttackRange, weapon.Damage, weapon.CriticalHit, weapon.CriticalHitChance, weapon.LVL1AttackCooldown, weapon.LVL2AttackCooldown, weapon.LVL3AttackCooldown, weapon.Lifetime, weapon.AttackHitboxScale, weapon.ProjectileSpeed);
 		
 			unsigned int level = w.attribute("level").as_uint();
 			if (level > m_HighestWeaponLevel)
@@ -81,7 +81,7 @@ namespace Frosty
 		return int(m_Weapons.size());
 	}
 	
-	const Weapon& WeaponHandler::GetWeaponAt(unsigned int index)
+	const Weapon& WeaponHandler::GetWeaponAt(size_t index)
 	{
 		FY_CORE_ASSERT(index >= int(m_Weapons.size()), "WeaponHandler: Invalid index in GetWeaponAt().");
 
@@ -165,6 +165,74 @@ namespace Frosty
 		FY_CORE_ASSERT(int(indices.size()) > 0, "WeaponHandler: Weapon type in GetWeaponByType() hasn't been loaded and therefore cannot be fetched.");
 
 		// Randomize between all weapons with the right type required
+		int randomIndex = rand() % int(indices.size());
+		return m_Weapons[indices[randomIndex]];
+	}
+	
+	const Weapon& WeaponHandler::GetWeaponByTypeAndLevel(Weapon::WeaponType type, unsigned int minLevel, unsigned int maxLevel)
+	{
+		FY_CORE_ASSERT(minLevel <= maxLevel, "WeaponHandler: Required minimum level value is bigger than maximim level value in GetWeaponByTypeAndLevel().");
+
+		if (minLevel <= m_LowestWeaponLevel)
+			minLevel = m_LowestWeaponLevel;
+		else if (minLevel >= m_HighestWeaponLevel)
+		{
+			minLevel = m_HighestWeaponLevel;
+			maxLevel = m_HighestWeaponLevel;
+		}
+			
+		if (maxLevel >= m_HighestWeaponLevel)
+			maxLevel = m_HighestWeaponLevel;
+		else if (maxLevel <= m_LowestWeaponLevel)
+		{
+			minLevel = m_LowestWeaponLevel;
+			maxLevel = m_LowestWeaponLevel;
+		}
+
+		std::vector<size_t> indices;
+		indices.reserve(m_Weapons.size());
+
+		for (size_t i = 0; i < m_Weapons.size(); i++)
+		{
+			if ((m_Weapons[i].Type == type) && m_Weapons[i].Level >= minLevel && m_Weapons[i].Level <= maxLevel)
+				indices.emplace_back(i);
+		}
+
+		// Randomize between lowest level - max level required
+		int randomIndex = rand() % int(indices.size());
+		return m_Weapons[indices[randomIndex]];
+	}
+
+	const Weapon& WeaponHandler::GetAPlayerWeapon(unsigned int minLevel, unsigned int maxLevel)
+	{
+		FY_CORE_ASSERT(minLevel <= maxLevel, "WeaponHandler: Required minimum level value is bigger than maximim level value in GetAPlayerWeapon().");
+
+		if (minLevel <= m_LowestWeaponLevel)
+			minLevel = m_LowestWeaponLevel;
+		else if (minLevel >= m_HighestWeaponLevel)
+		{
+			minLevel = m_HighestWeaponLevel;
+			maxLevel = m_HighestWeaponLevel;
+		}
+
+		if (maxLevel >= m_HighestWeaponLevel)
+			maxLevel = m_HighestWeaponLevel;
+		else if (maxLevel <= m_LowestWeaponLevel)
+		{
+			minLevel = m_LowestWeaponLevel;
+			maxLevel = m_LowestWeaponLevel;
+		}
+
+		std::vector<size_t> indices;
+		indices.reserve(m_Weapons.size());
+
+		for (size_t i = 0; i < m_Weapons.size(); i++)
+		{
+			if ((m_Weapons[i].Type == Weapon::WeaponType::Sword || m_Weapons[i].Type == Weapon::WeaponType::Bow) && m_Weapons[i].Level >= minLevel && m_Weapons[i].Level <= maxLevel)
+				indices.emplace_back(i);
+		}
+
+		// Randomize between lowest level - max level required
 		int randomIndex = rand() % int(indices.size());
 		return m_Weapons[indices[randomIndex]];
 	}

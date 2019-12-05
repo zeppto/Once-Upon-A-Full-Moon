@@ -1,7 +1,7 @@
 #ifndef LOOT_SYSTEM_HPP
 #define LOOT_SYSTEM_HPP
 
-namespace Frosty { class PickUpAttemptEvent; }
+namespace Frosty { class PickUpAttemptEvent; class EnterNewRoomEvent; class DropItemEvent; }
 
 namespace MCS
 {
@@ -21,9 +21,15 @@ namespace MCS
 		virtual void RemoveEntity(const std::shared_ptr<Frosty::ECS::Entity>& entity) override;
 		virtual void UpdateEntityComponent(const std::shared_ptr<Frosty::ECS::Entity>& entity) override;
 		virtual std::string GetInfo() const override;
+
 	private:
 		void OnPickUpAttemptEvent(Frosty::PickUpAttemptEvent& e);
 		float Distance2D(glm::vec3 pos1, glm::vec3 pos2);
+
+		void OnEnterNewRoom(Frosty::EnterNewRoomEvent& e);
+		void OnDropItemEvent(Frosty::DropItemEvent& e);
+		const Frosty::Weapon& GenerateWeapon();
+
 	private:
 		Frosty::World* m_World{ nullptr };
 
@@ -32,8 +38,10 @@ namespace MCS
 
 		std::shared_ptr<Frosty::ECS::Entity> m_Player = nullptr;
 
-		float m_WorkingArea = 2.0f;
+		float m_WorkingArea = 3.0f;
 		float m_CoolDown = 0.0f;
+
+		int m_TotalRoomsVisited = 0;
 	};
 }
 #endif

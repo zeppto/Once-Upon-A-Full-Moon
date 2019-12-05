@@ -23,6 +23,7 @@ namespace MCS
 		virtual std::string GetInfo() const override;
 
 		void AttachGameCamera(Frosty::ECS::CTransform* gameCamera) { m_CameraTransform = gameCamera; }
+		void ChangeParticlesStartColor (Frosty::ECS::CParticleSystem& particleSystem, glm::vec3 color);
 
 	private:
 		void UpdateParticleSystem(size_t systemIndex);
@@ -43,7 +44,6 @@ namespace MCS
 		std::array<Frosty::ECS::CTransform*, Frosty::ECS::MAX_ENTITIES_PER_COMPONENT> m_Transform;
 		std::array<Frosty::ECS::CParticleSystem*, Frosty::ECS::MAX_ENTITIES_PER_COMPONENT> m_ParticleSystem;
 		bool m_EditMode{ false };
-		bool m_SwitchShader{ false };
 
 		Frosty::ECS::CTransform* m_CameraTransform{ nullptr };
 	};

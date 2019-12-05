@@ -18,7 +18,13 @@ namespace MCS
 		{
 			if (m_Light[i]->Origin != nullptr)
 			{
-				m_Transform[i]->Position = m_Light[i]->Origin->Position + m_Light[i]->Offset;
+				auto& world = Frosty::Application::Get().GetWorld();
+
+				if (world->HasComponent<Frosty::ECS::CPlayer>(m_Light[i]->Origin->EntityPtr))
+				{
+					glm::vec3 point3D = ScreenToTerrainPoint();
+					ShiftTowadsPoint(point3D, i);
+				}
 			}
 		}
 	}
@@ -104,7 +110,7 @@ namespace MCS
 			m_Transform[it->second] = transformPtr;
 			m_Light[it->second] = lightPtr;
 
-			Frosty::Renderer::UppdateLight(m_Light[it->second], m_Transform[it->second]);
+			Frosty::Renderer::UpdateLight(m_Light[it->second], m_Transform[it->second]);
 
 		}
 	}
@@ -132,5 +138,50 @@ namespace MCS
 		retInfo << "\t----------------Done----------------\n\n";
 
 		return retInfo.str();
+	}
+
+	glm::vec3 LightSystem::ScreenToTerrainPoint()
+	{
+		glm::vec4 viewport = Frosty::Application::Get().GetWindow().GetViewport();
+		auto& gameCameraEntity = Frosty::Application::Get().GetWorld()->GetSceneCamera();
+		auto& gameCameraTransformComp = Frosty::Application::Get().GetWorld()->GetComponent<Frosty::ECS::CTransform>(gameCameraEntity);
+		auto& gameCameraCamerComp = Frosty::Application::Get().GetWorld()->GetComponent<Frosty::ECS::CCamera>(gameCameraEntity);
+		glm::vec2 mousePos = glm::vec2(Frosty::InputManager::GetMouseX(), Frosty::InputManager::GetMouseY());
+
+
+		// Convert from viewport to NDC
+		glm::vec2 NDC = glm::vec2(
+			(2.0f * (mousePos.x - viewport.x)) / viewport.z - 1.0f,
+			(2.0f * (mousePos.y - viewport.y)) / viewport.w - 1.0f
+		);
+
+		// Convert from NDC to clip
+		glm::vec4 clipRayCoords = glm::vec4(NDC.x, NDC.y, -1.0f, 1.0f);
+
+		// Convert from clip to eye
+		glm::vec4 eyeRayCoords = glm::inverse(gameCameraCamerComp.ProjectionMatrix) * clipRayCoords;
+		eyeRayCoords.z = -1.0f;
+		eyeRayCoords.w = 0.0f;
+
+		// Convert from eye to world (and then normalize)
+		glm::vec4 worldRayCoords = glm::inverse(gameCameraCamerComp.ViewMatrix) * eyeRayCoords;
+		glm::vec3 mouseWorldRay = normalize(glm::vec3(worldRayCoords));
+
+		// Now we got a normalized vector from our screen position. Use this to find point in 3D space
+		float div = glm::dot(glm::vec3(0.0f, 1.0f, 0.0f), mouseWorldRay);
+		float t = (1.0f - glm::dot(glm::vec3(0.0f, 1.0f, 0.0f), gameCameraTransformComp.Position)) / div;
+		glm::vec3 point3D = t * mouseWorldRay + gameCameraTransformComp.Position;
+
+		return point3D;
+	}
+
+	void LightSystem::ShiftTowadsPoint(const glm::vec3& point, size_t index)
+	{
+		// Shifts the light slightly towards the lookAt position
+
+		m_Transform[index]->Position = m_Light[index]->Origin->Position + m_Light[index]->Offset;
+		glm::vec3 pointVector = glm::normalize(point - m_Transform[index]->Position);
+
+		m_Transform[index]->Position += pointVector * glm::vec3(2.f, 0.f, 2.f);
 	}
 }

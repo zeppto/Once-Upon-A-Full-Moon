@@ -10,6 +10,7 @@ namespace MCS
 {
 	bool InspectorLayer::s_VSync = false;
 	bool InspectorLayer::s_DistanceCulling = false;
+	bool InspectorLayer::s_LightCulling = false;
 
 	void InspectorLayer::OnAttach()
 	{
@@ -44,6 +45,7 @@ namespace MCS
 			ImGui::Text("FPS: %i", Frosty::Time::FPS());
 			if (ImGui::Checkbox("VSync: ", &s_VSync)) m_App->GetWindow().SetVSync(s_VSync);
 			if (ImGui::Checkbox("Distance Culling: ", &s_DistanceCulling))Frosty::Renderer::SetDistanceCulling(s_DistanceCulling);
+			if (ImGui::Checkbox("Light Culling: ", &s_LightCulling))Frosty::Renderer::SetLightCulling(s_LightCulling);
 			if (ImGui::Button("Create Entity", ImVec2(100.0f, 20.0f))) world->CreateEntity();
 
 			static int selection_mask = 0;
@@ -99,17 +101,26 @@ namespace MCS
 					if (world->HasComponent<Frosty::ECS::CMesh>(m_SelectedEntity)) toggles[1] = true;
 					if (world->HasComponent<Frosty::ECS::CCamera>(m_SelectedEntity)) toggles[2] = true;
 					if (world->HasComponent<Frosty::ECS::CMaterial>(m_SelectedEntity)) toggles[3] = true;
-					if (world->HasComponent<Frosty::ECS::CPlayer>(m_SelectedEntity)) toggles[4] = true;
-					if (world->HasComponent<Frosty::ECS::CFollow>(m_SelectedEntity)) toggles[5] = true;
-					if (world->HasComponent<Frosty::ECS::CLight>(m_SelectedEntity)) toggles[6] = true;
-					if (world->HasComponent<Frosty::ECS::CPhysics>(m_SelectedEntity)) toggles[7] = true;
-					if (world->HasComponent<Frosty::ECS::CEnemy>(m_SelectedEntity)) toggles[8] = true;
-					if (world->HasComponent<Frosty::ECS::CHealth>(m_SelectedEntity)) toggles[9] = true;
-					if (world->HasComponent<Frosty::ECS::CInventory>(m_SelectedEntity)) toggles[10] = true;
-					if (world->HasComponent<Frosty::ECS::CHealthBar>(m_SelectedEntity)) toggles[11] = true;
-					if (world->HasComponent<Frosty::ECS::CParticleSystem>(m_SelectedEntity)) toggles[12] = true;
-					if (world->HasComponent<Frosty::ECS::CBoss>(m_SelectedEntity)) toggles[13] = true;
-					if (world->HasComponent<Frosty::ECS::CAnimController>(m_SelectedEntity)) toggles[17] = true;
+					if (world->HasComponent<Frosty::ECS::CLight>(m_SelectedEntity)) toggles[4] = true;
+					if (world->HasComponent<Frosty::ECS::CPhysics>(m_SelectedEntity)) toggles[5] = true;
+					if (world->HasComponent<Frosty::ECS::CWeapon>(m_SelectedEntity)) toggles[6] = true;
+					if (world->HasComponent<Frosty::ECS::CAttack>(m_SelectedEntity)) toggles[7] = true;
+					if (world->HasComponent<Frosty::ECS::CPlayer>(m_SelectedEntity)) toggles[8] = true;
+					if (world->HasComponent<Frosty::ECS::CEnemy>(m_SelectedEntity)) toggles[9] = true;
+					if (world->HasComponent<Frosty::ECS::CHealth>(m_SelectedEntity)) toggles[10] = true;
+					if (world->HasComponent<Frosty::ECS::CInventory>(m_SelectedEntity)) toggles[11] = true;
+					if (world->HasComponent<Frosty::ECS::CHealthBar>(m_SelectedEntity)) toggles[12] = true;
+					if (world->HasComponent<Frosty::ECS::CDash>(m_SelectedEntity)) toggles[13] = true;
+					if (world->HasComponent<Frosty::ECS::CDestroy>(m_SelectedEntity)) toggles[14] = true;
+					if (world->HasComponent<Frosty::ECS::CParticleSystem>(m_SelectedEntity)) toggles[15] = true;
+					if (world->HasComponent<Frosty::ECS::CLootable>(m_SelectedEntity)) toggles[16] = true;
+					if (world->HasComponent<Frosty::ECS::CDropItem>(m_SelectedEntity)) toggles[17] = true;
+					if (world->HasComponent<Frosty::ECS::CBoss>(m_SelectedEntity)) toggles[18] = true;
+					if (world->HasComponent<Frosty::ECS::CAnimController>(m_SelectedEntity)) toggles[19] = true;
+					if (world->HasComponent<Frosty::ECS::CLevelExit>(m_SelectedEntity)) toggles[20] = true;
+					if (world->HasComponent<Frosty::ECS::CGUI>(m_SelectedEntity)) toggles[21] = true;
+					if (world->HasComponent<Frosty::ECS::CWitchCircle>(m_SelectedEntity)) toggles[22] = true;
+
 				}
 
 				// Information
@@ -142,35 +153,42 @@ namespace MCS
 						else
 							world->RemoveComponent<Frosty::ECS::CMaterial>(m_SelectedEntity);
 					}
-					if (ImGui::MenuItem("Player", "", &toggles[4]))
-					{
-						if (!world->HasComponent<Frosty::ECS::CPlayer>(m_SelectedEntity))
-							world->AddComponent<Frosty::ECS::CPlayer>(m_SelectedEntity);
-						else
-							world->RemoveComponent<Frosty::ECS::CPlayer>(m_SelectedEntity);
-					}
-					if (ImGui::MenuItem("Follow", "", &toggles[5]))
-					{
-						if (!world->HasComponent<Frosty::ECS::CFollow>(m_SelectedEntity))
-							world->AddComponent<Frosty::ECS::CFollow>(m_SelectedEntity);
-						else
-							world->RemoveComponent<Frosty::ECS::CFollow>(m_SelectedEntity);
-					}
-					if (ImGui::MenuItem("Light", "", &toggles[6]))
+					if (ImGui::MenuItem("Light", "", &toggles[4]))
 					{
 						if (!world->HasComponent<Frosty::ECS::CLight>(m_SelectedEntity))
 							world->AddComponent<Frosty::ECS::CLight>(m_SelectedEntity, Frosty::ECS::CLight::LightType::Point);
 						else
 							world->RemoveComponent<Frosty::ECS::CLight>(m_SelectedEntity);
 					}
-					if (ImGui::MenuItem("Physics", "", &toggles[7]))
+					if (ImGui::MenuItem("Physics", "", &toggles[5]))
 					{
 						if (!world->HasComponent<Frosty::ECS::CPhysics>(m_SelectedEntity))
-							world->AddComponent<Frosty::ECS::CPhysics>(m_SelectedEntity, Frosty::AssetManager::GetBoundingBox("pCube1"));
+							world->AddComponent<Frosty::ECS::CPhysics>(m_SelectedEntity, Frosty::AssetManager::GetBoundingBox("pCube1"), glm::vec3(1.0f));
 						else
 							world->RemoveComponent<Frosty::ECS::CPhysics>(m_SelectedEntity);
 					}
-					if (ImGui::MenuItem("Player Attack", "", &toggles[8]))
+					if (ImGui::MenuItem("Weapon", "", &toggles[6]))
+					{
+						if (!world->HasComponent<Frosty::ECS::CWeapon>(m_SelectedEntity))
+							world->AddComponent<Frosty::ECS::CWeapon>(m_SelectedEntity);
+						else
+							world->RemoveComponent<Frosty::ECS::CWeapon>(m_SelectedEntity);
+					}
+					if (ImGui::MenuItem("Attack", "", &toggles[7]))
+					{
+						if (!world->HasComponent<Frosty::ECS::CAttack>(m_SelectedEntity))
+							world->AddComponent<Frosty::ECS::CAttack>(m_SelectedEntity);
+						else
+							world->RemoveComponent<Frosty::ECS::CAttack>(m_SelectedEntity);
+					}
+					if (ImGui::MenuItem("Player", "", &toggles[8]))
+					{
+						if (!world->HasComponent<Frosty::ECS::CPlayer>(m_SelectedEntity))
+							world->AddComponent<Frosty::ECS::CPlayer>(m_SelectedEntity);
+						else
+							world->RemoveComponent<Frosty::ECS::CPlayer>(m_SelectedEntity);
+					}
+					if (ImGui::MenuItem("Enemy", "", &toggles[9]))
 					{
 						if (!world->HasComponent<Frosty::ECS::CEnemy>(m_SelectedEntity))
 							world->AddComponent<Frosty::ECS::CEnemy>(m_SelectedEntity);
@@ -198,29 +216,67 @@ namespace MCS
 						else
 							world->RemoveComponent<Frosty::ECS::CHealthBar>(m_SelectedEntity);
 					}
-					if (ImGui::MenuItem("Particle System", "", &toggles[14])) {
+					if (ImGui::MenuItem("Dash", "", &toggles[13]))
+					{
+						if (!world->HasComponent<Frosty::ECS::CDash>(m_SelectedEntity))
+							world->AddComponent<Frosty::ECS::CDash>(m_SelectedEntity);
+						else
+							world->RemoveComponent<Frosty::ECS::CDash>(m_SelectedEntity);
+					}
+					if (ImGui::MenuItem("Destroy", "", &toggles[14]))
+					{
+						if (!world->HasComponent<Frosty::ECS::CDestroy>(m_SelectedEntity))
+							world->AddComponent<Frosty::ECS::CDestroy>(m_SelectedEntity);
+						else
+							world->RemoveComponent<Frosty::ECS::CDestroy>(m_SelectedEntity);
+					}
+					if (ImGui::MenuItem("Particle System", "", &toggles[15])) {
 						if (!world->HasComponent<Frosty::ECS::CParticleSystem>(m_SelectedEntity))
 							world->AddComponent<Frosty::ECS::CParticleSystem>(m_SelectedEntity);
 						else
 							world->RemoveComponent<Frosty::ECS::CParticleSystem>(m_SelectedEntity);
 					}
-					if (ImGui::MenuItem("Boss", "", &toggles[15])) {
+					if (ImGui::MenuItem("Lootable", "", &toggles[16])) {
+						if (!world->HasComponent<Frosty::ECS::CLootable>(m_SelectedEntity))
+							world->AddComponent<Frosty::ECS::CLootable>(m_SelectedEntity);
+						else
+							world->RemoveComponent<Frosty::ECS::CLootable>(m_SelectedEntity);
+					}
+					if (ImGui::MenuItem("Drop Item", "", &toggles[17])) {
+						if (!world->HasComponent<Frosty::ECS::CDropItem>(m_SelectedEntity))
+							world->AddComponent<Frosty::ECS::CDropItem>(m_SelectedEntity);
+						else
+							world->RemoveComponent<Frosty::ECS::CDropItem>(m_SelectedEntity);
+					}
+					if (ImGui::MenuItem("Boss", "", &toggles[18])) {
 						if (!world->HasComponent<Frosty::ECS::CBoss>(m_SelectedEntity))
 							world->AddComponent<Frosty::ECS::CBoss>(m_SelectedEntity);
 						else
 							world->RemoveComponent<Frosty::ECS::CBoss>(m_SelectedEntity);
 					}
-					if (ImGui::MenuItem("GUI", "", &toggles[16])) {
+					if (ImGui::MenuItem("Anim Controller", "", &toggles[19])) {
+						if (!world->HasComponent<Frosty::ECS::CAnimController>(m_SelectedEntity))
+							world->AddComponent<Frosty::ECS::CAnimController>(m_SelectedEntity);
+						else
+							world->RemoveComponent<Frosty::ECS::CAnimController>(m_SelectedEntity);
+					}
+					if (ImGui::MenuItem("Level Exit", "", &toggles[20])) {
+						if (!world->HasComponent<Frosty::ECS::CLevelExit>(m_SelectedEntity))
+							world->AddComponent<Frosty::ECS::CLevelExit>(m_SelectedEntity);
+						else
+							world->RemoveComponent<Frosty::ECS::CLevelExit>(m_SelectedEntity);
+					}
+					if (ImGui::MenuItem("GUI", "", &toggles[21])) {
 						if (!world->HasComponent<Frosty::ECS::CGUI>(m_SelectedEntity))
 							world->AddComponent<Frosty::ECS::CGUI>(m_SelectedEntity);
 						else
 							world->RemoveComponent<Frosty::ECS::CGUI>(m_SelectedEntity);
 					}
-					if (ImGui::MenuItem("Anim Controller", "", &toggles[17])) {
-						if (!world->HasComponent<Frosty::ECS::CAnimController>(m_SelectedEntity))
-							world->AddComponent<Frosty::ECS::CAnimController>(m_SelectedEntity);
+					if (ImGui::MenuItem("Witch Circle", "", &toggles[22])) {
+						if (!world->HasComponent<Frosty::ECS::CWitchCircle>(m_SelectedEntity))
+							world->AddComponent<Frosty::ECS::CWitchCircle>(m_SelectedEntity);
 						else
-							world->RemoveComponent<Frosty::ECS::CAnimController>(m_SelectedEntity);
+							world->RemoveComponent<Frosty::ECS::CWitchCircle>(m_SelectedEntity);
 					}
 					ImGui::EndPopup();
 				}
@@ -268,12 +324,21 @@ namespace MCS
 
 									if (world->HasComponent<Frosty::ECS::CMaterial>(m_SelectedEntity))
 									{
-										Frosty::Renderer::ChangeEntity(m_SelectedEntity->Id, &world->GetComponent<Frosty::ECS::CMaterial>(m_SelectedEntity),
-											oldMeshName, world->GetComponent<Frosty::ECS::CMesh>(m_SelectedEntity).Mesh,
-											m_SelectedEntity->Id, &world->GetComponent<Frosty::ECS::CTransform>(m_SelectedEntity));
-
+										if (!world->HasComponent<Frosty::ECS::CAnimController>(m_SelectedEntity))
+										{
+											Frosty::Renderer::ChangeEntity(m_SelectedEntity->Id, &world->GetComponent<Frosty::ECS::CMaterial>(m_SelectedEntity),
+												oldMeshName, &world->GetComponent<Frosty::ECS::CMesh>(m_SelectedEntity),
+												m_SelectedEntity->Id, &world->GetComponent<Frosty::ECS::CTransform>(m_SelectedEntity),nullptr);
+										}
+										else
+										{
+											Frosty::Renderer::ChangeEntity(m_SelectedEntity->Id, &world->GetComponent<Frosty::ECS::CMaterial>(m_SelectedEntity),
+												oldMeshName, &world->GetComponent<Frosty::ECS::CMesh>(m_SelectedEntity),
+												m_SelectedEntity->Id, &world->GetComponent<Frosty::ECS::CTransform>(m_SelectedEntity),
+												&world->GetComponent<Frosty::ECS::CAnimController>(m_SelectedEntity));
+										}
+										
 									}
-								
 								}
 							}
 
@@ -341,9 +406,18 @@ namespace MCS
 									//Updates the renderer
 									if (world->HasComponent<Frosty::ECS::CMesh>(m_SelectedEntity))
 									{
-										Frosty::Renderer::ChangeEntity(m_SelectedEntity->Id, &world->GetComponent<Frosty::ECS::CMaterial>(m_SelectedEntity),
-											world->GetComponent<Frosty::ECS::CMesh>(m_SelectedEntity).Mesh->GetName(), world->GetComponent<Frosty::ECS::CMesh>(m_SelectedEntity).Mesh,
-											m_SelectedEntity->Id, &world->GetComponent<Frosty::ECS::CTransform>(m_SelectedEntity));
+										if (!world->HasComponent<Frosty::ECS::CAnimController>(m_SelectedEntity))
+										{
+											Frosty::Renderer::ChangeEntity(m_SelectedEntity->Id, &world->GetComponent<Frosty::ECS::CMaterial>(m_SelectedEntity),
+												world->GetComponent<Frosty::ECS::CMesh>(m_SelectedEntity).Mesh->GetName(), &world->GetComponent<Frosty::ECS::CMesh>(m_SelectedEntity),
+												m_SelectedEntity->Id, &world->GetComponent<Frosty::ECS::CTransform>(m_SelectedEntity), nullptr);
+										}
+										else
+										{
+											Frosty::Renderer::ChangeEntity(m_SelectedEntity->Id, &world->GetComponent<Frosty::ECS::CMaterial>(m_SelectedEntity),
+												world->GetComponent<Frosty::ECS::CMesh>(m_SelectedEntity).Mesh->GetName(), &world->GetComponent<Frosty::ECS::CMesh>(m_SelectedEntity),
+												m_SelectedEntity->Id, &world->GetComponent<Frosty::ECS::CTransform>(m_SelectedEntity), &world->GetComponent<Frosty::ECS::CAnimController>(m_SelectedEntity));
+										}
 									}
 								}
 							}
@@ -527,31 +601,31 @@ namespace MCS
 							// Diffuse // 
 							ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(10, 10));
 
-							
-				/*			world->AddComponent<Frosty::ECS::CAnimController>(m_SelectedEntity);
 
-							
-							Frosty::ECS::CAnimController& controlComp = world->GetComponent<Frosty::ECS::CAnimController>(m_SelectedEntity);
-							ImGui::SliderFloat("AnimSpeed", &controlComp.animSpeed, 0.f, 100.f);*/
+							/*			world->AddComponent<Frosty::ECS::CAnimController>(m_SelectedEntity);
 
-							//if (ImGui::CollapsingHeader("Animation Controller"))
-							//{
-							//	ImGui::SliderFloat("AnimSpeed", &controlComp.animSpeed, 0.f, 100.f);
-							//	
-							//	if (ImGui::Button("Pick Animation")) ImGui::OpenPopup("Animation menu");
-							//	if (ImGui::BeginPopup("Animation menu"))
-							//	{
-							//		for (auto& it: *Frosty::AssetManager::GetAnimationMap())
-							//		{
-							//			if (ImGui::Button(it.first.c_str())) controlComp.currAnim = &it.second;
-							//		}
-							//		if (ImGui::Button("Close")) ImGui::CloseCurrentPopup();
 
-							//		ImGui::EndPopup();
-							//	}
-							//}
-							//uint32_t selDiffuseID = 0;
-							//comp.DiffuseTexture ? selDiffuseID = comp.DiffuseTexture->GetRenderID() : selDiffuseID = Frosty::AssetManager::GetTexture2D("Checkerboard")->GetRenderID();
+										Frosty::ECS::CAnimController& controlComp = world->GetComponent<Frosty::ECS::CAnimController>(m_SelectedEntity);
+										ImGui::SliderFloat("AnimSpeed", &controlComp.animSpeed, 0.f, 100.f);*/
+
+										//if (ImGui::CollapsingHeader("Animation Controller"))
+										//{
+										//	ImGui::SliderFloat("AnimSpeed", &controlComp.animSpeed, 0.f, 100.f);
+										//	
+										//	if (ImGui::Button("Pick Animation")) ImGui::OpenPopup("Animation menu");
+										//	if (ImGui::BeginPopup("Animation menu"))
+										//	{
+										//		for (auto& it: *Frosty::AssetManager::GetAnimationMap())
+										//		{
+										//			if (ImGui::Button(it.first.c_str())) controlComp.currAnim = &it.second;
+										//		}
+										//		if (ImGui::Button("Close")) ImGui::CloseCurrentPopup();
+
+										//		ImGui::EndPopup();
+										//	}
+										//}
+										//uint32_t selDiffuseID = 0;
+										//comp.DiffuseTexture ? selDiffuseID = comp.DiffuseTexture->GetRenderID() : selDiffuseID = Frosty::AssetManager::GetTexture2D("Checkerboard")->GetRenderID();
 							ImGui::Image(comp.DiffuseTexture ? comp.DiffuseTexture->GetRenderID() : Frosty::AssetManager::GetTexture2D("Checkerboard")->GetRenderID(), ImVec2(64, 64));
 							ImGui::PopStyleVar();
 							if (ImGui::IsItemClicked()) ImGui::OpenPopup("diffuse_texture_selector");
@@ -669,77 +743,12 @@ namespace MCS
 							ImGui::Text("Normal");
 						}
 
+						if (comp.HasTransparency)
+						{
+							ImGui::Text("Has transparency");
+						}
+
 						// Add more parameters like texture etc
-						ImGui::EndChild();
-					}
-				}
-				if (world->HasComponent<Frosty::ECS::CPlayer>(m_SelectedEntity))
-				{
-					if (ImGui::CollapsingHeader("Player"))
-					{
-						auto& comp = world->GetComponent<Frosty::ECS::CPlayer>(m_SelectedEntity);
-						ImGui::BeginChild("CController", ImVec2(EDITOR_INSPECTOR_WIDTH, 110), true);
-
-						if (ImGui::Button(std::to_string(comp.MoveLeftKey).c_str(), ImVec2(100.0f, 0.0f)))
-						{
-							m_SelectedController = &comp;
-							m_PreviousControllerHotkey = comp.MoveLeftKey;
-						}
-						ImGui::SameLine();
-						ImGui::Text(m_PreviousControllerHotkey == comp.MoveLeftKey ? "Move Left (Press a key)" : "Move Left");
-
-						if (ImGui::Button(std::to_string(comp.MoveForwardKey).c_str(), ImVec2(100.0f, 0.0f)))
-						{
-							m_SelectedController = &comp;
-							m_PreviousControllerHotkey = comp.MoveForwardKey;
-						}
-						ImGui::SameLine();
-						ImGui::Text(m_PreviousControllerHotkey == comp.MoveForwardKey ? "Move Forward (Press a key)" : "Move Forward");
-
-						if (ImGui::Button(std::to_string(comp.MoveRightKey).c_str(), ImVec2(100.0f, 0.0f)))
-						{
-							m_SelectedController = &comp;
-							m_PreviousControllerHotkey = comp.MoveRightKey;
-						}
-						ImGui::SameLine();
-						ImGui::Text(m_PreviousControllerHotkey == comp.MoveRightKey ? "Move Right (Press a key)" : "Move Right");
-
-						if (ImGui::Button(std::to_string(comp.MoveBackKey).c_str(), ImVec2(100.0f, 0.0f)))
-						{
-							m_SelectedController = &comp;
-							m_PreviousControllerHotkey = comp.MoveBackKey;
-						}
-						ImGui::SameLine();
-						ImGui::Text(m_PreviousControllerHotkey == comp.MoveBackKey ? "Move Back (Press a key)" : "Move Back");
-
-						ImGui::EndChild();
-					}
-				}
-				if (world->HasComponent<Frosty::ECS::CFollow>(m_SelectedEntity))
-				{
-					if (ImGui::CollapsingHeader("Follow"))
-					{
-						auto& comp = world->GetComponent<Frosty::ECS::CFollow>(m_SelectedEntity);
-						ImGui::BeginChild("CFollow", ImVec2(EDITOR_INSPECTOR_WIDTH, 60), true);
-						if (ImGui::Button("Target")) ImGui::OpenPopup("follow_target_select_popup");
-						ImGui::SameLine();
-						comp.Target ? ImGui::TextUnformatted(("Entity (" + std::to_string(comp.Target->EntityPtr->Id) + ")").c_str()) : ImGui::TextUnformatted("None");
-						if (ImGui::BeginPopup("follow_target_select_popup"))
-						{
-							ImGui::Separator();
-							for (auto& entity : *world->GetEntityManager())
-							{
-								if (entity != m_SelectedEntity)
-								{
-									if (ImGui::Selectable(std::string("Entity (" + std::to_string(entity->Id) + ")").c_str()))
-									{
-										comp.Target = &world->GetComponent<Frosty::ECS::CTransform>(entity);
-									}
-								}
-							}
-							ImGui::EndPopup();
-						}
-						ImGui::InputFloat("Stop Distance", &comp.StopDistance, 1.0f, 10.0f, 0);
 						ImGui::EndChild();
 					}
 				}
@@ -805,12 +814,90 @@ namespace MCS
 						ImGui::EndChild();
 					}
 				}
+				if (world->HasComponent<Frosty::ECS::CWeapon>(m_SelectedEntity))
+				{
+					if (ImGui::CollapsingHeader("Weapon"))
+					{
+						auto& comp = world->GetComponent<Frosty::ECS::CWeapon>(m_SelectedEntity);
+						ImGui::BeginChild("CWeapon", ImVec2(EDITOR_INSPECTOR_WIDTH, 100), true);
+						// Parameters
+						ImGui::EndChild();
+					}
+				}
+				if (world->HasComponent<Frosty::ECS::CAttack>(m_SelectedEntity))
+				{
+					if (ImGui::CollapsingHeader("Attack"))
+					{
+						auto& comp = world->GetComponent<Frosty::ECS::CAttack>(m_SelectedEntity);
+						ImGui::BeginChild("CAttack", ImVec2(EDITOR_INSPECTOR_WIDTH, 100), true);
+						// Parameters
+						ImGui::EndChild();
+					}
+				}
+				if (world->HasComponent<Frosty::ECS::CPlayer>(m_SelectedEntity))
+				{
+					if (ImGui::CollapsingHeader("Player"))
+					{
+						auto& comp = world->GetComponent<Frosty::ECS::CPlayer>(m_SelectedEntity);
+						ImGui::BeginChild("CController", ImVec2(EDITOR_INSPECTOR_WIDTH, 110), true);
+
+						if (ImGui::Button(std::to_string(comp.MoveLeftKey).c_str(), ImVec2(100.0f, 0.0f)))
+						{
+							m_SelectedController = &comp;
+							m_PreviousControllerHotkey = comp.MoveLeftKey;
+						}
+						ImGui::SameLine();
+						ImGui::Text(m_PreviousControllerHotkey == comp.MoveLeftKey ? "Move Left (Press a key)" : "Move Left");
+
+						if (ImGui::Button(std::to_string(comp.MoveForwardKey).c_str(), ImVec2(100.0f, 0.0f)))
+						{
+							m_SelectedController = &comp;
+							m_PreviousControllerHotkey = comp.MoveForwardKey;
+						}
+						ImGui::SameLine();
+						ImGui::Text(m_PreviousControllerHotkey == comp.MoveForwardKey ? "Move Forward (Press a key)" : "Move Forward");
+
+						if (ImGui::Button(std::to_string(comp.MoveRightKey).c_str(), ImVec2(100.0f, 0.0f)))
+						{
+							m_SelectedController = &comp;
+							m_PreviousControllerHotkey = comp.MoveRightKey;
+						}
+						ImGui::SameLine();
+						ImGui::Text(m_PreviousControllerHotkey == comp.MoveRightKey ? "Move Right (Press a key)" : "Move Right");
+
+						if (ImGui::Button(std::to_string(comp.MoveBackKey).c_str(), ImVec2(100.0f, 0.0f)))
+						{
+							m_SelectedController = &comp;
+							m_PreviousControllerHotkey = comp.MoveBackKey;
+						}
+						ImGui::SameLine();
+						ImGui::Text(m_PreviousControllerHotkey == comp.MoveBackKey ? "Move Back (Press a key)" : "Move Back");
+
+						ImGui::EndChild();
+					}
+				}
 				if (world->HasComponent<Frosty::ECS::CEnemy>(m_SelectedEntity))
 				{
-					if (ImGui::CollapsingHeader("Player Attack"))
+					if (ImGui::CollapsingHeader("Enemy"))
 					{
 						auto& comp = world->GetComponent<Frosty::ECS::CEnemy>(m_SelectedEntity);
-						ImGui::BeginChild("CPlayerAttack", ImVec2(EDITOR_INSPECTOR_WIDTH, 105), true);
+						ImGui::BeginChild("CEnemy", ImVec2(EDITOR_INSPECTOR_WIDTH, 105), true);
+						//if (ImGui::Button("Weapon")) ImGui::OpenPopup("camera_target_select_popup");
+						//ImGui::SameLine();
+						//comp.Target ? ImGui::TextUnformatted(("Entity (" + std::to_string(comp.Weapon->EntityPtr->Id) + ")").c_str()) : ImGui::TextUnformatted("None");
+						//if (ImGui::BeginPopup("weapon_select_popup"))
+						//{
+						//	ImGui::Separator();
+						//	for (auto& entity : *world->GetEntityManager())
+						//	{
+						//		if (entity != m_SelectedEntity)
+						//		{
+						//		}
+						//	}
+						//	ImGui::EndPopup();
+						//}
+						ImGui::DragFloat3("SpawnPosition", glm::value_ptr(comp.SpawnPosition), 0.0f, 0.0f, 0.0f, "%.2f");
+						ImGui::InputFloat("RunOnHealth", &comp.RunOnHealth, 1.0f, 10.0f, 0);
 						ImGui::EndChild();
 					}
 				}
@@ -820,8 +907,8 @@ namespace MCS
 					{
 						auto& comp = world->GetComponent<Frosty::ECS::CHealth>(m_SelectedEntity);
 						ImGui::BeginChild("CHealth", ImVec2(EDITOR_INSPECTOR_WIDTH, 70), true);
-						ImGui::InputFloat("Max Health", &comp.MaxHealth, 1.0f, 10.0f, 0);
-						ImGui::InputFloat("Current Health", &comp.CurrentHealth, 1.0f, 10.0f, 0);
+						ImGui::InputInt("Max Health", &comp.MaxHealth, 1, 10, 0);
+						ImGui::InputInt("Current Health", &comp.CurrentHealth, 1, 10, 0);
 						ImGui::EndChild();
 					}
 				}
@@ -850,39 +937,78 @@ namespace MCS
 						ImGui::EndChild();
 					}
 				}
+				if (world->HasComponent<Frosty::ECS::CDash>(m_SelectedEntity))
+				{
+					if (ImGui::CollapsingHeader("Dash"))
+					{
+						auto& comp = world->GetComponent<Frosty::ECS::CDash>(m_SelectedEntity);
+						ImGui::BeginChild("CDash", ImVec2(EDITOR_INSPECTOR_WIDTH, 100), true);
+						// Parameters
+						ImGui::EndChild();
+					}
+				}
+				if (world->HasComponent<Frosty::ECS::CDestroy>(m_SelectedEntity))
+				{
+					if (ImGui::CollapsingHeader("Destroy"))
+					{
+						auto& comp = world->GetComponent<Frosty::ECS::CDestroy>(m_SelectedEntity);
+						ImGui::BeginChild("CDestroy", ImVec2(EDITOR_INSPECTOR_WIDTH, 100), true);
+						// Parameters
+						ImGui::EndChild();
+					}
+				}
 				if (world->HasComponent<Frosty::ECS::CParticleSystem>(m_SelectedEntity))
 				{
 					if (ImGui::CollapsingHeader("Particle System"))
 					{
 						auto& comp = world->GetComponent<Frosty::ECS::CParticleSystem>(m_SelectedEntity);
-						ImGui::BeginChild("CParticleSystem", ImVec2(EDITOR_INSPECTOR_WIDTH, 500), true);
+						ImGui::BeginChild("CParticleSystem", ImVec2(EDITOR_INSPECTOR_WIDTH, 560), true);
 						ImGui::Text("Active particles: %i", comp.ParticleCount);
-						ImGui::Checkbox("Preview", &comp.Preview);
+						if (comp.Loop)
+						{
+							ImGui::Checkbox("Preview", &comp.Preview);
+							ImGui::SameLine();
+						}
+						else
+						{
+							if (ImGui::Button("Play", ImVec2(40, 25)))
+							{
+								comp.Preview = true;
+								comp.TimesPlayed = -1;
+							}
+						}
+						ImGui::Checkbox("Loop", &comp.Loop);
+						ImGui::SameLine();
 						ImGui::Checkbox("Face camera", &comp.AlwaysFaceCamera);
 						if (ImGui::IsItemClicked())
 						{
 							if (comp.AlwaysFaceCamera == false) //Was false, changed to true
 							{
 								comp.UseShader = Frosty::AssetManager::GetShader("Particles");
+								comp.RotateOverLifetime = false;
 							}
-							else if(comp.AlwaysFaceCamera == true) //Was true, changed to false
+							else if (comp.AlwaysFaceCamera == true) //Was true, changed to false
 							{
 								comp.UseShader = Frosty::AssetManager::GetShader("ParticlesHorizontal");
 
 							}
 						}
-						ImGui::Checkbox("Static color", &comp.StaticColor);
-						if (comp.StaticColor == true)
+						if (!Frosty::Application::Get().GameIsRunning())
 						{
-							ImGui::ColorEdit4("Color", glm::value_ptr(comp.SystemStartColor));
-							comp.SystemEndColor = comp.SystemStartColor;
+							ImGui::SameLine();
+							ImGui::Checkbox("Static color", &comp.StaticColor);
+
+							if (comp.StaticColor == true)
+							{
+								ImGui::ColorEdit4("Color", glm::value_ptr(comp.SystemStartColor));
+								comp.SystemEndColor = comp.SystemStartColor;
+							}
+							else
+							{
+								ImGui::ColorEdit4("Start color", glm::value_ptr(comp.SystemStartColor));
+								ImGui::ColorEdit4("End color", glm::value_ptr(comp.SystemEndColor));
+							}
 						}
-						else
-						{
-							ImGui::ColorEdit4("Start color", glm::value_ptr(comp.SystemStartColor));
-							ImGui::ColorEdit4("End color", glm::value_ptr(comp.SystemEndColor));
-						}
-						ImGui::DragFloat3("Rotation", glm::value_ptr(comp.SystemRotation), 0.1f, 0.0f, 0.0f, "%.2f");
 						ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(10, 10));
 						ImGui::Image(comp.Texture ? comp.Texture->GetRenderID() : Frosty::AssetManager::GetTexture2D("Checkerboard")->GetRenderID(), ImVec2(64, 64));
 						ImGui::PopStyleVar();
@@ -922,12 +1048,24 @@ namespace MCS
 						ImGui::Text("Texture");
 						if (!Frosty::Application::Get().GameIsRunning())
 						{
-							ImGui::SliderInt("Particle count", (int*)&comp.MaxParticles, 1, comp.MAX_PARTICLE_COUNT);
+							ImGui::SliderInt("Particle count", (int*)& comp.MaxParticles, 1, comp.MAX_PARTICLE_COUNT);
 						}
+						ImGui::DragFloat3("Rotation", glm::value_ptr(comp.SystemRotation), 0.1f, 0.0f, 0.0f, "%.2f");
 						ImGui::Checkbox("Random direction", &comp.RandomDirection);
+						ImGui::SameLine();
+						ImGui::Checkbox("Gravity", &comp.HasGravity);
 						if (comp.RandomDirection == false)
 						{
 							ImGui::DragFloat3("Direction", glm::value_ptr(comp.ParticleSystemDirection), 0.1f, 0.0f, 0.0f, "%.2f");
+						}
+						else
+						{
+							ImGui::InputFloat("Spread", &comp.randSpread);
+							ImGui::DragFloat3("Main direction", glm::value_ptr(comp.randMainDir), 0.1f, 0.0f, 0.0, "%.2f");
+						}
+						if (comp.HasGravity)
+						{
+							ImGui::InputFloat("Weight", &comp.ParticleWeight);
 						}
 						ImGui::Checkbox("Random start position", &comp.RandomStartPos);
 						if (comp.RandomStartPos == false)
@@ -937,16 +1075,45 @@ namespace MCS
 						ImGui::Checkbox("Random lifetimes", &comp.RandomLifetimes);
 						if (comp.RandomLifetimes == true)
 						{
-							ImGui::InputFloat("Max lifetime", &comp.MaxLifetime);
 							ImGui::InputFloat("Min lifetime", &comp.MinLifetime);
+							ImGui::InputFloat("Max lifetime", &comp.MaxLifetime);
 						}
-						ImGui::InputFloat("Speed", &comp.Speed);
+						if (comp.AlwaysFaceCamera == false) //Only relevant if particles aren't billboarded since we won't see any difference
+						{
+							ImGui::Checkbox("Rotate over lifetime", &comp.RotateOverLifetime);
+						}
+						if (!Frosty::Application::Get().GameIsRunning())
+						{
+							ImGui::InputFloat("Speed", &comp.Speed);
+						}
 						ImGui::InputFloat("Start size", &comp.StartParticleSize);
 						ImGui::InputFloat("End size", &comp.EndParticleSize);
 						ImGui::InputFloat("Emit rate", &comp.EmitRate);
-						ImGui::DragInt("Emit count", (int*)&comp.EmitCount, 1, 1, comp.MaxParticles);
+						ImGui::DragInt("Emit count", (int*)& comp.EmitCount, 1, 1, comp.MaxParticles);
 						ImGui::InputFloat("Lifetime", &comp.MaxLifetime);
-						ImGui::SliderFloat("Fade", &comp.FadeTreshold, 0.0f, comp.MaxLifetime);
+						ImGui::SliderFloat("Fade in", &comp.FadeInTreshold, comp.MaxLifetime, 0.0f);
+						ImGui::SliderFloat("Fade out", &comp.FadeTreshold, 0.0f, comp.MaxLifetime);
+
+						ImGui::EndChild();
+					}
+				}
+				if (world->HasComponent<Frosty::ECS::CLootable>(m_SelectedEntity))
+				{
+					if (ImGui::CollapsingHeader("Lootable"))
+					{
+						auto& comp = world->GetComponent<Frosty::ECS::CLootable>(m_SelectedEntity);
+						ImGui::BeginChild("CLootable", ImVec2(EDITOR_INSPECTOR_WIDTH, 100), true);
+						// Parameters
+						ImGui::EndChild();
+					}
+				}
+				if (world->HasComponent<Frosty::ECS::CDropItem>(m_SelectedEntity))
+				{
+					if (ImGui::CollapsingHeader("Drop Item"))
+					{
+						auto& comp = world->GetComponent<Frosty::ECS::CDropItem>(m_SelectedEntity);
+						ImGui::BeginChild("CDropItem", ImVec2(EDITOR_INSPECTOR_WIDTH, 100), true);
+						// Parameters
 						ImGui::EndChild();
 					}
 				}
@@ -966,16 +1133,15 @@ namespace MCS
 					{
 						auto& comp = world->GetComponent<Frosty::ECS::CGUI>(m_SelectedEntity);
 						ImGui::BeginChild("CGUI", ImVec2(EDITOR_INSPECTOR_WIDTH, 45), true);
-						ImGui::Text("Test text"); //TODO: Fill with info
+						ImGui::Text("The GUI is active."); //TODO: Fill with info
 						ImGui::EndChild();
 					}
 				}
-				
 				if (world->HasComponent<Frosty::ECS::CAnimController>(m_SelectedEntity))
 				{
 					if (ImGui::CollapsingHeader("Animation Controller"))
 					{
-						Frosty::ECS::CAnimController * comp = &world->GetComponent<Frosty::ECS::CAnimController>(m_SelectedEntity);
+						Frosty::ECS::CAnimController* comp = &world->GetComponent<Frosty::ECS::CAnimController>(m_SelectedEntity);
 						ImGui::SliderFloat("AnimSpeed", &comp->animSpeed, 0.f, 50.f);
 
 						if (ImGui::Button("Pick Animation")) ImGui::OpenPopup("Animation menu");
@@ -989,6 +1155,36 @@ namespace MCS
 							ImGui::EndPopup();
 						}
 
+					}
+				}
+				if (world->HasComponent<Frosty::ECS::CLevelExit>(m_SelectedEntity))
+				{
+					if (ImGui::CollapsingHeader("Level Exit"))
+					{
+						auto& comp = world->GetComponent<Frosty::ECS::CLevelExit>(m_SelectedEntity);
+						ImGui::BeginChild("CLevelExit", ImVec2(EDITOR_INSPECTOR_WIDTH, 100), true);
+						// Parameters
+						ImGui::EndChild();
+					}
+				}
+				if (world->HasComponent<Frosty::ECS::CGUI>(m_SelectedEntity))
+				{
+					if (ImGui::CollapsingHeader("GUI"))
+					{
+						auto& comp = world->GetComponent<Frosty::ECS::CGUI>(m_SelectedEntity);
+						ImGui::BeginChild("CGUI", ImVec2(EDITOR_INSPECTOR_WIDTH, 100), true);
+						// Parameters
+						ImGui::EndChild();
+					}
+				}
+				if (world->HasComponent<Frosty::ECS::CWitchCircle>(m_SelectedEntity))
+				{
+					if (ImGui::CollapsingHeader("Witch Circle"))
+					{
+						auto& comp = world->GetComponent<Frosty::ECS::CWitchCircle>(m_SelectedEntity);
+						ImGui::BeginChild("CWitchCircle", ImVec2(EDITOR_INSPECTOR_WIDTH, 100), true);
+						// Parameters
+						ImGui::EndChild();
 					}
 				}
 			}
@@ -1094,6 +1290,34 @@ namespace MCS
 			if (ImGui::Button("chest", ImVec2(80.0f, EDITOR_MAIN_MENU_BAR_HEIGHT)))
 			{
 				Frosty::EventBus::GetEventBus()->Publish<Frosty::CreatEntityEvent>(Frosty::CreatEntityEvent(17));
+			}
+			if (ImGui::Button("sparsFierflis", ImVec2(100.0f, EDITOR_MAIN_MENU_BAR_HEIGHT)))
+			{
+				Frosty::EventBus::GetEventBus()->Publish<Frosty::CreatEntityEvent>(Frosty::CreatEntityEvent(18));
+			}
+			ImGui::SameLine();
+			if (ImGui::Button("fierflis", ImVec2(80.0f, EDITOR_MAIN_MENU_BAR_HEIGHT)))
+			{
+				Frosty::EventBus::GetEventBus()->Publish<Frosty::CreatEntityEvent>(Frosty::CreatEntityEvent(19));
+			}
+			ImGui::SameLine();
+			if (ImGui::Button("fierflisSwarm", ImVec2(100.0f, EDITOR_MAIN_MENU_BAR_HEIGHT)))
+			{
+				Frosty::EventBus::GetEventBus()->Publish<Frosty::CreatEntityEvent>(Frosty::CreatEntityEvent(20));
+			}
+			ImGui::SameLine();
+			if (ImGui::Button("fierflisBlue", ImVec2(100.0f, EDITOR_MAIN_MENU_BAR_HEIGHT)))
+			{
+				Frosty::EventBus::GetEventBus()->Publish<Frosty::CreatEntityEvent>(Frosty::CreatEntityEvent(21));
+			}
+			if (ImGui::Button("cultist", ImVec2(100.0f, EDITOR_MAIN_MENU_BAR_HEIGHT)))
+			{
+				Frosty::EventBus::GetEventBus()->Publish<Frosty::CreatEntityEvent>(Frosty::CreatEntityEvent(22));
+			}
+			ImGui::SameLine();
+			if (ImGui::Button("wolf", ImVec2(100.0f, EDITOR_MAIN_MENU_BAR_HEIGHT)))
+			{
+				Frosty::EventBus::GetEventBus()->Publish<Frosty::CreatEntityEvent>(Frosty::CreatEntityEvent(23));
 			}
 		}
 		ImGui::End();

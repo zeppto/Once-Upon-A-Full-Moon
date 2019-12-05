@@ -28,7 +28,8 @@ namespace MCS
 
 	private:
 		void CheckCollision(size_t index);
-		void SpawnItem(size_t index);
+		glm::vec3 CircleIntersection(size_t indexA, size_t indexB);
+
 	private:
 		std::array<Frosty::ECS::CTransform*, Frosty::ECS::MAX_ENTITIES_PER_COMPONENT> m_Transform;
 		std::array<Frosty::ECS::CPhysics*, Frosty::ECS::MAX_ENTITIES_PER_COMPONENT> m_Physics;

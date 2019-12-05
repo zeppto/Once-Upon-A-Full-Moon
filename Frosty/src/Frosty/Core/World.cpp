@@ -34,22 +34,39 @@ namespace Frosty
 
 	void World::OnInput()
 	{
-		for (size_t i = 1; i < m_TotalSystems; i++)
+		if (!m_GamePaused)
 		{
-			m_Systems[i]->OnInput();
+			for (size_t i = 1; i < m_TotalSystems; i++)
+			{
+				m_Systems[i]->OnInput();
+			}
 		}
 	}
 
 	void World::OnUpdate()
 	{
-		for (size_t i = 1; i < m_TotalSystems; i++)
+		if (!m_GamePaused)
+		{
+			for (size_t i = 1; i < m_TotalSystems; i++)
+			{
+				m_Systems[i]->OnUpdate();
+			}
+		}
+		/*for (size_t i = 1; i < m_TotalSystems; i++)
 		{
 			m_Systems[i]->OnUpdate();
-		}
+		}*/
 	}
 
 	void World::OnEvent(BaseEvent& e)
 	{
+		/*if (!m_GamePaused)
+		{
+			for (size_t i = 1; i < m_TotalSystems; i++)
+			{
+				m_Systems[i]->OnEvent(e);
+			}
+		}*/
 		for (size_t i = 1; i < m_TotalSystems; i++)
 		{
 			m_Systems[i]->OnEvent(e);
@@ -106,11 +123,10 @@ namespace Frosty
 		m_Scene->AddCamera(entity);
 	}
 
-	void World::DestroyGroup(int32_t groupId)
+	void World::DestroyGroup(bool current)
 	{
-		FY_CORE_ASSERT(groupId == 0 || groupId == 1, "That groupId doesn't exist!");
-
-		m_DestroyRoom = groupId;
+		if (current) m_DestroyRoom = (int32_t)(m_CurrentRoom);
+		else m_DestroyRoom = (int32_t)((m_CurrentRoom + 1) % 2);
 	}
 
 	void World::HandleDestroyedRoom()
@@ -182,5 +198,15 @@ namespace Frosty
 			RemoveEntity(m_DestroyedEntities[i]);
 			m_DestroyedEntities.erase(m_DestroyedEntities.begin() + i);
 		}
+	}
+	
+	bool World::PauseGame()
+	{
+		return m_GamePaused = true;
+	}
+	
+	bool World::PlayGame()
+	{
+		return m_GamePaused = false;
 	}
 }
