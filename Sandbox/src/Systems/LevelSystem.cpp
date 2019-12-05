@@ -3,7 +3,6 @@
 #include "Frosty/API/AssetManager/AssetManager.hpp"
 #include "Frosty/Events/AbilityEvent.hpp"
 #include "Frosty/Core/BoolMap/BoolMapGenerator.hpp"
-
 namespace MCS
 {
 	const std::string LevelSystem::NAME = "Level";
@@ -12,7 +11,6 @@ namespace MCS
 	{
 		m_World = Frosty::Application::Get().GetWorld().get();
 		p_Signature.set(Frosty::ECS::getComponentTypeID<Frosty::ECS::CTransform>(), true);
-
 	}
 
 	void LevelSystem::OnStart()
@@ -58,6 +56,9 @@ namespace MCS
 		case Frosty::EventType::BossSpawned:
 			OnBossSpawnedEvent(static_cast<Frosty::BossSpawnedEvent&>(e));
 			break;
+		case Frosty::EventType::BaitPlaced:
+			OnBaitPlacedEvent(static_cast<Frosty::BaitPlacedEvent&>(e));
+			break;
 		default:
 			break;
 		}
@@ -88,6 +89,163 @@ namespace MCS
 			m_LevelFileFormat.OpenFromFile("deadend_chests_IsStatick_t_p_e_r_h_a", m_PlayerPos, playerTransform, rotate);
 			m_Start = false;
 			m_LevelFileFormat.LoadBoolMap("deadend_chests_IsStatick_t_p_e_r_h_a");
+			m_StartTimer = Frosty::Time::CurrentTime();
+		}
+
+		float time = Frosty::Time::CurrentTime() - m_StartTimer - m_BossStartTimer;
+		if (time > 0)
+		{
+			if (!m_haveStartedMoving)
+			{
+				FY_INFO("The boss have started moving {0}", "!");
+				Room chekRoom = m_Map.getRoom(m_BossPos);
+				if (!chekRoom.Ocupide)
+				{
+					m_BossPos = m_Map.getLastCreatedLevelPos();
+				}
+				FY_INFO("The boss starts on ({0}, {1})", m_BossPos.x, m_BossPos.y);
+				m_haveStartedMoving = true;
+			}
+
+			if (time > m_BossTimer)
+			{
+				float estematedBossRoomTime;
+				if (m_LevelFileFormat.NumberOfRoomsVisited() != 0)
+				{
+					estematedBossRoomTime = ((Frosty::Time::CurrentTime() - m_StartTimer + 50.0f) / m_LevelFileFormat.NumberOfRoomsVisited() / 2);
+					if(estematedBossRoomTime > m_BossRoomTimer)
+						estematedBossRoomTime = m_BossRoomTimer;
+				}
+				else
+				{
+					estematedBossRoomTime = m_BossRoomTimer;
+				}
+
+				m_BossTimer = time + estematedBossRoomTime;
+				FY_INFO("It takes {0} sec until boss moves", estematedBossRoomTime);
+				if (m_PlayerPos != m_BossPos)
+				{
+					if (m_RoomswhithBait.size() > 0)
+					{
+						//follow bait
+						FY_INFO("The boss is following bait");
+						Room bossCurrentRoom = m_Map.getRoom(m_BossPos);
+						glm::ivec2 expectedBossPos = glm::ivec2(-1, -1);
+						if (m_BossRememberdPath.pathToGo.size() > m_BossRememberdPath.lastTile)
+							expectedBossPos = m_BossRememberdPath.pathToGo.at(m_BossRememberdPath.lastTile - 1);
+						//the boss follows bait
+						for (int i = 0; i < m_RoomswhithBait.size(); i++)
+						{
+							if (m_BossRememberdPath.expectedPlayerPos != m_RoomswhithBait.at(i) || m_BossPos != expectedBossPos)
+							{
+								bossRememberdPath baitTarget;
+								baitTarget.pathToGo = m_Map.getPathToTargert(m_BossPos, m_RoomswhithBait.at(i));
+								baitTarget.lastTile = 1;
+								baitTarget.expectedPlayerPos = m_RoomswhithBait.at(i);
+								if (baitTarget.pathToGo.size() - baitTarget.lastTile < m_BossRememberdPath.pathToGo.size() - m_BossRememberdPath.lastTile || m_BossRememberdPath.pathToGo.size() - m_BossRememberdPath.lastTile == 0)
+								{
+									FY_INFO("The boss found a closer bait");
+									m_BossRememberdPath.pathToGo = baitTarget.pathToGo;
+									m_BossRememberdPath.lastTile = baitTarget.lastTile;
+									m_BossRememberdPath.expectedPlayerPos = baitTarget.expectedPlayerPos;
+								}
+							}
+						}
+						if (m_BossRememberdPath.pathToGo.size() > m_BossRememberdPath.lastTile)
+						{
+							m_BossPos = m_BossRememberdPath.pathToGo.at(m_BossRememberdPath.lastTile);
+							m_BossRememberdPath.lastTile++;
+							FY_INFO("The boss is moving to ({0}, {1})", m_BossPos.x, m_BossPos.y);
+							FY_INFO("");
+
+						}
+						else
+						{
+							FY_INFO("Somthing is wrong and the boss did don't move");
+							FY_INFO("");
+						}
+						if (m_BossRememberdPath.expectedPlayerPos == m_BossPos)
+						{
+							float timeToEate = (5.0f * m_LevelFileFormat.RemoveAllBaitInRoom(m_BossPos));
+							m_BossTimer += timeToEate;
+							for (int i = 0; i < m_RoomswhithBait.size(); i++)
+							{
+								if (m_RoomswhithBait.at(i) == m_BossPos)
+									m_RoomswhithBait.erase(m_RoomswhithBait.begin() + i);
+							}
+							FY_INFO("The boss found the bait! and is eating for {0} sec", timeToEate);
+							FY_INFO("");
+						}
+
+						if (m_BossPos == m_PlayerPos)
+						{
+							Frosty::EventBus::GetEventBus()->Publish<Frosty::SpawnBossEvent>(Frosty::SpawnBossEvent());
+							FY_INFO("The boss found the player!");
+							FY_INFO("");
+						}
+					}
+					else
+					{
+						//ther is no bait so move to player
+						int moveToPlayerChanse = rand() % 100;
+						FY_INFO("The boss hase {0} % chans to move to player", time / ((m_BossFollowTimer * 60.0f) / 100.0f));
+						if (moveToPlayerChanse < time / ((m_BossFollowTimer * 60.0f) / 100.0f))
+						{
+							FY_INFO("The boss knowes wher you are and moves");
+							Room bossCurrentRoom = m_Map.getRoom(m_BossPos);
+							glm::ivec2 expectedBossPos = glm::ivec2(-1, -1);
+							if (m_BossRememberdPath.pathToGo.size() > m_BossRememberdPath.lastTile)
+								expectedBossPos = m_BossRememberdPath.pathToGo.at(m_BossRememberdPath.lastTile - 1);
+							//the boss follows player
+							if (m_BossRememberdPath.expectedPlayerPos != m_PlayerPos || m_BossPos != expectedBossPos)
+							{
+								m_BossRememberdPath.pathToGo = m_Map.getPathToTargert(m_BossPos, m_PlayerPos);
+								m_BossRememberdPath.lastTile = 1;
+								m_BossRememberdPath.expectedPlayerPos = m_PlayerPos;
+
+							}
+							if (m_BossRememberdPath.pathToGo.size() > m_BossRememberdPath.lastTile)
+							{
+								m_BossPos = m_BossRememberdPath.pathToGo.at(m_BossRememberdPath.lastTile);
+								m_BossRememberdPath.lastTile++;
+								FY_INFO("The boss is moving to ({0}, {1})", m_BossPos.x, m_BossPos.y);
+								FY_INFO("");
+
+							}
+							else
+							{
+								FY_INFO("Somthing is wrong and the boss did don't move");
+								FY_INFO("");
+							}
+						}
+						else
+						{
+							FY_INFO("The boss lost track of you and is serching");
+							randomBossMovment();
+							FY_INFO("");
+						}
+
+						if (m_BossPos == m_PlayerPos)
+						{
+							Frosty::EventBus::GetEventBus()->Publish<Frosty::SpawnBossEvent>(Frosty::SpawnBossEvent());
+							FY_INFO("The boss found the player!");
+							FY_INFO("");
+						}
+					}
+				}
+			}
+
+			//howel
+			if(time > m_BossHawol && m_PlayerPos != m_BossPos)
+			{
+				FY_INFO("The boss haoweld");
+				FY_INFO("");
+				int nextHawol = (rand() % 10) + 20;
+				m_BossHawol = time + nextHawol;
+				glm::vec2 direction = m_BossPos - m_PlayerPos;
+
+				Frosty::EventBus::GetEventBus()->Publish<Frosty::BossFearEffectEvent>(Frosty::BossFearEffectEvent(direction));
+			}
 		}
 	}
 
@@ -232,6 +390,8 @@ namespace MCS
 			m_PlayerPos += glm::ivec2(-1, 0);
 		if (ExitSide.ExitDirection == 3)
 			m_PlayerPos += glm::ivec2(1, 0);
+		FY_INFO("The player moved to ({0}, {1})", m_PlayerPos.x, m_PlayerPos.y);
+		FY_INFO("");
 
 		m_CurrentRoome = m_Map.getRoom(m_PlayerPos);
 		//m_EntrensSide = ExitSide.ExitDirection;
@@ -740,28 +900,252 @@ namespace MCS
 
 	void LevelSystem::OnResetEvent(Frosty::ResetEvent& e)
 	{
+		Frosty::ECS::CMesh* weaponMesh = nullptr;
+		Frosty::ECS::CAnimController* animation = nullptr;
+		Frosty::ECS::CPlayer* Player = nullptr;
+		Frosty::ECS::CTransform* PlayerT = nullptr;
+		Frosty::ECS::CWeapon* m_Weapon = nullptr;
+		int weaponID = 0;
+
 		for (size_t i = 1; i < p_Total; i++)
 		{
-			if (!m_World->HasComponent<Frosty::ECS::CWeapon>(m_Transform[i]->EntityPtr))
+			if (!m_World->HasComponent<Frosty::ECS::CPlayer>(m_Transform[i]->EntityPtr))
 			{
-
-				if (!m_World->HasComponent<Frosty::ECS::CGUI>(m_Transform[i]->EntityPtr))
+				if (!m_World->HasComponent<Frosty::ECS::CWeapon>(m_Transform[i]->EntityPtr))
+				{
+					if (!m_World->HasComponent<Frosty::ECS::CCamera>(m_Transform[i]->EntityPtr))
+					{
+						if (!m_World->HasComponent<Frosty::ECS::CLight>(m_Transform[i]->EntityPtr))
+						{
+							if (!m_World->HasComponent<Frosty::ECS::CGUI>(m_Transform[i]->EntityPtr))
+							{
+								if (!m_World->HasComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr))
+								{
+									m_World->AddComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr);
+								}
+							}
+						}
+					}
+				}
+				else if (!m_World->GetComponent<Frosty::ECS::CWeapon>(m_Transform[i]->EntityPtr).IsPlayerWeapon)
 				{
 					if (!m_World->HasComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr))
 					{
 						m_World->AddComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr);
 					}
 				}
+				else if (m_World->GetComponent<Frosty::ECS::CWeapon>(m_Transform[i]->EntityPtr).IsPlayerWeapon)
+				{
+					auto& weaponHandler = Frosty::AssetManager::GetWeaponHandler("Weapons");
+					Frosty::Weapon lootWeaponComp = weaponHandler->GetAPlayerWeapon(1, 1);
+					auto& playerWeaponComp = m_World->GetComponent<Frosty::ECS::CWeapon>(m_Transform[i]->EntityPtr);
+					Frosty::ECS::CWeapon::WeaponType type = playerWeaponComp.Type;
 
+					if (lootWeaponComp.Type == Frosty::Weapon::WeaponType::Sword)
+					{
+						playerWeaponComp.Type = Frosty::ECS::CWeapon::WeaponType::Sword;
+						auto& mesh = m_World->GetComponent<Frosty::ECS::CMesh>(m_Transform[i]->EntityPtr);
+						mesh.Mesh = Frosty::AssetManager::GetMesh("sword");
+						auto& weaponMat = m_World->GetComponent<Frosty::ECS::CMaterial>(m_Transform[i]->EntityPtr);
+						weaponMat.UseShader = Frosty::AssetManager::GetShader("Texture2D");
+						weaponMat.DiffuseTexture = Frosty::AssetManager::GetTexture2D("sword_lvl1_diffuse");
+						weaponMat.NormalTexture = Frosty::AssetManager::GetTexture2D("sword_normal");
+
+						if (playerWeaponComp.Type == Frosty::ECS::CWeapon::WeaponType::Sword)
+						{
+							m_GUI = GetPlayerGUI();
+							if (m_GUI != nullptr)
+							{
+								m_GUI->Layout.sprites.at(1).SetImage("attackMelee");
+								m_GUI->Layout.sprites.at(2).SetImage("attackMelee1");
+								m_GUI->Layout.sprites.at(3).SetImage("attackMelee2");
+								m_GUI->Layout.sprites.at(4).SetImage("attackMelee3");
+							}
+							Frosty::Renderer::ChangeEntity(m_Transform[i]->EntityPtr->Id, &weaponMat, "Sword", &mesh, m_Transform[i]->EntityPtr->Id, m_Transform[i], nullptr);
+						}
+						weaponMesh = &mesh;
+					}
+					else if (lootWeaponComp.Type == Frosty::Weapon::WeaponType::Bow)
+					{
+						playerWeaponComp.Type = Frosty::ECS::CWeapon::WeaponType::Bow;
+						auto& mesh = m_World->GetComponent<Frosty::ECS::CMesh>(m_Transform[i]->EntityPtr);
+						mesh.Mesh = Frosty::AssetManager::GetMesh("Bow");
+						auto& weaponMat = m_World->GetComponent<Frosty::ECS::CMaterial>(m_Transform[i]->EntityPtr);
+						weaponMat.UseShader = Frosty::AssetManager::GetShader("Texture2D");
+						weaponMat.DiffuseTexture = Frosty::AssetManager::GetTexture2D("bow_lvl1_diffuse");
+						weaponMat.NormalTexture = Frosty::AssetManager::GetTexture2D("bow_normal");
+
+						if (playerWeaponComp.Type == Frosty::ECS::CWeapon::WeaponType::Bow)
+						{
+							m_GUI = GetPlayerGUI();
+							if (m_GUI != nullptr)
+							{
+								m_GUI->Layout.sprites.at(1).SetImage("attackRanged");
+								m_GUI->Layout.sprites.at(2).SetImage("attackRanged1");
+								m_GUI->Layout.sprites.at(3).SetImage("attackRanged2");
+								m_GUI->Layout.sprites.at(4).SetImage("attackRanged3");
+							}
+							Frosty::Renderer::ChangeEntity(m_Transform[i]->EntityPtr->Id, &weaponMat, "Bow", &mesh, m_Transform[i]->EntityPtr->Id, m_Transform[i], nullptr);
+						}
+						weaponMesh = &mesh;
+					}
+
+					playerWeaponComp.Level = lootWeaponComp.Level;
+					playerWeaponComp.Speciality = lootWeaponComp.Speciality;
+					playerWeaponComp.MaxAttackRange = lootWeaponComp.MaxAttackRange;
+					playerWeaponComp.MinAttackRange = lootWeaponComp.MinAttackRange;
+					playerWeaponComp.Damage = lootWeaponComp.Damage;
+					playerWeaponComp.CriticalHit = lootWeaponComp.CriticalHit;
+					playerWeaponComp.CriticalHitChance = lootWeaponComp.CriticalHitChance;
+					playerWeaponComp.LVL1AttackCooldown = lootWeaponComp.LVL1AttackCooldown;
+					playerWeaponComp.LVL2AttackCooldown = lootWeaponComp.LVL2AttackCooldown;
+					playerWeaponComp.LVL3AttackCooldown = lootWeaponComp.LVL3AttackCooldown;
+					playerWeaponComp.Lifetime = lootWeaponComp.Lifetime;
+					playerWeaponComp.AttackHitboxScale = lootWeaponComp.AttackHitboxScale;
+					playerWeaponComp.FireCriticalHitChance = 0;
+					playerWeaponComp.EarthDamage = 0;
+					playerWeaponComp.WindSpeed = 0;
+					playerWeaponComp.WaterHealing = 0;
+					playerWeaponComp.IsFullyUpgraded = false;
+					playerWeaponComp.ProjectileSpeed = lootWeaponComp.ProjectileSpeed;
+
+					weaponID = (int)m_Transform[i]->EntityPtr->Id;
+				}
+			}
+			else if (m_World->HasComponent<Frosty::ECS::CPlayer>(m_Transform[i]->EntityPtr))
+			{
+				auto& playerTransform = m_World->GetComponent<Frosty::ECS::CTransform>(m_Transform[i]->EntityPtr);
+				Player = &m_World->GetComponent<Frosty::ECS::CPlayer>(m_Transform[i]->EntityPtr);
+				playerTransform.Position = glm::vec3(-104.0f, 0.0f, -15.4f);
+				animation = &m_World->GetComponent<Frosty::ECS::CAnimController>(m_Transform[i]->EntityPtr);
+				PlayerT = &playerTransform;
+				auto& health = m_World->GetComponent<Frosty::ECS::CHealth>(m_Transform[i]->EntityPtr);
+				health.CurrentHealth = 20;
+				health.MaxHealth = 20;
+				health.MaxPossibleHealth = 40;
+				Player->Score = 0;
+
+				auto& playerInventory = m_World->GetComponent<Frosty::ECS::CInventory>(m_Transform[i]->EntityPtr);
+				playerInventory.MaxHealingPotions = 5;
+				playerInventory.CurrentHealingPotions = 0;
+				playerInventory.MaxIncreaseHPPotions = 5;
+				playerInventory.CurrentIncreaseHPPotions = 0;
+				playerInventory.MaxSpeedPotions = 5;
+				playerInventory.CurrentSpeedPotions = 0;
+				playerInventory.MaxSpeedBoots = 5;
+				playerInventory.CurrentSpeedBoots = 0;
+				playerInventory.MaxBaitAmount = 5;
+				playerInventory.CurrentBaitAmount = 0;
+				playerInventory.MaxWolfsbaneAmount = 10;
+				playerInventory.CurrentWolfsbane = 0;
+
+				m_GUI = &m_World->GetComponent<Frosty::ECS::CGUI>(m_Transform[i]->EntityPtr);
+
+				m_GUI->Layout.sprites.at(14).SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 0.0f));
+				m_GUI->Layout.sprites.at(15).SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 0.0f));
+				m_GUI->Layout.sprites.at(16).SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 0.0f));
+				m_GUI->Layout.sprites.at(17).SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 0.0f));
+				m_GUI->Layout.sprites.at(18).SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 0.0f));
 			}
 		}
+
+		weaponMesh->parentMatrix = PlayerT->GetModelMatrix();
+		animation->holdPtr = animation->currAnim->getHoldingJoint();
+		weaponMesh->animOffset = animation->holdPtr;
+		Frosty::Renderer::UpdateCMesh(weaponID, weaponMesh);
+
 		m_Start = true;
 		m_PlayerPos = { 10, 15 };
-		//visited rom reset missing!
+	}
+
+	Frosty::ECS::CGUI* LevelSystem::GetPlayerGUI()
+	{
+		for (int i = 1; i < p_Total; i++)
+		{
+			if (m_World->HasComponent<Frosty::ECS::CPlayer>(m_Transform[i]->EntityPtr))
+			{
+				m_GUI = &m_World->GetComponent<Frosty::ECS::CGUI>(m_Transform[i]->EntityPtr);
+			}
+		}
+		return m_GUI;
 	}
 
 	void LevelSystem::OnBossSpawnedEvent(Frosty::BossSpawnedEvent& e)
 	{
 		m_BossSpawned = true;
+	}
+	void LevelSystem::OnBaitPlacedEvent(Frosty::BaitPlacedEvent& e)
+	{
+		auto& baitTransform = m_World->GetComponent<Frosty::ECS::CTransform>(e.GetEntity());
+		if (m_LevelFileFormat.AddBaitToMap(baitTransform.Position, m_PlayerPos))
+		{
+			FY_INFO("bait is now saved");
+		}
+		else
+		{
+			FY_INFO("culdent save bait");
+		}
+		bool alradyExist = false;
+		for (int i = 0; i < m_RoomswhithBait.size(); i++)
+		{
+			if (m_RoomswhithBait.at(i) == m_PlayerPos)
+				alradyExist = true;
+		}
+		if (!alradyExist)
+		{
+			m_RoomswhithBait.push_back(m_PlayerPos);
+		}
+	}
+	void LevelSystem::randomBossMovment()
+	{
+		Room bossCurrentRoom = m_Map.getRoom(m_BossPos);
+		int roomToEnter;
+		bool redoRoom = false;
+		glm::ivec2 tempLastPos = m_BossPos;
+		glm::ivec2 tempPos = m_BossPos;
+		do
+		{
+			redoRoom = false;
+			roomToEnter = rand() % 4;
+			if (bossCurrentRoom.sideExits[roomToEnter])
+			{
+				tempLastPos = m_BossPos;
+				tempPos = m_BossPos;
+				if (roomToEnter == 0)
+					tempPos += glm::ivec2(0, -1);
+				if (roomToEnter == 1)
+					tempPos += glm::ivec2(0, 1);
+				if (roomToEnter == 2)
+					tempPos += glm::ivec2(-1, 0);
+				if (roomToEnter == 3)
+					tempPos += glm::ivec2(1, 0);
+				if (tempPos == m_BossLastRoom)
+				{
+					FY_INFO("The boss want's to go back{0}", "!");
+					int chansToReturn = rand() % 4;
+					if (chansToReturn != 1)
+					{
+						redoRoom = true;
+						FY_INFO("The boss faild to move back :(");
+					}
+					else
+						FY_INFO("The boss succeded in moving back :)");
+				}
+
+				Room tempChek = m_Map.getRoom(tempPos);
+				if (!tempChek.Ocupide)
+				{
+					FY_INFO("wath how? don't do this");
+					redoRoom = true;
+				}
+			}
+			else
+			{
+				FY_INFO("The boss tryed to move but faild! ({0}, {1})", m_BossPos.x, m_BossPos.y);
+			}
+		} while (!bossCurrentRoom.sideExits[roomToEnter] || redoRoom);
+		m_BossPos = tempPos;
+		m_BossLastRoom = tempLastPos;
+		FY_INFO("The boss is moving to ({0}, {1})", m_BossPos.x, m_BossPos.y);
 	}
 }

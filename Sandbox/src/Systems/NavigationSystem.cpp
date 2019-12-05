@@ -171,7 +171,7 @@ namespace MCS
 
 	void NavigationSystem::LookAtPoint(const glm::vec3& point, size_t index)
 	{
-		// Rotate the player to look towards the mouse (point3D)
+		// Rotate towards a point
 		glm::vec3 pointVector = glm::normalize(point - m_Transform[index]->Position);
 		glm::vec3 originDirection = glm::vec3(0.0f, 0.0f, 1.0f);
 		float extraRotation = 0.0f;
@@ -184,6 +184,7 @@ namespace MCS
 
 		float rotationOffset = glm::degrees(glm::acos(product)) + extraRotation;
 
+		if (Frosty::Time::GetFrameCount() % 60 == 0) FY_INFO("{0}", rotationOffset);
 
 		m_Transform[index]->Rotation.y = rotationOffset;
 	}
@@ -236,6 +237,7 @@ namespace MCS
 	{
 		// Check if enemy is boss
 		if (m_World->HasComponent<Frosty::ECS::CBoss>(m_Transform[index]->EntityPtr)) return;
+		//if (m_Enemy[index]->Weapon->AnimPlaying) return;
 
 		if (glm::distance(m_Transform[index]->Position, m_Enemy[index]->Target->Position) >= m_Enemy[index]->Weapon->MinAttackRange)
 		{
@@ -266,6 +268,7 @@ namespace MCS
 		// Rotate towards target (cell)
 		LookAtPoint(cellTarget, index);
 	}
+	
 	void NavigationSystem::HandleDeath(size_t index)
 	{
 		m_Physics[index]->SpeedMultiplier = 0.0f;

@@ -413,8 +413,8 @@ namespace MCS
 						if (fileEntitys.myEntitys.at(i).MyComponents.at(10).HaveComponent || !fileEntitys.myEntitys.at(i).MyComponents.at(1).HaveComponent)
 						{
 							float savedX = fileEntitys.myEntitys.at(i).myTransform.Scale.x;
-							fileEntitys.myEntitys.at(i).myTransform.Scale.x = fileEntitys.myEntitys.at(i).myTransform.Scale.z *1.25;
-							fileEntitys.myEntitys.at(i).myTransform.Scale.z = savedX * 1.25;
+							fileEntitys.myEntitys.at(i).myTransform.Scale.x = fileEntitys.myEntitys.at(i).myTransform.Scale.z *1.25f;
+							fileEntitys.myEntitys.at(i).myTransform.Scale.z = savedX * 1.25f;
 						}
 						else
 						{
@@ -682,6 +682,7 @@ namespace MCS
 						}
 						auto& enemyWeaponCompA = m_World->AddComponent<Frosty::ECS::CWeapon>(enemyWeaponA, loadedWeapon);
 						auto& enemy = m_World->AddComponent<Frosty::ECS::CEnemy>(entity, playerTransform, &enemyWeaponCompA, fileEntitys.myEntitys.at(i).myEnemy.RunOnHealth);
+						enemy.WeaponEntityID = enemyWeaponCompA.EntityPtr->Id;
 						auto& transform = m_World->GetComponent< Frosty::ECS::CTransform>(entity);
 						enemy.SpawnPosition = transform.Position;
 					}
@@ -870,6 +871,14 @@ namespace MCS
 					m_WitchCirkel.at(m_VisitedRooms.at(enteredRoomId).removeWitchCirkel.at(i)) = m_WitchCirkel.at(m_WitchCirkel.size() - 1 - i);
 					m_WitchCirkel.back() = temp;
 				}
+				//add existing meat
+				for (int i = 0; i < m_VisitedRooms.at(enteredRoomId).addedBait.size(); i++)
+				{
+					auto& bait = m_World->CreateEntity(m_VisitedRooms.at(enteredRoomId).addedBait.at(i));
+					m_World->AddComponent<Frosty::ECS::CMesh>(bait, Frosty::AssetManager::GetMesh("meat"));
+					auto& material = m_World->AddComponent<Frosty::ECS::CMaterial>(bait, Frosty::AssetManager::GetShader("Texture2D"));
+					material.DiffuseTexture = Frosty::AssetManager::GetTexture2D("meat");
+				}
 			}
 			else
 			{
@@ -935,6 +944,7 @@ namespace MCS
 
 
 	void LevelFileFormat::LoadBoolMap(std::string fileName)
+		 
 	{
 		std::ifstream existingFile;
 		existingFile.open("../../../assets/levels/" + fileName + ".lvl", std::ios::binary);
@@ -1079,6 +1089,35 @@ namespace MCS
 		bool k = ABoolMap->CheckCollition(glm::vec3(1.0f, 0.0f, 1.0f));
 		ABoolMap->SaveMap("", "BoolMap");
 		ABoolMap->LoadMap("BoolMap.bmap");
+	}
+	int LevelFileFormat::NumberOfRoomsVisited()
+	{
+		return (int)m_VisitedRooms.size();
+	}
+	bool LevelFileFormat::AddBaitToMap(glm::vec3 baitPos, glm::ivec2 room)
+	{
+		for (int i = 0; i < m_VisitedRooms.size(); i++)
+		{
+			if (m_VisitedRooms.at(i).myRoomId == room)
+			{
+				m_VisitedRooms.at(i).addedBait.push_back(baitPos);
+				return true;
+			}
+		}
+		return false;
+	}
+	int LevelFileFormat::RemoveAllBaitInRoom(glm::ivec2 room)
+	{
+		int toReturn = 0;
+		for (int i = 0; i < m_VisitedRooms.size(); i++)
+		{
+			if (m_VisitedRooms.at(i).myRoomId == room)
+			{
+				toReturn = (int)m_VisitedRooms.at(i).addedBait.size();
+				m_VisitedRooms.at(i).addedBait.clear();
+			}
+		}
+		return toReturn;
 	}
 }
 

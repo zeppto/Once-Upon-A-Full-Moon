@@ -31,9 +31,9 @@ namespace MCS
 				{
 					auto& enemyMaterial = m_World->GetComponent<Frosty::ECS::CMaterial>(entity);
 
-					float testTime = (Frosty::Time::CurrentTime() - enemy.DamageEffectTimer);
+					float testTime = (Frosty::Time::CurrentTime() - enemy.FlashTimer);
 					//kan bli optimeserat
-					if (testTime > enemy.DamageEffectTime)
+					if (testTime > enemy.FlashTime)
 					{
 						enemyMaterial.Flash = 0.0f;
 					}
@@ -226,7 +226,7 @@ namespace MCS
 			if (enemyComp.CurrentState != Frosty::ECS::CEnemy::State::Reset)
 			{
 				auto& attackComp = m_World->GetComponent<Frosty::ECS::CAttack>(entityA);
-				if (Frosty::utils::BinarySearch(attackComp.AttackedEntities, it->first->Id) == -1)
+				if ((Frosty::utils::BinarySearch(attackComp.AttackedEntities, it->first->Id) == -1) && m_Health[it->second]->CurrentHealth > 0)
 				{
 					attackComp.AttackedEntities.emplace_back(it->first->Id);
 					m_Health[it->second]->CurrentHealth -= attackComp.Damage;
@@ -240,7 +240,7 @@ namespace MCS
 					{
 						auto& enemyMaterial = m_World->GetComponent<Frosty::ECS::CMaterial>(it->first);
 						enemyMaterial.Flash = 1.0f;
-						enemyComp.DamageEffectTimer = Frosty::Time::CurrentTime();
+						enemyComp.FlashTimer = Frosty::Time::CurrentTime();
 					}
 				}
 			}

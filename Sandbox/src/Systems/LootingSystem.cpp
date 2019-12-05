@@ -158,7 +158,7 @@ namespace MCS
 			}
 			else
 				randomValue = rand() % 6;
-
+			
 			if (randomValue != -1)
 			{
 
@@ -168,6 +168,7 @@ namespace MCS
 				auto& material = m_World->AddComponent<Frosty::ECS::CMaterial>(item, Frosty::AssetManager::GetShader("Texture2D"), true);
 				auto& light = m_World->AddComponent<Frosty::ECS::CLight>(item, Frosty::ECS::CLight::LightType::Point, 3.f, glm::vec3(1.f, 1.f, 1.f), 2.f);
 				auto& loot = m_World->AddComponent<Frosty::ECS::CLootable>(item);
+
 
 				switch (randomValue)
 				{

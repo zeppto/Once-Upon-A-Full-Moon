@@ -242,6 +242,7 @@ namespace MCS
 		glm::ivec2 myRoomId = { 0, 0 };
 		std::vector<int> removeChest;
 		std::vector<int> removeWitchCirkel;
+		std::vector<glm::vec3> addedBait;
 		//not in use
 		std::vector<int> existingIDs;
 		std::vector<int> killedIds;
@@ -260,6 +261,11 @@ namespace MCS
 		void OpenFromFile(std::string fileName, glm::ivec2 roomId = glm::ivec2(0, 0), Frosty::ECS::CTransform* playerTransform = nullptr,
 			int rotation = 0, glm::vec3 move = glm::vec3(0, 0, 0));
 		void LoadBoolMap(std::string fileName);
+		int NumberOfRoomsVisited();
+		bool AddBaitToMap(glm::vec3 baitPos, glm::ivec2 room);
+		//std::vector<glm::vec3> GetAllBaitInRoom();
+		//int GetNumberOfBaitInRoom();
+		int RemoveAllBaitInRoom(glm::ivec2 room);
 
 	private:
 		//std::shared_ptr<ECS::Entity> m_ExitEntity;

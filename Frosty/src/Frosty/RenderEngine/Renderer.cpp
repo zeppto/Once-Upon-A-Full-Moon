@@ -13,23 +13,29 @@ namespace Frosty
 	std::unordered_map<size_t, std::unordered_map<std::string, std::shared_ptr<Renderer::MeshData>>*> Renderer::s_MeshLookUpMap;
 	std::unordered_map<size_t, std::unordered_map<size_t, std::shared_ptr<Renderer::MaterialData>>*> Renderer::s_MaterialLookUpMap;
 	std::vector<Renderer::RenderPassData>  Renderer::s_RenderPas;
-
+	FrustumGrid Renderer::s_ForwardPlus;
 	int Renderer::s_TotalNrOfFrames;
 	bool Renderer::s_DistanceCulling = false;
+	bool Renderer::s_LightCulling = false;
 
 	void Renderer::Init()
 	{
 		RenderCommand::Init();
 
-		for (uint8_t i = 0; i < 3; i++)
+		for (uint8_t i = 0; i < 4; i++)
 		{
 			s_RenderPas.emplace_back(RenderPassData());
 		}
 
+		s_ForwardPlus.Initiate();
 	}
 
 	void Renderer::BeginScene()
 	{
+		if (s_LightCulling)
+		{
+			s_ForwardPlus.Update();
+		}
 	}
 
 	void Renderer::RenderScene()
@@ -114,8 +120,22 @@ namespace Frosty
 					DirectLI++;
 				}
 
+				shaderData->Shader->UploadUniformInt("u_LightCulling", s_LightCulling);
+				if (s_LightCulling)
+				{
+					// LightIndex
+					for (int i = 0; i < int(s_ForwardPlus.GetLightIndexList().size()); i++)
+					{
+						shaderData->Shader->UploadUniformInt(("forwardPlus.LightIndexList[" + std::to_string(i) + "]").c_str(), s_ForwardPlus.GetLightIndexList().at(i));
+					}
 
-				//For all Materials
+					// CellLightInfo
+					for (int i = 0; i < s_ForwardPlus.GetNrOfGrids(); i++)
+					{
+						shaderData->Shader->UploadUniformFloat2(("forwardPlus.CellLightInfo[" + std::to_string(i) + "]").c_str(), s_ForwardPlus.GetCellLightInfoAt(i));
+					}
+				}
+
 				for (auto& MaterialIt : shaderData->MaterialMap)
 				{
 					nrOfMaterials++;
@@ -125,14 +145,18 @@ namespace Frosty
 					shaderData->Shader->UploadUniformInt("u_Shininess", materialData->Material->Shininess);
 
 
-					if (shaderData->Shader->GetName() == "FlatColor")
+					if (shaderData->Shader->GetName() == "FlatColor" || shaderData->Shader->GetName() == "HeatMap")
 					{
 						shaderData->Shader->UploadUniformFloat4("u_ObjectColor", materialData->Material->Albedo);
 						shaderData->Shader->UploadUniformFloat("u_SpecularStrength", materialData->Material->SpecularStrength);
 
 					}
-					else if (shaderData->Shader->GetName() == "Texture2D" || shaderData->Shader->GetName() == "BlendShader"
-						|| shaderData->Shader->GetName() == "Animation")
+					else if (shaderData->Shader->GetName() == "Animation")
+					{
+						shaderData->Shader->UploadUniformFloat("u_Flash", materialData->Material->Flash);
+						shaderData->Shader->UploadUniformFloat2("u_TextureCoordScale", materialData->Material->TextureScale);
+					}
+					else if (shaderData->Shader->GetName() == "Texture2D" || shaderData->Shader->GetName() == "BlendShader")
 					{
 						shaderData->Shader->UploadUniformFloat2("u_TextureCoordScale", materialData->Material->TextureScale);
 					}
@@ -245,12 +269,7 @@ namespace Frosty
 				}
 				glUseProgram(0);
 
-				if (shaderData->Shader->GetName() == "Texture2D" || shaderData->Shader->GetName() == "Animation")
-				{
-					glDisable(GL_BLEND);
-					RenderCommand::DisableBackfaceCulling();
-				}
-				else if (shaderData->Shader->GetName() == "FlatColor")
+				if (shaderData->Shader->GetName() == "Texture2D" || shaderData->Shader->GetName() == "FlatColor" || shaderData->Shader->GetName() == "Animation")
 				{
 					glDisable(GL_BLEND);
 					RenderCommand::DisableBackfaceCulling();
@@ -352,8 +371,6 @@ namespace Frosty
 		RemoveLight(entity);
 		AddLight(&world->GetComponent<Frosty::ECS::CLight>(entity), &world->GetComponent<Frosty::ECS::CTransform>(entity));
 	}
-
-
 
 	/*void Renderer::AddLight(const glm::vec3& color, const glm::vec3& pos, float strength, float radius)
 	{
@@ -500,13 +517,35 @@ namespace Frosty
 		mat->UseShader->UploadUniformFloat3("u_CameraPosition", s_SceneData->GameCamera.CameraPosition);
 		mat->UseShader->UploadUniformInt("u_Shininess", mat->Shininess);
 
+		SubmitLightUniforms(mat);
+		SubmitForwardPlusUniforms(mat);
+
+		if (mat->UseShader->GetName() == "FlatColor" || mat->UseShader->GetName() == "HeatMap")
+		{
+			mat->UseShader->UploadUniformFloat4("u_ObjectColor", mat->Albedo);
+			mat->UseShader->UploadUniformFloat("u_SpecularStrength", mat->SpecularStrength);
+
+		}
+		else if (mat->UseShader->GetName() == "Texture2D" || mat->UseShader->GetName() == "BlendShader")
+		{
+			mat->UseShader->UploadUniformFloat2("u_TextureCoordScale", mat->TextureScale);
+		}
+		vertexArray->Bind();
+		RenderCommand::EnableBackfaceCulling();
+		RenderCommand::Draw2D(vertexArray);
+
+		glDisable(GL_BLEND);
+	}
+
+	void Renderer::SubmitLightUniforms(ECS::CMaterial* mat)
+	{
 		// Point Lights
 		mat->UseShader->UploadUniformInt("u_TotalPointLights", (int)s_SceneData->PointLights.size());
 		int PointLI = 0;
 		for (auto& pointLIt : s_SceneData->PointLights)
 		{
 			mat->UseShader->UploadUniformFloat3Array("u_PointLights[" + std::to_string(PointLI) + "].Color", s_SceneData->PointLights[pointLIt.first].PointLight->Color);
-			mat->UseShader->UploadUniformFloat3Array("u_PointLights[" + std::to_string(PointLI) + "].Position", s_SceneData->PointLights[pointLIt.first].Position);
+			mat->UseShader->UploadUniformFloat3Array("u_PointLights[" + std::to_string(PointLI) + "].Position", s_SceneData->PointLights[pointLIt.first].Transform->Position);
 			mat->UseShader->UploadUniformFloatArray("u_PointLights[" + std::to_string(PointLI) + "].Radius", s_SceneData->PointLights[pointLIt.first].PointLight->Radius);
 			mat->UseShader->UploadUniformFloatArray("u_PointLights[" + std::to_string(PointLI) + "].Strength", s_SceneData->PointLights[pointLIt.first].PointLight->Strength);
 			PointLI++;
@@ -522,22 +561,21 @@ namespace Frosty
 			mat->UseShader->UploadUniformFloatArray("u_DirectionalLights[" + std::to_string(dirLI) + "].Strength", s_SceneData->DirectionalLights[DirLIt.first].DirectionalLight->Strength);
 			dirLI++;
 		}
+	}
 
-		if (mat->UseShader->GetName() == "FlatColor")
+	void Renderer::SubmitForwardPlusUniforms(ECS::CMaterial* mat)
+	{
+		// LightIndex
+		for (int i = 0; i < int(s_ForwardPlus.GetLightIndexList().size()); i++)
 		{
-			mat->UseShader->UploadUniformFloat4("u_ObjectColor", mat->Albedo);
-			mat->UseShader->UploadUniformFloat("u_SpecularStrength", mat->SpecularStrength);
-
+			mat->UseShader->UploadUniformInt(("forwardPlus.LightIndexList[" + std::to_string(i) + "]").c_str(), s_ForwardPlus.GetLightIndexList().at(i));
 		}
-		else if (mat->UseShader->GetName() == "Texture2D" || mat->UseShader->GetName() == "BlendShader")
+
+		// CellLightInfo
+		for (int i = 0; i < s_ForwardPlus.GetNrOfGrids(); i++)
 		{
-			mat->UseShader->UploadUniformFloat2("u_TextureCoordScale", mat->TextureScale);
+			mat->UseShader->UploadUniformFloat2(("forwardPlus.CellLightInfo[" + std::to_string(i) + "]").c_str(), s_ForwardPlus.GetCellLightInfoAt(i));
 		}
-		vertexArray->Bind();
-		RenderCommand::EnableBackfaceCulling();
-		RenderCommand::Draw2D(vertexArray);
-
-		glDisable(GL_BLEND);
 	}
 
 	//For 2D, might be temp
@@ -610,13 +648,11 @@ namespace Frosty
 	//		//	
 	//		//}
 
-
 	//		counter++;
 	//		//Set up IDs
 	//		size_t matID = transform->EntityPtr->Id; //Works but can be improved whith a real material ID
 	//		std::string meshID = mesh->Mesh->GetName();
 	//		size_t transformID = transform->EntityPtr->Id;
-
 
 	//		//Check if the shader key is already in the map, if not add it.
 	//		std::string ShaderName = mat->UseShader->GetName();
@@ -627,8 +663,6 @@ namespace Frosty
 	//		}
 	//		auto& shaderData = ShaderMap->at(ShaderName);
 	//		shaderData->Shader = mat->UseShader;
-
-
 
 	//		//Check if the material key is already in the map, if not add it.
 	//		if (shaderData->MaterialMap.find(matID) == shaderData->MaterialMap.end())
@@ -669,18 +703,22 @@ namespace Frosty
 	void Renderer::AddToRenderer(ECS::CMaterial* mat, ECS::CMesh* mesh, ECS::CTransform* transform, ECS::CAnimController* controller)
 	{
 
-		//std::unordered_map<std::string, std::shared_ptr<ShaderData>>* ShaderMap = nullptr;saw
+			// at(0) will be for dept sampling for shadow map
+			int RenderPassID = 0;
+			if (mat->HasTransparency)
+			{
+				RenderPassID = 2;
+			}
+			else
+			{
+				RenderPassID = 1;
+			}
 
-		// at(0) will be for dept sampling for shadow map
-		int RenderPassID = 0;
-		if (mat->HasTransparency)
-		{
-			RenderPassID = 2;
-		}
-		else
-		{
-			RenderPassID = 1;
-		}
+			// Forward Plus Temp
+			if (mat->UseShader->GetName() == "HeatMap")
+			{
+				RenderPassID = 3;
+			}
 
 
 		counter++;

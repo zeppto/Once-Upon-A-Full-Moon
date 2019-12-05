@@ -272,7 +272,7 @@ void MCS::AnimationSystem::OnPlayAnimEvent(Frosty::PlayAnimEvent& e)
 				break;
 			case 1:
 				BeginNewAnim(controller, "Scarlet_Attack1");
-				controller->animSpeed = 1.0f;
+				controller->animSpeed = 1.5f;
 				break;
 			case 2:
 				BeginNewAnim(controller, "Scarlet_Attack2");
@@ -351,11 +351,11 @@ void MCS::AnimationSystem::OnPlayAnimEvent(Frosty::PlayAnimEvent& e)
 					break;
 				case 1:
 					BeginNewAnim(controller, "Cultist_Attack1");
-					controller->animSpeed = 1.7f;
+					controller->animSpeed = 3.0f;
 					break;
 				case 2:
 					BeginNewAnim(controller, "Cultist_Attack2");
-					controller->animSpeed = 3.0f;
+					controller->animSpeed = 1.8f;
 					break;
 				}
 				UpdateAnimOffset(controller);
