@@ -74,7 +74,7 @@ namespace MCS
 				{
 					auto& world = Frosty::Application::Get().GetWorld();
 					auto& menuGui = world->GetComponent<Frosty::ECS::CGUI>(m_MenuGui);
-					menuGui.Layout.texts.at(1).SetColor(glm::vec4(0.0f, 0.0f, 1.0f, 0.0f));
+					menuGui.Layout.texts[1].SetColor(glm::vec4(0.0f, 0.0f, 1.0f, 0.0f));
 
 					world->PlayGame();
 					m_App->GetStateMachine().AddState(Frosty::StateRef(FY_NEW(GameState)), true);
@@ -89,13 +89,13 @@ namespace MCS
 					std::string Controls = "Controls";
 					float posX = (960 / 1.5f) - (Controls.size() / 2) * 17;
 
-					menuGui.Layout.texts.at(0).SetText("");
-					menuGui.Layout.texts.at(1).SetText("");
-					menuGui.Layout.texts.at(2).SetText("");
-					menuGui.Layout.texts.at(3).SetText("Back");
-					menuGui.Layout.texts.at(3).SetPosition(glm::vec2(posX, 50.0f));
-					menuGui.Layout.sprites.at(0).SetImage("Controls");
-					menuGui.Layout.sprites.at(0).SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+					menuGui.Layout.texts[0].SetText("");
+					menuGui.Layout.texts[1].SetText("");
+					menuGui.Layout.texts[2].SetText("");
+					menuGui.Layout.texts[3].SetText("Back");
+					menuGui.Layout.texts[3].SetPosition(glm::vec2(posX, 50.0f));
+					menuGui.Layout.sprites[0].SetImage("Controls");
+					menuGui.Layout.sprites[0].SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
 					m_ButtonsLoaded = false;
 					m_Controls = true;
 				}
@@ -119,13 +119,13 @@ namespace MCS
 					std::string Exit = "Exit";
 					float posX = (960 / 1.5f) - (Exit.size() / 2) * 17;
 
-					menuGui.Layout.texts.at(0).SetText("Main Menu");
-					menuGui.Layout.texts.at(1).SetText("Play");
-					menuGui.Layout.texts.at(2).SetText("Controls");
-					menuGui.Layout.texts.at(3).SetText("Exit");
-					menuGui.Layout.texts.at(3).SetPosition(glm::vec2(posX, 250.0f));
-					menuGui.Layout.sprites.at(0).SetImage("Background");
-					menuGui.Layout.sprites.at(0).SetColorSprite(glm::vec4(0.5f, 0.5f, 0.5f, 1.0f));
+					menuGui.Layout.texts[0].SetText("Main Menu");
+					menuGui.Layout.texts[1].SetText("Play");
+					menuGui.Layout.texts[2].SetText("Controls");
+					menuGui.Layout.texts[3].SetText("Exit");
+					menuGui.Layout.texts[3].SetPosition(glm::vec2(posX, 250.0f));
+					menuGui.Layout.sprites[0].SetImage("Background");
+					menuGui.Layout.sprites[0].SetColorSprite(glm::vec4(0.5f, 0.5f, 0.5f, 1.0f));
 
 					m_ButtonsLoaded = true;
 					m_Controls = false;
@@ -145,21 +145,21 @@ namespace MCS
 
 			if (x > 910.0f && x < 1005.0f && y > 550.0f && y < 610.0f)
 			{
-				menuGui.Layout.texts.at(1).SetColor(glm::vec4(0.0f, 1.0f, 0.0f, 0.0f));
+				menuGui.Layout.texts[1].SetColor(glm::vec4(0.0f, 1.0f, 0.0f, 0.0f));
 			}
 			else if (x > 860.f && x < 1050.0f && y > 445.0f && y < 500.0f)
 			{
-				menuGui.Layout.texts.at(2).SetColor(glm::vec4(0.0f, 1.0f, 0.0f, 0.0f));
+				menuGui.Layout.texts[2].SetColor(glm::vec4(0.0f, 1.0f, 0.0f, 0.0f));
 			}
 			else if (x > 910.f && x < 1005.0f && y > 350.0f && y < 390.0f)
 			{
-				menuGui.Layout.texts.at(3).SetColor(glm::vec4(1.0f, 0.0f, 0.0f, 0.0f));
+				menuGui.Layout.texts[3].SetColor(glm::vec4(1.0f, 0.0f, 0.0f, 0.0f));
 			}
 			else
 			{
-				menuGui.Layout.texts.at(1).SetColor(glm::vec4(1.0f, 1.0f, 0.0f, 0.0f));
-				menuGui.Layout.texts.at(2).SetColor(glm::vec4(1.0f, 1.0f, 0.0f, 0.0f));
-				menuGui.Layout.texts.at(3).SetColor(glm::vec4(0.8f, 0.0f, 0.0f, 0.0f));
+				menuGui.Layout.texts[1].SetColor(glm::vec4(1.0f, 1.0f, 0.0f, 0.0f));
+				menuGui.Layout.texts[2].SetColor(glm::vec4(1.0f, 1.0f, 0.0f, 0.0f));
+				menuGui.Layout.texts[3].SetColor(glm::vec4(0.8f, 0.0f, 0.0f, 0.0f));
 			}
 		}
 	}

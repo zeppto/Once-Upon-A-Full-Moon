@@ -1110,10 +1110,10 @@ namespace MCS
 					else if (playerWeapon.Level == 3)
 						SetPickUpText(i, "Picked Up Sword Level 3");
 
-					HUD.Layout.sprites.at(1).SetImage("attackMelee");
-					HUD.Layout.sprites.at(2).SetImage("attackMelee1");
-					HUD.Layout.sprites.at(3).SetImage("attackMelee2");
-					HUD.Layout.sprites.at(4).SetImage("attackMelee3");
+					HUD.Layout.sprites[1].SetImage("attackMelee");
+					HUD.Layout.sprites[2].SetImage("attackMelee1");
+					HUD.Layout.sprites[3].SetImage("attackMelee2");
+					HUD.Layout.sprites[4].SetImage("attackMelee3");
 				}
 				else if(playerWeapon.Type == Frosty::ECS::CWeapon::WeaponType::Bow)
 				{
@@ -1124,10 +1124,10 @@ namespace MCS
 					else if (playerWeapon.Level == 3)
 						SetPickUpText(i, "Picked Up Bow Level 3");
 
-					HUD.Layout.sprites.at(1).SetImage("attackRanged");
-					HUD.Layout.sprites.at(2).SetImage("attackRanged1");
-					HUD.Layout.sprites.at(3).SetImage("attackRanged2");
-					HUD.Layout.sprites.at(4).SetImage("attackRanged3");
+					HUD.Layout.sprites[1].SetImage("attackRanged");
+					HUD.Layout.sprites[2].SetImage("attackRanged1");
+					HUD.Layout.sprites[3].SetImage("attackRanged2");
+					HUD.Layout.sprites[4].SetImage("attackRanged3");
 				}
 				
 				//if (loot.Weapon == Frosty::ECS::CLootable::WeaponType::Sword1 || loot.Weapon == Frosty::ECS::CLootable::WeaponType::Sword2 || loot.Weapon == Frosty::ECS::CLootable::WeaponType::Sword3)
@@ -1139,10 +1139,10 @@ namespace MCS
 				//	else if (loot.Weapon == Frosty::ECS::CLootable::WeaponType::Sword3)
 				//		SetPickUpText(i, "Picked Up Sword Level 3");
 				//
-				//	HUD.Layout.sprites.at(1).SetImage("attackMelee");
-				//	HUD.Layout.sprites.at(2).SetImage("attackMelee1");
-				//	HUD.Layout.sprites.at(3).SetImage("attackMelee2");
-				//	HUD.Layout.sprites.at(4).SetImage("attackMelee3");
+				//	HUD.Layout.sprites[1].SetImage("attackMelee");
+				//	HUD.Layout.sprites[2].SetImage("attackMelee1");
+				//	HUD.Layout.sprites[3].SetImage("attackMelee2");
+				//	HUD.Layout.sprites[4].SetImage("attackMelee3");
 				//}
 				//else
 				//{
@@ -1153,10 +1153,10 @@ namespace MCS
 				//	else if (loot.Weapon == Frosty::ECS::CLootable::WeaponType::Bow3)
 				//		SetPickUpText(i, "Picked Up Bow Level 3");
 				//
-				//	HUD.Layout.sprites.at(1).SetImage("attackRanged");
-				//	HUD.Layout.sprites.at(2).SetImage("attackRanged1");
-				//	HUD.Layout.sprites.at(3).SetImage("attackRanged2");
-				//	HUD.Layout.sprites.at(4).SetImage("attackRanged3");
+				//	HUD.Layout.sprites[1].SetImage("attackRanged");
+				//	HUD.Layout.sprites[2].SetImage("attackRanged1");
+				//	HUD.Layout.sprites[3].SetImage("attackRanged2");
+				//	HUD.Layout.sprites[4].SetImage("attackRanged3");
 				//}
 			}
 		}
@@ -1467,60 +1467,60 @@ namespace MCS
 		{
 			auto& HUD = m_World->GetComponent<Frosty::ECS::CGUI>(m_Transform[index]->EntityPtr);
 			//Items
-			HUD.Layout.texts.at(0).SetText(std::string(std::to_string(m_Inventory[index]->CurrentHealingPotions) + "/" + std::string(std::to_string(m_Inventory[index]->MaxHealingPotions))));
-			HUD.Layout.texts.at(1).SetText(std::string(std::to_string(m_Inventory[index]->CurrentSpeedPotions) + "/" + std::string(std::to_string(m_Inventory[index]->MaxSpeedBoots))));
-			HUD.Layout.texts.at(2).SetText(std::string(std::to_string(m_Inventory[index]->CurrentBaitAmount) + "/" + std::string(std::to_string(m_Inventory[index]->MaxBaitAmount))));
-			HUD.Layout.texts.at(3).SetText(std::string(std::to_string(m_Inventory[index]->CurrentWolfsbane)));
+			HUD.Layout.texts[0].SetText(std::string(std::to_string(m_Inventory[index]->CurrentHealingPotions) + "/" + std::string(std::to_string(m_Inventory[index]->MaxHealingPotions))));
+			HUD.Layout.texts[1].SetText(std::string(std::to_string(m_Inventory[index]->CurrentSpeedPotions) + "/" + std::string(std::to_string(m_Inventory[index]->MaxSpeedBoots))));
+			HUD.Layout.texts[2].SetText(std::string(std::to_string(m_Inventory[index]->CurrentBaitAmount) + "/" + std::string(std::to_string(m_Inventory[index]->MaxBaitAmount))));
+			HUD.Layout.texts[3].SetText(std::string(std::to_string(m_Inventory[index]->CurrentWolfsbane)));
 
 			if (m_Inventory[index]->CurrentHealingPotions == 0)
 			{
-				HUD.Layout.sprites.at(9).SetColorSprite(glm::vec4(0.3f, 0.3f, 0.3f, 1.0f));
-				HUD.Layout.texts.at(18).SetText(std::string(""));
-				HUD.Layout.texts.at(0).SetColor(glm::vec3(0.75f, 0.75f, 0.50f));
+				HUD.Layout.sprites[9].SetColorSprite(glm::vec4(0.3f, 0.3f, 0.3f, 1.0f));
+				HUD.Layout.texts[18].SetText(std::string(""));
+				HUD.Layout.texts[0].SetColor(glm::vec3(0.75f, 0.75f, 0.50f));
 			}
 			else
 			{
-				HUD.Layout.sprites.at(9).SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
-				HUD.Layout.texts.at(18).SetText(std::string("[1]"));
-				HUD.Layout.texts.at(0).SetColor(glm::vec3(1.0f, 1.0f, 0.75f));
+				HUD.Layout.sprites[9].SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+				HUD.Layout.texts[18].SetText(std::string("[1]"));
+				HUD.Layout.texts[0].SetColor(glm::vec3(1.0f, 1.0f, 0.75f));
 
 			}
 
 			if (m_Inventory[index]->CurrentSpeedPotions == 0)
 			{
-				HUD.Layout.sprites.at(10).SetColorSprite(glm::vec4(0.3f, 0.3f, 0.3f, 1.0f));
-				HUD.Layout.texts.at(19).SetText(std::string(""));
-				HUD.Layout.texts.at(1).SetColor(glm::vec3(0.75f, 0.75f, 0.50f));
+				HUD.Layout.sprites[10].SetColorSprite(glm::vec4(0.3f, 0.3f, 0.3f, 1.0f));
+				HUD.Layout.texts[19].SetText(std::string(""));
+				HUD.Layout.texts[1].SetColor(glm::vec3(0.75f, 0.75f, 0.50f));
 
 			}
 			else
 			{
-				HUD.Layout.sprites.at(10).SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
-				HUD.Layout.texts.at(19).SetText(std::string("[2]"));
-				HUD.Layout.texts.at(1).SetColor(glm::vec3(1.0f, 1.0f, 0.75f));
+				HUD.Layout.sprites[10].SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+				HUD.Layout.texts[19].SetText(std::string("[2]"));
+				HUD.Layout.texts[1].SetColor(glm::vec3(1.0f, 1.0f, 0.75f));
 
 			}
 
 			if (m_Inventory[index]->CurrentBaitAmount == 0)
 			{
-				HUD.Layout.sprites.at(11).SetColorSprite(glm::vec4(0.3f, 0.3f, 0.3f, 1.0f));
-				HUD.Layout.texts.at(20).SetText(std::string(""));
-				HUD.Layout.texts.at(2).SetColor(glm::vec3(0.5f, 0.5f, 0.25f));
+				HUD.Layout.sprites[11].SetColorSprite(glm::vec4(0.3f, 0.3f, 0.3f, 1.0f));
+				HUD.Layout.texts[20].SetText(std::string(""));
+				HUD.Layout.texts[2].SetColor(glm::vec3(0.5f, 0.5f, 0.25f));
 
 			}
 			else
 			{
-				HUD.Layout.sprites.at(11).SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
-				HUD.Layout.texts.at(20).SetText(std::string("[Q]"));
-				HUD.Layout.texts.at(2).SetColor(glm::vec3(1.0f, 1.0f, 0.75f));
+				HUD.Layout.sprites[11].SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+				HUD.Layout.texts[20].SetText(std::string("[Q]"));
+				HUD.Layout.texts[2].SetColor(glm::vec3(1.0f, 1.0f, 0.75f));
 
 			}
 
 			//Points
-			HUD.Layout.texts.at(4).SetText(std::string("Points: " + std::to_string(m_Player[index]->Score)));
+			HUD.Layout.texts[4].SetText(std::string("Points: " + std::to_string(m_Player[index]->Score)));
 
 			//Temp Health
-			//HUD.Layout.texts.at(5).SetText(std::string(std::to_string((int)m_Health[index]->CurrentHealth) + "/" + std::to_string((int)m_Health[index]->MaxHealth)));
+			//HUD.Layout.texts[5].SetText(std::string(std::to_string((int)m_Health[index]->CurrentHealth) + "/" + std::to_string((int)m_Health[index]->MaxHealth)));
 
 			int currentHealth = 0;
 
@@ -1538,8 +1538,8 @@ namespace MCS
 			{
 				if (healthSpriteID < 29)
 				{
-					HUD.Layout.sprites.at(healthSpriteID).SetImage("Heart_4");
-					HUD.Layout.sprites.at(healthSpriteID).SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+					HUD.Layout.sprites[healthSpriteID].SetImage("Heart_4");
+					HUD.Layout.sprites[healthSpriteID].SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
 					healthSpriteID++;
 				}
 			}
@@ -1548,32 +1548,32 @@ namespace MCS
 			{
 				if (healthSpriteID < 29)
 				{
-					HUD.Layout.sprites.at(healthSpriteID).SetImage("Heart_1");
-					HUD.Layout.sprites.at(healthSpriteID).SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+					HUD.Layout.sprites[healthSpriteID].SetImage("Heart_1");
+					HUD.Layout.sprites[healthSpriteID].SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
 				}
 			}
 			else if (nrOfHeartQuadrants == 2)
 			{
 				if (healthSpriteID < 29)
 				{
-					HUD.Layout.sprites.at(healthSpriteID).SetImage("Heart_2");
-					HUD.Layout.sprites.at(healthSpriteID).SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+					HUD.Layout.sprites[healthSpriteID].SetImage("Heart_2");
+					HUD.Layout.sprites[healthSpriteID].SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
 				}
 			}
 			else if (nrOfHeartQuadrants == 3)
 			{
 				if (healthSpriteID < 29)
 				{
-					HUD.Layout.sprites.at(healthSpriteID).SetImage("Heart_3");
-					HUD.Layout.sprites.at(healthSpriteID).SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+					HUD.Layout.sprites[healthSpriteID].SetImage("Heart_3");
+					HUD.Layout.sprites[healthSpriteID].SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
 				}
 			}
 			else if (m_Health[index]->CurrentHealth < m_Health[index]->MaxHealth)
 			{
 				if (healthSpriteID < 29)
 				{
-					HUD.Layout.sprites.at(healthSpriteID).SetImage("Heart_0");
-					HUD.Layout.sprites.at(healthSpriteID).SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+					HUD.Layout.sprites[healthSpriteID].SetImage("Heart_0");
+					HUD.Layout.sprites[healthSpriteID].SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
 				}
 			}
 
@@ -1589,8 +1589,8 @@ namespace MCS
 			{
 				if (healthSpriteID < 29)
 				{
-					HUD.Layout.sprites.at(healthSpriteID).SetImage("Heart_0");
-					HUD.Layout.sprites.at(healthSpriteID).SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+					HUD.Layout.sprites[healthSpriteID].SetImage("Heart_0");
+					HUD.Layout.sprites[healthSpriteID].SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
 					healthSpriteID++;
 				}
 
@@ -1599,14 +1599,14 @@ namespace MCS
 				//Pickup Text
 			if (Frosty::Time::CurrentTime() - m_Player[index]->PickUpTextTimer >= m_Player[index]->PickUpTextTime)
 			{
-				HUD.Layout.texts.at(6).SetText("");
+				HUD.Layout.texts[6].SetText("");
 			}
 
 			//Attack cooldown
 			auto& weapon = m_Player[index]->Weapon;
 			if (weapon->Level == 3)
 			{
-				HUD.Layout.texts.at(14).SetText(std::string("[SPACE]"));
+				HUD.Layout.texts[14].SetText(std::string("[SPACE]"));
 
 				float timer = weapon->LVL3AttackCooldownTimer;
 				float time = Frosty::Time::CurrentTime();
@@ -1616,26 +1616,26 @@ namespace MCS
 				{
 					int cooldown1 = (int)cooldown;
 					int cooldown2 = (int)((cooldown - cooldown1) * 10);
-					HUD.Layout.texts.at(7).SetText(std::string(std::to_string(cooldown1) + "." + std::to_string(cooldown2)));
-					HUD.Layout.sprites.at(4).SetColorSprite(glm::vec4(0.1f, 0.1f, 0.1f, 0.90f));
+					HUD.Layout.texts[7].SetText(std::string(std::to_string(cooldown1) + "." + std::to_string(cooldown2)));
+					HUD.Layout.sprites[4].SetColorSprite(glm::vec4(0.1f, 0.1f, 0.1f, 0.90f));
 				}
 				else
 				{
-					HUD.Layout.texts.at(7).SetText(std::string(""));
-					HUD.Layout.sprites.at(4).SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+					HUD.Layout.texts[7].SetText(std::string(""));
+					HUD.Layout.sprites[4].SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
 
 				}
 			}
 			else
 			{
-				HUD.Layout.texts.at(14).SetText(std::string(""));
-				HUD.Layout.sprites.at(4).SetColorSprite(glm::vec4(0.1f, 0.1f, 0.1f, 0.50f));
+				HUD.Layout.texts[14].SetText(std::string(""));
+				HUD.Layout.sprites[4].SetColorSprite(glm::vec4(0.1f, 0.1f, 0.1f, 0.50f));
 
 			}
 
 			if (weapon->Level >= 2)
 			{
-				HUD.Layout.texts.at(15).SetText(std::string("[R-MOUSE]"));
+				HUD.Layout.texts[15].SetText(std::string("[R-MOUSE]"));
 
 				float timer = weapon->LVL2AttackCooldownTimer;
 				float time = Frosty::Time::CurrentTime();
@@ -1645,28 +1645,28 @@ namespace MCS
 				{
 					int cooldown1 = (int)cooldown;
 					int cooldown2 = (int)((cooldown - cooldown1) * 10);
-					HUD.Layout.texts.at(8).SetText(std::string(std::to_string(cooldown1) + "." + std::to_string(cooldown2)));
-					HUD.Layout.sprites.at(3).SetColorSprite(glm::vec4(0.1f, 0.1f, 0.1f, 0.90f));
+					HUD.Layout.texts[8].SetText(std::string(std::to_string(cooldown1) + "." + std::to_string(cooldown2)));
+					HUD.Layout.sprites[3].SetColorSprite(glm::vec4(0.1f, 0.1f, 0.1f, 0.90f));
 
 
 				}
 				else
 				{
-					HUD.Layout.texts.at(8).SetText(std::string(""));
-					HUD.Layout.sprites.at(3).SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+					HUD.Layout.texts[8].SetText(std::string(""));
+					HUD.Layout.sprites[3].SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
 
 				}
 			}
 			else
 			{
-				HUD.Layout.texts.at(15).SetText(std::string(""));
-				HUD.Layout.sprites.at(3).SetColorSprite(glm::vec4(0.1f, 0.1f, 0.1f, 0.50f));
+				HUD.Layout.texts[15].SetText(std::string(""));
+				HUD.Layout.sprites[3].SetColorSprite(glm::vec4(0.1f, 0.1f, 0.1f, 0.50f));
 
 			}
 
 			if (weapon->Level >= 1)
 			{
-				HUD.Layout.texts.at(16).SetText(std::string("[L-MOUSE]"));
+				HUD.Layout.texts[16].SetText(std::string("[L-MOUSE]"));
 
 				float timer = weapon->LVL1AttackCooldownTimer;
 				float time = Frosty::Time::CurrentTime();
@@ -1676,23 +1676,23 @@ namespace MCS
 				{
 					int cooldown1 = (int)cooldown;
 					int cooldown2 = (int)((cooldown - cooldown1) * 10);
-					HUD.Layout.texts.at(9).SetText(std::string(std::to_string(cooldown1) + "." + std::to_string(cooldown2)));
-					HUD.Layout.sprites.at(2).SetColorSprite(glm::vec4(0.1f, 0.1f, 0.1f, 0.90f));
+					HUD.Layout.texts[9].SetText(std::string(std::to_string(cooldown1) + "." + std::to_string(cooldown2)));
+					HUD.Layout.sprites[2].SetColorSprite(glm::vec4(0.1f, 0.1f, 0.1f, 0.90f));
 
 
 				}
 				else
 				{
-					HUD.Layout.texts.at(9).SetText(std::string(""));
-					HUD.Layout.sprites.at(2).SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+					HUD.Layout.texts[9].SetText(std::string(""));
+					HUD.Layout.sprites[2].SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
 
 				}
 
 			}
 			else
 			{
-				HUD.Layout.texts.at(16).SetText(std::string(""));
-				HUD.Layout.sprites.at(2).SetColorSprite(glm::vec4(0.1f, 0.1f, 0.1f, 0.50f));
+				HUD.Layout.texts[16].SetText(std::string(""));
+				HUD.Layout.sprites[2].SetColorSprite(glm::vec4(0.1f, 0.1f, 0.1f, 0.50f));
 
 			}
 
@@ -1703,14 +1703,14 @@ namespace MCS
 				int cooldown1 = (int)(m_Dash[index]->CurrentCooldown);
 				int cooldown2 = (int)(((m_Dash[index]->CurrentCooldown - cooldown1) * 10));
 
-				HUD.Layout.texts.at(10).SetText(std::string(std::to_string(cooldown1) + "." + std::to_string(cooldown2)));
-				HUD.Layout.sprites.at(13).SetColorSprite(glm::vec4(0.1f, 0.1f, 0.1f, 0.90f));
+				HUD.Layout.texts[10].SetText(std::string(std::to_string(cooldown1) + "." + std::to_string(cooldown2)));
+				HUD.Layout.sprites[13].SetColorSprite(glm::vec4(0.1f, 0.1f, 0.1f, 0.90f));
 
 			}
 			else
 			{
-				HUD.Layout.texts.at(10).SetText(std::string(""));
-				HUD.Layout.sprites.at(13).SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+				HUD.Layout.texts[10].SetText(std::string(""));
+				HUD.Layout.sprites[13].SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
 
 			}
 
@@ -1729,16 +1729,16 @@ namespace MCS
 			{
 				int cooldown1 = (int)cooldown;
 				int cooldown2 = (int)((cooldown - cooldown1) * 10);
-				HUD.Layout.texts.at(11).SetText(std::string(std::to_string(cooldown1) + "." + std::to_string(cooldown2)));
-				HUD.Layout.sprites.at(9).SetColorSprite(glm::vec4(0.2f, 0.2f, 0.2f, 0.75f));
+				HUD.Layout.texts[11].SetText(std::string(std::to_string(cooldown1) + "." + std::to_string(cooldown2)));
+				HUD.Layout.sprites[9].SetColorSprite(glm::vec4(0.2f, 0.2f, 0.2f, 0.75f));
 
 			}
 			else
 			{
-				HUD.Layout.texts.at(11).SetText(std::string(""));
+				HUD.Layout.texts[11].SetText(std::string(""));
 				if (m_Inventory[index]->CurrentHealingPotions != 0)
 				{
-					HUD.Layout.sprites.at(9).SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+					HUD.Layout.sprites[9].SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
 				}
 
 			}
@@ -1752,16 +1752,16 @@ namespace MCS
 			{
 				int cooldown1 = (int)cooldown;
 				int cooldown2 = (int)((cooldown - cooldown1) * 10);
-				HUD.Layout.texts.at(12).SetText(std::string(std::to_string(cooldown1) + "." + std::to_string(cooldown2)));
-				HUD.Layout.sprites.at(10).SetColorSprite(glm::vec4(0.2f, 0.2f, 0.2f, 0.75f));
+				HUD.Layout.texts[12].SetText(std::string(std::to_string(cooldown1) + "." + std::to_string(cooldown2)));
+				HUD.Layout.sprites[10].SetColorSprite(glm::vec4(0.2f, 0.2f, 0.2f, 0.75f));
 
 			}
 			else
 			{
-				HUD.Layout.texts.at(12).SetText(std::string(""));
+				HUD.Layout.texts[12].SetText(std::string(""));
 				if (m_Inventory[index]->CurrentSpeedPotions != 0)
 				{
-					HUD.Layout.sprites.at(10).SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+					HUD.Layout.sprites[10].SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
 				}
 
 			}
@@ -1775,16 +1775,16 @@ namespace MCS
 			{
 				int cooldown1 = (int)cooldown;
 				int cooldown2 = (int)((cooldown - cooldown1) * 10);
-				HUD.Layout.texts.at(13).SetText(std::string(std::to_string(cooldown1) + "." + std::to_string(cooldown2)));
-				HUD.Layout.sprites.at(11).SetColorSprite(glm::vec4(0.2f, 0.2f, 0.2f, 0.75f));
+				HUD.Layout.texts[13].SetText(std::string(std::to_string(cooldown1) + "." + std::to_string(cooldown2)));
+				HUD.Layout.sprites[11].SetColorSprite(glm::vec4(0.2f, 0.2f, 0.2f, 0.75f));
 
 			}
 			else
 			{
-				HUD.Layout.texts.at(13).SetText(std::string(""));
+				HUD.Layout.texts[13].SetText(std::string(""));
 				if (m_Inventory[index]->CurrentBaitAmount != 0)
 				{
-					HUD.Layout.sprites.at(11).SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+					HUD.Layout.sprites[11].SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
 				}
 
 			}
@@ -1794,7 +1794,7 @@ namespace MCS
 			for (int i = 0; i < m_Inventory[index]->CurrentSpeedBoots && m_Inventory[index]->CurrentSpeedBoots <= 5; i++)
 			{
 
-				HUD.Layout.sprites.at(bootSpriteID).SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+				HUD.Layout.sprites[bootSpriteID].SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
 				bootSpriteID++;
 			}
 
@@ -1803,38 +1803,38 @@ namespace MCS
 			//Earth
 			if (m_Player[index]->Weapon->EarthDamage > 0.0f)
 			{
-				HUD.Layout.sprites.at(5).SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+				HUD.Layout.sprites[5].SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
 			}
 			else
 			{
-				HUD.Layout.sprites.at(5).SetColorSprite(glm::vec4(0.1f, 0.1f, 0.1f, 0.50f));
+				HUD.Layout.sprites[5].SetColorSprite(glm::vec4(0.1f, 0.1f, 0.1f, 0.50f));
 			}
 			//Fire
 			if (m_Player[index]->Weapon->FireCriticalHitChance > 0.0f)
 			{
-				HUD.Layout.sprites.at(6).SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+				HUD.Layout.sprites[6].SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
 			}
 			else
 			{
-				HUD.Layout.sprites.at(6).SetColorSprite(glm::vec4(0.1f, 0.1f, 0.1f, 0.50f));
+				HUD.Layout.sprites[6].SetColorSprite(glm::vec4(0.1f, 0.1f, 0.1f, 0.50f));
 			}
 			//Water
 			if (m_Player[index]->Weapon->WaterHealing > 0.0f)
 			{
-				HUD.Layout.sprites.at(7).SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+				HUD.Layout.sprites[7].SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
 			}
 			else
 			{
-				HUD.Layout.sprites.at(7).SetColorSprite(glm::vec4(0.1f, 0.1f, 0.1f, 0.50f));
+				HUD.Layout.sprites[7].SetColorSprite(glm::vec4(0.1f, 0.1f, 0.1f, 0.50f));
 			}
 			//Wind
 			if (m_Player[index]->Weapon->WindSpeed > 0.0f)
 			{
-				HUD.Layout.sprites.at(8).SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+				HUD.Layout.sprites[8].SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
 			}
 			else
 			{
-				HUD.Layout.sprites.at(8).SetColorSprite(glm::vec4(0.1f, 0.1f, 0.1f, 0.50f));
+				HUD.Layout.sprites[8].SetColorSprite(glm::vec4(0.1f, 0.1f, 0.1f, 0.50f));
 			}
 
 			//Damage Effect
@@ -1848,17 +1848,17 @@ namespace MCS
 				{
 					percentage = 0.75;
 				}
-				HUD.Layout.sprites.at(0).SetColorSprite(glm::vec4(1.0f* percentage, 0.0f, 0.0f, 0.75f));
+				HUD.Layout.sprites[0].SetColorSprite(glm::vec4(1.0f* percentage, 0.0f, 0.0f, 0.75f));
 
 				
 			}
 			else if(m_Health[index]->CurrentHealth <= 4)
 			{
-				HUD.Layout.sprites.at(0).SetColorSprite(glm::vec4(0.75f, 0.0f, 0.0f, 0.75f));
+				HUD.Layout.sprites[0].SetColorSprite(glm::vec4(0.75f, 0.0f, 0.0f, 0.75f));
 			}
 			else
 			{
-				HUD.Layout.sprites.at(0).SetColorSprite(glm::vec4(0.0f, 0.0f, 0.0f, 0.75f));
+				HUD.Layout.sprites[0].SetColorSprite(glm::vec4(0.0f, 0.0f, 0.0f, 0.75f));
 			}
 		}
 	}
@@ -1869,7 +1869,7 @@ namespace MCS
 		{
 			auto& HUD = m_World->GetComponent<Frosty::ECS::CGUI>(m_Transform[index]->EntityPtr);
 
-			HUD.Layout.texts.at(6).SetText(text);
+			HUD.Layout.texts[6].SetText(text);
 			m_Player[index]->PickUpTextTimer = Frosty::Time::CurrentTime();
 		}
 	}
@@ -1877,9 +1877,9 @@ namespace MCS
 	void PlayerControllerSystem::ResetAllHUDWeaponInfo(size_t index)
 	{
 		auto& HUD = m_World->GetComponent<Frosty::ECS::CGUI>(m_Transform[index]->EntityPtr);
-		HUD.Layout.texts.at(7).SetText(std::string(""));
-		HUD.Layout.texts.at(8).SetText(std::string(""));
-		HUD.Layout.texts.at(9).SetText(std::string(""));
+		HUD.Layout.texts[7].SetText(std::string(""));
+		HUD.Layout.texts[8].SetText(std::string(""));
+		HUD.Layout.texts[9].SetText(std::string(""));
 	}
 
 	void PlayerControllerSystem::OnDamage()
@@ -1887,7 +1887,7 @@ namespace MCS
 		for (size_t i = 1; i < p_Total; i++)
 		{
 			auto& HUD = m_World->GetComponent<Frosty::ECS::CGUI>(m_Transform[i]->EntityPtr);
-			HUD.Layout.sprites.at(0).SetColorSprite(glm::vec4(1.0f, 0.0f, 0.0f, 0.75f));
+			HUD.Layout.sprites[0].SetColorSprite(glm::vec4(1.0f, 0.0f, 0.0f, 0.75f));
 
 			m_Player[i]->DamageEffectTimer = Frosty::Time::CurrentTime();
 		}

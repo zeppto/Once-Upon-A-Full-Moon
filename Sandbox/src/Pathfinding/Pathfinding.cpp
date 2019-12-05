@@ -120,7 +120,7 @@ namespace MCS
 	{
 		for (size_t i = 0; i < closedSet.size(); i++)
 		{
-			if (closedSet.at(i) == *findNode) return true;
+			if (closedSet[i] == *findNode) return true;
 		}
 		return false;
 	}

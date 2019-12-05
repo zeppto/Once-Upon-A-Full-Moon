@@ -120,7 +120,7 @@ namespace Frosty
 
 			//for (int j = 0; j < m_SceneData->PointLights.size(); j++)
 			//{
-			//	if (CheckCollision(m_GridCells[i], ConvertToNDC(glm::vec4(m_SceneData->PointLights.at(j).Position, m_SceneData->PointLights.at(j).Radius), m_SceneData->PointLights.at(j).Transform->ModelMatrix)))
+			//	if (CheckCollision(m_GridCells[i], ConvertToNDC(glm::vec4(m_SceneData->PointLights[j].Position, m_SceneData->PointLights[j].Radius), m_SceneData->PointLights[j].Transform->ModelMatrix)))
 			//	{
 			//		//pos.emplace_back(i);							// Temporary for checking	~ W-_-W ~
 			//		m_CellLightsInfo[i].Offset = offsetCounter;		// Find better place, it becomes repetative and uneccesary	~ W-_-W ~

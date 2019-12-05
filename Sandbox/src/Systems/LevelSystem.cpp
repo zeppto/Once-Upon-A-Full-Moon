@@ -132,16 +132,16 @@ namespace MCS
 						Room bossCurrentRoom = m_Map.getRoom(m_BossPos);
 						glm::ivec2 expectedBossPos = glm::ivec2(-1, -1);
 						if (m_BossRememberdPath.pathToGo.size() > m_BossRememberdPath.lastTile)
-							expectedBossPos = m_BossRememberdPath.pathToGo.at(m_BossRememberdPath.lastTile - 1);
+							expectedBossPos = m_BossRememberdPath.pathToGo[m_BossRememberdPath.lastTile - 1];
 						//the boss follows bait
 						for (int i = 0; i < m_RoomswhithBait.size(); i++)
 						{
-							if (m_BossRememberdPath.expectedPlayerPos != m_RoomswhithBait.at(i) || m_BossPos != expectedBossPos)
+							if (m_BossRememberdPath.expectedPlayerPos != m_RoomswhithBait[i] || m_BossPos != expectedBossPos)
 							{
 								bossRememberdPath baitTarget;
-								baitTarget.pathToGo = m_Map.getPathToTargert(m_BossPos, m_RoomswhithBait.at(i));
+								baitTarget.pathToGo = m_Map.getPathToTargert(m_BossPos, m_RoomswhithBait[i]);
 								baitTarget.lastTile = 1;
-								baitTarget.expectedPlayerPos = m_RoomswhithBait.at(i);
+								baitTarget.expectedPlayerPos = m_RoomswhithBait[i];
 								if (baitTarget.pathToGo.size() - baitTarget.lastTile < m_BossRememberdPath.pathToGo.size() - m_BossRememberdPath.lastTile || m_BossRememberdPath.pathToGo.size() - m_BossRememberdPath.lastTile == 0)
 								{
 									FY_INFO("The boss found a closer bait");
@@ -153,7 +153,7 @@ namespace MCS
 						}
 						if (m_BossRememberdPath.pathToGo.size() > m_BossRememberdPath.lastTile)
 						{
-							m_BossPos = m_BossRememberdPath.pathToGo.at(m_BossRememberdPath.lastTile);
+							m_BossPos = m_BossRememberdPath.pathToGo[m_BossRememberdPath.lastTile];
 							m_BossRememberdPath.lastTile++;
 							FY_INFO("The boss is moving to ({0}, {1})", m_BossPos.x, m_BossPos.y);
 							FY_INFO("");
@@ -170,7 +170,7 @@ namespace MCS
 							m_BossTimer += timeToEate;
 							for (int i = 0; i < m_RoomswhithBait.size(); i++)
 							{
-								if (m_RoomswhithBait.at(i) == m_BossPos)
+								if (m_RoomswhithBait[i] == m_BossPos)
 									m_RoomswhithBait.erase(m_RoomswhithBait.begin() + i);
 							}
 							FY_INFO("The boss found the bait! and is eating for {0} sec", timeToEate);
@@ -195,7 +195,7 @@ namespace MCS
 							Room bossCurrentRoom = m_Map.getRoom(m_BossPos);
 							glm::ivec2 expectedBossPos = glm::ivec2(-1, -1);
 							if (m_BossRememberdPath.pathToGo.size() > m_BossRememberdPath.lastTile)
-								expectedBossPos = m_BossRememberdPath.pathToGo.at(m_BossRememberdPath.lastTile - 1);
+								expectedBossPos = m_BossRememberdPath.pathToGo[m_BossRememberdPath.lastTile - 1];
 							//the boss follows player
 							if (m_BossRememberdPath.expectedPlayerPos != m_PlayerPos || m_BossPos != expectedBossPos)
 							{
@@ -206,7 +206,7 @@ namespace MCS
 							}
 							if (m_BossRememberdPath.pathToGo.size() > m_BossRememberdPath.lastTile)
 							{
-								m_BossPos = m_BossRememberdPath.pathToGo.at(m_BossRememberdPath.lastTile);
+								m_BossPos = m_BossRememberdPath.pathToGo[m_BossRememberdPath.lastTile];
 								m_BossRememberdPath.lastTile++;
 								FY_INFO("The boss is moving to ({0}, {1})", m_BossPos.x, m_BossPos.y);
 								FY_INFO("");
@@ -956,10 +956,10 @@ namespace MCS
 							m_GUI = GetPlayerGUI();
 							if (m_GUI != nullptr)
 							{
-								m_GUI->Layout.sprites.at(1).SetImage("attackMelee");
-								m_GUI->Layout.sprites.at(2).SetImage("attackMelee1");
-								m_GUI->Layout.sprites.at(3).SetImage("attackMelee2");
-								m_GUI->Layout.sprites.at(4).SetImage("attackMelee3");
+								m_GUI->Layout.sprites[1].SetImage("attackMelee");
+								m_GUI->Layout.sprites[2].SetImage("attackMelee1");
+								m_GUI->Layout.sprites[3].SetImage("attackMelee2");
+								m_GUI->Layout.sprites[4].SetImage("attackMelee3");
 							}
 							Frosty::Renderer::ChangeEntity(m_Transform[i]->EntityPtr->Id, &weaponMat, "Sword", &mesh, m_Transform[i]->EntityPtr->Id, m_Transform[i], nullptr);
 						}
@@ -980,10 +980,10 @@ namespace MCS
 							m_GUI = GetPlayerGUI();
 							if (m_GUI != nullptr)
 							{
-								m_GUI->Layout.sprites.at(1).SetImage("attackRanged");
-								m_GUI->Layout.sprites.at(2).SetImage("attackRanged1");
-								m_GUI->Layout.sprites.at(3).SetImage("attackRanged2");
-								m_GUI->Layout.sprites.at(4).SetImage("attackRanged3");
+								m_GUI->Layout.sprites[1].SetImage("attackRanged");
+								m_GUI->Layout.sprites[2].SetImage("attackRanged1");
+								m_GUI->Layout.sprites[3].SetImage("attackRanged2");
+								m_GUI->Layout.sprites[4].SetImage("attackRanged3");
 							}
 							Frosty::Renderer::ChangeEntity(m_Transform[i]->EntityPtr->Id, &weaponMat, "Bow", &mesh, m_Transform[i]->EntityPtr->Id, m_Transform[i], nullptr);
 						}
@@ -1041,11 +1041,11 @@ namespace MCS
 
 				m_GUI = &m_World->GetComponent<Frosty::ECS::CGUI>(m_Transform[i]->EntityPtr);
 
-				m_GUI->Layout.sprites.at(14).SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 0.0f));
-				m_GUI->Layout.sprites.at(15).SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 0.0f));
-				m_GUI->Layout.sprites.at(16).SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 0.0f));
-				m_GUI->Layout.sprites.at(17).SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 0.0f));
-				m_GUI->Layout.sprites.at(18).SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 0.0f));
+				m_GUI->Layout.sprites[14].SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 0.0f));
+				m_GUI->Layout.sprites[15].SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 0.0f));
+				m_GUI->Layout.sprites[16].SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 0.0f));
+				m_GUI->Layout.sprites[17].SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 0.0f));
+				m_GUI->Layout.sprites[18].SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 0.0f));
 			}
 		}
 
@@ -1088,7 +1088,7 @@ namespace MCS
 		bool alradyExist = false;
 		for (int i = 0; i < m_RoomswhithBait.size(); i++)
 		{
-			if (m_RoomswhithBait.at(i) == m_PlayerPos)
+			if (m_RoomswhithBait[i] == m_PlayerPos)
 				alradyExist = true;
 		}
 		if (!alradyExist)
