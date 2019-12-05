@@ -252,8 +252,8 @@ namespace Frosty
 			}
 			inline size_t GetTotalEntities() const { return m_Entities.size(); }
 
-			inline std::shared_ptr<Entity>& At(size_t index) { return m_Entities.at(index); }
-			inline const std::shared_ptr<Entity>& At(size_t index) const { return m_Entities.at(index); }
+			inline std::shared_ptr<Entity>& At(size_t index) { return m_Entities[index]; }
+			inline const std::shared_ptr<Entity>& At(size_t index) const { return m_Entities[index]; }
 
 			inline std::shared_ptr<Entity>& Create()
 			{
@@ -296,7 +296,7 @@ namespace Frosty
 				out << "\tIndex\tId\tAddress\t\t\tRefs\n";
 				for (unsigned int i = 0; i < em.m_Entities.size(); i++)
 				{
-					out << "\t" << i << "\t" << em.m_Entities.at(i)->Id << "\t" << em.m_Entities.at(i) << "\t" << em.m_Entities.at(i).use_count() << std::endl;
+					out << "\t" << i << "\t" << em.m_Entities[i]->Id << "\t" << em.m_Entities[i] << "\t" << em.m_Entities[i].use_count() << std::endl;
 				}
 				out << "\t----------------Done----------------\n\n";
 
@@ -361,14 +361,14 @@ namespace Frosty
 			inline ComponentArrayIndex GetTotal() { return Total; }
 			virtual BaseComponent* GetTypeComponent(const std::shared_ptr<Entity>& entity) override
 			{
-				ComponentArrayIndex tempIndex = EntityMap.at(entity);
+				ComponentArrayIndex tempIndex = EntityMap[entity];
 
 				return &m_Data[tempIndex];
 			}
 
 			inline ComponentType& Get(const std::shared_ptr<Entity>& entity)
 			{
-				ComponentArrayIndex tempIndex = EntityMap.at(entity);
+				ComponentArrayIndex tempIndex = EntityMap[entity];
 
 				return m_Data[tempIndex];
 			}
@@ -383,9 +383,9 @@ namespace Frosty
 					"Maximum number of entities for this specific component({0}) is reached.", getComponentTypeID<ComponentType>());
 
 				EntityMap.emplace(entity, Total);
-				m_Data.at(Total) = ComponentType(std::forward<TArgs>(mArgs)...);
+				m_Data[Total] = ComponentType(std::forward<TArgs>(mArgs)...);
 				entity->Bitset.flip(getComponentTypeID<ComponentType>());
-				m_Data.at(Total).EntityPtr = entity;
+				m_Data[Total].EntityPtr = entity;
 
 				return m_Data[Total++];
 			}
@@ -398,29 +398,29 @@ namespace Frosty
 
 				ComponentArrayIndex index = it->second;
 
-				m_Data.at(index).EntityPtr.reset();
-				m_Data.at(index) = m_Data.at(Total - 1);
-				m_Data.at(index).EntityPtr = m_Data.at(Total - 1).EntityPtr;
-				m_Data.at(Total - 1).EntityPtr.reset();
-				m_Data.at(Total - 1) = ComponentType();
+				m_Data[index].EntityPtr.reset();
+				m_Data[index] = m_Data[Total - 1];
+				m_Data[index].EntityPtr = m_Data[Total - 1].EntityPtr;
+				m_Data[Total - 1].EntityPtr.reset();
+				m_Data[Total - 1] = ComponentType();
 
 				Total--;
 				if (Total > index)
 				{
-					auto& itUpdate = EntityMap.find(m_Data.at(index).EntityPtr);
+					auto& itUpdate = EntityMap.find(m_Data[index].EntityPtr);
 					FY_CORE_ASSERT(itUpdate != EntityMap.end(), "This should not happen!");
 					EntityMap[itUpdate->first] = index;
-					//EntityMap[m_Data.at(it->second).EntityPtr] = it->second;
+					//EntityMap[m_Data[it->second].EntityPtr] = it->second;
 				}
 
 				EntityMap.erase(entity);
 				entity->Bitset.flip(getComponentTypeID<ComponentType>());
-				return m_Data.at(index).EntityPtr;
+				return m_Data[index].EntityPtr;
 			}
 
 			inline ComponentType* GetComponentAddress(const std::shared_ptr<Entity>& entity)
 			{
-				return &m_Data.at(EntityMap[entity]);
+				return &m_Data[EntityMap[entity]];
 			}
 
 			virtual std::string GetInfo() const override

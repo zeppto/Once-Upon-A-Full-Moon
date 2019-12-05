@@ -433,10 +433,10 @@ namespace Frosty
 
 		for (size_t i = 0; i < size; i++)
 		{
-			triangles.at(i).indices.resize(3);
-			triangles.at(i).indices.at(0) = indices.at(i*3);
-			triangles.at(i).indices.at(1) = indices.at(i*3+1);
-			triangles.at(i).indices.at(2) = indices.at(i*3+2);;
+			triangles[i].indices.resize(3);
+			triangles[i].indices[0] = indices[i*3];
+			triangles[i].indices[1] = indices[i*3+1];
+			triangles[i].indices[2] = indices[i*3+2];;
 		}
 
 		s_CurrentVertexArray = &vertices;
@@ -445,9 +445,9 @@ namespace Frosty
 
 		for (int i = 0; i < size; i++)
 		{
-			indices.at(i*3) = triangles.at(i).indices.at(0);
-			indices.at(i*3+1) = triangles.at(i).indices.at(1);
-			indices.at(i*3+2) = triangles.at(i).indices.at(2);
+			indices[i*3] = triangles[i].indices[0];
+			indices[i*3+1] = triangles[i].indices[1];
+			indices[i*3+2] = triangles[i].indices[2];
 		}
 	}
 
@@ -457,9 +457,9 @@ namespace Frosty
 		Triangle triangleB = *(Triangle*)b;
 
 
-		unsigned int indexPosA1 = triangleA.indices.at(0).vertIndex;
-		unsigned int indexPosA2 = triangleA.indices.at(0).vertIndex;
-		unsigned int indexPosA3 = triangleA.indices.at(0).vertIndex;
+		unsigned int indexPosA1 = triangleA.indices[0].vertIndex;
+		unsigned int indexPosA2 = triangleA.indices[0].vertIndex;
+		unsigned int indexPosA3 = triangleA.indices[0].vertIndex;
 
 		float YposA1 = s_CurrentVertexArray->at(indexPosA1).position[1];
 		float YposA2 = s_CurrentVertexArray->at(indexPosA2).position[1];
@@ -467,9 +467,9 @@ namespace Frosty
 
 		float YposA = (YposA1 + YposA2 + YposA3);
 
-		unsigned int indexPosB1 = triangleB.indices.at(0).vertIndex;
-		unsigned int indexPosB2 = triangleB.indices.at(0).vertIndex;
-		unsigned int indexPosb3 = triangleB.indices.at(0).vertIndex;
+		unsigned int indexPosB1 = triangleB.indices[0].vertIndex;
+		unsigned int indexPosB2 = triangleB.indices[0].vertIndex;
+		unsigned int indexPosb3 = triangleB.indices[0].vertIndex;
 
 		float YposB1 = s_CurrentVertexArray->at(indexPosB1).position[1];
 		float YposB2 = s_CurrentVertexArray->at(indexPosB2).position[1];
@@ -568,7 +568,7 @@ namespace Frosty
 
 		for (int i = 0; i < s_FilePath_Vector.size() && returnValue == false; i++)
 		{
-			if (s_FilePath_Vector.at(i) == FilePath)
+			if (s_FilePath_Vector[i] == FilePath)
 			{
 				returnValue = true;
 			}

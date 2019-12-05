@@ -54,11 +54,11 @@ namespace MCS
 		{
 			if (m_LoosEndsRooms.size() > 0)
 			{
-				if (generateRoom(m_LoosEndsRooms.at(0).pos, m_LoosEndsRooms.at(0).startSide, nrToGenerate - i > m_LoosEndsRooms.size()))
+				if (generateRoom(m_LoosEndsRooms[0].pos, m_LoosEndsRooms[0].startSide, nrToGenerate - i > m_LoosEndsRooms.size()))
 				{
 					if (m_LoosEndsRooms.size() == 1 || i == nrToGenerate - 1)
 					{
-						m_LastCreatedRoom = m_LoosEndsRooms.at(0).pos;
+						m_LastCreatedRoom = m_LoosEndsRooms[0].pos;
 					}
 					i++;
 				}

@@ -193,8 +193,8 @@ namespace MCS
 					if (m_World->HasComponent<Frosty::ECS::CInventory>(m_Transform[index]->EntityPtr))
 					{
 
-
-						checkCollision = false;
+						
+					//	checkCollision = false;
 						if (m_World->HasComponent<Frosty::ECS::CLevelExit>(m_Transform[i]->EntityPtr))
 						{
 							checkCollision = true;

@@ -28,7 +28,7 @@ namespace MCS
 				if (m_Boss[i]->TargetList.size() == 1)
 				{
 					//Follow player
-					m_Enemy[i]->Target = &world->GetComponent<Frosty::ECS::CTransform>(m_Boss[i]->TargetList.at(m_Boss[i]->TargetList.size() - 1));
+					m_Enemy[i]->Target = &world->GetComponent<Frosty::ECS::CTransform>(m_Boss[i]->TargetList[m_Boss[i]->TargetList.size() - 1]);
 					//m_Enemy[i]->StopDistance = 1.0f;
 				}
 				else
@@ -38,15 +38,15 @@ namespace MCS
 					{
 						int ShortestID = FindClosestBait(m_Transform[i]->Position, m_Boss[i]->TargetList);
 
-						std::swap(m_Boss[i]->TargetList.at(0), m_Boss[i]->TargetList.at(ShortestID));
+						std::swap(m_Boss[i]->TargetList[0], m_Boss[i]->TargetList[ShortestID]);
 					}
-					m_Enemy[i]->Target = &world->GetComponent<Frosty::ECS::CTransform>(m_Boss[i]->TargetList.at(0));
+					m_Enemy[i]->Target = &world->GetComponent<Frosty::ECS::CTransform>(m_Boss[i]->TargetList[0]);
 					m_Boss[i]->Hunting = true;
 					//m_Enemy[i]->StopDistance = 0.1f;
 				}
 				//	}
 
-				float distance = CalcDistance2D(m_Transform[i]->Position, world->GetComponent<Frosty::ECS::CTransform>(m_Boss[i]->TargetList.at(0)).Position);
+				float distance = CalcDistance2D(m_Transform[i]->Position, world->GetComponent<Frosty::ECS::CTransform>(m_Boss[i]->TargetList[0]).Position);
 
 				if (distance < 5.0 && m_Boss[i]->TargetList.size() > 1)
 				{
@@ -60,7 +60,7 @@ namespace MCS
 			//Eat bait
 			if ((m_Boss[i]->Distracted == true) && (Frosty::Time::CurrentTime() - m_Boss[i]->DistractionTimer >= m_Boss[i]->DistractionTime) && m_Boss[i]->TargetList.size() > 1)
 			{
-				world->AddComponent<Frosty::ECS::CDestroy>(m_Boss[i]->TargetList.at(0));
+				world->AddComponent<Frosty::ECS::CDestroy>(m_Boss[i]->TargetList[0]);
 				m_Boss[i]->TargetList.erase(m_Boss[i]->TargetList.begin());
 				m_Boss[i]->Distracted = false;
 				m_Boss[i]->DistractionTimer = Frosty::Time::CurrentTime();
@@ -177,9 +177,9 @@ namespace MCS
 			//Follow the nearest bait
 			int ShortestID = FindClosestBait(m_Transform[i]->Position, m_Boss[i]->TargetList);
 
-			std::swap(m_Boss[i]->TargetList.at(0), m_Boss[i]->TargetList.at(ShortestID));
+			std::swap(m_Boss[i]->TargetList[0], m_Boss[i]->TargetList[ShortestID]);
 
-			m_Enemy[i]->Target = &world->GetComponent<Frosty::ECS::CTransform>(m_Boss[i]->TargetList.at(0));
+			m_Enemy[i]->Target = &world->GetComponent<Frosty::ECS::CTransform>(m_Boss[i]->TargetList[0]);
 			m_Boss[i]->Hunting = true;
 			//m_Enemy[i]->StopDistance = 0.1f;
 
@@ -190,13 +190,13 @@ namespace MCS
 	{
 		auto& world = Frosty::Application::Get().GetWorld();
 
-		float ShortestDistance = CalcDistance2D(world->GetComponent<Frosty::ECS::CTransform>(Baits.at(0)).Position, SelfPos);
+		float ShortestDistance = CalcDistance2D(world->GetComponent<Frosty::ECS::CTransform>(Baits[0]).Position, SelfPos);
 		int ShortestID = 0;
 		float distance = 0;
 
 		for (uint8_t bait = 1; bait < Baits.size() - 1; bait++)
 		{
-			distance = CalcDistance2D(world->GetComponent<Frosty::ECS::CTransform>(Baits.at(bait)).Position, SelfPos);
+			distance = CalcDistance2D(world->GetComponent<Frosty::ECS::CTransform>(Baits[bait]).Position, SelfPos);
 			if (distance < ShortestDistance)
 			{
 				ShortestID = bait;
