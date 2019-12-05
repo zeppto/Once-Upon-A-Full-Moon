@@ -186,7 +186,7 @@ namespace MCS
 		auto& ExitSide = m_World->GetComponent<Frosty::ECS::CLevelExit>(e.GetExitEntity());
 
 		auto& PlayerTranform = m_World->GetComponent<Frosty::ECS::CTransform>(e.GetPlayerEntity());
-		Frosty::ECS::CTransform* playerTransform = nullptr;
+		//Frosty::ECS::CTransform playerTransform = static_cast<Frosty::ECS::CTransform>(PlayerTranform);
 
 		////temp level swap
 		//for (size_t i = 1; i < p_Total; i++)
@@ -265,7 +265,7 @@ namespace MCS
 			m_LoadMapBool = true;
 			m_LoadExitDir = ExitSide.ExitDirection;
 			m_World->DestroyGroup(false);
-			m_PlayerTransformLoadComponent = playerTransform;
+			m_PlayerTransformLoadComponent = &PlayerTranform;
 			m_LoadFileName = m_Map.getRoomTextur(m_OtherRoom, &m_MapRotation);
 			//PlayerTranform.Position = Level::Room(m_CurrentRoome.sideExits[0], m_CurrentRoome.sideExits[1], 
 			//	m_CurrentRoome.sideExits[2], m_CurrentRoome.sideExits[3], texture, rotation, ExitSide.ExitDirection);

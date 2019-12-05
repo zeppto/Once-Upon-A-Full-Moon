@@ -39,10 +39,10 @@ namespace MCS
 		void OnSwitchRoomEvent(Frosty::SwitchRoomEvent& e);
 		void LookAtPoint(const glm::vec3& point, size_t index);
 
-		void HandlePathfinding(size_t index);
+		void HandlePathfinding(size_t index, const uint32_t& EntityGroupID);
 		void HandleDistance(size_t index);
 		void HandleEscape(size_t index);
-		void HandleReset(size_t index);
+		void HandleReset(size_t index, const uint32_t& EntityGroupID);
 
 	private:
 		Frosty::World* m_World{ nullptr };
@@ -64,7 +64,7 @@ namespace MCS
 		{
 			std::shared_ptr<Frosty::Grid> Grid{ nullptr };
 			std::shared_ptr<Pathfinding> PathFinder{ nullptr };
-			uint16_t EntityUpdateGroup{ (uint16_t)-1 };
+			uint16_t EntityGroupID{ (uint16_t)-1 };
 
 			GridMap& operator=(const GridMap& other)
 			{
@@ -72,7 +72,7 @@ namespace MCS
 				{
 					Grid = other.Grid;
 					PathFinder = other.PathFinder;
-					EntityUpdateGroup = other.EntityUpdateGroup;
+					EntityGroupID = other.EntityGroupID;
 				}
 				return *this;
 			}

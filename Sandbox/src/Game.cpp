@@ -378,22 +378,22 @@ namespace MCS
 		//enemyWeaponCompA.AttackHitboxScale = glm::vec3(10.0f, 6.0f, 4.0f);				// Sword
 		enemyWeaponCompA.AttackHitboxScale = glm::vec3(4.0f, 6.0f, 4.0f);				// Bite
 /*		enemyWeaponCompA.AttackHitboxScale = glm::vec3(0.3f);	*/						// Arrow
-		
-		
-		//// ENEMY A
-		auto& enemyA = world->CreateEntity({ 200.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 2.0f, 2.0f, 2.0f });
-		world->AddComponent<Frosty::ECS::CAnimController>(enemyA).currAnim = Frosty::AssetManager::GetAnimation("Wolf_Idle");
-		world->AddComponent<Frosty::ECS::CMesh>(enemyA, Frosty::AssetManager::GetMesh("Wolf"));
-		auto& enemyMatA = world->AddComponent<Frosty::ECS::CMaterial>(enemyA, Frosty::AssetManager::GetShader("Animation"));
-		enemyMatA.DiffuseTexture = Frosty::AssetManager::GetTexture2D("Wolf_Diffuse");
-		enemyMatA.NormalTexture = Frosty::AssetManager::GetTexture2D("wolf_defaultMat_Normal");
-		world->AddComponent<Frosty::ECS::CPhysics>(enemyA, Frosty::AssetManager::GetBoundingBox("Wolf"), 6.0f);
-		auto& enemyComp = world->AddComponent<Frosty::ECS::CEnemy>(enemyA, &playerTransform, &enemyWeaponCompA, 0.1f);
-		enemyComp.SpawnPosition = { 200.0f, 0.0f, 0.0f };
-		world->AddComponent<Frosty::ECS::CHealth>(enemyA, 10);
-		world->AddComponent<Frosty::ECS::CHealthBar>(enemyA, glm::vec3(0.0f, 10.0f, 0.0f));
-		world->AddComponent<Frosty::ECS::CDropItem>(enemyA);
-
+		//
+		//
+		////// ENEMY A
+		//auto& enemyA = world->CreateEntity({ 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 2.0f, 2.0f, 2.0f });
+		//world->AddComponent<Frosty::ECS::CAnimController>(enemyA).currAnim = Frosty::AssetManager::GetAnimation("Wolf_Idle");
+		//world->AddComponent<Frosty::ECS::CMesh>(enemyA, Frosty::AssetManager::GetMesh("Wolf"));
+		//auto& enemyMatA = world->AddComponent<Frosty::ECS::CMaterial>(enemyA, Frosty::AssetManager::GetShader("Animation"));
+		//enemyMatA.DiffuseTexture = Frosty::AssetManager::GetTexture2D("Wolf_Diffuse");
+		//enemyMatA.NormalTexture = Frosty::AssetManager::GetTexture2D("wolf_defaultMat_Normal");
+		//world->AddComponent<Frosty::ECS::CPhysics>(enemyA, Frosty::AssetManager::GetBoundingBox("Wolf"), 6.0f);
+		//auto& enemyComp = world->AddComponent<Frosty::ECS::CEnemy>(enemyA, &playerTransform, &enemyWeaponCompA, 0.1f);
+		//enemyComp.SpawnPosition = { 0.0f, 0.0f, 0.0f };
+		//world->AddComponent<Frosty::ECS::CHealth>(enemyA, 10);
+		//world->AddComponent<Frosty::ECS::CHealthBar>(enemyA, glm::vec3(0.0f, 10.0f, 0.0f));
+		//world->AddComponent<Frosty::ECS::CDropItem>(enemyA);
+		//enemyA->GroupId = 0;
 
 		// TREE
 		//auto& tree = world->CreateEntity({ 50.0f, 3.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 8.0f, 6.0f, 7.0f }, true);

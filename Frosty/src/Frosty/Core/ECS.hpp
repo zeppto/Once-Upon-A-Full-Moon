@@ -791,7 +791,7 @@ namespace Frosty
 			static const int RESET_DISTANCE = 60;
 
 			enum class State { Idle, Escape, Attack, Chase, Reset };
-			State CurrentState{ State::Reset };
+			State CurrentState{ State::Idle };
 
 			CWeapon* Weapon{ nullptr };
 			CTransform* Target{ nullptr };

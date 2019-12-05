@@ -669,10 +669,10 @@ namespace MCS
 					}
 
 
-					if (fileEntitys.myEntitys.at(i).MyComponents.at(6).HaveComponent)
-					{
-						m_World->AddComponent<Frosty::ECS::CDestroy>(entity);
-					}
+					//if (fileEntitys.myEntitys.at(i).MyComponents.at(6).HaveComponent)
+					//{
+					//	m_World->AddComponent<Frosty::ECS::CDestroy>(entity);
+					//}
 
 
 				}
