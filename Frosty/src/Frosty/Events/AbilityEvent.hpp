@@ -309,9 +309,13 @@ namespace Frosty
 	class GameoverEvent : public BaseEvent
 	{
 	public:
-		GameoverEvent() { }
+		GameoverEvent(const std::shared_ptr<ECS::Entity>& entity) : m_PlayerEntity(entity) { }
+
+		const std::shared_ptr<ECS::Entity>& GetEntity() const { return m_PlayerEntity; }
 
 		EVENT_TYPE(GameOver)
+	private:
+		std::shared_ptr<ECS::Entity> m_PlayerEntity;
 	};
 
 	class WinEvent : public BaseEvent

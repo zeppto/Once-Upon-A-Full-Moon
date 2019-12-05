@@ -159,7 +159,6 @@ namespace MCS
 			else
 				randomValue = rand() % 6;
 
-			randomValue = 5;
 			if (randomValue != -1)
 			{
 

@@ -329,8 +329,6 @@ namespace Frosty
 		}
 	}
 
-
-
 	void Renderer::RemoveAllLights()
 	{
 		for (auto& PLightIt : s_SceneData->PointLights)

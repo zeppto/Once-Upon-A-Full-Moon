@@ -13,6 +13,10 @@
 #include "Frosty/Events/AbilityEvent.hpp"
 #include "Frosty/Events/EventSystem.hpp"
 
+#include <fstream>
+
+#include "HighScoreState.h"
+
 namespace MCS
 {
 	GameState::GameState()
@@ -62,7 +66,7 @@ namespace MCS
 		switch (e.GetEventType())
 		{
 		case Frosty::EventType::GameOver:
-			OnGameOverEvent();
+			OnGameOverEvent(static_cast<Frosty::GameoverEvent&>(e));
 			break;
 		case Frosty::EventType::Win:
 			OnGameWinEvent();
@@ -70,10 +74,18 @@ namespace MCS
 		}
 	}
 
-	void GameState::OnGameOverEvent()
+	void GameState::OnGameOverEvent(Frosty::GameoverEvent& e)
 	{
 		auto& world = Frosty::Application::Get().GetWorld();
-		m_App->GetStateMachine().AddState(Frosty::StateRef(FY_NEW(GameOverState)), true);
+
+		// Writing score here since I can't get to it in other state.
+		std::ofstream scoreFile;
+		//Write at the end of the file
+		scoreFile.open("Highscore_test.txt", std::ios::app);
+		scoreFile << world->GetComponent<Frosty::ECS::CPlayer>(e.GetEntity()).Score << "\n";
+		scoreFile.close();
+
+		m_App->GetStateMachine().AddState(Frosty::StateRef(FY_NEW(HighscoreState)), true);
 		world->PauseGame();
 	}
 

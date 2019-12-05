@@ -1,7 +1,9 @@
 #ifndef GAMESTATE_HPP
 #define GAMESTATE_HPP
 
-namespace Frosty { class GetEntityAttemptEvent; }
+namespace Frosty { class GetEntityAttemptEvent; 
+				   class GameoverEvent;
+				 }
 
 namespace MCS
 {
@@ -17,7 +19,7 @@ namespace MCS
 
 		void OnEvent(Frosty::BaseEvent& e);
 
-		void OnGameOverEvent();
+		void OnGameOverEvent(Frosty::GameoverEvent& e);
 		void OnGameWinEvent();
 
 		void DeletePlayer();
