@@ -21,7 +21,6 @@ namespace MCS
 		{
 			if (glm::distance(m_Transform[m_CurrentActiveWC]->Position, m_WitchCircle[m_CurrentActiveWC]->Enchanter->Position) <= 2.f)
 			{
-
 				auto& witchCircleHealth = m_World->GetComponent<Frosty::ECS::CHealth>(m_WitchCircle[m_CurrentActiveWC]->EntityPtr);
 				auto& witchCircleHealthBar = m_World->GetComponent<Frosty::ECS::CHealthBar>(m_WitchCircle[m_CurrentActiveWC]->EntityPtr);
 
@@ -41,7 +40,6 @@ namespace MCS
 				}
 				else if (witchCircleHealth.CurrentHealth >= witchCircleHealth.MaxHealth)
 				{
-					m_WitchCircle[m_CurrentActiveWC]->Deployed = true;
 					RemoveHealthBar();
 
 					// Send event to generate an element
@@ -145,15 +143,33 @@ namespace MCS
 	void WitchCircleSystem::OnActiveWitchCircleEvent(Frosty::ActivateWitchCircleEvent& e)
 	{
 		auto& enchanter = e.GetEntity();
-		auto& enchanterTransform = m_World->GetComponent<Frosty::ECS::CTransform>(enchanter);
 
 		for (size_t i = 1; i < p_Total && m_CurrentActiveWC == 0; i++)
 		{
+			auto& enchanterTransform = m_World->GetComponent<Frosty::ECS::CTransform>(enchanter);
+			
 			// If enchanter is within reach --> activate the hexcircle
 			if (glm::distance(m_Transform[i]->Position, enchanterTransform.Position) <= 2.f && !m_WitchCircle[i]->Deployed)
 			{
-				m_CurrentActiveWC = i;
-				m_WitchCircle[i]->Enchanter = &enchanterTransform;
+				if (m_World->HasComponent<Frosty::ECS::CPlayer>(enchanter))
+				{
+					auto& playerComp = m_World->GetComponent<Frosty::ECS::CPlayer>(enchanter);
+					auto& inventoryComp = m_World->GetComponent<Frosty::ECS::CInventory>(enchanter);
+
+					if (inventoryComp.CurrentWolfsbane > 0)
+					{
+						auto& weaponComp = m_World->GetComponent<Frosty::ECS::CWeapon>(playerComp.Weapon->EntityPtr);
+						if (!weaponComp.IsFullyUpgraded)
+						{
+							m_CurrentActiveWC = i;
+							m_WitchCircle[i]->Enchanter = &enchanterTransform;
+						}
+						else
+							SetHUDText(enchanter, "Weapon Is Fully Upgraded");
+					}
+					else
+						SetHUDText(enchanter, "Not Enough Wolfsbane");
+				}
 			}
 		}
 	}
@@ -173,6 +189,7 @@ namespace MCS
 				m_World->AddComponent<Frosty::ECS::CDestroy>(witchCircleHealthBar.Background->EntityPtr);
 			}
 			witchCircleHealthBar.Background = nullptr;
+			m_WitchCircle[m_CurrentActiveWC]->Enchanter = nullptr;
 			witchCircleHealth.CurrentHealth = 0;
 			m_CurrentActiveWC = 0;
 		}
@@ -191,6 +208,7 @@ namespace MCS
 		//m_World->RemoveComponent<Frosty::ECS::CLight>(m_WitchCircle[m_CurrentActiveWC]->EntityPtr);
 		//m_World->RemoveComponent<Frosty::ECS::CParticleSystem>(m_WitchCircle[m_CurrentActiveWC]->EntityPtr);
 
+		auto& witchCircleHealth = m_World->GetComponent<Frosty::ECS::CHealth>(m_WitchCircle[m_CurrentActiveWC]->EntityPtr);
 		auto& witchCircleHealthBar = m_World->GetComponent<Frosty::ECS::CHealthBar>(m_WitchCircle[m_CurrentActiveWC]->EntityPtr);
 	
 		// Remove healthbar (witchCircle + background)
@@ -203,9 +221,25 @@ namespace MCS
 				m_World->AddComponent<Frosty::ECS::CDestroy>(witchCircleHealthBar.Background->EntityPtr);
 			}
 
-			witchCircleHealthBar.UseShader = Frosty::AssetManager::GetShader("FlatColor");
-			witchCircleHealthBar.BarOffset = glm::vec3(0.f, -5.f, 0.f);
+			//witchCircleHealthBar.UseShader = Frosty::AssetManager::GetShader("FlatColor");
+			//witchCircleHealthBar.BarOffset = glm::vec3(0.f, -5.f, 0.f);
+			m_WitchCircle[m_CurrentActiveWC]->Enchanter = nullptr;
+			m_WitchCircle[m_CurrentActiveWC]->Deployed = true;
+			witchCircleHealth.CurrentHealth = 0;
+
 			m_CurrentActiveWC = 0;
+		}
+	}
+
+	void WitchCircleSystem::SetHUDText(const std::shared_ptr<Frosty::ECS::Entity>& entity, std::string text)
+	{
+		if (m_World->HasComponent<Frosty::ECS::CGUI>(entity) && m_World->HasComponent<Frosty::ECS::CPlayer>(entity))
+		{
+			auto& playerComp = m_World->GetComponent<Frosty::ECS::CPlayer>(entity);
+			auto& HUD = m_World->GetComponent<Frosty::ECS::CGUI>(entity);
+
+			HUD.Layout.texts.at(6).SetText(text);
+			playerComp.PickUpTextTimer = Frosty::Time::CurrentTime();
 		}
 	}
 }

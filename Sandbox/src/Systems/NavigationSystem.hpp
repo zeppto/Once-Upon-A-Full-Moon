@@ -42,7 +42,12 @@ namespace MCS
 		void HandlePathfinding(size_t index, const uint32_t& EntityGroupID);
 		void HandleDistance(size_t index);
 		void HandleEscape(size_t index);
+<<<<<<< HEAD
 		void HandleReset(size_t index, const uint32_t& EntityGroupID);
+=======
+		void HandleReset(size_t index);
+		void HandleDeath(size_t index);
+>>>>>>> 0e1c2caaa9a95857c133dafa4e8671c7b7a57418
 
 	private:
 		Frosty::World* m_World{ nullptr };
@@ -52,7 +57,7 @@ namespace MCS
 		std::array<Frosty::ECS::CEnemy*, Frosty::ECS::MAX_ENTITIES_PER_COMPONENT> m_Enemy;
 
 		//std::unique_ptr<GridMap> m_GridMap;
-		std::unique_ptr<Frosty::Grid> m_Grid;
+		std::unique_ptr<Grid> m_Grid;
 		std::unique_ptr<Pathfinding> m_Pathfinding;
 
 		std::shared_ptr<Frosty::Grid> m_CurrentActiveGridMap {nullptr};

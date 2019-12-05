@@ -52,7 +52,16 @@ namespace Frosty
 			/// Frame Start
 			Time::OnUpdate();
 
+			m_StateMachine.ProcessStateChanges();
+
+			if (m_CallInput)
+			{
+				m_StateMachine.GetActiveState()->OnInput();
+				m_CallInput = false;
+			}
+
 			m_EditorCamera.OnUpdate();
+			m_StateMachine.GetActiveState()->OnUpdate();
 			for (Layer* layer : m_LayerHandler)
 			{
 				layer->OnUpdate();
@@ -74,10 +83,11 @@ namespace Frosty
 				m_World->BeginScene();
 			}
 			//Simon move this
+			//NO :P
 			glm::ivec4 viewP(m_Window->GetViewport());
 			glViewport(viewP.x, viewP.y, viewP.z, viewP.w);
-			Renderer::RenderScene();
 
+			Renderer::RenderScene();
 			m_World->Render();
 
 			Renderer::EndScene();
@@ -93,6 +103,11 @@ namespace Frosty
 			m_ImGuiLayer->End();
 
 			m_Window->OnUpdate();
+
+			float ramMemory = RamUsage();
+			float vramMemory = VramUsage();
+			if (ramMemory > 256) FY_CORE_FATAL("{0} MiB RAM committed.", ramMemory);
+			//if (vramMemory > 256) FY_CORE_FATAL("{0} MiB VRAM used.", vramMemory);
 		}
 	}
 
@@ -144,6 +159,26 @@ namespace Frosty
 		if (maximize) m_Window->ActivateEditorMode();
 	}
 
+	bool Application::MenuLoaded()
+	{
+		return m_MenuLoaded;
+	}
+
+	bool Application::GameLoaded()
+	{
+		return m_GameLoaded;
+	}
+
+	void Application::SetMenuLoad(bool menuLoad)
+	{
+		m_MenuLoaded = menuLoad;
+	}
+
+	void Application::SetGameLoad(bool gameLoad)
+	{
+		m_GameLoaded = gameLoad;
+	}
+
 	void Application::OnEvent(BaseEvent& e)
 	{
 		switch (e.GetEventType())
@@ -156,6 +191,12 @@ namespace Frosty
 			break;
 		case EventType::KeyReleased:
 			OnKeyReleasedEvent(static_cast<KeyReleasedEvent&>(e));
+			break;
+		case Frosty::EventType::MouseButtonPressed:
+			OnMousePressedEvent(static_cast<MouseButtonPressedEvent&>(e));
+			break;
+		case Frosty::EventType::MouseButtonReleased:
+			OnMouseReleasedEvent(static_cast<MouseButtonReleasedEvent&>(e));
 			break;
 		default:
 			break;
@@ -188,10 +229,11 @@ namespace Frosty
 
 	void Application::OnKeyPressedEvent(KeyPressedEvent& e)
 	{
-		if (e.GetKeyCode() == FY_KEY_ESCAPE)
+		m_CallInput = true;
+		/*if (e.GetKeyCode() == FY_KEY_ESCAPE)
 		{
 			m_Running = false;
-		}
+		}*/
 		if ((InputManager::IsKeyPressed(FY_KEY_LEFT_CONTROL) || InputManager::IsKeyPressed(FY_KEY_RIGHT_CONTROL)) && e.GetKeyCode() == FY_KEY_P && m_CanPrintInfo)
 		{
 			m_World->PrintWorld();
@@ -201,9 +243,86 @@ namespace Frosty
 
 	void Application::OnKeyReleasedEvent(KeyReleasedEvent& e)
 	{
+		m_CallInput = true;
 		if (e.GetKeyCode() == FY_KEY_P)
 		{
 			m_CanPrintInfo = true;
 		}
+	}
+
+	void Application::OnMousePressedEvent(MouseButtonPressedEvent & e)
+	{
+		m_CallInput = true;
+	}
+
+	void Application::OnMouseReleasedEvent(MouseButtonReleasedEvent & e)
+	{
+		m_CallInput = true;
+	}
+	
+	float Application::RamUsage()
+	{
+		//src: https://docs.microsoft.com/en-us/windows/desktop/api/psapi/ns-psapi-_process_memory_counters
+
+		DWORD currentProcessID = GetCurrentProcessId();
+
+		HANDLE hProcess = OpenProcess(PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, FALSE, currentProcessID);
+
+		if (NULL == hProcess)
+			return 0.0f;
+
+		float memoryUsage = 0.0f;
+		PROCESS_MEMORY_COUNTERS pmc{};
+		if (GetProcessMemoryInfo(hProcess, &pmc, sizeof(pmc)))
+		{
+			//PagefileUsage is the:
+				//The Commit Charge value in bytes for this process.
+				//Commit Charge is the total amount of memory that the memory manager has committed for a running process.
+
+			memoryUsage = float(pmc.PagefileUsage / 1024.0 / 1024.0); //MiB
+			memoryUsage = memoryUsage - VramUsage();
+
+			//if (memoryUsage > 256) FY_CORE_FATAL("{0} MiB RAM committed.", memoryUsage);
+		}
+
+		CloseHandle(hProcess);
+
+		return memoryUsage;
+	}
+	
+	float Application::VramUsage()
+	{
+		IDXGIFactory* dxgifactory = nullptr;
+		HRESULT ret_code = ::CreateDXGIFactory(
+			__uuidof(IDXGIFactory),
+			reinterpret_cast<void**>(&dxgifactory));
+
+		float memoryUsage = 0.0f;
+		if (SUCCEEDED(ret_code))
+		{
+			IDXGIAdapter* dxgiAdapter = nullptr;
+
+			if (SUCCEEDED(dxgifactory->EnumAdapters(0, &dxgiAdapter)))
+			{
+				IDXGIAdapter4* dxgiAdapter4 = NULL;
+				if (SUCCEEDED(dxgiAdapter->QueryInterface(__uuidof(IDXGIAdapter4), (void**)&dxgiAdapter4)))
+				{
+					DXGI_QUERY_VIDEO_MEMORY_INFO info;
+
+					if (SUCCEEDED(dxgiAdapter4->QueryVideoMemoryInfo(0, DXGI_MEMORY_SEGMENT_GROUP_LOCAL, &info)))
+					{
+						memoryUsage = float(info.CurrentUsage / 1024.0 / 1024.0); //MiB
+
+						//if (memoryUsage > 256) FY_CORE_FATAL("{0} MiB VRAM used.", memoryUsage);
+					};
+
+					dxgiAdapter4->Release();
+				}
+				dxgiAdapter->Release();
+			}
+			dxgifactory->Release();
+		}
+
+		return memoryUsage;
 	}
 }

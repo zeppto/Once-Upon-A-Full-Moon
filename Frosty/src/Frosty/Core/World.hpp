@@ -1,6 +1,5 @@
 #ifndef WORLD_HPP
 #define WORLD_HPP
-
 #include "Frosty/API/Scene.hpp"
 
 namespace Frosty
@@ -111,9 +110,10 @@ namespace Frosty
 		// Other
 		void PrintWorld();
 
+		bool PauseGame();
+		bool PlayGame();
 	private:
 		void HandleDestroyedEntities();
-
 	private:
 		// Scene Declarations
 		std::unique_ptr<Scene> m_Scene;
@@ -126,6 +126,7 @@ namespace Frosty
 		std::vector<std::shared_ptr<ECS::Entity>> m_DestroyedEntities;
 		int32_t m_DestroyRoom{ -1 };
 
+		bool m_GamePaused = false;
 	};
 }
 

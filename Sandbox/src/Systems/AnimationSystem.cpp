@@ -25,7 +25,7 @@ void MCS::AnimationSystem::OnUpdate()
 				if (!m_World->GetComponent<Frosty::ECS::CDash>(m_AControllers[i]->EntityPtr).Active)
 				{
 					auto& physics = m_World->GetComponent<Frosty::ECS::CPhysics>(m_AControllers[i]->EntityPtr);
-					if (physics.Direction.x != 0.0f || physics.Direction.y != 0.0f || physics.Direction.z != 0.0f)
+					if (physics.Direction.x != 0.0f || physics.Direction.z != 0.0f)
 					{
 						if (m_AControllers[i]->currAnim->GetName() != "Scarlet_Run")
 						{
@@ -33,6 +33,10 @@ void MCS::AnimationSystem::OnUpdate()
 							m_AControllers[i]->animSpeed = 0.7f;
 							UpdateAnimOffset(m_AControllers[i]);
 						}
+					}
+					else if (physics.Direction.y != 0.0f)
+					{
+						//Scarlet is stunned!
 					}
 					else
 					{
@@ -52,8 +56,32 @@ void MCS::AnimationSystem::OnUpdate()
 				auto& enemy = m_World->GetComponent<Frosty::ECS::CEnemy>(m_AControllers[i]->EntityPtr);
 				auto& wType = m_World->GetComponent<Frosty::ECS::CEnemy>(m_AControllers[i]->EntityPtr).Weapon->Type;
 
+				if (m_World->HasComponent<Frosty::ECS::CBoss>(m_AControllers[i]->EntityPtr))
+				{
+					if (enemy.CurrentState == Frosty::ECS::CEnemy::State::Chase || enemy.CurrentState == Frosty::ECS::CEnemy::State::Escape
+						|| enemy.CurrentState == Frosty::ECS::CEnemy::State::Reset)
+					{
+						if (m_AControllers[i]->currAnim->GetName() != "Werewolf_Run")
+						{
+							m_AControllers[i]->currAnim = Frosty::AssetManager::GetAnimation("Werewolf_Run");
+							m_AControllers[i]->currAnim->SetIsRepeating(true);
+							m_AControllers[i]->currAnim->SetIsFinished(false);
+							m_AControllers[i]->animSpeed = 1.0;
+						}
+					}
+					else
+					{
+						if (m_AControllers[i]->currAnim->GetName() != "Werewolf_Idle")
+						{
+							m_AControllers[i]->currAnim = Frosty::AssetManager::GetAnimation("Werewolf_Idle");
+							m_AControllers[i]->currAnim->SetIsRepeating(true);
+							m_AControllers[i]->currAnim->SetIsFinished(false);
+							m_AControllers[i]->animSpeed = 1.0;
+						}
+					}
+				}
 				//If it has bite it is a wolf
-				if (wType == Frosty::ECS::CWeapon::WeaponType::Bite)
+				else if (wType == Frosty::ECS::CWeapon::WeaponType::Bite)
 				{
 					if (enemy.CurrentState == Frosty::ECS::CEnemy::State::Chase || enemy.CurrentState == Frosty::ECS::CEnemy::State::Escape 
 						|| enemy.CurrentState == Frosty::ECS::CEnemy::State::Reset)
@@ -136,19 +164,9 @@ void MCS::AnimationSystem::AddComponent(const std::shared_ptr<Frosty::ECS::Entit
 		m_Transform[p_Total] = &m_World->GetComponent<Frosty::ECS::CTransform>(entity);
 		m_AControllers[p_Total] = &m_World->GetComponent<Frosty::ECS::CAnimController>(entity);
 
-		//if (m_AControllers[p_Total]->currAnim->getHoldingJoint() != nullptr)
-		//{
-		//	auto& weapPos = m_World->GetComponent<Frosty::ECS::CTransform>(m_Player[p_Total]->Weapon->EntityPtr);
-		//	auto& playerPos = m_World->GetComponent<Frosty::ECS::CTransform>(m_Player[p_Total]->EntityPtr);
-
-		//	//NOTE we DO want to change the value of the parent matrix pointer and NOT replace it with another pointer.
-		//	//If we don't Renderer won't be able to catch updates as AddToRenderer is only run once.
-		//	//Parent it.
-		//	m_World->GetComponent<Frosty::ECS::CMesh>(m_Player[p_Total]->Weapon->EntityPtr).parentMatrix = m_Transform[p_Total]->GetModelMatrix();
-		//	//Save the joint translation
-		//	m_World->GetComponent<Frosty::ECS::CMesh>(m_Player[p_Total]->Weapon->EntityPtr).animOffset = m_AControllers[p_Total]->currAnim->getHoldingJoint();
-
-		//}
+		//Ensure all things with animControllers have them properly mapped in the renderer.
+		//If it crashes here please ensure you add Animcontroller component after the mesh.
+		Frosty::Renderer::UpdateCMesh(entity->Id, &m_World->GetComponent<Frosty::ECS::CMesh>(entity), &m_World->GetComponent<Frosty::ECS::CAnimController>(entity));
 
 		p_Total++;
 	}
@@ -176,6 +194,38 @@ void MCS::AnimationSystem::RemoveEntity(const std::shared_ptr<Frosty::ECS::Entit
 
 void MCS::AnimationSystem::UpdateEntityComponent(const std::shared_ptr<Frosty::ECS::Entity>& entity)
 {
+	auto& it = p_EntityMap.find(entity);
+
+	if (it != p_EntityMap.end())
+	{
+		auto& world = Frosty::Application::Get().GetWorld();
+		Frosty::ECS::CTransform* transformPtr = world->GetComponentAddress<Frosty::ECS::CTransform>(entity);
+		Frosty::ECS::CAnimController* animPtr = world->GetComponentAddress<Frosty::ECS::CAnimController>(entity);
+
+		m_Transform[it->second] = transformPtr;
+		m_AControllers[it->second] = animPtr;
+		//Special for animation system:
+		Frosty::Renderer::UpdateCMesh(entity->Id, &m_World->GetComponent<Frosty::ECS::CMesh>(entity), &m_World->GetComponent<Frosty::ECS::CAnimController>(entity));
+	}
+}
+
+void MCS::AnimationSystem::Render()
+{
+	//for (size_t i = 1; i < p_Total; i++)
+	//{
+	//	auto& mesh = m_World->GetComponent<Frosty::ECS::CMesh>(m_Transform[i]->EntityPtr).Mesh;
+	//	auto& material = m_World->GetComponent<Frosty::ECS::CMaterial>(m_Transform[i]->EntityPtr);
+
+	//	material.DiffuseTexture->Bind(0);
+	//	material.NormalTexture->Bind(1);
+	///*	material.SpecularTexture->Bind(2);*/
+
+	//	Frosty::Renderer::AnimSubmit(&material, mesh, m_Transform[i]->ModelMatrix, m_AControllers[i]);
+
+	//	material.DiffuseTexture->Unbind();
+	//	material.NormalTexture->Unbind();
+	//	//material.SpecularTexture->Unbind();
+	//}
 }
 
 std::string MCS::AnimationSystem::GetInfo() const
@@ -236,7 +286,7 @@ void MCS::AnimationSystem::OnPlayAnimEvent(Frosty::PlayAnimEvent& e)
 				break;
 			case 1:
 				BeginNewAnim(controller, "Scarlet_Attack1");
-				controller->animSpeed = 1.0f;
+				controller->animSpeed = 1.5f;
 				break;
 			case 2:
 				BeginNewAnim(controller, "Scarlet_Attack2");
@@ -258,17 +308,50 @@ void MCS::AnimationSystem::OnPlayAnimEvent(Frosty::PlayAnimEvent& e)
 		{
 			auto& wType = m_World->GetComponent<Frosty::ECS::CEnemy>(e.GetEntity()).Weapon->Type;
 
+			if (m_World->HasComponent<Frosty::ECS::CBoss>(e.GetEntity()))
+			{
+				switch (*id)
+				{
+				case 0:
+					BeginNewAnim(controller, "Werewolf_Death");
+					controller->animSpeed = 1.0f;
+					break;
+				case 1:
+					BeginNewAnim(controller, "Werewolf_Attack1");
+					controller->animSpeed = 1.0f;
+					break;
+				case 2:
+					//Leap
+					BeginNewAnim(controller, "Werewolf_Attack2");
+					controller->animSpeed = 1.5f;
+					break;
+				case 3:
+					BeginNewAnim(controller, "Werewolf_Charge_Prepare");
+					controller->animSpeed = 2.0f;
+					break;
+				case 4:
+					BeginNewAnim(controller, "Werewolf_Run");
+					controller->animSpeed = 2.0f;
+					controller->currAnim->SetIsRepeating(true);
+					controller->isBusy = false;
+				case 5:
+					controller->animSpeed = 1.0f;
+
+				}
+			}
 			//If it has bite it is a wolf
-			if (wType == Frosty::ECS::CWeapon::WeaponType::Bite)
+			else if (wType == Frosty::ECS::CWeapon::WeaponType::Bite)
 			{
 				switch (*id)
 				{
 				case 0:
 					BeginNewAnim(controller, "Wolf_Death");
 					controller->animSpeed = 1.0f;
+					break;
 				case 1:
 					BeginNewAnim(controller, "Wolf_Attack");
 					controller->animSpeed = 1.0f;
+					break;
 				}
 			}
 			else
@@ -277,14 +360,17 @@ void MCS::AnimationSystem::OnPlayAnimEvent(Frosty::PlayAnimEvent& e)
 				switch (*id)
 				{
 				case 0:
-					BeginNewAnim(controller, "Wolf_Death");
+					BeginNewAnim(controller, "Cultist_Death");
 					controller->animSpeed = 1.0f;
+					break;
 				case 1:
 					BeginNewAnim(controller, "Cultist_Attack1");
-					controller->animSpeed = 1.0f;
+					controller->animSpeed = 3.0f;
+					break;
 				case 2:
 					BeginNewAnim(controller, "Cultist_Attack2");
-					controller->animSpeed = 2.0f;
+					controller->animSpeed = 1.8f;
+					break;
 				}
 				UpdateAnimOffset(controller);
 			}
@@ -293,7 +379,7 @@ void MCS::AnimationSystem::OnPlayAnimEvent(Frosty::PlayAnimEvent& e)
 	else
 	{
 		FY_FATAL("AN ANIM EVENT WAS PUBLISHED ON ENTITY: {0}" ,e.GetEntity()->Id);
-		FY_FATAL("WITHOUT HAVING AN ANIMCONTROLLER COMPONENT! WHY WOULD YOU DO THAT?? WHAT IS W R O N G WITH YOU!!???");
+		FY_FATAL("WITHOUT HAVING AN ANIMCONTROLLER COMPONENT! ");
 	}
 }
 
@@ -315,14 +401,14 @@ void MCS::AnimationSystem::UpdateAnimOffset(Frosty::ECS::CAnimController* ctrl)
 		auto& wEntity = m_World->GetComponent<Frosty::ECS::CPlayer>(ctrl->EntityPtr).Weapon->EntityPtr;
 
 		m_World->GetComponent<Frosty::ECS::CMesh>(wEntity).animOffset = ctrl->currAnim->getHoldingJoint();
-		Frosty::Renderer::UpdateCMesh(wEntity->Id, &m_World->GetComponent<Frosty::ECS::CMesh>(wEntity));
+		Frosty::Renderer::UpdateCMesh((int)wEntity->Id, &m_World->GetComponent<Frosty::ECS::CMesh>(wEntity));
 	}
 	else
 	{
 		//Is cultist
-		auto& wEntity = m_World->GetComponent<Frosty::ECS::CEnemy>(ctrl->EntityPtr).Weapon->EntityPtr;
+		/*auto& wEntity = m_World->GetComponent<Frosty::ECS::CEnemy>(ctrl->EntityPtr).Weapon->EntityPtr;
 
 		m_World->GetComponent<Frosty::ECS::CMesh>(wEntity).animOffset = ctrl->currAnim->getHoldingJoint();
-		Frosty::Renderer::UpdateCMesh(wEntity->Id, &m_World->GetComponent<Frosty::ECS::CMesh>(wEntity));
+		Frosty::Renderer::UpdateCMesh(wEntity->Id, &m_World->GetComponent<Frosty::ECS::CMesh>(wEntity));*/
 	}
 }

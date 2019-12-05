@@ -15,6 +15,14 @@ namespace MCS
 	void MapGenerator::generateMap()
 	{
 		glm::ivec2 startPos = glm::ivec2(0);
+		
+		for (int i = 0; i < 30; i++)
+		{
+			for (int j = 0; j < 30; j++)
+			{
+				m_TileMap[i][j] = Room();
+			}
+		}
 
 		//start pos
 		startPos = glm::ivec2(10, 15);
@@ -47,8 +55,18 @@ namespace MCS
 			if (m_LoosEndsRooms.size() > 0)
 			{
 				if (generateRoom(m_LoosEndsRooms.at(0).pos, m_LoosEndsRooms.at(0).startSide, nrToGenerate - i > m_LoosEndsRooms.size()))
+				{
+					if (m_LoosEndsRooms.size() == 1 || i == nrToGenerate - 1)
+					{
+						m_LastCreatedRoom = m_LoosEndsRooms.at(0).pos;
+					}
 					i++;
+				}
 				m_LoosEndsRooms.erase(m_LoosEndsRooms.begin());
+			}
+			else
+			{
+				i++;
 			}
 		}
 		//nrToGenerate--;
@@ -170,7 +188,6 @@ namespace MCS
 				}
 			}
 
-
 			m_TileMap[pos.x][pos.y].Ocupide = true;
 			m_TileMap[pos.x][pos.y].sideExits[1 + (startSide / 2) * 4 - startSide] = true;
 			numberOfExits = 0;
@@ -203,7 +220,6 @@ namespace MCS
 							numberOfExits++;
 						}
 					}
-
 				}
 			}
 			return true;
@@ -228,6 +244,11 @@ namespace MCS
 	Room MapGenerator::getRoom(glm::ivec2 pos)
 	{
 		return m_TileMap[pos.x][pos.y];
+	}
+
+	glm::ivec2 MapGenerator::getLastCreatedLevelPos()
+	{
+		return m_LastCreatedRoom;
 	}
 
 	std::string MapGenerator::getRoomTextur(glm::ivec2 pos, int* rotation)
@@ -256,95 +277,156 @@ namespace MCS
 		{
 			*rotation = 90;
 			//return "RoomTempStraght";
-			return "straightRoad_chests_IsStatick_t_p_e_r_h";
+			return "straightRoad_chests_IsStatick_t_p_e_r_h_a";
 		}
 		if (!m_TileMap[pos.x][pos.y].sideExits[0] && !m_TileMap[pos.x][pos.y].sideExits[1] && m_TileMap[pos.x][pos.y].sideExits[2] && m_TileMap[pos.x][pos.y].sideExits[3])
 		{
 			*rotation = 0;
 			//return "RoomTempStraght";
-			return "straightRoad_chests_IsStatick_t_p_e_r_h";
+			return "straightRoad_chests_IsStatick_t_p_e_r_h_a";
 		}
 		if (m_TileMap[pos.x][pos.y].sideExits[0] && !m_TileMap[pos.x][pos.y].sideExits[1] && m_TileMap[pos.x][pos.y].sideExits[2] && !m_TileMap[pos.x][pos.y].sideExits[3])
 		{
 			*rotation = 90;
 			//return "RoomTempBend";
-			return "turningRoad_chests_IsStatick_t_p_e_r_h";
+			return "turningRoad_chests_IsStatick_t_p_e_r_h_a";
 		}
 		if (m_TileMap[pos.x][pos.y].sideExits[0] && !m_TileMap[pos.x][pos.y].sideExits[1] && !m_TileMap[pos.x][pos.y].sideExits[2] && m_TileMap[pos.x][pos.y].sideExits[3])
 		{
 			*rotation = 0;
 			//return "RoomTempBend";
-			return "turningRoad_chests_IsStatick_t_p_e_r_h";
+			return "turningRoad_chests_IsStatick_t_p_e_r_h_a";
 		}
 		if (!m_TileMap[pos.x][pos.y].sideExits[0] && m_TileMap[pos.x][pos.y].sideExits[1] && m_TileMap[pos.x][pos.y].sideExits[2] && !m_TileMap[pos.x][pos.y].sideExits[3])
 		{
 			*rotation = 180;
 			//return "RoomTempBend";
-			return "turningRoad_chests_IsStatick_t_p_e_r_h";
+			return "turningRoad_chests_IsStatick_t_p_e_r_h_a";
 		}
 		if (!m_TileMap[pos.x][pos.y].sideExits[0] && m_TileMap[pos.x][pos.y].sideExits[1] && !m_TileMap[pos.x][pos.y].sideExits[2] && m_TileMap[pos.x][pos.y].sideExits[3])
 		{
 			*rotation = 270;
 			//return "RoomTempBend";
-			return "turningRoad_chests_IsStatick_t_p_e_r_h";
+			return "turningRoad_chests_IsStatick_t_p_e_r_h_a";
 		}
 		if (m_TileMap[pos.x][pos.y].sideExits[0] && !m_TileMap[pos.x][pos.y].sideExits[1] && m_TileMap[pos.x][pos.y].sideExits[2] && m_TileMap[pos.x][pos.y].sideExits[3])
 		{
 			*rotation = 0;
 			//return "RoomTemp3";
-			return "threeWayRoad_chests_IsStatick_t_p_e_r_h";
+			return "threeWayRoad_chests_IsStatick_t_p_e_r_h_a";
 		}
 		if (m_TileMap[pos.x][pos.y].sideExits[0] && m_TileMap[pos.x][pos.y].sideExits[1] && m_TileMap[pos.x][pos.y].sideExits[2] && !m_TileMap[pos.x][pos.y].sideExits[3])
 		{
 			*rotation = 90;
 			//return "RoomTemp3";
-			return "threeWayRoad_chests_IsStatick_t_p_e_r_h";
+			return "threeWayRoad_chests_IsStatick_t_p_e_r_h_a";
 		}
 		if (!m_TileMap[pos.x][pos.y].sideExits[0] && m_TileMap[pos.x][pos.y].sideExits[1] && m_TileMap[pos.x][pos.y].sideExits[2] && m_TileMap[pos.x][pos.y].sideExits[3])
 		{
 			*rotation = 180;
 			//return "RoomTemp3";
-			return "threeWayRoad_chests_IsStatick_t_p_e_r_h";
+			return "threeWayRoad_chests_IsStatick_t_p_e_r_h_a";
 		}
 		if (m_TileMap[pos.x][pos.y].sideExits[0] && m_TileMap[pos.x][pos.y].sideExits[1] && !m_TileMap[pos.x][pos.y].sideExits[2] && m_TileMap[pos.x][pos.y].sideExits[3])
 		{
 			*rotation = 270;
 			//return "RoomTemp3";
-			return "threeWayRoad_chests_IsStatick_t_p_e_r_h";
+			return "threeWayRoad_chests_IsStatick_t_p_e_r_h_a";
 		}
 		if (m_TileMap[pos.x][pos.y].sideExits[0] && m_TileMap[pos.x][pos.y].sideExits[1] && m_TileMap[pos.x][pos.y].sideExits[2] && m_TileMap[pos.x][pos.y].sideExits[3])
 		{
 			*rotation = 0;
 			//return "RoomTempCross";
-			return "crossroad_chests_IsStatick_t_p_e_r_h";
+			return "crossroad_chests_IsStatick_t_p_e_r_h_a";
 		}
 		//dead ends
 		if (m_TileMap[pos.x][pos.y].sideExits[0] && !m_TileMap[pos.x][pos.y].sideExits[1] && !m_TileMap[pos.x][pos.y].sideExits[2] && !m_TileMap[pos.x][pos.y].sideExits[3])
 		{
 			*rotation = 0;
 			//return "RoomTempDeadEnd";
-			return "deadend_chests_IsStatick_t_p_e_r_h";
+			return "deadend_chests_IsStatick_t_p_e_r_h_a";
 		}
 		if (!m_TileMap[pos.x][pos.y].sideExits[0] && !m_TileMap[pos.x][pos.y].sideExits[1] && m_TileMap[pos.x][pos.y].sideExits[2] && !m_TileMap[pos.x][pos.y].sideExits[3])
 		{
 			*rotation = 90;
 			//return "RoomTempDeadEnd";
-			return "deadend_chests_IsStatick_t_p_e_r_h";
+			return "deadend_chests_IsStatick_t_p_e_r_h_a";
 		}
 		if (!m_TileMap[pos.x][pos.y].sideExits[0] && m_TileMap[pos.x][pos.y].sideExits[1] && !m_TileMap[pos.x][pos.y].sideExits[2] && !m_TileMap[pos.x][pos.y].sideExits[3])
 		{
 			*rotation = 180;
 			//return "RoomTempDeadEnd";
-			return "deadend_chests_IsStatick_t_p_e_r_h";
+			return "deadend_chests_IsStatick_t_p_e_r_h_a";
 		}
 		if (!m_TileMap[pos.x][pos.y].sideExits[0] && !m_TileMap[pos.x][pos.y].sideExits[1] && !m_TileMap[pos.x][pos.y].sideExits[2] && m_TileMap[pos.x][pos.y].sideExits[3])
 		{
 			*rotation = 270;
 			//return "RoomTempDeadEnd";
-			return "deadend_chests_IsStatick_t_p_e_r_h";
+			return "deadend_chests_IsStatick_t_p_e_r_h_a";
 		}
 		if (m_TileMap[pos.x][pos.y].Ocupide)
-			return "deadend_chests_IsStatick_t_p_e_r_h";
-		return "deadend_chests_IsStatick_t_p_e_r_h";
+			return "deadend_chests_IsStatick_t_p_e_r_h_a";
+		return "deadend_chests_IsStatick_t_p_e_r_h_a";
 	}
+
+	std::vector<glm::ivec2> MapGenerator::getPathToTargert(glm::ivec2 startPos, glm::ivec2 endPos)
+	{
+		pathOnTile pathRooms[30][30];
+		std::vector<glm::ivec2> rooms;
+		pathOnTile startRoom;
+		startRoom.pos = startPos;
+		startRoom.distensTo = 0;
+		pathRooms[startRoom.pos.x][startRoom.pos.y].distensTo = startRoom.distensTo;
+		for (int j = 0; j < 4; j++)
+		{
+			Room theStartRoom = getRoom(startRoom.pos);
+			pathRooms[startRoom.pos.x][startRoom.pos.y].sideExits[j] = theStartRoom.sideExits[j];
+		}
+		std::deque<pathOnTile> roomsToGoThrough;
+		roomsToGoThrough.emplace_back(startRoom);
+
+
+		while (roomsToGoThrough.size() > 0)
+		{
+			pathOnTile room = roomsToGoThrough.front();
+			Room currentRoom = getRoom(room.pos);
+			for (int i = 0; i < 4; i++)
+			{
+				if (currentRoom.sideExits[i])
+				{
+					Room neighbor = getRoom(room.pos + posOffset(i));
+					if (neighbor.Ocupide)
+					{
+						pathOnTile newPath;
+						newPath.pos = room.pos + posOffset(i);
+						newPath.distensTo = room.distensTo + 1;
+						if (pathRooms[newPath.pos.x][newPath.pos.y].distensTo == -1)
+						{
+							pathRooms[newPath.pos.x][newPath.pos.y].distensTo = newPath.distensTo;
+							for (int j = 0; j < 4; j++)
+							{
+								newPath.sideExits[j] = neighbor.sideExits[j];
+								pathRooms[newPath.pos.x][newPath.pos.y].sideExits[j] = neighbor.sideExits[j];
+							}
+							newPath.parantTile = room.parantTile;
+							newPath.parantTile.push_back(room.pos);
+
+							roomsToGoThrough.emplace_back(newPath);
+
+						}
+						if (newPath.pos == endPos)
+						{
+							rooms = newPath.parantTile;
+							rooms.push_back(newPath.pos);
+
+							return rooms;
+						}
+					}
+				}
+			}
+			roomsToGoThrough.pop_front();
+		}
+		return rooms;
+	}
+
 }

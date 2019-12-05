@@ -58,6 +58,9 @@ namespace MCS
 			case Frosty::ECS::CEnemy::State::Reset:
 				HandleReset(i, m_Enemy[i]->EntityPtr->GroupId);
 				break;
+			case Frosty::ECS::CEnemy::State::Dead:
+				HandleDeath(i);
+				break;
 			default:
 				break;
 			}
@@ -165,8 +168,12 @@ namespace MCS
 
 	void NavigationSystem::InitiateGridMap(const Frosty::ECS::CTransform& planeTransform)
 	{
+<<<<<<< HEAD
 
 		m_Grid.reset(FY_NEW Frosty::Grid());
+=======
+		m_Grid.reset(FY_NEW Grid());
+>>>>>>> 0e1c2caaa9a95857c133dafa4e8671c7b7a57418
 		Frosty::Time::StartTimer("Grid::Init()");
 		m_Grid->Init(planeTransform);
 		Frosty::Time::EndTimer("Grid::Init()");
@@ -200,12 +207,16 @@ namespace MCS
 
 	void NavigationSystem::OnInitiateGridMap(Frosty::InitiateGridEvent& e)
 	{
+<<<<<<< HEAD
 		//m_SecondGridMap.reset(FY_NEW Frosty::Grid());
 		//m_SecondGridMap->Init(*e.GetTransform());
 		//m_SecondPathfinding.reset(FY_NEW Pathfinding());
 		//m_SecondPathfinding->Init(&*m_SecondGridMap);
 
 
+=======
+		m_Grid.reset(FY_NEW Grid());
+>>>>>>> 0e1c2caaa9a95857c133dafa4e8671c7b7a57418
 		Frosty::Time::StartTimer("Grid::Init()");
 		m_OtherMap.Grid.reset(FY_NEW Frosty::Grid());
 		m_OtherMap.Grid->Init(*e.GetTransform());
@@ -225,7 +236,7 @@ namespace MCS
 
 	void NavigationSystem::LookAtPoint(const glm::vec3& point, size_t index)
 	{
-		// Rotate the player to look towards the mouse (point3D)
+		// Rotate towards a point
 		glm::vec3 pointVector = glm::normalize(point - m_Transform[index]->Position);
 		glm::vec3 originDirection = glm::vec3(0.0f, 0.0f, 1.0f);
 		float extraRotation = 0.0f;
@@ -238,6 +249,7 @@ namespace MCS
 
 		float rotationOffset = glm::degrees(glm::acos(product)) + extraRotation;
 
+		if (Frosty::Time::GetFrameCount() % 60 == 0) FY_INFO("{0}", rotationOffset);
 
 		m_Transform[index]->Rotation.y = rotationOffset;
 	}
@@ -304,6 +316,7 @@ namespace MCS
 	{
 		// Check if enemy is boss
 		if (m_World->HasComponent<Frosty::ECS::CBoss>(m_Transform[index]->EntityPtr)) return;
+		//if (m_Enemy[index]->Weapon->AnimPlaying) return;
 
 		if (glm::distance(m_Transform[index]->Position, m_Enemy[index]->Target->Position) >= m_Enemy[index]->Weapon->MinAttackRange)
 		{
@@ -348,5 +361,11 @@ namespace MCS
 
 		// Rotate towards target (cell)
 		LookAtPoint(cellTarget, index);
+	}
+	
+	void NavigationSystem::HandleDeath(size_t index)
+	{
+		m_Physics[index]->SpeedMultiplier = 0.0f;
+		/*m_Physics[index]->Direction = glm::vec3(0.0f);*/
 	}
 }

@@ -77,6 +77,15 @@ namespace Frosty
 		std::shared_ptr<ECS::Entity> m_Entity;
 	};
 
+	class ResetEvent : public BaseEvent
+	{
+	public:
+		ResetEvent() { }
+
+		EVENT_TYPE(Reset)
+	private:
+	};
+
 	class BaitPlacedEvent : public BaseEvent
 	{
 	public:
@@ -123,6 +132,19 @@ namespace Frosty
 		std::shared_ptr<ECS::Entity> m_PlayerEntity;
 	};
 
+	class EnterNewRoomEvent : public BaseEvent
+	{
+	public:
+		EnterNewRoomEvent(const int totalVisitedRooms) : m_TotalVisitedRooms(totalVisitedRooms) { }
+
+		const int GetTotalvisitedRooms() const { return m_TotalVisitedRooms; }
+
+		EVENT_TYPE(EnterNewRoom)
+
+	private:
+		int m_TotalVisitedRooms = 0;
+	};
+
 	class SaveLevelEvent : public BaseEvent
 	{
 	public:
@@ -132,7 +154,6 @@ namespace Frosty
 
 	private:
 	};
-
 
 	class BoolMapLoadedEvent : public BaseEvent
 	{
@@ -146,7 +167,6 @@ namespace Frosty
 	private:
 		std::shared_ptr <BoolMap> m_BoolMap;
 	};
-
 
 	class CreateLevelEvent : public BaseEvent
 	{
@@ -281,6 +301,117 @@ namespace Frosty
 
 		EVENT_TYPE(HealAbility)
 	};
-}
 
+	class EnemyDeathEvent : public BaseEvent
+	{
+	public:
+		EnemyDeathEvent(int points) : m_Points(points) { }
+
+		int GetPoints() { return m_Points; }
+
+		EVENT_TYPE(EnemyDeath)
+
+	private:
+		int m_Points{ 0 };
+	};
+
+	class PlayerDamageEvent : public BaseEvent
+	{
+	public:
+		PlayerDamageEvent() { }
+
+		EVENT_TYPE(PlayerDamage)
+	};
+
+	class DropItemEvent : public BaseEvent
+	{
+	public:
+		DropItemEvent(const std::shared_ptr<ECS::Entity>& entity) : m_Entity(entity) { }
+
+		const std::shared_ptr<ECS::Entity>& GetEntity() const { return m_Entity; }
+
+		EVENT_TYPE(DropItem)
+
+	private:
+		std::shared_ptr<ECS::Entity> m_Entity;
+	};
+	
+	class DamageEvent : public BaseEvent
+	{
+	public:
+		DamageEvent(const std::shared_ptr<ECS::Entity>& entity, float damage) : m_Entity(entity), m_Damage(damage) { }
+
+		const std::shared_ptr<ECS::Entity>& GetEntity() const { return m_Entity; }
+		float GetDamage() const { return m_Damage; }
+
+		EVENT_TYPE(Damage)
+
+	private:
+		std::shared_ptr<ECS::Entity> m_Entity;
+		float m_Damage;
+	};
+
+	class GameoverEvent : public BaseEvent
+	{
+	public:
+		GameoverEvent() { }
+
+		EVENT_TYPE(GameOver)
+	};
+
+	class WinEvent : public BaseEvent
+	{
+	public:
+		WinEvent() { }
+
+		EVENT_TYPE(Win)
+	};
+
+	class BossSpawnedEvent : public BaseEvent
+	{
+	public:
+		BossSpawnedEvent() { }
+
+		EVENT_TYPE(BossSpawned)
+	};
+
+	class ResetBossAbilitiesEvent : public BaseEvent
+	{
+	public:
+		ResetBossAbilitiesEvent(const std::shared_ptr<ECS::Entity>& boss) : m_Boss(boss) { }
+
+		const std::shared_ptr<ECS::Entity>& GetBoss() const { return m_Boss; }
+
+		EVENT_TYPE(ResetBoss)
+
+	private:
+		std::shared_ptr<ECS::Entity> m_Boss;
+
+	};
+
+	class SpawnBossEvent : public BaseEvent
+	{
+	public:
+		SpawnBossEvent() { }
+
+
+		EVENT_TYPE(SpawnBoss)
+
+	private:
+
+	};
+
+	class BossFearEffectEvent : public BaseEvent
+	{
+	public:
+		BossFearEffectEvent(glm::ivec2 bossDirection) : m_Direction(bossDirection) {}
+
+		glm::ivec2 GetDirectionToBoss() { return m_Direction; }
+
+		EVENT_TYPE(BossFearEffect)
+
+	private:
+		glm::ivec2 m_Direction;
+	};
+}
 #endif // !ABILITY_EVENT_HPP

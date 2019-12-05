@@ -21,7 +21,7 @@ namespace MCS
 	struct Level_Header
 	{
 		int NrOfEntitys = 0;
-		int NrOfComponents = 13;
+		int NrOfComponents = 14;
 	};
 
 	//Do this per nrOfEntitys and as meny times as nrOfComponents (to make older files have a higer shans of combadebilety) 
@@ -197,6 +197,12 @@ namespace MCS
 		//emty
 	};
 
+	//13 = AnimController
+	struct Level_AnimController
+	{
+		//emty
+	};
+
 	//n = name
 	//struct Level_
 	//{
@@ -220,6 +226,7 @@ namespace MCS
 		Level_LevelExit myLevelExit;
 		Level_DropItem myDropItem;
 		Level_WitchCircle myWitchCircle;
+		Level_AnimController myAnimController;
 
 
 	};
@@ -233,7 +240,10 @@ namespace MCS
 	struct Level_rememberedEntitys
 	{
 		glm::ivec2 myRoomId = { 0, 0 };
-		std::vector<int> removeEnemy;
+		std::vector<int> removeChest;
+		std::vector<int> removeWitchCirkel;
+		std::vector<glm::vec3> addedBait;
+		//not in use
 		std::vector<int> existingIDs;
 		std::vector<int> killedIds;
 		float timePlayerLeft;
@@ -257,6 +267,11 @@ namespace MCS
 			glm::vec3 move = glm::vec3(0, 0, 0),
 			const int& RoomExitDir = -1);
 		void LoadBoolMap(std::string fileName);
+		int NumberOfRoomsVisited();
+		bool AddBaitToMap(glm::vec3 baitPos, glm::ivec2 room);
+		//std::vector<glm::vec3> GetAllBaitInRoom();
+		//int GetNumberOfBaitInRoom();
+		int RemoveAllBaitInRoom(glm::ivec2 room);
 
 	private:
 		//std::shared_ptr<ECS::Entity> m_ExitEntity;

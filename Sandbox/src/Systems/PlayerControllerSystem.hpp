@@ -1,7 +1,7 @@
 #ifndef PLAYER_CONTROLLER_SYSTEM_HPP
 #define PLAYER_CONTROLLER_SYSTEM_HPP
 
-namespace Frosty { class PickUpEvent; class UpgradeWeaponEvent; class HealAbilityEvent; }
+namespace Frosty { class PickUpEvent; class UpgradeWeaponEvent; class HealAbilityEvent; class EnemyDeathEvent; }
 
 namespace MCS
 {
@@ -41,12 +41,18 @@ namespace MCS
 		void CreateLVL2Projectile(const std::shared_ptr<Frosty::ECS::Entity>& weaponCarrier, const std::shared_ptr<Frosty::ECS::Entity>& weapon);
 		void CreateLVL3Projectile(const std::shared_ptr<Frosty::ECS::Entity>& weaponCarrier, const std::shared_ptr<Frosty::ECS::Entity>& weapon);
 
+		void CreateFireEffect(Frosty::ECS::CAttack& attack, glm::vec3 spawnPos, glm::vec3 rotation);
+		void CreateEarthEffect(Frosty::ECS::CAttack& attack, glm::vec3 spawnPos, glm::vec3 rotation);
+		void CreateWindEffect(Frosty::ECS::CAttack& attack, glm::vec3 spawnPos, glm::vec3 rotation);
+		void CreateWaterEffect(Frosty::ECS::CAttack& attack, glm::vec3 spawnPos, glm::vec3 rotation);
+
 		float GenerateCriticalHit(float criticalHit, float criticalHitChance);
 
 		void HandleInventory(size_t index);
 		void OnPickUpEvent(Frosty::PickUpEvent& e);
 		void OnUpgradeWeaponEvent();
 		void OnHealAbilityEvent();
+		void OnEnemyDeathEvent(Frosty::EnemyDeathEvent& e);
 
 		void SwapWeapon(const std::shared_ptr<Frosty::ECS::Entity>& playerWeapon, const std::shared_ptr<Frosty::ECS::Entity>& lootWeapon);
 		void SwapMesh(const std::shared_ptr<Frosty::ECS::Entity>& playerWeapon, const std::shared_ptr<Frosty::ECS::Entity>& lootWeapon);
@@ -56,6 +62,8 @@ namespace MCS
 		void UpdateHUD(size_t index);
 		void SetPickUpText(size_t index, std::string text);
 		void ResetAllHUDWeaponInfo(size_t index);
+		void OnDamage();
+
 
 	private:
 		std::array<Frosty::ECS::CTransform*, Frosty::ECS::MAX_ENTITIES_PER_COMPONENT> m_Transform;
