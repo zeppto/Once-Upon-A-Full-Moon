@@ -184,18 +184,19 @@ namespace MCS
 
 					if (!m_Transform[i]->IsStatic) intersectionPushback = CircleIntersection(index, i);
 
-					if ((intersectionPushback != glm::vec3(0.0f, 0.0f, 0.0f)) || intersect)
+					// Attack with Player/Enemy/Chest
+					if (m_World->HasComponent<Frosty::ECS::CAttack>(m_Transform[index]->EntityPtr))
 					{
-						// Attack with Player/Enemy/Chest
-						if (m_World->HasComponent<Frosty::ECS::CAttack>(m_Transform[index]->EntityPtr))
+						bool AttackIntersect = Frosty::SphereHitbox::IsCollidingWith(finalLengthA, finalCenterA, m_Transform[index]->Rotation, finalLengthB, finalCenterB, m_Transform[i]->Rotation);
+						auto& attack = m_World->GetComponent<Frosty::ECS::CAttack>(m_Transform[index]->EntityPtr);
+						if (AttackIntersect && attack.Type != Frosty::ECS::CAttack::AttackType::Range)
 						{
-							auto& attack = m_World->GetComponent<Frosty::ECS::CAttack>(m_Transform[index]->EntityPtr);
-
 							// Attack - Enemy or Player
 							if (m_World->HasComponent<Frosty::ECS::CDropItem>(m_Transform[i]->EntityPtr) || m_World->HasComponent<Frosty::ECS::CPlayer>(m_Transform[i]->EntityPtr))
 							{
 								if (attack.Friendly && m_World->HasComponent<Frosty::ECS::CDropItem>(m_Transform[i]->EntityPtr))
 								{
+									FY_INFO("player Attack hit");
 									// Player Attack - Enemy or Chest
 									if (!m_World->HasComponent<Frosty::ECS::CEnemy>(m_Transform[i]->EntityPtr))
 									{
@@ -216,11 +217,55 @@ namespace MCS
 								{
 									// Enemy Attack - Player
 									Frosty::EventBus::GetEventBus()->Publish<Frosty::CollisionEvent>(Frosty::CollisionEvent(m_Transform[index]->EntityPtr, m_Transform[i]->EntityPtr));
+									FY_INFO("enemy Attack hit");
+								}
+							}
+							else if (attack.Type != Frosty::ECS::CAttack::AttackType::Range)
+							{
+								FY_INFO("not");
+							}
+						}
+					}
+					if ((intersectionPushback != glm::vec3(0.0f, 0.0f, 0.0f)) || intersect)
+					{
+						// Attack with Player/Enemy/Chest
+						if (m_World->HasComponent<Frosty::ECS::CAttack>(m_Transform[index]->EntityPtr))
+						{
+							auto& attack = m_World->GetComponent<Frosty::ECS::CAttack>(m_Transform[index]->EntityPtr);
+							if (attack.Type == Frosty::ECS::CAttack::AttackType::Range)
+							{
+								FY_INFO("rangade attack");
+								// Attack - Enemy or Player
+								if (m_World->HasComponent<Frosty::ECS::CDropItem>(m_Transform[i]->EntityPtr) || m_World->HasComponent<Frosty::ECS::CPlayer>(m_Transform[i]->EntityPtr))
+								{
+									if (attack.Friendly && m_World->HasComponent<Frosty::ECS::CDropItem>(m_Transform[i]->EntityPtr))
+									{
+										// Player Attack - Enemy or Chest
+										if (!m_World->HasComponent<Frosty::ECS::CEnemy>(m_Transform[i]->EntityPtr))
+										{
+											Frosty::EventBus::GetEventBus()->Publish<Frosty::DropItemEvent>(Frosty::DropItemEvent(m_Transform[i]->EntityPtr));
+
+											if (!m_World->HasComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr))
+											{
+												m_World->AddComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr);
+											}
+											Frosty::EventBus::GetEventBus()->Publish<Frosty::EnemyDeathEvent>(Frosty::EnemyDeathEvent(30));
+										}
+										else
+										{
+											Frosty::EventBus::GetEventBus()->Publish<Frosty::CollisionEvent>(Frosty::CollisionEvent(m_Transform[index]->EntityPtr, m_Transform[i]->EntityPtr));
+										}
+									}
+									else if (!attack.Friendly && m_World->HasComponent<Frosty::ECS::CPlayer>(m_Transform[i]->EntityPtr))
+									{
+										// Enemy Attack - Player
+										Frosty::EventBus::GetEventBus()->Publish<Frosty::CollisionEvent>(Frosty::CollisionEvent(m_Transform[index]->EntityPtr, m_Transform[i]->EntityPtr));
+									}
 								}
 							}
 						}
 						// Player with Exit Level
-						else if (m_World->HasComponent<Frosty::ECS::CPlayer>(m_Transform[index]->EntityPtr) && m_World->HasComponent<Frosty::ECS::CLevelExit>(m_Transform[i]->EntityPtr))
+						if (m_World->HasComponent<Frosty::ECS::CPlayer>(m_Transform[index]->EntityPtr) && m_World->HasComponent<Frosty::ECS::CLevelExit>(m_Transform[i]->EntityPtr))
 						{
 							Frosty::EventBus::GetEventBus()->Publish<Frosty::ExitLevelEvent>(Frosty::ExitLevelEvent(m_Transform[i]->EntityPtr, m_Transform[index]->EntityPtr));
 						}

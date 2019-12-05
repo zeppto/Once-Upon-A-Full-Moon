@@ -442,13 +442,9 @@ namespace MCS
 
 		// Create BB
 		glm::vec3 spawnPos = attackerTransform.Position + (glm::vec3(direction) * 4.0f);
-		glm::vec3 spawnScale = glm::vec3(10.0f, 6.0f, 4.0f);
-		auto& sword = m_World->CreateEntity({ spawnPos.x, 3.0f, spawnPos.z }, attackerTransform.Rotation, spawnScale);
+		glm::vec3 spawnScale = glm::vec3(6.0f, 8.0f, 6.0f);
+		auto& sword = m_World->CreateEntity({ spawnPos.x, 3.0f, spawnPos.z }, attackerTransform.Rotation + glm::vec3(0.0f, 0.0f, 90.0f), spawnScale);
 		auto& swordTransform = m_World->GetComponent<Frosty::ECS::CTransform>(sword);
-
-		//test
-		m_World->AddComponent<Frosty::ECS::CHealth>(sword);
-		m_World->AddComponent<Frosty::ECS::CHealthBar>(sword, glm::vec3(0.0f, 10.0f, 0.0f));
 
 		float criticalHit = 0;
 		criticalHit = GenerateCriticalHit(weaponComp.CriticalHit, weaponComp.CriticalHitChance + weaponComp.FireCriticalHitChance);
@@ -467,7 +463,7 @@ namespace MCS
 		// Create BB
 		glm::vec3 spawnPos = attackerTransform.Position;
 
-		glm::vec3 spawnScale = glm::vec3(10.0f, 6.0f, 10.0f);
+		glm::vec3 spawnScale = glm::vec3(15.0f, 30.0f, 15.0f);
 		auto& sword = m_World->CreateEntity({ spawnPos.x, 3.0f, spawnPos.z }, { 0.f, 0.f, 0.f }, spawnScale);
 		auto& swordTransform = m_World->GetComponent<Frosty::ECS::CTransform>(sword);
 
@@ -489,13 +485,16 @@ namespace MCS
 		glm::mat4 mat = glm::mat4(1.0f);
 		mat = glm::rotate(mat, glm::radians(attackerTransform.Rotation.x), { 1.0f, 0.0f, 0.0f });
 		mat = glm::rotate(mat, glm::radians(attackerTransform.Rotation.y), { 0.0f, 1.0f, 0.0f });
-		mat = glm::rotate(mat, glm::radians(attackerTransform.Rotation.z + 90.0f), { 0.0f, 0.0f, 1.0f });
+		mat = glm::rotate(mat, glm::radians(attackerTransform.Rotation.z), { 0.0f, 0.0f, 1.0f });
 		glm::vec4 direction = mat * glm::vec4(0.0f, 0.0f, 1.0f, 0.0);
 
 		// Create BB
 		glm::vec3 spawnPos = attackerTransform.Position + (glm::vec3(direction) * 5.0f);
-		glm::vec3 spawnScale = glm::vec3(2.0f, 6.0f, 10.0f);
-		auto& sword = m_World->CreateEntity({ spawnPos.x, 3.0f, spawnPos.z }, attackerTransform.Rotation, spawnScale);
+		//glm::vec3 spawnScale = glm::vec3(2.0f, 6.0f, 10.0f);
+		//y needs to be the bigest if using capcol colitiondw
+		glm::vec3 spawnScale = glm::vec3(3.0f, 10.0f, 3.0f);
+		//the extra rotations are for rotating the bonding box
+		auto& sword = m_World->CreateEntity({ spawnPos.x, 3.0f, spawnPos.z }, attackerTransform.Rotation + glm::vec3(0.0f, 90.0f, 90.0f), spawnScale);
 		auto& swordTransform = m_World->GetComponent<Frosty::ECS::CTransform>(sword);
 
 		float criticalHit = 0;
