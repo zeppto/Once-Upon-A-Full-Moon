@@ -10,8 +10,12 @@
 #include "Frosty/RenderEngine/Renderer.hpp"
 #include "Frosty/RenderEngine/Texture.hpp"
 
+
+
 namespace Frosty
 {
+	class Application;
+
 	class UIText : public UIElement
 	{
 	public:
@@ -33,9 +37,9 @@ namespace Frosty
 
 		const std::shared_ptr<VertexArray>& GetVertexArray() { return m_VertArray; }
 		std::string GetText() const { return m_Text; }
-		const glm::vec2& GetPosition() { return m_Position; }
+		const glm::vec2& GetPosition();
 		const glm::vec3& GetColor() { return m_Color; }
-		const float GetFontScale() { return m_FontScale; }
+		const float GetFontScale();
 
 		void SetText(std::string text) { m_Text = text; }
 		void SetFont(std::string font) { m_Font = font; }

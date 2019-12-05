@@ -7,7 +7,7 @@
 
 //Particle Branch Includes
 #include "Frosty/RenderEngine/VertexArray.hpp"
-#include "Frosty/UI/UIText.h"
+//#include "Frosty/UI/UIText.h"
 
 namespace Frosty
 {

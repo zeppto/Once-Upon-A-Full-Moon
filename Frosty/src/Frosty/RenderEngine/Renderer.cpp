@@ -391,9 +391,9 @@ namespace Frosty
 		glDisable(GL_DEPTH_TEST);
 		shader->Bind();
 		vertexArray->Bind();
-
-		float width = Frosty::Application::Get().GetWindow().GetWidth();
-		float height = Frosty::Application::Get().GetWindow().GetHeight();
+		auto& window = Frosty::Application::Get().GetWindow();
+		float width = window.GetWidth();
+		float height = window.GetHeight();
 		glm::mat4 projection = glm::ortho(0.0f, width, 0.0f, height);
 
 		shader->UploadUniformMat4("projection", projection);
@@ -401,8 +401,10 @@ namespace Frosty
 		shader->UploadUniformFloat3("textColor", color);
 
 		std::string::const_iterator c;
-		float x = pos.x;
-		float y = pos.y;
+		float x = pos.x * window.GetWidthMultiplier();
+		float y = pos.y * window.GetHeightMultiplier();
+		scale = scale * window.GetWidthMultiplier();
+
 		for (c = text.begin(); c != text.end(); c++) {
 			Character ch = Frosty::AssetManager::GetTTF("Gabriola")->m_characters.at(*c); //TODO: Switch out for actual font provided by system
 			float xpos = x + ch.bearing.x * scale;
@@ -443,11 +445,22 @@ namespace Frosty
 	{
 		shader->Bind();
 		vertexArray->Bind();
-
-		float width = Frosty::Application::Get().GetWindow().GetWidth();
-		float height = Frosty::Application::Get().GetWindow().GetHeight();
+		auto& window = Frosty::Application::Get().GetWindow();
+		float width = window.GetWidth();
+		float height = window.GetHeight();
 		glm::mat4 projection = glm::ortho(0.0f, width, 0.0f, height);
 		shader->UploadUniformMat4("projection", projection);
+		
+
+		transform[3][0] *=  window.GetWidthMultiplier() ;
+		transform[3][1] *= window.GetHeightMultiplier();
+
+		for (int i = 0; i < 3; i++)
+		{
+			transform[i][i] *= window.GetWidthMultiplier();
+		}
+		
+
 		shader->UploadUniformMat4("transform", transform);
 		shader->UploadUniformFloat4("color", color); //Make sure this number matches the active and sampled texture
 
@@ -735,7 +748,7 @@ namespace Frosty
 		}
 
 		if (controller != nullptr)
-		{	
+		{
 			meshData->AnimMap.emplace(transformID, controller);
 		}
 		//Add the mesh to the MeshLookUpMap
