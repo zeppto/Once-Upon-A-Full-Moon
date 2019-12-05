@@ -10,6 +10,7 @@ namespace MCS
 {
 	bool InspectorLayer::s_VSync = false;
 	bool InspectorLayer::s_DistanceCulling = false;
+	bool InspectorLayer::s_LightCulling = false;
 
 	void InspectorLayer::OnAttach()
 	{
@@ -44,6 +45,7 @@ namespace MCS
 			ImGui::Text("FPS: %i", Frosty::Time::FPS());
 			if (ImGui::Checkbox("VSync: ", &s_VSync)) m_App->GetWindow().SetVSync(s_VSync);
 			if (ImGui::Checkbox("Distance Culling: ", &s_DistanceCulling))Frosty::Renderer::SetDistanceCulling(s_DistanceCulling);
+			if (ImGui::Checkbox("Light Culling: ", &s_LightCulling))Frosty::Renderer::SetLightCulling(s_LightCulling);
 			if (ImGui::Button("Create Entity", ImVec2(100.0f, 20.0f))) world->CreateEntity();
 
 			static int selection_mask = 0;

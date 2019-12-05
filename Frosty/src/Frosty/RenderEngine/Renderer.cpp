@@ -16,6 +16,7 @@ namespace Frosty
 	FrustumGrid Renderer::s_ForwardPlus;
 	int Renderer::s_TotalNrOfFrames;
 	bool Renderer::s_DistanceCulling = false;
+	bool Renderer::s_LightCulling = false;
 
 	void Renderer::Init()
 	{
@@ -31,7 +32,10 @@ namespace Frosty
 
 	void Renderer::BeginScene()
 	{
-		s_ForwardPlus.Update();
+		if (s_LightCulling)
+		{
+			s_ForwardPlus.Update();
+		}
 	}
 
 	void Renderer::RenderScene()
@@ -116,16 +120,20 @@ namespace Frosty
 					DirectLI++;
 				}
 
-				// LightIndex
-				for (int i = 0; i < int(s_ForwardPlus.GetLightIndexList().size()); i++)
+				shaderData->Shader->UploadUniformInt("u_LightCulling", s_LightCulling);
+				if (s_LightCulling)
 				{
-					shaderData->Shader->UploadUniformInt(("forwardPlus.LightIndexList[" + std::to_string(i) + "]").c_str(), s_ForwardPlus.GetLightIndexList().at(i));
-				}
+					// LightIndex
+					for (int i = 0; i < int(s_ForwardPlus.GetLightIndexList().size()); i++)
+					{
+						shaderData->Shader->UploadUniformInt(("forwardPlus.LightIndexList[" + std::to_string(i) + "]").c_str(), s_ForwardPlus.GetLightIndexList().at(i));
+					}
 
-				// CellLightInfo
-				for (int i = 0; i < s_ForwardPlus.GetNrOfGrids(); i++)
-				{
-					shaderData->Shader->UploadUniformFloat2(("forwardPlus.CellLightInfo[" + std::to_string(i) + "]").c_str(), s_ForwardPlus.GetCellLightInfoAt(i));
+					// CellLightInfo
+					for (int i = 0; i < s_ForwardPlus.GetNrOfGrids(); i++)
+					{
+						shaderData->Shader->UploadUniformFloat2(("forwardPlus.CellLightInfo[" + std::to_string(i) + "]").c_str(), s_ForwardPlus.GetCellLightInfoAt(i));
+					}
 				}
 
 				for (auto& MaterialIt : shaderData->MaterialMap)
@@ -261,12 +269,7 @@ namespace Frosty
 				}
 				glUseProgram(0);
 
-				if (shaderData->Shader->GetName() == "Texture2D" || shaderData->Shader->GetName() == "Animation")
-				{
-					glDisable(GL_BLEND);
-					RenderCommand::DisableBackfaceCulling();
-				}
-				else if (shaderData->Shader->GetName() == "FlatColor")
+				if (shaderData->Shader->GetName() == "Texture2D" || shaderData->Shader->GetName() == "FlatColor" || shaderData->Shader->GetName() == "Animation")
 				{
 					glDisable(GL_BLEND);
 					RenderCommand::DisableBackfaceCulling();

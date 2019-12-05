@@ -22,6 +22,10 @@ namespace MCS
 		virtual std::string GetInfo() const override;
 
 	private:
+		glm::vec3 ScreenToTerrainPoint();
+		void ShiftTowadsPoint(const glm::vec3& point, size_t index);
+
+	private:
 		std::array<Frosty::ECS::CTransform*, Frosty::ECS::MAX_ENTITIES_PER_COMPONENT> m_Transform;
 		std::array<Frosty::ECS::CLight*, Frosty::ECS::MAX_ENTITIES_PER_COMPONENT> m_Light;
 	};

@@ -50,6 +50,7 @@ void main()
 
 	int cellLocation = (16 * int(floor(gl_FragCoord.y / 62.5f))) + int(floor(gl_FragCoord.x / 120.f));	// (gridSize * minY * cellHeight) + minX / cellWidth
 //	int cellLocation = int(16 * floor(16 * viewportCoord.y) + floor(16 * viewportCoord.x));
+	
 	if (cellLocation >= 0 && cellLocation <= 255)
 	{
 		// CellLocation x = offset		CellLocation y = size

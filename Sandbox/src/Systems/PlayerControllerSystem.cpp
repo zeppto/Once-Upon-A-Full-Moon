@@ -1039,22 +1039,16 @@ namespace MCS
 						m_Physics[i]->Speed += m_Inventory[i]->IncreaseSpeed;
 						SetPickUpText(i, "Speed Increased");
 					}
+					else
+					{
+						m_Physics[i]->Speed = m_Physics[i]->MaxSpeed;
+					}
 					FY_INFO("SpeedBoots Activated");
 					FY_INFO("{0} / {1}", m_Inventory[i]->CurrentSpeedBoots, m_Inventory[i]->MaxSpeedBoots);
 					if (!world->HasComponent<Frosty::ECS::CDestroy>(e.GetEntity()))
 					{
 						world->AddComponent<Frosty::ECS::CDestroy>(e.GetEntity());
 					}
-				}
-				else
-				{
-					m_Physics[i]->Speed += m_Physics[i]->MaxSpeed;
-				}
-				FY_INFO("SpeedBoots Activated");
-				FY_INFO("{0} / {1}", m_Inventory[i]->CurrentSpeedBoots, m_Inventory[i]->MaxSpeedBoots);
-				if (!world->HasComponent<Frosty::ECS::CDestroy>(e.GetEntity()))
-				{
-					SetPickUpText(i, "Can't Pick Up SpeedBoots");
 				}
 			}
 			else if (loot.Type == Frosty::ECS::CLootable::LootType::Wolfsbane)
