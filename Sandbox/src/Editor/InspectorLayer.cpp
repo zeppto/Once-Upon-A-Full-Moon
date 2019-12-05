@@ -247,6 +247,7 @@ namespace MCS
 						ImGui::BeginChild("CMesh", ImVec2(EDITOR_INSPECTOR_WIDTH, 35), true);
 						if (ImGui::Button("Select mesh.."))
 							ImGui::OpenPopup("Mesh selector");
+						ImGui::SetNextWindowSize(ImVec2(160, 370));
 						if (ImGui::BeginPopupModal("Mesh selector", NULL, ImGuiWindowFlags_MenuBar))
 						{
 							//auto& meshes = Frosty::AssetManager::GetMeshes();
@@ -782,6 +783,7 @@ namespace MCS
 						ImGui::InputFloat("Speed", &comp.Speed, 1.0f, 10.0f, 0);
 						if (ImGui::Button("Select bounding box.."))
 							ImGui::OpenPopup("Bounding box selector");
+						ImGui::SetNextWindowSize(ImVec2(160, 370));
 						if (ImGui::BeginPopupModal("Bounding box selector", NULL, ImGuiWindowFlags_MenuBar))
 						{
 							size_t index = 0;

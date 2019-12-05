@@ -22,7 +22,7 @@ namespace Frosty
 		virtual ~SphereHitbox();
 
 		//If you have a better name then rename it
-		static bool IsCollidingWith(glm::vec3 length, glm::vec3 center, glm::vec3 direction, glm::vec3 otherLength, glm::vec3 otherCenter, glm::vec3 otherDirection);
+		static bool IsCollidingWith(glm::vec3 length, glm::vec3 center, glm::vec3  rotation, glm::vec3 otherLength, glm::vec3 otherCenter, glm::vec3 otherRotation);
 
 
 	private:

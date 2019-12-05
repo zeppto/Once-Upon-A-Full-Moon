@@ -401,13 +401,18 @@ namespace MCS
 		glm::vec4 direction = mat * glm::vec4(0.0f, 0.0f, 1.0f, 0.0);
 
 		// Create BB
-		glm::vec3 spawnPos = attackerTransform.Position + (glm::vec3(direction) * 4.0f);
-		glm::vec3 spawnScale = glm::vec3(10.0f, 6.0f, 4.0f);
-		auto& sword = m_World->CreateEntity({ spawnPos.x, 3.0f, spawnPos.z }, attackerTransform.Rotation, spawnScale);
+		glm::vec3 spawnPos = attackerTransform.Position + (glm::vec3(direction) * 5.0f);
+		//glm::vec3 spawnScale = glm::vec3(10.0f, 6.0f, 4.0f);
+		glm::vec3 spawnScale = glm::vec3(4.0f, 10.0f, 4.0f);
+		auto& sword = m_World->CreateEntity({ spawnPos.x, 3.0f, spawnPos.z }, attackerTransform.Rotation + glm::vec3(0.0f, 90.0f, 90.0f), spawnScale);
 
 		m_World->AddComponent<Frosty::ECS::CMesh>(sword, Frosty::AssetManager::GetMesh("pCube1"));
 		m_World->AddComponent<Frosty::ECS::CMaterial>(sword, Frosty::AssetManager::GetShader("FlatColor"));
 		m_World->AddComponent<Frosty::ECS::CPhysics>(sword, Frosty::AssetManager::GetBoundingBox("pCube1"));
+
+		//test
+		m_World->AddComponent<Frosty::ECS::CHealth>(sword);
+		m_World->AddComponent<Frosty::ECS::CHealthBar>(sword, glm::vec3(0.0f, 10.0f, 0.0f));
 
 		float criticalHit = 0;
 		criticalHit = GenerateCriticalHit(weaponComp.CriticalHit, weaponComp.CriticalHitChance);
@@ -451,7 +456,7 @@ namespace MCS
 		glm::mat4 mat = glm::mat4(1.0f);
 		mat = glm::rotate(mat, glm::radians(attackerTransform.Rotation.x), { 1.0f, 0.0f, 0.0f });
 		mat = glm::rotate(mat, glm::radians(attackerTransform.Rotation.y), { 0.0f, 1.0f, 0.0f });
-		mat = glm::rotate(mat, glm::radians(attackerTransform.Rotation.z), { 0.0f, 0.0f, 1.0f });
+		mat = glm::rotate(mat, glm::radians(attackerTransform.Rotation.z + 90.0f), { 0.0f, 0.0f, 1.0f });
 		glm::vec4 direction = mat * glm::vec4(0.0f, 0.0f, 1.0f, 0.0);
 
 		// Create BB

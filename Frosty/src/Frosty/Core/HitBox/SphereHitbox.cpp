@@ -14,19 +14,31 @@ namespace Frosty
 	{
 	}
 
-	bool Frosty::SphereHitbox::IsCollidingWith(glm::vec3 length, glm::vec3 center, glm::vec3 direction, glm::vec3 otherLength, glm::vec3 otherCenter, glm::vec3 otherDirection)
+	bool Frosty::SphereHitbox::IsCollidingWith(glm::vec3 length, glm::vec3 center, glm::vec3 rotation, glm::vec3 otherLength, glm::vec3 otherCenter, glm::vec3 otherRotation)
 	{
 		glm::vec3 this_Position = center;
-		glm::vec3 this_Direction = glm::vec3(0.0f, 1.0f, 0.0f);
 
-		float this_Length = length.y*2;
+		glm::mat4 rotationMatrix(1.0f);
+		rotationMatrix = glm::rotate(rotationMatrix, glm::radians(rotation.x), glm::vec3(1.0f, 0.0f, 0.0f));
+		rotationMatrix = glm::rotate(rotationMatrix, glm::radians(rotation.y), glm::vec3(0.0f, 1.0f, 0.0f));
+		rotationMatrix = glm::rotate(rotationMatrix, glm::radians(rotation.z), glm::vec3(0.0f, 0.0f, 1.0f));
+		glm::vec3 finalRotation = rotationMatrix * glm::vec4(0.0f, 1.0f, 0.0f, 1.0f);
+		glm::vec3 this_Direction = glm::normalize(finalRotation);
+
 		float this_Raduis = (length.x + length.z) / 2;
+		float this_Length = (length.y -this_Raduis) * 2;
 
 		glm::vec3 other_Position = otherCenter;
-		glm::vec3 other_Direction = glm::vec3(0.0f, 1.0f, 0.0f);
 
-		float other_Length = otherLength.y*2;
+		rotationMatrix = glm::mat4(1.0f);
+		rotationMatrix = glm::rotate(rotationMatrix, glm::radians(otherRotation.x), glm::vec3(1.0f, 0.0f, 0.0f));
+		rotationMatrix = glm::rotate(rotationMatrix, glm::radians(otherRotation.y), glm::vec3(0.0f, 1.0f, 0.0f));
+		rotationMatrix = glm::rotate(rotationMatrix, glm::radians(otherRotation.z), glm::vec3(0.0f, 0.0f, 1.0f));
+		finalRotation = rotationMatrix * glm::vec4(0.0f, 1.0f, 0.0f, 1.0f);
+		glm::vec3 other_Direction = glm::normalize(finalRotation);
+
 		float other_Raduis = (otherLength.x + otherLength.z) / 2;
+		float other_Length = (otherLength.y -other_Raduis) * 2;
 
 		float t_Length = this_Length + this_Raduis;
 		float o_Length = other_Length + other_Raduis;
@@ -53,9 +65,6 @@ namespace Frosty
 			{
 				returnValue = true;
 			}
-
-
-
 
 		}
 		return returnValue;
