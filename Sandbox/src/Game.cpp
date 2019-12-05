@@ -6,7 +6,7 @@ namespace MCS
 {
 	Game::Game()
 	{
-<<<<<<< HEAD
+
 		auto& world = Application::Get().GetWorld();
 		// Add systems
 		world->AddSystem<LevelSystem>();
@@ -427,10 +427,10 @@ namespace MCS
 		//particel.FadeInTreshold = 1.915f;
 		//particel.FadeTreshold = 0.902f;
 		//particel.ParticleSystemStartPos = glm::vec3(0, 0.03f, 0);
-=======
+
 		auto& state = Application::Get().GetStateMachine();
 		state.AddState(Frosty::StateRef(FY_NEW(MenuState)));
->>>>>>> 0e1c2caaa9a95857c133dafa4e8671c7b7a57418
+
 
 #ifdef FY_DEBUG
 		PushLayer(FY_NEW InspectorLayer());
