@@ -197,11 +197,9 @@ namespace MCS
 			}
 			else
 			{
-<<<<<<< HEAD
+
 		//		if (Frosty::Time::GetFrameCount() % 60 == 0) FY_INFO("Reset");
-=======
-				//if (Frosty::Time::GetFrameCount() % 60 == 0) FY_INFO("Reset");
->>>>>>> 0e1c2caaa9a95857c133dafa4e8671c7b7a57418
+
 				return;
 			}
 		}
@@ -217,11 +215,9 @@ namespace MCS
 		if (m_Health[index]->CurrentHealth <= m_Health[index]->MaxHealth * m_Enemy[index]->RunOnHealth)
 		{
 			m_Enemy[index]->CurrentState = Frosty::ECS::CEnemy::State::Escape;
-<<<<<<< HEAD
+
 		//	if (Frosty::Time::GetFrameCount() % 60 == 0) FY_INFO("Escape");
-=======
-			//if (Frosty::Time::GetFrameCount() % 60 == 0) FY_INFO("Escape");
->>>>>>> 0e1c2caaa9a95857c133dafa4e8671c7b7a57418
+
 			return;
 		}
 
@@ -229,11 +225,9 @@ namespace MCS
 		if (glm::distance(m_Transform[index]->Position, m_Enemy[index]->Target->Position) > m_Enemy[index]->SightRange)
 		{
 			m_Enemy[index]->CurrentState = Frosty::ECS::CEnemy::State::Idle;
-<<<<<<< HEAD
+
 		//	if (Frosty::Time::GetFrameCount() % 60 == 0) FY_INFO("Idle");
-=======
-			//if (Frosty::Time::GetFrameCount() % 60 == 0) FY_INFO("Idle");
->>>>>>> 0e1c2caaa9a95857c133dafa4e8671c7b7a57418
+
 			return;
 		}
 
@@ -241,11 +235,9 @@ namespace MCS
 		if ((glm::distance(m_Transform[index]->Position, m_Enemy[index]->Target->Position) <= m_Enemy[index]->Weapon->MaxAttackRange))
 		{
 			m_Enemy[index]->CurrentState = Frosty::ECS::CEnemy::State::Attack;
-<<<<<<< HEAD
+
 		//	if (Frosty::Time::GetFrameCount() % 60 == 0) FY_INFO("Attack");
-=======
-			//if (Frosty::Time::GetFrameCount() % 60 == 0) FY_INFO("Attack");
->>>>>>> 0e1c2caaa9a95857c133dafa4e8671c7b7a57418
+
 
 			//if (glm::distance(m_Transform[index]->Position, m_Enemy[index]->Target->Position) < m_Enemy[index]->Weapon->MinAttackRange)
 			//{
@@ -262,11 +254,9 @@ namespace MCS
 			if (!stopChase)
 			{
 				m_Enemy[index]->CurrentState = Frosty::ECS::CEnemy::State::Chase;
-<<<<<<< HEAD
+
 		//		if (Frosty::Time::GetFrameCount() % 60 == 0) FY_INFO("Chase");
-=======
-				//if (Frosty::Time::GetFrameCount() % 60 == 0) FY_INFO("Chase");
->>>>>>> 0e1c2caaa9a95857c133dafa4e8671c7b7a57418
+
 			}
 		}
 	}

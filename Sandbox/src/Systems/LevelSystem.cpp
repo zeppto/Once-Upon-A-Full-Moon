@@ -55,7 +55,7 @@ namespace MCS
 
 		if (m_LodeNamedRoom)
 		{
-			m_LevelFileFormat.OpenFromFile(m_RoomType, m_PlayerPos);
+		//	m_LevelFileFormat.OpenFromFile(m_RoomType, m_PlayerPos);
 			m_LodeNamedRoom = false;
 		}
 	}

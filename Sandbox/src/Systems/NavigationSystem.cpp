@@ -16,7 +16,7 @@ namespace MCS
 
 	void NavigationSystem::OnUpdate()
 	{
-		m_Grid->Reset();
+		//m_Grid->Reset();
 		for (size_t i = 1; i < p_Total; i++)
 		{
 	//		m_Grid->SetNodeUnwalkable(m_Transform[i]->Position);
@@ -168,12 +168,9 @@ namespace MCS
 
 	void NavigationSystem::InitiateGridMap(const Frosty::ECS::CTransform& planeTransform)
 	{
-<<<<<<< HEAD
 
 		m_Grid.reset(FY_NEW Frosty::Grid());
-=======
-		m_Grid.reset(FY_NEW Grid());
->>>>>>> 0e1c2caaa9a95857c133dafa4e8671c7b7a57418
+
 		Frosty::Time::StartTimer("Grid::Init()");
 		m_Grid->Init(planeTransform);
 		Frosty::Time::EndTimer("Grid::Init()");
@@ -207,16 +204,16 @@ namespace MCS
 
 	void NavigationSystem::OnInitiateGridMap(Frosty::InitiateGridEvent& e)
 	{
-<<<<<<< HEAD
+
 		//m_SecondGridMap.reset(FY_NEW Frosty::Grid());
 		//m_SecondGridMap->Init(*e.GetTransform());
 		//m_SecondPathfinding.reset(FY_NEW Pathfinding());
 		//m_SecondPathfinding->Init(&*m_SecondGridMap);
 
 
-=======
-		m_Grid.reset(FY_NEW Grid());
->>>>>>> 0e1c2caaa9a95857c133dafa4e8671c7b7a57418
+
+	//	m_Grid.reset(FY_NEW Grid());
+
 		Frosty::Time::StartTimer("Grid::Init()");
 		m_OtherMap.Grid.reset(FY_NEW Frosty::Grid());
 		m_OtherMap.Grid->Init(*e.GetTransform());
@@ -227,11 +224,11 @@ namespace MCS
 
 	//	FY_INFO("Map Group ID: {0}", m_OtherMap.EntityUpdateGroup);
 
-		m_Grid.reset(FY_NEW Frosty::Grid());
-		m_Grid->Init(*e.GetTransform());
+		//m_Grid.reset(FY_NEW Frosty::Grid());
+		//m_Grid->Init(*e.GetTransform());
 
-		m_Pathfinding.reset(FY_NEW Pathfinding());
-		m_Pathfinding->Init(m_Grid.get());
+		//m_Pathfinding.reset(FY_NEW Pathfinding());
+		//m_Pathfinding->Init(m_Grid.get());
 	}
 
 	void NavigationSystem::LookAtPoint(const glm::vec3& point, size_t index)

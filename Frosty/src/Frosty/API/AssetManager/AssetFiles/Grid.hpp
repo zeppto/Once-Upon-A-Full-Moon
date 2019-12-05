@@ -1,12 +1,8 @@
 #ifndef GRID_HPP
 #define GRID_HPP
 
-<<<<<<< HEAD:Frosty/src/Frosty/API/AssetManager/AssetFiles/Grid.hpp
 
 namespace Frosty
-=======
-namespace MCS
->>>>>>> 0e1c2caaa9a95857c133dafa4e8671c7b7a57418:Sandbox/src/Pathfinding/Grid.hpp
 {
 	class World;
 	namespace ECS { struct CTransform; }
@@ -26,13 +22,10 @@ namespace MCS
 
 
 		// TEMPORARY FOR DEBUGGING
-<<<<<<< HEAD:Frosty/src/Frosty/API/AssetManager/AssetFiles/Grid.hpp
 		size_t CellEntityID{ 0 };
-=======
-		Frosty::ECS::EntityID CellEntityID{ 0 };
->>>>>>> 0e1c2caaa9a95857c133dafa4e8671c7b7a57418:Sandbox/src/Pathfinding/Grid.hpp
 
-		CellNode(const glm::vec3& worldPos, bool walkable, int32_t gridX, int32_t gridY) : WorldPosition(worldPos), Walkable(walkable), GridX(gridX), GridY(gridY) { }
+		inline CellNode() {};
+		inline CellNode(const glm::vec3& worldPos, bool walkable, int32_t gridX, int32_t gridY) : WorldPosition(worldPos), Walkable(walkable), GridX(gridX), GridY(gridY) { }
 		
 		// Operators
 		bool operator==(const CellNode& obj) const { return obj.GridX == GridX && obj.GridY == GridY; }
@@ -67,7 +60,6 @@ namespace MCS
 		void DrawSeekerCell(Frosty::ECS::CTransform* transform);
 		void DrawPathCells(const std::vector<CellNode*> path);
 
-<<<<<<< HEAD:Frosty/src/Frosty/API/AssetManager/AssetFiles/Grid.hpp
 		void SaveFile(const std::string FileName);
 		void LoadFile(const std::string FilePath);
 		inline void LoadFile() {
@@ -78,20 +70,21 @@ namespace MCS
 		inline void SetFileName(const std::string& FileName) { m_FileName = FileName; }
 		inline void SetFilePath(const std::string& FilePath) { m_FilePath = FilePath; }
 
-=======
->>>>>>> 0e1c2caaa9a95857c133dafa4e8671c7b7a57418:Sandbox/src/Pathfinding/Grid.hpp
 	private:
 		void CreateGrid();
 		bool CheckCollision(const glm::vec3& worldPoint, float radius) const;
 
 	private:
-		Frosty::World* m_World;
+		World* m_World;
 		glm::vec3 m_GridWorldPosition{ 0.0f };		// Position(XZ) of the plane in world space 
 		glm::vec2 m_GridWorldSize{ 0.0f };			// Scale(XZ) of the plane in world space
 		glm::vec2 m_GridSize{ 0.0f };				// Number of grids in XZ
 
 		std::vector<CellNode> m_CellNodes;
 		std::vector<CellNode*> m_DynamicOccupiedNodes;
+
+		std::string m_FileName{ "" };
+		std::string m_FilePath{ "" };
 
 		// TEMPORARY FOR DEUGGING
 		bool m_DrawGizmos{ 0 };
@@ -102,9 +95,9 @@ namespace MCS
 namespace std
 {
 	template <>
-	struct hash<MCS::CellNode>
+	struct hash<Frosty::CellNode>
 	{
-		size_t operator()(const MCS::CellNode& k) const
+		size_t operator()(const Frosty::CellNode& k) const
 		{
 			// Compute individual hash values for two data members and combine them using XOR and bit shifting
 			return ((hash<int>()(k.GridX) ^ (hash<int>()(k.GridY) << 1)) >> 1);
