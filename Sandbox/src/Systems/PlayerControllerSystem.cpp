@@ -1490,7 +1490,6 @@ namespace MCS
 		if (m_World->HasComponent<Frosty::ECS::CGUI>(m_Transform[index]->EntityPtr))
 		{
 
-			ScaleHudToScreen(index);
 
 			auto& HUD = m_World->GetComponent<Frosty::ECS::CGUI>(m_Transform[index]->EntityPtr);
 
@@ -1507,6 +1506,7 @@ namespace MCS
 
 				Frosty::EventBus::GetEventBus()->Publish<Frosty::UpgradeWeaponEvent>(Frosty::UpgradeWeaponEvent());
 			}
+
 
 
 			//Items
@@ -2002,7 +2002,11 @@ namespace MCS
 			{
 				HUD.Layout.sprites.at(0).SetColorSprite(glm::vec4(0.0f, 0.0f, 0.0f, 0.75f));
 			}
+
 		}
+
+		ScaleHudToScreen(index);
+
 	}
 
 	void PlayerControllerSystem::SetPickUpText(size_t index, std::string text)
@@ -2056,7 +2060,7 @@ namespace MCS
 		}
 		else
 		{
-			int test2= 0;
+			int test2 = 0;
 
 		}
 		m_WindowWidth = width;
@@ -2065,23 +2069,23 @@ namespace MCS
 		m_WidthMultiplier = m_WindowWidth / 1280;
 		m_HeightMultiplier = m_WindowHeight / 720;
 
-		
+
 
 
 		if (m_LastWidthtMultiplier == 0 || m_LastHeightMultiplier == 0)
 		{
 
-			
+
 
 			m_LastWidthtMultiplier = m_WidthMultiplier;
 			m_LastHeightMultiplier = m_HeightMultiplier;
 
-			
+
 
 		}
 		else
 		{
-		
+
 
 			m_WidthMultiplier = m_WidthMultiplier / m_LastWidthtMultiplier;
 			m_HeightMultiplier = m_HeightMultiplier / m_LastHeightMultiplier;
@@ -2093,42 +2097,43 @@ namespace MCS
 
 
 
-		
+
 
 		/*if (m_WidthMultiplier != 1 || m_HeightMultiplier != 1)
 		{*/
-			//m_LastWidthtMultiplier = m_WidthMultiplier;
-			//m_LastHeightMultiplier = m_HeightMultiplier;
+		//m_LastWidthtMultiplier = m_WidthMultiplier;
+		//m_LastHeightMultiplier = m_HeightMultiplier;
 
 
-			auto& HUD = m_World->GetComponent<Frosty::ECS::CGUI>(m_Transform[index]->EntityPtr);
+		auto& HUD = m_World->GetComponent<Frosty::ECS::CGUI>(m_Transform[index]->EntityPtr);
 
-			//Texts
-			for (size_t i = 0; i < HUD.Layout.texts.size(); i++)
-			{
-				HUD.Layout.texts.at(i).SetPosition(glm::vec2(HUD.Layout.texts.at(i).GetPosition().x * m_WidthMultiplier, HUD.Layout.texts.at(i).GetPosition().y * m_HeightMultiplier));
-				HUD.Layout.texts.at(i).SetFontScale(HUD.Layout.texts.at(i).GetFontScale() * m_WidthMultiplier);
-			}
+		//Texts
+		for (size_t i = 0; i < HUD.Layout.texts.size(); i++)
+		{
+			HUD.Layout.texts.at(i).SetPosition(glm::vec2(HUD.Layout.texts.at(i).GetPosition().x * m_WidthMultiplier, HUD.Layout.texts.at(i).GetPosition().y * m_HeightMultiplier));
+			HUD.Layout.texts.at(i).SetFontScale(HUD.Layout.texts.at(i).GetFontScale() * m_WidthMultiplier);
+		}
 
-			//Sprite
-			for (size_t i = 0; i < HUD.Layout.sprites.size(); i++)
-			{
-				float scaleX = HUD.Layout.sprites.at(i).GetScaleSprite().x;
-				scaleX *= m_WidthMultiplier;
-				
-				float scaleY = HUD.Layout.sprites.at(i).GetScaleSprite().y;
-				scaleY *= m_HeightMultiplier;
+		//Sprite
+		for (size_t i = 0; i < HUD.Layout.sprites.size(); i++)
+		{
+			float scaleX = HUD.Layout.sprites.at(i).GetScaleSprite().x;
+			scaleX *= m_WidthMultiplier;
 
-				float posX = HUD.Layout.sprites.at(i).GetTranslateSprite().x;
-				posX *= m_WidthMultiplier;
+			float scaleY = HUD.Layout.sprites.at(i).GetScaleSprite().y;
+			scaleY *= m_HeightMultiplier;
 
-				float posY = HUD.Layout.sprites.at(i).GetTranslateSprite().y;
-				posY *= m_HeightMultiplier;
+			float posX = HUD.Layout.sprites.at(i).GetTranslateSprite().x;
+			posX *= m_WidthMultiplier;
 
-				//Sprites diasapear when doing this, dont know why...
-			//	HUD.Layout.sprites.at(i).SetScaleSprite(glm::vec2(scaleX, scaleY));
-			//	HUD.Layout.sprites.at(i).SetTranslateSprite(glm::vec2(posX, posY));
-			}
+			float posY = HUD.Layout.sprites.at(i).GetTranslateSprite().y;
+			posY *= m_HeightMultiplier;
+
+			//Sprites diasapear when doing this, dont know why...
+			HUD.Layout.sprites.at(i).SetTranslateSprite(glm::vec2(posX, posY));
+			HUD.Layout.sprites.at(i).SetScaleSprite(glm::vec2(scaleX, scaleY));
+		
+		}
 		//}
 
 

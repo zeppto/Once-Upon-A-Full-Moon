@@ -316,7 +316,7 @@ namespace MCS
 		uiLayout.AddText(spPotionControl, "[2]", glm::vec3(1.0f, 1.0f, 0.75f), controlsInfoSize2); //19
 		uiLayout.AddText(baitControl, "[Q]", glm::vec3(1.0f, 1.0f, 0.75f), controlsInfoSize2); //20
 
-		uiLayout.AddSprite(glm::vec2((windowWidth / 2), (windowHeight / 2)), glm::vec2(16 * 1.6 * windowHeight, 9 * 1.6f * heightMultiplier), "fearEffect", glm::vec4(0.0f, 0.0f, 0.0f, 0.75f)); // 0
+		uiLayout.AddSprite(glm::vec2((windowWidth / 2), (windowHeight / 2)), glm::vec2(windowWidth, windowHeight), "fearEffect", glm::vec4(0.0f, 0.0f, 0.0f, 0.75f)); // 0
 
 		//Weapon
 		glm::vec2 attackScale = glm::vec2(0.75 * widthMultiplier, 0.75 * heightMultiplier);
