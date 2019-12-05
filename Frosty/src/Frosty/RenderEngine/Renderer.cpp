@@ -483,7 +483,7 @@ namespace Frosty
 
 	}
 
-	void Renderer::SubmitParticles(const std::shared_ptr<Shader>& shader, const std::shared_ptr<VertexArray>& vertexArray, glm::mat4& modelMat, size_t particleCount, float maxLifetime)
+	void Renderer::SubmitParticles(const std::shared_ptr<Shader>& shader, const std::shared_ptr<VertexArray>& vertexArray, glm::mat4& modelMat, size_t particleCount, float maxLifetime, unsigned int renderMode)
 	{
 		shader->Bind();
 		vertexArray->Bind();
@@ -494,7 +494,15 @@ namespace Frosty
 
 		glEnable(GL_BLEND);
 		glDepthMask(GL_FALSE);
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+		switch (renderMode)
+		{
+		case 0:
+			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+			break;
+		case 1:
+			glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+			break;
+		}
 
 		RenderCommand::DisableBackfaceCulling();
 		RenderCommand::DrawParticles(vertexArray, particleCount);

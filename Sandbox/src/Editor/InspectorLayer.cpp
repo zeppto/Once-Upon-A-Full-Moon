@@ -1008,6 +1008,7 @@ namespace MCS
 								ImGui::ColorEdit4("End color", glm::value_ptr(comp.SystemEndColor));
 							}
 						}
+						ImGui::Combo("Render mode", (int*)&comp.RenderMode, "Normal\0Additive\0");
 						ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(10, 10));
 						ImGui::Image(comp.Texture ? comp.Texture->GetRenderID() : Frosty::AssetManager::GetTexture2D("Checkerboard")->GetRenderID(), ImVec2(64, 64));
 						ImGui::PopStyleVar();
@@ -1133,6 +1134,9 @@ namespace MCS
 						auto& comp = world->GetComponent<Frosty::ECS::CGUI>(m_SelectedEntity);
 						ImGui::BeginChild("CGUI", ImVec2(EDITOR_INSPECTOR_WIDTH, 45), true);
 						ImGui::Text("The GUI is active."); //TODO: Fill with info
+						ImGui::Checkbox("Render text", &comp.RenderText);
+						ImGui::SameLine();
+						ImGui::Checkbox("Render sprites", &comp.RenderSprites);
 						ImGui::EndChild();
 					}
 				}
