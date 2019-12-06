@@ -46,6 +46,9 @@ namespace Frosty
 	private:
 		void OnWindowCloseEvent(WindowCloseEvent& e);
 		void OnKeyPressedEvent(KeyPressedEvent& e);	
+
+		float RamUsage();
+		float VramUsage();
 	private:
 		bool m_Running = true;
 
