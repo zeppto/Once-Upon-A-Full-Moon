@@ -5,6 +5,7 @@ namespace Frosty {
 	class PlayMediaEvent;
 	class PlayMediaEntityEvent;
 	class PlayMusicEvent;
+	class StopMediaEvent;
 }
 
 namespace MCS
@@ -31,10 +32,12 @@ namespace MCS
 		std::array<Frosty::ECS::CTransform*, Frosty::ECS::MAX_ENTITIES_PER_COMPONENT> m_Transform;
 		std::array<Frosty::ECS::CMediaManager*, Frosty::ECS::MAX_ENTITIES_PER_COMPONENT> m_MediaManager;
 		Frosty::World* m_World{ nullptr };
+		irrklang::ISoundEngine* m_SoundEngine;
 
 		void OnPlayMusicEvent(Frosty::PlayMusicEvent& e);
 		void OnPlayMediaEvent(Frosty::PlayMediaEvent& e);
 		void OnPlayMediaEntityEvent(Frosty::PlayMediaEntityEvent& e);
+		void OnStopMediaEvent(Frosty::StopMediaEvent& e);
 		void playMusic(const char* source, bool loop);
 		void play2DSound(const char* source, bool loop, bool startPaused, bool track, bool enableSoundEffects, float volume, int effectID);
 		void play3DSound(const char* source, vec3df position, bool loop, bool startPaused, bool track, bool enableSoundEffects, float volume, float minDist, float maxDist, int effectID);

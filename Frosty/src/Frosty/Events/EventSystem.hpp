@@ -19,7 +19,7 @@ namespace Frosty
 		SpawnItem,
 		PickUpAttempt, PickUp,
 		LoadBoolMap, InitiateGridMap, ActivateWitchCircle, UpgradeWeapon, PlayAnim, HealAbility, PlayerDamage, DropItem, GameOver, Win, Damage,
-		PlayMedia, PlayMediaEntity, PlayMusic,
+		PlayMedia, PlayMediaEntity, PlayMusic, StopMedia,
 		Reset,
 		BaitPlaced, ExitCurrentLevel, EnterNewRoom,
 		SaveLevel, CreateLevel, OpenLevel, CreatEntity, EnemyDeath, BossSpawned, ResetBoss,

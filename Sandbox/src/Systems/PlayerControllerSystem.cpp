@@ -49,6 +49,7 @@ namespace MCS
 		for (size_t i = 1; i < p_Total; i++)
 		{
 			if (m_Dash[i]->CurrentCooldown > 0.0f) m_Dash[i]->CurrentCooldown -= Frosty::Time::DeltaTime();
+			if (m_Player[i]->CurrentCooldown > 0.0f) m_Player[i]->CurrentCooldown -= Frosty::Time::DeltaTime();
 			if (Frosty::Time::CurrentTime() - m_Inventory[i]->SpeedTimer >= m_Inventory[i]->SpeedCooldown && m_Physics[i]->SpeedMultiplier > 1.0f)
 			{
 				m_Physics[i]->SpeedMultiplier = 1.0f;
@@ -296,12 +297,26 @@ namespace MCS
 						int rand = std::rand() % 3 + 1;
 						std::string str = "assets/sounds/DodgePrassel" + std::to_string(rand) + ".wav";
 						const char* fileName = str.c_str();
-						Frosty::EventBus::GetEventBus()->Publish<Frosty::PlayMediaEntityEvent>(Frosty::PlayMediaEntityEvent(m_Player[index]->EntityPtr, fileName, 3.0f, 10.0f, 100.0f, false, 0));
+						Frosty::EventBus::GetEventBus()->Publish<Frosty::PlayMediaEntityEvent>(Frosty::PlayMediaEntityEvent(m_Player[index]->EntityPtr, fileName, 5.0f, 10.0f, 100.0f, false, 0));
 
 						//m_Physics[index]->Velocity *= m_Dash[index]->SpeedMultiplier;
 						m_Physics[index]->SpeedMultiplier = m_Dash[index]->SpeedMultiplier;
 						m_Dash[index]->CurrentCooldown = m_Dash[index]->COOLDOWN / 1000.0f;
 					}
+				}
+			}
+
+			// Walking sounds
+			if (glm::length(m_Physics[index]->Direction) > 0.0f)
+			{
+				if (m_Player[index]->CurrentCooldown <= 0.0f)
+				{
+					int rand = std::rand() % 5 + 1;
+					std::string str = "assets/sounds/FootstepMud" + std::to_string(rand) + ".wav";
+					const char* fileName = str.c_str();
+					Frosty::EventBus::GetEventBus()->Publish<Frosty::PlayMediaEntityEvent>(Frosty::PlayMediaEntityEvent(m_Player[index]->EntityPtr, fileName, 1.0f, 10.0f, 100.0f, false, 0));
+
+					m_Player[index]->CurrentCooldown = m_Player[index]->COOLDOWN / 1000.0f;
 				}
 			}
 		}

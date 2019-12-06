@@ -13,6 +13,7 @@ namespace MCS
 		p_Signature.set(Frosty::ECS::getComponentTypeID<Frosty::ECS::CMediaManager>(), true);
 
 		m_World = Frosty::Application::Get().GetWorld().get();
+		m_SoundEngine = irrklang::createIrrKlangDevice();
 	}
 
 	void MCS::MediaSystem::OnUpdate()
@@ -32,6 +33,9 @@ namespace MCS
 			break;
 		case Frosty::EventType::PlayMusic:
 			OnPlayMusicEvent(static_cast<Frosty::PlayMusicEvent&>(e));
+			break;
+		case Frosty::EventType::StopMedia:
+			OnStopMediaEvent(static_cast<Frosty::StopMediaEvent&>(e));
 			break;
 		default:
 			break;
@@ -125,11 +129,6 @@ namespace MCS
 		float volume = e.GetVolume();
 		bool enableSoundEffects = e.IsSoundEffectsEnabled();
 		play2DSound(filepath, false, false, false, enableSoundEffects, volume, effectID);
-
-		//	playMusic(/*soundEngine,*/ "assets/music/menusong.mp3", true);
-		//	playMusic(/*soundEngine,*/ "assets/music/menusong.mp3", true); // Main theme song, does not exist yet
-		//	play2DSound(/*soundEngine, */"assets/sounds/Atmo.wav", true, false, false, false);
-		//	play2DSound(/*soundEngine,*/ "assets/sounds/Atmo_Skog.wav", true, false, false, false);
 	}
 
 	void MediaSystem::OnPlayMediaEntityEvent(Frosty::PlayMediaEntityEvent& e)
@@ -139,49 +138,22 @@ namespace MCS
 		float volume = e.GetVolume(); float minDist = e.GetMinDistance(); float maxDist = e.GetMaxDistance();
 		int effectID = e.GetEffectID();
 		play3DSound(filepath, vec3df(componentPos.x, componentPos.y, componentPos.z), false, false, false, true, volume, minDist, maxDist, effectID);
-		
-		//	play3DSound(/*soundEngine,*/ "assets/sounds/SwooshLight1.wav", vec3df(componentPos.x, componentPos.y, componentPos.z), false, false, false, false);
-		//	play3DSound(/*soundEngine,*/ "assets/sounds/SwooshLight2.wav", vec3df(componentPos.x, componentPos.y, componentPos.z), false, false, false, false);
-		//	play3DSound(/*soundEngine,*/ "assets/sounds/SwooshLight3.wav", vec3df(componentPos.x, componentPos.y, componentPos.z), false, false, false, false);
-		//	play3DSound(/*soundEngine,*/ "assets/sounds/FootstepMud1.wav", vec3df(componentPos.x, componentPos.y, componentPos.z), false, false, false, false);
-		//	play3DSound(/*soundEngine,*/ "assets/sounds/FootstepMud2.wav", vec3df(componentPos.x, componentPos.y, componentPos.z), false, false, false, false);
-		//	play3DSound(/*soundEngine,*/ "assets/sounds/FootstepMud3.wav", vec3df(componentPos.x, componentPos.y, componentPos.z), false, false, false, false);
-		//	play3DSound(/*soundEngine,*/ "assets/sounds/FootstepMud4.wav", vec3df(componentPos.x, componentPos.y, componentPos.z), false, false, false, false);
-		//	play3DSound(/*soundEngine,*/ "assets/sounds/FootstepMud5.wav", vec3df(componentPos.x, componentPos.y, componentPos.z), false, false, false, false);
-		//	play3DSound(/*soundEngine,*/ "assets/sounds/DodgePrassel1.wav", vec3df(componentPos.x, componentPos.y, componentPos.z), false, false, false, false);
-		//	play3DSound(/*soundEngine,*/ "assets/sounds/DodgePrassel2.wav", vec3df(componentPos.x, componentPos.y, componentPos.z), false, false, false, false);
-		//	play3DSound(/*soundEngine,*/ "assets/sounds/DodgePrassel3.wav", vec3df(componentPos.x, componentPos.y, componentPos.z), false, false, false, false);
-		//	play3DSound(/*soundEngine,*/ "assets/sounds/ArrowHit1.wav", vec3df(componentPos.x, componentPos.y, componentPos.z), false, false, false, false);
-		//	play3DSound(/*soundEngine,*/ "assets/sounds/ArrowHit2.wav", vec3df(componentPos.x, componentPos.y, componentPos.z), false, false, false, false);
-		//	play3DSound(/*soundEngine,*/ "assets/sounds/ArrowHit3.wav", vec3df(componentPos.x, componentPos.y, componentPos.z), false, false, false, false);
-		//	play3DSound(/*soundEngine,*/ "assets/sounds/ArrowHit4.wav", vec3df(componentPos.x, componentPos.y, componentPos.z), false, false, false, false);
-		//	play3DSound(/*soundEngine,*/ "assets/sounds/ArrowHit5.wav", vec3df(componentPos.x, componentPos.y, componentPos.z), false, false, false, false);
-		//	play3DSound(/*soundEngine,*/ "assets/sounds/ArrowHit6.wav", vec3df(componentPos.x, componentPos.y, componentPos.z), false, false, false, false);
-		//	play3DSound(/*soundEngine,*/ "assets/sounds/HitSoundCrit1.wav", vec3df(componentPos.x, componentPos.y, componentPos.z), false, false, false, false);
-		//	play3DSound(/*soundEngine,*/ "assets/sounds/HitSoundCrit2.wav", vec3df(componentPos.x, componentPos.y, componentPos.z), false, false, false, false);
-		//	play3DSound(/*soundEngine,*/ "assets/sounds/HitSoundCrit3.wav", vec3df(componentPos.x, componentPos.y, componentPos.z), false, false, false, false);
-		//	play3DSound(/*soundEngine,*/ "assets/sounds/HitSoundCrit4.wav", vec3df(componentPos.x, componentPos.y, componentPos.z), false, false, false, false);
-		//	play3DSound(/*soundEngine,*/ "assets/sounds/BowDrawLong.wav", vec3df(componentPos.x, componentPos.y, componentPos.z), false, false, false, false);
-		//	play3DSound(/*soundEngine,*/ "assets/sounds/BowDrawShort.wav", vec3df(componentPos.x, componentPos.y, componentPos.z), false, false, false, false);
-		//	play3DSound(/*soundEngine,*/ "assets/sounds/WeaponHeavy.wav", vec3df(componentPos.x, componentPos.y, componentPos.z), false, false, false, false);
-		//	play3DSound(/*soundEngine,*/ "assets/sounds/WeaponMediumSword.wav", vec3df(componentPos.x, componentPos.y, componentPos.z), false, false, false, false);
-		//	play3DSound(/*soundEngine,*/ "assets/sounds/WolfAttack.wav", vec3df(componentPos.x, componentPos.y, componentPos.z), false, false, false, false);
-		//	play3DSound(/*soundEngine,*/ "assets/sounds/WolfGrowl.wav", vec3df(componentPos.x, componentPos.y, componentPos.z), false, false, false, false);
-		//	play3DSound(/*soundEngine,*/ "assets/sounds/WolfHowl.wav", vec3df(componentPos.x, componentPos.y, componentPos.z), false, false, false, false);
-		//	play3DSound(/*soundEngine,*/ "assets/sounds/WolfHowl2.wav", vec3df(componentPos.x, componentPos.y, componentPos.z), false, false, false, false);
+	}
+
+	void MediaSystem::OnStopMediaEvent(Frosty::StopMediaEvent& e)
+	{
+		stopAllSounds();
 	}
 
 	void MediaSystem::playMusic(const char* source, bool loop)
 	{
-		ISoundEngine* soundEngine = irrklang::createIrrKlangDevice();
-		soundEngine->play2D(source, loop, false, false, ESM_AUTO_DETECT, false);
+		m_SoundEngine->play2D(source, loop, false, false, ESM_AUTO_DETECT, false);
 	}
 
 	void MediaSystem::play2DSound(const char* source, bool loop, bool startPaused, bool track, bool enableSoundEffects, float volume, int effectID)
 	{
-		ISoundEngine* soundEngine = irrklang::createIrrKlangDevice();
-		soundEngine->setSoundVolume(volume);
-		ISound* sound2D = soundEngine->play2D(source, loop, startPaused, track, ESM_AUTO_DETECT, enableSoundEffects);
+		m_SoundEngine->setSoundVolume(volume);
+		ISound* sound2D = m_SoundEngine->play2D(source, loop, startPaused, track, ESM_AUTO_DETECT, enableSoundEffects);
 		
 		if (enableSoundEffects)
 		{
@@ -206,11 +178,10 @@ namespace MCS
 
 	void MediaSystem::play3DSound(const char* source, vec3df position, bool loop, bool startPaused, bool track, bool enableSoundEffects, float volume, float minDist, float maxDist, int effectID)
 	{
-		ISoundEngine* soundEngine = irrklang::createIrrKlangDevice();
-		soundEngine->setDefault3DSoundMinDistance(minDist);
-		soundEngine->setDefault3DSoundMaxDistance(maxDist); // So the sound reaches the camera, else its really quiet by default
-		soundEngine->setSoundVolume(volume);
-		ISound* sound3D = soundEngine->play3D(source, position, loop, startPaused, track, ESM_AUTO_DETECT, enableSoundEffects);
+		m_SoundEngine->setDefault3DSoundMinDistance(minDist);
+		m_SoundEngine->setDefault3DSoundMaxDistance(maxDist); // So the sound reaches the camera, else its really quiet by default
+		m_SoundEngine->setSoundVolume(volume);
+		ISound* sound3D = m_SoundEngine->play3D(source, position, loop, startPaused, track, ESM_AUTO_DETECT, enableSoundEffects);
 
 		if (enableSoundEffects)
 		{
@@ -235,7 +206,6 @@ namespace MCS
 
 	void MediaSystem::stopAllSounds()
 	{
-		ISoundEngine* soundEngine = irrklang::createIrrKlangDevice();
-		soundEngine->stopAllSounds();
+		m_SoundEngine->stopAllSounds();
 	}
 }

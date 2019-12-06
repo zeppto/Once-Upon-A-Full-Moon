@@ -188,6 +188,15 @@ namespace Frosty
 		int m_EffectID;
 	};
 
+	class StopMediaEvent : public BaseEvent
+	{
+	public:
+		StopMediaEvent()  {}
+
+		EVENT_TYPE(StopMedia);
+	private:
+	};
+
 	class ExitLevelEvent : public BaseEvent
 	{
 	public:

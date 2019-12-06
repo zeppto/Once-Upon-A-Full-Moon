@@ -726,7 +726,8 @@ namespace Frosty
 			float DamageEffectTime{ 2.0f };
 			float DamageEffectTimer{ Frosty::Time::CurrentTime() };
 
-
+			static const int COOLDOWN = 375;
+			float CurrentCooldown{ 0.0f };
 
 			CPlayer() = default;
 			CPlayer(CWeapon* weapon) : Weapon(weapon) { }
