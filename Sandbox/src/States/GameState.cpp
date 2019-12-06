@@ -15,8 +15,6 @@
 
 #include <fstream>
 
-#include "HighScoreState.h"
-
 namespace MCS
 {
 	GameState::GameState()
@@ -69,7 +67,7 @@ namespace MCS
 		scoreFile << world->GetComponent<Frosty::ECS::CPlayer>(e.GetEntity()).Score << "\n";
 		scoreFile.close();
 
-		m_App->GetStateMachine().AddState(Frosty::StateRef(FY_NEW(HighscoreState)), true);
+		m_App->GetStateMachine().AddState(Frosty::StateRef(FY_NEW(GameOverState)), true);
 		world->PauseGame();
 	}
 

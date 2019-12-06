@@ -19,8 +19,8 @@ namespace MCS
 		int maxMinute = 5;
 
 		int spawnMinute = rand() % (maxMinute - minMinute + 1) + minMinute;
-		m_BossSpawnTime = spawnMinute * 60.0f + 20.0f;
-		//BossSpawnTime = 50.0f;
+		/*m_BossSpawnTime = spawnMinute * 60.0f + 20.0f;*/
+		m_BossSpawnTime = 10.0f;
 	}
 
 	void AISystem::OnUpdate()

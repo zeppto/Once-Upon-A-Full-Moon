@@ -3,6 +3,7 @@
 #include "Frosty/Events/AbilityEvent.hpp"
 #include "Frosty/Events/EventSystem.hpp"
 #include "HighScoreState.h"
+#include "GameOverState.hpp"
 #include <fstream>
 
 MCS::HighscoreState::HighscoreState()
@@ -27,10 +28,36 @@ void MCS::HighscoreState::Initiate()
 
 void MCS::HighscoreState::OnInput()
 {
+	float x = Frosty::InputManager::GetMouseX();
+	float y = Frosty::InputManager::GetMouseY();
+
+	if (x > 600.0f && x < 800.0f && y > 110.0f && y < 170.0f)
+	{
+		if (Frosty::InputManager::IsMouseButtonPressed(FY_MOUSE_BUTTON_LEFT))
+		{
+			m_App->GetStateMachine().AddState(Frosty::StateRef(FY_NEW(GameOverState)), true);
+		}
+	}
 }
 
 void MCS::HighscoreState::OnUpdate()
 {
+	if (m_HighscoreGUI != nullptr)
+	{
+		auto& world = Frosty::Application::Get().GetWorld();
+		auto& menuGui = world->GetComponent<Frosty::ECS::CGUI>(m_HighscoreGUI);
+		float x = Frosty::InputManager::GetMouseX();
+		float y = Frosty::InputManager::GetMouseY();
+
+		if (x > 600.0f && x < 800.0f && y > 110.0f && y < 170.0f)
+		{
+			menuGui.Layout.texts.at(2).SetColor(glm::vec4(0.0f, 1.0f, 0.0f, 0.0f));
+		}
+		else
+		{
+			menuGui.Layout.texts.at(2).SetColor(glm::vec4(1.0f, 1.0f, 0.0f, 0.0f));
+		}
+	}
 }
 
 void MCS::HighscoreState::InitiateGUI()
@@ -38,8 +65,8 @@ void MCS::HighscoreState::InitiateGUI()
 	auto& world = Frosty::Application::Get().GetWorld();
 	m_HighscoreGUI = m_App->Get().GetWorld()->CreateEntity();
 
-	//10 for scores two for player score and "Highscore List" text.
-	Frosty::UILayout UILayout(12, 0);
+	//10 for scores two for player score and "Highscore List" text. One for "Back"
+	Frosty::UILayout UILayout(13, 0);
 
 	float height = 650.0f;
 
@@ -63,8 +90,10 @@ void MCS::HighscoreState::InitiateGUI()
 		}
 		iScores.close();
 	}
+	int scoreLoc = count - 1;
 	//Latest added at this point is player's score
-	UILayout.AddText(glm::vec2(540.0f, height-550), "Your score: " + std::to_string(scores[count-1]), glm::vec3(1.0f, 1.0f, 0.0f), 1.0f);
+	UILayout.AddText(glm::vec2(540.0f, height- 550.0f), "Your score: " + std::to_string(scores[scoreLoc]), glm::vec3(1.0f, 1.0f, 0.0f), 1.0f);
+	UILayout.AddText(glm::vec2(400.0f, height - 550.0f), "Back", glm::vec3(1.0f, 1.0f, 0.0f), 1.0f);
 
 	//Sort from high to low
 	std::sort(scores.begin(), scores.end(), std::greater<int>());
