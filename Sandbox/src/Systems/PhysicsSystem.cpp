@@ -297,7 +297,6 @@ namespace MCS
 							{
 								if (attack.Friendly && m_World->HasComponent<Frosty::ECS::CDropItem>(m_Transform[i]->EntityPtr))
 								{
-									FY_INFO("player Attack hit");
 									// Player Attack - Enemy or Chest
 									if (!m_World->HasComponent<Frosty::ECS::CEnemy>(m_Transform[i]->EntityPtr))
 									{
@@ -318,12 +317,7 @@ namespace MCS
 								{
 									// Enemy Attack - Player
 									Frosty::EventBus::GetEventBus()->Publish<Frosty::CollisionEvent>(Frosty::CollisionEvent(m_Transform[index]->EntityPtr, m_Transform[i]->EntityPtr));
-									FY_INFO("enemy Attack hit");
 								}
-							}
-							else if (attack.Type != Frosty::ECS::CAttack::AttackType::Range)
-							{
-								FY_INFO("not");
 							}
 						}
 					}
@@ -335,7 +329,6 @@ namespace MCS
 							auto& attack = m_World->GetComponent<Frosty::ECS::CAttack>(m_Transform[index]->EntityPtr);
 							if (attack.Type == Frosty::ECS::CAttack::AttackType::Range)
 							{
-								FY_INFO("rangade attack");
 								// Attack - Enemy or Player
 								if (m_World->HasComponent<Frosty::ECS::CDropItem>(m_Transform[i]->EntityPtr) || m_World->HasComponent<Frosty::ECS::CPlayer>(m_Transform[i]->EntityPtr))
 								{
