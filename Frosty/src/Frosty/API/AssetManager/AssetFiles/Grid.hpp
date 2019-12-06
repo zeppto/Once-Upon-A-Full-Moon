@@ -16,6 +16,7 @@ namespace Frosty
 
 		int16_t GCost{ 0 };
 		int16_t HCost{ 0 };
+		int16_t ExtraCost{ 0 };
 		int32_t ParentGridX{ -1 };
 		int32_t ParentGridY{ -1 };
 		bool ExistsInOpenSet{ false };

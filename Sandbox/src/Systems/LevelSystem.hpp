@@ -92,6 +92,7 @@ namespace MCS
 		float m_BossRoomTimer = 100.0f; //in sec (max)
 		float m_BossFollowTimer = 2.0f; //in min
 
+
 		float m_BossHawol = 0.0f;
 		float m_BossStartTimer = 10.0f;
 		bossRememberdPath m_BossRememberdPath;

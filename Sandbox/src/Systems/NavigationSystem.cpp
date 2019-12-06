@@ -233,22 +233,49 @@ namespace MCS
 
 	void NavigationSystem::LookAtPoint(const glm::vec3& point, size_t index)
 	{
-		// Rotate towards a point
+		// Target vector
 		glm::vec3 pointVector = glm::normalize(point - m_Transform[index]->Position);
-		glm::vec3 originDirection = glm::vec3(0.0f, 0.0f, 1.0f);
-		float extraRotation = 0.0f;
-		if (point.x <= m_Transform[index]->Position.x)
+
+		// Origin vector
+		glm::mat4 mat = glm::mat4(1.0f);
+		mat = glm::rotate(mat, glm::radians(m_Transform[index]->Rotation.x), { 1.0f, 0.0f, 0.0f });
+		mat = glm::rotate(mat, glm::radians(m_Transform[index]->Rotation.y), { 0.0f, 1.0f, 0.0f });
+		mat = glm::rotate(mat, glm::radians(m_Transform[index]->Rotation.z), { 0.0f, 0.0f, 1.0f });
+		glm::vec3 dir = glm::normalize(mat * glm::vec4(0.0f, 0.0f, 1.0f, 0.0));
+
+		// Calculate angle (dot)
+		double angle = glm::dot(pointVector, dir);
+
+		// Convert dot angle to degrees
+		float totalDegrees = (float)glm::degrees(glm::acos(angle));
+		float rotationDegrees = 200.0f * Frosty::Time::DeltaTime();
+		if (rotationDegrees > totalDegrees)
 		{
-			originDirection.z = -1.0f;
-			extraRotation = 180.0f;
+			rotationDegrees = totalDegrees;
 		}
-		float product = glm::dot(glm::normalize(originDirection), pointVector);
 
-		float rotationOffset = glm::degrees(glm::acos(product)) + extraRotation;
+		// Check to see minus/plus
+		glm::vec3 newRotation = m_Transform[index]->Rotation;
+		newRotation.y += rotationDegrees;
 
-		if (Frosty::Time::GetFrameCount() % 60 == 0) FY_INFO("{0}", rotationOffset);
+		// Get the new direction based on rotation
+		mat = glm::mat4(1.0f);
+		mat = glm::rotate(mat, glm::radians(newRotation.x), { 1.0f, 0.0f, 0.0f });
+		mat = glm::rotate(mat, glm::radians(newRotation.y), { 0.0f, 1.0f, 0.0f });
+		mat = glm::rotate(mat, glm::radians(newRotation.z), { 0.0f, 0.0f, 1.0f });
+		glm::vec3 newDir = glm::normalize(mat * glm::vec4(0.0f, 0.0f, 1.0f, 0.0));
 
-		m_Transform[index]->Rotation.y = rotationOffset;
+		// Check to see if we rotated towards or away from target
+		double newAngle = glm::dot(pointVector, newDir);
+		if (newAngle < angle)
+		{
+			// We rotated wrong way
+			newRotation = m_Transform[index]->Rotation;
+			newRotation.y -= rotationDegrees;
+		}
+
+		// Set the rotation
+		m_Transform[index]->Rotation = newRotation;
 	}
 	
 	void NavigationSystem::HandlePathfinding(size_t index, const uint32_t& EntityGroupID)
