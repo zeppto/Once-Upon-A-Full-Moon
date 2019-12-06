@@ -39,11 +39,12 @@ namespace Frosty
 	{
 		m_VertexArray.reset(VertexArray::Create());
 
-		float vertices[3 * 7] =
+		float vertices[4 * 7] =
 		{
 			-0.5f, -0.5f, 0.0f, 0.8f, 0.0f, 0.8f, 1.0f,
 			 0.5f, -0.5f, 0.0f, 0.2f, 0.3f, 0.8f, 1.0f,
-			 0.0f,  0.5f, 0.0f, 0.8f, 0.8f, 0.2f, 1.0f
+			-0.5f,  0.5f, 0.0f, 0.8f, 0.8f, 0.2f, 1.0f,
+			 0.5f,  0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f
 		};
 
 		std::shared_ptr<VertexBuffer> m_VertexBuffer;
@@ -58,7 +59,10 @@ namespace Frosty
 		m_VertexBuffer->SetLayout(layout);
 		m_VertexArray->AddVertexBuffer(m_VertexBuffer);
 
-		uint32_t indices[3] = { 0, 1, 2 };
+		uint32_t indices[2 * 3] = { 
+			0, 1, 2,
+			2, 1, 3
+		};
 		std::shared_ptr<IndexBuffer> m_IndexBuffer;
 		m_IndexBuffer.reset(IndexBuffer::Create(indices, sizeof(indices) / sizeof(uint32_t)));
 		m_VertexArray->SetIndexBuffer(m_IndexBuffer);
