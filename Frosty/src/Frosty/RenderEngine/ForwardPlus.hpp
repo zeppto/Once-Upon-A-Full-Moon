@@ -37,7 +37,7 @@ namespace Frosty
 		FrustumGrid& operator=(const FrustumGrid& other);
 
 		void Update();
-		void Initiate(std::shared_ptr<LightManager>& lightManager);
+		void Initiate();
 
 		// Get
 		const int GetNrOfGrids();
@@ -55,12 +55,11 @@ namespace Frosty
 		std::array<GridCell, GRID_SIZE * GRID_SIZE> m_GridCells;			// Array of cells
 		int m_TotalCells;
 
-		std::shared_ptr<LightManager> m_LightManager;						// Contains an internal array of all point lights
+		//std::shared_ptr<LightManager> m_LightManager;						// Contains an internal array of all point lights
 		std::vector<int> m_LightIndexList;									// Contains light indices, referring to the array of point lights in m_LightManager
-		std::array<CellLightinfo, GRID_SIZE * GRID_SIZE> m_CellLightsInfo;	// Contains an offset (x) to and size (y) of the light list for each tile
+		std::array<CellLightinfo, GRID_SIZE * GRID_SIZE> m_CellLightsInfo;	// Contains an offset (x) and size (y) of the light list for each tile
 
-
-		std::unique_ptr<Camera> m_Camera;									// Needed for view and proj matrices
+		//std::unique_ptr<Camera> m_Camera;									// Needed for view and proj matrices
 		glm::vec2 m_Frustum;												// Screen width (x) and height (y)
 
 		static FrustumGrid* s_Instance;

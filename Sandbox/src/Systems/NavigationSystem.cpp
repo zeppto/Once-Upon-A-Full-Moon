@@ -16,15 +16,28 @@ namespace MCS
 
 	void NavigationSystem::OnUpdate()
 	{
-		m_Grid->Reset();
+		//m_Grid->Reset();
 		for (size_t i = 1; i < p_Total; i++)
 		{
-			m_Grid->SetNodeUnwalkable(m_Transform[i]->Position);
+	//		m_Grid->SetNodeUnwalkable(m_Transform[i]->Position);
+			if (m_Transform[i]->EntityPtr->GroupId == m_ActiveMap.EntityGroupID)
+			{
+				m_ActiveMap.Grid->SetNodeUnwalkable(m_Transform[i]->Position);
+			}
+			else
+			{
+				m_OtherMap.Grid->SetNodeUnwalkable(m_Transform[i]->Position);
+			}
+
 		}
 
 		for (size_t i = 1; i < p_Total; i++)
 		{
-			m_Grid->DrawSeekerCell(m_Transform[i]);
+	//		m_Grid->DrawSeekerCell(m_Transform[i]);
+			if (i == 5)
+			{
+				int j = 0;
+			}
 
 			// Check current state
 			switch (m_Enemy[i]->CurrentState)
@@ -40,10 +53,10 @@ namespace MCS
 				HandleEscape(i);
 				break;
 			case Frosty::ECS::CEnemy::State::Chase:
-				HandlePathfinding(i);
+				HandlePathfinding(i, m_Enemy[i]->EntityPtr->GroupId);
 				break;
 			case Frosty::ECS::CEnemy::State::Reset:
-				HandleReset(i);
+				HandleReset(i, m_Enemy[i]->EntityPtr->GroupId);
 				break;
 			case Frosty::ECS::CEnemy::State::Dead:
 				HandleDeath(i);
@@ -60,6 +73,12 @@ namespace MCS
 		{
 		case Frosty::EventType::InitiateGridMap:
 			OnInitiateGridMap(static_cast<Frosty::InitiateGridEvent&>(e));
+			break;
+		case Frosty::EventType::UpdateCurrentRoom:
+			OnUpdateCurrentRoomEvent(static_cast<Frosty::UpdateCurrentRoomEvent&>(e));
+			break;
+		case Frosty::EventType::SwitchRoom:
+			OnSwitchRoomEvent(static_cast<Frosty::SwitchRoomEvent&>(e));
 			break;
 		default:
 			break;
@@ -149,7 +168,9 @@ namespace MCS
 
 	void NavigationSystem::InitiateGridMap(const Frosty::ECS::CTransform& planeTransform)
 	{
-		m_Grid.reset(FY_NEW Grid());
+
+		m_Grid.reset(FY_NEW Frosty::Grid());
+
 		Frosty::Time::StartTimer("Grid::Init()");
 		m_Grid->Init(planeTransform);
 		Frosty::Time::EndTimer("Grid::Init()");
@@ -158,15 +179,56 @@ namespace MCS
 		m_Pathfinding->Init(m_Grid.get());
 	}
 
+	void NavigationSystem::OnUpdateCurrentRoomEvent(Frosty::UpdateCurrentRoomEvent& e)
+{
+//		m_CurrentActiveGridMap = Frosty::AssetManager::GetGridMap(e.GetCurrentRoom());
+
+}
+
+	void NavigationSystem::OnSwitchRoomEvent(Frosty::SwitchRoomEvent& e)
+	{
+		//std::shared_ptr<Frosty::Grid> tempGrid = m_CurrentActiveGridMap;
+		//std::shared_ptr<Pathfinding> tempPath = m_CurrentActivePathfinding;
+		//m_CurrentActiveGridMap = m_SecondGridMap;
+		//m_CurrentActivePathfinding = m_SecondPathfinding;
+		//m_SecondGridMap = tempGrid;
+		//m_SecondPathfinding = tempPath;
+
+
+		GridMap temp = m_ActiveMap;
+		m_ActiveMap = m_OtherMap;
+		m_OtherMap = temp;
+
+
+	}
+
 	void NavigationSystem::OnInitiateGridMap(Frosty::InitiateGridEvent& e)
 	{
-		m_Grid.reset(FY_NEW Grid());
+
+		//m_SecondGridMap.reset(FY_NEW Frosty::Grid());
+		//m_SecondGridMap->Init(*e.GetTransform());
+		//m_SecondPathfinding.reset(FY_NEW Pathfinding());
+		//m_SecondPathfinding->Init(&*m_SecondGridMap);
+
+
+
+	//	m_Grid.reset(FY_NEW Grid());
+
 		Frosty::Time::StartTimer("Grid::Init()");
-		m_Grid->Init(*e.GetTransform());
+		m_OtherMap.Grid.reset(FY_NEW Frosty::Grid());
+		m_OtherMap.Grid->Init(*e.GetTransform());
+		m_OtherMap.PathFinder.reset(FY_NEW Pathfinding());
+		m_OtherMap.PathFinder->Init(&*m_OtherMap.Grid);
+		m_OtherMap.EntityGroupID = e.GetEntityGroup();
 		Frosty::Time::EndTimer("Grid::Init()");
 
-		m_Pathfinding.reset(FY_NEW Pathfinding());
-		m_Pathfinding->Init(m_Grid.get());
+	//	FY_INFO("Map Group ID: {0}", m_OtherMap.EntityUpdateGroup);
+
+		//m_Grid.reset(FY_NEW Frosty::Grid());
+		//m_Grid->Init(*e.GetTransform());
+
+		//m_Pathfinding.reset(FY_NEW Pathfinding());
+		//m_Pathfinding->Init(m_Grid.get());
 	}
 
 	void NavigationSystem::LookAtPoint(const glm::vec3& point, size_t index)
@@ -216,7 +278,7 @@ namespace MCS
 		m_Transform[index]->Rotation = newRotation;
 	}
 	
-	void NavigationSystem::HandlePathfinding(size_t index)
+	void NavigationSystem::HandlePathfinding(size_t index, const uint32_t& EntityGroupID)
 	{
 		// Check if enemy is boss and check active ability
 		if (m_World->HasComponent<Frosty::ECS::CBoss>(m_Transform[index]->EntityPtr))
@@ -224,9 +286,23 @@ namespace MCS
 			auto& bossComp = m_World->GetComponent<Frosty::ECS::CBoss>(m_Transform[index]->EntityPtr);
 			if (bossComp.ActiveAbility != Frosty::ECS::CBoss::AbilityState::None) return;
 		}
+
+
+
+		std::shared_ptr<Pathfinding> PathFinding;
+
+		if (EntityGroupID == m_ActiveMap.EntityGroupID)
+		{
+			PathFinding = m_ActiveMap.PathFinder;
+		}
+		else
+		{
+			PathFinding = m_OtherMap.PathFinder;
+		}
+
 		
 		// Find target cell and set velocity
-		glm::vec3 cellTarget = m_Pathfinding->FindPath(m_Transform[index]->Position, m_Enemy[index]->Target->Position);
+		glm::vec3 cellTarget = PathFinding->FindPath(m_Transform[index]->Position, m_Enemy[index]->Target->Position);
 		m_Enemy[index]->CellTarget = cellTarget;
 		m_Physics[index]->Direction = glm::normalize(m_Enemy[index]->CellTarget - glm::vec3(m_Transform[index]->Position.x, 0.0f, m_Transform[index]->Position.z));
 
@@ -284,11 +360,26 @@ namespace MCS
 		m_Physics[index]->Direction = glm::normalize(escapeVector);
 	}	
 
-	void NavigationSystem::HandleReset(size_t index)
+	void NavigationSystem::HandleReset(size_t index,  const uint32_t& EntityGroupID)
 	{
+
+		std::shared_ptr<Pathfinding> PathFinding;
+
+		if (EntityGroupID == m_ActiveMap.EntityGroupID)
+		{
+			PathFinding = m_ActiveMap.PathFinder;
+		}
+		else
+		{
+			PathFinding = m_OtherMap.PathFinder;
+		}
+
+
+
 		// Find target cell and set velocity
 		m_Physics[index]->SpeedMultiplier = 1.5f;
-		glm::vec3 cellTarget = m_Pathfinding->FindPath(m_Transform[index]->Position, m_Enemy[index]->SpawnPosition);
+		//glm::vec3 cellTarget = m_Pathfinding->FindPath(m_Transform[index]->Position, m_Enemy[index]->SpawnPosition);
+		glm::vec3 cellTarget = PathFinding->FindPath(m_Transform[index]->Position, m_Enemy[index]->SpawnPosition);
 		m_Enemy[index]->CellTarget = cellTarget;
 		m_Physics[index]->Direction = glm::normalize(m_Enemy[index]->CellTarget - glm::vec3(m_Transform[index]->Position.x, 0.0f, m_Transform[index]->Position.z));
 

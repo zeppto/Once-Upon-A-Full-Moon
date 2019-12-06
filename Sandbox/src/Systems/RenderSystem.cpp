@@ -120,7 +120,7 @@ namespace MCS
 				m_Anims[p_Total] = nullptr;
 			}
 
-			Frosty::Renderer::AddToRenderer(m_Materials.at(p_Total), m_Meshes.at(p_Total), m_Transform.at(p_Total), m_Anims.at(p_Total));
+			Frosty::Renderer::AddToRenderer(m_Materials[p_Total], m_Meshes[p_Total], m_Transform[p_Total], m_Anims[p_Total]);
 
 			p_Total++;
 
@@ -168,7 +168,7 @@ namespace MCS
 			m_Meshes[it->second] = meshPtr;
 			m_Materials[it->second] = materialPtr;
 
-			Frosty::Renderer::UpdateEntity(m_Materials[it->second]->EntityPtr->Id, m_Materials.at(it->second), m_Meshes[it->second]->Mesh->GetName(), m_Meshes.at(it->second)->Mesh, m_Transform[it->second]->EntityPtr->Id, m_Transform.at(it->second));
+			Frosty::Renderer::UpdateEntity(m_Materials[it->second]->EntityPtr->Id, m_Materials[it->second], m_Meshes[it->second]->Mesh->GetName(), m_Meshes[it->second]->Mesh, m_Transform[it->second]->EntityPtr->Id, m_Transform[it->second]);
 		}
 	}
 

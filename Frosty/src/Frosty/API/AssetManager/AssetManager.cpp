@@ -31,6 +31,8 @@ namespace Frosty
 	std::map<std::string, std::shared_ptr<Luna::BoundingBox>> AssetManager::s_BoundingBoxes;
 	std::map<std::string, std::shared_ptr<TrueTypeFile>> AssetManager::s_TruefontTypes;
 	std::map<std::string, std::shared_ptr<WeaponHandler>> AssetManager::s_WeaponHandler;
+	std::map<std::string, std::shared_ptr<Grid>> AssetManager::s_Grid;
+	std::map<std::string, std::shared_ptr<BoolMap>> AssetManager::s_BoolMaps;
 
 	std::vector<std::string> AssetManager::s_FilePath_Vector;
 
@@ -65,9 +67,9 @@ namespace Frosty
 			switch (TempFileInfo.Type)
 			{
 			case JPG :
-
 				returnValue = LoadGraphicFile(TempFileInfo);
 				break;
+
 			case PNG:
 				returnValue = LoadGraphicFile(TempFileInfo);
 				break;
@@ -77,9 +79,7 @@ namespace Frosty
 				break;
 
 			case LUNA:
-
 				returnValue = LoadLunaFile(TempFileInfo);
-
 				break;
 
 			case TTF:
@@ -89,7 +89,13 @@ namespace Frosty
 				returnValue = LoadXML(TempFileInfo);
 				break;
 
+			case GRID:
+				returnValue = LoadGrid(TempFileInfo);
+				break;
 
+			case BMAP:
+				returnValue = LoadBoolMap(TempFileInfo);
+				break;
 
 			default:
 				FY_CORE_WARN("Unknown fileformat, Filepath: {0}", TempFileInfo.FileName);
@@ -121,17 +127,15 @@ namespace Frosty
 		s_Shaders.emplace("Text", FY_NEW Shader("assets/shaders/TextVertex.glsl", "assets/shaders/TextFragment.glsl", "Text"));
 		s_Shaders.emplace("Sprite", FY_NEW Shader("assets/shaders/SpriteVertex.glsl", "assets/shaders/SpriteFragment.glsl", "Sprite"));
 		s_Shaders.emplace("HealthBar", FY_NEW Shader("assets/shaders/HealthBarVertex.glsl", "assets/shaders/HealthBarFragment.glsl", "HealthBar"));
+		s_Shaders.emplace("HeatMap", FY_NEW Shader("assets/shaders/TestLightVS.glsl", "assets/shaders/TestLightFS.glsl", "HeatMap"));
 
 		s_Shaders["Texture2D"]->Bind();
-
-		// Clock
 		s_Shaders["Texture2D"]->UploadUniformInt("u_DiffuseTexture", 0);
 		s_Shaders["Texture2D"]->UploadUniformInt("u_NormalTexture", 1);
 		s_Shaders["Texture2D"]->UploadUniformInt("u_SpecularTexture", 2);
 
 		//Animation Shader
 		s_Shaders["Animation"]->Bind();
-
 		s_Shaders["Animation"]->UploadUniformInt("u_DiffuseTexture", 0);
 		s_Shaders["Animation"]->UploadUniformInt("u_NormalTexture", 1);
 		s_Shaders["Animation"]->UploadUniformInt("u_SpecularTexture", 2);
@@ -144,11 +148,8 @@ namespace Frosty
 		s_Shaders["BlendShader"]->UploadUniformInt("u_BlendTexture1", 4);
 		s_Shaders["BlendShader"]->UploadUniformInt("u_BlendTexture2", 5);
 
-
 		s_Shaders["UI"]->Bind();
-
 		s_Shaders["UI"]->UploadUniformInt("u_DiffuseTexture", 0);
-
 
 		LoadDir("assets/");
 		ConnectWatchList();
@@ -247,6 +248,20 @@ namespace Frosty
 		return returnValue;
 	}
 
+	bool AssetManager::AddBoolMap(const FileMetaData& MetaData)
+	{
+		if (TextureLoaded(MetaData.FileName))
+		{
+			FY_CORE_INFO("BoolMap: {0}, Is already loaded", MetaData.FileName);
+			return false;
+		}
+		else
+		{
+			s_BoolMaps.emplace(MetaData.FileName, FY_NEW BoolMap(MetaData));
+		}
+		return true;
+	}
+
 	bool AssetManager::AddTexture(const FileMetaData& MetaData)
 	{
 		if (TextureLoaded(MetaData.FileName))
@@ -290,6 +305,19 @@ namespace Frosty
 		return true;
 	}
 	
+	bool AssetManager::AddGrid(const FileMetaData& MetaData)
+	{
+		if (GridLoaded(MetaData.FileName))
+		{
+			FY_CORE_INFO("Grid: {0}, Is already loaded", MetaData.FileName);
+			return false;
+		}
+		else
+		{
+			s_Grid.emplace(MetaData.FileName, FY_NEW Grid());
+		}
+		return true;
+	}
 
 	bool AssetManager::AddMaterial(LinkedMaterial& LnkMat)
 	{
@@ -405,10 +433,10 @@ namespace Frosty
 
 		for (size_t i = 0; i < size; i++)
 		{
-			triangles.at(i).indices.resize(3);
-			triangles.at(i).indices.at(0) = indices.at(i*3);
-			triangles.at(i).indices.at(1) = indices.at(i*3+1);
-			triangles.at(i).indices.at(2) = indices.at(i*3+2);;
+			triangles[i].indices.resize(3);
+			triangles[i].indices[0] = indices[i*3];
+			triangles[i].indices[1] = indices[i*3+1];
+			triangles[i].indices[2] = indices[i*3+2];;
 		}
 
 		s_CurrentVertexArray = &vertices;
@@ -417,9 +445,9 @@ namespace Frosty
 
 		for (int i = 0; i < size; i++)
 		{
-			indices.at(i*3) = triangles.at(i).indices.at(0);
-			indices.at(i*3+1) = triangles.at(i).indices.at(1);
-			indices.at(i*3+2) = triangles.at(i).indices.at(2);
+			indices[i*3] = triangles[i].indices[0];
+			indices[i*3+1] = triangles[i].indices[1];
+			indices[i*3+2] = triangles[i].indices[2];
 		}
 	}
 
@@ -429,9 +457,9 @@ namespace Frosty
 		Triangle triangleB = *(Triangle*)b;
 
 
-		unsigned int indexPosA1 = triangleA.indices.at(0).vertIndex;
-		unsigned int indexPosA2 = triangleA.indices.at(0).vertIndex;
-		unsigned int indexPosA3 = triangleA.indices.at(0).vertIndex;
+		unsigned int indexPosA1 = triangleA.indices[0].vertIndex;
+		unsigned int indexPosA2 = triangleA.indices[0].vertIndex;
+		unsigned int indexPosA3 = triangleA.indices[0].vertIndex;
 
 		float YposA1 = s_CurrentVertexArray->at(indexPosA1).position[1];
 		float YposA2 = s_CurrentVertexArray->at(indexPosA2).position[1];
@@ -439,9 +467,9 @@ namespace Frosty
 
 		float YposA = (YposA1 + YposA2 + YposA3);
 
-		unsigned int indexPosB1 = triangleB.indices.at(0).vertIndex;
-		unsigned int indexPosB2 = triangleB.indices.at(0).vertIndex;
-		unsigned int indexPosb3 = triangleB.indices.at(0).vertIndex;
+		unsigned int indexPosB1 = triangleB.indices[0].vertIndex;
+		unsigned int indexPosB2 = triangleB.indices[0].vertIndex;
+		unsigned int indexPosb3 = triangleB.indices[0].vertIndex;
 
 		float YposB1 = s_CurrentVertexArray->at(indexPosB1).position[1];
 		float YposB2 = s_CurrentVertexArray->at(indexPosB2).position[1];
@@ -540,7 +568,7 @@ namespace Frosty
 
 		for (int i = 0; i < s_FilePath_Vector.size() && returnValue == false; i++)
 		{
-			if (s_FilePath_Vector.at(i) == FilePath)
+			if (s_FilePath_Vector[i] == FilePath)
 			{
 				returnValue = true;
 			}
@@ -688,6 +716,37 @@ namespace Frosty
 		return returnValue;
 	}
 
+	bool AssetManager::GridLoaded(const std::string& FileName)
+	{
+		bool returnValue = false;
+
+		std::map<std::string, std::shared_ptr<Grid>>::iterator it;
+		for (it = s_Grid.begin(); it != s_Grid.end() && returnValue == false; it++)
+		{
+			if (it->first == FileName)
+			{
+				returnValue = true;
+			}
+		}
+
+		return returnValue;
+	}
+
+	bool AssetManager::BoolMapLoaded(const std::string& FileName)
+	{
+		bool returnValue = false;
+
+		std::map<std::string, std::shared_ptr<BoolMap>>::iterator it;
+		for (it = s_BoolMaps.begin(); it != s_BoolMaps.end() && returnValue == false; it++)
+		{
+			if (it->first == FileName)
+			{
+				returnValue = true;
+			}
+		}
+
+		return returnValue;
+	}
 
 	bool AssetManager::LoadLunaFile(const FileMetaData& FileNameInformation, const bool& Reload)
 	{
@@ -903,7 +962,21 @@ namespace Frosty
 		return returnValue;
 	}
 
-	
+	bool AssetManager::LoadGrid(const FileMetaData& FileNameInformation, const bool& Reload)
+	{
+		bool returnValue = false;
+		if (AddGrid(FileNameInformation))
+		{
+
+			std::shared_ptr<Grid> ptr = GetGridMap(FileNameInformation.FileName);
+			ptr->SetFileName(FileNameInformation.FileName);
+			ptr->SetFilePath(FileNameInformation.FullFilePath);
+			ptr->LoadFile();
+
+		}
+		return returnValue;
+	}
+
 	bool AssetManager::LoadXML(const FileMetaData& FileNameInformation, const bool& Reload)
 	{
 		bool returnValue = false;
@@ -999,6 +1072,14 @@ namespace Frosty
 		{
 			return XML;
 		}
+		else if (fileType == FILE_TYPE_GRID)
+		{
+			return GRID;
+		}
+		else if (fileType == FILE_TYPE_BOOLMAP)
+		{
+			return BMAP;
+		}
 
 
 		return -1;
@@ -1017,6 +1098,22 @@ namespace Frosty
 				LoadFile(dirEntry.path().string());
 			}
 		}
+	}
+
+	bool AssetManager::LoadBoolMap(const FileMetaData& FileNameInformation, const bool& Reload)
+	{
+		bool returnValue = false;
+		if (AddBoolMap(FileNameInformation))
+		{
+
+			std::shared_ptr<BoolMap> ptr = GetBoolMap(FileNameInformation.FileName);
+
+			if (ptr->LoadMap(FileNameInformation.FullFilePath))
+			{
+				returnValue = true;
+			}
+		}
+		return returnValue;
 	}
 
 	void AssetManager::ConnectWatchList()

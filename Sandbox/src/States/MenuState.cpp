@@ -74,7 +74,7 @@ namespace MCS
 				{
 					auto& world = Frosty::Application::Get().GetWorld();
 					auto& menuGui = world->GetComponent<Frosty::ECS::CGUI>(m_MenuGui);
-					menuGui.Layout.texts.at(1).SetColor(glm::vec4(0.0f, 0.0f, 1.0f, 0.0f));
+					menuGui.Layout.texts[1].SetColor(glm::vec4(0.0f, 0.0f, 1.0f, 0.0f));
 
 					world->PlayGame();
 					m_App->GetStateMachine().AddState(Frosty::StateRef(FY_NEW(GameState)), true);
@@ -89,13 +89,13 @@ namespace MCS
 					std::string Controls = "Controls";
 					float posX = (960 / 1.5f) - (Controls.size() / 2) * 17;
 
-					menuGui.Layout.texts.at(0).SetText("");
-					menuGui.Layout.texts.at(1).SetText("");
-					menuGui.Layout.texts.at(2).SetText("");
-					menuGui.Layout.texts.at(3).SetText("Back");
-					menuGui.Layout.texts.at(3).SetPosition(glm::vec2(posX, 50.0f));
-					menuGui.Layout.sprites.at(0).SetImage("Controls");
-					menuGui.Layout.sprites.at(0).SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+					menuGui.Layout.texts[0].SetText("");
+					menuGui.Layout.texts[1].SetText("");
+					menuGui.Layout.texts[2].SetText("");
+					menuGui.Layout.texts[3].SetText("Back");
+					menuGui.Layout.texts[3].SetPosition(glm::vec2(posX, 50.0f));
+					menuGui.Layout.sprites[0].SetImage("Controls");
+					menuGui.Layout.sprites[0].SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
 					m_ButtonsLoaded = false;
 					m_Controls = true;
 				}
@@ -119,13 +119,13 @@ namespace MCS
 					std::string Exit = "Exit";
 					float posX = (960 / 1.5f) - (Exit.size() / 2) * 17;
 
-					menuGui.Layout.texts.at(0).SetText("Main Menu");
-					menuGui.Layout.texts.at(1).SetText("Play");
-					menuGui.Layout.texts.at(2).SetText("Controls");
-					menuGui.Layout.texts.at(3).SetText("Exit");
-					menuGui.Layout.texts.at(3).SetPosition(glm::vec2(posX, 250.0f));
-					menuGui.Layout.sprites.at(0).SetImage("Background");
-					menuGui.Layout.sprites.at(0).SetColorSprite(glm::vec4(0.5f, 0.5f, 0.5f, 1.0f));
+					menuGui.Layout.texts[0].SetText("Main Menu");
+					menuGui.Layout.texts[1].SetText("Play");
+					menuGui.Layout.texts[2].SetText("Controls");
+					menuGui.Layout.texts[3].SetText("Exit");
+					menuGui.Layout.texts[3].SetPosition(glm::vec2(posX, 250.0f));
+					menuGui.Layout.sprites[0].SetImage("Background");
+					menuGui.Layout.sprites[0].SetColorSprite(glm::vec4(0.5f, 0.5f, 0.5f, 1.0f));
 
 					m_ButtonsLoaded = true;
 					m_Controls = false;
@@ -145,21 +145,21 @@ namespace MCS
 
 			if (x > 910.0f && x < 1005.0f && y > 550.0f && y < 610.0f)
 			{
-				menuGui.Layout.texts.at(1).SetColor(glm::vec4(0.0f, 1.0f, 0.0f, 0.0f));
+				menuGui.Layout.texts[1].SetColor(glm::vec4(0.0f, 1.0f, 0.0f, 0.0f));
 			}
 			else if (x > 860.f && x < 1050.0f && y > 445.0f && y < 500.0f)
 			{
-				menuGui.Layout.texts.at(2).SetColor(glm::vec4(0.0f, 1.0f, 0.0f, 0.0f));
+				menuGui.Layout.texts[2].SetColor(glm::vec4(0.0f, 1.0f, 0.0f, 0.0f));
 			}
 			else if (x > 910.f && x < 1005.0f && y > 350.0f && y < 390.0f)
 			{
-				menuGui.Layout.texts.at(3).SetColor(glm::vec4(1.0f, 0.0f, 0.0f, 0.0f));
+				menuGui.Layout.texts[3].SetColor(glm::vec4(1.0f, 0.0f, 0.0f, 0.0f));
 			}
 			else
 			{
-				menuGui.Layout.texts.at(1).SetColor(glm::vec4(1.0f, 1.0f, 0.0f, 0.0f));
-				menuGui.Layout.texts.at(2).SetColor(glm::vec4(1.0f, 1.0f, 0.0f, 0.0f));
-				menuGui.Layout.texts.at(3).SetColor(glm::vec4(0.8f, 0.0f, 0.0f, 0.0f));
+				menuGui.Layout.texts[1].SetColor(glm::vec4(1.0f, 1.0f, 0.0f, 0.0f));
+				menuGui.Layout.texts[2].SetColor(glm::vec4(1.0f, 1.0f, 0.0f, 0.0f));
+				menuGui.Layout.texts[3].SetColor(glm::vec4(0.8f, 0.0f, 0.0f, 0.0f));
 			}
 		}
 	}
@@ -252,7 +252,7 @@ namespace MCS
 
 		// TORCH
 		auto& torch = world->CreateEntity({ 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f });
-		world->AddComponent<Frosty::ECS::CLight>(torch, Frosty::ECS::CLight::LightType::Point, 1.f, glm::vec3(0.99f, 0.9f, 0.8f), 15.f, &playerTransform, glm::vec3(0.f, 5.f, 0.f));		
+		world->AddComponent<Frosty::ECS::CLight>(torch, Frosty::ECS::CLight::LightType::Point, 1.f, glm::vec3(0.99f, 0.9f, 0.8f), 15.f, &playerTransform, glm::vec3(0.f, 10.f, 0.f));		
 
 		m_Player = player;
 		m_Weapon = weapon;
@@ -463,7 +463,6 @@ namespace MCS
 
 		// PLAYER
 		auto& player = world->CreateEntity({ -104.0f, 0.0f, -15.4f }, { 0.0f, 0.0f, 0.0f }, { 2.0f, 2.0f, 2.0f });
-		//auto& player = world->CreateEntity({ -90.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 2.0f, 2.0f, 2.0f });
 		auto& playerTransform = world->GetComponent<Frosty::ECS::CTransform>(player);
 		world->AddComponent<Frosty::ECS::CMesh>(player, Frosty::AssetManager::GetMesh("Scarlet"));
 
@@ -492,10 +491,6 @@ namespace MCS
 		weaponMesh->animOffset = animation.holdPtr;
 		//Update it in renderer.
 		Frosty::Renderer::UpdateCMesh((int)weapon->Id, weaponMesh);
-
-		//// TORCH
-		auto& torch = world->CreateEntity({ 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f });
-		world->AddComponent<Frosty::ECS::CLight>(torch, Frosty::ECS::CLight::LightType::Point, 1.f, glm::vec3(0.99f, 0.9f, 0.8f), 15.f, &playerTransform, glm::vec3(0.f, 5.f, 0.f));
 
 		//Player HUD
 		Frosty::UILayout uiLayout(21, 29);
@@ -670,7 +665,41 @@ namespace MCS
 		world->AddComponent<Frosty::ECS::CGUI>(player, uiLayout);
 
 
+		////					<<<		FORWARD PLUS TESTING	>>>		~ W-_-W ~
+		//// LIGHTS
+		//auto& light = world->CreateEntity({ 0.0f, 0.1f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f });
+		//world->AddComponent<Frosty::ECS::CLight>(light, Frosty::ECS::CLight::LightType::Point, 1.f, glm::vec3(0.99f, 0.9f, 0.8f), 2000.f);		
 
+		//auto& light2 = world->CreateEntity({ 0.0f, 0.1f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f });
+		//world->AddComponent<Frosty::ECS::CLight>(light2, Frosty::ECS::CLight::LightType::Point, 1.f, glm::vec3(0.99f, 0.9f, 0.8f), 15.f);
+		//
+		//auto& light3 = world->CreateEntity({ 10.0f, 0.1f, -5.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f });
+		//world->AddComponent<Frosty::ECS::CLight>(light3, Frosty::ECS::CLight::LightType::Point, 1.f, glm::vec3(0.99f, 0.9f, 0.8f), 9.f);
+
+		//auto& light4 = world->CreateEntity({ -20.0f, 1.0f, 10.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f });
+		//world->AddComponent<Frosty::ECS::CLight>(light4, Frosty::ECS::CLight::LightType::Point, 1.f, glm::vec3(0.99f, 0.9f, 0.8f), 10.f);
+		//
+		//auto& light5 = world->CreateEntity({ -6.0f, 1.0f, -6.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f });
+		//world->AddComponent<Frosty::ECS::CLight>(light5, Frosty::ECS::CLight::LightType::Point, 1.f, glm::vec3(0.99f, 0.9f, 0.8f), 2.f);
+
+		//auto& light6 = world->CreateEntity({ 0.0f, 1.0f, -6.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f });
+		//world->AddComponent<Frosty::ECS::CLight>(light6, Frosty::ECS::CLight::LightType::Point, 1.f, glm::vec3(0.99f, 0.9f, 0.8f), 22.f);
+
+		//auto& light7 = world->CreateEntity({ 10.0f, 1.0f, 12.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f });
+		//world->AddComponent<Frosty::ECS::CLight>(light7, Frosty::ECS::CLight::LightType::Point, 1.f, glm::vec3(0.99f, 0.9f, 0.8f), 8.f);
+
+		//auto& light8 = world->CreateEntity({ -20.0f, 1.0f, 20.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f });
+		//world->AddComponent<Frosty::ECS::CLight>(light8, Frosty::ECS::CLight::LightType::Point, 1.f, glm::vec3(0.99f, 0.9f, 0.8f), 20.f);
+
+		//auto& light9 = world->CreateEntity({ -15.0f, 1.0f, -15.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f });
+		//world->AddComponent<Frosty::ECS::CLight>(light9, Frosty::ECS::CLight::LightType::Point, 1.f, glm::vec3(0.99f, 0.9f, 0.8f), 5.f);
+
+		//// QUAD
+		//auto& quad = world->CreateEntity({ 0.f, 0.f, 0.f }, { 0.f, 0.f, 0.f }, { 1000.f, 1.f, 1000.f });
+		//auto& quadTransform = world->GetComponent<Frosty::ECS::CTransform>(quad);
+		//world->AddComponent<Frosty::ECS::CMesh>(quad, Frosty::AssetManager::GetMesh("pPlane1"));
+		//auto& quadMat = world->AddComponent<Frosty::ECS::CMaterial>(quad, Frosty::AssetManager::GetShader("HeatMap"));
+		//quadMat.Albedo = glm::vec4(0.f, 0.f, 1.f, 1.f);
 	}
 
 	void MenuState::InitiateButtons()
@@ -709,7 +738,7 @@ namespace MCS
 
 	void MenuState::InitiateTorch()
 	{
-		//// TORCH
+		// TORCH
 		auto& world = Frosty::Application::Get().GetWorld();
 		auto& playerTransform = world->GetComponent<Frosty::ECS::CTransform>(m_Player);
 		auto& torch = world->CreateEntity({ 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f });
