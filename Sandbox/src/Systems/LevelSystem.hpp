@@ -66,7 +66,7 @@ namespace MCS
 		float m_BossRoomTimer = 2.0f; //in sec
 		float m_BossFollowTimer = 0.5f; //in min
 
-		float m_BossStartTimer = 10.0f;
+		float m_BossStartTimer = 1000.0f;
 		bossRememberdPath m_BossRememberdPath;
 		//temp bools
 		bool m_haveStartedMoving = false;

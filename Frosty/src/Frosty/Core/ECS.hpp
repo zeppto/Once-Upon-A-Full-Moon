@@ -146,7 +146,7 @@ namespace Frosty
 
 		// Let's define a maximum number of entities that
 		// can have the same component type:
-		constexpr std::size_t MAX_ENTITIES_PER_COMPONENT{ 1024 };
+		constexpr std::size_t MAX_ENTITIES_PER_COMPONENT{ 30024 };
 
 		// Defining the maximum nr of systems
 		constexpr std::size_t MAX_SYSTEMS{ 20 };
