@@ -1491,8 +1491,11 @@ namespace MCS
 		{
 			auto& window = Frosty::Application::Get().GetWindow();
 
-			m_HeightMultiplier = window.GetHeightMultiplier();
-			m_WidthMultiplier = window.GetWidthMultiplier();
+			//m_HeightMultiplier = window.GetHeightMultiplier();
+			//m_WidthMultiplier = window.GetWidthMultiplier();
+
+			m_HeightMultiplier =1;
+			m_WidthMultiplier = 1;
 
 			auto& HUD = m_World->GetComponent<Frosty::ECS::CGUI>(m_Transform[index]->EntityPtr);
 
@@ -2015,7 +2018,7 @@ namespace MCS
 	{
 
 
-		float posX = (Frosty::Application::Get().GetWindow().GetWidth() / 2) - (text.size() / 2) * 11 * m_WidthMultiplier;
+		float posX = (m_WindowWidth / 2) - (text.size() / 2) * 11 * m_WidthMultiplier;
 
 		if (m_World->HasComponent<Frosty::ECS::CGUI>(m_Transform[index]->EntityPtr))
 		{

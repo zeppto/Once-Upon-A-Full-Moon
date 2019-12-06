@@ -82,8 +82,8 @@ namespace MCS
 		float m_LastHeightMultiplier{ 0.0f };
 		float m_LastWidthMultiplier{ 0.0f };
 
-		float m_WindowWidth = { 0.0f };
-		float m_WindowHeight = { 0.0f };
+		float m_WindowWidth = { 1280.f };
+		float m_WindowHeight = { 720.f };
 
 	};
 }
