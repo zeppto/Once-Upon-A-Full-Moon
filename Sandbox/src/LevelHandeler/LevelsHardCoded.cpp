@@ -189,6 +189,8 @@ namespace MCS
 				auto& ExitBBoxTranform = world->GetComponent<Frosty::ECS::CTransform>(ExitBBox);
 				ExitBBoxTranform.Position = glm::vec3(145.00f, 2.00f, 0.00f);
 				ExitBBoxTranform.Scale = glm::vec3(10.00f, 20.00f, 55.00f);
+				//ExitBBoxTranform.Position = glm::vec3(117.0f, 0.0f, -0.0f);
+				//ExitBBoxTranform.Scale = glm::vec3(66.00f, 20.00f, 96.00f);
 				world->AddComponent<Frosty::ECS::CPhysics>(ExitBBox, Frosty::AssetManager::GetBoundingBox("pCube1"), ExitBBoxTranform.Scale, 0.0f);
 				world->AddComponent<Frosty::ECS::CLevelExit>(ExitBBox, 3);
 

@@ -55,7 +55,7 @@ namespace MCS
 
 		if (m_LodeNamedRoom)
 		{
-		//	m_LevelFileFormat.OpenFromFile(m_RoomType, m_PlayerCoords);
+			m_LevelFileFormat.OpenFromFile(m_RoomType, 1, m_PlayerCoords);
 			m_LodeNamedRoom = false;
 		}
 		if (m_ReStart)
@@ -137,9 +137,9 @@ namespace MCS
 			m_Map.getRoomTextur(m_PlayerCoords, &rotate);
 			m_CurrentRoomBool = m_World->GetCurrentRoom();
 			//	Level::MoveToNewRoom(m_CurrentRoome.sideExits[0], m_CurrentRoome.sideExits[1], m_CurrentRoome.sideExits[2], m_CurrentRoome.sideExits[3]);
-			m_LevelFileFormat.OpenFromFile("deadend_chests_IsStatick_t_p_e_r_h_a", !m_NextLevel, m_PlayerCoords, playerTransform, rotate);
+			m_LevelFileFormat.OpenFromFile("deadend_chests_IsStatick_t_p_e_r_h_a_bb", !m_NextLevel, m_PlayerCoords, playerTransform, rotate);
 			
-			m_T_Room.RoomName = "deadend_chests_IsStatick_t_p_e_r_h_a";
+			m_T_Room.RoomName = "deadend_chests_IsStatick_t_p_e_r_h_a_bb";
 
 			m_T_Room.Rotation = rotate;
 			Frosty::EventBus::GetEventBus()->Publish<Frosty::UpdateCurrentRoomEvent>(Frosty::UpdateCurrentRoomEvent(m_T_Room.RoomName, m_T_Room.Rotation));
@@ -150,6 +150,7 @@ namespace MCS
 			//m_ThisRoomName = "deadend_chests_IsStatick_t_p_e_r_h";
 			m_Start = false;
 			m_haveStartedMoving = false;
+			m_BossTimer = 0;
 
 			//m_LevelFileFormat.LoadBoolMap("deadend_chests_IsStatick_t_p_e_r_h_a");
 			m_StartTimer = Frosty::Time::CurrentTime();
@@ -653,10 +654,11 @@ namespace MCS
 		}
 		m_LodeNamedRoom = true;
 		m_RoomType = e.GetFilename();
+		m_World->DestroyGroup(true);
 
-		m_LevelFileFormat.OpenFromFile(m_RoomType, 1, m_PlayerCoords, playerTransform);
+		//m_LevelFileFormat.OpenFromFile(m_RoomType, 1, m_PlayerCoords, playerTransform);
 		//For OpenFromFile second parameter.
-		FY_ASSERT(0, "In use?");
+		//FY_ASSERT(0, "In use?");
 
 	}
 

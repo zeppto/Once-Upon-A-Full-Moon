@@ -415,6 +415,30 @@ namespace MCS
 					//	fileEntitys.myEntitys[i].myTransform.Scale.z = 110;
 					//}
 
+					//for new biger exit soons
+					//if (fileEntitys.myEntitys[i].MyComponents[10].HaveComponent)
+					//{
+					//	if (fileEntitys.myEntitys.at(i).myTransform.Position == glm::vec3(145.00f, 2.00f, 0.00f))
+					//	{
+					//		fileEntitys.myEntitys.at(i).myTransform.Position = glm::vec3(117.0f, 0.0f, 0.0f);
+					//		fileEntitys.myEntitys.at(i).myTransform.Scale = glm::vec3(66.00f, 20.00f, 96.00f);
+					//	}
+					//	if (fileEntitys.myEntitys.at(i).myTransform.Position == glm::vec3(0.00f, 2.00f, 145.00f))
+					//	{
+					//		fileEntitys.myEntitys.at(i).myTransform.Position = glm::vec3(0.0f, 0.0f, 117.0f);
+					//		fileEntitys.myEntitys.at(i).myTransform.Scale = glm::vec3(96.00f, 20.00f, 66.00f);
+					//	}
+					//	if (fileEntitys.myEntitys.at(i).myTransform.Position == glm::vec3(-145.00f, 2.00f, 0.00f))
+					//	{
+					//		fileEntitys.myEntitys.at(i).myTransform.Position = glm::vec3(-117.0f, 0.0f, 0.0f);
+					//		fileEntitys.myEntitys.at(i).myTransform.Scale = glm::vec3(66.00f, 20.00f, 96.00f);
+					//	}
+					//	if (fileEntitys.myEntitys.at(i).myTransform.Position == glm::vec3(0.00f, 2.00f, -145.00f))
+					//	{
+					//		fileEntitys.myEntitys.at(i).myTransform.Position = glm::vec3(0.0f, 0.0f, -117.0f);
+					//		fileEntitys.myEntitys.at(i).myTransform.Scale = glm::vec3(96.00f, 20.00f, 66.00f);
+					//	}
+					//}
 
 					glm::mat4 matrix(1.0f);
 					matrix = glm::rotate(matrix, glm::radians((float)rotation), glm::vec3(0, 1, 0));
@@ -446,8 +470,8 @@ namespace MCS
 					}
 
 					auto& entity = m_World->CreateEntity((glm::vec3(matrix[3].x, matrix[3].y, matrix[3].z) + startOffset), tempRotation, fileEntitys.myEntitys.at(i).myTransform.Scale, fileEntitys.myEntitys.at(i).myTransform.IsStatic);
+					//auto& entity = m_World->CreateEntity((glm::vec3(matrix[3].x, matrix[3].y, matrix[3].z)), tempRotation, fileEntitys.myEntitys.at(i).myTransform.Scale, fileEntitys.myEntitys.at(i).myTransform.IsStatic);
 					m_World->AddToGroup(entity, CurrentGroup);
-
 
 					auto& newlyTreansform = m_World->GetComponent<Frosty::ECS::CTransform>(entity);
 					if (newlyTreansform.Scale == glm::vec3(300.0f, 1.0f, 300.0f))
@@ -697,7 +721,7 @@ namespace MCS
 							physics.Speed = 10.0f;
 						}
 						auto& enemyWeaponCompA = m_World->AddComponent<Frosty::ECS::CWeapon>(enemyWeaponA, loadedWeapon);
-						auto& enemy = m_World->AddComponent<Frosty::ECS::CEnemy>(entity, playerTransform, &enemyWeaponCompA, fileEntitys.myEntitys[i].myEnemy.RunOnHealth);
+						auto& enemy = m_World->AddComponent<Frosty::ECS::CEnemy>(entity, nullptr, &enemyWeaponCompA, fileEntitys.myEntitys[i].myEnemy.RunOnHealth);
 						enemy.WeaponEntityID = enemyWeaponCompA.EntityPtr->Id;
 						auto& transform = m_World->GetComponent< Frosty::ECS::CTransform>(entity);
 						enemy.SpawnPosition = transform.Position;
@@ -897,91 +921,91 @@ namespace MCS
 			}
 
 			//to remove "enemys" or chest m.m to control the number and randomize pos
-			int enteredRoomId = -1;
-			for (int i = 0; i < m_VisitedRooms.size(); i++)
-			{
-				if (m_VisitedRooms[i].myRoomId == roomId)
-				{
-					enteredRoomId = i;
-				}
-			}
-			if (enteredRoomId != -1)
-			{
-				//removes the number of chests
-				for (int i = 0; i < m_VisitedRooms[enteredRoomId].removeChest.size(); i++)
-				{
-					if (!m_World->HasComponent<Frosty::ECS::CDestroy>(m_Chests[m_VisitedRooms[enteredRoomId].removeChest[i]]))
-					{
-						m_World->AddComponent<Frosty::ECS::CDestroy>(m_Chests[m_VisitedRooms[enteredRoomId].removeChest[i]]);
-					}
-					std::shared_ptr<Frosty::ECS::Entity> temp = m_Chests[m_VisitedRooms[enteredRoomId].removeChest[i]];
-					m_Chests[m_VisitedRooms[enteredRoomId].removeChest[i]] = m_Chests[m_Chests.size() - 1 - i];
-					m_Chests.back() = temp;
-				}
-				//removes the number of witchCirkels
-				for (int i = 0; i < m_VisitedRooms[enteredRoomId].removeWitchCirkel.size(); i++)
-				{
-					if (!m_World->HasComponent<Frosty::ECS::CDestroy>(m_WitchCirkel[m_VisitedRooms[enteredRoomId].removeWitchCirkel[i]]))
-					{
-						m_World->AddComponent<Frosty::ECS::CDestroy>(m_WitchCirkel[m_VisitedRooms[enteredRoomId].removeWitchCirkel[i]]);
-					}
-					std::shared_ptr<Frosty::ECS::Entity> temp = m_Chests[m_VisitedRooms[enteredRoomId].removeWitchCirkel[i]];
-					m_WitchCirkel[m_VisitedRooms[enteredRoomId].removeWitchCirkel[i]] = m_WitchCirkel[m_WitchCirkel.size() - 1 - i];
-					m_WitchCirkel.back() = temp;
-				}
-				//add existing meat
-				for (int i = 0; i < m_VisitedRooms[enteredRoomId].addedBait.size(); i++)
-				{
-					auto& bait = m_World->CreateEntity(m_VisitedRooms[enteredRoomId].addedBait[i]);
-					m_World->AddComponent<Frosty::ECS::CMesh>(bait, Frosty::AssetManager::GetMesh("meat"));
-					auto& material = m_World->AddComponent<Frosty::ECS::CMaterial>(bait, Frosty::AssetManager::GetShader("Texture2D"));
-					material.DiffuseTexture = Frosty::AssetManager::GetTexture2D("meat");
-				}
-			}
-			else
-			{
-				int nrToHave = rand() % 3;
-				if(roomId == glm::ivec2(10, 15))
-					nrToHave = 2;
-				Level_rememberedEntitys rEntitys;
-				rEntitys.myRoomId = roomId;
-				//removes the number of chests
-				if (m_Chests.size() >= nrToHave)
-				{
-					for (int i = 0; i < m_Chests.size() - nrToHave; i++)
-					{
-						int rnd = rand() % (m_Chests.size() - i);
-						if (!m_World->HasComponent<Frosty::ECS::CDestroy>(m_Chests[rnd]))
-						{
-							rEntitys.removeChest.push_back(rnd);
-							m_World->AddComponent<Frosty::ECS::CDestroy>(m_Chests[rnd]);
-						}
-						std::shared_ptr<Frosty::ECS::Entity> temp = m_Chests[rnd];
-						m_Chests[rnd] = m_Chests[m_Chests.size() - 1 - i];
-						m_Chests.back() = temp;
-					}
-				}
-				//removes the number of witchCirkels
-				nrToHave = rand() % 3;
-				if (nrToHave > 0)
-					nrToHave = 1;
-				if (m_WitchCirkel.size() >= nrToHave && roomId != glm::ivec2(10, 15))
-				{
-					for (int i = 0; i < m_WitchCirkel.size() - nrToHave; i++)
-					{
-						int rnd = rand() % (m_WitchCirkel.size() - i);
-						if (!m_World->HasComponent<Frosty::ECS::CDestroy>(m_WitchCirkel[rnd]))
-						{
-							rEntitys.removeWitchCirkel.push_back(rnd);
-							m_World->AddComponent<Frosty::ECS::CDestroy>(m_WitchCirkel[rnd]);
-						}
-						std::shared_ptr<Frosty::ECS::Entity> temp = m_WitchCirkel[rnd];
-						m_WitchCirkel[rnd] = m_WitchCirkel[m_WitchCirkel.size() - 1 - i];
-						m_WitchCirkel.back() = temp;
-					}
-				}
-				m_VisitedRooms.push_back(rEntitys);
-			}
+			//int enteredRoomId = -1;
+			//for (int i = 0; i < m_VisitedRooms.size(); i++)
+			//{
+			//	if (m_VisitedRooms[i].myRoomId == roomId)
+			//	{
+			//		enteredRoomId = i;
+			//	}
+			//}
+			//if (enteredRoomId != -1)
+			//{
+			//	//removes the number of chests
+			//	for (int i = 0; i < m_VisitedRooms[enteredRoomId].removeChest.size(); i++)
+			//	{
+			//		if (!m_World->HasComponent<Frosty::ECS::CDestroy>(m_Chests[m_VisitedRooms[enteredRoomId].removeChest[i]]))
+			//		{
+			//			m_World->AddComponent<Frosty::ECS::CDestroy>(m_Chests[m_VisitedRooms[enteredRoomId].removeChest[i]]);
+			//		}
+			//		std::shared_ptr<Frosty::ECS::Entity> temp = m_Chests[m_VisitedRooms[enteredRoomId].removeChest[i]];
+			//		m_Chests[m_VisitedRooms[enteredRoomId].removeChest[i]] = m_Chests[m_Chests.size() - 1 - i];
+			//		m_Chests.back() = temp;
+			//	}
+			//	//removes the number of witchCirkels
+			//	for (int i = 0; i < m_VisitedRooms[enteredRoomId].removeWitchCirkel.size(); i++)
+			//	{
+			//		if (!m_World->HasComponent<Frosty::ECS::CDestroy>(m_WitchCirkel[m_VisitedRooms[enteredRoomId].removeWitchCirkel[i]]))
+			//		{
+			//			m_World->AddComponent<Frosty::ECS::CDestroy>(m_WitchCirkel[m_VisitedRooms[enteredRoomId].removeWitchCirkel[i]]);
+			//		}
+			//		std::shared_ptr<Frosty::ECS::Entity> temp = m_Chests[m_VisitedRooms[enteredRoomId].removeWitchCirkel[i]];
+			//		m_WitchCirkel[m_VisitedRooms[enteredRoomId].removeWitchCirkel[i]] = m_WitchCirkel[m_WitchCirkel.size() - 1 - i];
+			//		m_WitchCirkel.back() = temp;
+			//	}
+			//	//add existing meat
+			//	for (int i = 0; i < m_VisitedRooms[enteredRoomId].addedBait.size(); i++)
+			//	{
+			//		auto& bait = m_World->CreateEntity(m_VisitedRooms[enteredRoomId].addedBait[i]);
+			//		m_World->AddComponent<Frosty::ECS::CMesh>(bait, Frosty::AssetManager::GetMesh("meat"));
+			//		auto& material = m_World->AddComponent<Frosty::ECS::CMaterial>(bait, Frosty::AssetManager::GetShader("Texture2D"));
+			//		material.DiffuseTexture = Frosty::AssetManager::GetTexture2D("meat");
+			//	}
+			//}
+			//else
+			//{
+			//	int nrToHave = rand() % 3;
+			//	if(roomId == glm::ivec2(10, 15))
+			//		nrToHave = 2;
+			//	Level_rememberedEntitys rEntitys;
+			//	rEntitys.myRoomId = roomId;
+			//	//removes the number of chests
+			//	if (m_Chests.size() >= nrToHave)
+			//	{
+			//		for (int i = 0; i < m_Chests.size() - nrToHave; i++)
+			//		{
+			//			int rnd = rand() % (m_Chests.size() - i);
+			//			if (!m_World->HasComponent<Frosty::ECS::CDestroy>(m_Chests[rnd]))
+			//			{
+			//				rEntitys.removeChest.push_back(rnd);
+			//				m_World->AddComponent<Frosty::ECS::CDestroy>(m_Chests[rnd]);
+			//			}
+			//			std::shared_ptr<Frosty::ECS::Entity> temp = m_Chests[rnd];
+			//			m_Chests[rnd] = m_Chests[m_Chests.size() - 1 - i];
+			//			m_Chests.back() = temp;
+			//		}
+			//	}
+			//	//removes the number of witchCirkels
+			//	nrToHave = rand() % 3;
+			//	if (nrToHave > 0)
+			//		nrToHave = 1;
+			//	if (m_WitchCirkel.size() >= nrToHave && roomId != glm::ivec2(10, 15))
+			//	{
+			//		for (int i = 0; i < m_WitchCirkel.size() - nrToHave; i++)
+			//		{
+			//			int rnd = rand() % (m_WitchCirkel.size() - i);
+			//			if (!m_World->HasComponent<Frosty::ECS::CDestroy>(m_WitchCirkel[rnd]))
+			//			{
+			//				rEntitys.removeWitchCirkel.push_back(rnd);
+			//				m_World->AddComponent<Frosty::ECS::CDestroy>(m_WitchCirkel[rnd]);
+			//			}
+			//			std::shared_ptr<Frosty::ECS::Entity> temp = m_WitchCirkel[rnd];
+			//			m_WitchCirkel[rnd] = m_WitchCirkel[m_WitchCirkel.size() - 1 - i];
+			//			m_WitchCirkel.back() = temp;
+			//		}
+			//	}
+			//	m_VisitedRooms.push_back(rEntitys);
+			//}
 
 		}
 		else
@@ -1228,7 +1252,7 @@ namespace MCS
 	}
 	void LevelFileFormat::clearVisitedRooms()
 	{
-		//crach?
+		//it crach ones way?
 		m_VisitedRooms.clear();
 	}
 }
