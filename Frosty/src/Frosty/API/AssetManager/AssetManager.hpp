@@ -24,6 +24,8 @@
 #define FILE_TYPE_TGA "tga"
 #define FILE_TYPE_GLSL "glsl"
 #define FILE_TYPE_XML "xml"
+#define FILE_TYPE_WAV "wav"
+#define FILE_TYPE_MP3 "mp3"
 
 #define MAT_NAME "Mat_" //(followed by a number)
 #define MAT_NAME_FOLLOW ":"
@@ -40,7 +42,9 @@ namespace Frosty
 		TTF,
 		TGA,
 		GLSL,
-		XML
+		XML,
+		WAV,
+		MP3
 	};
 
 	// For storing animation data per vertex!
@@ -85,6 +89,9 @@ namespace Frosty
 		static std::map<std::string, std::shared_ptr<Luna::BoundingBox>> s_BoundingBoxes;
 		static std::map<std::string, std::shared_ptr<TrueTypeFile>> s_TruefontTypes;
 		static std::map<std::string, std::shared_ptr<WeaponHandler>> s_WeaponHandler;
+
+		static std::map<std::string, std::shared_ptr<const char>> s_Media;
+
 
 		static std::unordered_map <std::string, std::list<TextureFile**>> s_TextureWatchList;
 
@@ -149,6 +156,12 @@ namespace Frosty
 		static std::vector<std::string> GetBoundingBoxNames();
 
 
+		//Use File Name
+		inline static std::shared_ptr<const char>& GetMediaFile(const std::string& FileName) { FY_CORE_ASSERT(s_Media.count(FileName), "Media error!\n{0} doesn't exist!", FileName); return s_Media[FileName]; }
+	//	inline static std::map<std::string, std::shared_ptr<WeaponHandler>>& GetWeaponHandlers() { return s_WeaponHandler; }
+
+
+
 	private:	//Functions
 
 		inline static void Delete() { if (s_Instance != nullptr) { delete s_Instance; } }
@@ -165,10 +178,12 @@ namespace Frosty
 		static bool AnimationLoaded(const std::string& AssetName);
 		static bool MeshLoaded(const std::string& AssetName);
 		static bool BoundingboxLoaded(const std::string& MeshName);
+		static bool MediaFileLoaded(const std::string& MeshName);
 
 		//from ML
 		static 	bool LoadLunaFile(const FileMetaData& FileNameInformation, const bool& Reload = false);
 		static 	bool LoadTTF_File(const FileMetaData& FileNameInformation, const bool& Reload = false);
+		static 	bool LoadMediaFile(const FileMetaData& FileNameInformation, const bool& Reload = false);
 		static 	bool LoadGraphicFile(const FileMetaData& FileNameInformation, const bool& Reload = false);
 		static bool LoadXML(const FileMetaData& FileNameInformation, const bool& Reload = false);
 		static 	bool GetFileInformation(FileMetaData& FileNameInformation);
@@ -191,6 +206,7 @@ namespace Frosty
 		static bool AddTexture(const FileMetaData& MetaData);
 		static bool AddTTF(const FileMetaData& MetaData);
 		static bool AddXML(const FileMetaData& MetaData);
+		static bool AddMedia(const FileMetaData& MetaData);
 
 		static bool AddMaterial(LinkedMaterial& LnkMat);
 		static bool AddMaterial(const FileMetaData& MetaData, const Luna::Material& LunMat);

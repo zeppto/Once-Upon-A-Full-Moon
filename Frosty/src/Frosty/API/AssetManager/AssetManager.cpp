@@ -32,6 +32,8 @@ namespace Frosty
 	std::map<std::string, std::shared_ptr<TrueTypeFile>> AssetManager::s_TruefontTypes;
 	std::map<std::string, std::shared_ptr<WeaponHandler>> AssetManager::s_WeaponHandler;
 
+	std::map<std::string, std::shared_ptr<const char>> AssetManager::s_Media;
+
 	std::vector<std::string> AssetManager::s_FilePath_Vector;
 
 	uint16_t AssetManager::s_Failed_Loading_Attempts = 0;
@@ -87,6 +89,13 @@ namespace Frosty
 				break;
 			case XML:
 				returnValue = LoadXML(TempFileInfo);
+				break;
+
+			case MP3:
+				returnValue = LoadMediaFile(TempFileInfo);
+				break;
+			case WAV:
+				returnValue = LoadMediaFile(TempFileInfo);
 				break;
 
 
@@ -290,6 +299,23 @@ namespace Frosty
 		return true;
 	}
 	
+	
+
+	bool AssetManager::AddMedia(const FileMetaData& MetaData)
+	{
+		if (MediaFileLoaded(MetaData.FileName))
+		{
+			FY_CORE_INFO("Media File: {0}, Is already loaded", MetaData.FileName);
+			return false;
+		}
+		else
+		{
+			//Add Load IrrklangFunc here
+			//s_Media[MetaData.FileName] = (irrklang loaded file);
+		}
+		return true;
+	}
+
 
 	bool AssetManager::AddMaterial(LinkedMaterial& LnkMat)
 	{
@@ -672,6 +698,25 @@ namespace Frosty
 		return returnValue;
 	}
 
+
+	bool AssetManager::MediaFileLoaded(const std::string& MeshName)
+	{
+		bool returnValue = false;
+
+
+		std::map<std::string, std::shared_ptr<const char>>::iterator it;
+		for (it = s_Media.begin(); it != s_Media.end() && returnValue == false; it++)
+		{
+			if (it->first == MeshName)
+			{
+				returnValue = true;
+			}
+		}
+
+		return returnValue;
+	}
+
+
 	bool AssetManager::BoundingboxLoaded(const std::string& MeshName)
 	{
 		bool returnValue = false;
@@ -904,6 +949,21 @@ namespace Frosty
 	}
 
 	
+	bool AssetManager::LoadMediaFile(const FileMetaData& FileNameInformation, const bool& Reload)
+	{
+		bool returnValue = false;
+
+
+
+		if (AddMedia(FileNameInformation))
+		{
+			returnValue = true;
+		}
+
+		return returnValue;
+	}
+
+
 	bool AssetManager::LoadXML(const FileMetaData& FileNameInformation, const bool& Reload)
 	{
 		bool returnValue = false;
@@ -998,6 +1058,14 @@ namespace Frosty
 		else if (fileType == FILE_TYPE_XML)
 		{
 			return XML;
+		}
+		else if (fileType == FILE_TYPE_WAV)
+		{
+			return WAV;
+		}
+		else if (fileType == FILE_TYPE_MP3)
+		{
+			return MP3;
 		}
 
 
