@@ -147,7 +147,7 @@ void MCS::AnimationSystem::OnEvent(Frosty::BaseEvent& e)
 	switch (e.GetEventType())
 	{
 	case Frosty::EventType::PlayAnim:
-		//OnPlayAnimEvent(static_cast<Frosty::PlayAnimEvent&>(e));
+		OnPlayAnimEvent(static_cast<Frosty::PlayAnimEvent&>(e));
 		break;
 	case Frosty::EventType::Dash:
 		OnDashEvent(static_cast<Frosty::DashEvent&>(e));

@@ -442,7 +442,7 @@ namespace MCS
 
 		// Create BB
 		glm::vec3 spawnPos = attackerTransform.Position + (glm::vec3(direction) * 4.0f);
-		glm::vec3 spawnScale = glm::vec3(6.0f, 8.0f, 6.0f);
+		glm::vec3 spawnScale = glm::vec3(6.0f, 6.0f, 6.0f);
 		auto& sword = m_World->CreateEntity({ spawnPos.x, 3.0f, spawnPos.z }, attackerTransform.Rotation + glm::vec3(0.0f, 0.0f, 90.0f), spawnScale);
 		auto& swordTransform = m_World->GetComponent<Frosty::ECS::CTransform>(sword);
 
@@ -492,7 +492,7 @@ namespace MCS
 		glm::vec3 spawnPos = attackerTransform.Position + (glm::vec3(direction) * 5.0f);
 		//glm::vec3 spawnScale = glm::vec3(2.0f, 6.0f, 10.0f);
 		//y needs to be the bigest if using capcol colitiondw
-		glm::vec3 spawnScale = glm::vec3(3.0f, 10.0f, 3.0f);
+		glm::vec3 spawnScale = glm::vec3(3.0f, 8.0f, 3.0f);
 		//the extra rotations are for rotating the bonding box
 		auto& sword = m_World->CreateEntity({ spawnPos.x, 3.0f, spawnPos.z }, attackerTransform.Rotation + glm::vec3(0.0f, 90.0f, 90.0f), spawnScale);
 		auto& swordTransform = m_World->GetComponent<Frosty::ECS::CTransform>(sword);
