@@ -272,6 +272,7 @@ namespace MCS
 		//std::vector<glm::vec3> GetAllBaitInRoom();
 		//int GetNumberOfBaitInRoom();
 		int RemoveAllBaitInRoom(glm::ivec2 room);
+		void clearVisitedRooms();
 
 	private:
 		//std::shared_ptr<ECS::Entity> m_ExitEntity;

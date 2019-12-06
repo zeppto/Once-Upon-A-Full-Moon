@@ -82,7 +82,7 @@ namespace MCS
 		glm::ivec2 m_PlayerCoords = { 10, 15 };//{ 10, 15 };
 		glm::ivec2 m_OtherRoom = { -1, -1 };
 
-		glm::ivec2 m_PlayerPos = { 10, 15 };//{ 10, 15 };
+		//glm::ivec2 m_PlayerPos = { 10, 15 };//{ 10, 15 };
 		glm::ivec2 m_BossPos = { 9, 15 };
 		glm::ivec2 m_BossLastRoom = { -1, -1 };
 		float m_StartTimer = 0.0f;
@@ -117,6 +117,7 @@ namespace MCS
 		Frosty::ECS::CTransform* m_PlayerTransform = nullptr;
 		bool m_CreatNewRoom = false;
 		bool m_LodeNamedRoom = false;
+		bool m_ReStart = false;
 		bool m_BossSpawned{ false };
 
 		bool m_LoadMapBool = false;

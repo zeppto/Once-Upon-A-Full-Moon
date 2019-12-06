@@ -164,6 +164,7 @@ namespace MCS
 
 				Frosty::Weapon weapon;
 				auto& item = m_World->CreateEntity(entityTransform.Position + glm::vec3(0.0f, 0.3f, 0.0f), { 0.0f, 0.0f, 0.0f }, { 3.f, 3.f, 3.f });
+				m_World->AddToGroup(item, true);
 				auto& transform = m_World->GetComponent<Frosty::ECS::CTransform>(item);
 				auto& material = m_World->AddComponent<Frosty::ECS::CMaterial>(item, Frosty::AssetManager::GetShader("Texture2D"), true);
 				auto& light = m_World->AddComponent<Frosty::ECS::CLight>(item, Frosty::ECS::CLight::LightType::Point, 3.f, glm::vec3(1.f, 1.f, 1.f), 2.f);
