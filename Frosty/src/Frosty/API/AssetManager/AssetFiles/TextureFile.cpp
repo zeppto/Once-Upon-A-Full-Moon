@@ -56,7 +56,7 @@ namespace Frosty
 
 			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, textureWidth, textureHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, imageData);
 			glGenerateMipmap(GL_TEXTURE_2D);
-
+			glBindTexture(GL_TEXTURE_2D, 0);
 
 			m_Buffer_ID = (uint16_t)tempBufferId;
 			m_Image_Height = (uint16_t)textureHeight;
@@ -93,10 +93,11 @@ namespace Frosty
 			glGenTextures(1, &tempBufferId);
 			glActiveTexture(tempBufferId);
 			glBindTexture(GL_TEXTURE_2D, tempBufferId);
+	
 
 			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, textureWidth, textureHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, imageData);
 			glGenerateMipmap(GL_TEXTURE_2D);
-
+			glBindTexture(GL_TEXTURE_2D, 0);
 
 			m_Buffer_ID = (uint16_t)tempBufferId;
 			m_Image_Height = (uint16_t)textureHeight;

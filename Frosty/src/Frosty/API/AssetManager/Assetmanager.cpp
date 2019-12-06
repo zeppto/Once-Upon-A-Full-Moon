@@ -18,7 +18,7 @@ namespace Frosty
 			s_Instance = new Assetmanager;
 			s_Instance->m_Total_Nr_Assets = 0;
 		}
-			return s_Instance;
+		return s_Instance;
 	}
 
 	Frosty::Assetmanager::~Assetmanager()
@@ -87,10 +87,10 @@ namespace Frosty
 			tempTextureMetaData->SetFileMetaData(MetaData);
 			tempTextureMetaData->SetRefData(Texture);
 
-			if (tempTextureMetaData->GetData()->LoadToGpu())
+	/*		if (tempTextureMetaData->GetData()->LoadToGpu())
 			{
 				returnValue = true;
-			}
+			}*/
 
 		}
 		else
@@ -108,7 +108,7 @@ namespace Frosty
 
 	bool Assetmanager::AddNewMaterialTemplate(const Luna::Material& Material, const FileMetaData& MetaData)
 	{
-		
+
 		bool returnValue = false;
 
 		if (!MaterialLoaded(MetaData.FileName))
@@ -167,7 +167,7 @@ namespace Frosty
 
 	}
 
-	AssetMetaData<ModelTemplate> * Assetmanager::GetModeltemplateMetaData(const std::string& FileName)
+	AssetMetaData<ModelTemplate>* Assetmanager::GetModeltemplateMetaData(const std::string& FileName)
 	{
 		if (ModelTemplateLoaded(FileName))
 		{
@@ -233,7 +233,7 @@ namespace Frosty
 		}
 		else
 		{
-			FY_CORE_WARN("Could not link Material key, File is not loaded, File: {0}",FileName);
+			FY_CORE_WARN("Could not link Material key, File is not loaded, File: {0}", FileName);
 		}
 		return returnValue;
 	}
@@ -254,9 +254,9 @@ namespace Frosty
 			temp_mt_ptr->SetKeyData(m_MAT_MetaData_Map[FileName]);
 			returnValue = true;
 		}
-		else 
+		else
 		{
-			FY_CORE_WARN("Could not link key, The FileName is not loaded, Name: {0}",FileName);
+			FY_CORE_WARN("Could not link key, The FileName is not loaded, Name: {0}", FileName);
 		}
 		return returnValue;
 	}
@@ -282,7 +282,7 @@ namespace Frosty
 				}
 				else
 				{
-					FY_CORE_WARN("Diffuse Material Name: {0} Could not be loaded, File Path: {1}" , Material.Diffuse_File_Name, MetaData.FilePath);
+					FY_CORE_WARN("Diffuse Material Name: {0} Could not be loaded, File Path: {1}", Material.Diffuse_File_Name, MetaData.FilePath);
 				}
 
 			}

@@ -90,7 +90,7 @@ namespace Frosty
 
 		// Colour 
 		glGenTextures(1, &m_ColourRenderTexture);
-		glBindTexture(GL_TEXTURE_2D, m_ColourRenderTexture);
+		//glBindTexture(GL_TEXTURE_2D, m_ColourRenderTexture);
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, m_WindowWidth, m_WindowHeight, 0, GL_RGB, GL_FLOAT, NULL);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
@@ -107,7 +107,7 @@ namespace Frosty
 		}
 
 		glGenTextures(1, &m_DepthRenderTexture);
-		glBindTexture(GL_TEXTURE_2D, m_DepthRenderTexture);
+		//glBindTexture(GL_TEXTURE_2D, m_DepthRenderTexture);
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, m_WindowWidth, m_WindowHeight, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
@@ -138,7 +138,7 @@ namespace Frosty
 
 		// Colour
 		glGenTextures(1, &m_GUIRenderTexture);
-		glBindTexture(GL_TEXTURE_2D, m_GUIRenderTexture);
+		//glBindTexture(GL_TEXTURE_2D, m_GUIRenderTexture);
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, m_WindowWidth, m_WindowHeight, 0, GL_RGB, GL_FLOAT, NULL);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
@@ -365,7 +365,7 @@ namespace Frosty
 
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		glEnable(GL_DEPTH_TEST);
+		//glEnable(GL_DEPTH_TEST);
 
 		glUniformMatrix4fv(0, 1, GL_FALSE, &m_Transform.getModel()[0][0]); //Temp
 
@@ -437,8 +437,8 @@ namespace Frosty
 		if (m_RenderTestModel)
 		{
 			glBindVertexArray(Assetmanager::GetAssetmanager()->GetModeltemplateMetaData("clock")->GetData()->GetVBO(0));
-			glActiveTexture(GL_TEXTURE0);
-			glBindTexture(GL_TEXTURE_2D, Assetmanager::GetAssetmanager()->GetMaterialMetaData("Mat_0:clock")->GetData()->Diffuse_Texture_MetaData_Ptr->GetData()->GetBufferID());
+			//glActiveTexture(GL_TEXTURE0);
+			//glBindTexture(GL_TEXTURE_2D, Assetmanager::GetAssetmanager()->GetMaterialMetaData("Mat_0:clock")->GetData()->Diffuse_Texture_MetaData_Ptr->GetData()->GetBufferID());
 			glDrawArrays(GL_TRIANGLES, 0, Assetmanager::GetAssetmanager()->GetModeltemplateMetaData("clock")->GetData()->GetMeshConst(0).vertexCount);
 		}
 

@@ -73,7 +73,7 @@ void main()
 	result + vec3(ambient);
 
 	//finalColor = diffTexture*vec4(result, 1.f);
-	finalColor = diffTexture;
+	finalColor = vec4(0.8, 0.2, 0.3, 1.0);
 	//finalColor = diffTexture*vec4(result, 1.f);
 
 
