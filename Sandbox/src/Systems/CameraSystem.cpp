@@ -50,7 +50,7 @@ namespace MCS
 		{
 			Frosty::RenderCommand::SetClearColor(glm::vec4(m_Cameras[i]->Background, 1.0f));
 			Frosty::RenderCommand::Clear();
-			Frosty::Renderer::BeginScene();
+			//Frosty::Renderer::BeginScene();
 			Frosty::Renderer::SetCamera(m_Transform[i]->Position, m_Cameras[i]->ViewMatrix, m_Cameras[i]->ProjectionMatrix);
 		}
 	}

@@ -2,7 +2,7 @@
 #include "PhysicsSystem.hpp"
 #include "Frosty/Events/AbilityEvent.hpp"
 #include "Frosty/API/AssetManager/AssetManager.hpp"
-#include"Frosty/Core/BoolMap/BoolMap.hpp"
+#include "Frosty/API/AssetManager/AssetFiles/BoolMap.hpp"
 
 namespace MCS
 {
@@ -14,25 +14,34 @@ namespace MCS
 
 		p_Signature.set(Frosty::ECS::getComponentTypeID<Frosty::ECS::CTransform>(), true);
 		p_Signature.set(Frosty::ECS::getComponentTypeID<Frosty::ECS::CPhysics>(), true);
+
+	//	m_Current_BoolMap = Frosty::AssetManager::GetBoolMap("deadend_chests_IsStatick_t_p_e_r_h");
 	}
 
 	void PhysicsSystem::OnUpdate()
 	{
 		for (size_t i = 1; i < p_Total; i++)
 		{
-			//if (i == 2 && Frosty::Time::GetFrameCount() % 100 == 0) FY_INFO("Direction is ({0}, {1}, {2})", m_Physics[i]->Direction.x, m_Physics[i]->Direction.y, m_Physics[i]->Direction.z);
-			//if (i == 2 && Frosty::Time::GetFrameCount() % 10 == 0) FY_INFO("Speed multiplier is ({0})", m_Physics[i]->SpeedMultiplier);
-
-			glm::vec3 changeOffset = m_Physics[i]->Direction * m_Physics[i]->Speed * m_Physics[i]->SpeedMultiplier * Frosty::Time::DeltaTime();
-			m_Transform[i]->Position += changeOffset;
-
-			//if (m_World->HasComponent<Frosty::ECS::CPlayer>(m_Transform[i]->EntityPtr) && m_Physics[i]->Direction.y > 0.0f)
-			//{
-			//	__debugbreak();
-			//}
-
+			// Movement
+			glm::vec3 movementOffset = m_Physics[i]->Direction * m_Physics[i]->Speed * m_Physics[i]->SpeedMultiplier * Frosty::Time::DeltaTime();
+			m_Transform[i]->Position += movementOffset;
+			
+			// Collision
 			if (!m_Transform[i]->IsStatic) CheckCollision(i);
 
+			// Player slow reset
+			if (m_World->HasComponent<Frosty::ECS::CPlayer>(m_Transform[i]->EntityPtr) && m_Physics[i]->SlowTime > 0.0f)
+			{
+				m_Physics[i]->SlowTime -= Frosty::Time::DeltaTime();
+
+				if (m_Physics[i]->SlowTime <= 0.0f)
+				{
+					m_Physics[i]->SpeedMultiplier += 0.4f;
+					m_Physics[i]->SlowTime = 0.0f;
+				}
+			}
+
+			// Boss charge into player, float up and down
 			if (m_Physics[i]->Direction.y > 0.0f)
 			{
 				m_Physics[i]->HangTime -= Frosty::Time::DeltaTime();
@@ -59,6 +68,10 @@ namespace MCS
 		{
 		case Frosty::EventType::LoadBoolMap:
 			OnLoadBoolMapEvent(static_cast<Frosty::BoolMapLoadedEvent&>(e));
+			break;
+
+		case Frosty::EventType::UpdateCurrentRoom:
+			OnUpdateCurrentRoomEvent(static_cast<Frosty::UpdateCurrentRoomEvent&>(e));
 			break;
 		}
 	}
@@ -142,6 +155,13 @@ namespace MCS
 		int o = 0;
 	}
 
+	void PhysicsSystem::OnUpdateCurrentRoomEvent(Frosty::UpdateCurrentRoomEvent& e)
+	{
+		m_Current_BoolMap = Frosty::AssetManager::GetBoolMap(e.GetCurrentRoom());
+		m_Room_Rotation = e.GetRotation();
+	}
+
+
 	void PhysicsSystem::CheckCollision(size_t index)
 	{
 		for (size_t i = 1; i < p_Total; i++)
@@ -164,6 +184,82 @@ namespace MCS
 				{
 					checkCollision = true;
 				}
+
+
+				//Test
+				if (( m_World->HasComponent<Frosty::ECS::CPlayer>(m_Transform[index]->EntityPtr)))
+				{
+
+					if (m_World->HasComponent<Frosty::ECS::CInventory>(m_Transform[index]->EntityPtr))
+					{
+
+						
+					//	checkCollision = false;
+						if (m_World->HasComponent<Frosty::ECS::CLevelExit>(m_Transform[i]->EntityPtr))
+						{
+							checkCollision = true;
+						}
+
+						if (m_Current_BoolMap != nullptr)
+						{
+							
+					
+
+							glm::vec3 tempPos = m_Transform[index]->Position + glm::vec3(static_cast<float>((m_Current_BoolMap->GetCoordWidth() >> 1)), 0.0f, static_cast<float>(m_Current_BoolMap->GetCoordHeight() >> 1));
+
+							float tempX = glm::floor(std::abs(tempPos.x));
+							int intXcoord = static_cast<int>(tempX) % m_Current_BoolMap->GetCoordWidth();
+							float newXcoord = static_cast<float>(intXcoord) + (std::abs(tempPos.x) - tempX);
+
+							if (tempPos.x < 0.0f)
+							{
+								newXcoord = static_cast<float>(m_Current_BoolMap->GetCoordWidth()) - newXcoord;
+							}
+
+							float tempZ = glm::floor(std::abs(tempPos.z));
+							int intZcoord = static_cast<int>(tempZ) % m_Current_BoolMap->GetCoordHeight();
+							float newZcoord = static_cast<float>(intZcoord) + (std::abs(tempPos.z) - tempZ);
+
+							if (tempPos.z < 0.0f)
+							{
+								newZcoord = static_cast<float>(m_Current_BoolMap->GetCoordHeight()) - newZcoord;
+							}
+
+							if (m_Room_Rotation != 0.0f)
+							{
+								if (m_Room_Rotation == 90.0f)
+								{
+									float temp = newXcoord;
+									newXcoord = 300.0f - newZcoord;
+									newZcoord = temp;
+								}
+								else if (m_Room_Rotation == 180.0f)
+								{
+									newXcoord = 300.0f - newXcoord;
+									newZcoord = 300.0f - newZcoord;
+								}
+								else if (m_Room_Rotation == 270.0f)
+								{
+									float temp = newXcoord;
+									newXcoord = newZcoord;
+									newZcoord = 300.0f - temp;
+								}
+							}
+
+							bool testBool = m_Current_BoolMap->CheckCollision(glm::vec3(newXcoord, 0.0f, newZcoord));
+
+
+							if (testBool)
+							{
+							//	FY_INFO("1");
+							}
+						}
+
+
+					}
+				}
+
+
 
 				if (checkCollision)
 				{
@@ -215,7 +311,21 @@ namespace MCS
 						// Player with Exit Level
 						else if (m_World->HasComponent<Frosty::ECS::CPlayer>(m_Transform[index]->EntityPtr) && m_World->HasComponent<Frosty::ECS::CLevelExit>(m_Transform[i]->EntityPtr))
 						{
-							Frosty::EventBus::GetEventBus()->Publish<Frosty::ExitLevelEvent>(Frosty::ExitLevelEvent(m_Transform[i]->EntityPtr, m_Transform[index]->EntityPtr));
+							//Frosty::EventBus::GetEventBus()->Publish<Frosty::ExitLevelEvent>(Frosty::ExitLevelEvent(m_Transform[i]->EntityPtr, m_Transform[index]->EntityPtr));
+							auto& Exit = m_World->GetComponent<Frosty::ECS::CLevelExit>(m_Transform[i]->EntityPtr);
+							if (!Exit.IsTriggered)
+							{
+								glm::ivec2 CoordsTest = m_World->GetComponent<Frosty::ECS::CLevelExit>(m_Transform[i]->EntityPtr).RoomCoords;
+
+								Exit.IsTriggered = true;
+								Frosty::EventBus::GetEventBus()->Publish
+									<Frosty::UpdatePlayerRoomCoordEvent>(Frosty::UpdatePlayerRoomCoordEvent
+									(m_World->GetComponent<Frosty::ECS::CLevelExit>(m_Transform[i]->EntityPtr).RoomCoords));
+
+								Frosty::EventBus::GetEventBus()->Publish
+									<Frosty::ExitLevelEvent>(Frosty::ExitLevelEvent
+									(m_Transform[i]->EntityPtr, m_Transform[index]->EntityPtr));
+							}
 						}
 						// Enemy or Player colliding
 						else if (m_World->HasComponent<Frosty::ECS::CEnemy>(m_Transform[index]->EntityPtr) || m_World->HasComponent<Frosty::ECS::CPlayer>(m_Transform[index]->EntityPtr))
@@ -231,9 +341,11 @@ namespace MCS
 									{
 										// Leap colliding into player, damage the player
 										Frosty::EventBus::GetEventBus()->Publish<Frosty::DamageEvent>(Frosty::DamageEvent(m_Transform[i]->EntityPtr, bossComp.LeapDamage));
+										m_Physics[i]->SpeedMultiplier -= bossComp.LeapSlowAmount;
+										m_Physics[i]->SlowTime = bossComp.LeapSlowCooldown;
 									}
 
-									// Reset charge attributes
+									// Reset leap attributes
 									Frosty::EventBus::GetEventBus()->Publish<Frosty::ResetBossAbilitiesEvent>(Frosty::ResetBossAbilitiesEvent(m_Transform[index]->EntityPtr));
 									bool normalCollisionPushback = false;
 								}
@@ -250,9 +362,7 @@ namespace MCS
 									}
 
 									// Reset charge attributes
-									FY_INFO("First: {0}", bossComp.ActiveAbility);
 									Frosty::EventBus::GetEventBus()->Publish<Frosty::ResetBossAbilitiesEvent>(Frosty::ResetBossAbilitiesEvent(m_Transform[index]->EntityPtr));
-									FY_INFO("Second: {0}", bossComp.ActiveAbility);
 									normalCollisionPushback = false;
 								}
 							}
@@ -268,6 +378,11 @@ namespace MCS
 								if (normalCollisionPushback) m_Transform[index]->Position -= intersectionPushback;
 							}
 						}
+					}
+					else if (m_World->HasComponent<Frosty::ECS::CPlayer>(m_Transform[index]->EntityPtr) && m_World->HasComponent<Frosty::ECS::CLevelExit>(m_Transform[i]->EntityPtr))
+					{
+						auto& Exit = m_World->GetComponent<Frosty::ECS::CLevelExit>(m_Transform[i]->EntityPtr);
+						Exit.IsTriggered = false;
 					}
 				}
 

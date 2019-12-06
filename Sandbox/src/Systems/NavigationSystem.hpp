@@ -8,6 +8,8 @@
 #include "Pathfinding/Pathfinding.hpp"
 
 namespace Frosty { class InitiateGridEvent; }
+namespace Frosty { class UpdateCurrentRoomEvent; }
+namespace Frosty { class SwitchRoomEvent; }
 
 namespace MCS
 {
@@ -33,13 +35,16 @@ namespace MCS
 
 	private:
 		void OnInitiateGridMap(Frosty::InitiateGridEvent& e);
+		void OnUpdateCurrentRoomEvent(Frosty::UpdateCurrentRoomEvent& e);
+		void OnSwitchRoomEvent(Frosty::SwitchRoomEvent& e);
 		void LookAtPoint(const glm::vec3& point, size_t index);
 
-		void HandlePathfinding(size_t index);
+		void HandlePathfinding(size_t index, const uint32_t& EntityGroupID);
 		void HandleDistance(size_t index);
 		void HandleEscape(size_t index);
-		void HandleReset(size_t index);
+		void HandleReset(size_t index, const uint32_t& EntityGroupID);
 		void HandleDeath(size_t index);
+
 
 	private:
 		Frosty::World* m_World{ nullptr };
@@ -49,8 +54,37 @@ namespace MCS
 		std::array<Frosty::ECS::CEnemy*, Frosty::ECS::MAX_ENTITIES_PER_COMPONENT> m_Enemy;
 
 		//std::unique_ptr<GridMap> m_GridMap;
-		std::unique_ptr<Grid> m_Grid;
+		std::unique_ptr<Frosty::Grid> m_Grid;
 		std::unique_ptr<Pathfinding> m_Pathfinding;
+
+		std::shared_ptr<Frosty::Grid> m_CurrentActiveGridMap {nullptr};
+		std::shared_ptr<Pathfinding> m_CurrentActivePathfinding {nullptr};
+		uint16_t m_GroupUpdate;
+
+
+		struct GridMap
+		{
+			std::shared_ptr<Frosty::Grid> Grid{ nullptr };
+			std::shared_ptr<Pathfinding> PathFinder{ nullptr };
+			uint16_t EntityGroupID{ (uint16_t)-1 };
+
+			GridMap& operator=(const GridMap& other)
+			{
+				if (&other != this)
+				{
+					Grid = other.Grid;
+					PathFinder = other.PathFinder;
+					EntityGroupID = other.EntityGroupID;
+				}
+				return *this;
+			}
+		};
+
+		GridMap m_ActiveMap;
+		GridMap m_OtherMap;
+		
+		std::shared_ptr<Frosty::Grid> m_SecondGridMap {nullptr};
+		std::shared_ptr<Pathfinding> m_SecondPathfinding {nullptr};
 
 	};
 }

@@ -10,6 +10,7 @@ namespace MCS
 {
 	bool InspectorLayer::s_VSync = false;
 	bool InspectorLayer::s_DistanceCulling = false;
+	bool InspectorLayer::s_LightCulling = false;
 
 	void InspectorLayer::OnAttach()
 	{
@@ -44,6 +45,7 @@ namespace MCS
 			ImGui::Text("FPS: %i", Frosty::Time::FPS());
 			if (ImGui::Checkbox("VSync: ", &s_VSync)) m_App->GetWindow().SetVSync(s_VSync);
 			if (ImGui::Checkbox("Distance Culling: ", &s_DistanceCulling))Frosty::Renderer::SetDistanceCulling(s_DistanceCulling);
+			if (ImGui::Checkbox("Light Culling: ", &s_LightCulling))Frosty::Renderer::SetLightCulling(s_LightCulling);
 			if (ImGui::Button("Create Entity", ImVec2(100.0f, 20.0f))) world->CreateEntity();
 
 			static int selection_mask = 0;
@@ -961,7 +963,20 @@ namespace MCS
 						auto& comp = world->GetComponent<Frosty::ECS::CParticleSystem>(m_SelectedEntity);
 						ImGui::BeginChild("CParticleSystem", ImVec2(EDITOR_INSPECTOR_WIDTH, 560), true);
 						ImGui::Text("Active particles: %i", comp.ParticleCount);
-						ImGui::Checkbox("Preview", &comp.Preview);
+						if (comp.Loop)
+						{
+							ImGui::Checkbox("Preview", &comp.Preview);
+							ImGui::SameLine();
+						}
+						else
+						{
+							if (ImGui::Button("Play", ImVec2(40, 25)))
+							{
+								comp.Preview = true;
+								comp.TimesPlayed = -1;
+							}
+						}
+						ImGui::Checkbox("Loop", &comp.Loop);
 						ImGui::SameLine();
 						ImGui::Checkbox("Face camera", &comp.AlwaysFaceCamera);
 						if (ImGui::IsItemClicked())
@@ -993,6 +1008,7 @@ namespace MCS
 								ImGui::ColorEdit4("End color", glm::value_ptr(comp.SystemEndColor));
 							}
 						}
+						ImGui::Combo("Render mode", (int*)&comp.RenderMode, "Normal\0Additive\0");
 						ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(10, 10));
 						ImGui::Image(comp.Texture ? comp.Texture->GetRenderID() : Frosty::AssetManager::GetTexture2D("Checkerboard")->GetRenderID(), ImVec2(64, 64));
 						ImGui::PopStyleVar();
@@ -1036,6 +1052,8 @@ namespace MCS
 						}
 						ImGui::DragFloat3("Rotation", glm::value_ptr(comp.SystemRotation), 0.1f, 0.0f, 0.0f, "%.2f");
 						ImGui::Checkbox("Random direction", &comp.RandomDirection);
+						ImGui::SameLine();
+						ImGui::Checkbox("Gravity", &comp.HasGravity);
 						if (comp.RandomDirection == false)
 						{
 							ImGui::DragFloat3("Direction", glm::value_ptr(comp.ParticleSystemDirection), 0.1f, 0.0f, 0.0f, "%.2f");
@@ -1044,6 +1062,10 @@ namespace MCS
 						{
 							ImGui::InputFloat("Spread", &comp.randSpread);
 							ImGui::DragFloat3("Main direction", glm::value_ptr(comp.randMainDir), 0.1f, 0.0f, 0.0, "%.2f");
+						}
+						if (comp.HasGravity)
+						{
+							ImGui::InputFloat("Weight", &comp.ParticleWeight);
 						}
 						ImGui::Checkbox("Random start position", &comp.RandomStartPos);
 						if (comp.RandomStartPos == false)
@@ -1112,6 +1134,9 @@ namespace MCS
 						auto& comp = world->GetComponent<Frosty::ECS::CGUI>(m_SelectedEntity);
 						ImGui::BeginChild("CGUI", ImVec2(EDITOR_INSPECTOR_WIDTH, 45), true);
 						ImGui::Text("The GUI is active."); //TODO: Fill with info
+						ImGui::Checkbox("Render text", &comp.RenderText);
+						ImGui::SameLine();
+						ImGui::Checkbox("Render sprites", &comp.RenderSprites);
 						ImGui::EndChild();
 					}
 				}

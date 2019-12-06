@@ -1,7 +1,7 @@
 #ifndef PLAYER_CONTROLLER_SYSTEM_HPP
 #define PLAYER_CONTROLLER_SYSTEM_HPP
 
-namespace Frosty { class PickUpEvent; class UpgradeWeaponEvent; class HealAbilityEvent; class EnemyDeathEvent; }
+namespace Frosty { class PickUpEvent; class UpgradeWeaponEvent; class HealAbilityEvent; class EnemyDeathEvent; class BossFearEffectEvent; }
 
 namespace MCS
 {
@@ -63,6 +63,7 @@ namespace MCS
 		void SetPickUpText(size_t index, std::string text);
 		void ResetAllHUDWeaponInfo(size_t index);
 		void OnDamage();
+		void OnBossFearEffect(Frosty::BossFearEffectEvent& e);
 		
 
 	private:

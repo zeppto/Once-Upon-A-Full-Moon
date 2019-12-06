@@ -79,8 +79,6 @@ project "Frosty"
 		"%{prj.name}/src/Frosty/API/PrefabManager/*.h",
 		"%{prj.name}/src/Frosty/Particles/*.cpp",
 		"%{prj.name}/src/Frosty/Particles/*.h",
-		"%{prj.name}/src/Frosty/RenderEngine/ForwardPlus.cpp",
-		"%{prj.name}/src/Frosty/RenderEngine/ForwardPlus.hpp",
 		"%{prj.name}/src/Frosty/StateMachine/States/*.cpp",
 		"%{prj.name}/src/Frosty/StateMachine/States/*.h"
 	}
@@ -189,8 +187,14 @@ project "Sandbox"
 		"irrKlang.lib"
 	}
 	
+	prebuildcommands
+	{
+		--("{DELETE} %{wks.location.relpath} ../bin/" .. outputdir .. "/%{prj.name}/assets"),
+	}
+	
 	postbuildcommands
 	{
+		--("{DELETE} /Q /F %{wks.location.relpath} ../bin/" .. outputdir .. "/%{prj.name}/assets/**.**"),
 		("{COPY} %{wks.location.relpath} ../assets ../bin/" .. outputdir .. "/%{prj.name}/assets/"),
 		("{COPY} %{wks.location.relpath} ../Frosty/vendor/FreeType/lib/freetype.dll ../bin/" .. outputdir .. "/%{prj.name}/"),
 		("{COPY} %{wks.location.relpath} ../Frosty/vendor/irrKlang/bin/winx64-visualStudio/ikpFlac.dll ../bin/" .. outputdir .. "/%{prj.name}/"),

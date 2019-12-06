@@ -68,7 +68,7 @@ namespace MCS
 
 			if (m_Dash[i]->Active)
 			{
-				m_Dash[i]->DistanceDashed += glm::length(m_Physics[i]->Direction * m_Physics[i]->Speed * m_Dash[i]->SpeedMultiplier * Frosty::Time::DeltaTime());
+				m_Dash[i]->DistanceDashed += glm::length(m_Physics[i]->Direction * (m_Physics[i]->Speed * m_Dash[i]->SpeedMultiplier) * Frosty::Time::DeltaTime());
 				if (m_Dash[i]->DistanceDashed >= m_Dash[i]->DISTANCE / 1000.0f)
 				{
 					m_Dash[i]->Active = false;
@@ -76,7 +76,7 @@ namespace MCS
 				}
 				else
 				{
-					m_Transform[i]->Position += m_Dash[i]->SpeedMultiplier * glm::normalize(m_Physics[i]->Direction); /*(m_Physics[i]->Direction * m_Physics[i]->Speed) * m_Physics[i]->SpeedMultiplier;*/
+					m_Transform[i]->Position += glm::normalize(m_Physics[i]->Direction) * (m_Physics[i]->Speed * m_Dash[i]->SpeedMultiplier) * Frosty::Time::DeltaTime();
 				}
 			}
 			//m_Transform[i]->Position.y = 0.f;
@@ -103,6 +103,8 @@ namespace MCS
 			break;
 		case Frosty::EventType::PlayerDamage:
 			OnDamage();
+		case Frosty::EventType::BossFearEffect:
+			OnBossFearEffect(static_cast<Frosty::BossFearEffectEvent&>(e));
 			break;
 		default:
 			break;
@@ -304,8 +306,6 @@ namespace MCS
 					{
 						m_Dash[index]->Active = true;
 						Frosty::EventBus::GetEventBus()->Publish<Frosty::DashEvent>(Frosty::DashEvent(m_Player[index]->EntityPtr));
-						//m_Physics[index]->Velocity *= m_Dash[index]->SpeedMultiplier;
-						m_Physics[index]->SpeedMultiplier = m_Dash[index]->SpeedMultiplier;
 						m_Dash[index]->CurrentCooldown = m_Dash[index]->COOLDOWN / 1000.0f;
 					}
 				}
@@ -530,11 +530,11 @@ namespace MCS
 		auto& projectilePhysics = m_World->AddComponent<Frosty::ECS::CPhysics>(projectile, Frosty::AssetManager::GetBoundingBox("player_arrow"), projectileTransform.Scale, weaponComp.ProjectileSpeed);
 		projectilePhysics.Direction = direction;
 
-		auto& particles = m_World->AddComponent<Frosty::ECS::CParticleSystem>(projectile, "Particles", "particle", 30, glm::vec3(0.7f, 0.7f, 1.0f), 12.0f);
-		particles.ParticleSystemDirection = glm::vec3(0.0f, 0.0f, -1.0f);
+		auto& particles = m_World->AddComponent<Frosty::ECS::CParticleSystem>(projectile, "Particles", "particle", 50, glm::vec3(0.7f, 0.7f, 1.0f), 3.0f);
+		particles.ParticleSystemDirection = glm::vec3(-1.0f, 0.0f, 0.0f);
 		particles.RandomDirection = true;
 		particles.randMainDir = particles.ParticleSystemDirection;
-		particles.randSpread = 0.005f;
+		particles.randSpread = 0.2f;
 		particles.StartParticleSize = 0.4f;
 		particles.EmitCount = 2;
 		particles.EmitRate = 0.05f;
@@ -544,6 +544,7 @@ namespace MCS
 		particles.StaticColor = false;
 		particles.SystemEndColor = glm::vec3(0.0f, 0.0f, 1.0f);
 		particles.ParticleSystemStartPos = glm::vec3(0.0f, 0.0f, 1.1f);
+		particles.HasGravity = true;
 
 		float criticalHit = 0;
 		criticalHit = GenerateCriticalHit(weaponComp.CriticalHit, weaponComp.CriticalHitChance + weaponComp.FireCriticalHitChance);
@@ -613,11 +614,11 @@ namespace MCS
 			m_World->AddComponent<Frosty::ECS::CAttack>(projectile, Frosty::ECS::CAttack::AttackType::Range, totalDamage, true, weaponComp.Lifetime);
 			auto& attack = m_World->GetComponent<Frosty::ECS::CAttack>(projectile);
 
-			auto& particles = m_World->AddComponent<Frosty::ECS::CParticleSystem>(projectile, "Particles", "particle", 30, glm::vec3(0.0f, 1.0f, 0.2f), 12.0f);
+			auto& particles = m_World->AddComponent<Frosty::ECS::CParticleSystem>(projectile, "Particles", "particle", 50, glm::vec3(0.0f, 1.0f, 0.2f), 3.0f);
 			particles.ParticleSystemDirection = glm::vec3(0.0f, 0.0f, -1.0f);
 			particles.RandomDirection = true;
 			particles.randMainDir = particles.ParticleSystemDirection;
-			particles.randSpread = 0.05f;
+			particles.randSpread = 0.2f;
 			particles.StartParticleSize = 0.4f;
 			particles.EmitCount = 2;
 			particles.EmitRate = 0.05f;
@@ -627,6 +628,7 @@ namespace MCS
 			particles.StaticColor = false;
 			particles.SystemEndColor = glm::vec3(1.0f, 1.0f, 1.0f);
 			particles.ParticleSystemStartPos = glm::vec3(0.0f, 0.0f, 1.1f);
+			particles.HasGravity = true;
 
 			if (weaponComp.FireCriticalHitChance > 0.0f)
 			{
@@ -679,11 +681,11 @@ namespace MCS
 		m_World->AddComponent<Frosty::ECS::CAttack>(projectile, Frosty::ECS::CAttack::AttackType::Range, totalDamage, true, weaponComp.Lifetime, false);
 		auto& attack = m_World->GetComponent<Frosty::ECS::CAttack>(projectile);
 
-		auto& particles = m_World->AddComponent<Frosty::ECS::CParticleSystem>(projectile, "Particles", "particle", 30, glm::vec3(1.0f, 0.0f, 0.0f), 12.0f);
+		auto& particles = m_World->AddComponent<Frosty::ECS::CParticleSystem>(projectile, "Particles", "particle", 50, glm::vec3(0.0f, 1.0f, 0.2f), 3.0f);
 		particles.ParticleSystemDirection = glm::vec3(0.0f, 0.0f, -1.0f);
 		particles.RandomDirection = true;
 		particles.randMainDir = particles.ParticleSystemDirection;
-		particles.randSpread = 0.05f;
+		particles.randSpread = 0.2f;
 		particles.StartParticleSize = 0.4f;
 		particles.EmitCount = 2;
 		particles.EmitRate = 0.05f;
@@ -691,8 +693,9 @@ namespace MCS
 		particles.FadeInTreshold = 1.4f;
 		particles.FadeTreshold = 1.3f;
 		particles.StaticColor = false;
-		particles.SystemEndColor = glm::vec3(7.0f, 7.0f, 0.0f);
+		particles.SystemEndColor = glm::vec3(1.0f, 1.0f, 1.0f);
 		particles.ParticleSystemStartPos = glm::vec3(0.0f, 0.0f, 1.1f);
+		particles.HasGravity = true;
 
 		if (weaponComp.FireCriticalHitChance > 0.0f)
 		{
@@ -716,8 +719,8 @@ namespace MCS
 	{
 		auto& fireEffect = m_World->CreateEntity({ spawnPos.x, 1.0f, spawnPos.z }, rotation, { 5.0f, 5.0f, 2.0f });
 
-		auto& fireParticles = m_World->AddComponent<Frosty::ECS::CParticleSystem>(fireEffect, "Particles", "particle", 30, glm::vec3(1.0f, 0.0f, 0.0f), 12.0f);
-		fireParticles.ParticleSystemDirection = glm::vec3(0.0f, 0.0f, -1.0f);
+		auto& fireParticles = m_World->AddComponent<Frosty::ECS::CParticleSystem>(fireEffect, "Particles", "particleSpark1", 30, glm::vec3(1.0f, 0.0f, 0.0f), 3.0f);
+		fireParticles.ParticleSystemDirection = glm::vec3(-1.0f, 0.0f, 0.0f);
 		fireParticles.RandomDirection = true;
 		fireParticles.randMainDir = fireParticles.ParticleSystemDirection;
 		fireParticles.randSpread = 0.05f;
@@ -730,6 +733,7 @@ namespace MCS
 		fireParticles.StaticColor = false;
 		fireParticles.SystemEndColor = glm::vec3(0.0f, 0.0f, 1.0f);
 		fireParticles.ParticleSystemStartPos = glm::vec3(0.0f, 0.0f, 1.1f);
+		fireParticles.HasGravity = true;
 
 		attack.FireEffect = fireEffect;
 	}
@@ -738,12 +742,12 @@ namespace MCS
 	{
 		auto& earthEffect = m_World->CreateEntity({ spawnPos.x, 1.0f, spawnPos.z }, rotation, { 5.0f, 5.0f, 2.0f });
 
-		auto& earthParticles = m_World->AddComponent<Frosty::ECS::CParticleSystem>(earthEffect, "Particles", "particleSmoke", 30, glm::vec3(0.5f, 0.5f, 0.1f), 12.0f);
-		earthParticles.ParticleSystemDirection = glm::vec3(0.0f, 0.0f, -1.0f);
+		auto& earthParticles = m_World->AddComponent<Frosty::ECS::CParticleSystem>(earthEffect, "Particles", "particleSpark1", 30, glm::vec3(0.5f, 0.5f, 0.1f), 3.0f);
+		earthParticles.ParticleSystemDirection = glm::vec3(-1.0f, 0.0f, 0.0f);
 		earthParticles.RandomDirection = true;
 		earthParticles.randMainDir = earthParticles.ParticleSystemDirection;
 		earthParticles.randSpread = 0.05f;
-		earthParticles.StartParticleSize = 2.4f;
+		earthParticles.StartParticleSize = 0.4f;
 		earthParticles.EmitCount = 2;
 		earthParticles.EmitRate = 0.05f;
 		earthParticles.MaxLifetime = 1.5f;
@@ -752,6 +756,7 @@ namespace MCS
 		earthParticles.StaticColor = false;
 		earthParticles.SystemEndColor = glm::vec3(0.0f, 0.0f, 1.0f);
 		earthParticles.ParticleSystemStartPos = glm::vec3(0.0f, 0.0f, 1.1f);
+		earthParticles.HasGravity = true;
 
 		attack.EarthEffect = earthEffect;
 	}
@@ -760,8 +765,8 @@ namespace MCS
 	{
 		auto& windEffect = m_World->CreateEntity({ spawnPos.x, 1.0f, spawnPos.z }, rotation, { 5.0f, 5.0f, 2.0f });
 
-		auto& windParticles = m_World->AddComponent<Frosty::ECS::CParticleSystem>(windEffect, "Particles", "particle", 30, glm::vec3(0.0f, 1.0f, 0.0f), 12.0f);
-		windParticles.ParticleSystemDirection = glm::vec3(0.0f, 0.0f, -1.0f);
+		auto& windParticles = m_World->AddComponent<Frosty::ECS::CParticleSystem>(windEffect, "Particles", "particleSpark1", 30, glm::vec3(0.0f, 1.0f, 0.0f), 3.0f);
+		windParticles.ParticleSystemDirection = glm::vec3(-1.0f, 0.0f, 0.0f);
 		windParticles.RandomDirection = true;
 		windParticles.randMainDir = windParticles.ParticleSystemDirection;
 		windParticles.randSpread = 0.05f;
@@ -774,6 +779,7 @@ namespace MCS
 		windParticles.StaticColor = false;
 		windParticles.SystemEndColor = glm::vec3(0.0f, 0.0f, 1.0f);
 		windParticles.ParticleSystemStartPos = glm::vec3(0.0f, 0.0f, 1.1f);
+		windParticles.HasGravity = true;
 
 		attack.WindEffect = windEffect;
 	}
@@ -782,8 +788,8 @@ namespace MCS
 	{
 		auto& waterEffect = m_World->CreateEntity({ spawnPos.x, 1.0f, spawnPos.z }, rotation, { 5.0f, 5.0f, 2.0f });
 
-		auto& waterParticles = m_World->AddComponent<Frosty::ECS::CParticleSystem>(waterEffect, "Particles", "particle", 30, glm::vec3(0.0f, 0.0f, 1.0f), 12.0f);
-		waterParticles.ParticleSystemDirection = glm::vec3(0.0f, 0.0f, -1.0f);
+		auto& waterParticles = m_World->AddComponent<Frosty::ECS::CParticleSystem>(waterEffect, "Particles", "particleSpark1", 30, glm::vec3(0.0f, 0.0f, 1.0f), 3.0f);
+		waterParticles.ParticleSystemDirection = glm::vec3(-1.0f, 0.0f, 0.0f);
 		waterParticles.RandomDirection = true;
 		waterParticles.randMainDir = waterParticles.ParticleSystemDirection;
 		waterParticles.randSpread = 0.05f;
@@ -796,6 +802,7 @@ namespace MCS
 		waterParticles.StaticColor = false;
 		waterParticles.SystemEndColor = glm::vec3(0.0f, 0.0f, 1.0f);
 		waterParticles.ParticleSystemStartPos = glm::vec3(0.0f, 0.0f, 1.1f);
+		waterParticles.HasGravity = true;
 
 		attack.WaterEffect = waterEffect;
 	}
@@ -1036,22 +1043,16 @@ namespace MCS
 						m_Physics[i]->Speed += m_Inventory[i]->IncreaseSpeed;
 						SetPickUpText(i, "Speed Increased");
 					}
+					else
+					{
+						m_Physics[i]->Speed = m_Physics[i]->MaxSpeed;
+					}
 					FY_INFO("SpeedBoots Activated");
 					FY_INFO("{0} / {1}", m_Inventory[i]->CurrentSpeedBoots, m_Inventory[i]->MaxSpeedBoots);
 					if (!world->HasComponent<Frosty::ECS::CDestroy>(e.GetEntity()))
 					{
 						world->AddComponent<Frosty::ECS::CDestroy>(e.GetEntity());
 					}
-				}
-				else
-				{
-					m_Physics[i]->Speed += m_Physics[i]->MaxSpeed;
-				}
-				FY_INFO("SpeedBoots Activated");
-				FY_INFO("{0} / {1}", m_Inventory[i]->CurrentSpeedBoots, m_Inventory[i]->MaxSpeedBoots);
-				if (!world->HasComponent<Frosty::ECS::CDestroy>(e.GetEntity()))
-				{
-					SetPickUpText(i, "Can't Pick Up SpeedBoots");
 				}
 			}
 			else if (loot.Type == Frosty::ECS::CLootable::LootType::Wolfsbane)
@@ -1107,10 +1108,10 @@ namespace MCS
 					else if (playerWeapon.Level == 3)
 						SetPickUpText(i, "Picked Up Sword Level 3");
 
-					HUD.Layout.sprites.at(1).SetImage("attackMelee");
-					HUD.Layout.sprites.at(2).SetImage("attackMelee1");
-					HUD.Layout.sprites.at(3).SetImage("attackMelee2");
-					HUD.Layout.sprites.at(4).SetImage("attackMelee3");
+					HUD.Layout.sprites[2].SetImage("attackMelee");
+					HUD.Layout.sprites[3].SetImage("attackMelee1");
+					HUD.Layout.sprites[4].SetImage("attackMelee2");
+					HUD.Layout.sprites[5].SetImage("attackMelee3");
 				}
 				else if (playerWeapon.Type == Frosty::ECS::CWeapon::WeaponType::Bow)
 				{
@@ -1121,10 +1122,10 @@ namespace MCS
 					else if (playerWeapon.Level == 3)
 						SetPickUpText(i, "Picked Up Bow Level 3");
 
-					HUD.Layout.sprites.at(1).SetImage("attackRanged");
-					HUD.Layout.sprites.at(2).SetImage("attackRanged1");
-					HUD.Layout.sprites.at(3).SetImage("attackRanged2");
-					HUD.Layout.sprites.at(4).SetImage("attackRanged3");
+					HUD.Layout.sprites[2].SetImage("attackRanged");
+					HUD.Layout.sprites[3].SetImage("attackRanged1");
+					HUD.Layout.sprites[4].SetImage("attackRanged2");
+					HUD.Layout.sprites[5].SetImage("attackRanged3");
 				}
 
 
@@ -1166,7 +1167,7 @@ namespace MCS
 				{
 
 					weaponComp.FireCriticalHitChance += 0.1f;
-					HUD.Layout.sprites.at(6).SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+					HUD.Layout.sprites[6].SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
 					//HUD.Layout.sprites.at(6).SetTranslateSprite(glm::vec2(960 / 1.5f, (540 / 1.5f) + 500));
 					//HUD.Layout.sprites.at(6).SetScaleSprite(glm::vec2(1.5, 1.5));
 					m_Player[p_Total - 1]->ElementDisplayTimer = Frosty::Time::CurrentTime();
@@ -1180,7 +1181,7 @@ namespace MCS
 				{
 					weaponComp.EarthDamage += 1.f;
 
-					HUD.Layout.sprites.at(5).SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+					HUD.Layout.sprites[6].SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
 					//HUD.Layout.sprites.at(5).SetTranslateSprite(glm::vec2(960 / 1.5f, (540 / 1.5f) + 500));
 					//HUD.Layout.sprites.at(5).SetScaleSprite(glm::vec2(1.5, 1.5));
 					m_Player[p_Total - 1]->ElementDisplayTimer = Frosty::Time::CurrentTime();
@@ -1194,7 +1195,7 @@ namespace MCS
 				{
 					weaponComp.WindSpeed += 0.4f;
 
-					HUD.Layout.sprites.at(8).SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+					HUD.Layout.sprites[9].SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
 					//HUD.Layout.sprites.at(8).SetTranslateSprite(glm::vec2(960 / 1.5f, (540 / 1.5f) + 500));
 					//HUD.Layout.sprites.at(8).SetScaleSprite(glm::vec2(1.5, 1.5));
 					m_Player[p_Total - 1]->ElementDisplayTimer = Frosty::Time::CurrentTime();
@@ -1208,7 +1209,7 @@ namespace MCS
 				{
 					weaponComp.WaterHealing += 1;
 
-					HUD.Layout.sprites.at(7).SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+					HUD.Layout.sprites[8].SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
 					//HUD.Layout.sprites.at(7).SetTranslateSprite(glm::vec2(960 / 1.5f, (540 / 1.5f) + 500));
 					//HUD.Layout.sprites.at(7).SetScaleSprite(glm::vec2(1.5, 1.5));
 					m_Player[p_Total - 1]->ElementDisplayTimer = Frosty::Time::CurrentTime();
@@ -1494,7 +1495,7 @@ namespace MCS
 			//m_HeightMultiplier = window.GetHeightMultiplier();
 			//m_WidthMultiplier = window.GetWidthMultiplier();
 
-			m_HeightMultiplier =1;
+			m_HeightMultiplier = 1;
 			m_WidthMultiplier = 1;
 
 			auto& HUD = m_World->GetComponent<Frosty::ECS::CGUI>(m_Transform[index]->EntityPtr);
@@ -1516,60 +1517,60 @@ namespace MCS
 
 
 			//Items
-			HUD.Layout.texts.at(0).SetText(std::string(std::to_string(m_Inventory[index]->CurrentHealingPotions) + "/" + std::string(std::to_string(m_Inventory[index]->MaxHealingPotions))));
-			HUD.Layout.texts.at(1).SetText(std::string(std::to_string(m_Inventory[index]->CurrentSpeedPotions) + "/" + std::string(std::to_string(m_Inventory[index]->MaxSpeedBoots))));
-			HUD.Layout.texts.at(2).SetText(std::string(std::to_string(m_Inventory[index]->CurrentBaitAmount) + "/" + std::string(std::to_string(m_Inventory[index]->MaxBaitAmount))));
-			HUD.Layout.texts.at(3).SetText(std::string(std::to_string(m_Inventory[index]->CurrentWolfsbane)));
+			HUD.Layout.texts[0].SetText(std::string(std::to_string(m_Inventory[index]->CurrentHealingPotions) + "/" + std::string(std::to_string(m_Inventory[index]->MaxHealingPotions))));
+			HUD.Layout.texts[1].SetText(std::string(std::to_string(m_Inventory[index]->CurrentSpeedPotions) + "/" + std::string(std::to_string(m_Inventory[index]->MaxSpeedBoots))));
+			HUD.Layout.texts[2].SetText(std::string(std::to_string(m_Inventory[index]->CurrentBaitAmount) + "/" + std::string(std::to_string(m_Inventory[index]->MaxBaitAmount))));
+			HUD.Layout.texts[3].SetText(std::string(std::to_string(m_Inventory[index]->CurrentWolfsbane)));
 
 			if (m_Inventory[index]->CurrentHealingPotions == 0)
 			{
-				HUD.Layout.sprites.at(9).SetColorSprite(glm::vec4(0.3f, 0.3f, 0.3f, 1.0f));
-				HUD.Layout.texts.at(18).SetText(std::string(""));
-				HUD.Layout.texts.at(0).SetColor(glm::vec3(0.75f, 0.75f, 0.50f));
+				HUD.Layout.sprites[10].SetColorSprite(glm::vec4(0.3f, 0.3f, 0.3f, 1.0f));
+				HUD.Layout.texts[18].SetText(std::string(""));
+				HUD.Layout.texts[0].SetColor(glm::vec3(0.75f, 0.75f, 0.50f));
 			}
 			else
 			{
-				HUD.Layout.sprites.at(9).SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
-				HUD.Layout.texts.at(18).SetText(std::string("[1]"));
-				HUD.Layout.texts.at(0).SetColor(glm::vec3(1.0f, 1.0f, 0.75f));
+				HUD.Layout.sprites[10].SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+				HUD.Layout.texts[18].SetText(std::string("[1]"));
+				HUD.Layout.texts[0].SetColor(glm::vec3(1.0f, 1.0f, 0.75f));
 
 			}
 
 			if (m_Inventory[index]->CurrentSpeedPotions == 0)
 			{
-				HUD.Layout.sprites.at(10).SetColorSprite(glm::vec4(0.3f, 0.3f, 0.3f, 1.0f));
-				HUD.Layout.texts.at(19).SetText(std::string(""));
-				HUD.Layout.texts.at(1).SetColor(glm::vec3(0.75f, 0.75f, 0.50f));
+				HUD.Layout.sprites[11].SetColorSprite(glm::vec4(0.3f, 0.3f, 0.3f, 1.0f));
+				HUD.Layout.texts[19].SetText(std::string(""));
+				HUD.Layout.texts[1].SetColor(glm::vec3(0.75f, 0.75f, 0.50f));
 
 			}
 			else
 			{
-				HUD.Layout.sprites.at(10).SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
-				HUD.Layout.texts.at(19).SetText(std::string("[2]"));
-				HUD.Layout.texts.at(1).SetColor(glm::vec3(1.0f, 1.0f, 0.75f));
+				HUD.Layout.sprites[11].SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+				HUD.Layout.texts[19].SetText(std::string("[2]"));
+				HUD.Layout.texts[1].SetColor(glm::vec3(1.0f, 1.0f, 0.75f));
 
 			}
 
 			if (m_Inventory[index]->CurrentBaitAmount == 0)
 			{
-				HUD.Layout.sprites.at(11).SetColorSprite(glm::vec4(0.3f, 0.3f, 0.3f, 1.0f));
-				HUD.Layout.texts.at(20).SetText(std::string(""));
-				HUD.Layout.texts.at(2).SetColor(glm::vec3(0.5f, 0.5f, 0.25f));
+				HUD.Layout.sprites[12].SetColorSprite(glm::vec4(0.3f, 0.3f, 0.3f, 1.0f));
+				HUD.Layout.texts[20].SetText(std::string(""));
+				HUD.Layout.texts[2].SetColor(glm::vec3(0.5f, 0.5f, 0.25f));
 
 			}
 			else
 			{
-				HUD.Layout.sprites.at(11).SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
-				HUD.Layout.texts.at(20).SetText(std::string("[Q]"));
-				HUD.Layout.texts.at(2).SetColor(glm::vec3(1.0f, 1.0f, 0.75f));
+				HUD.Layout.sprites[12].SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+				HUD.Layout.texts[20].SetText(std::string("[Q]"));
+				HUD.Layout.texts[2].SetColor(glm::vec3(1.0f, 1.0f, 0.75f));
 
 			}
 
 			//Points
-			HUD.Layout.texts.at(4).SetText(std::string("Points: " + std::to_string(m_Player[index]->Score)));
+			HUD.Layout.texts[4].SetText(std::string("Points: " + std::to_string(m_Player[index]->Score)));
 
 			//Temp Health
-			//HUD.Layout.texts.at(5).SetText(std::string(std::to_string((int)m_Health[index]->CurrentHealth) + "/" + std::to_string((int)m_Health[index]->MaxHealth)));
+			//HUD.Layout.texts[5].SetText(std::string(std::to_string((int)m_Health[index]->CurrentHealth) + "/" + std::to_string((int)m_Health[index]->MaxHealth)));
 
 			int currentHealth = 0;
 
@@ -1582,52 +1583,52 @@ namespace MCS
 			int nrOfFilledHearts = currentHealth / 4;
 			int nrOfHeartQuadrants = currentHealth % 4;
 
-			int healthSpriteID = 19;
+			int healthSpriteID = 20;
 			for (int i = 0; i < nrOfFilledHearts && nrOfFilledHearts <= m_Health[index]->MaxHealth; i++)
 			{
 				if (healthSpriteID < 29)
 				{
-					HUD.Layout.sprites.at(healthSpriteID).SetImage("Heart_4");
-					HUD.Layout.sprites.at(healthSpriteID).SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+					HUD.Layout.sprites[healthSpriteID].SetImage("Heart_4");
+					HUD.Layout.sprites[healthSpriteID].SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
 					healthSpriteID++;
 				}
 			}
 
 			if (nrOfHeartQuadrants == 1)
 			{
-				if (healthSpriteID < 29)
+				if (healthSpriteID < 30)
 				{
-					HUD.Layout.sprites.at(healthSpriteID).SetImage("Heart_1");
-					HUD.Layout.sprites.at(healthSpriteID).SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+					HUD.Layout.sprites[healthSpriteID].SetImage("Heart_1");
+					HUD.Layout.sprites[healthSpriteID].SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
 				}
 			}
 			else if (nrOfHeartQuadrants == 2)
 			{
-				if (healthSpriteID < 29)
+				if (healthSpriteID < 30)
 				{
-					HUD.Layout.sprites.at(healthSpriteID).SetImage("Heart_2");
-					HUD.Layout.sprites.at(healthSpriteID).SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+					HUD.Layout.sprites[healthSpriteID].SetImage("Heart_2");
+					HUD.Layout.sprites[healthSpriteID].SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
 				}
 			}
 			else if (nrOfHeartQuadrants == 3)
 			{
-				if (healthSpriteID < 29)
+				if (healthSpriteID < 30)
 				{
-					HUD.Layout.sprites.at(healthSpriteID).SetImage("Heart_3");
-					HUD.Layout.sprites.at(healthSpriteID).SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+					HUD.Layout.sprites[healthSpriteID].SetImage("Heart_3");
+					HUD.Layout.sprites[healthSpriteID].SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
 				}
 			}
 			else if (m_Health[index]->CurrentHealth < m_Health[index]->MaxHealth)
 			{
-				if (healthSpriteID < 29)
+				if (healthSpriteID < 30)
 				{
-					HUD.Layout.sprites.at(healthSpriteID).SetImage("Heart_0");
-					HUD.Layout.sprites.at(healthSpriteID).SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+					HUD.Layout.sprites[healthSpriteID].SetImage("Heart_0");
+					HUD.Layout.sprites[healthSpriteID].SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
 				}
 			}
 
 			int nrOfEmptyHearts = (m_Health[index]->MaxHealth - currentHealth) / 4;
-			healthSpriteID = 19 + currentHealth / 4;
+			healthSpriteID = 20 + currentHealth / 4;
 
 			if (nrOfHeartQuadrants > 0)
 			{
@@ -1636,10 +1637,10 @@ namespace MCS
 
 			for (int i = 0; i < nrOfEmptyHearts; i++)
 			{
-				if (healthSpriteID < 29)
+				if (healthSpriteID < 30)
 				{
-					HUD.Layout.sprites.at(healthSpriteID).SetImage("Heart_0");
-					HUD.Layout.sprites.at(healthSpriteID).SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+					HUD.Layout.sprites[healthSpriteID].SetImage("Heart_0");
+					HUD.Layout.sprites[healthSpriteID].SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
 					healthSpriteID++;
 				}
 			}
@@ -1647,14 +1648,14 @@ namespace MCS
 			//Pickup Text
 			if (Frosty::Time::CurrentTime() - m_Player[index]->PickUpTextTimer >= m_Player[index]->PickUpTextTime)
 			{
-				HUD.Layout.texts.at(6).SetText("");
+				HUD.Layout.texts[6].SetText("");
 			}
 
 			//Attack cooldown
 			auto& weapon = m_Player[index]->Weapon;
 			if (weapon->Level == 3)
 			{
-				HUD.Layout.texts.at(14).SetText(std::string("[SPACE]"));
+				HUD.Layout.texts[14].SetText(std::string("[SPACE]"));
 
 				float timer = weapon->LVL3AttackCooldownTimer;
 				float time = Frosty::Time::CurrentTime();
@@ -1664,24 +1665,26 @@ namespace MCS
 				{
 					int cooldown1 = (int)cooldown;
 					int cooldown2 = (int)((cooldown - cooldown1) * 10);
-					HUD.Layout.texts.at(7).SetText(std::string(std::to_string(cooldown1) + "." + std::to_string(cooldown2)));
-					HUD.Layout.sprites.at(4).SetColorSprite(glm::vec4(0.1f, 0.1f, 0.1f, 0.90f));
+					HUD.Layout.texts[7].SetText(std::string(std::to_string(cooldown1) + "." + std::to_string(cooldown2)));
+					HUD.Layout.sprites[5].SetColorSprite(glm::vec4(0.1f, 0.1f, 0.1f, 0.90f));
 				}
 				else
 				{
-					HUD.Layout.texts.at(7).SetText(std::string(""));
-					HUD.Layout.sprites.at(4).SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+					HUD.Layout.texts[7].SetText(std::string(""));
+					HUD.Layout.sprites[5].SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+
 				}
 			}
 			else
 			{
-				HUD.Layout.texts.at(14).SetText(std::string(""));
-				HUD.Layout.sprites.at(4).SetColorSprite(glm::vec4(0.1f, 0.1f, 0.1f, 0.50f));
+				HUD.Layout.texts[14].SetText(std::string(""));
+				HUD.Layout.sprites[5].SetColorSprite(glm::vec4(0.1f, 0.1f, 0.1f, 0.50f));
+
 			}
 
 			if (weapon->Level >= 2)
 			{
-				HUD.Layout.texts.at(15).SetText(std::string("[R-MOUSE]"));
+				HUD.Layout.texts[15].SetText(std::string("[R-MOUSE]"));
 
 				float timer = weapon->LVL2AttackCooldownTimer;
 				float time = Frosty::Time::CurrentTime();
@@ -1691,25 +1694,28 @@ namespace MCS
 				{
 					int cooldown1 = (int)cooldown;
 					int cooldown2 = (int)((cooldown - cooldown1) * 10);
-					HUD.Layout.texts.at(8).SetText(std::string(std::to_string(cooldown1) + "." + std::to_string(cooldown2)));
-					HUD.Layout.sprites.at(3).SetColorSprite(glm::vec4(0.1f, 0.1f, 0.1f, 0.90f));
+					HUD.Layout.texts[8].SetText(std::string(std::to_string(cooldown1) + "." + std::to_string(cooldown2)));
+					HUD.Layout.sprites[4].SetColorSprite(glm::vec4(0.1f, 0.1f, 0.1f, 0.90f));
+
+
 				}
 				else
 				{
-					HUD.Layout.texts.at(8).SetText(std::string(""));
-					HUD.Layout.sprites.at(3).SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+					HUD.Layout.texts[8].SetText(std::string(""));
+					HUD.Layout.sprites[4].SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+
 				}
 			}
 			else
 			{
-				HUD.Layout.texts.at(15).SetText(std::string(""));
-				HUD.Layout.sprites.at(3).SetColorSprite(glm::vec4(0.1f, 0.1f, 0.1f, 0.50f));
+				HUD.Layout.texts[15].SetText(std::string(""));
+				HUD.Layout.sprites[4].SetColorSprite(glm::vec4(0.1f, 0.1f, 0.1f, 0.50f));
 
 			}
 
 			if (weapon->Level >= 1)
 			{
-				HUD.Layout.texts.at(16).SetText(std::string("[L-MOUSE]"));
+				HUD.Layout.texts[16].SetText(std::string("[L-MOUSE]"));
 
 				float timer = weapon->LVL1AttackCooldownTimer;
 				float time = Frosty::Time::CurrentTime();
@@ -1719,19 +1725,23 @@ namespace MCS
 				{
 					int cooldown1 = (int)cooldown;
 					int cooldown2 = (int)((cooldown - cooldown1) * 10);
-					HUD.Layout.texts.at(9).SetText(std::string(std::to_string(cooldown1) + "." + std::to_string(cooldown2)));
-					HUD.Layout.sprites.at(2).SetColorSprite(glm::vec4(0.1f, 0.1f, 0.1f, 0.90f));
+					HUD.Layout.texts[9].SetText(std::string(std::to_string(cooldown1) + "." + std::to_string(cooldown2)));
+					HUD.Layout.sprites[3].SetColorSprite(glm::vec4(0.1f, 0.1f, 0.1f, 0.90f));
+
+
 				}
 				else
 				{
-					HUD.Layout.texts.at(9).SetText(std::string(""));
-					HUD.Layout.sprites.at(2).SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+					HUD.Layout.texts[9].SetText(std::string(""));
+					HUD.Layout.sprites[3].SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+
 				}
 			}
 			else
 			{
-				HUD.Layout.texts.at(16).SetText(std::string(""));
-				HUD.Layout.sprites.at(2).SetColorSprite(glm::vec4(0.1f, 0.1f, 0.1f, 0.50f));
+				HUD.Layout.texts[16].SetText(std::string(""));
+				HUD.Layout.sprites[3].SetColorSprite(glm::vec4(0.1f, 0.1f, 0.1f, 0.50f));
+
 			}
 
 
@@ -1741,14 +1751,14 @@ namespace MCS
 				int cooldown1 = (int)(m_Dash[index]->CurrentCooldown);
 				int cooldown2 = (int)(((m_Dash[index]->CurrentCooldown - cooldown1) * 10));
 
-				HUD.Layout.texts.at(10).SetText(std::string(std::to_string(cooldown1) + "." + std::to_string(cooldown2)));
-				HUD.Layout.sprites.at(13).SetColorSprite(glm::vec4(0.1f, 0.1f, 0.1f, 0.90f));
+				HUD.Layout.texts[10].SetText(std::string(std::to_string(cooldown1) + "." + std::to_string(cooldown2)));
+				HUD.Layout.sprites[14].SetColorSprite(glm::vec4(0.1f, 0.1f, 0.1f, 0.90f));
 
 			}
 			else
 			{
-				HUD.Layout.texts.at(10).SetText(std::string(""));
-				HUD.Layout.sprites.at(13).SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+				HUD.Layout.texts[10].SetText(std::string(""));
+				HUD.Layout.sprites[14].SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
 
 			}
 
@@ -1767,16 +1777,16 @@ namespace MCS
 			{
 				int cooldown1 = (int)cooldown;
 				int cooldown2 = (int)((cooldown - cooldown1) * 10);
-				HUD.Layout.texts.at(11).SetText(std::string(std::to_string(cooldown1) + "." + std::to_string(cooldown2)));
-				HUD.Layout.sprites.at(9).SetColorSprite(glm::vec4(0.2f, 0.2f, 0.2f, 0.75f));
+				HUD.Layout.texts[11].SetText(std::string(std::to_string(cooldown1) + "." + std::to_string(cooldown2)));
+				HUD.Layout.sprites[10].SetColorSprite(glm::vec4(0.2f, 0.2f, 0.2f, 0.75f));
 
 			}
 			else
 			{
-				HUD.Layout.texts.at(11).SetText(std::string(""));
+				HUD.Layout.texts[11].SetText(std::string(""));
 				if (m_Inventory[index]->CurrentHealingPotions != 0)
 				{
-					HUD.Layout.sprites.at(9).SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+					HUD.Layout.sprites[10].SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
 				}
 
 			}
@@ -1790,16 +1800,16 @@ namespace MCS
 			{
 				int cooldown1 = (int)cooldown;
 				int cooldown2 = (int)((cooldown - cooldown1) * 10);
-				HUD.Layout.texts.at(12).SetText(std::string(std::to_string(cooldown1) + "." + std::to_string(cooldown2)));
-				HUD.Layout.sprites.at(10).SetColorSprite(glm::vec4(0.2f, 0.2f, 0.2f, 0.75f));
+				HUD.Layout.texts[12].SetText(std::string(std::to_string(cooldown1) + "." + std::to_string(cooldown2)));
+				HUD.Layout.sprites[11].SetColorSprite(glm::vec4(0.2f, 0.2f, 0.2f, 0.75f));
 
 			}
 			else
 			{
-				HUD.Layout.texts.at(12).SetText(std::string(""));
+				HUD.Layout.texts[12].SetText(std::string(""));
 				if (m_Inventory[index]->CurrentSpeedPotions != 0)
 				{
-					HUD.Layout.sprites.at(10).SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+					HUD.Layout.sprites[11].SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
 				}
 
 			}
@@ -1813,26 +1823,26 @@ namespace MCS
 			{
 				int cooldown1 = (int)cooldown;
 				int cooldown2 = (int)((cooldown - cooldown1) * 10);
-				HUD.Layout.texts.at(13).SetText(std::string(std::to_string(cooldown1) + "." + std::to_string(cooldown2)));
-				HUD.Layout.sprites.at(11).SetColorSprite(glm::vec4(0.2f, 0.2f, 0.2f, 0.75f));
+				HUD.Layout.texts[13].SetText(std::string(std::to_string(cooldown1) + "." + std::to_string(cooldown2)));
+				HUD.Layout.sprites[12].SetColorSprite(glm::vec4(0.2f, 0.2f, 0.2f, 0.75f));
 
 			}
 			else
 			{
-				HUD.Layout.texts.at(13).SetText(std::string(""));
+				HUD.Layout.texts[13].SetText(std::string(""));
 				if (m_Inventory[index]->CurrentBaitAmount != 0)
 				{
-					HUD.Layout.sprites.at(11).SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+					HUD.Layout.sprites[12].SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
 				}
 
 			}
 
 			//Speed boots
-			int bootSpriteID = 14;
+			int bootSpriteID = 15;
 			for (int i = 0; i < m_Inventory[index]->CurrentSpeedBoots && m_Inventory[index]->CurrentSpeedBoots <= 5; i++)
 			{
 
-				HUD.Layout.sprites.at(bootSpriteID).SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+				HUD.Layout.sprites[bootSpriteID].SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
 				bootSpriteID++;
 			}
 
@@ -1863,23 +1873,23 @@ namespace MCS
 					glm::vec2 scaleB{ 0.5 * m_WidthMultiplier, 0.5 * m_HeightMultiplier };
 					glm::vec2 scaleDif = scaleA - scaleB;
 
-					HUD.Layout.sprites.at(5).SetTranslateSprite(posA - posDif * percentage);
-					HUD.Layout.sprites.at(5).SetScaleSprite(scaleA - scaleDif * percentage);
+					HUD.Layout.sprites[6].SetTranslateSprite(posA - posDif * percentage);
+					HUD.Layout.sprites[6].SetScaleSprite(scaleA - scaleDif * percentage);
 
 
 				}
 				else
 				{
-					HUD.Layout.sprites.at(5).SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
-					HUD.Layout.sprites.at(5).SetTranslateSprite(glm::vec2(30 * m_WidthMultiplier, 30 * m_HeightMultiplier));
-					HUD.Layout.sprites.at(5).SetScaleSprite(glm::vec2(0.5 * m_WidthMultiplier, 0.5 * m_HeightMultiplier));
+					HUD.Layout.sprites[6].SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+					HUD.Layout.sprites[6].SetTranslateSprite(glm::vec2(30 * m_WidthMultiplier, 30 * m_HeightMultiplier));
+					HUD.Layout.sprites[6].SetScaleSprite(glm::vec2(0.5 * m_WidthMultiplier, 0.5 * m_HeightMultiplier));
 					m_Player[index]->Weapon->HasDoneEarthSprite = true;
 				}
 
 			}
 			else
 			{
-				HUD.Layout.sprites.at(5).SetColorSprite(glm::vec4(0.1f, 0.1f, 0.1f, 0.50f));
+				HUD.Layout.sprites[6].SetColorSprite(glm::vec4(0.1f, 0.1f, 0.1f, 0.50f));
 			}
 
 			//Fire
@@ -1899,22 +1909,22 @@ namespace MCS
 					glm::vec2 scaleB{ 0.5 * m_WidthMultiplier, 0.5 * m_HeightMultiplier };
 					glm::vec2 scaleDif = scaleA - scaleB;
 
-					HUD.Layout.sprites.at(6).SetTranslateSprite(posA - posDif * percentage);
-					HUD.Layout.sprites.at(6).SetScaleSprite(scaleA - scaleDif * percentage);
+					HUD.Layout.sprites[7].SetTranslateSprite(posA - posDif * percentage);
+					HUD.Layout.sprites[7].SetScaleSprite(scaleA - scaleDif * percentage);
 
 
 				}
 				else
 				{
-					HUD.Layout.sprites.at(6).SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
-					HUD.Layout.sprites.at(6).SetTranslateSprite(glm::vec2(50 * m_WidthMultiplier, 30 * m_HeightMultiplier));
-					HUD.Layout.sprites.at(6).SetScaleSprite(glm::vec2(0.5 * m_WidthMultiplier, 0.5 * m_HeightMultiplier));
+					HUD.Layout.sprites[7].SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+					HUD.Layout.sprites[7].SetTranslateSprite(glm::vec2(50 * m_WidthMultiplier, 30 * m_HeightMultiplier));
+					HUD.Layout.sprites[7].SetScaleSprite(glm::vec2(0.5 * m_WidthMultiplier, 0.5 * m_HeightMultiplier));
 					m_Player[index]->Weapon->HasDoneFireSprite = true;
 				}
 			}
 			else
 			{
-				HUD.Layout.sprites.at(6).SetColorSprite(glm::vec4(0.1f, 0.1f, 0.1f, 0.50f));
+				HUD.Layout.sprites[7].SetColorSprite(glm::vec4(0.1f, 0.1f, 0.1f, 0.50f));
 			}
 			//Water
 			if (m_Player[index]->Weapon->WaterHealing > 0.0f)
@@ -1933,22 +1943,22 @@ namespace MCS
 					glm::vec2 scaleB{ 0.5 * m_WidthMultiplier, 0.5 * m_HeightMultiplier };
 					glm::vec2 scaleDif = scaleA - scaleB;
 
-					HUD.Layout.sprites.at(7).SetTranslateSprite(posA - posDif * percentage);
-					HUD.Layout.sprites.at(7).SetScaleSprite(scaleA - scaleDif * percentage);
+					HUD.Layout.sprites[8].SetTranslateSprite(posA - posDif * percentage);
+					HUD.Layout.sprites[8].SetScaleSprite(scaleA - scaleDif * percentage);
 
 
 				}
 				else
 				{
-					HUD.Layout.sprites.at(7).SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
-					HUD.Layout.sprites.at(7).SetTranslateSprite(glm::vec2(70 * m_WidthMultiplier, 30 * m_HeightMultiplier));
-					HUD.Layout.sprites.at(7).SetScaleSprite(glm::vec2(0.5 * m_WidthMultiplier, 0.5 * m_HeightMultiplier));
+					HUD.Layout.sprites[8].SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+					HUD.Layout.sprites[8].SetTranslateSprite(glm::vec2(70 * m_WidthMultiplier, 30 * m_HeightMultiplier));
+					HUD.Layout.sprites[8].SetScaleSprite(glm::vec2(0.5 * m_WidthMultiplier, 0.5 * m_HeightMultiplier));
 					m_Player[index]->Weapon->HasDoneWaterSprite = true;
 				}
 			}
 			else
 			{
-				HUD.Layout.sprites.at(7).SetColorSprite(glm::vec4(0.1f, 0.1f, 0.1f, 0.50f));
+				HUD.Layout.sprites[8].SetColorSprite(glm::vec4(0.1f, 0.1f, 0.1f, 0.50f));
 			}
 			//Wind
 			if (m_Player[index]->Weapon->WindSpeed > 0.0f)
@@ -1967,22 +1977,22 @@ namespace MCS
 					glm::vec2 scaleB{ 0.5 * m_WidthMultiplier, 0.5 * m_HeightMultiplier };
 					glm::vec2 scaleDif = scaleA - scaleB;
 
-					HUD.Layout.sprites.at(8).SetTranslateSprite(posA - posDif * percentage);
-					HUD.Layout.sprites.at(8).SetScaleSprite(scaleA - scaleDif * percentage);
+					HUD.Layout.sprites[9].SetTranslateSprite(posA - posDif * percentage);
+					HUD.Layout.sprites[9].SetScaleSprite(scaleA - scaleDif * percentage);
 
 
 				}
 				else
 				{
-					HUD.Layout.sprites.at(8).SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
-					HUD.Layout.sprites.at(8).SetTranslateSprite(glm::vec2(90 * m_WidthMultiplier, 30 * m_HeightMultiplier));
-					HUD.Layout.sprites.at(8).SetScaleSprite(glm::vec2(0.5 * m_WidthMultiplier, 0.5 * m_HeightMultiplier));
+					HUD.Layout.sprites[9].SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+					HUD.Layout.sprites[9].SetTranslateSprite(glm::vec2(90 * m_WidthMultiplier, 30 * m_HeightMultiplier));
+					HUD.Layout.sprites[9].SetScaleSprite(glm::vec2(0.5 * m_WidthMultiplier, 0.5 * m_HeightMultiplier));
 					m_Player[index]->Weapon->HasDoneWindSprite = true;
 				}
 			}
 			else
 			{
-				HUD.Layout.sprites.at(8).SetColorSprite(glm::vec4(0.1f, 0.1f, 0.1f, 0.50f));
+				HUD.Layout.sprites[9].SetColorSprite(glm::vec4(0.1f, 0.1f, 0.1f, 0.50f));
 			}
 
 			//Damage Effect
@@ -1996,18 +2006,35 @@ namespace MCS
 				{
 					percentage = 0.75;
 				}
-				HUD.Layout.sprites.at(0).SetColorSprite(glm::vec4(1.0f * percentage, 0.0f, 0.0f, 0.75f));
+				HUD.Layout.sprites[0].SetColorSprite(glm::vec4(1.0f * percentage, 0.0f, 0.0f, 0.75f));
 
 
 			}
 			else if (m_Health[index]->CurrentHealth <= 4)
 			{
-				HUD.Layout.sprites.at(0).SetColorSprite(glm::vec4(0.75f, 0.0f, 0.0f, 0.75f));
+				HUD.Layout.sprites[0].SetColorSprite(glm::vec4(0.75f, 0.0f, 0.0f, 0.75f));
 			}
 			else
 			{
-				HUD.Layout.sprites.at(0).SetColorSprite(glm::vec4(0.0f, 0.0f, 0.0f, 0.75f));
+				HUD.Layout.sprites[0].SetColorSprite(glm::vec4(0.0f, 0.0f, 0.0f, 0.75f));
 			}
+
+
+			//BossFearEffect
+			timeLeft = Frosty::Time::CurrentTime() - m_Player[index]->BossFearEffectTimer;
+			if (timeLeft <= m_Player[index]->BossFearEffectTime && timeLeft >= 0)
+			{
+			/*	float percentage = m_Player[index]->BossFearEffectTime / (Frosty::Time::CurrentTime() - m_Player[index]->BossFearEffectTimer);
+				percentage /= 100;*/
+				float percentage = (Frosty::Time::CurrentTime() - m_Player[index]->BossFearEffectTimer) / m_Player[index]->BossFearEffectTime;
+
+
+				HUD.Layout.sprites[1].SetColorSprite(glm::vec4(1.0f , 1.0f, 1.0f, 1.0f - 1.0f* percentage));
+				FY_INFO("OnBossFearEffect reset");
+
+
+			}
+			
 
 		}
 
@@ -2024,9 +2051,9 @@ namespace MCS
 		{
 			auto& HUD = m_World->GetComponent<Frosty::ECS::CGUI>(m_Transform[index]->EntityPtr);
 
-			HUD.Layout.texts.at(6).SetText(text);
-			HUD.Layout.texts.at(6).SetScale(glm::vec2(0.75f * m_WidthMultiplier, 0.75f * m_HeightMultiplier));
-			HUD.Layout.texts.at(6).SetPosition(glm::vec2(posX, 425 * m_HeightMultiplier));
+			HUD.Layout.texts[6].SetText(text);
+			HUD.Layout.texts[6].SetScale(glm::vec2(0.75f * m_WidthMultiplier, 0.75f * m_HeightMultiplier));
+			HUD.Layout.texts[6].SetPosition(glm::vec2(posX, 425 * m_HeightMultiplier));
 
 			m_Player[index]->PickUpTextTimer = Frosty::Time::CurrentTime();
 		}
@@ -2035,9 +2062,9 @@ namespace MCS
 	void PlayerControllerSystem::ResetAllHUDWeaponInfo(size_t index)
 	{
 		auto& HUD = m_World->GetComponent<Frosty::ECS::CGUI>(m_Transform[index]->EntityPtr);
-		HUD.Layout.texts.at(7).SetText(std::string(""));
-		HUD.Layout.texts.at(8).SetText(std::string(""));
-		HUD.Layout.texts.at(9).SetText(std::string(""));
+		HUD.Layout.texts[7].SetText(std::string(""));
+		HUD.Layout.texts[8].SetText(std::string(""));
+		HUD.Layout.texts[9].SetText(std::string(""));
 	}
 
 	void PlayerControllerSystem::OnDamage()
@@ -2045,12 +2072,59 @@ namespace MCS
 		for (size_t i = 1; i < p_Total; i++)
 		{
 			auto& HUD = m_World->GetComponent<Frosty::ECS::CGUI>(m_Transform[i]->EntityPtr);
-			HUD.Layout.sprites.at(0).SetColorSprite(glm::vec4(1.0f, 0.0f, 0.0f, 0.75f));
+			HUD.Layout.sprites[0].SetColorSprite(glm::vec4(1.0f, 0.0f, 0.0f, 0.75f));
 
 			m_Player[i]->DamageEffectTimer = Frosty::Time::CurrentTime();
 		}
 
 	}
 
-	
+	void PlayerControllerSystem::OnBossFearEffect(Frosty::BossFearEffectEvent& e)
+	{
+		FY_INFO("OnBossFearEffect");
+		glm::vec2 pos;
+		float width = 1280.f;
+		float height = 720.f;
+
+		if (e.GetDirectionToBoss().x > 0)
+		{
+			pos.x = width; //Right
+		}
+		else if (e.GetDirectionToBoss().x < 0)
+		{
+			pos.x = 0; //Left
+		}
+		else
+		{
+			pos.x = width/2; //Midle
+		}
+
+		if (e.GetDirectionToBoss().y > 0)
+		{
+			pos.y = 0; //Bottom
+		}
+		else if (e.GetDirectionToBoss().y < 0)
+		{
+			pos.y = height; //Top
+
+		}
+		else
+		{
+			pos.y = height / 2; //Midle
+		}
+
+
+
+
+		for (size_t i = 1; i < p_Total; i++)
+		{
+			auto& HUD = m_World->GetComponent<Frosty::ECS::CGUI>(m_Transform[i]->EntityPtr);
+			HUD.Layout.sprites[1].SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+			HUD.Layout.sprites[1].SetPosition(pos);
+
+			m_Player[i]->BossFearEffectTimer = Frosty::Time::CurrentTime();
+		}
+	}
+
+
 }

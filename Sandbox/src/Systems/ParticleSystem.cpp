@@ -35,17 +35,25 @@ namespace MCS
 			transform = glm::rotate(transform, glm::radians(m_ParticleSystem[i]->SystemRotation.y), { 0.0f, 1.0f, 0.0f });
 			transform = glm::rotate(transform, glm::radians(m_ParticleSystem[i]->SystemRotation.z), { 0.0f, 0.0f, 1.0f });
 
-			glm::mat4 parentTransform = glm::translate(glm::mat4(1.0f), m_Transform[i]->Position);
-			parentTransform = glm::rotate(parentTransform, glm::radians(m_Transform[i]->Rotation.x), { 1.0f, 0.0f, 0.0f });
-			parentTransform = glm::rotate(parentTransform, glm::radians(m_Transform[i]->Rotation.y), { 0.0f, 1.0f, 0.0f });
-			parentTransform = glm::rotate(parentTransform, glm::radians(m_Transform[i]->Rotation.z), { 0.0f, 0.0f, 1.0f });
-			parentTransform = glm::scale(parentTransform, m_Transform[i]->Scale);
+			glm::mat4 parentTransform;
+			if (!m_ParticleSystem[i]->HasGravity)
+			{
+				parentTransform = glm::translate(glm::mat4(1.0f), m_Transform[i]->Position);
+				parentTransform = glm::rotate(parentTransform, glm::radians(m_Transform[i]->Rotation.x), { 1.0f, 0.0f, 0.0f });
+				parentTransform = glm::rotate(parentTransform, glm::radians(m_Transform[i]->Rotation.y), { 0.0f, 1.0f, 0.0f });
+				parentTransform = glm::rotate(parentTransform, glm::radians(m_Transform[i]->Rotation.z), { 0.0f, 0.0f, 1.0f });
+				parentTransform = glm::scale(parentTransform, m_Transform[i]->Scale);
+			}
+			else
+			{
+				parentTransform = glm::mat4(1.0f);
+			}
 
 			transform = parentTransform * transform;
 
 			m_ParticleSystem[i]->Texture->Bind();
 
-			Frosty::Renderer::SubmitParticles(m_ParticleSystem[i]->UseShader, m_ParticleSystem[i]->ParticleVertArray, transform, m_ParticleSystem[i]->ParticleCount, 2.0f);
+			Frosty::Renderer::SubmitParticles(m_ParticleSystem[i]->UseShader, m_ParticleSystem[i]->ParticleVertArray, transform, m_ParticleSystem[i]->ParticleCount, 2.0f, (unsigned int)m_ParticleSystem[i]->RenderMode);
 
 			m_ParticleSystem[i]->Texture->Unbind();
 		}
@@ -164,11 +172,6 @@ namespace MCS
 		}
 	}
 
-	void ParticleSystem::ChangeParticlesTexture(Frosty::ECS::CParticleSystem & particleSystem, std::string textureName)
-	{
-
-	}
-
 	void ParticleSystem::UpdateParticleSystem(size_t systemIndex)
 	{
 		m_ParticleSystem[systemIndex]->Timer -= Frosty::Time::DeltaTime(); //Update internal timer
@@ -176,7 +179,22 @@ namespace MCS
 		{
 			for (uint32_t i = 0; i < m_ParticleSystem[systemIndex]->EmitCount; i++)
 			{
-				ResetParticle(systemIndex, FindUnusedParticle(systemIndex));
+				uint32_t unusedParticle = FindUnusedParticle(systemIndex);
+				if (!m_ParticleSystem[systemIndex]->Loop)
+				{
+					if (unusedParticle == 0)
+					{
+						m_ParticleSystem[systemIndex]->TimesPlayed += 1;
+					}
+					if (m_ParticleSystem[systemIndex]->TimesPlayed < 1)
+					{
+						ResetParticle(systemIndex, unusedParticle);
+					}
+				}
+				else
+				{
+					ResetParticle(systemIndex, unusedParticle);
+				}
 			}
 			m_ParticleSystem[systemIndex]->Timer = m_ParticleSystem[systemIndex]->EmitRate;
 		}
@@ -219,6 +237,7 @@ namespace MCS
 			{
 				UpdateGpuData(systemIndex, i);
 			}
+			m_ParticleSystem[systemIndex]->LastUsedParticle = m_ParticleSystem[systemIndex]->MaxParticles; //To not read outside of buffer when downsizing
 		}
 		if (glm::vec3(m_ParticleSystem[systemIndex]->Particles[0].StartColor) != m_ParticleSystem[systemIndex]->SystemStartColor) //Still very temporary solution to determine if data needs updating
 		{
@@ -238,13 +257,13 @@ namespace MCS
 				m_ParticleSystem[systemIndex]->Particles[i].StartSize = m_ParticleSystem[systemIndex]->StartParticleSize;
 			}
 		}
-		if (m_ParticleSystem[systemIndex]->Particles[0].Speed != m_ParticleSystem[systemIndex]->Speed) //Temporary if we're gonna have physics, drag or random speeds
-		{
-			for (uint32_t i = 0; i < m_ParticleSystem[systemIndex]->MaxParticles; i++)
-			{
-				m_ParticleSystem[systemIndex]->Particles[i].Speed = m_ParticleSystem[systemIndex]->Speed;
-			}
-		}
+		//if (m_ParticleSystem[systemIndex]->Particles[0].Speed != m_ParticleSystem[systemIndex]->Speed) //Temporary if we're gonna have physics, drag or random speeds
+		//{
+		//	for (uint32_t i = 0; i < m_ParticleSystem[systemIndex]->MaxParticles; i++)
+		//	{
+		//		m_ParticleSystem[systemIndex]->Particles[i].Speed = m_ParticleSystem[systemIndex]->Speed;
+		//	}
+		//}
 
 		if (m_ParticleSystem[systemIndex]->Preview)
 		{
@@ -253,7 +272,22 @@ namespace MCS
 			{
 				for (uint32_t i = 0; i < m_ParticleSystem[systemIndex]->EmitCount; i++)
 				{
-					ResetParticle(systemIndex, FindUnusedParticle(systemIndex));
+					uint32_t unusedParticle = FindUnusedParticle(systemIndex);
+					if (!m_ParticleSystem[systemIndex]->Loop)
+					{
+						if (unusedParticle == 0)
+						{
+							m_ParticleSystem[systemIndex]->TimesPlayed += 1;
+						}
+						if (m_ParticleSystem[systemIndex]->TimesPlayed < 1)
+						{
+							ResetParticle(systemIndex, unusedParticle);
+						}
+					}
+					else
+					{
+						ResetParticle(systemIndex, unusedParticle);
+					}
 				}
 				m_ParticleSystem[systemIndex]->Timer = m_ParticleSystem[systemIndex]->EmitRate;
 			}
@@ -293,7 +327,16 @@ namespace MCS
 		Frosty::ECS::CParticleSystem::Particle& p = m_ParticleSystem[systemIndex]->Particles[index];
 
 		p.CamDistance = glm::length2(glm::vec3(p.Position) - m_CameraTransform->Position);
-		p.Position += (p.Direction * p.Speed) * Frosty::Time::DeltaTime();
+		if (m_ParticleSystem[systemIndex]->HasGravity)
+		{
+			p.Direction += m_ParticleSystem[systemIndex]->ParticleWeight * glm::vec4(0.0f, -1.0f, 0.0f, 1.0f) * Frosty::Time::DeltaTime();
+			glm::normalize(p.Direction);
+			p.Position += (p.Direction * p.Speed) * Frosty::Time::DeltaTime();
+		}
+		else
+		{
+			p.Position += (p.Direction * p.Speed) * Frosty::Time::DeltaTime();
+		}
 
 		//Fade in
 		if (m_ParticleSystem[systemIndex]->FadeInTreshold < p.MaxLifetime) {
@@ -341,7 +384,12 @@ namespace MCS
 			float randLifetime = RandomFloat(m_ParticleSystem[systemIndex]->MaxLifetime, m_ParticleSystem[systemIndex]->MinLifetime);
 			p.MaxLifetime = randLifetime;
 		}
-		if (m_ParticleSystem[systemIndex]->RandomStartPos == false)
+		if (m_ParticleSystem[systemIndex]->HasGravity)
+		{
+			//m_ParticleSystem[systemIndex]->ParticleSystemStartPos = m_Transform[systemIndex]->Position;
+			p.StartPos = glm::vec4(m_Transform[systemIndex]->Position, 1.0f);
+		}
+		else if (m_ParticleSystem[systemIndex]->RandomStartPos == false)
 		{
 			p.StartPos = glm::vec4(m_ParticleSystem[systemIndex]->ParticleSystemStartPos, 1.0f);
 		}
@@ -380,6 +428,7 @@ namespace MCS
 			p.Direction.z = randDir.z;
 		}
 		p.Color = p.StartColor;
+		p.Speed = m_ParticleSystem[systemIndex]->Speed; //TODO: StartSpeed
 	}
 
 	void ParticleSystem::UpdateGpuData(size_t systemIndex, size_t index, uint32_t particleCount)
@@ -421,7 +470,6 @@ namespace MCS
 			}
 		}
 
-		//m_ParticleSystem[systemIndex]->LastUsedParticle = 0;
 		return 0; // All particles taken, override the first one
 	}
 
