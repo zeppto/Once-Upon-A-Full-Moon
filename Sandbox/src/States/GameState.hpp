@@ -15,13 +15,12 @@ namespace MCS
 
 		void OnEvent(Frosty::BaseEvent& e);
 
+		void InitiateLight();
+
 		void OnGameOverEvent();
 		void OnGameWinEvent();
 	private:
 		Frosty::Application* m_App = nullptr;
-		std::shared_ptr<Frosty::ECS::Entity> m_Player;
-		std::shared_ptr<Frosty::ECS::Entity> m_Light;
-		std::shared_ptr<Frosty::ECS::Entity> m_Torch;
 	};
 }
 #endif

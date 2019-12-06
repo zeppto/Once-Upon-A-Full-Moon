@@ -88,6 +88,8 @@ namespace MCS
 			m_Start = false;
 			m_LevelFileFormat.LoadBoolMap("deadend_chests_IsStatick_t_p_e_r_h_a");
 			m_StartTimer = Frosty::Time::CurrentTime();
+			m_haveStartedMoving = false;
+			m_BossPos = glm::ivec2(9, 15);
 		}
 
 		float time = Frosty::Time::CurrentTime() - m_StartTimer - m_BossStartTimer;
@@ -812,8 +814,8 @@ namespace MCS
 		Frosty::ECS::CAnimController* animation = nullptr;
 		Frosty::ECS::CPlayer* Player = nullptr;
 		Frosty::ECS::CTransform* PlayerT = nullptr;
-		Frosty::ECS::CWeapon* m_Weapon = nullptr;
-		Frosty::ECS::CHealth* m_Health = nullptr;
+		Frosty::ECS::CWeapon* Weapon = nullptr;
+		Frosty::ECS::CHealth* Health = nullptr;
 		int weaponID = 0;
 
 		for (size_t i = 1; i < p_Total; i++)
@@ -824,7 +826,7 @@ namespace MCS
 				{
 					if (!m_World->HasComponent<Frosty::ECS::CCamera>(m_Transform[i]->EntityPtr))
 					{
-						if (!m_World->HasComponent<Frosty::ECS::CLight>(m_Transform[i]->EntityPtr))
+						/*if (!m_World->HasComponent<Frosty::ECS::CLight>(m_Transform[i]->EntityPtr))
 						{
 							if (!m_World->HasComponent<Frosty::ECS::CGUI>(m_Transform[i]->EntityPtr))
 							{
@@ -832,6 +834,13 @@ namespace MCS
 								{
 									m_World->AddComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr);
 								}
+							}
+						}*/
+						if (!m_World->HasComponent<Frosty::ECS::CGUI>(m_Transform[i]->EntityPtr))
+						{
+							if (!m_World->HasComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr))
+							{
+								m_World->AddComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr);
 							}
 						}
 					}
@@ -958,13 +967,19 @@ namespace MCS
 			}
 		}
 
+		//auto& torch = m_World->CreateEntity({ 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f });
+		//m_World->AddComponent<Frosty::ECS::CLight>(torch, Frosty::ECS::CLight::LightType::Point, 1.f, glm::vec3(0.99f, 0.9f, 0.8f), 15.f, &PlayerT->Position, glm::vec3(0.f, 5.f, 0.f));
+
 		weaponMesh->parentMatrix = PlayerT->GetModelMatrix();
 		animation->holdPtr = animation->currAnim->getHoldingJoint();
 		weaponMesh->animOffset = animation->holdPtr;
 		Frosty::Renderer::UpdateCMesh(weaponID, weaponMesh);
 
-		m_Start = true;
+		m_BossSpawned = false;
+		m_BossRoomTimer = 2.0f;
+		m_BossTimer = 0.0f;
 		m_PlayerPos = { 10, 15 };
+		m_Start = true;
 	}
 
 	Frosty::ECS::CGUI* LevelSystem::GetPlayerGUI()
