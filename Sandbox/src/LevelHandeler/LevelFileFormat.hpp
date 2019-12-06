@@ -258,14 +258,21 @@ namespace MCS
 
 		void AddEntity(const std::shared_ptr<Frosty::ECS::Entity>& entity);
 		void SaveToFile(std::string fileName);
-		void OpenFromFile(std::string fileName, glm::ivec2 roomId = glm::ivec2(0, 0), Frosty::ECS::CTransform* playerTransform = nullptr,
-			int rotation = 0, glm::vec3 move = glm::vec3(0, 0, 0));
+		void OpenFromFile(
+			std::string fileName,
+			const bool& CurrentGroup,
+			glm::ivec2 roomId = glm::ivec2(0, 0)
+			, Frosty::ECS::CTransform* playerTransform = nullptr,
+			int rotation = 0,
+			glm::vec3 move = glm::vec3(0, 0, 0),
+			const int& RoomExitDir = -1);
 		void LoadBoolMap(std::string fileName);
 		int NumberOfRoomsVisited();
 		bool AddBaitToMap(glm::vec3 baitPos, glm::ivec2 room);
 		//std::vector<glm::vec3> GetAllBaitInRoom();
 		//int GetNumberOfBaitInRoom();
 		int RemoveAllBaitInRoom(glm::ivec2 room);
+		void clearVisitedRooms();
 
 	private:
 		//std::shared_ptr<ECS::Entity> m_ExitEntity;

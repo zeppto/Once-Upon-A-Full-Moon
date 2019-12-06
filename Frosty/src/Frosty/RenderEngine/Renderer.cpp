@@ -54,7 +54,7 @@ namespace Frosty
 		for (int i = 0; i < s_RenderPas.size(); i++)
 		{
 			nrOfpasses++;
-			auto passData = s_RenderPas.at(i);
+			auto passData = s_RenderPas[i];
 
 			//For all shaders
 			for (auto& ShaderIt : passData.ShaderMap)
@@ -126,7 +126,7 @@ namespace Frosty
 					// LightIndex
 					for (int i = 0; i < int(s_ForwardPlus.GetLightIndexList().size()); i++)
 					{
-						shaderData->Shader->UploadUniformInt(("forwardPlus.LightIndexList[" + std::to_string(i) + "]").c_str(), s_ForwardPlus.GetLightIndexList().at(i));
+						shaderData->Shader->UploadUniformInt(("forwardPlus.LightIndexList[" + std::to_string(i) + "]").c_str(), s_ForwardPlus.GetLightIndexList()[i]);
 					}
 
 					// CellLightInfo
@@ -209,11 +209,11 @@ namespace Frosty
 								//If mesh is bound to a specific joint during animations.
 								if (meshData->holdJointTransform != nullptr)
 								{
-									meshData->TransformMap[TransformIt.first]->ModelMatrix = (*meshData->parentMatrix * *meshData->holdJointTransform * *meshData->TransformMap[TransformIt.first]->GetModelMatrix());
+									meshData->TransformMap.at(TransformIt.first)->ModelMatrix = (*meshData->parentMatrix * *meshData->holdJointTransform * *meshData->TransformMap.at(TransformIt.first)->GetModelMatrix());
 								}
 								else
 								{
-									meshData->TransformMap[TransformIt.first]->ModelMatrix = *meshData->parentMatrix * meshData->TransformMap[TransformIt.first]->ModelMatrix;
+									meshData->TransformMap.at(TransformIt.first)->ModelMatrix = *meshData->parentMatrix * meshData->TransformMap.at(TransformIt.first)->ModelMatrix;
 								}
 							}
 
@@ -298,8 +298,8 @@ namespace Frosty
 		if (light->Type == Frosty::ECS::CLight::LightType::Point)
 		{
 			s_SceneData->PointLights.emplace(light->EntityPtr->Id, PointLight());
-			s_SceneData->PointLights.at(int(light->EntityPtr->Id)).PointLight = light;
-			s_SceneData->PointLights.at(int(light->EntityPtr->Id)).Transform = transform;
+			s_SceneData->PointLights[int(light->EntityPtr->Id)].PointLight = light;
+			s_SceneData->PointLights[int(light->EntityPtr->Id)].Transform = transform;
 		}
 		else if (light->Type == Frosty::ECS::CLight::LightType::Directional)
 		{
@@ -312,8 +312,8 @@ namespace Frosty
 
 
 			s_SceneData->DirectionalLights.emplace(int(light->EntityPtr->Id), DirectionalLight());
-			s_SceneData->DirectionalLights.at(int(light->EntityPtr->Id)).DirectionalLight = light;
-			s_SceneData->DirectionalLights.at(int(light->EntityPtr->Id)).Transform = transform;
+			s_SceneData->DirectionalLights[int(light->EntityPtr->Id)].DirectionalLight = light;
+			s_SceneData->DirectionalLights[int(light->EntityPtr->Id)].Transform = transform;
 		}
 	}
 
@@ -321,14 +321,14 @@ namespace Frosty
 	{
 		if (light->Type == Frosty::ECS::CLight::LightType::Point)
 		{
-			s_SceneData->PointLights.at(int(light->EntityPtr->Id)).PointLight = light;
-			s_SceneData->PointLights.at(int(light->EntityPtr->Id)).Transform = transform;
+			s_SceneData->PointLights[int(light->EntityPtr->Id)].PointLight = light;
+			s_SceneData->PointLights[int(light->EntityPtr->Id)].Transform = transform;
 		}
 		else if (light->Type == Frosty::ECS::CLight::LightType::Directional)
 		{
 
-			s_SceneData->DirectionalLights.at(int(light->EntityPtr->Id)).DirectionalLight = light;
-			s_SceneData->DirectionalLights.at(int(light->EntityPtr->Id)).Transform = transform;
+			s_SceneData->DirectionalLights[int(light->EntityPtr->Id)].DirectionalLight = light;
+			s_SceneData->DirectionalLights[int(light->EntityPtr->Id)].Transform = transform;
 		}
 	}
 
@@ -352,13 +352,13 @@ namespace Frosty
 	{
 		for (auto& PLightIt : s_SceneData->PointLights)
 		{
-			//delete s_SceneData->PointLights.at(PLightIt.first);
+			//delete s_SceneData->PointLights[PLightIt.first];
 			s_SceneData->PointLights.erase(PLightIt.first);
 		}
 
 		for (auto& DLightIt : s_SceneData->DirectionalLights)
 		{
-			//delete s_SceneData->DirectionalLights.at(DLightIt.first);
+			//delete s_SceneData->DirectionalLights[DLightIt.first];
 			s_SceneData->DirectionalLights.erase(DLightIt.first);
 		}
 
@@ -415,7 +415,7 @@ namespace Frosty
 		float x = pos.x;
 		float y = pos.y;
 		for (c = text.begin(); c != text.end(); c++) {
-			Character ch = Frosty::AssetManager::GetTTF("Gabriola")->m_characters.at(*c); //TODO: Switch out for actual font provided by system
+			Character ch = Frosty::AssetManager::GetTTF("Gabriola")->m_characters[*c];
 			float xpos = x + ch.bearing.x * scale;
 			float ypos = y - (ch.size.y - ch.bearing.y) * scale;
 			float width = ch.size.x * scale;
@@ -483,7 +483,7 @@ namespace Frosty
 
 	}
 
-	void Renderer::SubmitParticles(const std::shared_ptr<Shader>& shader, const std::shared_ptr<VertexArray>& vertexArray, glm::mat4& modelMat, size_t particleCount, float maxLifetime)
+	void Renderer::SubmitParticles(const std::shared_ptr<Shader>& shader, const std::shared_ptr<VertexArray>& vertexArray, glm::mat4& modelMat, size_t particleCount, float maxLifetime, unsigned int renderMode)
 	{
 		shader->Bind();
 		vertexArray->Bind();
@@ -494,7 +494,15 @@ namespace Frosty
 
 		glEnable(GL_BLEND);
 		glDepthMask(GL_FALSE);
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+		switch (renderMode)
+		{
+		case 0:
+			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+			break;
+		case 1:
+			glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+			break;
+		}
 
 		RenderCommand::DisableBackfaceCulling();
 		RenderCommand::DrawParticles(vertexArray, particleCount);
@@ -568,7 +576,7 @@ namespace Frosty
 		// LightIndex
 		for (int i = 0; i < int(s_ForwardPlus.GetLightIndexList().size()); i++)
 		{
-			mat->UseShader->UploadUniformInt(("forwardPlus.LightIndexList[" + std::to_string(i) + "]").c_str(), s_ForwardPlus.GetLightIndexList().at(i));
+			mat->UseShader->UploadUniformInt(("forwardPlus.LightIndexList[" + std::to_string(i) + "]").c_str(), s_ForwardPlus.GetLightIndexList()[i]);
 		}
 
 		// CellLightInfo
@@ -640,11 +648,11 @@ namespace Frosty
 	//		//// at(0) will be for dept sampling for shadow map
 	//		//if (mat->HasTransparency)
 	//		//{
-	//		//	ShaderMap = &s_RenderPas.at(1);
+	//		//	ShaderMap = &s_RenderPas[1];
 	//		//}
 	//		//else
 	//		//{
-	//		//	ShaderMap = &s_RenderPas.at(2);
+	//		//	ShaderMap = &s_RenderPas[2];
 	//		//	
 	//		//}
 
@@ -669,7 +677,7 @@ namespace Frosty
 	//		{
 	//			shaderData->MaterialMap.emplace(matID, FY_NEW MaterialData);
 	//		}
-	//		auto& materialData = shaderData->MaterialMap.at(matID);
+	//		auto& materialData = shaderData->MaterialMap[matID];
 	//		materialData->Material = mat;
 
 	//		//Add the material to the MaterialLookUpMap
@@ -680,7 +688,7 @@ namespace Frosty
 	//		{
 	//			materialData->MeshMap.emplace(meshID, FY_NEW  MeshData);
 	//		}
-	//		auto& meshData = materialData->MeshMap.at(meshID);
+	//		auto& meshData = materialData->MeshMap[meshID];
 	//		meshData->VertexArray = mesh->Mesh;
 	//		meshData->TransformMap.emplace(transformID, transform);
 	//		if (mesh->parentMatrix != nullptr)
@@ -730,12 +738,12 @@ namespace Frosty
 
 		//Check if the shader key is already in the map, if not add it.
 		std::string ShaderName = mat->UseShader->GetName();
-		if (s_RenderPas.at(RenderPassID).ShaderMap.find(mat->UseShader->GetName()) == s_RenderPas.at(RenderPassID).ShaderMap.end())
+		if (s_RenderPas[RenderPassID].ShaderMap.find(mat->UseShader->GetName()) == s_RenderPas[RenderPassID].ShaderMap.end())
 		{
-			s_RenderPas.at(RenderPassID).ShaderMap.emplace(mat->UseShader->GetName(), FY_NEW ShaderData);
+			s_RenderPas[RenderPassID].ShaderMap.emplace(mat->UseShader->GetName(), FY_NEW ShaderData);
 
 		}
-		auto& shaderData = s_RenderPas.at(RenderPassID).ShaderMap.at(ShaderName);
+		auto& shaderData = s_RenderPas[RenderPassID].ShaderMap.at(ShaderName);
 		shaderData->Shader = mat->UseShader;
 
 
@@ -777,7 +785,7 @@ namespace Frosty
 		auto& transformMap = meshData->TransformMap;
 		s_TransformLookUpMap.emplace(transformID, &transformMap);
 
-		s_RenderPas.at(RenderPassID).ShaderMap; //For debugging
+		s_RenderPas[RenderPassID].ShaderMap; //For debugging
 	}
 
 	void Renderer::RemoveFromRenderer(const size_t& matID, const std::string& meshName, const size_t& transformID)

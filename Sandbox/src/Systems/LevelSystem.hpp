@@ -4,12 +4,13 @@
 #include "LevelHandeler/LevelsHardCoded.hpp"
 #include "LevelHandeler/LevelFileFormat.hpp"
 
+namespace Frosty { class BoolMap; }
 namespace Frosty { class ExitLevelEvent; }
 namespace Frosty { class SaveLevelEvent; }
-namespace Frosty { class CreateLevelEvent; }
 namespace Frosty { class OpenLevelEvent; }
+namespace Frosty { class CreateLevelEvent; }
 namespace Frosty { class CreatEntityEvent; }
-namespace Frosty { class BoolMap; }
+namespace Frosty { class UpdatePlayerRoomCoordEvent; }
 namespace Frosty { class ResetEvent; }
 namespace Frosty { class BossSpawnedEvent; }
 namespace Frosty { class BaitPlacedEvent; }
@@ -23,6 +24,10 @@ struct bossRememberdPath
 
 namespace MCS
 {
+
+	
+
+
 	class LevelSystem : public Frosty::ECS::BaseSystem
 	{
 	public:
@@ -40,14 +45,23 @@ namespace MCS
 		virtual std::string GetInfo() const override;
 
 	private:
+
+		struct RoomInfo
+		{
+			std::string RoomName{""};
+			int Rotation;
+		};
+
+
 		void OnExitLevelEvent(Frosty::ExitLevelEvent& e);
 		void OnSaveLevelEvent(Frosty::SaveLevelEvent& e);
 		void OnCreateLevelEvent(Frosty::CreateLevelEvent& e);
 		void OnOpenLevelEvent(Frosty::OpenLevelEvent& e);
 		void OnCreatEntityEvent(Frosty::CreatEntityEvent& e);
+		void OnPlayerUpdateCoordEvent(Frosty::UpdatePlayerRoomCoordEvent& e);
+		void FlipRoomNames();
 		void OnResetEvent(Frosty::ResetEvent& e);
 		Frosty::ECS::CGUI* GetPlayerGUI();
-
 		void OnBossSpawnedEvent(Frosty::BossSpawnedEvent& e);
 		void OnBaitPlacedEvent(Frosty::BaitPlacedEvent& e);
 
@@ -58,7 +72,17 @@ namespace MCS
 		std::array<Frosty::ECS::CTransform*, Frosty::ECS::MAX_ENTITIES_PER_COMPONENT> m_Transform;
 
 		MapGenerator m_Map;
-		glm::ivec2 m_PlayerPos = { 10, 15 };//{ 10, 15 };
+
+		//Canvas
+		bool m_CurrentRoomBool = true;
+		RoomInfo m_T_Room;
+		RoomInfo m_O_Room;
+
+
+		glm::ivec2 m_PlayerCoords = { 10, 15 };//{ 10, 15 };
+		glm::ivec2 m_OtherRoom = { -1, -1 };
+
+		//glm::ivec2 m_PlayerPos = { 10, 15 };//{ 10, 15 };
 		glm::ivec2 m_BossPos = { 9, 15 };
 		glm::ivec2 m_BossLastRoom = { -1, -1 };
 		float m_StartTimer = 0.0f;
@@ -68,6 +92,7 @@ namespace MCS
 		float m_BossRoomTimer = 100.0f; //in sec (max)
 		float m_BossFollowTimer = 2.0f; //in min
 
+
 		float m_BossHawol = 0.0f;
 		float m_BossStartTimer = 10.0f;
 		bossRememberdPath m_BossRememberdPath;
@@ -75,7 +100,6 @@ namespace MCS
 
 		//temp bools
 		bool m_haveStartedMoving = false;
-
 
 		//map.generateMap();
 		Room m_CurrentRoome;// = map.getRoom(glm::ivec2(11, 15));
@@ -94,7 +118,15 @@ namespace MCS
 		Frosty::ECS::CTransform* m_PlayerTransform = nullptr;
 		bool m_CreatNewRoom = false;
 		bool m_LodeNamedRoom = false;
+		bool m_ReStart = false;
 		bool m_BossSpawned{ false };
+
+		bool m_LoadMapBool = false;
+		Frosty::ECS::CTransform* m_PlayerTransformLoadComponent;
+		int m_LoadExitDir = -1;
+		std::string m_LoadFileName = "";
+		int m_MapRotation = 0;
+
 
 		//int rotation = 0;
 		//std::string texture = map.getRoomTextur(glm::ivec2(11, 15), &rotation);

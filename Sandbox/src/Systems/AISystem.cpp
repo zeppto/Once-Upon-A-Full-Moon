@@ -44,11 +44,11 @@ namespace MCS
 			//	}
 			//}
 
-			////Boss Timer For Debug
-			//if (Frosty::Time::CurrentTime() - BossTimer >= BossSpawnTime)
-			//{
-			//	if (!m_BossSpawned) SpawnBoss();
-			//}
+			//Boss Timer For Debug
+			if (Frosty::Time::CurrentTime() - m_BossTimer >= m_BossSpawnTime)
+			{
+				//if (!m_BossSpawned) SpawnBoss();
+			}
 		}
 	}
 
@@ -197,7 +197,9 @@ namespace MCS
 			}
 			else
 			{
-				//if (Frosty::Time::GetFrameCount() % 60 == 0) FY_INFO("Reset");
+
+		//		if (Frosty::Time::GetFrameCount() % 60 == 0) FY_INFO("Reset");
+
 				return;
 			}
 		}
@@ -213,7 +215,9 @@ namespace MCS
 		if (m_Health[index]->CurrentHealth <= m_Health[index]->MaxHealth * m_Enemy[index]->RunOnHealth)
 		{
 			m_Enemy[index]->CurrentState = Frosty::ECS::CEnemy::State::Escape;
-			//if (Frosty::Time::GetFrameCount() % 60 == 0) FY_INFO("Escape");
+
+		//	if (Frosty::Time::GetFrameCount() % 60 == 0) FY_INFO("Escape");
+
 			return;
 		}
 
@@ -221,7 +225,9 @@ namespace MCS
 		if (glm::distance(m_Transform[index]->Position, m_Enemy[index]->Target->Position) > m_Enemy[index]->SightRange)
 		{
 			m_Enemy[index]->CurrentState = Frosty::ECS::CEnemy::State::Idle;
-			//if (Frosty::Time::GetFrameCount() % 60 == 0) FY_INFO("Idle");
+
+		//	if (Frosty::Time::GetFrameCount() % 60 == 0) FY_INFO("Idle");
+
 			return;
 		}
 
@@ -229,7 +235,9 @@ namespace MCS
 		if ((glm::distance(m_Transform[index]->Position, m_Enemy[index]->Target->Position) <= m_Enemy[index]->Weapon->MaxAttackRange))
 		{
 			m_Enemy[index]->CurrentState = Frosty::ECS::CEnemy::State::Attack;
-			//if (Frosty::Time::GetFrameCount() % 60 == 0) FY_INFO("Attack");
+
+		//	if (Frosty::Time::GetFrameCount() % 60 == 0) FY_INFO("Attack");
+
 
 			//if (glm::distance(m_Transform[index]->Position, m_Enemy[index]->Target->Position) < m_Enemy[index]->Weapon->MinAttackRange)
 			//{
@@ -246,7 +254,9 @@ namespace MCS
 			if (!stopChase)
 			{
 				m_Enemy[index]->CurrentState = Frosty::ECS::CEnemy::State::Chase;
-				//if (Frosty::Time::GetFrameCount() % 60 == 0) FY_INFO("Chase");
+
+		//		if (Frosty::Time::GetFrameCount() % 60 == 0) FY_INFO("Chase");
+
 			}
 		}
 	}
@@ -378,7 +388,6 @@ namespace MCS
 		float product = glm::dot(glm::normalize(originDirection), pointVector);
 
 		float rotationOffset = glm::degrees(glm::acos(product)) + extraRotation;
-
 
 		m_Transform[index]->Rotation.y = rotationOffset;
 	}
