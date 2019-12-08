@@ -532,7 +532,7 @@ namespace MCS
 		auto& particles = m_World->AddComponent<Frosty::ECS::CParticleSystem>(projectile, "Particles", "particle", 50, glm::vec3(0.7f, 0.7f, 1.0f), 3.0f);
 		particles.ParticleSystemDirection = glm::vec3(-1.0f, 0.0f, 0.0f);
 		particles.RandomDirection = true;
-		particles.randMainDir = particles.ParticleSystemDirection;
+		particles.randMainDir = glm::vec3(0.0f, 0.0f, -1.0f);
 		particles.randSpread = 0.2f;
 		particles.StartParticleSize = 0.4f;
 		particles.EmitCount = 2;
@@ -542,7 +542,7 @@ namespace MCS
 		particles.FadeTreshold = 1.3f;
 		particles.StaticColor = false;
 		particles.SystemEndColor = glm::vec3(0.0f, 0.0f, 1.0f);
-		particles.ParticleSystemStartPos = glm::vec3(0.0f, 0.0f, 1.1f);
+		particles.ParticleSystemStartPos = glm::vec3(0.0f, 0.0f, -0.6f);
 		particles.HasGravity = true;
 
 		float criticalHit = 0;
@@ -616,7 +616,7 @@ namespace MCS
 			auto& particles = m_World->AddComponent<Frosty::ECS::CParticleSystem>(projectile, "Particles", "particle", 50, glm::vec3(0.0f, 1.0f, 0.2f), 3.0f);
 			particles.ParticleSystemDirection = glm::vec3(0.0f, 0.0f, -1.0f);
 			particles.RandomDirection = true;
-			particles.randMainDir = particles.ParticleSystemDirection;
+			particles.randMainDir = glm::vec3(0.0f, 0.0f, -1.0f);
 			particles.randSpread = 0.2f;
 			particles.StartParticleSize = 0.4f;
 			particles.EmitCount = 2;
@@ -626,7 +626,7 @@ namespace MCS
 			particles.FadeTreshold = 1.3f;
 			particles.StaticColor = false;
 			particles.SystemEndColor = glm::vec3(1.0f, 1.0f, 1.0f);
-			particles.ParticleSystemStartPos = glm::vec3(0.0f, 0.0f, 1.1f);
+			particles.ParticleSystemStartPos = glm::vec3(0.0f, 0.0f, -0.6f);
 			particles.HasGravity = true;
 
 			if (weaponComp.FireCriticalHitChance > 0.0f)
@@ -683,7 +683,7 @@ namespace MCS
 		auto& particles = m_World->AddComponent<Frosty::ECS::CParticleSystem>(projectile, "Particles", "particle", 50, glm::vec3(0.0f, 1.0f, 0.2f), 3.0f);
 		particles.ParticleSystemDirection = glm::vec3(0.0f, 0.0f, -1.0f);
 		particles.RandomDirection = true;
-		particles.randMainDir = particles.ParticleSystemDirection;
+		particles.randMainDir = glm::vec3(0.0f, 0.0f, -1.0f);
 		particles.randSpread = 0.2f;
 		particles.StartParticleSize = 0.4f;
 		particles.EmitCount = 2;
@@ -693,7 +693,7 @@ namespace MCS
 		particles.FadeTreshold = 1.3f;
 		particles.StaticColor = false;
 		particles.SystemEndColor = glm::vec3(1.0f, 1.0f, 1.0f);
-		particles.ParticleSystemStartPos = glm::vec3(0.0f, 0.0f, 1.1f);
+		particles.ParticleSystemStartPos = glm::vec3(0.0f, 0.0f, -0.6f);
 		particles.HasGravity = true;
 
 		if (weaponComp.FireCriticalHitChance > 0.0f)
@@ -721,7 +721,7 @@ namespace MCS
 		auto& fireParticles = m_World->AddComponent<Frosty::ECS::CParticleSystem>(fireEffect, "Particles", "particleSpark1", 30, glm::vec3(1.0f, 0.0f, 0.0f), 3.0f);
 		fireParticles.ParticleSystemDirection = glm::vec3(-1.0f, 0.0f, 0.0f);
 		fireParticles.RandomDirection = true;
-		fireParticles.randMainDir = fireParticles.ParticleSystemDirection;
+		fireParticles.randMainDir = glm::vec3(0.0f, 0.0f, -1.0f);
 		fireParticles.randSpread = 0.05f;
 		fireParticles.StartParticleSize = 0.4f;
 		fireParticles.EmitCount = 2;
@@ -731,7 +731,7 @@ namespace MCS
 		fireParticles.FadeTreshold = 1.3f;
 		fireParticles.StaticColor = false;
 		fireParticles.SystemEndColor = glm::vec3(0.0f, 0.0f, 1.0f);
-		fireParticles.ParticleSystemStartPos = glm::vec3(0.0f, 0.0f, 1.1f);
+		fireParticles.ParticleSystemStartPos = glm::vec3(0.0f, 0.0f, -0.6f);
 		fireParticles.HasGravity = true;
 
 		attack.FireEffect = fireEffect;
@@ -744,7 +744,7 @@ namespace MCS
 		auto& earthParticles = m_World->AddComponent<Frosty::ECS::CParticleSystem>(earthEffect, "Particles", "particleSpark1", 30, glm::vec3(0.5f, 0.5f, 0.1f), 3.0f);
 		earthParticles.ParticleSystemDirection = glm::vec3(-1.0f, 0.0f, 0.0f);
 		earthParticles.RandomDirection = true;
-		earthParticles.randMainDir = earthParticles.ParticleSystemDirection;
+		earthParticles.randMainDir = glm::vec3(0.0f, 0.0f, -1.0f);
 		earthParticles.randSpread = 0.05f;
 		earthParticles.StartParticleSize = 0.4f;
 		earthParticles.EmitCount = 2;
@@ -754,7 +754,7 @@ namespace MCS
 		earthParticles.FadeTreshold = 1.3f;
 		earthParticles.StaticColor = false;
 		earthParticles.SystemEndColor = glm::vec3(0.0f, 0.0f, 1.0f);
-		earthParticles.ParticleSystemStartPos = glm::vec3(0.0f, 0.0f, 1.1f);
+		earthParticles.ParticleSystemStartPos = glm::vec3(0.0f, 0.0f, -0.6f);
 		earthParticles.HasGravity = true;
 
 		attack.EarthEffect = earthEffect;
@@ -767,7 +767,7 @@ namespace MCS
 		auto& windParticles = m_World->AddComponent<Frosty::ECS::CParticleSystem>(windEffect, "Particles", "particleSpark1", 30, glm::vec3(0.0f, 1.0f, 0.0f), 3.0f);
 		windParticles.ParticleSystemDirection = glm::vec3(-1.0f, 0.0f, 0.0f);
 		windParticles.RandomDirection = true;
-		windParticles.randMainDir = windParticles.ParticleSystemDirection;
+		windParticles.randMainDir = glm::vec3(0.0f, 0.0f, -1.0f);
 		windParticles.randSpread = 0.05f;
 		windParticles.StartParticleSize = 0.4f;
 		windParticles.EmitCount = 2;
@@ -777,7 +777,7 @@ namespace MCS
 		windParticles.FadeTreshold = 1.3f;
 		windParticles.StaticColor = false;
 		windParticles.SystemEndColor = glm::vec3(0.0f, 0.0f, 1.0f);
-		windParticles.ParticleSystemStartPos = glm::vec3(0.0f, 0.0f, 1.1f);
+		windParticles.ParticleSystemStartPos = glm::vec3(0.0f, 0.0f, -0.6f);
 		windParticles.HasGravity = true;
 
 		attack.WindEffect = windEffect;
@@ -790,7 +790,7 @@ namespace MCS
 		auto& waterParticles = m_World->AddComponent<Frosty::ECS::CParticleSystem>(waterEffect, "Particles", "particleSpark1", 30, glm::vec3(0.0f, 0.0f, 1.0f), 3.0f);
 		waterParticles.ParticleSystemDirection = glm::vec3(-1.0f, 0.0f, 0.0f);
 		waterParticles.RandomDirection = true;
-		waterParticles.randMainDir = waterParticles.ParticleSystemDirection;
+		waterParticles.randMainDir = glm::vec3(0.0f, 0.0f, -1.0f);
 		waterParticles.randSpread = 0.05f;
 		waterParticles.StartParticleSize = 0.4f;
 		waterParticles.EmitCount = 2;
@@ -800,7 +800,7 @@ namespace MCS
 		waterParticles.FadeTreshold = 1.3f;
 		waterParticles.StaticColor = false;
 		waterParticles.SystemEndColor = glm::vec3(0.0f, 0.0f, 1.0f);
-		waterParticles.ParticleSystemStartPos = glm::vec3(0.0f, 0.0f, 1.1f);
+		waterParticles.ParticleSystemStartPos = glm::vec3(0.0f, 0.0f, -0.6f);
 		waterParticles.HasGravity = true;
 
 		attack.WaterEffect = waterEffect;

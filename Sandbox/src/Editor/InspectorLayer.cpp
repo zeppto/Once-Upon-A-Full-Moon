@@ -1227,99 +1227,99 @@ namespace MCS
 				Frosty::EventBus::GetEventBus()->Publish<Frosty::CreatEntityEvent>(Frosty::CreatEntityEvent(3));
 			}
 			ImGui::SameLine();
-			if (ImGui::Button("MushroomCirkel", ImVec2(110.0f, EDITOR_MAIN_MENU_BAR_HEIGHT)))
+			if (ImGui::Button("Mushroom Circle", ImVec2(120.0f, EDITOR_MAIN_MENU_BAR_HEIGHT)))
 			{
 				Frosty::EventBus::GetEventBus()->Publish<Frosty::CreatEntityEvent>(Frosty::CreatEntityEvent(4));
 			}
 			ImGui::SameLine();
-			if (ImGui::Button("mushroomsAndStonesBig", ImVec2(170.0f, EDITOR_MAIN_MENU_BAR_HEIGHT)))
+			if (ImGui::Button("Mushrooms And Stones Big", ImVec2(180.0f, EDITOR_MAIN_MENU_BAR_HEIGHT)))
 			{
 				Frosty::EventBus::GetEventBus()->Publish<Frosty::CreatEntityEvent>(Frosty::CreatEntityEvent(5));
 			}
 			ImGui::SameLine();
-			if (ImGui::Button("mushroomsAndStonesSmall", ImVec2(170.0f, EDITOR_MAIN_MENU_BAR_HEIGHT)))
+			if (ImGui::Button("Mushrooms And Stones Small", ImVec2(190.0f, EDITOR_MAIN_MENU_BAR_HEIGHT)))
 			{
 				Frosty::EventBus::GetEventBus()->Publish<Frosty::CreatEntityEvent>(Frosty::CreatEntityEvent(6));
 			}
 			ImGui::SameLine();
-			if (ImGui::Button("mushrooms", ImVec2(90.0f, EDITOR_MAIN_MENU_BAR_HEIGHT)))
+			if (ImGui::Button("Mushrooms", ImVec2(90.0f, EDITOR_MAIN_MENU_BAR_HEIGHT)))
 			{
 				Frosty::EventBus::GetEventBus()->Publish<Frosty::CreatEntityEvent>(Frosty::CreatEntityEvent(7));
 			}
 			ImGui::SameLine();
-			if (ImGui::Button("mushroomLong", ImVec2(100.0f, EDITOR_MAIN_MENU_BAR_HEIGHT)))
+			if (ImGui::Button("Mushroom Long", ImVec2(110.0f, EDITOR_MAIN_MENU_BAR_HEIGHT)))
 			{
 				Frosty::EventBus::GetEventBus()->Publish<Frosty::CreatEntityEvent>(Frosty::CreatEntityEvent(8));
 			}
 			ImGui::SameLine();
-			if (ImGui::Button("mushroomsFlat", ImVec2(100.0f, EDITOR_MAIN_MENU_BAR_HEIGHT)))
+			if (ImGui::Button("Mushrooms Flat", ImVec2(110.0f, EDITOR_MAIN_MENU_BAR_HEIGHT)))
 			{
 				Frosty::EventBus::GetEventBus()->Publish<Frosty::CreatEntityEvent>(Frosty::CreatEntityEvent(9));
 			}
-			if (ImGui::Button("2stones", ImVec2(80.0f, EDITOR_MAIN_MENU_BAR_HEIGHT)))
+			if (ImGui::Button("2 Stones", ImVec2(90.0f, EDITOR_MAIN_MENU_BAR_HEIGHT)))
 			{
 				Frosty::EventBus::GetEventBus()->Publish<Frosty::CreatEntityEvent>(Frosty::CreatEntityEvent(10));
 			}
 			ImGui::SameLine();
-			if (ImGui::Button("3stones", ImVec2(80.0f, EDITOR_MAIN_MENU_BAR_HEIGHT)))
+			if (ImGui::Button("3 Stones", ImVec2(90.0f, EDITOR_MAIN_MENU_BAR_HEIGHT)))
 			{
 				Frosty::EventBus::GetEventBus()->Publish<Frosty::CreatEntityEvent>(Frosty::CreatEntityEvent(11));
 			}
 			ImGui::SameLine();
-			if (ImGui::Button("4stones", ImVec2(80.0f, EDITOR_MAIN_MENU_BAR_HEIGHT)))
+			if (ImGui::Button("4 Stones", ImVec2(90.0f, EDITOR_MAIN_MENU_BAR_HEIGHT)))
 			{
 				Frosty::EventBus::GetEventBus()->Publish<Frosty::CreatEntityEvent>(Frosty::CreatEntityEvent(12));
 			}
 			ImGui::SameLine();
-			if (ImGui::Button("treeBunch3", ImVec2(100.0f, EDITOR_MAIN_MENU_BAR_HEIGHT)))
+			if (ImGui::Button("Tree Bunch 3", ImVec2(110.0f, EDITOR_MAIN_MENU_BAR_HEIGHT)))
 			{
 				Frosty::EventBus::GetEventBus()->Publish<Frosty::CreatEntityEvent>(Frosty::CreatEntityEvent(13));
 			}
 			ImGui::SameLine();
-			if (ImGui::Button("treeBunch4", ImVec2(100.0f, EDITOR_MAIN_MENU_BAR_HEIGHT)))
+			if (ImGui::Button("Tree Bunch 4", ImVec2(110.0f, EDITOR_MAIN_MENU_BAR_HEIGHT)))
 			{
 				Frosty::EventBus::GetEventBus()->Publish<Frosty::CreatEntityEvent>(Frosty::CreatEntityEvent(14));
 			}
 			ImGui::SameLine();
-			if (ImGui::Button("treeBunch7", ImVec2(100.0f, EDITOR_MAIN_MENU_BAR_HEIGHT)))
+			if (ImGui::Button("Tree Bunch 7", ImVec2(110.0f, EDITOR_MAIN_MENU_BAR_HEIGHT)))
 			{
 				Frosty::EventBus::GetEventBus()->Publish<Frosty::CreatEntityEvent>(Frosty::CreatEntityEvent(15));
 			}
 			ImGui::SameLine();
-			if (ImGui::Button("treeBunchWall", ImVec2(100.0f, EDITOR_MAIN_MENU_BAR_HEIGHT)))
+			if (ImGui::Button("Tree Bunch Wall", ImVec2(120.0f, EDITOR_MAIN_MENU_BAR_HEIGHT)))
 			{
 				Frosty::EventBus::GetEventBus()->Publish<Frosty::CreatEntityEvent>(Frosty::CreatEntityEvent(16));
 			}
 			ImGui::SameLine();
-			if (ImGui::Button("chest", ImVec2(80.0f, EDITOR_MAIN_MENU_BAR_HEIGHT)))
+			if (ImGui::Button("Chest", ImVec2(80.0f, EDITOR_MAIN_MENU_BAR_HEIGHT)))
 			{
 				Frosty::EventBus::GetEventBus()->Publish<Frosty::CreatEntityEvent>(Frosty::CreatEntityEvent(17));
 			}
-			if (ImGui::Button("sparsFierflis", ImVec2(100.0f, EDITOR_MAIN_MENU_BAR_HEIGHT)))
+			if (ImGui::Button("Sparse Fireflies", ImVec2(120.0f, EDITOR_MAIN_MENU_BAR_HEIGHT)))
 			{
 				Frosty::EventBus::GetEventBus()->Publish<Frosty::CreatEntityEvent>(Frosty::CreatEntityEvent(18));
 			}
 			ImGui::SameLine();
-			if (ImGui::Button("fierflis", ImVec2(80.0f, EDITOR_MAIN_MENU_BAR_HEIGHT)))
+			if (ImGui::Button("Fireflies", ImVec2(80.0f, EDITOR_MAIN_MENU_BAR_HEIGHT)))
 			{
 				Frosty::EventBus::GetEventBus()->Publish<Frosty::CreatEntityEvent>(Frosty::CreatEntityEvent(19));
 			}
 			ImGui::SameLine();
-			if (ImGui::Button("fierflisSwarm", ImVec2(100.0f, EDITOR_MAIN_MENU_BAR_HEIGHT)))
+			if (ImGui::Button("Fireflies Swarm", ImVec2(120.0f, EDITOR_MAIN_MENU_BAR_HEIGHT)))
 			{
 				Frosty::EventBus::GetEventBus()->Publish<Frosty::CreatEntityEvent>(Frosty::CreatEntityEvent(20));
 			}
 			ImGui::SameLine();
-			if (ImGui::Button("fierflisBlue", ImVec2(100.0f, EDITOR_MAIN_MENU_BAR_HEIGHT)))
+			if (ImGui::Button("Fireflies Blue", ImVec2(120.0f, EDITOR_MAIN_MENU_BAR_HEIGHT)))
 			{
 				Frosty::EventBus::GetEventBus()->Publish<Frosty::CreatEntityEvent>(Frosty::CreatEntityEvent(21));
 			}
-			if (ImGui::Button("cultist", ImVec2(100.0f, EDITOR_MAIN_MENU_BAR_HEIGHT)))
+			if (ImGui::Button("Cultist", ImVec2(100.0f, EDITOR_MAIN_MENU_BAR_HEIGHT)))
 			{
 				Frosty::EventBus::GetEventBus()->Publish<Frosty::CreatEntityEvent>(Frosty::CreatEntityEvent(22));
 			}
 			ImGui::SameLine();
-			if (ImGui::Button("wolf", ImVec2(100.0f, EDITOR_MAIN_MENU_BAR_HEIGHT)))
+			if (ImGui::Button("Wolf", ImVec2(100.0f, EDITOR_MAIN_MENU_BAR_HEIGHT)))
 			{
 				Frosty::EventBus::GetEventBus()->Publish<Frosty::CreatEntityEvent>(Frosty::CreatEntityEvent(23));
 			}
@@ -1358,7 +1358,7 @@ namespace MCS
 			}
 			if (ImGui::BeginMenu("Level"))
 			{
-				if (ImGui::MenuItem("Create Deadend"))
+				if (ImGui::MenuItem("Create dead end"))
 				{
 					Frosty::EventBus::GetEventBus()->Publish<Frosty::CreateLevelEvent>(Frosty::CreateLevelEvent(true, false, false, false));
 				}
@@ -1370,7 +1370,7 @@ namespace MCS
 				{
 					Frosty::EventBus::GetEventBus()->Publish<Frosty::CreateLevelEvent>(Frosty::CreateLevelEvent(false, false, true, true));
 				}
-				if (ImGui::MenuItem("Create three way road"))
+				if (ImGui::MenuItem("Create three-way road"))
 				{
 					Frosty::EventBus::GetEventBus()->Publish<Frosty::CreateLevelEvent>(Frosty::CreateLevelEvent(true, false, true, true));
 				}
