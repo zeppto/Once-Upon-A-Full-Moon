@@ -17,12 +17,16 @@ namespace MCS
 			auto& testTranform = world->GetComponent<Frosty::ECS::CTransform>(PlaneOne);
 			testTranform.Scale = glm::vec3(300, 1.0f, 300);
 			testTranform.Rotation = glm::vec3(0, rotation, 0);
-			world->AddComponent<Frosty::ECS::CMesh>(PlaneOne, Frosty::AssetManager::GetMesh("tiledGround"));
-			//world->AddComponent<Frosty::ECS::CMesh>(PlaneOne, Frosty::AssetManager::GetMesh("pPlane1"));
-			auto& testMaterial = world->AddComponent<Frosty::ECS::CMaterial>(PlaneOne, Frosty::AssetManager::GetShader("Texture2D"));
+			//world->AddComponent<Frosty::ECS::CMesh>(PlaneOne, Frosty::AssetManager::GetMesh("tiledGround"));
+			world->AddComponent<Frosty::ECS::CMesh>(PlaneOne, Frosty::AssetManager::GetMesh("pPlane1"));
+			auto& testMaterial = world->AddComponent<Frosty::ECS::CMaterial>(PlaneOne, Frosty::AssetManager::GetShader("BlendShader"));
 			//testMaterial.Albedo = glm::vec4(0.2f, 0.8f, 0.3f, 1.0f);
 			//testMaterial.DiffuseTexture = Frosty::AssetManager::GetTexture2D(texture);
-			testMaterial.DiffuseTexture = Frosty::AssetManager::GetTexture2D("brown_mud_diffuse");
+			testMaterial.DiffuseTexture = Frosty::AssetManager::GetTexture2D("ground_test2");
+			testMaterial.NormalTexture = Frosty::AssetManager::GetTexture2D("ground_test_normal");
+			testMaterial.BlendMapTexture = Frosty::AssetManager::GetTexture2D("black");
+			testMaterial.BlendTexture1 = Frosty::AssetManager::GetTexture2D("road_test2");
+			testMaterial.BlendTexture2 = Frosty::AssetManager::GetTexture2D("ground_test2");
 			//testMaterial.TextureScale = glm::vec2(mapDepth / 10.0f, mapLength / 10.0f);
 
 			for (int i = 0; i < 8; i++)
@@ -33,6 +37,7 @@ namespace MCS
 				TreeTranform.Position = BorderTrees(i);
 				auto& TreeMaterial = world->AddComponent<Frosty::ECS::CMaterial>(Tree, Frosty::AssetManager::GetShader("Texture2D"));
 				TreeMaterial.Albedo = glm::vec4(0.2f, 0.8f, 0.3f, 1.0f);
+				TreeMaterial.HasTransparency = true;
 				std::string treeName = "Tree" + std::to_string(((rand() % NrOfTreeTypes) + 1));
 				//Tree7 is my fave
 				TreeMaterial.DiffuseTexture = Frosty::AssetManager::GetTexture2D("Tree7");
@@ -47,6 +52,7 @@ namespace MCS
 				TreeTranform.Position = BorderTrees(i * 4 + 8);
 				auto& TreeMaterial = world->AddComponent<Frosty::ECS::CMaterial>(Tree, Frosty::AssetManager::GetShader("Texture2D"));
 				TreeMaterial.Albedo = glm::vec4(0.2f, 0.8f, 0.3f, 1.0f);
+				TreeMaterial.HasTransparency = true;
 				std::string treeName = "Tree" + std::to_string(((rand() % NrOfTreeTypes) + 1));
 				//Tree7 is my fave
 				TreeMaterial.DiffuseTexture = Frosty::AssetManager::GetTexture2D("Tree7");
@@ -58,6 +64,7 @@ namespace MCS
 				Tree2Tranform.Position = BorderTrees(i * 4 + 9);
 				auto& Tree2Material = world->AddComponent<Frosty::ECS::CMaterial>(Tree2, Frosty::AssetManager::GetShader("Texture2D"));
 				Tree2Material.Albedo = glm::vec4(0.2f, 0.8f, 0.3f, 1.0f);
+				Tree2Material.HasTransparency = true;
 				treeName = "Tree" + std::to_string(((rand() % NrOfTreeTypes) + 1));
 				//Tree7 is my fave
 				Tree2Material.DiffuseTexture = Frosty::AssetManager::GetTexture2D("Tree7");
@@ -69,6 +76,7 @@ namespace MCS
 				Tree3Tranform.Position = BorderTrees(i * 4 + 10);
 				auto& Tree3Material = world->AddComponent<Frosty::ECS::CMaterial>(Tree3, Frosty::AssetManager::GetShader("Texture2D"));
 				Tree3Material.Albedo = glm::vec4(0.2f, 0.8f, 0.3f, 1.0f);
+				Tree3Material.HasTransparency = true;
 				treeName = "Tree" + std::to_string(((rand() % NrOfTreeTypes) + 1));
 				//Tree7 is my fave
 				Tree3Material.DiffuseTexture = Frosty::AssetManager::GetTexture2D("Tree7");
@@ -80,6 +88,7 @@ namespace MCS
 				Tree4Tranform.Position = BorderTrees(i * 4 + 11);
 				auto& Tree4Material = world->AddComponent<Frosty::ECS::CMaterial>(Tree4, Frosty::AssetManager::GetShader("Texture2D"));
 				Tree4Material.Albedo = glm::vec4(0.2f, 0.8f, 0.3f, 1.0f);
+				Tree4Material.HasTransparency = true;
 				treeName = "Tree" + std::to_string(((rand() % NrOfTreeTypes) + 1));
 				//Tree7 is my fave
 				Tree4Material.DiffuseTexture = Frosty::AssetManager::GetTexture2D("Tree7");
@@ -95,6 +104,7 @@ namespace MCS
 				TreeTranform.Position = glm::vec3(2.3f, 0.0f, -135.3f);
 				auto& TreeMaterial = world->AddComponent<Frosty::ECS::CMaterial>(Tree, Frosty::AssetManager::GetShader("Texture2D"));
 				TreeMaterial.Albedo = glm::vec4(0.2f, 0.8f, 0.3f, 1.0f);
+				TreeMaterial.HasTransparency = true;
 				std::string treeName = "Tree" + std::to_string(((rand() % NrOfTreeTypes) + 1));
 				//Tree7 is my fave
 				TreeMaterial.DiffuseTexture = Frosty::AssetManager::GetTexture2D("Tree7");
@@ -134,6 +144,7 @@ namespace MCS
 				TreeTranform.Position = glm::vec3(-2.3f, 0.0f, 135.3f);
 				auto& TreeMaterial = world->AddComponent<Frosty::ECS::CMaterial>(Tree, Frosty::AssetManager::GetShader("Texture2D"));
 				TreeMaterial.Albedo = glm::vec4(0.2f, 0.8f, 0.3f, 1.0f);
+				TreeMaterial.HasTransparency = true;
 				std::string treeName = "Tree" + std::to_string(((rand() % NrOfTreeTypes) + 1));
 				//Tree7 is my fave
 				TreeMaterial.DiffuseTexture = Frosty::AssetManager::GetTexture2D("Tree7");
@@ -172,6 +183,7 @@ namespace MCS
 				auto& TreeMaterial = world->AddComponent<Frosty::ECS::CMaterial>(Tree, Frosty::AssetManager::GetShader("Texture2D"));
 				TreeTranform.Position = glm::vec3(135.3f, 0.0f, -2.3f);
 				TreeMaterial.Albedo = glm::vec4(0.2f, 0.8f, 0.3f, 1.0f);
+				TreeMaterial.HasTransparency = true;
 				std::string treeName = "Tree" + std::to_string(((rand() % NrOfTreeTypes) + 1));
 				//Tree7 is my fave
 				TreeMaterial.DiffuseTexture = Frosty::AssetManager::GetTexture2D("Tree7");
@@ -213,6 +225,7 @@ namespace MCS
 				TreeTranform.Position = glm::vec3(-135.3f, 0.0f, 2.3f);
 				auto& TreeMaterial = world->AddComponent<Frosty::ECS::CMaterial>(Tree, Frosty::AssetManager::GetShader("Texture2D"));
 				TreeMaterial.Albedo = glm::vec4(0.2f, 0.8f, 0.3f, 1.0f);
+				TreeMaterial.HasTransparency = true;
 				std::string treeName = "Tree" + std::to_string(((rand() % NrOfTreeTypes) + 1));
 				//Tree7 is my fave
 				TreeMaterial.DiffuseTexture = Frosty::AssetManager::GetTexture2D("Tree7");
@@ -274,6 +287,7 @@ namespace MCS
 						TreeMaterial.Albedo = glm::vec4(0.2f, 0.8f, 0.3f, 1.0f);
 						std::string treeName = "Tree" + std::to_string(((rand() % NrOfTreeTypes) + 1));
 						TreeMaterial.DiffuseTexture = Frosty::AssetManager::GetTexture2D("Tree7");
+						TreeMaterial.HasTransparency = true;
 
 						treeName = "tree" + std::to_string(((rand() % NrOfTreeTypes) + 1));
 						world->AddComponent<Frosty::ECS::CMesh>(Tree, Frosty::AssetManager::GetMesh("tree1"));
@@ -290,6 +304,7 @@ namespace MCS
 							TreeMaterial.Albedo = glm::vec4(0.2f, 0.8f, 0.3f, 1.0f);
 							std::string treeName = "Tree" + std::to_string(((rand() % NrOfTreeTypes) + 1));
 							TreeMaterial.DiffuseTexture = Frosty::AssetManager::GetTexture2D("Tree1");
+							TreeMaterial.HasTransparency = true;
 
 							treeName = "Tree" + std::to_string(((rand() % NrOfTreeTypes) + 1));
 							world->AddComponent<Frosty::ECS::CMesh>(Tree, Frosty::AssetManager::GetMesh("tree1"));
@@ -318,6 +333,7 @@ namespace MCS
 							TreeMaterial.Albedo = glm::vec4(0.2f, 0.8f, 0.3f, 1.0f);
 							std::string treeName = "Tree" + std::to_string(((rand() % NrOfTreeTypes) + 1));
 							TreeMaterial.DiffuseTexture = Frosty::AssetManager::GetTexture2D("Tree1");
+							TreeMaterial.HasTransparency = true;
 
 							treeName = "Tree" + std::to_string(((rand() % NrOfTreeTypes) + 1));
 							world->AddComponent<Frosty::ECS::CMesh>(Tree, Frosty::AssetManager::GetMesh("tree1"));
@@ -346,6 +362,7 @@ namespace MCS
 							TreeMaterial.Albedo = glm::vec4(0.2f, 0.8f, 0.3f, 1.0f);
 							std::string treeName = "Tree" + std::to_string(((rand() % NrOfTreeTypes) + 1));
 							TreeMaterial.DiffuseTexture = Frosty::AssetManager::GetTexture2D("Tree1");
+							TreeMaterial.HasTransparency = true;
 
 							treeName = "Tree" + std::to_string(((rand() % NrOfTreeTypes) + 1));
 							world->AddComponent<Frosty::ECS::CMesh>(Tree, Frosty::AssetManager::GetMesh("tree1"));
@@ -374,6 +391,7 @@ namespace MCS
 							TreeMaterial.Albedo = glm::vec4(0.2f, 0.8f, 0.3f, 1.0f);
 							std::string treeName = "Tree" + std::to_string(((rand() % NrOfTreeTypes) + 1));
 							TreeMaterial.DiffuseTexture = Frosty::AssetManager::GetTexture2D("Tree1");
+							TreeMaterial.HasTransparency = true;
 
 							treeName = "Tree" + std::to_string(((rand() % NrOfTreeTypes) + 1));
 							world->AddComponent<Frosty::ECS::CMesh>(Tree, Frosty::AssetManager::GetMesh("tree1"));
