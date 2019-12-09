@@ -590,6 +590,7 @@ namespace MCS
 						existingFile.read((char*)& fileEntitys.myEntitys[i].myEnemy, sizeof(Level_Enemy));
 						std::string meshName = fileEntitys.myEntitys[i].myMesh.MeshName;
 						auto& enemyWeaponA = m_World->CreateEntity({ 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 1.0f, 1.0f, 1.0f });
+						m_World->AddToGroup(enemyWeaponA, CurrentGroup);
 						auto& weaponHandler = Frosty::AssetManager::GetWeaponHandler("Weapons");
 						Frosty::Weapon loadedWeapon;
 						int lowLevel = 1;
@@ -778,7 +779,7 @@ namespace MCS
 					if (fileEntitys.myEntitys[i].MyComponents[10].HaveComponent)
 					{
 
-				existingFile.read((char*)& fileEntitys.myEntitys[i].myLevelExit, sizeof(Level_LevelExit));
+						existingFile.read((char*)& fileEntitys.myEntitys[i].myLevelExit, sizeof(Level_LevelExit));
 						int newExit = fileEntitys.myEntitys.at(i).myLevelExit.ExitDirection;
 
 						int translatedExitDir = -2;
@@ -1224,6 +1225,11 @@ namespace MCS
 			}
 		}
 		return toReturn;
+	}
+	void LevelFileFormat::clearVisitedRooms()
+	{
+		//crach?
+		m_VisitedRooms.clear();
 	}
 }
 

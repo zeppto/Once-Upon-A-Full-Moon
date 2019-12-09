@@ -28,10 +28,10 @@ namespace MCS
 		if (m_CreatNewRoom)
 		{
 			int rotation = 0;
-			std::string fileName = m_Map.getRoomTextur(m_PlayerPos, &rotation);
+			std::string fileName = m_Map.getRoomTextur(m_PlayerCoords, &rotation);
 			//PlayerTranform.Position = Level::MoveToNewRoom(m_CurrentRoome.sideExits[0], m_CurrentRoome.sideExits[1],
 			//	m_CurrentRoome.sideExits[2], m_CurrentRoome.sideExits[3], ExitSide.ExitDirection);
-			m_LevelFileFormat.OpenFromFile(fileName, m_PlayerPos, m_PlayerTransform, rotation);
+			m_LevelFileFormat.OpenFromFile(fileName, m_PlayerCoords, m_PlayerTransform, rotation);
 			m_CreatNewRoom = false;
 		}*/
 
@@ -55,8 +55,19 @@ namespace MCS
 
 		if (m_LodeNamedRoom)
 		{
-		//	m_LevelFileFormat.OpenFromFile(m_RoomType, m_PlayerPos);
+		//	m_LevelFileFormat.OpenFromFile(m_RoomType, m_PlayerCoords);
 			m_LodeNamedRoom = false;
+		}
+		if (m_ReStart)
+		{
+			m_ReStart = false;
+			m_Start = true;
+			m_World->DestroyGroup(false);
+			m_OtherRoom = { -1, -1 };
+			m_BossPos = { 9, 15 };
+			m_BossRememberdPath.pathToGo.clear();
+			m_BossRememberdPath.expectedPlayerPos = { -1, -1 };
+			m_BossRememberdPath.lastTile = 1;
 		}
 	}
 
@@ -103,16 +114,22 @@ namespace MCS
 			m_Map.generateMap();
 			m_CurrentRoome = m_Map.getRoom(m_PlayerCoords);
 
+			m_LevelFileFormat.clearVisitedRooms();
+
 			//int rotation = 0;
-			//std::string texture = m_Map.getRoomTextur(m_PlayerPos, &rotation);
+			//std::string texture = m_Map.getRoomTextur(m_PlayerCoords, &rotation);
 			//Level::Room(m_CurrentRoome.sideExits[0], m_CurrentRoome.sideExits[1], m_CurrentRoome.sideExits[2], m_CurrentRoome.sideExits[3], texture, rotation);
 			//this is curently the start room
 			Frosty::ECS::CTransform* playerTransform = nullptr;
 			for (size_t i = 1; i < p_Total; i++)
 			{
-				if (m_World->HasComponent<Frosty::ECS::CPlayer>(m_Transform[i]->EntityPtr))
+				//addet to se if it fixes a crash
+				if (m_Transform[i]->EntityPtr != nullptr)
 				{
-					playerTransform = m_Transform[i];
+					if (m_World->HasComponent<Frosty::ECS::CPlayer>(m_Transform[i]->EntityPtr))
+					{
+						playerTransform = m_Transform[i];
+					}
 				}
 			}
 			int rotate;
@@ -120,7 +137,7 @@ namespace MCS
 			m_Map.getRoomTextur(m_PlayerCoords, &rotate);
 			m_CurrentRoomBool = m_World->GetCurrentRoom();
 			//	Level::MoveToNewRoom(m_CurrentRoome.sideExits[0], m_CurrentRoome.sideExits[1], m_CurrentRoome.sideExits[2], m_CurrentRoome.sideExits[3]);
-			m_LevelFileFormat.OpenFromFile("deadend_chests_IsStatick_t_p_e_r_h_a", true, m_PlayerCoords, playerTransform, rotate);
+			m_LevelFileFormat.OpenFromFile("deadend_chests_IsStatick_t_p_e_r_h_a", !m_NextLevel, m_PlayerCoords, playerTransform, rotate);
 			
 			m_T_Room.RoomName = "deadend_chests_IsStatick_t_p_e_r_h_a";
 
@@ -132,9 +149,11 @@ namespace MCS
 			//m_RoomRotation = rotate;
 			//m_ThisRoomName = "deadend_chests_IsStatick_t_p_e_r_h";
 			m_Start = false;
+			m_haveStartedMoving = false;
 
 			//m_LevelFileFormat.LoadBoolMap("deadend_chests_IsStatick_t_p_e_r_h_a");
 			m_StartTimer = Frosty::Time::CurrentTime();
+
 		}
 
 		float time = Frosty::Time::CurrentTime() - m_StartTimer - m_BossStartTimer;
@@ -168,7 +187,7 @@ namespace MCS
 
 				m_BossTimer = time + estematedBossRoomTime;
 				FY_INFO("It takes {0} sec until boss moves", estematedBossRoomTime);
-				if (m_PlayerPos != m_BossPos)
+				if (m_PlayerCoords != m_BossPos)
 				{
 					if (m_RoomswhithBait.size() > 0)
 					{
@@ -222,7 +241,7 @@ namespace MCS
 							FY_INFO("");
 						}
 
-						if (m_BossPos == m_PlayerPos)
+						if (m_BossPos == m_PlayerCoords)
 						{
 							Frosty::EventBus::GetEventBus()->Publish<Frosty::SpawnBossEvent>(Frosty::SpawnBossEvent());
 							FY_INFO("The boss found the player!");
@@ -242,11 +261,11 @@ namespace MCS
 							if (m_BossRememberdPath.pathToGo.size() > m_BossRememberdPath.lastTile)
 								expectedBossPos = m_BossRememberdPath.pathToGo[m_BossRememberdPath.lastTile - 1];
 							//the boss follows player
-							if (m_BossRememberdPath.expectedPlayerPos != m_PlayerPos || m_BossPos != expectedBossPos)
+							if (m_BossRememberdPath.expectedPlayerPos != m_PlayerCoords || m_BossPos != expectedBossPos)
 							{
-								m_BossRememberdPath.pathToGo = m_Map.getPathToTargert(m_BossPos, m_PlayerPos);
+								m_BossRememberdPath.pathToGo = m_Map.getPathToTargert(m_BossPos, m_PlayerCoords);
 								m_BossRememberdPath.lastTile = 1;
-								m_BossRememberdPath.expectedPlayerPos = m_PlayerPos;
+								m_BossRememberdPath.expectedPlayerPos = m_PlayerCoords;
 
 							}
 							if (m_BossRememberdPath.pathToGo.size() > m_BossRememberdPath.lastTile)
@@ -270,7 +289,7 @@ namespace MCS
 							FY_INFO("");
 						}
 
-						if (m_BossPos == m_PlayerPos)
+						if (m_BossPos == m_PlayerCoords)
 						{
 							Frosty::EventBus::GetEventBus()->Publish<Frosty::SpawnBossEvent>(Frosty::SpawnBossEvent());
 							FY_INFO("The boss found the player!");
@@ -281,13 +300,13 @@ namespace MCS
 			}
 
 			//howel
-			if(time > m_BossHawol && m_PlayerPos != m_BossPos)
+			if(time > m_BossHawol && m_PlayerCoords != m_BossPos)
 			{
 				FY_INFO("The boss haoweld");
 				FY_INFO("");
 				int nextHawol = (rand() % 10) + 20;
 				m_BossHawol = time + nextHawol;
-				glm::vec2 direction = m_BossPos - m_PlayerPos;
+				glm::vec2 direction = m_BossPos - m_PlayerCoords;
 
 				Frosty::EventBus::GetEventBus()->Publish<Frosty::BossFearEffectEvent>(Frosty::BossFearEffectEvent(direction));
 			}
@@ -440,8 +459,8 @@ namespace MCS
 		tempCoord += glm::ivec2(1, 0);
 		
 /*
-		m_PlayerPos += glm::ivec2(1, 0);
-		FY_INFO("The player moved to ({0}, {1})", m_PlayerPos.x, m_PlayerPos.y);
+		m_PlayerCoords += glm::ivec2(1, 0);
+		FY_INFO("The player moved to ({0}, {1})", m_PlayerCoords.x, m_PlayerCoords.y);
 		FY_INFO("");
 */
 
@@ -471,12 +490,12 @@ namespace MCS
 		m_PlayerTransform = playerTransform;
 
 		//int rotation = 0;
-		//std::string fileName = m_Map.getRoomTextur(m_PlayerPos, &rotation);
+		//std::string fileName = m_Map.getRoomTextur(m_PlayerCoords, &rotation);
 		//PlayerTranform.Position = Level::Room(m_CurrentRoome.sideExits[0], m_CurrentRoome.sideExits[1], 
 		//	m_CurrentRoome.sideExits[2], m_CurrentRoome.sideExits[3], texture, rotation, ExitSide.ExitDirection);
 		PlayerTranform.Position = Level::MoveToNewRoom(m_CurrentRoome.sideExits[0], m_CurrentRoome.sideExits[1],
 			m_CurrentRoome.sideExits[2], m_CurrentRoome.sideExits[3], ExitSide.ExitDirection);
-		//m_LevelFileFormat.OpenFromFile(fileName, m_PlayerPos, playerTransform, rotation);
+		//m_LevelFileFormat.OpenFromFile(fileName, m_PlayerCoords, playerTransform, rotation);
 		m_CreatNewRoom = true;
 */
 
@@ -1016,20 +1035,20 @@ namespace MCS
 						{
 							if (!m_World->HasComponent<Frosty::ECS::CGUI>(m_Transform[i]->EntityPtr))
 							{
-								if (!m_World->HasComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr))
-								{
-									m_World->AddComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr);
-								}
+								//if (!m_World->HasComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr))
+								//{
+								//	m_World->AddComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr);
+								//}
 							}
 						}
 					}
 				}
 				else if (!m_World->GetComponent<Frosty::ECS::CWeapon>(m_Transform[i]->EntityPtr).IsPlayerWeapon)
 				{
-					if (!m_World->HasComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr))
-					{
-						m_World->AddComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr);
-					}
+					//if (!m_World->HasComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr))
+					//{
+					//	m_World->AddComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr);
+					//}
 				}
 				else if (m_World->GetComponent<Frosty::ECS::CWeapon>(m_Transform[i]->EntityPtr).IsPlayerWeapon)
 				{
@@ -1151,8 +1170,10 @@ namespace MCS
 		weaponMesh->animOffset = animation->holdPtr;
 		Frosty::Renderer::UpdateCMesh(weaponID, weaponMesh);
 
-		m_Start = true;
-		m_PlayerPos = { 10, 15 };
+		m_World->DestroyGroup(true);
+
+		m_ReStart = true;
+		m_PlayerCoords = { 10, 15 };
 	}
 
 	Frosty::ECS::CGUI* LevelSystem::GetPlayerGUI()
@@ -1174,7 +1195,7 @@ namespace MCS
 	void LevelSystem::OnBaitPlacedEvent(Frosty::BaitPlacedEvent& e)
 	{
 		auto& baitTransform = m_World->GetComponent<Frosty::ECS::CTransform>(e.GetEntity());
-		if (m_LevelFileFormat.AddBaitToMap(baitTransform.Position, m_PlayerPos))
+		if (m_LevelFileFormat.AddBaitToMap(baitTransform.Position, m_PlayerCoords))
 		{
 			FY_INFO("bait is now saved");
 		}
@@ -1185,12 +1206,12 @@ namespace MCS
 		bool alradyExist = false;
 		for (int i = 0; i < m_RoomswhithBait.size(); i++)
 		{
-			if (m_RoomswhithBait[i] == m_PlayerPos)
+			if (m_RoomswhithBait[i] == m_PlayerCoords)
 				alradyExist = true;
 		}
 		if (!alradyExist)
 		{
-			m_RoomswhithBait.push_back(m_PlayerPos);
+			m_RoomswhithBait.push_back(m_PlayerCoords);
 		}
 	}
 	void LevelSystem::randomBossMovment()

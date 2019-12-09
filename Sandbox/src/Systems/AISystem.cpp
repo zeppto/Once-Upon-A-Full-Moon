@@ -44,11 +44,11 @@ namespace MCS
 			//	}
 			//}
 
-			////Boss Timer For Debug
-			//if (Frosty::Time::CurrentTime() - BossTimer >= BossSpawnTime)
-			//{
-			//	if (!m_BossSpawned) SpawnBoss();
-			//}
+			//Boss Timer For Debug
+			if (Frosty::Time::CurrentTime() - m_BossTimer >= m_BossSpawnTime)
+			{
+				//if (!m_BossSpawned) SpawnBoss();
+			}
 		}
 	}
 
@@ -388,7 +388,6 @@ namespace MCS
 		float product = glm::dot(glm::normalize(originDirection), pointVector);
 
 		float rotationOffset = glm::degrees(glm::acos(product)) + extraRotation;
-
 
 		m_Transform[index]->Rotation.y = rotationOffset;
 	}

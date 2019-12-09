@@ -198,11 +198,11 @@ namespace Frosty
 
 
 
-			uint32_t VecSize = m_CellNodes.size();
+			uint32_t VecSize = (uint32_t)m_CellNodes.size();
 			OutFile << VecSize << "\n";
 
 
-			for (int i = 0; i < VecSize; i++)
+			for (uint32_t i = 0; i < VecSize; i++)
 			{
 				OutFile << m_CellNodes[i].WorldPosition[0] << "\n";
 				OutFile << m_CellNodes[i].WorldPosition[1] << "\n";
@@ -310,7 +310,7 @@ namespace Frosty
 			m_CellNodes.resize(VecSize);
 
 
-			for (int i = 0; i < VecSize; i++)
+			for (uint32_t i = 0; i < VecSize; i++)
 			{
 
 				std::getline(InFile, temp);

@@ -387,11 +387,71 @@ namespace MCS
 		if (m_ParticleSystem[systemIndex]->HasGravity)
 		{
 			//m_ParticleSystem[systemIndex]->ParticleSystemStartPos = m_Transform[systemIndex]->Position;
-			p.StartPos = glm::vec4(m_Transform[systemIndex]->Position, 1.0f);
+			glm::mat4 transform = glm::mat4(1.0f);
+			transform = glm::rotate(transform, glm::radians(m_ParticleSystem[systemIndex]->SystemRotation.x), { 1.0f, 0.0f, 0.0f });
+			transform = glm::rotate(transform, glm::radians(m_ParticleSystem[systemIndex]->SystemRotation.y), { 0.0f, 1.0f, 0.0f });
+			transform = glm::rotate(transform, glm::radians(m_ParticleSystem[systemIndex]->SystemRotation.z), { 0.0f, 0.0f, 1.0f });
+
+			glm::mat4 parentTransform;
+			parentTransform = glm::translate(glm::mat4(1.0f), m_Transform[systemIndex]->Position);
+			parentTransform = glm::rotate(parentTransform, glm::radians(m_Transform[systemIndex]->Rotation.x), { 1.0f, 0.0f, 0.0f });
+			parentTransform = glm::rotate(parentTransform, glm::radians(m_Transform[systemIndex]->Rotation.y), { 0.0f, 1.0f, 0.0f });
+			parentTransform = glm::rotate(parentTransform, glm::radians(m_Transform[systemIndex]->Rotation.z), { 0.0f, 0.0f, 1.0f });
+			parentTransform = glm::scale(parentTransform, m_Transform[systemIndex]->Scale);
+
+			transform = parentTransform * transform;
+
+			p.StartPos = transform * glm::vec4(m_ParticleSystem[systemIndex]->ParticleSystemStartPos, 1.0f);
+
+			if (m_ParticleSystem[systemIndex]->RandomDirection == false)
+			{
+				p.Direction = transform * glm::vec4(m_ParticleSystem[systemIndex]->ParticleSystemDirection, 0.0f);
+				//TODO: Start Direction?
+			}
+			else
+			{
+				//Not the best way to randomize direction but good enough for now
+
+				glm::vec3 randDir;
+				randDir.x = (rand() % 2000 - 1000.0f) / 1000.0f;
+				randDir.y = (rand() % 2000 - 1000.0f) / 1000.0f;
+				randDir.z = (rand() % 2000 - 1000.0f) / 1000.0f;
+
+				randDir = (transform * glm::vec4(m_ParticleSystem[systemIndex]->randMainDir, 0.0f)) + glm::vec4(randDir, 0.0f) * m_ParticleSystem[systemIndex]->randSpread;
+
+				glm::normalize(randDir);
+
+				p.Direction.x = randDir.x;
+				p.Direction.y = randDir.y;
+				p.Direction.z = randDir.z;
+			}
 		}
 		else if (m_ParticleSystem[systemIndex]->RandomStartPos == false)
 		{
 			p.StartPos = glm::vec4(m_ParticleSystem[systemIndex]->ParticleSystemStartPos, 1.0f);
+
+			if (m_ParticleSystem[systemIndex]->RandomDirection == false)
+			{
+				p.Direction = glm::vec4(m_ParticleSystem[systemIndex]->ParticleSystemDirection, 1.0f);
+				//TODO: Start Direction?
+			}
+			else
+			{
+				//Not the best way to randomize direction but good enough for now
+
+				glm::vec3 randDir;
+				randDir.x = (rand() % 2000 - 1000.0f) / 1000.0f;
+				randDir.y = (rand() % 2000 - 1000.0f) / 1000.0f;
+				randDir.z = (rand() % 2000 - 1000.0f) / 1000.0f;
+
+				randDir = m_ParticleSystem[systemIndex]->randMainDir + randDir * m_ParticleSystem[systemIndex]->randSpread;
+
+				glm::normalize(randDir);
+
+				p.Direction.x = randDir.x;
+				p.Direction.y = randDir.y;
+				p.Direction.z = randDir.z;
+			}
 		}
 		else
 		{
@@ -401,32 +461,33 @@ namespace MCS
 			p.StartPos.x = randomNumX;
 			p.StartPos.y = randomNumY;
 			p.StartPos.z = randomNumZ;
+
+			if (m_ParticleSystem[systemIndex]->RandomDirection == false)
+			{
+				p.Direction = glm::vec4(m_ParticleSystem[systemIndex]->ParticleSystemDirection, 1.0f);
+				//TODO: Start Direction?
+			}
+			else
+			{
+				//Not the best way to randomize direction but good enough for now
+
+				glm::vec3 randDir;
+				randDir.x = (rand() % 2000 - 1000.0f) / 1000.0f;
+				randDir.y = (rand() % 2000 - 1000.0f) / 1000.0f;
+				randDir.z = (rand() % 2000 - 1000.0f) / 1000.0f;
+
+				randDir = m_ParticleSystem[systemIndex]->randMainDir + randDir * m_ParticleSystem[systemIndex]->randSpread;
+
+				glm::normalize(randDir);
+
+				p.Direction.x = randDir.x;
+				p.Direction.y = randDir.y;
+				p.Direction.z = randDir.z;
+			}
 		}
 		p.Lifetime = p.MaxLifetime;
 		p.Position = p.StartPos;
 		p.Size = p.StartSize;
-		if (m_ParticleSystem[systemIndex]->RandomDirection == false)
-		{
-			p.Direction = glm::vec4(m_ParticleSystem[systemIndex]->ParticleSystemDirection, 1.0f);
-			//TODO: Start Direction?
-		}
-		else
-		{
-			//Not the best way to randomize direction but good enough for now
-
-			glm::vec3 randDir;
-			randDir.x = (rand()% 2000 - 1000.0f) / 1000.0f;
-			randDir.y = (rand() % 2000 - 1000.0f) / 1000.0f;
-			randDir.z = (rand() % 2000 - 1000.0f) / 1000.0f;
-
-			randDir = m_ParticleSystem[systemIndex]->randMainDir + randDir * m_ParticleSystem[systemIndex]->randSpread;
-
-			glm::normalize(randDir);
-
-			p.Direction.x = randDir.x;
-			p.Direction.y = randDir.y;
-			p.Direction.z = randDir.z;
-		}
 		p.Color = p.StartColor;
 		p.Speed = m_ParticleSystem[systemIndex]->Speed; //TODO: StartSpeed
 	}
