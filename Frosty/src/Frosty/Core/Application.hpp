@@ -62,8 +62,8 @@ namespace Frosty
 		void OnMousePressedEvent(MouseButtonPressedEvent & e);
 		void OnMouseReleasedEvent(MouseButtonReleasedEvent & e);
 
-		void RamUsage();
-		void VramUsage();
+		float RamUsage();
+		float VramUsage();
 
 	private:
 		InputManager m_InputManager;

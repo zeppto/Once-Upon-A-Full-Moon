@@ -1,7 +1,7 @@
 #ifndef PATHFINDING_HPP
 #define PATHFINDING_HPP
 
-#include "Grid.hpp"
+#include"Frosty/API/AssetManager/AssetFiles/Grid.hpp"
 
 namespace MCS
 {
@@ -15,16 +15,16 @@ namespace MCS
 		Pathfinding() = default;
 		virtual ~Pathfinding() = default;
 
-		void Pathfinding::Init(Grid* grid);
+		void Pathfinding::Init(Frosty::Grid* grid);
 		glm::vec3 Pathfinding::FindPath(const glm::vec3& startPos, const glm::vec3& targetPos);
 
 	private:
-		int32_t Pathfinding::GetDistance(CellNode* nodeA, CellNode* nodeB) const;
-		glm::vec3 Pathfinding::RetracePath(CellNode* startNode, CellNode* targetNode);
-		bool ExistsInClosedSet(const std::vector<CellNode>& closedSet, CellNode* findNode);
+		int32_t Pathfinding::GetDistance(Frosty::CellNode* nodeA, Frosty::CellNode* nodeB) const;
+		glm::vec3 Pathfinding::RetracePath(Frosty::CellNode* startNode, Frosty::CellNode* targetNode);
+		bool ExistsInClosedSet(const std::vector<Frosty::CellNode>& closedSet, Frosty::CellNode* findNode);
 
 	private:
-		Grid* m_Grid{ nullptr };
+		Frosty::Grid* m_Grid{ nullptr };
 
 	};
 }

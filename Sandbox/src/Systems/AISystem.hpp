@@ -43,8 +43,8 @@ namespace MCS
 
 		// Temporary for extern test
 		bool m_BossSpawned{ false };
-		float BossSpawnTime{ 20.f };
-		float BossTimer{ Frosty::Time::CurrentTime() };
+		float m_BossSpawnTime{ 20.f };
+		float m_BossTimer{ Frosty::Time::CurrentTime() };
 		glm::vec3 m_BossSpawn{ 0.0f };
 		Frosty::ECS::CTransform* m_PlayerTransform;
 	};

@@ -3,6 +3,7 @@
 
 namespace Frosty { class BoolMapLoadedEvent; }
 namespace Frosty { class BoolMap; }
+namespace Frosty { class UpdateCurrentRoomEvent; }
 
 namespace MCS
 {
@@ -25,6 +26,7 @@ namespace MCS
 		virtual std::string GetInfo() const override;
 
 		void OnLoadBoolMapEvent(Frosty::BoolMapLoadedEvent& e);
+		void OnUpdateCurrentRoomEvent(Frosty::UpdateCurrentRoomEvent& e);
 
 	private:
 		void CheckCollision(size_t index);
@@ -35,6 +37,9 @@ namespace MCS
 		std::array<Frosty::ECS::CPhysics*, Frosty::ECS::MAX_ENTITIES_PER_COMPONENT> m_Physics;
 
 		Frosty::World* m_World = nullptr;
+
+		std::shared_ptr<Frosty::BoolMap> m_Current_BoolMap{nullptr};
+		int m_Room_Rotation{0};
 
 		unsigned int m_RandItem = 0;
 	};

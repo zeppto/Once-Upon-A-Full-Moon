@@ -9,36 +9,25 @@ namespace Frosty
 	{
 
 	public:
-		const float SMALL_NUM = 10e-8f;
+		//const float SMALL_NUM = 10e-8f;
 
-		glm::vec3 m_Position;
-		glm::vec3 m_Direction;
-		glm::vec3 m_Scale;
-		float m_Length;
-		float m_Raduis;
+		//glm::vec3 m_Position;
+		//glm::vec3 m_Direction;
+		//glm::vec3 m_Scale;
+		//float m_Length;
+		//float m_Raduis;
 
 	public:
 		SphereHitbox();
-		SphereHitbox(const float& Length, const float& Raduis);
 		virtual ~SphereHitbox();
 
 		//If you have a better name then rename it
-		bool IsCollidingWith(const SphereHitbox& other);
-
-		bool ColTest(const SphereHitbox& other);
-		bool ColTest2(const SphereHitbox& other);
-
-
-
+		static bool IsCollidingWith(glm::vec3 length, glm::vec3 center, glm::vec3  rotation, glm::vec3 otherLength, glm::vec3 otherCenter, glm::vec3 otherRotation);
 
 
 	private:
 
-		glm::vec3 m_Temp_Calc_This_Dir;
-		glm::vec3 m_Temp_Calc_Other_Dir;
-	
-		bool SphereCheck(const SphereHitbox& Other);
-		const float calcShortestDist(const glm::vec3& S1P0,const glm::vec3& S1P1, const glm::vec3& S2P0, const glm::vec3& S2P1) const;
+		static float calcShortestDist(const glm::vec3& S1P0,const glm::vec3& S1P1, const glm::vec3& S2P0, const glm::vec3& S2P1);
 
 	};
 

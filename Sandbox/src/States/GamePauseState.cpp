@@ -77,21 +77,21 @@ namespace MCS
 
 			if (x > 885.0f && x < 1060.0f && y > 555.0f && y < 605.0f)
 			{
-				gamePauseGui.Layout.texts.at(1).SetColor(glm::vec4(0.0f, 1.0f, 0.0f, 0.0f));
+				gamePauseGui.Layout.texts[1].SetColor(glm::vec4(0.0f, 1.0f, 0.0f, 0.0f));
 			}
 			else if (x > 730.f && x < 1215.0f && y > 460.0f && y < 500.0f)
 			{
-				gamePauseGui.Layout.texts.at(2).SetColor(glm::vec4(0.0f, 1.0f, 0.0f, 0.0f));
+				gamePauseGui.Layout.texts[2].SetColor(glm::vec4(0.0f, 1.0f, 0.0f, 0.0f));
 			}
 			else if (x > 910.f && x < 1000.0f && y > 355.0f && y < 390.0f)
 			{
-				gamePauseGui.Layout.texts.at(3).SetColor(glm::vec4(1.0f, 0.0f, 0.0f, 0.0f));
+				gamePauseGui.Layout.texts[3].SetColor(glm::vec4(1.0f, 0.0f, 0.0f, 0.0f));
 			}
 			else
 			{
-				gamePauseGui.Layout.texts.at(1).SetColor(glm::vec4(1.0f, 1.0f, 0.0f, 0.0f));
-				gamePauseGui.Layout.texts.at(2).SetColor(glm::vec4(1.0f, 1.0f, 0.0f, 0.0f));
-				gamePauseGui.Layout.texts.at(3).SetColor(glm::vec4(0.8f, 0.0f, 0.0f, 0.0f));
+				gamePauseGui.Layout.texts[1].SetColor(glm::vec4(1.0f, 1.0f, 0.0f, 0.0f));
+				gamePauseGui.Layout.texts[2].SetColor(glm::vec4(1.0f, 1.0f, 0.0f, 0.0f));
+				gamePauseGui.Layout.texts[3].SetColor(glm::vec4(0.8f, 0.0f, 0.0f, 0.0f));
 			}
 		}
 	}

@@ -1,6 +1,5 @@
 #include "fypch.hpp"
 #include "Buffer.hpp"
-
 #include <glad/glad.h>
 
 namespace Frosty
@@ -12,10 +11,12 @@ namespace Frosty
 		glGenBuffers(1, &m_RendererID);
 		glBindBuffer(GL_ARRAY_BUFFER, m_RendererID);
 
-		if (type == STATIC) {
+		if (type == STATIC) 
+		{
 			glBufferData(GL_ARRAY_BUFFER, size, vertices, GL_STATIC_DRAW);
 		}
-		else if (type == DYNAMIC) {
+		else if (type == DYNAMIC) 
+		{
 			glBufferData(GL_ARRAY_BUFFER, size, vertices, GL_STREAM_DRAW);
 		}
 	}
@@ -42,12 +43,12 @@ namespace Frosty
 
 	VertexBuffer * VertexBuffer::Create(const void * vertices, uint32_t size, BufferType type)
 	{
-		return new VertexBuffer(vertices, size, type);
+		return FY_NEW VertexBuffer(vertices, size, type);
 	}
 
 	VertexBuffer * VertexBuffer::Create()
 	{
-		return new VertexBuffer();
+		return FY_NEW VertexBuffer();
 	}
 
 	void VertexBuffer::SetData(void * vertices, uint32_t size, BufferType type) //Used for updating data in buffers
@@ -86,7 +87,6 @@ namespace Frosty
 		return m_RendererID;
 	}
 
-
 	// Indexbuffer --------------------------------------------------------------------
 	IndexBuffer::IndexBuffer(const void* indices, uint32_t count)
 		: m_Count(count)
@@ -119,7 +119,7 @@ namespace Frosty
 
 	IndexBuffer* IndexBuffer::Create(const void* indices, uint32_t count)
 	{
-		return new IndexBuffer(indices, count);
+		return FY_NEW IndexBuffer(indices, count);
 	}
 
 	// UniformBuffer --------------------------------------------------------------------
@@ -130,6 +130,7 @@ namespace Frosty
 		glBufferData(GL_UNIFORM_BUFFER, sizeof(glm::mat4) * MaxBones , NULL, GL_DYNAMIC_DRAW);
 
 	}
+	
 	UniformBuffer::~UniformBuffer()
 	{
 		glDeleteBuffers(1, &m_RendererID);
@@ -139,6 +140,7 @@ namespace Frosty
 	{
 		glBindBuffer(GL_UNIFORM_BUFFER, m_RendererID);
 	}
+
 	void UniformBuffer::BindUpdate(void * boneData, int len)
 	{
 		glBindBufferBase(GL_UNIFORM_BUFFER, 1, m_RendererID);
@@ -152,18 +154,16 @@ namespace Frosty
 
 	UniformBuffer* UniformBuffer::Create(int MaxBones)
 	{
-		return new UniformBuffer(MaxBones);
+		return FY_NEW UniformBuffer(MaxBones);
 	}
-
 
 	ShaderStorageBuffer * ShaderStorageBuffer::Create(uint32_t size, void* data)
 	{
-		return new ShaderStorageBuffer(size, data);
+		return FY_NEW ShaderStorageBuffer(size, data);
 	}
 
 	void ShaderStorageBuffer::SetData(uint32_t size)
 	{
-
 	}
 
 	ShaderStorageBuffer::ShaderStorageBuffer(uint32_t size, void* data)

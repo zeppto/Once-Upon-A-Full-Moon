@@ -15,14 +15,18 @@ namespace Frosty
 		WindowClose, WindowMaximized, WindowResize, WindowFocus, WindowLostFocus, WindowMoved,
 		KeyPressed, KeyReleased,
 		MouseButtonPressed, MouseButtonReleased, MouseMoved, MouseScrolled,
-		ArrowHit, Dash, CheckCollision, Collision, BasicAttack, 
+		ArrowHit, Dash, CheckCollision, Collision, BasicAttack,
 		SpawnItem,
 		PickUpAttempt, PickUp,
+
+		UpdatePlayerCoordsPos, UpdateCurrentRoom, SwitchRoom,
+
 		Reset,
 		BaitPlaced, ExitCurrentLevel, EnterNewRoom,
 		SaveLevel, CreateLevel, OpenLevel, CreatEntity, EnemyDeath, BossSpawned, ResetBoss,
 		LoadBoolMap, InitiateGridMap, ActivateWitchCircle, UpgradeWeapon, PlayAnim, HealAbility,
-		PlayerDamage, DropItem, GameOver, Win, Damage, SpawnBoss
+		PlayerDamage, DropItem, GameOver, Win, Damage, SpawnBoss, BossFearEffect
+
 	};
 
 #define EVENT_TYPE(type) static EventType GetStaticType() { return EventType::##type; }\
@@ -53,10 +57,10 @@ namespace Frosty
 	class Subscriber : public BaseSubscriber
 	{
 	public:
-		typedef void(SystemType::*MemberFunction)(EventType&);
+		typedef void(SystemType::* MemberFunction)(EventType&);
 
 	public:
-		Subscriber(SystemType * instance, MemberFunction function) : m_Instance(instance), m_Function(function) { }
+		Subscriber(SystemType* instance, MemberFunction function) : m_Instance(instance), m_Function(function) { }
 		virtual ~Subscriber() { }
 
 		inline void CallFunction(BaseEvent& event)
@@ -94,14 +98,14 @@ namespace Frosty
 				"EventType must inherit from BaseEvent");
 
 			// Step 2
-			for (auto & sub : m_Subscribers)
+			for (auto& sub : m_Subscribers)
 			{
 				sub->CallFunction(event);
 			}
 		}
 
 		template<class SystemType, class EventType>
-		inline void Subscribe(SystemType* instance, void (SystemType::*function)(EventType &))
+		inline void Subscribe(SystemType* instance, void (SystemType::* function)(EventType&))
 		{
 			///	///////////////////////////////////////////////////////////	///
 			///						Order of business						///
