@@ -34,6 +34,7 @@ namespace Frosty
 		glm::vec3 m_HoldingJointOffset;
 		bool isRepeating;
 		bool isFinished;
+		float m_StridePercent;
 
 		JointTransforms m_SkinData;
 
@@ -75,7 +76,8 @@ namespace Frosty
 		void SetIsRepeating(bool isRepeat);
 		void SetIsFinished(bool isFinish);
 		bool GetIsFinished();
-
+		float GetStridePercent();
+		void SetStridePercent(float stride);
 		inline const std::string GetName()const { return m_Animation.animationName;}
 
 		virtual bool LoadToMem(const bool& Reload = false);

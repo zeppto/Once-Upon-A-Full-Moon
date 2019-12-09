@@ -1070,8 +1070,9 @@ namespace Frosty
 			float dt{ 0.0f };
 			glm::mat4* holdPtr{ nullptr };
 
-			bool isBusy{ false };
-
+			bool breakable{ true }; //When a new animation are allowed to be played (over another animation)
+			bool isBusy{ false }; //When a action such as Attacks, Dash and Run are running. -Only check this on Idle
+		
 			CAnimController() = default;
 			CAnimController(const CAnimController& org) { FY_CORE_ASSERT(false, "Copy constructor in CAnimController called."); }
 
