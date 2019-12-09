@@ -232,7 +232,7 @@ namespace MCS
 
 						if (m_BossPos == m_PlayerCoords)
 						{
-							Frosty::EventBus::GetEventBus()->Publish<Frosty::SpawnBossEvent>(Frosty::SpawnBossEvent());
+							Frosty::EventBus::GetEventBus()->Publish<Frosty::SpawnBossEvent>(Frosty::SpawnBossEvent(m_LevelFileFormat.GetBossSpawnPosition(m_PlayerCoords)));
 							FY_INFO("The boss found the player!");
 							FY_INFO("");
 						}
@@ -280,7 +280,7 @@ namespace MCS
 
 						if (m_BossPos == m_PlayerCoords)
 						{
-							Frosty::EventBus::GetEventBus()->Publish<Frosty::SpawnBossEvent>(Frosty::SpawnBossEvent());
+							Frosty::EventBus::GetEventBus()->Publish<Frosty::SpawnBossEvent>(Frosty::SpawnBossEvent(m_LevelFileFormat.GetBossSpawnPosition(m_PlayerCoords)));
 							FY_INFO("The boss found the player!");
 							FY_INFO("");
 						}

@@ -36,6 +36,7 @@ namespace MCS
 			
 			// Movement
 			glm::vec3 movementOffset = m_Physics[i]->Direction * m_Physics[i]->Speed * m_Physics[i]->SpeedMultiplier * Frosty::Time::DeltaTime();
+			m_PlayerLastMovement = movementOffset;
 			m_Transform[i]->Position += movementOffset;
 			
 			// Collision
@@ -204,9 +205,7 @@ namespace MCS
 
 					if (m_World->HasComponent<Frosty::ECS::CInventory>(m_Transform[index]->EntityPtr))
 					{
-
-						
-					//	checkCollision = false;
+						checkCollision = false;
 						if (m_World->HasComponent<Frosty::ECS::CLevelExit>(m_Transform[i]->EntityPtr))
 						{
 							checkCollision = true;
@@ -263,6 +262,8 @@ namespace MCS
 
 							if (testBool)
 							{
+
+								m_Transform[index]->Position -= m_PlayerLastMovement;
 							//	FY_INFO("1");
 							}
 						}

@@ -31,7 +31,7 @@ namespace MCS
 		void HandleAttack(size_t index);
 		void LookAtPoint(const glm::vec3& point, size_t index);
 		bool HandleBossAbilities(size_t index);
-		void SpawnBoss();
+		void SpawnBoss(const glm::vec3& SpawnPosition);
 		void ResetBossAbilities(size_t index);
 
 	private:

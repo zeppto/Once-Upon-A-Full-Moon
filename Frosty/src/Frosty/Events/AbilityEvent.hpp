@@ -392,13 +392,14 @@ namespace Frosty
 	class SpawnBossEvent : public BaseEvent
 	{
 	public:
-		SpawnBossEvent() { }
+		SpawnBossEvent(const glm::vec3& BossSpawnPosition) : m_BossSpawnPosition(BossSpawnPosition){ }
 
+		inline const glm::vec3& GetSpawnPosition() { return m_BossSpawnPosition; }
 
 		EVENT_TYPE(SpawnBoss)
 
 	private:
-
+		glm::vec3 m_BossSpawnPosition;
 	};
 
 	class BossFearEffectEvent : public BaseEvent

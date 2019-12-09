@@ -14,7 +14,7 @@ int main(int argc, char** argv)
 	app->Run();
 	delete app;
 
-	_CrtDumpMemoryLeaks;
+	_CrtDumpMemoryLeaks();
 
 	return 0;
 }
