@@ -1169,7 +1169,6 @@ namespace MCS
 		m_World->DestroyGroup(true);
 
 		m_ReStart = true;
-		m_PlayerCoords = { 10, 15 };
 	}
 
 	Frosty::ECS::CGUI* LevelSystem::GetPlayerGUI()
