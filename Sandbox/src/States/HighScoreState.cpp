@@ -31,7 +31,7 @@ void MCS::HighscoreState::OnInput()
 	float x = Frosty::InputManager::GetMouseX();
 	float y = Frosty::InputManager::GetMouseY();
 
-	if (x > 600.0f && x < 800.0f && y > 110.0f && y < 170.0f)
+	if (x > 600.0f && x < 800.0f && y > 30.0f && y < 80.0f)
 	{
 		if (Frosty::InputManager::IsMouseButtonPressed(FY_MOUSE_BUTTON_LEFT))
 		{
@@ -49,7 +49,7 @@ void MCS::HighscoreState::OnUpdate()
 		float x = Frosty::InputManager::GetMouseX();
 		float y = Frosty::InputManager::GetMouseY();
 
-		if (x > 600.0f && x < 800.0f && y > 110.0f && y < 170.0f)
+		if (x > 600.0f && x < 800.0f && y > 30.0f && y < 80.0f)
 		{
 			menuGui.Layout.texts.at(2).SetColor(glm::vec4(0.0f, 1.0f, 0.0f, 0.0f));
 		}
