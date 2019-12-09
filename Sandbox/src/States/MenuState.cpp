@@ -527,9 +527,9 @@ namespace MCS
 		float offsetY = 30.0f;
 
 		//Sprites
-		int itemSpriteXOffset = 920 * widthMultiplier;
-		int itemSpriteYOffset = 40 * heightMultiplier;
-		int itemSpritePadding = 110 * widthMultiplier;
+		float itemSpriteXOffset = 920.f * widthMultiplier;
+		float itemSpriteYOffset = 40.f * heightMultiplier;
+		float itemSpritePadding = 110.f * widthMultiplier;
 
 		glm::vec2 hpPotionSprite = glm::vec2(itemSpriteXOffset + itemSpritePadding * 0, itemSpriteYOffset);
 		glm::vec2 spPotionSprite = glm::vec2(itemSpriteXOffset + itemSpritePadding * 1, itemSpriteYOffset);
@@ -537,7 +537,7 @@ namespace MCS
 		glm::vec2 wolfsbainSprite = glm::vec2(itemSpriteXOffset + itemSpritePadding * 3, itemSpriteYOffset);
 
 		//Amount info
-		int itemNrOfXOffset = itemSpriteXOffset - 60 * widthMultiplier;
+		float itemNrOfXOffset = itemSpriteXOffset - 60.f * widthMultiplier;
 
 		glm::vec2 hpPotionNrOf = glm::vec2(itemNrOfXOffset + itemSpritePadding * 0, 30.0f * heightMultiplier);
 		glm::vec2 spPotionNrOf = glm::vec2(itemNrOfXOffset + itemSpritePadding * 1, 30.0f * heightMultiplier);
@@ -545,25 +545,25 @@ namespace MCS
 		glm::vec2 wolfsbainNrOf = glm::vec2(itemNrOfXOffset + 10 + itemSpritePadding * 3, 30.0f * heightMultiplier);
 
 		//Cooldown
-		int itemCoolDownXOffset = itemSpriteXOffset - 15 * widthMultiplier;
-		int itemCoolDownYOffset = itemSpriteYOffset - 10 * heightMultiplier;
+		float itemCoolDownXOffset = itemSpriteXOffset - 15.f * widthMultiplier;
+		float itemCoolDownYOffset = itemSpriteYOffset - 10.f * heightMultiplier;
 
 		glm::vec2 hpPotionCooldown = glm::vec2(itemCoolDownXOffset + itemSpritePadding * 0, itemCoolDownYOffset * heightMultiplier);
 		glm::vec2 spPotionCooldown = glm::vec2(itemCoolDownXOffset + itemSpritePadding * 1, itemCoolDownYOffset * heightMultiplier);
 		glm::vec2 baitCooldown = glm::vec2(itemCoolDownXOffset + itemSpritePadding * 2, itemCoolDownYOffset) * heightMultiplier;
 
 		//Controls
-		int itemControllXOffset = itemCoolDownXOffset + 8 * widthMultiplier;
-		int itemControllYOffset = itemSpriteYOffset + 40 * heightMultiplier;
+		float itemControllXOffset = itemCoolDownXOffset + 8.f * widthMultiplier;
+		float itemControllYOffset = itemSpriteYOffset + 40.f * heightMultiplier;
 
 		glm::vec2 hpPotionControl = glm::vec2(itemControllXOffset + itemSpritePadding * 0, itemControllYOffset);
 		glm::vec2 spPotionControl = glm::vec2(itemControllXOffset + itemSpritePadding * 1, itemControllYOffset);
 		glm::vec2 baitControl = glm::vec2(itemControllXOffset + itemSpritePadding * 2, itemControllYOffset);
 
-		uiLayout.AddText(hpPotionNrOf, "1/1", glm::vec3(1.0f, 1.0f, 0.75f), 0.75 * widthMultiplier); //0
-		uiLayout.AddText(spPotionNrOf, "1/1", glm::vec3(1.0f, 1.0f, 0.75f), 0.75 * widthMultiplier); //1
-		uiLayout.AddText(baitNrOf, "1/1", glm::vec3(1.0f, 1.0f, 0.75f), 0.75 * widthMultiplier); //2
-		uiLayout.AddText(wolfsbainNrOf, "1", glm::vec3(1.0f, 1.0f, 0.75f), 0.75 * widthMultiplier); //3
+		uiLayout.AddText(hpPotionNrOf, "1/1", glm::vec3(1.0f, 1.0f, 0.75f), 0.75f * widthMultiplier); //0
+		uiLayout.AddText(spPotionNrOf, "1/1", glm::vec3(1.0f, 1.0f, 0.75f), 0.75f * widthMultiplier); //1
+		uiLayout.AddText(baitNrOf, "1/1", glm::vec3(1.0f, 1.0f, 0.75f), 0.75f * widthMultiplier); //2
+		uiLayout.AddText(wolfsbainNrOf, "1", glm::vec3(1.0f, 1.0f, 0.75f), 0.75f * widthMultiplier); //3
 
 		//Points
 		uiLayout.AddText(glm::vec2(1100 * widthMultiplier, 675 * heightMultiplier), "Points: 100", glm::vec3(1.0f, 1.0f, 0.75f), 0.75f * widthMultiplier); //4
@@ -585,7 +585,7 @@ namespace MCS
 		uiLayout.AddText(glm::vec2(200 * widthMultiplier, 40 * heightMultiplier), "0.0", glm::vec3(1.0f, 1.0f, 1.0f), 0.65f * widthMultiplier); //10
 
 		//Item cooldown
-		float offsetx2 = 50 * widthMultiplier;
+		float offsetx2 = 50.f * widthMultiplier;
 		uiLayout.AddText(hpPotionCooldown, "1.0", glm::vec3(1.0f, 1.0f, 1.0f), 0.75f * widthMultiplier); //11
 		uiLayout.AddText(spPotionCooldown, "2.0", glm::vec3(1.0f, 1.0f, 1.0f), 0.75f * widthMultiplier); //12
 		uiLayout.AddText(baitCooldown, "3.0", glm::vec3(1.0f, 1.0f, 1.0f), 0.0f * widthMultiplier); //13
@@ -631,9 +631,9 @@ namespace MCS
 			uiLayout.AddSprite(glm::vec2(50.0f * widthMultiplier, 140.0f * heightMultiplier), attackScale, "attackMelee3", glm::vec4(0.1f, 0.1f, 0.1f, 0.50f));// 4
 		}
 
-		int elementXOffset = 30 * widthMultiplier;
-		int elementyOffset = 30 * heightMultiplier;
-		int elementPadding = 20 * widthMultiplier;
+		float elementXOffset = 30.f * widthMultiplier;
+		float elementyOffset = 30.f * heightMultiplier;
+		float elementPadding = 20.f * widthMultiplier;
 
 		glm::vec2 elementScale = glm::vec2(0.5 * widthMultiplier, 0.5 * heightMultiplier);
 
@@ -660,9 +660,9 @@ namespace MCS
 		uiLayout.AddSprite(glm::vec2(215 * widthMultiplier, 45 * heightMultiplier), glm::vec2(widthMultiplier, heightMultiplier), "attackRanged3", glm::vec4(1.0f));// 13
 
 		//Speed boot
-		int speedBuffXOffset = 30 * widthMultiplier;
-		int speedBuffYOffset = 650 * heightMultiplier;
-		int speedBuffPadding = 20 * widthMultiplier;
+		float speedBuffXOffset = 30.f * widthMultiplier;
+		float speedBuffYOffset = 650.f * heightMultiplier;
+		float speedBuffPadding = 20.f * widthMultiplier;
 		glm::vec2 speedBuffScale = glm::vec2(0.75 * widthMultiplier, 0.75 * heightMultiplier);
 
 		uiLayout.AddSprite(glm::vec2(speedBuffXOffset + speedBuffPadding * 0, speedBuffYOffset), speedBuffScale, "speedBoots", glm::vec4(1.0f, 1.0f, 1.0f, 0.0f));// 14
@@ -672,10 +672,10 @@ namespace MCS
 		uiLayout.AddSprite(glm::vec2(speedBuffXOffset + speedBuffPadding * 4, speedBuffYOffset), speedBuffScale, "speedBoots", glm::vec4(1.0f, 1.0f, 1.0f, 0.0f));// 18
 
 		//Health
-		int healthXOffset = 30 * widthMultiplier;
-		int healthYOffset = 680 * heightMultiplier;
-		int healthPadding = 45 * widthMultiplier;
-		glm::vec2 healthScale = glm::vec2(0.75 * widthMultiplier, 0.75 * heightMultiplier);
+		float healthXOffset = 30.f * widthMultiplier;
+		float healthYOffset = 680.f * heightMultiplier;
+		float healthPadding = 45.f * widthMultiplier;
+		glm::vec2 healthScale = glm::vec2(0.75f * widthMultiplier, 0.75f * heightMultiplier);
 
 		uiLayout.AddSprite(glm::vec2(healthXOffset + healthPadding * 0, healthYOffset), healthScale, "Heart_0", glm::vec4(1.0f, 1.0f, 1.0f, 0.0f));// 19
 		uiLayout.AddSprite(glm::vec2(healthXOffset + healthPadding * 1, healthYOffset), healthScale, "Heart_0", glm::vec4(1.0f, 1.0f, 1.0f, 0.0f));// 20

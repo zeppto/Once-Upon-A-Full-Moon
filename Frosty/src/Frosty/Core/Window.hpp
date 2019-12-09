@@ -22,8 +22,8 @@ namespace Frosty
 		Window& operator=(const Window& org) { FY_CORE_ASSERT(false, "Assignment operator in Window called."); return *this; }
 
 		virtual inline std::string GetTitle() const override { return m_Data.Title; }
-		virtual inline unsigned int GetWidth() const override { return m_Data.Width; }
-		virtual inline unsigned int GetHeight() const override { return m_Data.Height; }
+		virtual inline float GetWidth() const override { return m_Data.Width; }
+		virtual inline float GetHeight() const override { return m_Data.Height; }
 		virtual float GetWidthMultiplier()const override;
 		virtual float GetHeightMultiplier()const override;
 		virtual inline unsigned int GetPositionX() const override { return m_Data.PositionX; }
@@ -63,7 +63,7 @@ namespace Frosty
 		{
 			std::string Title{ "Frosty Engine" };
 			int Maximized;
-			unsigned int Width, Height;
+			float Width, Height;
 			unsigned int PositionX, PositionY;
 			float refWidth, refHeight;
 			float widthMultiplier{ 0.0f }, heightMultiplier{ 0.0f };

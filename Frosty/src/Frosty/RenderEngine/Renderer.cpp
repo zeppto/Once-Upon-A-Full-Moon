@@ -17,6 +17,10 @@ namespace Frosty
 	int Renderer::s_TotalNrOfFrames;
 	bool Renderer::s_DistanceCulling = false;
 	bool Renderer::s_LightCulling = false;
+	unsigned int Renderer::s_ShadowMapFBO;
+	unsigned int Renderer::s_ShadowMap;
+	//const unsigned int Renderer::SHADOW_WIDTH = 1280;
+	//const unsigned int Renderer::SHADOW_HEIGHT = 720;
 
 	void Renderer::Init()
 	{
@@ -28,6 +32,7 @@ namespace Frosty
 		}
 
 		s_ForwardPlus.Initiate();
+		CreateDepthMap();
 	}
 
 	void Renderer::BeginScene()
@@ -925,5 +930,34 @@ namespace Frosty
 				meshData->AnimMap.emplace(entityID, ctrlPtr);
 			}
 		}
+	}
+	void Renderer::CreateDepthMap()
+	{
+		glGenFramebuffers(1, &s_ShadowMapFBO);
+
+		glGenTextures(1, &s_ShadowMap);
+		glBindTexture(GL_TEXTURE_2D, s_ShadowMap);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, SHADOW_WIDTH, SHADOW_HEIGHT, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+		int err = 1;
+
+		if (glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE)
+		{
+			err = 0;
+		}
+		else
+		{
+			err = -1;
+		}
+
+		glBindFramebuffer(GL_FRAMEBUFFER, s_ShadowMapFBO);
+		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, s_ShadowMap, 0);
+		glDrawBuffer(GL_NONE);
+		glReadBuffer(GL_NONE);
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	}
 }

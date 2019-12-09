@@ -24,6 +24,8 @@ namespace Frosty
 
 
 	public:
+	
+
 		struct GameCameraProps
 		{
 			glm::vec3 CameraPosition;
@@ -99,6 +101,7 @@ namespace Frosty
 		inline static const GameCameraProps& GetGameCamera() { return s_SceneData->GameCamera; }
 		inline static const std::unordered_map<size_t, PointLight>& GetPointLights() { return s_SceneData->PointLights; }
 
+		static void CreateDepthMap();
 	private:
 
 
@@ -177,6 +180,13 @@ namespace Frosty
 		static bool s_LightCulling;
 
 		static FrustumGrid s_ForwardPlus;
+
+		static unsigned int s_ShadowMapFBO;
+		static unsigned int s_ShadowMap;
+
+		inline static const unsigned int SHADOW_WIDTH = 1280;
+		inline static const unsigned int SHADOW_HEIGHT = 720;
+	
 	};
 }
 #endif // !RENDERER_HPP
