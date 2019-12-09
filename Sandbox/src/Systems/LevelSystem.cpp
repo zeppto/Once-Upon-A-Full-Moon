@@ -816,6 +816,7 @@ namespace MCS
 		Frosty::ECS::CTransform* PlayerT = nullptr;
 		Frosty::ECS::CWeapon* Weapon = nullptr;
 		Frosty::ECS::CHealth* Health = nullptr;
+		Frosty::ECS::CLight* Torch = nullptr;
 		int weaponID = 0;
 
 		for (size_t i = 1; i < p_Total; i++)
@@ -826,7 +827,7 @@ namespace MCS
 				{
 					if (!m_World->HasComponent<Frosty::ECS::CCamera>(m_Transform[i]->EntityPtr))
 					{
-						/*if (!m_World->HasComponent<Frosty::ECS::CLight>(m_Transform[i]->EntityPtr))
+						if (!m_World->HasComponent<Frosty::ECS::CLight>(m_Transform[i]->EntityPtr))
 						{
 							if (!m_World->HasComponent<Frosty::ECS::CGUI>(m_Transform[i]->EntityPtr))
 							{
@@ -835,12 +836,26 @@ namespace MCS
 									m_World->AddComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr);
 								}
 							}
-						}*/
-						if (!m_World->HasComponent<Frosty::ECS::CGUI>(m_Transform[i]->EntityPtr))
+						}
+						else if (m_World->HasComponent<Frosty::ECS::CLight>(m_Transform[i]->EntityPtr))
 						{
-							if (!m_World->HasComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr))
+							auto& light = m_World->GetComponent<Frosty::ECS::CLight>(m_Transform[i]->EntityPtr);
+							if (light.Origin != nullptr)
 							{
-								m_World->AddComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr);
+								if (!m_World->HasComponent<Frosty::ECS::CPlayer>(light.Origin->EntityPtr))
+								{
+									if (!m_World->HasComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr))
+									{
+										m_World->AddComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr);
+									}
+								}
+							}
+							else if (light.Origin == nullptr)
+							{
+								if (!m_World->HasComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr))
+								{
+									m_World->AddComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr);
+								}
 							}
 						}
 					}
@@ -960,15 +975,12 @@ namespace MCS
 
 				m_GUI = &m_World->GetComponent<Frosty::ECS::CGUI>(m_Transform[i]->EntityPtr);
 
-				for (int j = 19; j < 19 + (healthSpriteCounter / 4); j++)
+				for (int j = 14; j < 19 + (healthSpriteCounter / 4); j++)
 				{
 					m_GUI->Layout.sprites.at(j).SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 0.0f));
 				}
 			}
 		}
-
-		//auto& torch = m_World->CreateEntity({ 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f });
-		//m_World->AddComponent<Frosty::ECS::CLight>(torch, Frosty::ECS::CLight::LightType::Point, 1.f, glm::vec3(0.99f, 0.9f, 0.8f), 15.f, &PlayerT->Position, glm::vec3(0.f, 5.f, 0.f));
 
 		weaponMesh->parentMatrix = PlayerT->GetModelMatrix();
 		animation->holdPtr = animation->currAnim->getHoldingJoint();

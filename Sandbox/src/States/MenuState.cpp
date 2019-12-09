@@ -419,7 +419,7 @@ namespace MCS
 		auto& world = Frosty::Application::Get().GetWorld();
 		m_MenuGui = m_App->Get().GetWorld()->CreateEntity();
 
-		m_UILayout = Frosty::UILayout(4, 0);
+		m_UILayout = Frosty::UILayout(4, 1);
 		std::string MainMenu = "Main Menu";
 		std::string Play     = "Play";
 		std::string Controls = "Controls";
@@ -434,7 +434,7 @@ namespace MCS
 		m_UILayout.AddText(glm::vec2(posX2, 400.0f), Play, glm::vec3(1.0f, 1.0f, 0.0f), 1.0f);
 		m_UILayout.AddText(glm::vec2(posX3, 325.0f), Controls, glm::vec3(1.0f, 1.0f, 0.0f), 1.0f);
 		m_UILayout.AddText(glm::vec2(posX4, 250.0f), Exit, glm::vec3(0.8f, 0.0f, 0.0f), 1.0f);
-		//m_UILayout.AddSprite(glm::vec2(640.0f, 360.0f), glm::vec2(25.6f, 14.4f), "Background", glm::vec4(0.5f, 0.5f, 0.5f, 1.0f));
+		m_UILayout.AddSprite(glm::vec2(640.0f, 360.0f), glm::vec2(25.6f, 14.4f), "Background", glm::vec4(0.5f, 0.5f, 0.5f, 1.0f));
 
 		world->AddComponent<Frosty::ECS::CGUI>(m_MenuGui, m_UILayout);
 	}

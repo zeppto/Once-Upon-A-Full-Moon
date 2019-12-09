@@ -11,10 +11,6 @@
 	#define FY_ENABLE_TIME
 #endif
 
-
-
-
-
 #ifdef FY_ENABLE_NEW_OVERLOAD
 	#define FY_NEW new(_NORMAL_BLOCK, __FILE__, __LINE__)
 #else
@@ -38,4 +34,4 @@
 #define FY_TIME_DISABLE(x, name) { x; }
 #define BIT(x) (1 << x)
 
-#endif // !BASE_HPP
+#endif 

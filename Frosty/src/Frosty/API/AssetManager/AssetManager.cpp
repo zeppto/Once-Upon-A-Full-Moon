@@ -8,15 +8,13 @@
 #include <stdio.h>
 #include <direct.h>
 
-
 namespace Frosty
 {
-
 	bool AssetManager::s_AutoLoad = true;
 	AssetManager* AssetManager::s_Instance = nullptr;
 	uint16_t AssetManager::s_Total_Nr_Assets = 0;
 
- std::vector<Luna::Vertex>* AssetManager::s_CurrentVertexArray = nullptr;
+	std::vector<Luna::Vertex>* AssetManager::s_CurrentVertexArray = nullptr;
 
 	std::unordered_map<std::string, Mesh> AssetManager::s_Meshes;
 	std::unordered_map<std::string, Animation> AssetManager::s_Animations;
@@ -36,7 +34,6 @@ namespace Frosty
 
 	uint16_t AssetManager::s_Failed_Loading_Attempts = 0;
 	uint16_t AssetManager::s_Success_Loading_Attempts = 0;
-
 
 	AssetManager* AssetManager::Get()
 	{
@@ -64,33 +61,24 @@ namespace Frosty
 		{
 			switch (TempFileInfo.Type)
 			{
-			case JPG :
-
+			case JPG:
 				returnValue = LoadGraphicFile(TempFileInfo);
 				break;
 			case PNG:
 				returnValue = LoadGraphicFile(TempFileInfo);
 				break;
-
 			case TGA:
 				returnValue = LoadGraphicFile(TempFileInfo);
 				break;
-
 			case LUNA:
-
 				returnValue = LoadLunaFile(TempFileInfo);
-
 				break;
-
 			case TTF:
 				returnValue = LoadTTF_File(TempFileInfo);
 				break;
 			case XML:
 				returnValue = LoadXML(TempFileInfo);
 				break;
-
-
-
 			default:
 				FY_CORE_WARN("Unknown fileformat, Filepath: {0}", TempFileInfo.FileName);
 				break;
@@ -144,11 +132,9 @@ namespace Frosty
 		s_Shaders["BlendShader"]->UploadUniformInt("u_BlendTexture1", 4);
 		s_Shaders["BlendShader"]->UploadUniformInt("u_BlendTexture2", 5);
 
-
 		s_Shaders["UI"]->Bind();
 
 		s_Shaders["UI"]->UploadUniformInt("u_DiffuseTexture", 0);
-
 
 		LoadDir("assets/");
 		ConnectWatchList();
@@ -289,7 +275,6 @@ namespace Frosty
 		}
 		return true;
 	}
-	
 
 	bool AssetManager::AddMaterial(LinkedMaterial& LnkMat)
 	{
@@ -688,7 +673,6 @@ namespace Frosty
 		return returnValue;
 	}
 
-
 	bool AssetManager::LoadLunaFile(const FileMetaData& FileNameInformation, const bool& Reload)
 	{
 
@@ -903,7 +887,6 @@ namespace Frosty
 		return returnValue;
 	}
 
-	
 	bool AssetManager::LoadXML(const FileMetaData& FileNameInformation, const bool& Reload)
 	{
 		bool returnValue = false;
@@ -1117,5 +1100,4 @@ namespace Frosty
 		}
 		return returnString;
 	}
-
 }
