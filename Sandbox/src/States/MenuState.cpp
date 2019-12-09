@@ -349,7 +349,7 @@ namespace MCS
 
 
 
-		uiLayout.AddSprite(glm::vec2(0.f,0.f), glm::vec2(10, 10), "IndicatorEffect", glm::vec4(1.0f)); // 1 Top Mid
+		uiLayout.AddSprite(glm::vec2(0.f,0.f), glm::vec2(10, 10), "IndicatorEffect", glm::vec4(0.0f)); // 1 
 		//uiLayout.AddSprite(glm::vec2(720.f / 2, 720.f), glm::vec2(10, 10), "IndicatorEffect", glm::vec4(1.0f)); // 1 Top Mid
 		//uiLayout.AddSprite(glm::vec2(1280.f, 720.f), glm::vec2(10, 10), "IndicatorEffect", glm::vec4(1.0f)); // 1 Top Right
 		//uiLayout.AddSprite(glm::vec2(1280.f, 720.f / 2), glm::vec2(10, 10), "IndicatorEffect", glm::vec4(1.0f)); // 1 Mid Right

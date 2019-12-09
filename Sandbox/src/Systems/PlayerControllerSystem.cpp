@@ -2024,21 +2024,11 @@ namespace MCS
 			timeLeft = Frosty::Time::CurrentTime() - m_Player[index]->BossFearEffectTimer;
 			if (timeLeft <= m_Player[index]->BossFearEffectTime && timeLeft >= 0)
 			{
-			/*	float percentage = m_Player[index]->BossFearEffectTime / (Frosty::Time::CurrentTime() - m_Player[index]->BossFearEffectTimer);
-				percentage /= 100;*/
 				float percentage = (Frosty::Time::CurrentTime() - m_Player[index]->BossFearEffectTimer) / m_Player[index]->BossFearEffectTime;
-
-
 				HUD.Layout.sprites[1].SetColorSprite(glm::vec4(1.0f , 1.0f, 1.0f, 1.0f - 1.0f* percentage));
-				FY_INFO("OnBossFearEffect reset");
-
-
+				//FY_INFO("OnBossFearEffect reset");
 			}
-			
-
 		}
-
-
 	}
 
 	void PlayerControllerSystem::SetPickUpText(size_t index, std::string text)
@@ -2114,14 +2104,13 @@ namespace MCS
 		}
 
 
-
-
 		for (size_t i = 1; i < p_Total; i++)
 		{
 			auto& HUD = m_World->GetComponent<Frosty::ECS::CGUI>(m_Transform[i]->EntityPtr);
 			HUD.Layout.sprites[1].SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
-			HUD.Layout.sprites[1].SetPosition(pos);
-
+			HUD.Layout.sprites[1].SetTranslateSprite(pos);
+			HUD.Layout.sprites[1].SetScaleSprite(glm::vec2(10,10));
+			
 			m_Player[i]->BossFearEffectTimer = Frosty::Time::CurrentTime();
 		}
 	}

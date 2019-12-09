@@ -463,7 +463,7 @@ namespace Frosty
 		shader->UploadUniformMat4("projection", projection);
 		
 
-		transform[3][0] *=  window.GetWidthMultiplier() ;
+ 		transform[3][0] *=  window.GetWidthMultiplier() ;
 		transform[3][1] *= window.GetHeightMultiplier();
 
 		for (int i = 0; i < 3; i++)
