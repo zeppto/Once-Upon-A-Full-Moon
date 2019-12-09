@@ -45,13 +45,11 @@ namespace MCS
 	{
 		auto& world = Frosty::Application::Get().GetWorld();
 		m_App = &Frosty::Application::Get();
-		m_App->PushOverlay(FY_NEW(MenuLayer));
 
 		if (!m_App->MenuLoaded())
 		{
-			InitiateSystems();
-			InitiateLight();
 			world->PauseGame();
+			InitiateSystems();
 			m_App->SetMenuLoad(true);
 		}
 		if (!m_ButtonsLoaded)
@@ -59,6 +57,7 @@ namespace MCS
 			InitiateButtons();
 			m_ButtonsLoaded = true;
 		}
+		m_App->SetGameLoad(false);
 	}
 
 	void MenuState::OnInput()
@@ -221,7 +220,6 @@ namespace MCS
 
 		// PLAYER
 		auto& player = world->CreateEntity({ -104.0f, 0.0f, -15.4f }, { 0.0f, 0.0f, 0.0f }, { 2.0f, 2.0f, 2.0f });
-		m_Player = player;
 		//auto& player = world->CreateEntity({ -90.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 2.0f, 2.0f, 2.0f });
 		auto& playerTransform = world->GetComponent<Frosty::ECS::CTransform>(player);
 		world->AddComponent<Frosty::ECS::CMesh>(player, Frosty::AssetManager::GetMesh("Scarlet"));
@@ -238,6 +236,7 @@ namespace MCS
 		world->AddComponent<Frosty::ECS::CDash>(player);
 		world->AddComponent<Frosty::ECS::CHealth>(player, 20);
 		world->AddComponent<Frosty::ECS::CInventory>(player);
+
 		//world->AddComponent<Frosty::ECS::CHealthBar>(player, glm::vec3(0.0f, 10.0f, 0.0f));
 		auto& camEntity = world->GetSceneCamera();
 		world->GetComponent<Frosty::ECS::CCamera>(camEntity).Target = &playerTransform;
@@ -252,10 +251,10 @@ namespace MCS
 
 		// TORCH
 		auto& torch = world->CreateEntity({ 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f });
-		world->AddComponent<Frosty::ECS::CLight>(torch, Frosty::ECS::CLight::LightType::Point, 1.f, glm::vec3(0.99f, 0.9f, 0.8f), 15.f, &playerTransform, glm::vec3(0.f, 10.f, 0.f));
 
-		m_Player = player;
-		m_Weapon = weapon;
+		world->AddComponent<Frosty::ECS::CLight>(torch, Frosty::ECS::CLight::LightType::Point, 1.f, glm::vec3(0.99f, 0.9f, 0.8f), 15.f, &playerTransform, glm::vec3(0.f, 5.f, 0.f));
+
+
 
 		//Player HUD
 		Frosty::UILayout uiLayout(21, 30);
@@ -349,7 +348,7 @@ namespace MCS
 
 
 
-		uiLayout.AddSprite(glm::vec2(0.f,0.f), glm::vec2(10, 10), "IndicatorEffect", glm::vec4(0.0f)); // 1 
+		uiLayout.AddSprite(glm::vec2(0.f, 0.f), glm::vec2(10, 10), "IndicatorEffect", glm::vec4(0.0f)); // 1 
 		//uiLayout.AddSprite(glm::vec2(720.f / 2, 720.f), glm::vec2(10, 10), "IndicatorEffect", glm::vec4(1.0f)); // 1 Top Mid
 		//uiLayout.AddSprite(glm::vec2(1280.f, 720.f), glm::vec2(10, 10), "IndicatorEffect", glm::vec4(1.0f)); // 1 Top Right
 		//uiLayout.AddSprite(glm::vec2(1280.f, 720.f / 2), glm::vec2(10, 10), "IndicatorEffect", glm::vec4(1.0f)); // 1 Mid Right
@@ -441,293 +440,9 @@ namespace MCS
 		world->AddComponent<Frosty::ECS::CGUI>(player, uiLayout);
 	}
 
-	void MenuState::InitiateObjects()
-	{
-		auto& world = Frosty::Application::Get().GetWorld();
-
-		// WEAPON 1
-		//Sword Offset
-		auto& weapon = world->CreateEntity({ -0.7f, 2.1f, 0.80f }, { 0.0f, 0.0f, 0.0f }, { 1.f, 1.f, 1.f });
-		//Bow Offset
-	/*	auto& weapon = world->CreateEntity({ -0.7f, 2.3f, 0.2f }, { 0.0f, 60.0f, 0.0f }, { 1.f, 1.f, 1.f });*/
-		auto& weaponHandler = Frosty::AssetManager::GetWeaponHandler("Weapons");
-		Frosty::Weapon loadedWeapon = weaponHandler->GetAPlayerWeapon(1, 1);
-		//Frosty::Weapon loadedWeapon = weaponHandler->GetWeaponByTypeAndLevel(Frosty::Weapon::WeaponType::Sword, 3, 3);
-		world->AddComponent<Frosty::ECS::CWeapon>(weapon, loadedWeapon, true);
-		auto& weaponComp = world->GetComponent<Frosty::ECS::CWeapon>(weapon);
-		Frosty::ECS::CMesh* weaponMesh;
-
-		if (weaponComp.Type == Frosty::ECS::CWeapon::WeaponType::Bow)
-		{
-			/*world->GetComponent<Frosty::ECS::CTransform>*/
-			weaponMesh = &world->AddComponent<Frosty::ECS::CMesh>(weapon, Frosty::AssetManager::GetMesh("Bow"));
-			auto& weaponMat = world->AddComponent<Frosty::ECS::CMaterial>(weapon, Frosty::AssetManager::GetShader("Texture2D"));
-			weaponMat.DiffuseTexture = Frosty::AssetManager::GetTexture2D("bow_lvl1_diffuse");
-			weaponMat.NormalTexture = Frosty::AssetManager::GetTexture2D("bow_normal");
-		}
-		else
-		{
-			weaponMesh = &world->AddComponent<Frosty::ECS::CMesh>(weapon, Frosty::AssetManager::GetMesh("sword"));
-			auto& weaponMat = world->AddComponent<Frosty::ECS::CMaterial>(weapon, Frosty::AssetManager::GetShader("Texture2D"));
-			weaponMat.DiffuseTexture = Frosty::AssetManager::GetTexture2D("sword_lvl1_diffuse");
-			weaponMat.NormalTexture = Frosty::AssetManager::GetTexture2D("sword_normal");
-		}
-
-		// PLAYER
-		auto& player = world->CreateEntity({ -104.0f, 0.0f, -15.4f }, { 0.0f, 0.0f, 0.0f }, { 2.0f, 2.0f, 2.0f });
-		auto& playerTransform = world->GetComponent<Frosty::ECS::CTransform>(player);
-		world->AddComponent<Frosty::ECS::CMesh>(player, Frosty::AssetManager::GetMesh("Scarlet"));
-
-		world->AddComponent<Frosty::ECS::CAnimController>(player).currAnim = Frosty::AssetManager::GetAnimation("Scarlet_Idle");
-		auto& animation = world->GetComponent<Frosty::ECS::CAnimController>(player);
-		animation.animSpeed = 0.7f;
-
-		auto& playerMat = world->AddComponent<Frosty::ECS::CMaterial>(player, Frosty::AssetManager::GetShader("Animation"));
-		playerMat.DiffuseTexture = Frosty::AssetManager::GetTexture2D("Scarlet_diffuse");
-		playerMat.NormalTexture = Frosty::AssetManager::GetTexture2D("Scarlet_normal");
-		playerMat.SpecularTexture = Frosty::AssetManager::GetTexture2D("Scarlet_specular");
-		world->AddComponent<Frosty::ECS::CPlayer>(player, &weaponComp);	// <-- Give player a weapon
-		//weaponTransform.Position += playerTransform.Position;//Check this
-		world->AddComponent<Frosty::ECS::CPhysics>(player, Frosty::AssetManager::GetBoundingBox("Scarlet"), playerTransform.Scale, 13.0f);
-		world->AddComponent<Frosty::ECS::CDash>(player);
-		world->AddComponent<Frosty::ECS::CHealth>(player, 20);
-		world->AddComponent<Frosty::ECS::CInventory>(player);
-		//world->AddComponent<Frosty::ECS::CHealthBar>(player, glm::vec3(0.0f, 10.0f, 0.0f));
-		auto& camEntity = world->GetSceneCamera();
-		world->GetComponent<Frosty::ECS::CCamera>(camEntity).Target = &playerTransform;
-
-		//Parent the weapon to player mesh.
-		weaponMesh->parentMatrix = playerTransform.GetModelMatrix();
-		animation.holdPtr = animation.currAnim->getHoldingJoint();
-		//Make it move according to the player's hand.
-		weaponMesh->animOffset = animation.holdPtr;
-		//Update it in renderer.
-		Frosty::Renderer::UpdateCMesh((int)weapon->Id, weaponMesh);
-
-		//Player HUD
-		Frosty::UILayout uiLayout(21, 29);
-
-		float windowWidth = Frosty::Application::Get().GetWindow().GetWidth();
-		float windowHeight = Frosty::Application::Get().GetWindow().GetHeight();
-
-		float refWidth = 1280;
-		float refHeight = 720;
-
-		/*float widthMultiplier = windowWidth / refWidth;
-		float heightMultiplier = windowHeight / refHeight;*/
-
-		float widthMultiplier = 1;
-		float heightMultiplier = 1;
 
 
 
-		//Items
-		float padding = 200.0f;
-		float offsetX = 700.0f;
-		float offsetY = 30.0f;
-
-		//Sprites
-		float itemSpriteXOffset = 920.f * widthMultiplier;
-		float itemSpriteYOffset = 40.f * heightMultiplier;
-		float itemSpritePadding = 110.f * widthMultiplier;
-
-		glm::vec2 hpPotionSprite = glm::vec2(itemSpriteXOffset + itemSpritePadding * 0, itemSpriteYOffset);
-		glm::vec2 spPotionSprite = glm::vec2(itemSpriteXOffset + itemSpritePadding * 1, itemSpriteYOffset);
-		glm::vec2 baitSprite = glm::vec2(itemSpriteXOffset + itemSpritePadding * 2, itemSpriteYOffset);
-		glm::vec2 wolfsbainSprite = glm::vec2(itemSpriteXOffset + itemSpritePadding * 3, itemSpriteYOffset);
-
-		//Amount info
-		float itemNrOfXOffset = itemSpriteXOffset - 60.f * widthMultiplier;
-
-		glm::vec2 hpPotionNrOf = glm::vec2(itemNrOfXOffset + itemSpritePadding * 0, 30.0f * heightMultiplier);
-		glm::vec2 spPotionNrOf = glm::vec2(itemNrOfXOffset + itemSpritePadding * 1, 30.0f * heightMultiplier);
-		glm::vec2 baitNrOf = glm::vec2(itemNrOfXOffset + itemSpritePadding * 2, 30.0f * heightMultiplier);
-		glm::vec2 wolfsbainNrOf = glm::vec2(itemNrOfXOffset + 10 + itemSpritePadding * 3, 30.0f * heightMultiplier);
-
-		//Cooldown
-		float itemCoolDownXOffset = itemSpriteXOffset - 15.f * widthMultiplier;
-		float itemCoolDownYOffset = itemSpriteYOffset - 10.f * heightMultiplier;
-
-		glm::vec2 hpPotionCooldown = glm::vec2(itemCoolDownXOffset + itemSpritePadding * 0, itemCoolDownYOffset * heightMultiplier);
-		glm::vec2 spPotionCooldown = glm::vec2(itemCoolDownXOffset + itemSpritePadding * 1, itemCoolDownYOffset * heightMultiplier);
-		glm::vec2 baitCooldown = glm::vec2(itemCoolDownXOffset + itemSpritePadding * 2, itemCoolDownYOffset) * heightMultiplier;
-
-		//Controls
-		float itemControllXOffset = itemCoolDownXOffset + 8.f * widthMultiplier;
-		float itemControllYOffset = itemSpriteYOffset + 40.f * heightMultiplier;
-
-		glm::vec2 hpPotionControl = glm::vec2(itemControllXOffset + itemSpritePadding * 0, itemControllYOffset);
-		glm::vec2 spPotionControl = glm::vec2(itemControllXOffset + itemSpritePadding * 1, itemControllYOffset);
-		glm::vec2 baitControl = glm::vec2(itemControllXOffset + itemSpritePadding * 2, itemControllYOffset);
-
-		uiLayout.AddText(hpPotionNrOf, "1/1", glm::vec3(1.0f, 1.0f, 0.75f), 0.75f * widthMultiplier); //0
-		uiLayout.AddText(spPotionNrOf, "1/1", glm::vec3(1.0f, 1.0f, 0.75f), 0.75f * widthMultiplier); //1
-		uiLayout.AddText(baitNrOf, "1/1", glm::vec3(1.0f, 1.0f, 0.75f), 0.75f * widthMultiplier); //2
-		uiLayout.AddText(wolfsbainNrOf, "1", glm::vec3(1.0f, 1.0f, 0.75f), 0.75f * widthMultiplier); //3
-
-		//Points
-		uiLayout.AddText(glm::vec2(1100 * widthMultiplier, 675 * heightMultiplier), "Points: 100", glm::vec3(1.0f, 1.0f, 0.75f), 0.75f * widthMultiplier); //4
-
-		//TempHealth
-		//uiLayout.AddText(glm::vec2(25, 600), "100/100", glm::vec3(1.0f, 1.0f, 0.75f)); //5
-		uiLayout.AddText(glm::vec2(25 * widthMultiplier, 600 * heightMultiplier), "", glm::vec3(1.0f, 1.0f, 0.75f * widthMultiplier)); //5
-
-		//Picked up
-		//uiLayout.AddText(glm::vec2(550, 425), "+ 1 Health Potion", glm::vec3(1.0f, 1.0f, 1.0f), 0.75f);
-		uiLayout.AddText(glm::vec2(windowWidth / 2, 425 * heightMultiplier), "", glm::vec3(1.0f, 1.0f, 0.75f), 0.75f * widthMultiplier); //6 
-
-		//Attack cooldown
-		uiLayout.AddText(glm::vec2(35 * widthMultiplier, 134 * heightMultiplier), "", glm::vec3(1.0f, 1.0f, 1.0f), 0.65f * widthMultiplier); //7
-		uiLayout.AddText(glm::vec2(90 * widthMultiplier, 105 * heightMultiplier), "", glm::vec3(1.0f, 1.0f, 1.0f), 0.65f * widthMultiplier); //8
-		uiLayout.AddText(glm::vec2(115 * widthMultiplier, 45 * heightMultiplier), "1.0", glm::vec3(1.0f, 1.0f, 1.0f), 0.65f * widthMultiplier); //9
-
-		//Dash cooldown
-		uiLayout.AddText(glm::vec2(200 * widthMultiplier, 40 * heightMultiplier), "0.0", glm::vec3(1.0f, 1.0f, 1.0f), 0.65f * widthMultiplier); //10
-
-		//Item cooldown
-		float offsetx2 = 50.f * widthMultiplier;
-		uiLayout.AddText(hpPotionCooldown, "1.0", glm::vec3(1.0f, 1.0f, 1.0f), 0.75f * widthMultiplier); //11
-		uiLayout.AddText(spPotionCooldown, "2.0", glm::vec3(1.0f, 1.0f, 1.0f), 0.75f * widthMultiplier); //12
-		uiLayout.AddText(baitCooldown, "3.0", glm::vec3(1.0f, 1.0f, 1.0f), 0.0f * widthMultiplier); //13
-
-		//Controls info
-		float controlsInfoSize = 0.5f * widthMultiplier;
-		float controlsInfoSize2 = 0.30f * widthMultiplier;
-		//Attacks
-		uiLayout.AddText(glm::vec2(30 * widthMultiplier, 150 * heightMultiplier + 15), "[SPACE]", glm::vec3(1.0f, 1.0f, 0.75f), controlsInfoSize2); //14
-		uiLayout.AddText(glm::vec2(80 * widthMultiplier, 100 * heightMultiplier + 35), "[R-MOUSE]", glm::vec3(1.0f, 1.0f, 0.75f), controlsInfoSize2); //15
-		uiLayout.AddText(glm::vec2(105 * widthMultiplier, 40 * heightMultiplier + 35), "[L-MOUSE]", glm::vec3(1.0f, 1.0f, 0.75f), controlsInfoSize2); //16
-
-		//Dash
-		uiLayout.AddText(glm::vec2(240 * widthMultiplier, 40 * heightMultiplier + 35), "[SHIFT]", glm::vec3(1.0f, 1.0f, 0.75f), controlsInfoSize2); //17
-
-		//Items
-		uiLayout.AddText(hpPotionControl, "[1]", glm::vec3(1.0f, 1.0f, 0.75f), controlsInfoSize2); //18
-		uiLayout.AddText(spPotionControl, "[2]", glm::vec3(1.0f, 1.0f, 0.75f), controlsInfoSize2); //19
-		uiLayout.AddText(baitControl, "[Q]", glm::vec3(1.0f, 1.0f, 0.75f), controlsInfoSize2); //20
-
-		uiLayout.AddSprite(glm::vec2((windowWidth / 2), (windowHeight / 2)), glm::vec2(windowWidth, windowHeight), "fearEffect", glm::vec4(0.0f, 0.0f, 0.0f, 0.75f)); // 0
-
-		//Weapon
-		glm::vec2 attackScale = glm::vec2(0.75 * widthMultiplier, 0.75 * heightMultiplier);
-
-		//Unlocked = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f)
-		//Cooldown =  glm::vec4(0.1f, 0.1f, 0.1f, 0.90f)
-		//Locked glm::vec4(0.1f, 0.1f, 0.1f, 0.50f)
-
-		if (weaponComp.Type == Frosty::ECS::CWeapon::WeaponType::Bow)
-		{
-			uiLayout.AddSprite(glm::vec2(55.0f * widthMultiplier, 75.0f * heightMultiplier), glm::vec2(widthMultiplier, heightMultiplier), "attackRanged", glm::vec4(1.0f));// 1
-			uiLayout.AddSprite(glm::vec2(130 * widthMultiplier, 50.0f * heightMultiplier), attackScale, "attackRanged1", glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));// 2
-			uiLayout.AddSprite(glm::vec2(105 * widthMultiplier, 110.0f * heightMultiplier), attackScale, "attackRanged2", glm::vec4(0.1f, 0.1f, 0.1f, 0.50f));// 3
-			uiLayout.AddSprite(glm::vec2(50.0f * widthMultiplier, 140.0f * heightMultiplier), attackScale, "attackRanged3", glm::vec4(0.1f, 0.1f, 0.1f, 0.50f));// 4
-
-		}
-		else
-		{
-			uiLayout.AddSprite(glm::vec2(55.0f * widthMultiplier, 75.0f * heightMultiplier), glm::vec2(widthMultiplier, heightMultiplier), "attackMelee", glm::vec4(1.0f));// 1
-			uiLayout.AddSprite(glm::vec2(130 * widthMultiplier, 50.0f * heightMultiplier), attackScale, "attackMelee1", glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));// 2
-			uiLayout.AddSprite(glm::vec2(105 * widthMultiplier, 110.0f * heightMultiplier), attackScale, "attackMelee2", glm::vec4(0.1f, 0.1f, 0.1f, 0.50f));// 3
-			uiLayout.AddSprite(glm::vec2(50.0f * widthMultiplier, 140.0f * heightMultiplier), attackScale, "attackMelee3", glm::vec4(0.1f, 0.1f, 0.1f, 0.50f));// 4
-		}
-
-		float elementXOffset = 30.f * widthMultiplier;
-		float elementyOffset = 30.f * heightMultiplier;
-		float elementPadding = 20.f * widthMultiplier;
-
-		glm::vec2 elementScale = glm::vec2(0.5 * widthMultiplier, 0.5 * heightMultiplier);
-
-		//Element
-		//Normal
-		//uiLayout.AddSprite(glm::vec2(960 / 1.5f, (540 / 1.5f)+200), glm::vec2(1.5, 1.5), "elementEarth", glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));// 5
-		uiLayout.AddSprite(glm::vec2(elementXOffset + elementPadding * 0, elementyOffset), elementScale, "elementEarth", glm::vec4(1.0f, 1.0f, 1.0f, 0.50));// 5
-		uiLayout.AddSprite(glm::vec2(elementXOffset + elementPadding * 1, elementyOffset), elementScale, "elementFire", glm::vec4(1.0f, 1.0f, 1.0f, 0.50));// 6
-		uiLayout.AddSprite(glm::vec2(elementXOffset + elementPadding * 2, elementyOffset), elementScale, "elementWater", glm::vec4(1.0f, 1.0f, 1.0f, 0.50));// 7
-		uiLayout.AddSprite(glm::vec2(elementXOffset + elementPadding * 3, elementyOffset), elementScale, "elementWind", glm::vec4(1.0f, 1.0f, 1.0f, 0.50));// 8
-
-		//Empty
-		//uiLayout.AddSprite(glm::vec2(elementXOffset + elementPadding * 0, elementyOffset), elementScale, "elementEarthEmpty", glm::vec4(0.1f, 0.1f, 0.1f, 0.50f));// 5
-		//uiLayout.AddSprite(glm::vec2(elementXOffset + elementPadding * 1, elementyOffset), elementScale, "elementFireEmpty", glm::vec4(0.1f, 0.1f, 0.1f, 0.50f));// 6
-		//uiLayout.AddSprite(glm::vec2(elementXOffset + elementPadding * 2, elementyOffset), elementScale, "elementWaterEmpty", glm::vec4(0.1f, 0.1f, 0.1f, 0.50f));// 7
-		//uiLayout.AddSprite(glm::vec2(elementXOffset + elementPadding * 3, elementyOffset), elementScale, "elementWindEmpty", glm::vec4(0.1f, 0.1f, 0.1f, 0.50f));// 8
-
-		uiLayout.AddSprite(hpPotionSprite, glm::vec2(1 * widthMultiplier, 1 * heightMultiplier), "hpPotion", glm::vec4(1.0f));// 9
-		uiLayout.AddSprite(spPotionSprite, glm::vec2(1 * widthMultiplier, 1), "spPotion", glm::vec4(1.0f));// 10
-		uiLayout.AddSprite(baitSprite, glm::vec2(1 * widthMultiplier, 1 * heightMultiplier), "bait", glm::vec4(1.0f));// 11
-		uiLayout.AddSprite(wolfsbainSprite, glm::vec2(1 * widthMultiplier, 1 * heightMultiplier), "wolfsbane", glm::vec4(1.0f));// 12
-
-		////Need to change this sprite to a "dodge" sprite ////
-		uiLayout.AddSprite(glm::vec2(215 * widthMultiplier, 45 * heightMultiplier), glm::vec2(widthMultiplier, heightMultiplier), "attackRanged3", glm::vec4(1.0f));// 13
-
-		//Speed boot
-		float speedBuffXOffset = 30.f * widthMultiplier;
-		float speedBuffYOffset = 650.f * heightMultiplier;
-		float speedBuffPadding = 20.f * widthMultiplier;
-		glm::vec2 speedBuffScale = glm::vec2(0.75 * widthMultiplier, 0.75 * heightMultiplier);
-
-		uiLayout.AddSprite(glm::vec2(speedBuffXOffset + speedBuffPadding * 0, speedBuffYOffset), speedBuffScale, "speedBoots", glm::vec4(1.0f, 1.0f, 1.0f, 0.0f));// 14
-		uiLayout.AddSprite(glm::vec2(speedBuffXOffset + speedBuffPadding * 1, speedBuffYOffset), speedBuffScale, "speedBoots", glm::vec4(1.0f, 1.0f, 1.0f, 0.0f));// 15
-		uiLayout.AddSprite(glm::vec2(speedBuffXOffset + speedBuffPadding * 2, speedBuffYOffset), speedBuffScale, "speedBoots", glm::vec4(1.0f, 1.0f, 1.0f, 0.0f));// 16
-		uiLayout.AddSprite(glm::vec2(speedBuffXOffset + speedBuffPadding * 3, speedBuffYOffset), speedBuffScale, "speedBoots", glm::vec4(1.0f, 1.0f, 1.0f, 0.0f));// 17
-		uiLayout.AddSprite(glm::vec2(speedBuffXOffset + speedBuffPadding * 4, speedBuffYOffset), speedBuffScale, "speedBoots", glm::vec4(1.0f, 1.0f, 1.0f, 0.0f));// 18
-
-		//Health
-		float healthXOffset = 30.f * widthMultiplier;
-		float healthYOffset = 680.f * heightMultiplier;
-		float healthPadding = 45.f * widthMultiplier;
-		glm::vec2 healthScale = glm::vec2(0.75f * widthMultiplier, 0.75f * heightMultiplier);
-
-		uiLayout.AddSprite(glm::vec2(healthXOffset + healthPadding * 0, healthYOffset), healthScale, "Heart_0", glm::vec4(1.0f, 1.0f, 1.0f, 0.0f));// 19
-		uiLayout.AddSprite(glm::vec2(healthXOffset + healthPadding * 1, healthYOffset), healthScale, "Heart_0", glm::vec4(1.0f, 1.0f, 1.0f, 0.0f));// 20
-		uiLayout.AddSprite(glm::vec2(healthXOffset + healthPadding * 2, healthYOffset), healthScale, "Heart_0", glm::vec4(1.0f, 1.0f, 1.0f, 0.0f));// 21
-		uiLayout.AddSprite(glm::vec2(healthXOffset + healthPadding * 3, healthYOffset), healthScale, "Heart_0", glm::vec4(1.0f, 1.0f, 1.0f, 0.0f));// 22
-		uiLayout.AddSprite(glm::vec2(healthXOffset + healthPadding * 4, healthYOffset), healthScale, "Heart_0", glm::vec4(1.0f, 1.0f, 1.0f, 0.0f));// 23
-		uiLayout.AddSprite(glm::vec2(healthXOffset + healthPadding * 5, healthYOffset), healthScale, "Heart_0", glm::vec4(1.0f, 1.0f, 1.0f, 0.0f));// 24
-		uiLayout.AddSprite(glm::vec2(healthXOffset + healthPadding * 6, healthYOffset), healthScale, "Heart_0", glm::vec4(1.0f, 1.0f, 1.0f, 0.0f));// 25
-		uiLayout.AddSprite(glm::vec2(healthXOffset + healthPadding * 7, healthYOffset), healthScale, "Heart_0", glm::vec4(1.0f, 1.0f, 1.0f, 0.0f));// 26
-		uiLayout.AddSprite(glm::vec2(healthXOffset + healthPadding * 8, healthYOffset), healthScale, "Heart_0", glm::vec4(1.0f, 1.0f, 1.0f, 0.0f));// 27
-		uiLayout.AddSprite(glm::vec2(healthXOffset + healthPadding * 9, healthYOffset), healthScale, "Heart_0", glm::vec4(1.0f, 1.0f, 1.0f, 0.0f));// 28
-
-		//uiLayout.AddSprite(glm::vec2(25.0f + testOffset * 0, 620.0f), glm::vec2(1, 1), "higlightHart", glm::vec4(1.0f));
-		world->AddComponent<Frosty::ECS::CGUI>(player, uiLayout);
-
-
-		////					<<<		FORWARD PLUS TESTING	>>>		~ W-_-W ~
-		//// LIGHTS
-		//auto& light = world->CreateEntity({ 0.0f, 0.1f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f });
-		//world->AddComponent<Frosty::ECS::CLight>(light, Frosty::ECS::CLight::LightType::Point, 1.f, glm::vec3(0.99f, 0.9f, 0.8f), 2000.f);		
-
-		//auto& light2 = world->CreateEntity({ 0.0f, 0.1f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f });
-		//world->AddComponent<Frosty::ECS::CLight>(light2, Frosty::ECS::CLight::LightType::Point, 1.f, glm::vec3(0.99f, 0.9f, 0.8f), 15.f);
-		//
-		//auto& light3 = world->CreateEntity({ 10.0f, 0.1f, -5.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f });
-		//world->AddComponent<Frosty::ECS::CLight>(light3, Frosty::ECS::CLight::LightType::Point, 1.f, glm::vec3(0.99f, 0.9f, 0.8f), 9.f);
-
-		//auto& light4 = world->CreateEntity({ -20.0f, 1.0f, 10.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f });
-		//world->AddComponent<Frosty::ECS::CLight>(light4, Frosty::ECS::CLight::LightType::Point, 1.f, glm::vec3(0.99f, 0.9f, 0.8f), 10.f);
-		//
-		//auto& light5 = world->CreateEntity({ -6.0f, 1.0f, -6.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f });
-		//world->AddComponent<Frosty::ECS::CLight>(light5, Frosty::ECS::CLight::LightType::Point, 1.f, glm::vec3(0.99f, 0.9f, 0.8f), 2.f);
-
-		//auto& light6 = world->CreateEntity({ 0.0f, 1.0f, -6.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f });
-		//world->AddComponent<Frosty::ECS::CLight>(light6, Frosty::ECS::CLight::LightType::Point, 1.f, glm::vec3(0.99f, 0.9f, 0.8f), 22.f);
-
-		//auto& light7 = world->CreateEntity({ 10.0f, 1.0f, 12.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f });
-		//world->AddComponent<Frosty::ECS::CLight>(light7, Frosty::ECS::CLight::LightType::Point, 1.f, glm::vec3(0.99f, 0.9f, 0.8f), 8.f);
-
-		//auto& light8 = world->CreateEntity({ -20.0f, 1.0f, 20.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f });
-		//world->AddComponent<Frosty::ECS::CLight>(light8, Frosty::ECS::CLight::LightType::Point, 1.f, glm::vec3(0.99f, 0.9f, 0.8f), 20.f);
-
-		//auto& light9 = world->CreateEntity({ -15.0f, 1.0f, -15.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f });
-		//world->AddComponent<Frosty::ECS::CLight>(light9, Frosty::ECS::CLight::LightType::Point, 1.f, glm::vec3(0.99f, 0.9f, 0.8f), 5.f);
-
-		//// QUAD
-		//auto& quad = world->CreateEntity({ 0.f, 0.f, 0.f }, { 0.f, 0.f, 0.f }, { 1000.f, 1.f, 1000.f });
-		//auto& quadTransform = world->GetComponent<Frosty::ECS::CTransform>(quad);
-		//world->AddComponent<Frosty::ECS::CMesh>(quad, Frosty::AssetManager::GetMesh("pPlane1"));
-		//auto& quadMat = world->AddComponent<Frosty::ECS::CMaterial>(quad, Frosty::AssetManager::GetShader("HeatMap"));
-		//quadMat.Albedo = glm::vec4(0.f, 0.f, 1.f, 1.f);
-	}
 
 	void MenuState::InitiateButtons()
 	{
@@ -755,20 +470,4 @@ namespace MCS
 		world->AddComponent<Frosty::ECS::CGUI>(m_MenuGui, m_UILayout);
 	}
 
-	void MenuState::InitiateLight()
-	{
-		auto& world = Frosty::Application::Get().GetWorld();
-		auto& light = world->CreateEntity({ 0.0f, 0.0f, 0.0f }, { 120.0f, 8.0f, -10.0f });
-		auto& DLight = world->AddComponent<Frosty::ECS::CLight>(light, Frosty::ECS::CLight::LightType::Directional, 0.9f, glm::vec3(0.5f, 0.6f, 1.f));
-		DLight.Direction = glm::vec3(-1.0f, -0.8, -1.0);
-	}
-
-	void MenuState::InitiateTorch()
-	{
-		// TORCH
-		auto& world = Frosty::Application::Get().GetWorld();
-		auto& playerTransform = world->GetComponent<Frosty::ECS::CTransform>(m_Player);
-		auto& torch = world->CreateEntity({ 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f });
-		world->AddComponent<Frosty::ECS::CLight>(torch, Frosty::ECS::CLight::LightType::Point, 1.f, glm::vec3(0.99f, 0.9f, 0.8f), 15.f, &playerTransform, glm::vec3(0.f, 5.f, 0.f));
-	}
 }

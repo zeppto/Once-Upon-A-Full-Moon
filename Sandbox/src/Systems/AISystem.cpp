@@ -91,6 +91,11 @@ namespace MCS
 
 		if (it != p_EntityMap.end())
 		{
+			if (m_World->HasComponent<Frosty::ECS::CBoss>(it->first))
+			{
+				m_BossSpawned = false;
+			}
+
 			p_Total--;
 			auto& entityToUpdate = m_Transform[p_Total]->EntityPtr;
 			m_Transform[p_Total] = nullptr;

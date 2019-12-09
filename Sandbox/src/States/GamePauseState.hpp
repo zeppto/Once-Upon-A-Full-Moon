@@ -1,6 +1,5 @@
 #ifndef GAMEPAUSESTATE_HPP
 #define GAMEPAUSESTATE_HPP
-#include "Layers/GamePauseLayer.hpp"
 
 namespace MCS
 {

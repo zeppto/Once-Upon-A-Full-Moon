@@ -103,6 +103,7 @@ namespace MCS
 			break;
 		case Frosty::EventType::PlayerDamage:
 			OnDamage();
+			break;
 		case Frosty::EventType::BossFearEffect:
 			OnBossFearEffect(static_cast<Frosty::BossFearEffectEvent&>(e));
 			break;
@@ -1170,7 +1171,7 @@ namespace MCS
 				{
 
 					weaponComp.FireCriticalHitChance += 0.1f;
-					HUD.Layout.sprites[6].SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+					HUD.Layout.sprites[7].SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
 					//HUD.Layout.sprites.at(6).SetTranslateSprite(glm::vec2(960 / 1.5f, (540 / 1.5f) + 500));
 					//HUD.Layout.sprites.at(6).SetScaleSprite(glm::vec2(1.5, 1.5));
 					m_Player[p_Total - 1]->ElementDisplayTimer = Frosty::Time::CurrentTime();
@@ -1514,7 +1515,7 @@ namespace MCS
 
 				SetPickUpText(index, "tjena");*/
 
-				Frosty::EventBus::GetEventBus()->Publish<Frosty::UpgradeWeaponEvent>(Frosty::UpgradeWeaponEvent());
+				//Frosty::EventBus::GetEventBus()->Publish<Frosty::UpgradeWeaponEvent>(Frosty::UpgradeWeaponEvent());
 			}
 
 
@@ -1589,7 +1590,7 @@ namespace MCS
 			int healthSpriteID = 20;
 			for (int i = 0; i < nrOfFilledHearts && nrOfFilledHearts <= m_Health[index]->MaxHealth; i++)
 			{
-				if (healthSpriteID < 29)
+				if (healthSpriteID < 30)
 				{
 					HUD.Layout.sprites[healthSpriteID].SetImage("Heart_4");
 					HUD.Layout.sprites[healthSpriteID].SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));

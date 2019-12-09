@@ -3,6 +3,7 @@
 #include "Frosty/API/AssetManager/AssetManager.hpp"
 #include "Frosty/Events/AbilityEvent.hpp"
 #include "Frosty/Core/BoolMap/BoolMapGenerator.hpp"
+
 namespace MCS
 {
 	const std::string LevelSystem::NAME = "Level";
@@ -13,28 +14,8 @@ namespace MCS
 		p_Signature.set(Frosty::ECS::getComponentTypeID<Frosty::ECS::CTransform>(), true);
 	}
 
-		//m_LevelFileFormat.LoadBoolMap("deadend_chests_IsStatick_t_p_e_r_h");
-		// "crossroad_chests_IsStatick_t_p_e_r_h";
-		// "threeWayRoad_chests_IsStatick_t_p_e_r_h";
-		// "turningRoad_chests_IsStatick_t_p_e_r_h";
-		// "straightRoad_chests_IsStatick_t_p_e_r_h";
-		// "deadend_chests_IsStatick_t_p_e_r_h";
-
-	
-
 	void LevelSystem::OnStart()
 	{
-/*
-		if (m_CreatNewRoom)
-		{
-			int rotation = 0;
-			std::string fileName = m_Map.getRoomTextur(m_PlayerCoords, &rotation);
-			//PlayerTranform.Position = Level::MoveToNewRoom(m_CurrentRoome.sideExits[0], m_CurrentRoome.sideExits[1],
-			//	m_CurrentRoome.sideExits[2], m_CurrentRoome.sideExits[3], ExitSide.ExitDirection);
-			m_LevelFileFormat.OpenFromFile(fileName, m_PlayerCoords, m_PlayerTransform, rotation);
-			m_CreatNewRoom = false;
-		}*/
-
 		if (m_LoadMapBool)
 		{
 			m_LevelFileFormat.OpenFromFile(m_LoadFileName,
@@ -55,7 +36,6 @@ namespace MCS
 
 		if (m_LodeNamedRoom)
 		{
-		//	m_LevelFileFormat.OpenFromFile(m_RoomType, m_PlayerCoords);
 			m_LodeNamedRoom = false;
 		}
 		if (m_ReStart)
@@ -153,7 +133,6 @@ namespace MCS
 
 			//m_LevelFileFormat.LoadBoolMap("deadend_chests_IsStatick_t_p_e_r_h_a");
 			m_StartTimer = Frosty::Time::CurrentTime();
-
 		}
 
 		float time = Frosty::Time::CurrentTime() - m_StartTimer - m_BossStartTimer;
@@ -1013,14 +992,15 @@ namespace MCS
 		m_O_Room = temp;
 	}
 
-
 	void LevelSystem::OnResetEvent(Frosty::ResetEvent& e)
 	{
 		Frosty::ECS::CMesh* weaponMesh = nullptr;
 		Frosty::ECS::CAnimController* animation = nullptr;
 		Frosty::ECS::CPlayer* Player = nullptr;
 		Frosty::ECS::CTransform* PlayerT = nullptr;
-		Frosty::ECS::CWeapon* m_Weapon = nullptr;
+		Frosty::ECS::CWeapon* Weapon = nullptr;
+		Frosty::ECS::CHealth* Health = nullptr;
+		Frosty::ECS::CLight* Torch = nullptr;
 		int weaponID = 0;
 
 		for (size_t i = 1; i < p_Total; i++)
@@ -1033,22 +1013,32 @@ namespace MCS
 					{
 						if (!m_World->HasComponent<Frosty::ECS::CLight>(m_Transform[i]->EntityPtr))
 						{
-							if (!m_World->HasComponent<Frosty::ECS::CGUI>(m_Transform[i]->EntityPtr))
+						}
+						else if (m_World->HasComponent<Frosty::ECS::CLight>(m_Transform[i]->EntityPtr))
+						{
+							auto& light = m_World->GetComponent<Frosty::ECS::CLight>(m_Transform[i]->EntityPtr);
+							if (light.Origin != nullptr)
 							{
-								//if (!m_World->HasComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr))
-								//{
-								//	m_World->AddComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr);
-								//}
+								if (!m_World->HasComponent<Frosty::ECS::CPlayer>(light.Origin->EntityPtr))
+								{
+									if (!m_World->HasComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr))
+									{
+										m_World->AddComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr);
+									}
+								}
+							}
+							else if (light.Origin == nullptr)
+							{
+								if (!m_World->HasComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr))
+								{
+									m_World->AddComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr);
+								}
 							}
 						}
 					}
 				}
 				else if (!m_World->GetComponent<Frosty::ECS::CWeapon>(m_Transform[i]->EntityPtr).IsPlayerWeapon)
 				{
-					//if (!m_World->HasComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr))
-					//{
-					//	m_World->AddComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr);
-					//}
 				}
 				else if (m_World->GetComponent<Frosty::ECS::CWeapon>(m_Transform[i]->EntityPtr).IsPlayerWeapon)
 				{
@@ -1072,10 +1062,10 @@ namespace MCS
 							m_GUI = GetPlayerGUI();
 							if (m_GUI != nullptr)
 							{
-								m_GUI->Layout.sprites[1].SetImage("attackMelee");
-								m_GUI->Layout.sprites[2].SetImage("attackMelee1");
-								m_GUI->Layout.sprites[3].SetImage("attackMelee2");
-								m_GUI->Layout.sprites[4].SetImage("attackMelee3");
+								m_GUI->Layout.sprites[2].SetImage("attackMelee");
+								m_GUI->Layout.sprites[3].SetImage("attackMelee1");
+								m_GUI->Layout.sprites[4].SetImage("attackMelee2");
+								m_GUI->Layout.sprites[5].SetImage("attackMelee3");
 							}
 							Frosty::Renderer::ChangeEntity(m_Transform[i]->EntityPtr->Id, &weaponMat, "Sword", &mesh, m_Transform[i]->EntityPtr->Id, m_Transform[i], nullptr);
 						}
@@ -1096,10 +1086,10 @@ namespace MCS
 							m_GUI = GetPlayerGUI();
 							if (m_GUI != nullptr)
 							{
-								m_GUI->Layout.sprites[1].SetImage("attackRanged");
-								m_GUI->Layout.sprites[2].SetImage("attackRanged1");
-								m_GUI->Layout.sprites[3].SetImage("attackRanged2");
-								m_GUI->Layout.sprites[4].SetImage("attackRanged3");
+								m_GUI->Layout.sprites[2].SetImage("attackRanged");
+								m_GUI->Layout.sprites[3].SetImage("attackRanged1");
+								m_GUI->Layout.sprites[4].SetImage("attackRanged2");
+								m_GUI->Layout.sprites[5].SetImage("attackRanged3");
 							}
 							Frosty::Renderer::ChangeEntity(m_Transform[i]->EntityPtr->Id, &weaponMat, "Bow", &mesh, m_Transform[i]->EntityPtr->Id, m_Transform[i], nullptr);
 						}
@@ -1136,6 +1126,7 @@ namespace MCS
 				animation = &m_World->GetComponent<Frosty::ECS::CAnimController>(m_Transform[i]->EntityPtr);
 				PlayerT = &playerTransform;
 				auto& health = m_World->GetComponent<Frosty::ECS::CHealth>(m_Transform[i]->EntityPtr);
+				int healthSpriteCounter = health.MaxPossibleHealth;
 				health.CurrentHealth = 20;
 				health.MaxHealth = 20;
 				health.MaxPossibleHealth = 40;
@@ -1157,11 +1148,10 @@ namespace MCS
 
 				m_GUI = &m_World->GetComponent<Frosty::ECS::CGUI>(m_Transform[i]->EntityPtr);
 
-				m_GUI->Layout.sprites[14].SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 0.0f));
-				m_GUI->Layout.sprites[15].SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 0.0f));
-				m_GUI->Layout.sprites[16].SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 0.0f));
-				m_GUI->Layout.sprites[17].SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 0.0f));
-				m_GUI->Layout.sprites[18].SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 0.0f));
+				for (int j = 15; j < 20 + (healthSpriteCounter / 4); j++)
+				{
+					m_GUI->Layout.sprites.at(j).SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 0.0f));
+				}
 			}
 		}
 
@@ -1169,6 +1159,12 @@ namespace MCS
 		animation->holdPtr = animation->currAnim->getHoldingJoint();
 		weaponMesh->animOffset = animation->holdPtr;
 		Frosty::Renderer::UpdateCMesh(weaponID, weaponMesh);
+
+		m_BossSpawned = false;
+		m_BossRoomTimer = 2.0f;
+		m_BossTimer = 0.0f;
+		m_PlayerCoords = { 10, 15 };
+		m_Start = true;
 
 		m_World->DestroyGroup(true);
 
@@ -1192,6 +1188,7 @@ namespace MCS
 	{
 		m_BossSpawned = true;
 	}
+
 	void LevelSystem::OnBaitPlacedEvent(Frosty::BaitPlacedEvent& e)
 	{
 		auto& baitTransform = m_World->GetComponent<Frosty::ECS::CTransform>(e.GetEntity());
@@ -1214,6 +1211,7 @@ namespace MCS
 			m_RoomswhithBait.push_back(m_PlayerCoords);
 		}
 	}
+
 	void LevelSystem::randomBossMovment()
 	{
 		Room bossCurrentRoom = m_Map.getRoom(m_BossPos);
