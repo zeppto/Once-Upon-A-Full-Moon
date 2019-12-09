@@ -27,7 +27,6 @@ namespace Frosty
 		}
 	}
 
-
 	bool TextureFile::LoadToMem(const bool& Reload)
 	{
 

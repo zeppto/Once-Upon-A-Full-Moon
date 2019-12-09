@@ -64,6 +64,8 @@ namespace Frosty
 				}
 			}
 
+			if (index == -1) __debugbreak();
+
 			return index;
 		}
 
@@ -251,8 +253,8 @@ namespace Frosty
 			}
 			inline size_t GetTotalEntities() const { return m_Entities.size(); }
 
-			inline std::shared_ptr<Entity>& At(size_t index) { return m_Entities.at(index); }
-			inline const std::shared_ptr<Entity>& At(size_t index) const { return m_Entities.at(index); }
+			inline std::shared_ptr<Entity>& At(size_t index) { return m_Entities[index]; }
+			inline const std::shared_ptr<Entity>& At(size_t index) const { return m_Entities[index]; }
 
 			inline std::shared_ptr<Entity>& Create()
 			{
@@ -280,8 +282,9 @@ namespace Frosty
 				return true;
 			}
 
-			inline void AddToGroup(uint64_t groupId, const std::shared_ptr<Entity>& entity)
+			inline void AddToGroup(uint32_t groupId, const std::shared_ptr<Entity>& entity)
 			{
+				entity->GroupId = groupId;
 				m_EntityGroups[groupId].emplace_back(entity);
 			}
 
@@ -294,7 +297,7 @@ namespace Frosty
 				out << "\tIndex\tId\tAddress\t\t\tRefs\n";
 				for (unsigned int i = 0; i < em.m_Entities.size(); i++)
 				{
-					out << "\t" << i << "\t" << em.m_Entities.at(i)->Id << "\t" << em.m_Entities.at(i) << "\t" << em.m_Entities.at(i).use_count() << std::endl;
+					out << "\t" << i << "\t" << em.m_Entities[i]->Id << "\t" << em.m_Entities[i] << "\t" << em.m_Entities[i].use_count() << std::endl;
 				}
 				out << "\t----------------Done----------------\n\n";
 
@@ -359,14 +362,14 @@ namespace Frosty
 			inline ComponentArrayIndex GetTotal() { return Total; }
 			virtual BaseComponent* GetTypeComponent(const std::shared_ptr<Entity>& entity) override
 			{
-				ComponentArrayIndex tempIndex = EntityMap.at(entity);
+				ComponentArrayIndex tempIndex = EntityMap[entity];
 
 				return &m_Data[tempIndex];
 			}
 
 			inline ComponentType& Get(const std::shared_ptr<Entity>& entity)
 			{
-				ComponentArrayIndex tempIndex = EntityMap.at(entity);
+				ComponentArrayIndex tempIndex = EntityMap[entity];
 
 				return m_Data[tempIndex];
 			}
@@ -381,9 +384,9 @@ namespace Frosty
 					"Maximum number of entities for this specific component({0}) is reached.", getComponentTypeID<ComponentType>());
 
 				EntityMap.emplace(entity, Total);
-				m_Data.at(Total) = ComponentType(std::forward<TArgs>(mArgs)...);
+				m_Data[Total] = ComponentType(std::forward<TArgs>(mArgs)...);
 				entity->Bitset.flip(getComponentTypeID<ComponentType>());
-				m_Data.at(Total).EntityPtr = entity;
+				m_Data[Total].EntityPtr = entity;
 
 				return m_Data[Total++];
 			}
@@ -396,29 +399,29 @@ namespace Frosty
 
 				ComponentArrayIndex index = it->second;
 
-				m_Data.at(index).EntityPtr.reset();
-				m_Data.at(index) = m_Data.at(Total - 1);
-				m_Data.at(index).EntityPtr = m_Data.at(Total - 1).EntityPtr;
-				m_Data.at(Total - 1).EntityPtr.reset();
-				m_Data.at(Total - 1) = ComponentType();
+				m_Data[index].EntityPtr.reset();
+				m_Data[index] = m_Data[Total - 1];
+				m_Data[index].EntityPtr = m_Data[Total - 1].EntityPtr;
+				m_Data[Total - 1].EntityPtr.reset();
+				m_Data[Total - 1] = ComponentType();
 
 				Total--;
 				if (Total > index)
 				{
-					auto& itUpdate = EntityMap.find(m_Data.at(index).EntityPtr);
+					auto& itUpdate = EntityMap.find(m_Data[index].EntityPtr);
 					FY_CORE_ASSERT(itUpdate != EntityMap.end(), "This should not happen!");
 					EntityMap[itUpdate->first] = index;
-					//EntityMap[m_Data.at(it->second).EntityPtr] = it->second;
+					//EntityMap[m_Data[it->second].EntityPtr] = it->second;
 				}
 
 				EntityMap.erase(entity);
 				entity->Bitset.flip(getComponentTypeID<ComponentType>());
-				return m_Data.at(index).EntityPtr;
+				return m_Data[index].EntityPtr;
 			}
 
 			inline ComponentType* GetComponentAddress(const std::shared_ptr<Entity>& entity)
 			{
-				return &m_Data.at(EntityMap[entity]);
+				return &m_Data[EntityMap[entity]];
 			}
 
 			virtual std::string GetInfo() const override
@@ -534,6 +537,7 @@ namespace Frosty
 			std::shared_ptr<Texture2D> BlendTexture1;
 			std::shared_ptr<Texture2D> BlendTexture2;
 
+			float Flash{ 0.0f };
 			float SpecularStrength{ 0.5f };
 			int Shininess{ 16 };
 			glm::vec2 TextureScale{ 1.0f };
@@ -583,6 +587,8 @@ namespace Frosty
 			float Speed{ 0.0f };
 			float SpeedMultiplier{ 1.f };						// Used in combination with Speed Boost Potion
 			float HangTime{ 0.0f };
+			glm::vec3 RotateTowards{ 0.0f };
+			float SlowTime{ Frosty::Time::CurrentTime() };
 
 			CPhysics() = default;
 			CPhysics(const std::shared_ptr<Luna::BoundingBox>& bb, const glm::vec3& scale, float speed = 0.0f) : BoundingBox(bb), Speed(speed)
@@ -620,7 +626,7 @@ namespace Frosty
 			float LVL2AttackCooldown{ 2.0f };
 			float LVL3AttackCooldown{ 3.0f };
 
-			bool animPlaying = false;
+			bool AnimPlaying{ false };
 
 			float LVL1AttackCooldownTimer{ Frosty::Time::CurrentTime() };
 			float LVL2AttackCooldownTimer{ Frosty::Time::CurrentTime() };
@@ -739,12 +745,13 @@ namespace Frosty
 		struct CEnemy : public BaseComponent
 		{
 			static std::string NAME;
-			static const int RESET_DISTANCE = 60;
+			static const int RESET_DISTANCE = 1000;
 
-			enum class State { Idle, Escape, Attack, Chase, Reset };
+			enum class State { Idle, Escape, Attack, Chase, Reset, Dead };
 			State CurrentState{ State::Idle };
 
 			CWeapon* Weapon{ nullptr };
+			size_t WeaponEntityID{ 0 };
 			CTransform* Target{ nullptr };
 
 			glm::vec3 SpawnPosition{ 0.0f };
@@ -752,6 +759,12 @@ namespace Frosty
 			float SightRange{ 40.0f };
 
 			float RunOnHealth{ 0.0f };
+
+			float AttackDelay{ 0.0f };
+			bool AttackInit{ false };
+
+			float FlashTime{ 0.05f };
+			float FlashTimer{ Frosty::Time::CurrentTime() };
 
 			CEnemy() = default;
 			CEnemy(CTransform* target, CWeapon* weapon, float runOnHealth = 0.0f) : Target(target), Weapon(weapon), RunOnHealth(runOnHealth) { }
@@ -767,6 +780,8 @@ namespace Frosty
 			int MaxPossibleHealth{ 40 };								// Max health an entity can upgrade to
 			int MaxHealth{ 5 };											// Max health an entity can currently have
 			int CurrentHealth{ 5 };
+
+			float DeathTimer{ -500.0f };
 
 			CHealth() = default;
 			CHealth(int health) : MaxHealth(health), CurrentHealth(health) {};
@@ -797,7 +812,7 @@ namespace Frosty
 			// SPEED BOOSTER POTION - boosts speed during a time interval (temp)
 			int MaxSpeedPotions{ 5 };
 			int CurrentSpeedPotions{ 0 };
-			float IncreaseSpeedTemporary{ 0.2f };
+			float IncreaseSpeedTemporary{ 0.5f };
 			float SpeedCooldown{ 5.f };
 			float SpeedTimer{ Frosty::Time::CurrentTime() };
 
@@ -849,7 +864,7 @@ namespace Frosty
 		{
 			static std::string NAME;
 			static const int COOLDOWN = 3000;
-			static const int DISTANCE = 5000;
+			static const int DISTANCE = 7000;
 			bool Active{ false };
 			float CurrentCooldown{ 0.0f };
 			float DistanceDashed{ 0.0f };
@@ -908,8 +923,15 @@ namespace Frosty
 				float Size{ 1.0f };
 			};
 
+			enum RenderMode
+			{
+				NORMAL,
+				ADDITIVE
+			};
+
 			static const uint32_t MAX_PARTICLE_COUNT = 200; //Absolute suported max
 
+			RenderMode RenderMode{ ADDITIVE };
 			uint32_t MaxParticles{ 1 }; //User's choice of max particles
 			float StartParticleSize{ 1.0f };
 			float EndParticleSize{ 0.0f };
@@ -924,6 +946,7 @@ namespace Frosty
 			glm::vec3 ParticleSystemStartPos{ 0.0f, 0.0f, 0.0f };
 			float EmitRate{ 0.1f };
 			uint32_t EmitCount{ 1 };
+			float ParticleWeight{ 1.0f };
 			float Speed{ 1.0f };
 			float MinLifetime{ 3.0f };
 			float MaxLifetime{ 3.0f };
@@ -933,6 +956,10 @@ namespace Frosty
 			float randSpread{ 1.5f };
 			glm::vec3 randMainDir{ 0.0f, 1.0f, 0.0f };
 
+			bool Loop{ true };
+			int32_t TimesPlayed = -1;
+
+			bool HasGravity{ false };
 			bool RotateOverLifetime{ false };
 			bool StaticColor{ true };
 			bool RandomLifetimes{ false };
@@ -959,7 +986,6 @@ namespace Frosty
 			{
 				Particles.resize(MaxParticles);
 			}
-
 			CParticleSystem(const std::string shaderName, const std::string texName, unsigned int maxParticles, const glm::vec3& color, float particleSpeed)
 				: ShaderName(shaderName), TextureName(texName), MaxParticles(maxParticles), SystemStartColor(color), SystemEndColor(color), Speed(particleSpeed)
 			{
@@ -1029,6 +1055,8 @@ namespace Frosty
 			float LeapCooldown{ 6.5f };			// The cool down of the ability
 			float LeapCooldownTime{ Frosty::Time::CurrentTime() };
 			glm::vec3 LeapTargetPosition{ 0.0f };
+			float LeapSlowAmount{ 0.4f };
+			float LeapSlowCooldown{ 1.5f };
 			//
 			int16_t ChargeDamage{ 0 };
 			float ChargeChance{ 15.0f };
@@ -1074,6 +1102,8 @@ namespace Frosty
 			static std::string NAME;
 			//up = 0, down = 1, right = 2, left = 3
 			int ExitDirection{ 0 };
+			glm::ivec2 RoomCoords = { -1, -1 };
+			bool IsTriggered = false;
 
 			CLevelExit() = default;
 			CLevelExit(int exitDirection) : ExitDirection(exitDirection) { }
@@ -1090,6 +1120,9 @@ namespace Frosty
 			std::shared_ptr<Shader> SpriteShader;
 
 			UILayout Layout;
+
+			bool RenderText{ true };
+			bool RenderSprites{ true };
 
 			CGUI() = default;
 			CGUI(UILayout& layout) : Layout(layout) {  }

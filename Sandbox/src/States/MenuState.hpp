@@ -1,6 +1,5 @@
 #ifndef MENUSTATE_HPP
 #define MENUSTATE_HPP
-#include "Layers/MenuLayer.hpp"
 
 namespace MCS
 {
@@ -14,13 +13,15 @@ namespace MCS
 		virtual void OnInput() override;
 		virtual void OnUpdate() override;
 	private:
-		//void InitiateMenuScreen();
 		void InitiateSystems();
-		void InitiateObjects();
 		void InitiateButtons();
 	private:
 		Frosty::Application* m_App = nullptr;
-		std::shared_ptr<Frosty::ECS::Entity> m_MenuGui;
+		std::shared_ptr<Frosty::ECS::Entity> m_MenuGui = nullptr;
+		Frosty::UILayout m_UILayout;
+
+		bool m_ButtonsLoaded = false;
+		bool m_Controls = false;
 	};
 }
 #endif

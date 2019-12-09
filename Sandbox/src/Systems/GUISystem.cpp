@@ -24,17 +24,24 @@ namespace MCS
 	{
 		for (size_t i = 1; i < p_Total; i++)
 		{
-			//Render all sprites
-			for (int j = 0; j < m_GUI[i]->Layout.sprites.size(); j++)
+			if (m_GUI[i]->RenderSprites)
 			{
-				auto& currSprite = m_GUI[i]->Layout.sprites[j];
-				Frosty::Renderer::SubmitSprite(m_GUI[i]->SpriteShader, currSprite.GetVertexArray(), currSprite.GetTextureID(), currSprite.GetColor(), currSprite.GetTransformSprite());
+				//Render all sprites
+				for (int j = 0; j < m_GUI[i]->Layout.sprites.size(); j++)
+				{
+					auto& currSprite = m_GUI[i]->Layout.sprites[j];
+					Frosty::Renderer::SubmitSprite(m_GUI[i]->SpriteShader, currSprite.GetVertexArray(), currSprite.GetTextureID(), currSprite.GetColor(), currSprite.GetTransformSprite());
+				}
 			}
-			//Render all text  
-			for (int j = 0; j < m_GUI[i]->Layout.texts.size(); j++)
+
+			if (m_GUI[i]->RenderText)
 			{
-				Frosty::UIText& currText = m_GUI[i]->Layout.texts[j];
-				Frosty::Renderer::SubmitText(m_GUI[i]->TextShader, currText.GetVertexArray(), currText.GetText(), currText.GetPosition(), currText.GetColor(), currText.GetFontScale());
+				//Render all text  
+				for (int j = 0; j < m_GUI[i]->Layout.texts.size(); j++)
+				{
+					Frosty::UIText& currText = m_GUI[i]->Layout.texts[j];
+					Frosty::Renderer::SubmitText(m_GUI[i]->TextShader, currText.GetVertexArray(), currText.GetText(), currText.GetPosition(), currText.GetColor(), currText.GetFontScale());
+				}
 			}
 		}
 	}

@@ -11,8 +11,6 @@ namespace MCS
 		p_Signature.set(Frosty::ECS::getComponentTypeID<Frosty::ECS::CTransform>(), true);
 		p_Signature.set(Frosty::ECS::getComponentTypeID<Frosty::ECS::CMesh>(), true);
 		p_Signature.set(Frosty::ECS::getComponentTypeID<Frosty::ECS::CMaterial>(), true);
-
-
 	}
 
 	void RenderSystem::OnUpdate()
@@ -111,8 +109,18 @@ namespace MCS
 			m_Transform[p_Total] = &world->GetComponent<Frosty::ECS::CTransform>(entity);
 			m_Meshes[p_Total] = &world->GetComponent<Frosty::ECS::CMesh>(entity);
 			m_Materials[p_Total] = &world->GetComponent<Frosty::ECS::CMaterial>(entity);
+			// While not the most efficent having correctly mapped Animcontrollers here
+			// Saves a lot of trouble and illegibility inside Renderer.cpp
+			if (world->HasComponent<Frosty::ECS::CAnimController>(entity))
+			{
+				m_Anims[p_Total] = &world->GetComponent<Frosty::ECS::CAnimController>(entity);
+			}
+			else
+			{
+				m_Anims[p_Total] = nullptr;
+			}
 
-			Frosty::Renderer::AddToRenderer(m_Materials.at(p_Total), m_Meshes.at(p_Total), m_Transform.at(p_Total));
+			Frosty::Renderer::AddToRenderer(m_Materials[p_Total], m_Meshes[p_Total], m_Transform[p_Total], m_Anims[p_Total]);
 
 			p_Total++;
 
@@ -133,6 +141,7 @@ namespace MCS
 			m_Transform[p_Total] = nullptr;
 			m_Meshes[p_Total] = nullptr;
 			m_Materials[p_Total] = nullptr;
+			m_Anims[p_Total] = nullptr;
 
 			if (p_Total > it->second)
 			{
@@ -159,8 +168,7 @@ namespace MCS
 			m_Meshes[it->second] = meshPtr;
 			m_Materials[it->second] = materialPtr;
 
-			Frosty::Renderer::UpdateEntity(m_Materials[it->second]->EntityPtr->Id, m_Materials.at(it->second), m_Meshes[it->second]->Mesh->GetName(), m_Meshes.at(it->second)->Mesh, m_Transform[it->second]->EntityPtr->Id, m_Transform.at(it->second));
-
+			Frosty::Renderer::UpdateEntity(m_Materials[it->second]->EntityPtr->Id, m_Materials[it->second], m_Meshes[it->second]->Mesh->GetName(), m_Meshes[it->second]->Mesh, m_Transform[it->second]->EntityPtr->Id, m_Transform[it->second]);
 		}
 	}
 

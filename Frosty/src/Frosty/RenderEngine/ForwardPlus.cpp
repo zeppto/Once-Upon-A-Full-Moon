@@ -40,11 +40,9 @@ namespace Frosty
 		LightCulling();
 	}
 
-	void FrustumGrid::Initiate(std::shared_ptr<LightManager>& lightManager)
+	void FrustumGrid::Initiate()
 	{
-		m_Camera.reset(FY_NEW Camera());
 		m_Frustum = glm::vec2(Application::Get().GetWindow().GetWidth(), Application::Get().GetWindow().GetHeight());
-		m_LightManager = lightManager;
 		CreateGridCells();
 	}
 
@@ -100,22 +98,41 @@ namespace Frosty
 		uint16_t size = 0;
 		uint16_t CellInfoCounter = 0;
 
+		int counter = 0;
 		for (int i = 0; i < m_TotalCells; i++)
 		{
-			for (int j = 0; j < m_LightManager->GetNrOfPointLights(); j++)
+			for (auto& pLightIt : Renderer::GetPointLights())
 			{
-				if (CheckCollision(m_GridCells[i], ConvertToNDC(m_LightManager->GetPointLightAt(j)->GetPositionAndRadius(), m_LightManager->GetPointLightAt(j)->GetTransform())))
+				if (i == 135)
 				{
-					//pos.emplace_back(i);							// Temporary for checking	~ W-_-W ~
+					bool fool = true;
+				}
+				if (CheckCollision(m_GridCells[i], ConvertToNDC(glm::vec4(pLightIt.second.Transform->Position, pLightIt.second.PointLight->Radius), pLightIt.second.Transform->ModelMatrix)))
+				{
+					//pos.emplace_back(i);
 
 					m_CellLightsInfo[i].Offset = offsetCounter;		// Find better place, it becomes repetative and uneccesary	~ W-_-W ~
 					size++;
-					m_LightIndexList.emplace_back(j);
+					m_LightIndexList.emplace_back(counter);
 				}
+				counter++;
 			}
+
+			//for (int j = 0; j < m_SceneData->PointLights.size(); j++)
+			//{
+			//	if (CheckCollision(m_GridCells[i], ConvertToNDC(glm::vec4(m_SceneData->PointLights[j].Position, m_SceneData->PointLights[j].Radius), m_SceneData->PointLights[j].Transform->ModelMatrix)))
+			//	{
+			//		//pos.emplace_back(i);							// Temporary for checking	~ W-_-W ~
+			//		m_CellLightsInfo[i].Offset = offsetCounter;		// Find better place, it becomes repetative and uneccesary	~ W-_-W ~
+			//		size++;
+			//		m_LightIndexList.emplace_back(j);
+			//	}
+			//}
+
 			m_CellLightsInfo[i].Size = size;
 			offsetCounter += m_CellLightsInfo[i].Size;
 			size = 0;
+			counter = 0;
 		}
 	}
 
@@ -129,7 +146,7 @@ namespace Frosty
 		glm::vec2 center = { light.x, light.y };
 
 		// Calculate AABB info (center, half-extents)
-		glm::vec2 aabb_half_extents(m_Frustum.x / GRID_SIZE / 2, m_Frustum.y / GRID_SIZE / 2);
+		glm::vec2 aabb_half_extents((m_Frustum.x / GRID_SIZE) / 2, (m_Frustum.y / GRID_SIZE) / 2);
 
 		glm::vec2 aabb_center(
 			cell.MinX + aabb_half_extents.x,
@@ -153,25 +170,28 @@ namespace Frosty
 	{
 		float z = light.z;	// Z value has to change in case the light is positioned behind the camera. Beacuse the light is const, we need a temp variable
 
-		if (light.z > m_Camera.get()->GetPosition().z)															// If light is behind camera ...
-		{
-			float dist = glm::length(glm::vec3(light.x, light.y, light.z) - m_Camera.get()->GetPosition());
-			if (dist < light.w)																					// 1) ... but light radius still reaches the "frustum"
-			{
-				dist = glm::length(z - m_Camera.get()->GetPosition().z);
-				z += (-dist * 2);																				// move light in front of camera with the same distance apart like before
-				z *= -1;
-			}
-			else																								// 2) ... and light radius doesn't reach the "frustum"
-			{
-				return glm::vec3(0, 0, 0);																		// abort calculation
-			}
-		}
+		Renderer::GameCameraProps camera = Renderer::GetGameCamera();
+		//if (light.z < camera.CameraPosition.z)																	// If light is behind camera ...
+		//{
+		//	float dist = glm::length(glm::vec3(light.x, light.y, light.z) - camera.CameraPosition);
+		//	if (dist < light.w)																					// 1) ... but light radius still reaches the "frustum"
+		//	{
+		//		dist = glm::length(z - camera.CameraPosition.z);
+		//		z += (-dist * 2);																				// move light in front of camera with the same distance apart like before
+		//		z *= -1;
+		//	}
+		//	else																								// 2) ... and light radius doesn't reach the "frustum"
+		//	{
+		//		return glm::vec3(0, 0, 0);																		// abort calculation
+		//	}
+		//}
 
-
+		
 		// Converting from 3D space to NDC
-		glm::mat4 VP = m_Camera.get()->GetProjection() * m_Camera.get()->GetView();
-		glm::mat4 MVP = m_Camera.get()->GetProjection() * m_Camera.get()->GetView() * transform;
+		//glm::mat4 VP = m_SceneData->GameCamera.ProjectionMatrix * m_SceneData->GameCamera.ViewMatrix;
+		glm::mat4 VP = camera.ViewProjectionMatrix;
+		//glm::mat4 MVP = m_SceneData->GameCamera.ProjectionMatrix * m_SceneData->GameCamera.ViewMatrix * transform;
+		glm::mat4 MVP = camera.ViewProjectionMatrix * transform;
 
 		glm::vec4 NDC = MVP * glm::vec4(glm::vec3(light.x, light.y, z), 1.f);
 		NDC = NDC / NDC.z;
@@ -181,17 +201,17 @@ namespace Frosty
 		int y = (int)round((NDC.y + 1.0f) * m_Frustum.y / 2.0f);
 
 
-		// Calculate Radius and repeat process
-		glm::vec4 NDC2 = MVP * glm::vec4(glm::vec3(light.x, light.y + light.w, z), 1.f);
+		// Calculate radius and repeat process
+		glm::vec4 NDC2 = MVP * glm::vec4(glm::vec3(light.x + light.w, light.y, z), 1.f);
 		NDC2 = NDC2 / NDC2.z;
 
-		int lightShereSurfaceX = (int)round((NDC2.x + 1.0f) * m_Frustum.x / 2.0f);
-		int lightShereSurfaceY = (int)round((NDC2.y + 1.0f) * m_Frustum.y / 2.0f);
+		int lightSphereSurfaceX = (int)round((NDC2.x + 1.0f) * m_Frustum.x / 2.0f);
+		int lightSphereSurfaceY = (int)round((NDC2.y + 1.0f) * m_Frustum.y / 2.0f);
 
-		float radius = glm::length(glm::vec2(x, y) - glm::vec2(lightShereSurfaceX, lightShereSurfaceY));
-		if (radius < 0)
-			radius *= -1;
+		float radius = glm::abs(glm::length(glm::vec2(x, y) - glm::vec2(lightSphereSurfaceX, lightSphereSurfaceY)));
+		radius *= 2;
+		//radius = 2000.f;
 
-		return glm::vec3(x, y, radius);
+		return glm::vec3(x, y, radius);	// radius is *2 because I suspect that CheckCollision is actually using the diameter instead of the circle radius
 	}
 }
