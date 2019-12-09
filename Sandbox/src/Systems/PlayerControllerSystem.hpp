@@ -1,7 +1,7 @@
 #ifndef PLAYER_CONTROLLER_SYSTEM_HPP
 #define PLAYER_CONTROLLER_SYSTEM_HPP
 
-namespace Frosty { class PickUpEvent; class UpgradeWeaponEvent; class HealAbilityEvent; class EnemyDeathEvent; }
+namespace Frosty { class PickUpEvent; class UpgradeWeaponEvent; class HealAbilityEvent; class EnemyDeathEvent; class BossFearEffectEvent; }
 
 namespace MCS
 {
@@ -63,7 +63,8 @@ namespace MCS
 		void SetPickUpText(size_t index, std::string text);
 		void ResetAllHUDWeaponInfo(size_t index);
 		void OnDamage();
-
+		void OnBossFearEffect(Frosty::BossFearEffectEvent& e);
+		
 
 	private:
 		std::array<Frosty::ECS::CTransform*, Frosty::ECS::MAX_ENTITIES_PER_COMPONENT> m_Transform;
@@ -76,6 +77,15 @@ namespace MCS
 		Frosty::World* m_World{ nullptr };
 
 		bool m_keyPressed{ false };
+
+		float m_HeightMultiplier{ 0.0f };
+		float m_WidthMultiplier{ 0.0f };
+		float m_LastHeightMultiplier{ 0.0f };
+		float m_LastWidthMultiplier{ 0.0f };
+
+		float m_WindowWidth = { 1280.f };
+		float m_WindowHeight = { 720.f };
+
 	};
 }
 #endif // !PLAYER_CONTROLLER_SYSTEM_HPP
