@@ -234,7 +234,7 @@ namespace Frosty
 						//Animation translation
 						m_HoldingJoint = &m_Joints[i].jointID;
 					}
-					tempFile.getKeyframes(m_Joints.at(i).jointID, m_KeyframeMap[m_Joints[i].jointID]);
+					tempFile.getKeyframes(m_Joints[i].jointID, m_KeyframeMap[m_Joints[i].jointID]);
 				}
 
 				m_OnMem = true;

@@ -1,11 +1,12 @@
 #ifndef BOOLMAPGENERATOR_HPP
 #define BOOLMAPGENERATOR_HPP
-#include"BoolMap.hpp"
+#include<Frosty/API/AssetManager/AssetFiles/BoolMap.hpp>
 #include<Frosty/RenderEngine/VertexArray.hpp>
 #define DEFAULT_BOOLMAP_WIDTH 300
 #define DEFAULT_BOOLMAP_HEIGHT 300
 #define DEFAULT_BOOLMAP_PIXELCOORD_RATIO 10
 
+#define STB_IMAGE_WRITE_IMPLEMENTATION
 //Change to MCS
 namespace Frosty
 {
@@ -64,7 +65,7 @@ namespace Frosty
 			
 			void main()
 			{
-				fsOutCol = vec4( 0.5f, 0.0f, 0.0f, 1.0f ); 
+				fsOutCol = vec4( 1.0f, 0.0f, 0.0f, 1.0f ); 
 			}
 		)";
 

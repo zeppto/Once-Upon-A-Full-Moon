@@ -2,6 +2,7 @@
 #include "UIText.h"
 #include "Frosty/DEFINITIONS.hpp"
 #include "Frosty/API/AssetManager/AssetManager.hpp"
+#include "Frosty/Core/Application.hpp"
 
 
 namespace Frosty
@@ -46,5 +47,11 @@ namespace Frosty
 		m_FontScale = that.m_FontScale;
 
 		m_VertArray = that.m_VertArray; //This could possibly be problematic
+	}
+
+	const float UIText::GetFontScale()
+	{
+		 auto& window = Application::Get().GetWindow();
+		 return m_FontScale; 
 	}
 }

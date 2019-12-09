@@ -10,8 +10,12 @@
 #include "Frosty/RenderEngine/Renderer.hpp"
 #include "Frosty/RenderEngine/Texture.hpp"
 
+
+
 namespace Frosty
 {
+	class Application;
+
 	class UIText : public UIElement
 	{
 	public:
@@ -31,17 +35,17 @@ namespace Frosty
 		~UIText();
 		UIText(const UIText& that);
 
-		const std::shared_ptr<VertexArray>& GetVertexArray() { return m_VertArray; }
-		std::string GetText() const { return m_Text; }
-		const glm::vec2& GetPosition() { return m_Position; }
-		const glm::vec3& GetColor() { return m_Color; }
-		const float GetFontScale() { return m_FontScale; }
+		inline const std::shared_ptr<VertexArray>& GetVertexArray() { return m_VertArray; }
+		inline std::string GetText() const { return m_Text; }
+		inline const glm::vec2& GetPosition() { return m_Position; }
+		inline const glm::vec3& GetColor() { return m_Color; }
+		const float GetFontScale();
 
-		void SetText(std::string text) { m_Text = text; }
-		void SetFont(std::string font) { m_Font = font; }
-		void SetPosition(glm::vec2 position) { m_Position = position; }
-		void SetColor(glm::vec3 color) { m_Color = color; }
-		void SetFontScale(float scale) { m_FontScale = scale; }
+		inline void SetText(std::string text) { m_Text = text; }
+		inline void SetFont(std::string font) { m_Font = font; }
+		inline void SetPosition(glm::vec2 position) { m_Position = position; }
+		inline void SetColor(glm::vec3 color) { m_Color = color; }
+		inline void SetFontScale(float scale) { m_FontScale = scale; }
 
 	private:
 

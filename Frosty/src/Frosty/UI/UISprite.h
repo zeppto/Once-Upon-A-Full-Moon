@@ -31,7 +31,12 @@ namespace Frosty
 		UISprite& operator= (const UISprite& other);
 
 		inline std::shared_ptr<VertexArray>& GetVertexArray() { return m_VertArray; }
-		inline glm::mat4& GetTransformSprite() { return m_Transform; }
+		inline glm::mat4& GetTransformSprite() 
+		{
+
+
+			return m_Transform; 
+		}
 		inline glm::vec2& GetTranslateSprite() { return m_Translate; }
 		inline glm::vec2& GetScaleSprite() { return m_Scale; }
 		inline glm::vec4& GetColor() { return m_Color; }

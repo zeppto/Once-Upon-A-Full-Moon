@@ -238,7 +238,7 @@ namespace MCS
 			auto& playerComp = m_World->GetComponent<Frosty::ECS::CPlayer>(entity);
 			auto& HUD = m_World->GetComponent<Frosty::ECS::CGUI>(entity);
 
-			HUD.Layout.texts.at(6).SetText(text);
+			HUD.Layout.texts[6].SetText(text);
 			playerComp.PickUpTextTimer = Frosty::Time::CurrentTime();
 		}
 	}

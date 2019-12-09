@@ -26,5 +26,6 @@
 
 // ---TEMPORARY----------------------
 #include "Frosty/Core/CollisionDetection.hpp"
+#include "Frosty/Core/HitBox/SphereHitbox.hpp"
 // ----------------------------------
 #endif

@@ -2,7 +2,7 @@
 #define ABILITY_EVENT_HPP
 
 #include "EventSystem.hpp"
-#include "Frosty/Core/BoolMap/BoolMap.hpp"
+#include "Frosty/API/AssetManager/AssetFiles/BoolMap.hpp"
 
 namespace Frosty
 {
@@ -215,17 +215,62 @@ namespace Frosty
 		unsigned int m_EntityType;
 	};
 
+
+	class UpdatePlayerRoomCoordEvent : public BaseEvent
+	{
+	public:
+		UpdatePlayerRoomCoordEvent(const glm::ivec2& Coords) : m_Coords(Coords) { }
+
+		const glm::ivec2& GetCoords() const { return m_Coords; }
+
+
+		EVENT_TYPE(UpdatePlayerCoordsPos)
+
+	private:
+		glm::ivec2 m_Coords;
+	};
+
+
+
+	class UpdateCurrentRoomEvent : public BaseEvent
+	{
+	public:
+		UpdateCurrentRoomEvent(const std::string& CurrentRoom, const int& rotation) : m_CurrentRoom(CurrentRoom), m_Rotation(rotation){}
+
+		inline const std::string& GetCurrentRoom() { return m_CurrentRoom; }
+		inline const int& GetRotation() { return m_Rotation; }
+
+		EVENT_TYPE(UpdateCurrentRoom)
+
+	private:
+		std::string m_CurrentRoom;
+		int m_Rotation;
+	};
+	
+
+		class SwitchRoomEvent : public BaseEvent
+	{
+	public:
+		SwitchRoomEvent() {}
+		EVENT_TYPE(SwitchRoom)
+
+	private:
+
+	};
+
 	class InitiateGridEvent : public BaseEvent
 	{
 	public:
-		InitiateGridEvent(Frosty::ECS::CTransform* planeTransform) : m_Transform(planeTransform) {}
+		InitiateGridEvent(Frosty::ECS::CTransform* planeTransform, const uint32_t& EntityGroup) : m_Transform(planeTransform), m_EntityGroup(EntityGroup){}
 
 		Frosty::ECS::CTransform* GetTransform() { return m_Transform; }
+		inline const uint32_t& GetEntityGroup() const noexcept { return m_EntityGroup; }
 
 		EVENT_TYPE(InitiateGridMap)
 
 	private:
 		Frosty::ECS::CTransform* m_Transform;
+		uint32_t m_EntityGroup;
 	};
 
 	class ActivateWitchCircleEvent : public BaseEvent
@@ -342,6 +387,31 @@ namespace Frosty
 	private:
 		std::shared_ptr<ECS::Entity> m_Boss;
 
+	};
+
+	class SpawnBossEvent : public BaseEvent
+	{
+	public:
+		SpawnBossEvent() { }
+
+
+		EVENT_TYPE(SpawnBoss)
+
+	private:
+
+	};
+
+	class BossFearEffectEvent : public BaseEvent
+	{
+	public:
+		BossFearEffectEvent(glm::ivec2 bossDirection) : m_Direction(bossDirection) {}
+
+		glm::ivec2 GetDirectionToBoss() { return m_Direction; }
+
+		EVENT_TYPE(BossFearEffect)
+
+	private:
+		glm::ivec2 m_Direction;
 	};
 }
 #endif // !ABILITY_EVENT_HPP

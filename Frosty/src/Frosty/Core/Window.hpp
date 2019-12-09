@@ -24,8 +24,11 @@ namespace Frosty
 		virtual inline std::string GetTitle() const override { return m_Data.Title; }
 		virtual inline unsigned int GetWidth() const override { return m_Data.Width; }
 		virtual inline unsigned int GetHeight() const override { return m_Data.Height; }
+		virtual float GetWidthMultiplier()const override;
+		virtual float GetHeightMultiplier()const override;
 		virtual inline unsigned int GetPositionX() const override { return m_Data.PositionX; }
 		virtual inline unsigned int GetPositionY() const override { return m_Data.PositionY; }
+
 		virtual std::pair<unsigned int, unsigned int> GetPosition() const override { return { m_Data.PositionX, m_Data.PositionY }; }
 		virtual const glm::vec4& GetViewport() const override;
 
@@ -62,6 +65,9 @@ namespace Frosty
 			int Maximized;
 			unsigned int Width, Height;
 			unsigned int PositionX, PositionY;
+			float refWidth, refHeight;
+			float widthMultiplier{ 0.0f }, heightMultiplier{ 0.0f };
+			float lastWidthMultiplier{ 0.0f }, lastHeightMultiplier{ 0.0f };
 			bool VSync;
 			glm::vec4 Viewport;
 			bool EditorMode{ true };

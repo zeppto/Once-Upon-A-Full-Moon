@@ -35,6 +35,7 @@ namespace MCS
 		// Static stuff (Mostly temporary)
 		static bool s_VSync;
 		static bool s_DistanceCulling;
+		static bool s_LightCulling;
 
 		//FOR OPENING LEVEL
 		char m_LevelName[50] = "name";
