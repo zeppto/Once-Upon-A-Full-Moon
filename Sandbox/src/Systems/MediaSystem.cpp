@@ -13,7 +13,10 @@ namespace MCS
 		p_Signature.set(Frosty::ECS::getComponentTypeID<Frosty::ECS::CMediaManager>(), true);
 
 		m_World = Frosty::Application::Get().GetWorld().get();
-		m_SoundEngine = irrklang::createIrrKlangDevice();
+		m_SoundEngine = Frosty::AssetManager::GetSoundEngine();
+
+		playMusic("assets/music/Atmo.mp3", 1.0f);
+		playMusic("assets/music/menusong.mp3", 1.0f);
 	}
 
 	void MCS::MediaSystem::OnUpdate()

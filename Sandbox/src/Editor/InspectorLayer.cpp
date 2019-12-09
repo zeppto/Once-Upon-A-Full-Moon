@@ -1354,7 +1354,6 @@ namespace MCS
 			{
 				if (ImGui::Button("Play", ImVec2(80.0f, EDITOR_MAIN_MENU_BAR_HEIGHT)))
 				{
-					//Frosty::EventBus::GetEventBus()->Publish<Frosty::MediaManager>(Frosty::MediaManager(m_SelectedEntity, 0));
 					m_App->StartGame(m_MaximizeOnPlay);
 					if (m_MaximizeOnPlay) m_Active = false;
 				}

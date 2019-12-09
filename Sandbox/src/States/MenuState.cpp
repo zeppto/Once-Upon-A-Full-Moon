@@ -54,30 +54,8 @@ namespace MCS
 			InitiateSystems();
 			world->PauseGame();
 			m_App->SetMenuLoad(true);
-
-			//// Setup ambience and music (this is probably incorrect placement to do this in)
-			//auto& testEntity = world->CreateEntity();
-			//auto& musicTest = world->AddComponent<Frosty::ECS::CMediaManager>(testEntity);
-			//musicTest.SoundEngine = irrklang::createIrrKlangDevice();
-			//world->GetComponent<Frosty::ECS::CMediaManager>(testEntity).SoundEngine->play2D(
-			//	"assets/music/Atmo.mp3",
-			//	true,
-			//	false,
-			//	false,
-			//	ESM_AUTO_DETECT,
-			//	false);
-
-			//world->GetComponent<Frosty::ECS::CMediaManager>(testEntity).SoundEngine->play2D(
-			//	"assets/music/menusong.mp3",
-			//	true,
-			//	false,
-			//	false,
-			//	ESM_AUTO_DETECT,
-			//	false);
-
-			Frosty::EventBus::GetEventBus()->Publish<Frosty::PlayMediaEvent>(Frosty::PlayMediaEvent("assets/music/Atmo.mp3", 1.0f, false, 0));
-			Frosty::EventBus::GetEventBus()->Publish<Frosty::PlayMediaEvent>(Frosty::PlayMediaEvent("assets/music/menusong.mp3", 1.0f, false, 0));
 		}
+
 		InitiateButtons();
 	}
 
@@ -388,7 +366,9 @@ namespace MCS
 		world->AddComponent<Frosty::ECS::CGUI>(player, uiLayout);
 
 		Frosty::EventBus::GetEventBus()->Publish<Frosty::StopMediaEvent>(Frosty::StopMediaEvent());
-		Frosty::EventBus::GetEventBus()->Publish<Frosty::PlayMediaEvent>(Frosty::PlayMediaEvent("assets/music/Atmo_Skog.mp3", 1.0f, false, 0));
+		//Frosty::EventBus::GetEventBus()->Publish<Frosty::PlayMediaEvent>(Frosty::PlayMediaEvent("assets/music/Atmo_Skog.mp3", 1.0f, false, 0));
+		Frosty::EventBus::GetEventBus()->Publish<Frosty::PlayMusicEvent>(Frosty::PlayMusicEvent("assets/music/Atmo_Skog.mp3", 1.0f));
+		//Frosty::EventBus::GetEventBus()->Publish<Frosty::PlayMediaEvent>(Frosty::PlayMediaEvent("assets/music/menusong.mp3", 1.0f, false, 0));
 	}
 
 	void MenuState::InitiateButtons()

@@ -13,6 +13,8 @@
 
 #include <Luna/include/Reader.h>
 
+#include <irrKlang/include/irrKlang.h>
+
 #include"KeyLabel.hpp"
 #include"BaseKey.hpp"
 
@@ -90,8 +92,8 @@ namespace Frosty
 		static std::map<std::string, std::shared_ptr<TrueTypeFile>> s_TruefontTypes;
 		static std::map<std::string, std::shared_ptr<WeaponHandler>> s_WeaponHandler;
 
-		static std::map<std::string, std::shared_ptr<const char>> s_Media;
-
+		static std::map<std::string, irrklang::ISoundSource*> s_Media;
+		static irrklang::ISoundEngine* s_SoundEngine;
 
 		static std::unordered_map <std::string, std::list<TextureFile**>> s_TextureWatchList;
 
@@ -157,7 +159,8 @@ namespace Frosty
 
 
 		//Use File Name
-		inline static std::shared_ptr<const char>& GetMediaFile(const std::string& FileName) { FY_CORE_ASSERT(s_Media.count(FileName), "Media error!\n{0} doesn't exist!", FileName); return s_Media[FileName]; }
+		inline static irrklang::ISoundSource* GetMediaFile(const std::string& FileName) { FY_CORE_ASSERT(s_Media.count(FileName), "Media error!\n{0} doesn't exist!", FileName); return s_Media[FileName]; }
+		inline static irrklang::ISoundEngine* GetSoundEngine() { return s_SoundEngine; }
 	//	inline static std::map<std::string, std::shared_ptr<WeaponHandler>>& GetWeaponHandlers() { return s_WeaponHandler; }
 
 

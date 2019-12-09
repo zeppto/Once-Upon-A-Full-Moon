@@ -32,7 +32,9 @@ namespace Frosty
 	std::map<std::string, std::shared_ptr<TrueTypeFile>> AssetManager::s_TruefontTypes;
 	std::map<std::string, std::shared_ptr<WeaponHandler>> AssetManager::s_WeaponHandler;
 
-	std::map<std::string, std::shared_ptr<const char>> AssetManager::s_Media;
+	irrklang::ISoundEngine* AssetManager::s_SoundEngine = nullptr;
+
+	std::map<std::string, irrklang::ISoundSource*> AssetManager::s_Media;
 
 	std::vector<std::string> AssetManager::s_FilePath_Vector;
 
@@ -45,13 +47,14 @@ namespace Frosty
 		if (!s_Instance)
 		{
 			s_Instance = FY_NEW AssetManager;
+			s_SoundEngine = irrklang::createIrrKlangDevice();
 		}
 		return s_Instance;
 	}
 
 	AssetManager::~AssetManager()
 	{
-		
+		s_SoundEngine->drop();
 	}
 
 	bool AssetManager::LoadFile(const std::string& FullFilePath, const std::string& TagName)
@@ -310,8 +313,9 @@ namespace Frosty
 		}
 		else
 		{
-			//Add Load IrrklangFunc here
-			//s_Media[MetaData.FileName] = (irrklang loaded file);
+			// Preload media file
+			irrklang::ISoundSource* temp =	s_SoundEngine->addSoundSourceFromFile(MetaData.FullFilePath.c_str(), irrklang::ESM_AUTO_DETECT, true);
+			s_Media[MetaData.FileName] = temp;
 		}
 		return true;
 	}
@@ -704,7 +708,7 @@ namespace Frosty
 		bool returnValue = false;
 
 
-		std::map<std::string, std::shared_ptr<const char>>::iterator it;
+		std::map<std::string, irrklang::ISoundSource*>::iterator it;
 		for (it = s_Media.begin(); it != s_Media.end() && returnValue == false; it++)
 		{
 			if (it->first == MeshName)
