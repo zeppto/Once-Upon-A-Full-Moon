@@ -921,7 +921,7 @@ namespace Frosty
 				float Size{ 1.0f };
 			};
 
-			enum RenderMode
+			enum class RenderMode
 			{
 				NORMAL,
 				ADDITIVE
@@ -929,7 +929,7 @@ namespace Frosty
 
 			static const uint32_t MAX_PARTICLE_COUNT = 200; //Absolute suported max
 
-			RenderMode RenderMode{ ADDITIVE };
+			RenderMode RenderMode{ RenderMode::ADDITIVE };
 			uint32_t MaxParticles{ 1 }; //User's choice of max particles
 			float StartParticleSize{ 1.0f };
 			float EndParticleSize{ 0.0f };

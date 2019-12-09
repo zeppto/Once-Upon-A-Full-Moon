@@ -208,7 +208,7 @@ namespace Frosty
 		{
 			m_BitMap.reset();
 
-			uint16_t check = fread(&m_CoordWidth, sizeof(uint16_t), 1, File);
+			uint16_t check = fread(&m_CoordWidth, sizeof(uint16_t), (uint16_t)1, File);
 			FY_CORE_ASSERT(check, "Could not read Width for Boolmap: {0}", filePath);
 			check = fread(&m_CoordHeight, sizeof(uint16_t), 1, File);
 			FY_CORE_ASSERT(check, "Could not read Heigth for Boolmap: {0}", filePath);

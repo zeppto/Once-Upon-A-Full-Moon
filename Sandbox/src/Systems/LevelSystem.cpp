@@ -2,7 +2,7 @@
 #include "LevelSystem.hpp"
 #include "Frosty/API/AssetManager/AssetManager.hpp"
 #include "Frosty/Events/AbilityEvent.hpp"
-#include "Frosty/Core/BoolMap/BoolMapGenerator.hpp"
+//#include "Frosty/Core/BoolMap/BoolMapGenerator.hpp"
 namespace MCS
 {
 	const std::string LevelSystem::NAME = "Level";
@@ -12,15 +12,6 @@ namespace MCS
 		m_World = Frosty::Application::Get().GetWorld().get();
 		p_Signature.set(Frosty::ECS::getComponentTypeID<Frosty::ECS::CTransform>(), true);
 	}
-
-		//m_LevelFileFormat.LoadBoolMap("deadend_chests_IsStatick_t_p_e_r_h");
-		// "crossroad_chests_IsStatick_t_p_e_r_h";
-		// "threeWayRoad_chests_IsStatick_t_p_e_r_h";
-		// "turningRoad_chests_IsStatick_t_p_e_r_h";
-		// "straightRoad_chests_IsStatick_t_p_e_r_h";
-		// "deadend_chests_IsStatick_t_p_e_r_h";
-
-	
 
 	void LevelSystem::OnStart()
 	{
@@ -150,8 +141,6 @@ namespace MCS
 			//m_ThisRoomName = "deadend_chests_IsStatick_t_p_e_r_h";
 			m_Start = false;
 			m_haveStartedMoving = false;
-
-			//m_LevelFileFormat.LoadBoolMap("deadend_chests_IsStatick_t_p_e_r_h_a");
 			m_StartTimer = Frosty::Time::CurrentTime();
 
 		}

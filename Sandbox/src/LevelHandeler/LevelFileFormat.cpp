@@ -3,7 +3,7 @@
 #include "LevelFileFormat.hpp"
 #include "Frosty/API/AssetManager/AssetManager.hpp"
 #include <glm/gtx/matrix_decompose.hpp>
-#include "Frosty/Core/BoolMap/BoolMapGenerator.hpp"
+//#include "Frosty/Core/BoolMap/BoolMapGenerator.hpp"
 #include "Frosty/Events/AbilityEvent.hpp"
 
 namespace MCS
