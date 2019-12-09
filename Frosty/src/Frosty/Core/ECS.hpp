@@ -643,6 +643,13 @@ namespace Frosty
 			int WaterHealing{ 0 };							// Water (+ Heal)
 			bool IsFullyUpgraded{ false };
 
+			//For HUD
+			bool HasDoneFireSprite{ false };
+			bool HasDoneEarthSprite{ false };
+			bool HasDoneWindSprite{ false };
+			bool HasDoneWaterSprite{ false };
+
+
 			// Special Attribute for Bow
 			float ProjectileSpeed{ 0.f };
 
@@ -725,13 +732,23 @@ namespace Frosty
 			int DropBaitKey{ FY_KEY_Q };
 
 			int Score{ 0 };
+			
 			float PickUpTextTime{ 2.0f };
 			float PickUpTextTimer{ Frosty::Time::CurrentTime() };
 
 			float DamageEffectTime{ 2.0f };
 			float DamageEffectTimer{ Frosty::Time::CurrentTime() };
 
+			float ElementMoveTime{ 1.0f };
+			float ElementMoveTimer{ Frosty::Time::CurrentTime() };
 
+			float ElementDisplayTime{ 2.0f };
+			float ElementDisplayTimer{ Frosty::Time::CurrentTime() };
+
+			float BossFearEffectTime{ 2.0f };
+			float BossFearEffectTimer{ Frosty::Time::CurrentTime() };
+			
+			
 
 			CPlayer() = default;
 			CPlayer(CWeapon* weapon) : Weapon(weapon) { }
