@@ -542,6 +542,11 @@ namespace MCS
 		m_BossSpawned = true;
 
 		Frosty::EventBus::GetEventBus()->Publish<Frosty::BossSpawnedEvent>(Frosty::BossSpawnedEvent());
+
+		int rand = std::rand() % 2 + 1;
+		std::string str = "assets/sounds/WolfHowl" + std::to_string(rand) + ".wav";
+		const char* fileName = str.c_str();
+		Frosty::EventBus::GetEventBus()->Publish<Frosty::PlayMediaEvent>(Frosty::PlayMediaEvent(fileName, 0.75f, 0.0f, false, 0));
 	}
 	
 	void AISystem::ResetBossAbilities(size_t index)
