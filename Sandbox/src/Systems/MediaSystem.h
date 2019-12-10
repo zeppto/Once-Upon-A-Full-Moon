@@ -39,7 +39,7 @@ namespace MCS
 		void OnPlayMediaEntityEvent(Frosty::PlayMediaEntityEvent& e);
 		void OnStopMediaEvent(Frosty::StopMediaEvent& e);
 		void playMusic(const char* source, bool loop);
-		void play2DSound(const char* source, bool loop, bool startPaused, bool track, bool enableSoundEffects, float volume, int effectID);
+		void play2DSound(const char* source, bool loop, bool startPaused, bool track, bool enableSoundEffects, float volume, float pan, int effectID);
 		void play3DSound(const char* source, vec3df position, bool loop, bool startPaused, bool track, bool enableSoundEffects, float volume, float minDist, float maxDist, int effectID);
 		void stopAllSounds(); // This includes music
 	};

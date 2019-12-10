@@ -148,11 +148,12 @@ namespace Frosty
 	class PlayMediaEvent : public BaseEvent
 	{
 	public:
-		PlayMediaEvent(const char* filepath, float volume, bool enableSoundEffects, int effectID) : 
-			m_Filepath(filepath), m_Volume(volume), m_EnableSoundEffects(enableSoundEffects), m_EffectID(effectID) {}
+		PlayMediaEvent(const char* filepath, float volume, float pan, bool enableSoundEffects, int effectID) : 
+			m_Filepath(filepath), m_Volume(volume), m_Pan(pan), m_EnableSoundEffects(enableSoundEffects), m_EffectID(effectID) {}
 
 		const char* GetFilepath() { return m_Filepath; }
 		float GetVolume() { return m_Volume; }
+		float GetPan() { return m_Pan; }
 		bool IsSoundEffectsEnabled() { return m_EnableSoundEffects; }
 		int GetEffectID() { return m_EffectID; }
 
@@ -160,6 +161,7 @@ namespace Frosty
 	private:
 		const char* m_Filepath;
 		float m_Volume;
+		float m_Pan;
 		bool m_EnableSoundEffects;
 		int m_EffectID;
 	};

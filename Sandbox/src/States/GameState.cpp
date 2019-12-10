@@ -72,6 +72,10 @@ namespace MCS
 		auto& world = Frosty::Application::Get().GetWorld();
 		world->PauseGame();
 		m_App->GetStateMachine().AddState(Frosty::StateRef(FY_NEW(GameOverState)), true);
+
+		Frosty::EventBus::GetEventBus()->Publish<Frosty::StopMediaEvent>(Frosty::StopMediaEvent());
+		Frosty::EventBus::GetEventBus()->Publish<Frosty::PlayMusicEvent>(Frosty::PlayMusicEvent("assets/music/Atmo.mp3", 1.0f));
+		Frosty::EventBus::GetEventBus()->Publish<Frosty::PlayMusicEvent>(Frosty::PlayMusicEvent("assets/music/menusong.mp3", 1.0f));
 	}
 
 	void GameState::OnGameWinEvent()
@@ -79,5 +83,9 @@ namespace MCS
 		auto& world = Frosty::Application::Get().GetWorld();
 		world->PauseGame();
 		m_App->GetStateMachine().AddState(Frosty::StateRef(FY_NEW(GameWinState)), true);
+
+		Frosty::EventBus::GetEventBus()->Publish<Frosty::StopMediaEvent>(Frosty::StopMediaEvent());
+		Frosty::EventBus::GetEventBus()->Publish<Frosty::PlayMusicEvent>(Frosty::PlayMusicEvent("assets/music/Atmo.mp3", 1.0f));
+		Frosty::EventBus::GetEventBus()->Publish<Frosty::PlayMusicEvent>(Frosty::PlayMusicEvent("assets/music/menusong.mp3", 1.0f));
 	}
 }

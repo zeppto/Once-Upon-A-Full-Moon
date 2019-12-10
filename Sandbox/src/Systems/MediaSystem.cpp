@@ -130,8 +130,9 @@ namespace MCS
 		const char* filepath = e.GetFilepath();
 		int effectID = e.GetEffectID();
 		float volume = e.GetVolume();
+		float pan = e.GetPan();
 		bool enableSoundEffects = e.IsSoundEffectsEnabled();
-		play2DSound(filepath, false, false, false, enableSoundEffects, volume, effectID);
+		play2DSound(filepath, false, false, true, enableSoundEffects, volume, pan, effectID);
 	}
 
 	void MediaSystem::OnPlayMediaEntityEvent(Frosty::PlayMediaEntityEvent& e)
@@ -153,10 +154,12 @@ namespace MCS
 		m_SoundEngine->play2D(source, loop, false, false, ESM_AUTO_DETECT, false);
 	}
 
-	void MediaSystem::play2DSound(const char* source, bool loop, bool startPaused, bool track, bool enableSoundEffects, float volume, int effectID)
+	void MediaSystem::play2DSound(const char* source, bool loop, bool startPaused, bool track, bool enableSoundEffects, float volume, float pan, int effectID)
 	{
-		m_SoundEngine->setSoundVolume(volume);
+		//m_SoundEngine->setSoundVolume(volume);
 		ISound* sound2D = m_SoundEngine->play2D(source, loop, startPaused, track, ESM_AUTO_DETECT, enableSoundEffects);
+		sound2D->setVolume(volume);
+		sound2D->setPan(pan);
 		
 		if (enableSoundEffects)
 		{
@@ -181,10 +184,13 @@ namespace MCS
 
 	void MediaSystem::play3DSound(const char* source, vec3df position, bool loop, bool startPaused, bool track, bool enableSoundEffects, float volume, float minDist, float maxDist, int effectID)
 	{
-		m_SoundEngine->setDefault3DSoundMinDistance(minDist);
-		m_SoundEngine->setDefault3DSoundMaxDistance(maxDist); // So the sound reaches the camera, else its really quiet by default
-		m_SoundEngine->setSoundVolume(volume);
+		//m_SoundEngine->setDefault3DSoundMinDistance(minDist);
+		//m_SoundEngine->setDefault3DSoundMaxDistance(maxDist);
+		//m_SoundEngine->setSoundVolume(volume);
 		ISound* sound3D = m_SoundEngine->play3D(source, position, loop, startPaused, track, ESM_AUTO_DETECT, enableSoundEffects);
+		sound3D->setMinDistance(minDist);
+		sound3D->setMaxDistance(maxDist); // So the sound reaches the camera, else its really quiet by default
+		sound3D->setVolume(volume);
 
 		if (enableSoundEffects)
 		{

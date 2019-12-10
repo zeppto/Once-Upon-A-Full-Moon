@@ -80,6 +80,9 @@ namespace MCS
 
 					world->PlayGame();
 					m_App->GetStateMachine().AddState(Frosty::StateRef(FY_NEW(GameState)), true);
+
+					Frosty::EventBus::GetEventBus()->Publish<Frosty::StopMediaEvent>(Frosty::StopMediaEvent());
+					Frosty::EventBus::GetEventBus()->Publish<Frosty::PlayMusicEvent>(Frosty::PlayMusicEvent("assets/music/Atmo_Skog.mp3", 1.0f));
 				}
 			}
 			else if (x > 860.f && x < 1050.0f && y > 445.0f && y < 500.0f)
@@ -417,9 +420,7 @@ namespace MCS
 		//uiLayout.AddSprite(glm::vec2(25.0f + testOffset * 0, 620.0f), glm::vec2(1, 1), "higlightHart", glm::vec4(1.0f));
 		world->AddComponent<Frosty::ECS::CGUI>(player, uiLayout);
 
-		Frosty::EventBus::GetEventBus()->Publish<Frosty::StopMediaEvent>(Frosty::StopMediaEvent());
 		//Frosty::EventBus::GetEventBus()->Publish<Frosty::PlayMediaEvent>(Frosty::PlayMediaEvent("assets/music/Atmo_Skog.mp3", 1.0f, false, 0));
-		Frosty::EventBus::GetEventBus()->Publish<Frosty::PlayMusicEvent>(Frosty::PlayMusicEvent("assets/music/Atmo_Skog.mp3", 1.0f));
 		//Frosty::EventBus::GetEventBus()->Publish<Frosty::PlayMediaEvent>(Frosty::PlayMediaEvent("assets/music/menusong.mp3", 1.0f, false, 0));
 	}
 
