@@ -73,7 +73,7 @@ namespace MCS
 						if (m_World->HasComponent<Frosty::ECS::CPlayer>(m_Health[i]->EntityPtr))
 						{
 							// Handle player death differently
-							Frosty::EventBus::GetEventBus()->Publish<Frosty::GameoverEvent>(Frosty::GameoverEvent());
+							Frosty::EventBus::GetEventBus()->Publish<Frosty::GameoverEvent>(Frosty::GameoverEvent(m_Health[i]->EntityPtr));
 						}
 						else if (m_World->HasComponent<Frosty::ECS::CBoss>(m_Health[i]->EntityPtr))
 						{

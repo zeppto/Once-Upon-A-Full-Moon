@@ -14,5 +14,6 @@ int main(int argc, char** argv)
 
 	delete app;
 
+	_CrtDumpMemoryLeaks();
 	return 0;
 }
