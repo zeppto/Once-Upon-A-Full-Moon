@@ -39,10 +39,7 @@ namespace MCS
 					}
 				}
 			}
-		}
 
-		for (size_t i = 1; i < p_Total; i++)
-		{
 			// So dirty. Dirty boi. Witch circle should probably not have health.
 			if (!m_World->HasComponent<Frosty::ECS::CWitchCircle>(m_Health[i]->EntityPtr))
 			{
