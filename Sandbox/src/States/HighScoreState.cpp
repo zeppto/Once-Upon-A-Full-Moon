@@ -35,7 +35,7 @@ void MCS::HighscoreState::OnInput()
 	{
 		if (Frosty::InputManager::IsMouseButtonPressed(FY_MOUSE_BUTTON_LEFT))
 		{
-			m_App->GetStateMachine().AddState(Frosty::StateRef(FY_NEW(GameOverState)), true);
+			m_App->GetStateMachine().RemoveState();
 		}
 	}
 }
@@ -66,7 +66,7 @@ void MCS::HighscoreState::InitiateGUI()
 	m_HighscoreGUI = m_App->Get().GetWorld()->CreateEntity();
 
 	//10 for scores two for player score and "Highscore List" text. One for "Back"
-	Frosty::UILayout UILayout(13, 0);
+	Frosty::UILayout UILayout(13, 1);
 
 	float height = 650.0f;
 
@@ -94,6 +94,7 @@ void MCS::HighscoreState::InitiateGUI()
 	//Latest added at this point is player's score
 	UILayout.AddText(glm::vec2(540.0f, height- 550.0f), "Your score: " + std::to_string(scores[scoreLoc]), glm::vec3(1.0f, 1.0f, 0.0f), 1.0f);
 	UILayout.AddText(glm::vec2(400.0f, height - 550.0f), "Back", glm::vec3(1.0f, 1.0f, 0.0f), 1.0f);
+	UILayout.AddSprite(glm::vec2(640.0f, 360.0f), glm::vec2(25.6f, 14.4f), "Background", glm::vec4(0.5f, 0.5f, 0.5f, 1.0f));
 
 	//Sort from high to low
 	std::sort(scores.begin(), scores.end(), std::greater<int>());

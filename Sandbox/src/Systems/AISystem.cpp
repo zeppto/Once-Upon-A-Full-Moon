@@ -513,7 +513,7 @@ namespace MCS
 		auto& enemyComp = m_World->AddComponent<Frosty::ECS::CEnemy>(boss, m_PlayerTransform, &bossWeaponComp);
 		enemyComp.SpawnPosition = m_BossSpawn;
 		enemyComp.SightRange = 300.0f;
-		m_World->AddComponent<Frosty::ECS::CHealth>(boss, 50);
+		m_World->AddComponent<Frosty::ECS::CHealth>(boss, 1);//50
 		m_World->AddComponent<Frosty::ECS::CHealthBar>(boss, glm::vec3(0.0f, 10.0f, 0.0f));
 		m_World->AddComponent<Frosty::ECS::CDropItem>(boss);
 		m_World->AddComponent<Frosty::ECS::CBoss>(boss);

@@ -1013,6 +1013,13 @@ namespace MCS
 					{
 						if (!m_World->HasComponent<Frosty::ECS::CLight>(m_Transform[i]->EntityPtr))
 						{
+							if (m_World->HasComponent<Frosty::ECS::CBoss>(m_Transform[i]->EntityPtr))
+							{
+								if (!m_World->HasComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr))
+								{
+									m_World->AddComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr);
+								}
+							}
 						}
 						else if (m_World->HasComponent<Frosty::ECS::CLight>(m_Transform[i]->EntityPtr))
 						{
@@ -1152,7 +1159,7 @@ namespace MCS
 				{
 					m_GUI->Layout.sprites.at(j).SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 0.0f));
 				}
-			}
+			}			
 		}
 
 		weaponMesh->parentMatrix = PlayerT->GetModelMatrix();

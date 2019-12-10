@@ -56,7 +56,7 @@ namespace MCS
 			OnGameOverEvent(static_cast<Frosty::GameoverEvent&>(e));
 			break;
 		case Frosty::EventType::Win:
-			OnGameWinEvent();
+			OnGameWinEvent(static_cast<Frosty::WinEvent&>(e));
 			break;
 		}
 	}
@@ -84,9 +84,16 @@ namespace MCS
 		m_App->GetStateMachine().AddState(Frosty::StateRef(FY_NEW(GameOverState)), true);
 	}
 
-	void GameState::OnGameWinEvent()
+	void GameState::OnGameWinEvent(Frosty::WinEvent& e)
 	{
 		auto& world = Frosty::Application::Get().GetWorld();
+		// Writing score here since I can't get to it in other state.
+		std::ofstream scoreFile;
+		//Write at the end of the file
+		scoreFile.open("Highscore_test.txt", std::ios::app);
+		scoreFile << world->GetComponent<Frosty::ECS::CPlayer>(e.GetEntity()).Score << "\n";
+		scoreFile.close();
+
 		world->PauseGame();
 		m_App->GetStateMachine().AddState(Frosty::StateRef(FY_NEW(GameWinState)), true);
 	}

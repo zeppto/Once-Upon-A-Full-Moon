@@ -366,9 +366,13 @@ namespace Frosty
 	class WinEvent : public BaseEvent
 	{
 	public:
-		WinEvent() { }
+		WinEvent(const std::shared_ptr<ECS::Entity>& entity) : m_PlayerEntity(entity) { }
+
+		const std::shared_ptr<ECS::Entity>& GetEntity() const { return m_PlayerEntity; }
 
 		EVENT_TYPE(Win)
+	private:
+		std::shared_ptr<ECS::Entity> m_PlayerEntity;
 	};
 
 	class BossSpawnedEvent : public BaseEvent

@@ -20,7 +20,7 @@ namespace Frosty
 
 		FY_CORE_ASSERT(!s_Instance, "Application already exists!");
 		s_Instance = this;
-
+		 
 		EventBus::GetEventBus()->Subscribe<Application, BaseEvent>(this, &Application::OnEvent);
 
 		m_Window.reset(BaseWindow::Create());
