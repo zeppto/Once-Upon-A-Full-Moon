@@ -542,6 +542,7 @@ namespace Frosty
 			glm::vec2 TextureScale{ 1.0f };
 
 			bool HasTransparency{ false };
+			bool CastsShadows{ true };
 
 			CMaterial() = default;
 			CMaterial(const std::shared_ptr<Shader>& shader, bool hasTransparency = false) : UseShader(shader), HasTransparency(hasTransparency){ NormalTexture = AssetManager::GetTexture2D("FlatNormal"); }

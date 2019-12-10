@@ -6,6 +6,8 @@
 #include "Frosty/RenderEngine/Shader.hpp"
 #include "ForwardPlus.hpp"
 
+
+
 namespace Frosty
 {
 	namespace ECS
@@ -102,6 +104,8 @@ namespace Frosty
 		inline static const std::unordered_map<size_t, PointLight>& GetPointLights() { return s_SceneData->PointLights; }
 
 		static void CreateDepthMap();
+		static void CreateFullScreenQuad();
+		static void DrawToFullScreenQuad(unsigned int TextureID);
 	private:
 
 
@@ -186,7 +190,7 @@ namespace Frosty
 
 		inline static const unsigned int SHADOW_WIDTH = 1280;
 		inline static const unsigned int SHADOW_HEIGHT = 720;
-	
+		static unsigned int s_FullScreenQuad;
 	};
 }
 #endif // !RENDERER_HPP

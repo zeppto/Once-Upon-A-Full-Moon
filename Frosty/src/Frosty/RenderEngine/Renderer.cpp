@@ -5,6 +5,8 @@
 #include "Frosty/Core/Application.hpp"
 #include <glad/glad.h>
 
+#define BUFFER_OFFSET(i) ((char *)nullptr + (i))
+
 namespace Frosty
 {
 	Renderer::SceneData* Renderer::s_SceneData = FY_NEW Renderer::SceneData;
@@ -19,8 +21,8 @@ namespace Frosty
 	bool Renderer::s_LightCulling = false;
 	unsigned int Renderer::s_ShadowMapFBO;
 	unsigned int Renderer::s_ShadowMap;
-	//const unsigned int Renderer::SHADOW_WIDTH = 1280;
-	//const unsigned int Renderer::SHADOW_HEIGHT = 720;
+	unsigned int Renderer::s_FullScreenQuad;
+
 
 	void Renderer::Init()
 	{
@@ -33,6 +35,7 @@ namespace Frosty
 
 		s_ForwardPlus.Initiate();
 		CreateDepthMap();
+		CreateFullScreenQuad();
 	}
 
 	void Renderer::BeginScene()
@@ -61,11 +64,19 @@ namespace Frosty
 			nrOfpasses++;
 			auto passData = s_RenderPas[i];
 
+			if (i != 0)
+			{
+				glm::ivec4 viewP(Application::Get().GetWindow().GetViewport());
+				glViewport(viewP.x, viewP.y, viewP.z, viewP.w);
+			}
+			
+			
+
 			//For all shaders
 			for (auto& ShaderIt : passData.ShaderMap)
 			{
 				nrOfShaders++;
-
+				 
 				auto& shaderData = passData.ShaderMap.at(ShaderIt.first);
 				shaderData->Shader->Bind();
 				//Set most uniforms here
@@ -96,6 +107,15 @@ namespace Frosty
 				{
 					RenderCommand::EnableBackfaceCulling();
 					culling = true;
+				}
+				else if (shaderData->Shader->GetName() == "ShadowMap")
+				{
+					RenderCommand::EnableBackfaceCulling();
+					culling = true;
+
+					glViewport(0, 0, SHADOW_WIDTH, SHADOW_HEIGHT);
+					glBindFramebuffer(GL_FRAMEBUFFER, s_ShadowMapFBO);
+					glClear(GL_DEPTH_BUFFER_BIT);
 				}
 				else
 				{
@@ -231,7 +251,9 @@ namespace Frosty
 							if (distance < 110)
 							{
 								nrOfDrawnedObjs++;
+
 								shaderData->Shader->UploadUniformMat4("u_Transform", meshData->TransformMap.at(TransformIt.first)->ModelMatrix);
+
 								if (shaderData->Shader->GetName() == "Animation")
 								{
 									if (meshData->AnimMap.find(TransformIt.first) != meshData->AnimMap.end())
@@ -253,6 +275,7 @@ namespace Frosty
 										}
 									}
 								}
+
 								RenderCommand::Draw2D(meshData->VertexArray);
 
 							}
@@ -273,7 +296,7 @@ namespace Frosty
 					glBindTexture(GL_TEXTURE_2D, 0);
 				}
 				glUseProgram(0);
-
+				glBindFramebuffer(GL_FRAMEBUFFER, 0);
 				if (shaderData->Shader->GetName() == "Texture2D" || shaderData->Shader->GetName() == "FlatColor" || shaderData->Shader->GetName() == "Animation")
 				{
 					glDisable(GL_BLEND);
@@ -283,6 +306,12 @@ namespace Frosty
 
 		}
 		s_TotalNrOfFrames++;
+
+
+		//DrawToFullScreenQuad(s_ShadowMap);
+
+		//DrawToFullScreenQuad(AssetManager::GetTexture2D("green_square")->GetRenderID());
+
 	}
 
 	void Renderer::EndScene()
@@ -466,16 +495,16 @@ namespace Frosty
 		float height = window.GetHeight();
 		glm::mat4 projection = glm::ortho(0.0f, width, 0.0f, height);
 		shader->UploadUniformMat4("projection", projection);
-		
 
- 		transform[3][0] *=  window.GetWidthMultiplier() ;
+
+		transform[3][0] *= window.GetWidthMultiplier();
 		transform[3][1] *= window.GetHeightMultiplier();
 
 		for (int i = 0; i < 3; i++)
 		{
 			transform[i][i] *= window.GetWidthMultiplier();
 		}
-		
+
 
 		shader->UploadUniformMat4("transform", transform);
 		shader->UploadUniformFloat4("color", color); //Make sure this number matches the active and sampled texture
@@ -729,22 +758,26 @@ namespace Frosty
 	void Renderer::AddToRenderer(ECS::CMaterial* mat, ECS::CMesh* mesh, ECS::CTransform* transform, ECS::CAnimController* controller)
 	{
 
-			// at(0) will be for dept sampling for shadow map
-			int RenderPassID = 0;
-			if (mat->HasTransparency)
-			{
-				RenderPassID = 2;
-			}
-			else
-			{
-				RenderPassID = 1;
-			}
+		// at(0) will be for dept sampling for shadow map
+		int RenderPassID = 0;
 
-			// Forward Plus Temp
-			if (mat->UseShader->GetName() == "HeatMap")
-			{
-				RenderPassID = 3;
-			}
+
+		if (mat->HasTransparency)
+		{
+			RenderPassID = 2;
+		}
+		else
+		{
+			RenderPassID = 1;
+		}
+
+		// Forward Plus Temp
+		if (mat->UseShader->GetName() == "HeatMap")
+		{
+			RenderPassID = 3;
+		}
+
+
 
 
 		counter++;
@@ -802,6 +835,28 @@ namespace Frosty
 		//Add the tranform to the TransformLookUpMap
 		auto& transformMap = meshData->TransformMap;
 		s_TransformLookUpMap.emplace(transformID, &transformMap);
+
+		//For Shadows
+		if (mat->CastsShadows)
+		{
+			//Check if the shader key is already in the map, if not add it.
+			std::string ShaderName = "ShadowMap";
+			if (s_RenderPas[0].ShaderMap.find(ShaderName) == s_RenderPas[0].ShaderMap.end())
+			{
+				s_RenderPas[0].ShaderMap.emplace(ShaderName, FY_NEW ShaderData);
+
+			}
+			auto& shaderData2 = s_RenderPas[0].ShaderMap.at(ShaderName);
+			shaderData2->Shader = AssetManager::GetShader(ShaderName);
+
+
+
+			//Check if the material key is already in the map, if not add it.
+			if (shaderData2->MaterialMap.find(matID) == shaderData2->MaterialMap.end())
+			{
+				shaderData2->MaterialMap.emplace(matID, materialData);
+			}
+		}
 
 		s_RenderPas[RenderPassID].ShaderMap; //For debugging
 	}
@@ -931,6 +986,7 @@ namespace Frosty
 			}
 		}
 	}
+
 	void Renderer::CreateDepthMap()
 	{
 		glGenFramebuffers(1, &s_ShadowMapFBO);
@@ -949,7 +1005,7 @@ namespace Frosty
 		{
 			err = 0;
 		}
-		else
+		else 
 		{
 			err = -1;
 		}
@@ -959,5 +1015,47 @@ namespace Frosty
 		glDrawBuffer(GL_NONE);
 		glReadBuffer(GL_NONE);
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	}
+
+	void Renderer::CreateFullScreenQuad()
+	{
+		struct Pos2UV
+		{
+			float x, y;
+			float u, v;
+		};
+		Pos2UV myQuad[6] =
+		{
+			-1,-1, 0, 0,
+			-1,+1, 0, 1,
+			+1,+1, 1, 1,
+			-1,-1, 0, 0,
+			+1,+1, 1, 1,
+			+1,-1, 1, 0,
+		};
+
+		glGenVertexArrays(1, &s_FullScreenQuad);
+		glBindVertexArray(s_FullScreenQuad);
+
+		glEnableVertexAttribArray(0);
+		glEnableVertexAttribArray(1);
+
+		glGenBuffers(1, &s_FullScreenQuad);
+		glBindBuffer(GL_ARRAY_BUFFER, s_FullScreenQuad);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(myQuad), myQuad, GL_STATIC_DRAW);
+
+		glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(Pos2UV), BUFFER_OFFSET(0));
+		glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(Pos2UV), BUFFER_OFFSET(sizeof(float) * 2));
+	}
+
+	void Renderer::DrawToFullScreenQuad(unsigned int TextureID)
+	{
+		glDisable(GL_DEPTH_TEST);
+		AssetManager::GetShader("DebugQuad")->Bind();
+		glBindVertexArray(s_FullScreenQuad);
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, TextureID);
+		glDrawArrays(GL_TRIANGLES, 0, 6);
+		glEnable(GL_DEPTH_TEST);
 	}
 }
