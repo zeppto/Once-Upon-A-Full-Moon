@@ -403,8 +403,8 @@ namespace Frosty
 		shader->Bind();
 		vertexArray->Bind();
 		auto& window = Frosty::Application::Get().GetWindow();
-		float width = window.GetWidth();
-		float height = window.GetHeight();
+		float width = float(window.GetWidth());
+		float height = float(window.GetHeight());
 		glm::mat4 projection = glm::ortho(0.0f, width, 0.0f, height);
 
 		shader->UploadUniformMat4("projection", projection);
@@ -457,8 +457,8 @@ namespace Frosty
 		shader->Bind();
 		vertexArray->Bind();
 		auto& window = Frosty::Application::Get().GetWindow();
-		float width = window.GetWidth();
-		float height = window.GetHeight();
+		float width = float(window.GetWidth());
+		float height = float(window.GetHeight());
 		glm::mat4 projection = glm::ortho(0.0f, width, 0.0f, height);
 		shader->UploadUniformMat4("projection", projection);
 		

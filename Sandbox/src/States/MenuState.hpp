@@ -14,6 +14,7 @@ namespace MCS
 		virtual void OnUpdate() override;
 	private:
 		void InitiateSystems();
+		void InitiateObjects();
 		void InitiateButtons();
 	private:
 		Frosty::Application* m_App = nullptr;

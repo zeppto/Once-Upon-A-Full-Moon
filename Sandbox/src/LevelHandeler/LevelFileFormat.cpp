@@ -992,7 +992,7 @@ namespace MCS
 
 		if (planeTransform != nullptr)
 		{
-			uint32_t EntityGroup = CurrentGroup ? m_World->GetCurrentRoom() : ~m_World->GetCurrentRoom() & (uint32_t)1;
+			uint32_t EntityGroup = CurrentGroup ? uint32_t(m_World->GetCurrentRoom()) : ~uint32_t(m_World->GetCurrentRoom()) & (uint32_t)1;
 			Frosty::EventBus::GetEventBus()->Publish<Frosty::InitiateGridEvent>(Frosty::InitiateGridEvent(planeTransform, EntityGroup));
 		}
 		else
