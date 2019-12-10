@@ -210,7 +210,6 @@ namespace Frosty
 
 		float radius = glm::abs(glm::length(glm::vec2(x, y) - glm::vec2(lightSphereSurfaceX, lightSphereSurfaceY)));
 		radius *= 2;
-		radius = 500.f;
 
 		return glm::vec3(x, y, radius);	// radius is *2 because I suspect that CheckCollision is actually using the diameter instead of the circle radius
 	}
