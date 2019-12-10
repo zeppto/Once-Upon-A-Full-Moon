@@ -150,13 +150,13 @@ namespace MCS
 		{
 			if (!m_haveStartedMoving)
 			{
-				FY_INFO("The boss have started moving {0}", "!");
+			//	FY_INFO("The boss have started moving {0}", "!");
 				Room chekRoom = m_Map.getRoom(m_BossPos);
 				if (!chekRoom.Ocupide)
 				{
 					m_BossPos = m_Map.getLastCreatedLevelPos();
 				}
-				FY_INFO("The boss starts on ({0}, {1})", m_BossPos.x, m_BossPos.y);
+			//	FY_INFO("The boss starts on ({0}, {1})", m_BossPos.x, m_BossPos.y);
 				m_haveStartedMoving = true;
 			}
 
@@ -175,7 +175,7 @@ namespace MCS
 				}
 
 				m_BossTimer = time + estematedBossRoomTime;
-				FY_INFO("It takes {0} sec until boss moves", estematedBossRoomTime);
+			//	FY_INFO("It takes {0} sec until boss moves", estematedBossRoomTime);
 				if (m_PlayerCoords != m_BossPos)
 				{
 					if (m_RoomswhithBait.size() > 0)
@@ -208,7 +208,7 @@ namespace MCS
 						{
 							m_BossPos = m_BossRememberdPath.pathToGo[m_BossRememberdPath.lastTile];
 							m_BossRememberdPath.lastTile++;
-							FY_INFO("The boss is moving to ({0}, {1})", m_BossPos.x, m_BossPos.y);
+				//			FY_INFO("The boss is moving to ({0}, {1})", m_BossPos.x, m_BossPos.y);
 							FY_INFO("");
 
 						}

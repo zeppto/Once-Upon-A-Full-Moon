@@ -10,8 +10,8 @@ namespace MCS
 
 	glm::vec3 Pathfinding::FindPath(const glm::vec3& startPos, const glm::vec3& targetPos)
 	{
-		Frosty::CellNode startNode = m_Grid->WorldPointToNode(startPos);
-		Frosty::CellNode targetNode = m_Grid->WorldPointToNode(targetPos);
+		auto& startNode = m_Grid->WorldPointToNode(startPos);
+		auto& targetNode = m_Grid->WorldPointToNode(targetPos);
 
 		std::priority_queue<Frosty::CellNode> openSet;
 		std::vector<Frosty::CellNode> closedSet;
@@ -39,8 +39,9 @@ namespace MCS
 				}
 				while (!closedSet.empty())
 				{
-					closedSet.back().GCost = 0;
-					closedSet.back().HCost = 0;
+					Frosty::CellNode* tempNode = m_Grid->GetNode(closedSet.back().GridX, closedSet.back().GridY);
+					tempNode->GCost = 0;
+					tempNode->HCost = 0;
 					closedSet.erase(closedSet.begin() + closedSet.size() - 1);
 				}
 
@@ -78,7 +79,35 @@ namespace MCS
 			}
 		}
 
-		return glm::vec3(0.0f);
+		while (!openSet.empty())
+		{
+			Frosty::CellNode* tempNode = m_Grid->GetNode(openSet.top().GridX, openSet.top().GridY);
+			tempNode->ExistsInOpenSet = false;
+			tempNode->HCost = 0;
+			tempNode->GCost = 0;
+			openSet.pop();
+		}
+		while (!closedSet.empty())
+		{
+			//closedSet.back().GCost = 0;
+			//closedSet.back().HCost = 0;
+			//closedSet.erase(closedSet.begin() + closedSet.size() - 1);
+
+			Frosty::CellNode* tempNode = m_Grid->GetNode(closedSet.back().GridX, closedSet.back().GridY);
+			tempNode->GCost = 0;
+			tempNode->HCost = 0;
+			closedSet.erase(closedSet.begin() + closedSet.size() - 1);
+
+		}
+
+		m_Grid->CheckHCost();
+
+		startNode.GCost = 0;
+		startNode.HCost = 0;
+		targetNode.GCost = 0;
+		targetNode.HCost = 0;
+
+		return glm::vec3(-1.0f);
 	}
 
 	int32_t Pathfinding::GetDistance(Frosty::CellNode* nodeA, Frosty::CellNode* nodeB) const
@@ -100,6 +129,9 @@ namespace MCS
 
 		std::vector<Frosty::CellNode*> path;
 		Frosty::CellNode* currentNode = targetNode;
+		currentNode->GCost = 0;
+		currentNode->HCost = 0;
+
 
 		while (*currentNode != *startNode)
 		{
@@ -113,6 +145,7 @@ namespace MCS
 
 		m_Grid->DrawPathCells(path);
 
+		m_Grid->CheckHCost();
 		return path[0]->WorldPosition;
 	}
 	
