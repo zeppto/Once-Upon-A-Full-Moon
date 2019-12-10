@@ -644,6 +644,13 @@ namespace Frosty
 			int WaterHealing{ 0 };							// Water (+ Heal)
 			bool IsFullyUpgraded{ false };
 
+			//For HUD
+			bool HasDoneFireSprite{ false };
+			bool HasDoneEarthSprite{ false };
+			bool HasDoneWindSprite{ false };
+			bool HasDoneWaterSprite{ false };
+
+
 			// Special Attribute for Bow
 			float ProjectileSpeed{ 0.f };
 
@@ -726,6 +733,7 @@ namespace Frosty
 			int DropBaitKey{ FY_KEY_Q };
 
 			int Score{ 0 };
+			
 			float PickUpTextTime{ 2.0f };
 			float PickUpTextTimer{ Frosty::Time::CurrentTime() };
 
@@ -734,6 +742,15 @@ namespace Frosty
 
 			static const int COOLDOWN = 375;
 			float CurrentCooldown{ 0.0f };
+
+			float ElementMoveTime{ 1.0f };
+			float ElementMoveTimer{ Frosty::Time::CurrentTime() };
+
+			float ElementDisplayTime{ 2.0f };
+			float ElementDisplayTimer{ Frosty::Time::CurrentTime() };
+
+			float BossFearEffectTime{ 2.0f };
+			float BossFearEffectTimer{ Frosty::Time::CurrentTime() };
 
 			CPlayer() = default;
 			CPlayer(CWeapon* weapon) : Weapon(weapon) { }
@@ -823,7 +840,7 @@ namespace Frosty
 
 			// BAIT - chunks of meat used to distract the wolf
 			int MaxBaitAmount{ 5 };
-			int CurrentBaitAmount{ 0 };
+			int CurrentBaitAmount{ 3 };
 			float BaitCooldown{ 1.f };
 			float BaitTimer{ Frosty::Time::CurrentTime() };
 

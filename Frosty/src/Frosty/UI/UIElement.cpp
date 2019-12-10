@@ -1,5 +1,6 @@
 #include "fypch.hpp"
 #include "UIElement.h"
+#include "Frosty/Core/Application.hpp"
 
 namespace Frosty {
 

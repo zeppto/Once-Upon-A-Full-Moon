@@ -56,12 +56,16 @@ namespace Frosty
 	{
 		m_SpritesCount = count;
 	}
-
+	glm::vec2 test;
 	bool UILayout::AddText(glm::vec2 pos, std::string text, glm::vec3 color, float fontScale, std::string font)
 	{
 		if (m_SetTexts < m_TextsCount)
 		{
 			texts[m_SetTexts].SetPosition(pos);
+			test.x = 12;
+			test.y = 8734;
+			test = texts[m_SetTexts].GetPosition();
+			test;
 			texts[m_SetTexts].SetText(text);
 			texts[m_SetTexts].SetColor(color);
 			texts[m_SetTexts].SetFont(font);
@@ -77,7 +81,7 @@ namespace Frosty
 	}
 
 	bool UILayout::AddSprite(glm::vec2 pos, glm::vec2 scale, std::string image, glm::vec4 color) {
-		
+
 		if (m_SetSprites < m_SpritesCount)
 		{
 			sprites[m_SetSprites].SetTranslateSprite(pos);
