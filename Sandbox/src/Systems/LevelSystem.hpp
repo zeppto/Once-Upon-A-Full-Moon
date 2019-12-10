@@ -64,6 +64,7 @@ namespace MCS
 		Frosty::ECS::CGUI* GetPlayerGUI();
 		void OnBossSpawnedEvent(Frosty::BossSpawnedEvent& e);
 		void OnBaitPlacedEvent(Frosty::BaitPlacedEvent& e);
+		void BossroomBlock(glm::ivec2 room);
 
 		void randomBossMovment();
 	private:
