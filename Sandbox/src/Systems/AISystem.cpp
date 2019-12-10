@@ -495,6 +495,7 @@ namespace MCS
 	{
 		// Boss Weapon
 		auto& bossWeapon = m_World->CreateEntity({ 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 1.0f, 1.0f, 1.0f });
+		m_World->AddToGroup(bossWeapon, true);
 		auto& bossWeaponComp = m_World->AddComponent<Frosty::ECS::CWeapon>(bossWeapon, Frosty::ECS::CWeapon::WeaponType::Sword, 1, 2.0f);
 		bossWeaponComp.LVL1AttackCooldown = 3.0f;
 		bossWeaponComp.MaxAttackRange = 15.0f;
@@ -503,6 +504,7 @@ namespace MCS
 
 		// Boss
 		auto& boss = m_World->CreateEntity(m_BossSpawn, { 0.0f, 0.0f, 0.0f }, { 1.5f, 1.5f, 1.5f });
+		m_World->AddToGroup(boss, true);
 		auto& bossTransform = m_World->GetComponent<Frosty::ECS::CTransform>(boss);
 		m_World->AddComponent<Frosty::ECS::CMesh>(boss, Frosty::AssetManager::GetMesh("Werewolf"));
 		m_World->AddComponent<Frosty::ECS::CAnimController>(boss).currAnim = Frosty::AssetManager::GetAnimation("Werewolf_Idle");
