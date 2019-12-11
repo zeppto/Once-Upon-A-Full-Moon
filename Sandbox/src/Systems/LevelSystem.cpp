@@ -223,6 +223,7 @@ namespace MCS
 						if (m_BossPos == m_PlayerCoords)
 						{
 							Frosty::EventBus::GetEventBus()->Publish<Frosty::SpawnBossEvent>(Frosty::SpawnBossEvent());
+							BossroomBlock(m_BossPos);
 							FY_INFO("The boss found the player!");
 							FY_INFO("");
 						}
@@ -271,6 +272,7 @@ namespace MCS
 						if (m_BossPos == m_PlayerCoords)
 						{
 							Frosty::EventBus::GetEventBus()->Publish<Frosty::SpawnBossEvent>(Frosty::SpawnBossEvent());
+							BossroomBlock(m_BossPos);
 							FY_INFO("The boss found the player!");
 							FY_INFO("");
 						}
@@ -978,6 +980,45 @@ namespace MCS
 			m_World->AddComponent<Frosty::ECS::CHealthBar>(enemyA, glm::vec3(0.0f, 10.0f, 0.0f));
 			m_World->AddComponent<Frosty::ECS::CDropItem>(enemyA);
 		}
+
+		//wall of fire
+		if (e.GetEntityType() == 24)
+		{
+			for (int i = 0; i < 6; i++)
+			{
+				auto& fire = m_World->CreateEntity({ 150.0f, 1.2f, -20.0f + (10.0f * i) }, { 0.0f, 90.0f, 0.0f }, { 1.0f, 0.2f, 0.5f });
+				m_World->AddComponent<Frosty::ECS::CLight>(fire, Frosty::ECS::CLight::LightType::Point, 1.0f, glm::vec3(0.99f, 0.4f, 0.1f), 20.0f, glm::vec3(0.f, 1.0f, 0.f));
+				auto& fireParticel = m_World->AddComponent<Frosty::ECS::CParticleSystem>(fire, "Particles", "fire", 100, glm::vec3(1.0f, 0.0f, 0.0f), 17.0f);
+				fireParticel.StaticColor = false;
+				fireParticel.SystemEndColor = glm::vec3(1.0f, 0.82f, 0.0f);
+				fireParticel.RandomStartPos = true;
+				fireParticel.StartParticleSize = 5.0f;
+				fireParticel.EndParticleSize = 1.0f;
+				fireParticel.EmitRate = 0.02f;
+				fireParticel.EmitCount = 1;
+				fireParticel.MaxLifetime = 3.5f;
+				fireParticel.MinLifetime = 3.5f;
+				fireParticel.FadeInTreshold = 2.683f;
+				fireParticel.FadeTreshold = 1.124f;
+
+				auto& smoke = m_World->CreateEntity({ 150.0f, 9.0f, -20.0f + (10.0f * i)}, { 0.0f, 90.0f, 0.0f }, { 1.0f, 0.2f, 0.5f });
+				auto& particel = m_World->AddComponent<Frosty::ECS::CParticleSystem>(smoke, "Particles", "particleSmoke", 24, glm::vec3(0.48f, 0.28f, 0.28f), 18.0f);
+				particel.SystemEndColor = glm::vec3(0.36f, 0.35f, 0.26f);
+				//particel.RandomDirection = true;
+				//particel.randSpread = 5.0f;
+				//particel.randMainDir = glm::vec3(0, 1, 0);
+				particel.StaticColor = false;
+				particel.RandomStartPos = true;
+				particel.StartParticleSize = 2.0f;
+				particel.EndParticleSize = 0.0f;
+				particel.EmitRate = 0.2f;
+				particel.EmitCount = 2;
+				particel.MaxLifetime = 3.0f;
+				particel.MinLifetime = 2.0f;
+				particel.FadeInTreshold = 2.573f;
+				particel.FadeTreshold = 2.195f;
+			}
+		}
 	}
 
 	void LevelSystem::OnPlayerUpdateCoordEvent(Frosty::UpdatePlayerRoomCoordEvent& e)
@@ -985,6 +1026,7 @@ namespace MCS
 		if (m_PlayerCoords != e.GetCoords())
 		{
 		//	FY_INFO("Changed Room");
+			FY_INFO("player changed Room to ({0}, {1})", e.GetCoords().x, e.GetCoords().y);
 			m_OtherRoom = m_PlayerCoords;
 			FlipRoomNames();
 			m_World->ChangeCurrentRoom();
@@ -1225,6 +1267,144 @@ namespace MCS
 		if (!alradyExist)
 		{
 			m_RoomswhithBait.push_back(m_PlayerCoords);
+		}
+	}
+
+	void LevelSystem::BossroomBlock(glm::ivec2 room)
+	{
+		Room currentRoom = m_Map.getRoom(room);
+		float offsetX = (room.x - 10) * 300;
+		float offsetY = (room.y - 15) * 300;
+
+		glm::vec3 pos = glm::vec3(offsetX, 0, offsetY);
+		glm::vec3 rotation = glm::vec3(0, 0, 0);
+		glm::vec3 scaleHittbox = glm::vec3(0, 0, 0);
+		glm::ivec2 roomCoord = room;
+		for (int j = 0; j < 4; j++)
+		{
+			if (currentRoom.sideExits[j])
+			{
+				pos = glm::vec3(offsetX, 0, offsetY);
+				glm::vec3 treePos = pos;
+				if (j == 0)
+				{
+					roomCoord.y -= 1;
+					pos += glm::vec3(0.0f, 0.0f, -300.0f);
+					treePos += glm::vec3(0.0f, 0.0f, -160.0f);
+					rotation = glm::vec3(0, 90, 0);
+					scaleHittbox = glm::vec3(100.0f, 20.0f, 24.0f);
+				}
+				if (j == 1)
+				{
+					roomCoord.y += 1;
+					pos += glm::vec3(0.0f, 0.0f, 300.0f);
+					treePos += glm::vec3(0.0f, 0.0f, 160.0f);
+					rotation = glm::vec3(0, 90, 0);
+					scaleHittbox = glm::vec3(100.0f, 20.0f, 24.0f);
+				}
+				if (j == 2)
+				{
+					roomCoord.x -= 1;
+					pos += glm::vec3(-300.0f, 0.0f, 0.0f);
+					treePos += glm::vec3(-160.0f, 0.0f, 0.0f);
+					rotation = glm::vec3(0, 0, 0);
+					scaleHittbox = glm::vec3(24.0f, 20.0f, 100.0f);
+				}
+				if (j == 3)
+				{
+					roomCoord.x += 1;
+					pos += glm::vec3(300.0f, 0.0f, 0.0f);
+					treePos += glm::vec3(160.0f, 0.0f, 0.0f);
+					rotation = glm::vec3(0, 180, 0);
+					scaleHittbox = glm::vec3(24.0f, 20.0f, 100.0f);
+				}
+				if (roomCoord != m_OtherRoom)
+				{
+					//auto& mushroom = m_World->CreateEntity(treePos, rotation, { 1.0f, 1.0f, 1.0f }, true);
+					//auto& mushroomTransform = m_World->GetComponent<Frosty::ECS::CTransform>(mushroom);
+					//m_World->AddComponent<Frosty::ECS::CMesh>(mushroom, Frosty::AssetManager::GetMesh("treeBunchWall"));
+					//auto& material = m_World->AddComponent<Frosty::ECS::CMaterial>(mushroom, Frosty::AssetManager::GetShader("Texture2D"), true);
+					//material.DiffuseTexture = Frosty::AssetManager::GetTexture2D("Tree7");
+					//auto& hitbox = m_World->CreateEntity(treePos, { 0.0f, 0.0f, 0.0f }, scaleHittbox, true);
+					//auto& hitboxTransform = m_World->GetComponent<Frosty::ECS::CTransform>(hitbox);
+					//m_World->AddComponent<Frosty::ECS::CPhysics>(hitbox, Frosty::AssetManager::GetBoundingBox("pCube1"), hitboxTransform.Scale, 0.0f);
+
+					auto& ground = m_World->CreateEntity();
+					auto& tranform = m_World->GetComponent<Frosty::ECS::CTransform>(ground);
+					tranform.Position = pos;
+					tranform.Scale = glm::vec3(300, 1.0f, 300);
+					m_World->AddComponent<Frosty::ECS::CMesh>(ground, Frosty::AssetManager::GetMesh("pPlane1"));
+					auto& testMaterial = m_World->AddComponent<Frosty::ECS::CMaterial>(ground, Frosty::AssetManager::GetShader("BlendShader"));
+					testMaterial.DiffuseTexture = Frosty::AssetManager::GetTexture2D("ground_test2");
+					testMaterial.NormalTexture = Frosty::AssetManager::GetTexture2D("ground_test_normal");
+					testMaterial.BlendMapTexture = Frosty::AssetManager::GetTexture2D("black");
+					testMaterial.BlendTexture1 = Frosty::AssetManager::GetTexture2D("ground_test2");
+					testMaterial.BlendTexture1 = Frosty::AssetManager::GetTexture2D("ground_test2");
+				}
+				//else
+				//{
+					//hittbox
+					auto& hitbox = m_World->CreateEntity(treePos, { 0.0f, 0.0f, 0.0f }, scaleHittbox, true);
+					auto& hitboxTransform = m_World->GetComponent<Frosty::ECS::CTransform>(hitbox);
+					m_World->AddComponent<Frosty::ECS::CPhysics>(hitbox, Frosty::AssetManager::GetBoundingBox("pCube1"), hitboxTransform.Scale, 0.0f);
+					//for fire block
+					for (int i = 0; i < 6; i++)
+					{
+						pos = glm::vec3(offsetX, 0, offsetY);
+						rotation = glm::vec3(0, 0, 0);
+						if (j == 0)
+						{
+							pos += glm::vec3(-20.0f + (10.0f * i), 1.2f, -150.0f);
+						}
+						if (j == 1)
+						{
+							pos += glm::vec3(-20.0f + (10.0f * i), 1.2f, 150.0f);
+						}
+						if (j == 2)
+						{
+							pos += glm::vec3(-150.0f, 1.2f, -20.0f + (10.0f * i));
+							rotation = glm::vec3(0.0f, 90.0f, 0.0f);
+						}
+						if (j == 3)
+						{
+							pos += glm::vec3(150.0f, 1.2f, -30.0f + (10.0f * i));
+							rotation = glm::vec3(0.0f, 90.0f, 0.0f);
+						}
+
+						auto& fire = m_World->CreateEntity(pos, rotation, { 1.0f, 0.2f, 0.5f });
+						m_World->AddComponent<Frosty::ECS::CLight>(fire, Frosty::ECS::CLight::LightType::Point, 1.0f, glm::vec3(0.99f, 0.4f, 0.1f), 20.0f, glm::vec3(0.f, 1.0f, 0.f));
+						auto& fireParticel = m_World->AddComponent<Frosty::ECS::CParticleSystem>(fire, "Particles", "fire", 100, glm::vec3(1.0f, 0.0f, 0.0f), 17.0f);
+						fireParticel.StaticColor = false;
+						fireParticel.SystemEndColor = glm::vec3(1.0f, 0.82f, 0.0f);
+						fireParticel.RandomStartPos = true;
+						fireParticel.StartParticleSize = 5.0f;
+						fireParticel.EndParticleSize = 1.0f;
+						fireParticel.EmitRate = 0.02f;
+						fireParticel.EmitCount = 1;
+						fireParticel.MaxLifetime = 3.5f;
+						fireParticel.MinLifetime = 3.5f;
+						fireParticel.FadeInTreshold = 2.683f;
+						fireParticel.FadeTreshold = 1.124f;
+
+						auto& smoke = m_World->CreateEntity(pos, rotation, { 1.0f, 0.2f, 0.5f });
+						auto& particel = m_World->AddComponent<Frosty::ECS::CParticleSystem>(smoke, "Particles", "particleSmoke", 24, glm::vec3(0.48f, 0.28f, 0.28f), 18.0f);
+						particel.SystemEndColor = glm::vec3(0.36f, 0.35f, 0.26f);
+						//particel.RandomDirection = true;
+						//particel.randSpread = 5.0f;
+						//particel.randMainDir = glm::vec3(0, 1, 0);
+						particel.StaticColor = false;
+						particel.RandomStartPos = true;
+						particel.StartParticleSize = 2.0f;
+						particel.EndParticleSize = 0.0f;
+						particel.EmitRate = 0.2f;
+						particel.EmitCount = 2;
+						particel.MaxLifetime = 3.0f;
+						particel.MinLifetime = 2.0f;
+						particel.FadeInTreshold = 2.573f;
+						particel.FadeTreshold = 2.195f;
+					}
+				//}
+			}
 		}
 	}
 
