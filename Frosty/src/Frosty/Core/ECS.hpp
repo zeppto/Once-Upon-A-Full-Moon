@@ -566,28 +566,28 @@ namespace Frosty
 			LightType Type{ LightType::Point };
 			glm::vec3 Color{ 1.0f, 0.96f, 0.84f };
 			glm::vec3 Direction{ 1.0f, 0.0f, 1.0f };
-			float Radius{ 20.0f };
+			float Radius{ 20.0f }; 
 			float Strength{ 1.0f };
 
 			// For ShadowMap
 		private:
-			struct Camera
-			{
+			struct Camera  
+			{ 
 				glm::vec3 Front{ 0.f, 0.f, -1.f };
-				glm::vec3 Background{ 0.2f, 0.2f, 0.2f };
-				float FieldOfView{ 90.0f };
-				float Near{ 0.03f };
+				glm::vec3 Background{ 0.2f, 0.2f, 0.2f }; 
+				float FieldOfView{ 90.0f }; 
+				float Near{ 0.03f }; 
 				float Far{ 300.0f };
-				glm::mat4 ViewMatrix{ 1.0f };
+				glm::mat4 ViewMatrix{ 1.0f }; 
 				glm::mat4 ProjectionMatrix{ 1.0f };
-				glm::mat4 ViewProjectionMatrix{ 1.0f };
-
-				Camera() = default;
+				glm::mat4 ViewProjectionMatrix{ 1.0f }; 
+				  
+				Camera() = default; 
 				Camera(glm::vec3 front, float fov, float aspect, float zNear, float zFar)
 					: Front(front), FieldOfView(fov), Near(zNear), Far(zFar), ProjectionMatrix(glm::perspective(glm::radians(fov), aspect, zNear, zFar)) { }
 			};
 		public:
-			std::vector<Camera> Cameras;
+			std::vector<Camera> Cameras; 
 			bool HasCamera{ false };
 
 			CLight() = default;

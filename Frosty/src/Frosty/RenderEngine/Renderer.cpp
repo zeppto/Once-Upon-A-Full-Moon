@@ -82,18 +82,27 @@ namespace Frosty
 				//Set most uniforms here
 				shaderData->Shader->UploadUniformMat4("u_ViewProjection", s_SceneData->GameCamera.ViewProjectionMatrix);
 				shaderData->Shader->UploadUniformFloat3("u_CameraPosition", s_SceneData->GameCamera.CameraPosition);
+
+				/*for (auto& DLightIt : s_SceneData->DirectionalLights)
+				{
+					shaderData->Shader->UploadUniformMat4("u_ViewProjection", s_SceneData->DirectionalLights[DLightIt.first].DirectionalLight->Cameras[0].ViewProjectionMatrix);
+
+				}*/
 				//if (s_SceneData->DirectionalLights.size() > 0)
 				//{
 				//	shaderData->Shader->UploadUniformMat4("u_ViewProjection", s_SceneData->DirectionalLights[0].DirectionalLight->Cameras[0].ViewProjectionMatrix);
 				//	shaderData->Shader->UploadUniformFloat3("u_CameraPosition", s_SceneData->DirectionalLights[0].Transform->Position);
-				//}
+				//} 
 
 				if (shaderData->Shader->GetName() == "Texture2D")
 				{
 					glEnable(GL_BLEND);
-					glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+					glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); 
 					RenderCommand::EnableBackfaceCulling();
 					culling = true;
+
+					glActiveTexture(GL_TEXTURE10);
+					glBindTexture(GL_TEXTURE_2D, s_ShadowMap);
 				}
 				else if (shaderData->Shader->GetName() == "Animation")
 				{
@@ -104,23 +113,31 @@ namespace Frosty
 					culling = true;
 				}
 				else if (shaderData->Shader->GetName() == "FlatColor")
+				{ 
+					RenderCommand::EnableBackfaceCulling(); 
+					culling = true;  
+				}
+				else if (shaderData->Shader->GetName() == "BlendShader")  
 				{
 					RenderCommand::EnableBackfaceCulling();
 					culling = true;
-				}
-				else if (shaderData->Shader->GetName() == "BlendShader")
+					glActiveTexture(GL_TEXTURE10);
+					glBindTexture(GL_TEXTURE_2D, s_ShadowMap);
+				}  
+				else if (shaderData->Shader->GetName() == "ShadowMap" ) 
 				{
-					RenderCommand::EnableBackfaceCulling();
-					culling = true;
-				}
-				else if (shaderData->Shader->GetName() == "ShadowMap")
-				{
-					RenderCommand::EnableBackfaceCulling();
+					RenderCommand::EnableBackfaceCulling(); 
 					culling = true;
 
 					glViewport(0, 0, SHADOW_WIDTH, SHADOW_HEIGHT);
 					glBindFramebuffer(GL_FRAMEBUFFER, s_ShadowMapFBO);
 					glClear(GL_DEPTH_BUFFER_BIT);
+					for (auto& DLightIt : s_SceneData->DirectionalLights)
+					{
+						shaderData->Shader->UploadUniformMat4("u_LightSpaceMatrix", s_SceneData->DirectionalLights[DLightIt.first].DirectionalLight->Cameras[0].ViewProjectionMatrix);
+
+					}
+
 				}
 				else
 				{
@@ -139,20 +156,23 @@ namespace Frosty
 					PointLI++;
 				}
 
-				// Directional Lights
+				// Directional Lights  
 				shaderData->Shader->UploadUniformInt("u_TotalDirectionalLights", (int)s_SceneData->DirectionalLights.size());
 				int DirectLI = 0;
 				for (auto& DLightIt : s_SceneData->DirectionalLights)
 				{
 					shaderData->Shader->UploadUniformFloat3Array("u_DirectionalLights[" + std::to_string(DirectLI) + "].Color", s_SceneData->DirectionalLights[DLightIt.first].DirectionalLight->Color);
+					shaderData->Shader->UploadUniformFloat3Array("u_DirectionalLights[" + std::to_string(DirectLI) + "].Position", s_SceneData->DirectionalLights[DLightIt.first].Transform->Position);
 					shaderData->Shader->UploadUniformFloat3Array("u_DirectionalLights[" + std::to_string(DirectLI) + "].Direction", s_SceneData->DirectionalLights[DLightIt.first].DirectionalLight->Direction);
 					shaderData->Shader->UploadUniformFloatArray("u_DirectionalLights[" + std::to_string(DirectLI) + "].Strength", s_SceneData->DirectionalLights[DLightIt.first].DirectionalLight->Strength);
+					shaderData->Shader->UploadUniformMat4("u_DirectionalLights[" + std::to_string(DirectLI) + "].LightSpaceMatrix", s_SceneData->DirectionalLights[DLightIt.first].DirectionalLight->Cameras[0].ViewProjectionMatrix);
+					
 					DirectLI++;
 				}
 
-				shaderData->Shader->UploadUniformInt("u_LightCulling", s_LightCulling);
-				if (s_LightCulling)
-				{
+				shaderData->Shader->UploadUniformInt("u_LightCulling", s_LightCulling); 
+				if (s_LightCulling) 
+				{ 
 					// LightIndex
 					for (int i = 0; i < int(s_ForwardPlus.GetLightIndexList().size()); i++)
 					{
@@ -216,6 +236,9 @@ namespace Frosty
 					{
 						materialData->Material->BlendTexture1->Bind(5);
 					}
+
+					
+					
 
 					if (materialData->Material->HasTransparency)
 					{
@@ -326,7 +349,7 @@ namespace Frosty
 
 	void Renderer::SetCamera(const glm::vec3& pos, const glm::mat4& view, const glm::mat4& projection)
 	{
-		s_SceneData->GameCamera.CameraPosition = pos;
+		s_SceneData->GameCamera.CameraPosition = pos; 
 		s_SceneData->GameCamera.ViewMatrix = view;
 		s_SceneData->GameCamera.ProjectionMatrix = projection;
 		s_SceneData->GameCamera.ViewProjectionMatrix = projection * view;
