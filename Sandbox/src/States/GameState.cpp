@@ -62,8 +62,11 @@ namespace MCS
 	void GameState::InitiateLight()
 	{
 		auto& world = Frosty::Application::Get().GetWorld();
+		auto& camEntity = world->GetSceneCamera();
+		auto& camTransformComp = world->GetComponent<Frosty::ECS::CTransform>(camEntity);
+
 		auto& light = world->CreateEntity({ 0.0f, 0.0f, 0.0f }, { 120.0f, 8.0f, -10.0f });
-		auto& DLight = world->AddComponent<Frosty::ECS::CLight>(light, Frosty::ECS::CLight::LightType::Directional, 0.9f, glm::vec3(0.5f, 0.6f, 1.f));
+		auto& DLight = world->AddComponent<Frosty::ECS::CLight>(light, Frosty::ECS::CLight::LightType::Directional, 0.9f, glm::vec3(0.5f, 0.6f, 1.f), &camTransformComp, glm::vec3(40.f, 5.f, 20.f), true);
 		DLight.Direction = glm::vec3(-1.0f, -0.8, -1.0);
 	}
 
