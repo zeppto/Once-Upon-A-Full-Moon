@@ -2,6 +2,7 @@
 #include "States/MenuState.hpp"
 #include "States/GameState.hpp"
 #include "Frosty/Core/Application.hpp"
+#include "Frosty/Events/AbilityEvent.hpp"
 
 #include "Frosty/API/AssetManager/AssetManager.hpp"
 #include "Frosty/Events/CombatEvent.hpp"
@@ -25,6 +26,7 @@
 #include "Systems/AnimationSystem.hpp"
 #include "Systems/AISystem.hpp"
 #include "Systems/WitchCircleSystem.hpp"
+#include "Systems/MediaSystem.h"
 
 namespace MCS
 {
@@ -53,6 +55,7 @@ namespace MCS
 			InitiateObjects();
 			m_App->SetMenuLoad(true);
 		}
+
 		if (!m_ButtonsLoaded)
 		{
 			InitiateButtons();
@@ -78,6 +81,9 @@ namespace MCS
 
 					world->PlayGame();
 					m_App->GetStateMachine().AddState(Frosty::StateRef(FY_NEW(GameState)), true);
+
+					Frosty::EventBus::GetEventBus()->Publish<Frosty::StopMediaEvent>(Frosty::StopMediaEvent());
+					Frosty::EventBus::GetEventBus()->Publish<Frosty::PlayMusicEvent>(Frosty::PlayMusicEvent("assets/music/Atmo_Skog.mp3", 1.0f));
 				}
 			}
 			else if (x > 860.f && x < 1050.0f && y > 445.0f && y < 500.0f)
@@ -188,6 +194,7 @@ namespace MCS
 		world->AddSystem<GUISystem>();
 		world->AddSystem<LootingSystem>();
 		world->AddSystem<WitchCircleSystem>();
+		world->AddSystem<MediaSystem>();
 
 		world->Awake();
 		particleSystem->AttachGameCamera(&world->GetComponent<Frosty::ECS::CTransform>(world->GetSceneCamera()));
@@ -444,7 +451,6 @@ namespace MCS
 
 		//uiLayout.AddSprite(glm::vec2(25.0f + testOffset * 0, 620.0f), glm::vec2(1, 1), "higlightHart", glm::vec4(1.0f));
 		world->AddComponent<Frosty::ECS::CGUI>(player, uiLayout);
-
 
 
 		////					<<<		FORWARD PLUS TESTING	>>>		plz don't touch		~ W-_-W ~
