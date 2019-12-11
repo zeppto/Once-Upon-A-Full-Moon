@@ -208,13 +208,13 @@ namespace Frosty
 		{
 			m_BitMap.reset();
 
-			uint16_t check = fread(&m_CoordWidth, sizeof(uint16_t), 1, File);
+			uint16_t check = uint16_t(fread(&m_CoordWidth, sizeof(uint16_t), 1, File));
 			FY_CORE_ASSERT(check, "Could not read Width for Boolmap: {0}", filePath);
-			check = fread(&m_CoordHeight, sizeof(uint16_t), 1, File);
+			check = uint16_t(fread(&m_CoordHeight, sizeof(uint16_t), 1, File));
 			FY_CORE_ASSERT(check, "Could not read Heigth for Boolmap: {0}", filePath);
-			check = fread(&m_PixCoordRatio, sizeof(uint8_t), 1, File);
+			check = uint16_t(fread(&m_PixCoordRatio, sizeof(uint8_t), 1, File));
 			FY_CORE_ASSERT(check, "Could not read Pix/Coord ratio for Boolmap: {0}", filePath);
-			check = fread(&m_BitMapCount, sizeof(uint32_t), 1, File);
+			check = uint16_t(fread(&m_BitMapCount, sizeof(uint32_t), 1, File));
 			FY_CORE_ASSERT(check, "Could not read BitmapCount for Boolmap: {0}", filePath);
 
 			m_PixWidth = m_CoordWidth * m_PixCoordRatio;

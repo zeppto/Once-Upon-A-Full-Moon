@@ -10,7 +10,7 @@ struct PointLight
 	float Strength;
 };
 uniform int u_TotalPointLights;
-uniform PointLight u_PointLights[10];
+uniform PointLight u_PointLights[20];
 
 struct DirectionalLight
 {
@@ -19,7 +19,7 @@ struct DirectionalLight
 	float Strength;
 };
 uniform int u_TotalDirectionalLights;
-uniform DirectionalLight u_DirectionalLights[10];
+uniform DirectionalLight u_DirectionalLights[5];
 
 struct ForwardPlus
 {
@@ -48,65 +48,65 @@ void main()
 	vec2 viewportCoord = NDC.xy * 0.5 + 0.5;							// NDC is -1 to 1 in GL. scale for 0 to 1
 	vec2 viewportPixelCoord;
 
-	int cellLocation = (16 * int(floor(gl_FragCoord.y / 62.5f))) + int(floor(gl_FragCoord.x / 120.f));	// (gridSize * minY * cellHeight) + minX / cellWidth
-//	int cellLocation = int(16 * floor(16 * viewportCoord.y) + floor(16 * viewportCoord.x));
-	
-	if (cellLocation >= 0 && cellLocation <= 255)
-	{
-		// CellLocation x = offset		CellLocation y = size
-		for(int i = int(forwardPlus.CellLightInfo[cellLocation].x); i < int(forwardPlus.CellLightInfo[cellLocation].x) + int(forwardPlus.CellLightInfo[cellLocation].y); i++)
-		{
-			result += CalculatePointLight(u_PointLights[forwardPlus.LightIndexList[i]]);
-		}
-	}
-	color = vec4(result, 1.f);
-
-
-	// <<< HEAT MAP >>>
-
+//	int cellLocation = (16 * int(floor(gl_FragCoord.y / 62.5f))) + int(floor(gl_FragCoord.x / 120.f));	// (gridSize * minY * cellHeight) + minX / cellWidth
+	int cellLocation = int(16 * floor(16 * viewportCoord.y) + floor(16 * viewportCoord.x));
+//	
 //	if (cellLocation >= 0 && cellLocation <= 255)
 //	{
-//		if(forwardPlus.CellLightInfo[cellLocation].y == 1)
+//		// CellLocation x = offset		CellLocation y = size
+//		for(int i = int(forwardPlus.CellLightInfo[cellLocation].x); i < int(forwardPlus.CellLightInfo[cellLocation].x) + int(forwardPlus.CellLightInfo[cellLocation].y); i++)
 //		{
-//			color = vec4(0.f, 0.5f, 0.f, 1.f);
-//		}
-//		else if (forwardPlus.CellLightInfo[cellLocation].y == 2)
-//		{
-//			color = vec4(0.1f, 0.7f, 0.f, 1.f);
-//		}
-//		else if (forwardPlus.CellLightInfo[cellLocation].y == 3)
-//		{
-//			color = vec4(0.4f, 1.f, 0.f, 1.f);
-//		}
-//		else if (forwardPlus.CellLightInfo[cellLocation].y == 4)
-//		{
-//			color = vec4(0.7f, 1.f, 0.f, 1.f);
-//		}
-//		else if (forwardPlus.CellLightInfo[cellLocation].y == 5)
-//		{
-//			color = vec4(1.f, 1.f, 0.f, 1.f);
-//		}
-//		else if (forwardPlus.CellLightInfo[cellLocation].y == 6)
-//		{
-//			color = vec4(1.f, 0.7f, 0.f, 1.f);
-//		}
-//		else if (forwardPlus.CellLightInfo[cellLocation].y == 7)
-//		{
-//			color = vec4(1.f, 0.4f, 0.f, 1.f);
-//		}
-//		else if (forwardPlus.CellLightInfo[cellLocation].y == 8)
-//		{
-//			color = vec4(1.f, 0.0f, 0.f, 1.f);
-//		}
-//		else if (forwardPlus.CellLightInfo[cellLocation].y == 9)
-//		{
-//			color = vec4(1.f, 0.0f, 0.5f, 1.f);
-//		}
-//		else if (forwardPlus.CellLightInfo[cellLocation].y == 0)
-//		{
-//			color = vec4(0.f, 0.f, 0.f, 1.f);
+//			result += CalculatePointLight(u_PointLights[forwardPlus.LightIndexList[i]]);
 //		}
 //	}
+//	color = vec4(result, 1.f);
+
+
+//				 <<< HEAT MAP >>>
+
+	if (cellLocation >= 0 && cellLocation <= 255)
+	{
+		if(forwardPlus.CellLightInfo[cellLocation].y == 1)
+		{
+			color = vec4(0.f, 0.5f, 0.f, 1.f);
+		}
+		else if (forwardPlus.CellLightInfo[cellLocation].y == 2)
+		{
+			color = vec4(0.1f, 0.7f, 0.f, 1.f);
+		}
+		else if (forwardPlus.CellLightInfo[cellLocation].y == 3)
+		{
+			color = vec4(0.4f, 1.f, 0.f, 1.f);
+		}
+		else if (forwardPlus.CellLightInfo[cellLocation].y == 4)
+		{
+			color = vec4(0.7f, 1.f, 0.f, 1.f);
+		}
+		else if (forwardPlus.CellLightInfo[cellLocation].y == 5)
+		{
+			color = vec4(1.f, 1.f, 0.f, 1.f);
+		}
+		else if (forwardPlus.CellLightInfo[cellLocation].y == 6)
+		{
+			color = vec4(1.f, 0.7f, 0.f, 1.f);
+		}
+		else if (forwardPlus.CellLightInfo[cellLocation].y == 7)
+		{
+			color = vec4(1.f, 0.4f, 0.f, 1.f);
+		}
+		else if (forwardPlus.CellLightInfo[cellLocation].y == 8)
+		{
+			color = vec4(1.f, 0.0f, 0.f, 1.f);
+		}
+		else if (forwardPlus.CellLightInfo[cellLocation].y == 9)
+		{
+			color = vec4(1.f, 0.0f, 0.5f, 1.f);
+		}
+		else if (forwardPlus.CellLightInfo[cellLocation].y == 0)
+		{
+			color = vec4(0.f, 0.f, 0.f, 1.f);
+		}
+	}
 }
 
 

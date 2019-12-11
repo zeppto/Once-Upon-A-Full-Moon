@@ -2,6 +2,7 @@
 #include "States/MenuState.hpp"
 #include "States/GameState.hpp"
 #include "Frosty/Core/Application.hpp"
+#include "Frosty/Events/AbilityEvent.hpp"
 
 #include "Frosty/API/AssetManager/AssetManager.hpp"
 #include "Frosty/Events/CombatEvent.hpp"
@@ -25,6 +26,7 @@
 #include "Systems/AnimationSystem.hpp"
 #include "Systems/AISystem.hpp"
 #include "Systems/WitchCircleSystem.hpp"
+#include "Systems/MediaSystem.h"
 
 namespace MCS
 {
@@ -50,8 +52,10 @@ namespace MCS
 		{
 			world->PauseGame();
 			InitiateSystems();
+			InitiateObjects();
 			m_App->SetMenuLoad(true);
 		}
+
 		if (!m_ButtonsLoaded)
 		{
 			InitiateButtons();
@@ -77,6 +81,9 @@ namespace MCS
 
 					world->PlayGame();
 					m_App->GetStateMachine().AddState(Frosty::StateRef(FY_NEW(GameState)), true);
+
+					Frosty::EventBus::GetEventBus()->Publish<Frosty::StopMediaEvent>(Frosty::StopMediaEvent());
+					Frosty::EventBus::GetEventBus()->Publish<Frosty::PlayMusicEvent>(Frosty::PlayMusicEvent("assets/music/Atmo_Skog.mp3", 1.0f));
 				}
 			}
 			else if (x > 860.f && x < 1050.0f && y > 445.0f && y < 500.0f)
@@ -187,9 +194,15 @@ namespace MCS
 		world->AddSystem<GUISystem>();
 		world->AddSystem<LootingSystem>();
 		world->AddSystem<WitchCircleSystem>();
+		world->AddSystem<MediaSystem>();
 
 		world->Awake();
 		particleSystem->AttachGameCamera(&world->GetComponent<Frosty::ECS::CTransform>(world->GetSceneCamera()));
+	}
+
+	void MenuState::InitiateObjects()
+	{
+		auto& world = Frosty::Application::Get().GetWorld();
 
 		// WEAPON 1
 		//Sword Offset
@@ -220,7 +233,6 @@ namespace MCS
 
 		// PLAYER
 		auto& player = world->CreateEntity({ -104.0f, 0.0f, -15.4f }, { 0.0f, 0.0f, 0.0f }, { 2.0f, 2.0f, 2.0f });
-		//auto& player = world->CreateEntity({ -90.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 2.0f, 2.0f, 2.0f });
 		auto& playerTransform = world->GetComponent<Frosty::ECS::CTransform>(player);
 		world->AddComponent<Frosty::ECS::CMesh>(player, Frosty::AssetManager::GetMesh("Scarlet"));
 		world->AddComponent<Frosty::ECS::CAnimController>(player).currAnim = Frosty::AssetManager::GetAnimation("Scarlet_Idle");
@@ -251,9 +263,7 @@ namespace MCS
 
 		// TORCH
 		auto& torch = world->CreateEntity({ 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f });
-
-		world->AddComponent<Frosty::ECS::CLight>(torch, Frosty::ECS::CLight::LightType::Point, 1.f, glm::vec3(0.99f, 0.9f, 0.8f), 15.f, &playerTransform, glm::vec3(0.f, 5.f, 0.f));
-
+		world->AddComponent<Frosty::ECS::CLight>(torch, Frosty::ECS::CLight::LightType::Point, 0.5f, glm::vec3(0.99f, 0.9f, 0.8f), 15.f, &playerTransform, glm::vec3(0.f, 7.f, 0.f), true);
 
 
 		//Player HUD
@@ -343,6 +353,7 @@ namespace MCS
 		uiLayout.AddText(hpPotionControl, "[1]", glm::vec3(1.0f, 1.0f, 0.75f), controlsInfoSize2); //18
 		uiLayout.AddText(spPotionControl, "[2]", glm::vec3(1.0f, 1.0f, 0.75f), controlsInfoSize2); //19
 		uiLayout.AddText(baitControl, "[Q]", glm::vec3(1.0f, 1.0f, 0.75f), controlsInfoSize2); //20
+
 
 		uiLayout.AddSprite(glm::vec2(1280.f / 2, 720.f / 2), glm::vec2(16 * 1.6, 9 * 1.6f), "fearEffect", glm::vec4(0.0f, 0.0f, 0.0f, 0.75f)); // 0
 
@@ -438,9 +449,44 @@ namespace MCS
 
 		//uiLayout.AddSprite(glm::vec2(25.0f + testOffset * 0, 620.0f), glm::vec2(1, 1), "higlightHart", glm::vec4(1.0f));
 		world->AddComponent<Frosty::ECS::CGUI>(player, uiLayout);
+
+
+		////					<<<		FORWARD PLUS TESTING	>>>		plz don't touch		~ W-_-W ~
+		//// LIGHTS
+		//auto& light = world->CreateEntity({ 0.0f, 0.1f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f });
+		//world->AddComponent<Frosty::ECS::CLight>(light, Frosty::ECS::CLight::LightType::Point, 1.f, glm::vec3(0.99f, 0.9f, 0.8f), 20.f);		
+
+		//auto& light2 = world->CreateEntity({ 0.0f, 0.1f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f });
+		//world->AddComponent<Frosty::ECS::CLight>(light2, Frosty::ECS::CLight::LightType::Point, 1.f, glm::vec3(0.99f, 0.9f, 0.8f), 15.f);
+		//
+		//auto& light3 = world->CreateEntity({ 10.0f, 0.1f, -5.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f });
+		//world->AddComponent<Frosty::ECS::CLight>(light3, Frosty::ECS::CLight::LightType::Point, 1.f, glm::vec3(0.99f, 0.9f, 0.8f), 9.f);
+
+		//auto& light4 = world->CreateEntity({ -20.0f, 1.0f, 10.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f });
+		//world->AddComponent<Frosty::ECS::CLight>(light4, Frosty::ECS::CLight::LightType::Point, 1.f, glm::vec3(0.99f, 0.9f, 0.8f), 10.f);
+		//
+		//auto& light5 = world->CreateEntity({ -6.0f, 1.0f, -6.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f });
+		//world->AddComponent<Frosty::ECS::CLight>(light5, Frosty::ECS::CLight::LightType::Point, 1.f, glm::vec3(0.99f, 0.9f, 0.8f), 2.f);
+
+		//auto& light6 = world->CreateEntity({ 0.0f, 1.0f, -6.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f });
+		//world->AddComponent<Frosty::ECS::CLight>(light6, Frosty::ECS::CLight::LightType::Point, 1.f, glm::vec3(0.99f, 0.9f, 0.8f), 22.f);
+
+		//auto& light7 = world->CreateEntity({ 10.0f, 1.0f, 12.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f });
+		//world->AddComponent<Frosty::ECS::CLight>(light7, Frosty::ECS::CLight::LightType::Point, 1.f, glm::vec3(0.99f, 0.9f, 0.8f), 8.f);
+
+		//auto& light8 = world->CreateEntity({ -20.0f, 1.0f, 20.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f });
+		//world->AddComponent<Frosty::ECS::CLight>(light8, Frosty::ECS::CLight::LightType::Point, 1.f, glm::vec3(0.99f, 0.9f, 0.8f), 20.f);
+
+		//auto& light9 = world->CreateEntity({ -15.0f, 1.0f, -15.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f });
+		//world->AddComponent<Frosty::ECS::CLight>(light9, Frosty::ECS::CLight::LightType::Point, 1.f, glm::vec3(0.99f, 0.9f, 0.8f), 5.f);
+
+		//// QUAD
+		//auto& quad = world->CreateEntity({ 0.f, 0.05f, 0.f }, { 0.f, 0.f, 0.f }, { 1000.f, 1.f, 1000.f });
+		//auto& quadTransform = world->GetComponent<Frosty::ECS::CTransform>(quad);
+		//world->AddComponent<Frosty::ECS::CMesh>(quad, Frosty::AssetManager::GetMesh("pPlane1"));
+		//auto& quadMat = world->AddComponent<Frosty::ECS::CMaterial>(quad, Frosty::AssetManager::GetShader("HeatMap"));
+		//quadMat.Albedo = glm::vec4(0.f, 0.f, 1.f, 1.f);
 	}
-
-
 
 	void MenuState::InitiateButtons()
 	{

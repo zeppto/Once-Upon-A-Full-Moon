@@ -304,7 +304,7 @@ namespace Frosty
 
 
 			std::getline(InFile, temp);
-			uint32_t VecSize = std::stof(temp);
+			uint32_t VecSize = std::stoi(temp);
 			//std::vector<CellNode> TestVec;
 			//TestVec.resize(VecSize);
 			m_CellNodes.resize(VecSize);

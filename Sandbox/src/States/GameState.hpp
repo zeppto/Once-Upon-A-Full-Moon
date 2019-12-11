@@ -1,6 +1,11 @@
 #ifndef GAMESTATE_HPP
 #define GAMESTATE_HPP
 
+namespace Frosty { 
+				   class GameoverEvent;
+				   class WinEvent;
+				 }
+
 namespace MCS
 {
 	class GameState : public Frosty::State
@@ -17,8 +22,8 @@ namespace MCS
 
 		void InitiateLight();
 
-		void OnGameOverEvent();
-		void OnGameWinEvent();
+		void OnGameOverEvent(Frosty::GameoverEvent& e);
+		void OnGameWinEvent(Frosty::WinEvent& e);
 	private:
 		Frosty::Application* m_App = nullptr;
 	};

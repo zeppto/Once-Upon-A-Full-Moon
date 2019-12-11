@@ -242,21 +242,7 @@ void MCS::AnimationSystem::UpdateEntityComponent(const std::shared_ptr<Frosty::E
 
 void MCS::AnimationSystem::Render()
 {
-	//for (size_t i = 1; i < p_Total; i++)
-	//{
-	//	auto& mesh = m_World->GetComponent<Frosty::ECS::CMesh>(m_Transform[i]->EntityPtr).Mesh;
-	//	auto& material = m_World->GetComponent<Frosty::ECS::CMaterial>(m_Transform[i]->EntityPtr);
 
-	//	material.DiffuseTexture->Bind(0);
-	//	material.NormalTexture->Bind(1);
-	///*	material.SpecularTexture->Bind(2);*/
-
-	//	Frosty::Renderer::AnimSubmit(&material, mesh, m_Transform[i]->ModelMatrix, m_AControllers[i]);
-
-	//	material.DiffuseTexture->Unbind();
-	//	material.NormalTexture->Unbind();
-	//	//material.SpecularTexture->Unbind();
-	//}
 }
 
 std::string MCS::AnimationSystem::GetInfo() const
