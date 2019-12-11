@@ -174,7 +174,6 @@ namespace MCS
 		m_Room_Rotation = e.GetRotation();
 	}
 
-
 	void PhysicsSystem::CheckCollision(size_t index)
 	{
 		for (size_t i = 1; i < p_Total; i++)
@@ -199,8 +198,9 @@ namespace MCS
 				}
 
 
-				//Test
-				if (( m_World->HasComponent<Frosty::ECS::CPlayer>(m_Transform[index]->EntityPtr)))
+				//Test Bmap
+				//if (( m_World->HasComponent<Frosty::ECS::CPlayer>(m_Transform[index]->EntityPtr)))
+				if (0)
 				{
 
 					if (m_World->HasComponent<Frosty::ECS::CInventory>(m_Transform[index]->EntityPtr))
@@ -262,7 +262,6 @@ namespace MCS
 
 							if (testBool)
 							{
-
 								m_Transform[index]->Position -= m_PlayerLastMovement;
 							//	FY_INFO("1");
 							}

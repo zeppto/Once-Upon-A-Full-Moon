@@ -302,7 +302,7 @@ namespace MCS
 		
 		// Find target cell and set velocity
 		glm::vec3 cellTarget = PathFinding->FindPath(m_Transform[index]->Position, m_Enemy[index]->Target->Position);
-		m_ActiveMap.Grid->CheckHCost();
+	//	m_ActiveMap.Grid->CheckHCost();
 		if (cellTarget == glm::vec3(-1.0f))
 		{
 			m_Physics[index]->Direction = glm::vec3(0.0f);

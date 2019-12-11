@@ -100,7 +100,7 @@ namespace MCS
 
 		}
 
-		m_Grid->CheckHCost();
+	//	m_Grid->CheckHCost();
 
 		startNode.GCost = 0;
 		startNode.HCost = 0;
@@ -145,7 +145,7 @@ namespace MCS
 
 		m_Grid->DrawPathCells(path);
 
-		m_Grid->CheckHCost();
+	//	m_Grid->CheckHCost();
 		return path[0]->WorldPosition;
 	}
 	
