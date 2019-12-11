@@ -13,6 +13,8 @@
 #include "Frosty/Events/AbilityEvent.hpp"
 #include "Frosty/Events/EventSystem.hpp"
 
+#include <fstream>
+
 namespace MCS
 {
 	GameState::GameState()
@@ -51,7 +53,7 @@ namespace MCS
 		switch (e.GetEventType())
 		{
 		case Frosty::EventType::GameOver:
-			OnGameOverEvent();
+			OnGameOverEvent(static_cast<Frosty::GameoverEvent&>(e));
 			break;
 		case Frosty::EventType::Win:
 			OnGameWinEvent();
@@ -59,7 +61,7 @@ namespace MCS
 		}
 	}
 
-	void GameState::InitiateLight()
+		void GameState::InitiateLight()
 	{
 		auto& world = Frosty::Application::Get().GetWorld();
 		auto& light = world->CreateEntity({ 0.0f, 0.0f, 0.0f }, { 120.0f, 8.0f, -10.0f });
@@ -67,11 +69,23 @@ namespace MCS
 		DLight.Direction = glm::vec3(-1.0f, -0.8, -1.0);
 	}
 
-	void GameState::OnGameOverEvent()
+	void GameState::OnGameOverEvent(Frosty::GameoverEvent& e)
 	{
 		auto& world = Frosty::Application::Get().GetWorld();
+
+		// Writing score here since I can't get to it in other state.
+		std::ofstream scoreFile;
+		//Write at the end of the file
+		scoreFile.open("Highscore_test.txt", std::ios::app);
+		scoreFile << world->GetComponent<Frosty::ECS::CPlayer>(e.GetEntity()).Score << "\n";
+		scoreFile.close();
+
 		world->PauseGame();
 		m_App->GetStateMachine().AddState(Frosty::StateRef(FY_NEW(GameOverState)), true);
+
+		Frosty::EventBus::GetEventBus()->Publish<Frosty::StopMediaEvent>(Frosty::StopMediaEvent());
+		Frosty::EventBus::GetEventBus()->Publish<Frosty::PlayMusicEvent>(Frosty::PlayMusicEvent("assets/music/Atmo.mp3", 1.0f));
+		Frosty::EventBus::GetEventBus()->Publish<Frosty::PlayMusicEvent>(Frosty::PlayMusicEvent("assets/music/menusong.mp3", 1.0f));
 	}
 
 	void GameState::OnGameWinEvent()
@@ -79,5 +93,9 @@ namespace MCS
 		auto& world = Frosty::Application::Get().GetWorld();
 		world->PauseGame();
 		m_App->GetStateMachine().AddState(Frosty::StateRef(FY_NEW(GameWinState)), true);
+
+		Frosty::EventBus::GetEventBus()->Publish<Frosty::StopMediaEvent>(Frosty::StopMediaEvent());
+		Frosty::EventBus::GetEventBus()->Publish<Frosty::PlayMusicEvent>(Frosty::PlayMusicEvent("assets/music/Atmo.mp3", 1.0f));
+		Frosty::EventBus::GetEventBus()->Publish<Frosty::PlayMusicEvent>(Frosty::PlayMusicEvent("assets/music/menusong.mp3", 1.0f));
 	}
 }

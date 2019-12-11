@@ -290,6 +290,15 @@ namespace MCS
 				glm::vec2 direction = m_BossPos - m_PlayerCoords;
 
 				Frosty::EventBus::GetEventBus()->Publish<Frosty::BossFearEffectEvent>(Frosty::BossFearEffectEvent(direction));
+
+				int rand = std::rand() % 2 + 1;
+				std::string str = "assets/sounds/WolfHowl" + std::to_string(rand) + ".wav";
+				const char* fileName = str.c_str();
+
+				if(m_BossPos.x < m_PlayerCoords.x)
+					Frosty::EventBus::GetEventBus()->Publish<Frosty::PlayMediaEvent>(Frosty::PlayMediaEvent(fileName, 0.5f, 1.0f, false, 0));
+				else if(m_BossPos.x > m_PlayerCoords.x)
+					Frosty::EventBus::GetEventBus()->Publish<Frosty::PlayMediaEvent>(Frosty::PlayMediaEvent(fileName, 0.5f, -1.0f, false, 0));
 			}
 		}
 	}

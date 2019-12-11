@@ -32,6 +32,10 @@ namespace Frosty
 	std::map<std::string, std::shared_ptr<Grid>> AssetManager::s_Grid;
 	std::map<std::string, std::shared_ptr<BoolMap>> AssetManager::s_BoolMaps;
 
+	irrklang::ISoundEngine* AssetManager::s_SoundEngine = nullptr;
+
+	std::map<std::string, irrklang::ISoundSource*> AssetManager::s_Media;
+
 	std::vector<std::string> AssetManager::s_FilePath_Vector;
 
 	uint16_t AssetManager::s_Failed_Loading_Attempts = 0;
@@ -42,12 +46,14 @@ namespace Frosty
 		if (!s_Instance)
 		{
 			s_Instance = FY_NEW AssetManager;
+			s_SoundEngine = irrklang::createIrrKlangDevice();
 		}
 		return s_Instance;
 	}
 
 	AssetManager::~AssetManager()
 	{
+		s_SoundEngine->drop();
 	}
 
 	bool AssetManager::LoadFile(const std::string& FullFilePath, const std::string& TagName)
@@ -83,7 +89,12 @@ namespace Frosty
 			case GRID:
 				returnValue = LoadGrid(TempFileInfo);
 				break;
-
+			case MP3:
+				returnValue = LoadMediaFile(TempFileInfo);
+				break;
+			case WAV:
+				returnValue = LoadMediaFile(TempFileInfo);
+				break;
 			case BMAP:
 				returnValue = LoadBoolMap(TempFileInfo);
 				break;
@@ -297,16 +308,28 @@ namespace Frosty
 		}
 		return true;
 	}
-	
+
+	bool AssetManager::AddMedia(const FileMetaData& MetaData)
+	{
+		if (MediaFileLoaded(MetaData.FileName))
+		{
+			FY_CORE_INFO("Media File: {0}, Is already loaded", MetaData.FileName);
+			return false;
+		}
+		else
+		{
+			// Preload media file
+			irrklang::ISoundSource* temp =	s_SoundEngine->addSoundSourceFromFile(MetaData.FullFilePath.c_str(), irrklang::ESM_AUTO_DETECT, true);
+			s_Media[MetaData.FileName] = temp;
+		}
+		return true;
+	}
+
 	bool AssetManager::AddGrid(const FileMetaData& MetaData)
 	{
 		if (GridLoaded(MetaData.FileName))
 		{
 			FY_CORE_INFO("Grid: {0}, Is already loaded", MetaData.FileName);
-			return false;
-		}
-		else
-		{
 			s_Grid.emplace(MetaData.FileName, FY_NEW Grid());
 		}
 		return true;
@@ -681,6 +704,25 @@ namespace Frosty
 		return returnValue;
 	}
 
+
+	bool AssetManager::MediaFileLoaded(const std::string& MeshName)
+	{
+		bool returnValue = false;
+
+
+		std::map<std::string, irrklang::ISoundSource*>::iterator it;
+		for (it = s_Media.begin(); it != s_Media.end() && returnValue == false; it++)
+		{
+			if (it->first == MeshName)
+			{
+				returnValue = true;
+			}
+		}
+
+		return returnValue;
+	}
+
+
 	bool AssetManager::BoundingboxLoaded(const std::string& MeshName)
 	{
 		bool returnValue = false;
@@ -920,6 +962,20 @@ namespace Frosty
 
 		return returnValue;
 	}
+	
+	bool AssetManager::LoadMediaFile(const FileMetaData& FileNameInformation, const bool& Reload)
+	{
+		bool returnValue = false;
+
+
+
+		if (AddMedia(FileNameInformation))
+		{
+			returnValue = true;
+		}
+
+		return returnValue;
+	}
 
 	bool AssetManager::LoadGrid(const FileMetaData& FileNameInformation, const bool& Reload)
 	{
@@ -1028,6 +1084,14 @@ namespace Frosty
 		else if (fileType == FILE_TYPE_XML)
 		{
 			return XML;
+		}
+		else if (fileType == FILE_TYPE_WAV)
+		{
+			return WAV;
+		}
+		else if (fileType == FILE_TYPE_MP3)
+		{
+			return MP3;
 		}
 		else if (fileType == FILE_TYPE_GRID)
 		{
