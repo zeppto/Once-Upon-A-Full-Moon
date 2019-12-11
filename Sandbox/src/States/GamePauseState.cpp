@@ -58,6 +58,10 @@ namespace MCS
 				auto& world = Frosty::Application::Get().GetWorld();
 				Frosty::EventBus::GetEventBus()->Publish<Frosty::ResetEvent>(Frosty::ResetEvent());
 				m_App->GetStateMachine().AddState(Frosty::StateRef(FY_NEW(MenuState)), true);
+
+				Frosty::EventBus::GetEventBus()->Publish<Frosty::StopMediaEvent>(Frosty::StopMediaEvent());
+				Frosty::EventBus::GetEventBus()->Publish<Frosty::PlayMusicEvent>(Frosty::PlayMusicEvent("assets/music/Atmo.mp3", 1.0f));
+				Frosty::EventBus::GetEventBus()->Publish<Frosty::PlayMusicEvent>(Frosty::PlayMusicEvent("assets/music/menusong.mp3", 1.0f));
 			}
 		}
 		else if (x > (610.0f * width) && x < (665.0f * width) && y >(260.0f * height) && y < (290 * height))

@@ -4,6 +4,7 @@
 #include "GameWinState.hpp"
 #include "Frosty/Events/AbilityEvent.hpp"
 #include "Frosty/Events/EventSystem.hpp"
+#include "HighScoreState.h"
 
 namespace MCS
 {
@@ -47,7 +48,7 @@ namespace MCS
 		{
 			if (Frosty::InputManager::IsMouseButtonPressed(FY_MOUSE_BUTTON_LEFT))
 			{
-				FY_INFO("HighScore");
+				m_App->GetStateMachine().AddState(Frosty::StateRef(FY_NEW(HighscoreState)), false);
 			}
 		}
 		else if (x > (575.0f * width) && x < (725.0f * width) && y >(260.0f * height) && y < (290 * height))

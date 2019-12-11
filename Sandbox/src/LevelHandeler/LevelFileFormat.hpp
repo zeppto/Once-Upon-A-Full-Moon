@@ -240,6 +240,7 @@ namespace MCS
 	struct Level_rememberedEntitys
 	{
 		glm::ivec2 myRoomId = { 0, 0 };
+		glm::vec3 firstEnemyPos;
 		std::vector<int> removeChest;
 		std::vector<int> removeWitchCirkel;
 		std::vector<glm::vec3> addedBait;
@@ -273,6 +274,8 @@ namespace MCS
 		//int GetNumberOfBaitInRoom();
 		int RemoveAllBaitInRoom(glm::ivec2 room);
 		void clearVisitedRooms();
+
+		const glm::vec3& GetBossSpawnPosition(const glm::ivec2& playerCoords);
 
 	private:
 		//std::shared_ptr<ECS::Entity> m_ExitEntity;

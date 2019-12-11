@@ -151,13 +151,13 @@ namespace MCS
 
 			if (m_World->HasComponent<Frosty::ECS::CEnemy>(e.GetEntity()))
 			{
-				randomValue = rand() % 5;
+				randomValue = (rand() % 7) % 5;
 				int dropItemChanse = rand() % 2;
 				if (dropItemChanse == 0)
 					randomValue = -1;
 			}
 			else
-				randomValue = rand() % 6;
+				randomValue = (rand() % 4) + 3;
 
 			if (randomValue != -1)
 			{
@@ -180,18 +180,18 @@ namespace MCS
 					loot.Type = Frosty::ECS::CLootable::LootType::HealingPotion;
 					break;
 				case 1:
-					// Increase Health Potion
-					m_World->AddComponent<Frosty::ECS::CMesh>(item, Frosty::AssetManager::GetMesh("pPlane1"));
-					material.DiffuseTexture = Frosty::AssetManager::GetTexture2D("highlightHeart");
-					light.Color = glm::vec3(1.f, 0.f, 0.f);
-					loot.Type = Frosty::ECS::CLootable::LootType::IncHealthPotion;
-					break;
-				case 2:
 					// Speed Potion
 					m_World->AddComponent<Frosty::ECS::CMesh>(item, Frosty::AssetManager::GetMesh("pPlane1"));
 					material.DiffuseTexture = Frosty::AssetManager::GetTexture2D("spPotion");
 					light.Color = glm::vec3(0.f, 0.f, 1.f);
 					loot.Type = Frosty::ECS::CLootable::LootType::SpeedPotion;
+					break;
+				case 2:
+					// Wolfsbane
+					m_World->AddComponent<Frosty::ECS::CMesh>(item, Frosty::AssetManager::GetMesh("pPlane1"));
+					material.DiffuseTexture = Frosty::AssetManager::GetTexture2D("wolfsbane");
+					light.Color = glm::vec3(0.8f, 0.f, 1.f);
+					loot.Type = Frosty::ECS::CLootable::LootType::Wolfsbane;
 					break;
 				case 3:
 					// Speed Boots
@@ -202,11 +202,11 @@ namespace MCS
 					loot.Type = Frosty::ECS::CLootable::LootType::SpeedBoots;
 					break;
 				case 4:
-					// Wolfsbane
+					// Increase Health Potion
 					m_World->AddComponent<Frosty::ECS::CMesh>(item, Frosty::AssetManager::GetMesh("pPlane1"));
-					material.DiffuseTexture = Frosty::AssetManager::GetTexture2D("wolfsbane");
-					light.Color = glm::vec3(0.8f, 0.f, 1.f);
-					loot.Type = Frosty::ECS::CLootable::LootType::Wolfsbane;
+					material.DiffuseTexture = Frosty::AssetManager::GetTexture2D("highlightHeart");
+					light.Color = glm::vec3(1.f, 0.f, 0.f);
+					loot.Type = Frosty::ECS::CLootable::LootType::IncHealthPotion;
 					break;
 				case 5:
 					// Weapon
