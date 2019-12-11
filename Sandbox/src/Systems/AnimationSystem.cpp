@@ -33,7 +33,7 @@ void MCS::AnimationSystem::OnUpdate()
 						{
 							m_AControllers[i]->dt = 0.0f;
 							m_AControllers[i]->currAnim = Frosty::AssetManager::GetAnimation("Scarlet_Run");
-							m_AControllers[i]->animSpeed = 0.7f; //Set to Physics speed? To increase animSpeed when speed boost
+							m_AControllers[i]->animSpeed = physics.Speed / 24.3f; //Set to Physics speed? To increase animSpeed when speed boost
 							m_AControllers[i]->isBusy = false;
 							UpdateAnimOffset(m_AControllers[i]);
 						}

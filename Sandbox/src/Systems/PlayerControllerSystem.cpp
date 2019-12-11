@@ -277,7 +277,7 @@ namespace MCS
 			//m_Physics[index]->Velocity.x = 0.0f;
 		}
 	
-		if (animController.breakable)
+		if (animController.breakable) //Check if current animation is busy/breakable
 		{
 			if (Frosty::InputManager::IsKeyPressed(m_Player[index]->MoveForwardKey))
 			{

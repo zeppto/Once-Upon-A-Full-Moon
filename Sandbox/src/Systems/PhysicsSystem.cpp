@@ -185,16 +185,30 @@ namespace MCS
 				if (m_World->HasComponent<Frosty::ECS::CAttack>(m_Transform[index]->EntityPtr) &&
 					(m_World->HasComponent<Frosty::ECS::CPlayer>(m_Transform[i]->EntityPtr) || m_World->HasComponent<Frosty::ECS::CDropItem>(m_Transform[i]->EntityPtr)))
 				{
-					checkCollision = true;
+					if (m_World->GetComponent<Frosty::ECS::CHealth>(m_Transform[i]->EntityPtr).CurrentHealth > 0)
+					{
+						checkCollision = true;
+					}
 				}
-				else if (m_World->HasComponent<Frosty::ECS::CPlayer>(m_Transform[index]->EntityPtr) && (m_World->HasComponent<Frosty::ECS::CLevelExit>(m_Transform[i]->EntityPtr) ||
+				else if(m_World->HasComponent<Frosty::ECS::CPlayer>(m_Transform[index]->EntityPtr) && (m_World->HasComponent<Frosty::ECS::CLevelExit>(m_Transform[i]->EntityPtr) ||
 					m_Transform[i]->IsStatic || m_World->HasComponent<Frosty::ECS::CDropItem>(m_Transform[i]->EntityPtr)))		// Add witch circle check here
 				{
-					checkCollision = true;
+					if (m_World->HasComponent<Frosty::ECS::CHealth>(m_Transform[i]->EntityPtr))
+					{
+						if (m_World->GetComponent<Frosty::ECS::CHealth>(m_Transform[i]->EntityPtr).CurrentHealth > 0)
+						{
+							checkCollision = true;
+						}
+					}
+					else
+						checkCollision = true;
 				}
 				else if (m_World->HasComponent<Frosty::ECS::CEnemy>(m_Transform[index]->EntityPtr) && (m_World->HasComponent<Frosty::ECS::CPlayer>(m_Transform[i]->EntityPtr) || m_Transform[i]->IsStatic))
 				{
-					checkCollision = true;
+					if (m_World->GetComponent<Frosty::ECS::CHealth>(m_Transform[index]->EntityPtr).CurrentHealth > 0)
+					{
+						checkCollision = true;
+					}
 				}
 
 
@@ -343,6 +357,7 @@ namespace MCS
 											{
 												m_World->AddComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr);
 											}
+											attack.Lifetime = 0.0f;
 											Frosty::EventBus::GetEventBus()->Publish<Frosty::EnemyDeathEvent>(Frosty::EnemyDeathEvent(30));
 										}
 										else

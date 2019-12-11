@@ -241,6 +241,7 @@ namespace MCS
 		{
 			m_Enemy[index]->CurrentState = Frosty::ECS::CEnemy::State::Attack;
 
+
 		//	if (Frosty::Time::GetFrameCount() % 60 == 0) FY_INFO("Attack");
 
 
@@ -253,7 +254,7 @@ namespace MCS
 		}
 
 		// Chase
-		if (glm::distance(m_Transform[index]->Position, m_Enemy[index]->Target->Position) <= m_Enemy[index]->SightRange)
+		if (m_Enemy[index]->AttackInit == false && glm::distance(m_Transform[index]->Position, m_Enemy[index]->Target->Position) <= m_Enemy[index]->SightRange)
 		{
 			bool stopChase = HandleBossAbilities(index);
 			if (!stopChase)
@@ -280,7 +281,8 @@ namespace MCS
 
 		// Rotate towards player
  		LookAtPoint(m_Enemy[index]->Target->Position, index);
-
+		
+		//Cult Range
 		if (m_Enemy[index]->Weapon->Type == Frosty::ECS::CWeapon::WeaponType::Bow)
 		{
 			float check = Frosty::Time::CurrentTime() - m_Enemy[index]->Weapon->LVL1AttackCooldownTimer;
@@ -292,6 +294,7 @@ namespace MCS
 				m_Enemy[index]->AttackDelay = 0.01f;
 			}
 		}
+		//Cult Melee
 		else if (m_Enemy[index]->Weapon->Type == Frosty::ECS::CWeapon::WeaponType::Sword)
 		{
 			if (Frosty::Time::CurrentTime() - m_Enemy[index]->Weapon->LVL1AttackCooldownTimer >= (m_Enemy[index]->Weapon->LVL1AttackCooldown)
@@ -302,6 +305,7 @@ namespace MCS
 				m_Enemy[index]->AttackDelay = 0.5f;
 			}
 		}
+		//Wolf
 		else if(Frosty::Time::CurrentTime() - m_Enemy[index]->Weapon->LVL1AttackCooldownTimer >= (m_Enemy[index]->Weapon->LVL1AttackCooldown)
 			&& m_Enemy[index]->Weapon->AnimPlaying == false)
 		{

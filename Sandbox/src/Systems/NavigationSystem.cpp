@@ -341,8 +341,12 @@ namespace MCS
 		// Check if enemy is boss
 		if (m_World->HasComponent<Frosty::ECS::CBoss>(m_Transform[index]->EntityPtr)) return;
 		//if (m_Enemy[index]->Weapon->AnimPlaying) return;
-
-		if (glm::distance(m_Transform[index]->Position, m_Enemy[index]->Target->Position) >= m_Enemy[index]->Weapon->MinAttackRange)
+		
+		if (m_Enemy[index]->AttackInit == true)
+		{
+			m_Physics[index]->Direction = glm::vec3(0.0f);
+		}
+		else if (glm::distance(m_Transform[index]->Position, m_Enemy[index]->Target->Position) >= m_Enemy[index]->Weapon->MinAttackRange)
 		{
 			m_Physics[index]->Direction = glm::vec3(0.0f);
 		}
