@@ -218,11 +218,9 @@ namespace MCS
 		for (size_t i = 0; i < m_Light[index]->Cameras.size(); i++)
 		{
 			if (m_Light[index]->Type == Frosty::ECS::CLight::LightType::Directional)
-			{
 				m_Light[index]->Cameras[i].Front = m_Light[index]->Direction;
-			}
-			auto& originTransformComp = world->GetComponent<Frosty::ECS::CTransform>(m_Light[index]->Origin->EntityPtr);
-			m_Transform[index]->Position = originTransformComp.Position + m_Light[index]->Offset;
+			if (!world->HasComponent<Frosty::ECS::CPlayer>(m_Light[index]->Origin->EntityPtr))
+				m_Transform[index]->Position = m_Light[index]->Origin->Position + m_Light[index]->Offset;
 			
 			m_Light[index]->Cameras[i].ViewMatrix = glm::lookAt(m_Transform[index]->Position, m_Transform[index]->Position + m_Light[index]->Cameras[i].Front, { 0.0f, 1.0f, 0.0f });
 			m_Light[index]->Cameras[i].ProjectionMatrix = glm::perspective(glm::radians(m_Light[index]->Cameras[i].FieldOfView), float(win.GetViewport().z / win.GetViewport().w), m_Light[index]->Cameras[i].Near, m_Light[index]->Cameras[i].Far);
