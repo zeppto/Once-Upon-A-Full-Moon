@@ -61,6 +61,10 @@ namespace MCS
 					{
 						ImGui::TreeNodeEx((void*)(intptr_t)counter, node_flags, "Entity (%d) (Player)", eid);
 					}
+					else if (world->HasComponent<Frosty::ECS::CEnemy>(entity))
+					{
+						ImGui::TreeNodeEx((void*)(intptr_t)counter, node_flags, "Entity (%d) (Enemy)", eid);
+					}
 					else
 					{
 						ImGui::TreeNodeEx((void*)(intptr_t)counter, node_flags, "Entity (%d)", eid);
