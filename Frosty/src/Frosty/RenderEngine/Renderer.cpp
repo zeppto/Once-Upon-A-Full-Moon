@@ -461,16 +461,11 @@ namespace Frosty
 		float height = window.GetHeight();
 		glm::mat4 projection = glm::ortho(0.0f, width, 0.0f, height);
 		shader->UploadUniformMat4("projection", projection);
-		
 
- 		transform[3][0] *=  window.GetWidthMultiplier() ;
+ 		transform[3][0] *=  window.GetWidthMultiplier();
 		transform[3][1] *= window.GetHeightMultiplier();
-
-		for (int i = 0; i < 3; i++)
-		{
-			transform[i][i] *= window.GetWidthMultiplier();
-		}
-		
+		transform[0][0] *= window.GetWidthMultiplier();
+		transform[1][1] *= window.GetHeightMultiplier();
 
 		shader->UploadUniformMat4("transform", transform);
 		shader->UploadUniformFloat4("color", color); //Make sure this number matches the active and sampled texture

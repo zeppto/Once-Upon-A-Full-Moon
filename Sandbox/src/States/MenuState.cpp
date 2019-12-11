@@ -65,9 +65,12 @@ namespace MCS
 		float x = Frosty::InputManager::GetMouseX();
 		float y = Frosty::InputManager::GetMouseY();
 
+		float width = m_App->GetWindow().GetWidthMultiplier();
+		float height = m_App->GetWindow().GetHeightMultiplier();
+
 		if (!m_Controls)
 		{
-			if (x > 910.0f && x < 1005.0f && y > 550.0f && y < 610.0f)
+			if (x > (605.0f * width) && x < (670.0f * width) && y >(400.0f * height) && y < (440.0f * height))
 			{
 				if (Frosty::InputManager::IsMouseButtonPressed(FY_MOUSE_BUTTON_LEFT))
 				{
@@ -79,7 +82,7 @@ namespace MCS
 					m_App->GetStateMachine().AddState(Frosty::StateRef(FY_NEW(GameState)), true);
 				}
 			}
-			else if (x > 860.f && x < 1050.0f && y > 445.0f && y < 500.0f)
+			else if (x > (570.0f * width) && x < (700.0f * width) && y >(335 * height) && y < (365 * height))
 			{
 				if (Frosty::InputManager::IsMouseButtonPressed(FY_MOUSE_BUTTON_LEFT))
 				{
@@ -92,14 +95,14 @@ namespace MCS
 					menuGui.Layout.texts[1].SetText("");
 					menuGui.Layout.texts[2].SetText("");
 					menuGui.Layout.texts[3].SetText("Back");
-					menuGui.Layout.texts[3].SetPosition(glm::vec2(posX, 50.0f));
+					menuGui.Layout.texts[3].SetPosition(glm::vec2(posX, 25.0f));
 					menuGui.Layout.sprites[0].SetImage("Controls");
 					menuGui.Layout.sprites[0].SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
 					m_ButtonsLoaded = false;
 					m_Controls = true;
 				}
 			}
-			else if (x > 910.f && x < 1005.0f && y > 350.0f && y < 390.0f)
+			else if (x > (605.0f * width) && x < (665.0f * width) && y >(260.0f * height) && y < (290 * height))
 			{
 				if (Frosty::InputManager::IsMouseButtonPressed(FY_MOUSE_BUTTON_LEFT))
 				{
@@ -109,7 +112,7 @@ namespace MCS
 		}
 		else if (m_Controls)
 		{
-			if (x > 860.0f && x < 965.0f && y > 70.0f && y < 120.0f)
+			if (x > (575.0f * width) && x < (640.0f * width) && y >(25.0f * height) && y < (60.0f * height))
 			{
 				if (Frosty::InputManager::IsMouseButtonPressed(FY_MOUSE_BUTTON_LEFT))
 				{
@@ -135,22 +138,26 @@ namespace MCS
 
 	void MenuState::OnUpdate()
 	{
+		auto& world = Frosty::Application::Get().GetWorld();
+		auto& menuGui = world->GetComponent<Frosty::ECS::CGUI>(m_MenuGui);
+		float x = Frosty::InputManager::GetMouseX();
+		float y = Frosty::InputManager::GetMouseY();
+		float width = m_App->GetWindow().GetWidthMultiplier();
+		float height = m_App->GetWindow().GetHeightMultiplier();
+
 		if (m_ButtonsLoaded)
 		{
-			auto& world = Frosty::Application::Get().GetWorld();
-			auto& menuGui = world->GetComponent<Frosty::ECS::CGUI>(m_MenuGui);
-			float x = Frosty::InputManager::GetMouseX();
-			float y = Frosty::InputManager::GetMouseY();
+			//FY_INFO("{0} : {1} | {2} : {3}", width, height, x, y);
 
-			if (x > 910.0f && x < 1005.0f && y > 550.0f && y < 610.0f)
+			if (x > (605.0f * width) && x < (670.0f * width) && y > (400.0f * height) && y < (440.0f * height))
 			{
 				menuGui.Layout.texts[1].SetColor(glm::vec4(0.0f, 1.0f, 0.0f, 0.0f));
 			}
-			else if (x > 860.f && x < 1050.0f && y > 445.0f && y < 500.0f)
+			else if (x > (570.0f * width) && x < (700.0f * width) && y > (335 * height) && y < (365 * height))
 			{
 				menuGui.Layout.texts[2].SetColor(glm::vec4(0.0f, 1.0f, 0.0f, 0.0f));
 			}
-			else if (x > 910.f && x < 1005.0f && y > 350.0f && y < 390.0f)
+			else if (x > (605.0f * width) && x < (665.0f * width) && y > (260.0f * height) && y < (290 * height))
 			{
 				menuGui.Layout.texts[3].SetColor(glm::vec4(1.0f, 0.0f, 0.0f, 0.0f));
 			}
@@ -158,6 +165,17 @@ namespace MCS
 			{
 				menuGui.Layout.texts[1].SetColor(glm::vec4(1.0f, 1.0f, 0.0f, 0.0f));
 				menuGui.Layout.texts[2].SetColor(glm::vec4(1.0f, 1.0f, 0.0f, 0.0f));
+				menuGui.Layout.texts[3].SetColor(glm::vec4(0.8f, 0.0f, 0.0f, 0.0f));
+			}
+		}
+		else
+		{
+			if (x > (575.0f * width) && x < (640.0f * width) && y >(25.0f * height) && y < (60.0f * height))
+			{
+				menuGui.Layout.texts[3].SetColor(glm::vec4(1.0f, 0.0f, 0.0f, 0.0f));
+			}
+			else
+			{
 				menuGui.Layout.texts[3].SetColor(glm::vec4(0.8f, 0.0f, 0.0f, 0.0f));
 			}
 		}
@@ -251,10 +269,7 @@ namespace MCS
 
 		// TORCH
 		auto& torch = world->CreateEntity({ 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f });
-
 		world->AddComponent<Frosty::ECS::CLight>(torch, Frosty::ECS::CLight::LightType::Point, 1.f, glm::vec3(0.99f, 0.9f, 0.8f), 15.f, &playerTransform, glm::vec3(0.f, 5.f, 0.f));
-
-
 
 		//Player HUD
 		Frosty::UILayout uiLayout(21, 30);
@@ -345,25 +360,10 @@ namespace MCS
 		uiLayout.AddText(baitControl, "[Q]", glm::vec3(1.0f, 1.0f, 0.75f), controlsInfoSize2); //20
 
 		uiLayout.AddSprite(glm::vec2(1280.f / 2, 720.f / 2), glm::vec2(16 * 1.6, 9 * 1.6f), "fearEffect", glm::vec4(0.0f, 0.0f, 0.0f, 0.75f)); // 0
-
-
-
 		uiLayout.AddSprite(glm::vec2(0.f, 0.f), glm::vec2(10, 10), "IndicatorEffect", glm::vec4(0.0f)); // 1 
-		//uiLayout.AddSprite(glm::vec2(720.f / 2, 720.f), glm::vec2(10, 10), "IndicatorEffect", glm::vec4(1.0f)); // 1 Top Mid
-		//uiLayout.AddSprite(glm::vec2(1280.f, 720.f), glm::vec2(10, 10), "IndicatorEffect", glm::vec4(1.0f)); // 1 Top Right
-		//uiLayout.AddSprite(glm::vec2(1280.f, 720.f / 2), glm::vec2(10, 10), "IndicatorEffect", glm::vec4(1.0f)); // 1 Mid Right
-		//uiLayout.AddSprite(glm::vec2(1280.f, 0), glm::vec2(10, 10), "IndicatorEffect", glm::vec4(1.0f)); // 1 Bot Right
-		//uiLayout.AddSprite(glm::vec2(1280.f / 2, 0), glm::vec2(10, 10), "IndicatorEffect", glm::vec4(1.0f)); // 1 Bot Mid
-		//uiLayout.AddSprite(glm::vec2(0, 0), glm::vec2(10, 10), "IndicatorEffect", glm::vec4(1.0f)); // 1 Bot Left
-		//uiLayout.AddSprite(glm::vec2(0, 720.f / 2), glm::vec2(10, 10), "IndicatorEffect", glm::vec4(1.0f)); // 1 Mid Left
-		//uiLayout.AddSprite(glm::vec2(0, 720.f), glm::vec2(10, 10), "IndicatorEffect", glm::vec4(1.0f)); // 1 Top Left
 
 		//Weapon
 		glm::vec2 attackScale = glm::vec2(0.75, 0.75);
-
-		//Unlocked = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f)
-		//Cooldown =  glm::vec4(0.1f, 0.1f, 0.1f, 0.90f)
-		//Locked glm::vec4(0.1f, 0.1f, 0.1f, 0.50f)
 
 		if (weaponComp.Type == Frosty::ECS::CWeapon::WeaponType::Bow)
 		{
@@ -392,12 +392,6 @@ namespace MCS
 		uiLayout.AddSprite(glm::vec2(elementXOffset + elementPadding * 1, elementyOffset), elementScale, "elementFire", glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));// 7
 		uiLayout.AddSprite(glm::vec2(elementXOffset + elementPadding * 2, elementyOffset), elementScale, "elementWater", glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));// 8
 		uiLayout.AddSprite(glm::vec2(elementXOffset + elementPadding * 3, elementyOffset), elementScale, "elementWind", glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));// 9
-
-		//Empty
-		//	uiLayout.AddSprite(glm::vec2(elementXOffset + elementPadding * 0, elementyOffset), elementScale, "elementEarthEmpty", glm::vec4(0.1f, 0.1f, 0.1f, 0.50f));// 6
-		//	uiLayout.AddSprite(glm::vec2(elementXOffset + elementPadding * 1, elementyOffset), elementScale, "elementFireEmpty", glm::vec4(0.1f, 0.1f, 0.1f, 0.50f));// 7
-		//	uiLayout.AddSprite(glm::vec2(elementXOffset + elementPadding * 2, elementyOffset), elementScale, "elementWaterEmpty", glm::vec4(0.1f, 0.1f, 0.1f, 0.50f));// 8
-		//	uiLayout.AddSprite(glm::vec2(elementXOffset + elementPadding * 3, elementyOffset), elementScale, "elementWindEmpty", glm::vec4(0.1f, 0.1f, 0.1f, 0.50f));// 9
 
 		uiLayout.AddSprite(hpPotionSprite, glm::vec2(1, 1), "hpPotion", glm::vec4(1.0f));// 10
 		uiLayout.AddSprite(spPotionSprite, glm::vec2(1, 1), "spPotion", glm::vec4(1.0f));// 11
@@ -440,29 +434,32 @@ namespace MCS
 		world->AddComponent<Frosty::ECS::CGUI>(player, uiLayout);
 	}
 
-
-
 	void MenuState::InitiateButtons()
 	{
 		m_App = &Frosty::Application::Get();
 		auto& world = Frosty::Application::Get().GetWorld();
 		m_MenuGui = m_App->Get().GetWorld()->CreateEntity();
-
+		
 		m_UILayout = Frosty::UILayout(4, 1);
 		std::string MainMenu = "Main Menu";
 		std::string Play = "Play";
 		std::string Controls = "Controls";
 		std::string Exit = "Exit";
 
-		float posX1 = (960 / 1.5f) - (MainMenu.size() / 2) * 21;
-		float posX2 = (960 / 1.5f) - (Play.size() / 2) * 17;
-		float posX3 = (960 / 1.5f) - (Controls.size() / 2) * 17;
-		float posX4 = (960 / 1.5f) - (Exit.size() / 2) * 17;
+		float width = m_App->GetWindow().GetWidthMultiplier();
+		float height = m_App->GetWindow().GetHeightMultiplier();
+		float middleX = float(m_App->GetWindow().GetWidth() / 2);
+		float middleY = float(m_App->GetWindow().GetHeight() / 2);
+		
+		float posX1 = (middleX / width) - (MainMenu.size() / 2) * 32;
+		float posX2 = (middleX / width) - (Play.size()     / 2) * 17;
+		float posX3 = (middleX / width) - (Controls.size() / 2) * 17;
+		float posX4 = (middleX / width) - (Exit.size()     / 2) * 17;
 
-		m_UILayout.AddText(glm::vec2(posX1, 525.f), MainMenu, glm::vec3(1.0f, 1.0f, 0.0f), 1.0f);
-		m_UILayout.AddText(glm::vec2(posX2, 400.0f), Play, glm::vec3(1.0f, 1.0f, 0.0f), 1.0f);
-		m_UILayout.AddText(glm::vec2(posX3, 325.0f), Controls, glm::vec3(1.0f, 1.0f, 0.0f), 1.0f);
-		m_UILayout.AddText(glm::vec2(posX4, 250.0f), Exit, glm::vec3(0.8f, 0.0f, 0.0f), 1.0f);
+		m_UILayout.AddText(glm::vec2(posX1, middleY / height + 175.0f), MainMenu, glm::vec3(1.0f, 1.0f, 0.0f), 1.5f);
+		m_UILayout.AddText(glm::vec2(posX2, (middleY / height) + 50.0f), Play, glm::vec3(1.0f, 1.0f, 0.0f), 1.0f);
+		m_UILayout.AddText(glm::vec2(posX3, (middleY / height) - 25.0f), Controls, glm::vec3(1.0f, 1.0f, 0.0f), 1.0f);
+		m_UILayout.AddText(glm::vec2(posX4, (middleY / height) - 100.0f), Exit, glm::vec3(0.8f, 0.0f, 0.0f), 1.0f);
 		m_UILayout.AddSprite(glm::vec2(640.0f, 360.0f), glm::vec2(25.6f, 14.4f), "Background", glm::vec4(0.5f, 0.5f, 0.5f, 1.0f));
 
 		world->AddComponent<Frosty::ECS::CGUI>(m_MenuGui, m_UILayout);
