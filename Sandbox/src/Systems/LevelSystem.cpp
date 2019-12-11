@@ -15,17 +15,6 @@ namespace MCS
 
 	void LevelSystem::OnStart()
 	{
-/*
-		if (m_CreatNewRoom)
-		{
-			int rotation = 0;
-			std::string fileName = m_Map.getRoomTextur(m_PlayerCoords, &rotation);
-			//PlayerTranform.Position = Level::MoveToNewRoom(m_CurrentRoome.sideExits[0], m_CurrentRoome.sideExits[1],
-			//	m_CurrentRoome.sideExits[2], m_CurrentRoome.sideExits[3], ExitSide.ExitDirection);
-			m_LevelFileFormat.OpenFromFile(fileName, m_PlayerCoords, m_PlayerTransform, rotation);
-			m_CreatNewRoom = false;
-		}*/
-
 		if (m_LoadMapBool)
 		{
 			m_LevelFileFormat.OpenFromFile(m_LoadFileName,
@@ -46,7 +35,6 @@ namespace MCS
 
 		if (m_LodeNamedRoom)
 		{
-		//	m_LevelFileFormat.OpenFromFile(m_RoomType, m_PlayerCoords);
 			m_LodeNamedRoom = false;
 		}
 		if (m_ReStart)
@@ -128,9 +116,9 @@ namespace MCS
 			m_Map.getRoomTextur(m_PlayerCoords, &rotate);
 			m_CurrentRoomBool = m_World->GetCurrentRoom();
 			//	Level::MoveToNewRoom(m_CurrentRoome.sideExits[0], m_CurrentRoome.sideExits[1], m_CurrentRoome.sideExits[2], m_CurrentRoome.sideExits[3]);
-			m_LevelFileFormat.OpenFromFile("deadend_chests_IsStatick_t_p_e_r_h_a", !m_NextLevel, m_PlayerCoords, playerTransform, rotate);
+			m_LevelFileFormat.OpenFromFile("deadend_chests_IsStatick_t_p_e_r_h_a_bb", !m_NextLevel, m_PlayerCoords, playerTransform, rotate);
 			
-			m_T_Room.RoomName = "deadend_chests_IsStatick_t_p_e_r_h_a";
+			m_T_Room.RoomName = "deadend_chests_IsStatick_t_p_e_r_h_a_bb";
 
 			m_T_Room.Rotation = rotate;
 			Frosty::EventBus::GetEventBus()->Publish<Frosty::UpdateCurrentRoomEvent>(Frosty::UpdateCurrentRoomEvent(m_T_Room.RoomName, m_T_Room.Rotation));
@@ -142,7 +130,6 @@ namespace MCS
 			m_Start = false;
 			m_haveStartedMoving = false;
 			m_StartTimer = Frosty::Time::CurrentTime();
-
 		}
 
 		float time = Frosty::Time::CurrentTime() - m_StartTimer - m_BossStartTimer;
@@ -232,7 +219,10 @@ namespace MCS
 
 						if (m_BossPos == m_PlayerCoords)
 						{
+
 							Frosty::EventBus::GetEventBus()->Publish<Frosty::SpawnBossEvent>(Frosty::SpawnBossEvent(m_LevelFileFormat.GetBossSpawnPosition(m_PlayerCoords)));
+							BossroomBlock(m_BossPos);
+
 							FY_INFO("The boss found the player!");
 							FY_INFO("");
 						}
@@ -280,7 +270,10 @@ namespace MCS
 
 						if (m_BossPos == m_PlayerCoords)
 						{
+
 							Frosty::EventBus::GetEventBus()->Publish<Frosty::SpawnBossEvent>(Frosty::SpawnBossEvent(m_LevelFileFormat.GetBossSpawnPosition(m_PlayerCoords)));
+							BossroomBlock(m_BossPos);
+
 							FY_INFO("The boss found the player!");
 							FY_INFO("");
 						}
@@ -298,6 +291,15 @@ namespace MCS
 				glm::vec2 direction = m_BossPos - m_PlayerCoords;
 
 				Frosty::EventBus::GetEventBus()->Publish<Frosty::BossFearEffectEvent>(Frosty::BossFearEffectEvent(direction));
+
+				int rand = std::rand() % 2 + 1;
+				std::string str = "assets/sounds/WolfHowl" + std::to_string(rand) + ".wav";
+				const char* fileName = str.c_str();
+
+				if(m_BossPos.x < m_PlayerCoords.x)
+					Frosty::EventBus::GetEventBus()->Publish<Frosty::PlayMediaEvent>(Frosty::PlayMediaEvent(fileName, 0.5f, 1.0f, false, 0));
+				else if(m_BossPos.x > m_PlayerCoords.x)
+					Frosty::EventBus::GetEventBus()->Publish<Frosty::PlayMediaEvent>(Frosty::PlayMediaEvent(fileName, 0.5f, -1.0f, false, 0));
 			}
 		}
 	}
@@ -979,6 +981,45 @@ namespace MCS
 			m_World->AddComponent<Frosty::ECS::CHealthBar>(enemyA, glm::vec3(0.0f, 10.0f, 0.0f));
 			m_World->AddComponent<Frosty::ECS::CDropItem>(enemyA);
 		}
+
+		//wall of fire
+		if (e.GetEntityType() == 24)
+		{
+			for (int i = 0; i < 6; i++)
+			{
+				auto& fire = m_World->CreateEntity({ 150.0f, 1.2f, -20.0f + (10.0f * i) }, { 0.0f, 90.0f, 0.0f }, { 1.0f, 0.2f, 0.5f });
+				m_World->AddComponent<Frosty::ECS::CLight>(fire, Frosty::ECS::CLight::LightType::Point, 1.0f, glm::vec3(0.99f, 0.4f, 0.1f), 20.0f, glm::vec3(0.f, 1.0f, 0.f));
+				auto& fireParticel = m_World->AddComponent<Frosty::ECS::CParticleSystem>(fire, "Particles", "fire", 100, glm::vec3(1.0f, 0.0f, 0.0f), 17.0f);
+				fireParticel.StaticColor = false;
+				fireParticel.SystemEndColor = glm::vec3(1.0f, 0.82f, 0.0f);
+				fireParticel.RandomStartPos = true;
+				fireParticel.StartParticleSize = 5.0f;
+				fireParticel.EndParticleSize = 1.0f;
+				fireParticel.EmitRate = 0.02f;
+				fireParticel.EmitCount = 1;
+				fireParticel.MaxLifetime = 3.5f;
+				fireParticel.MinLifetime = 3.5f;
+				fireParticel.FadeInTreshold = 2.683f;
+				fireParticel.FadeTreshold = 1.124f;
+
+				auto& smoke = m_World->CreateEntity({ 150.0f, 9.0f, -20.0f + (10.0f * i)}, { 0.0f, 90.0f, 0.0f }, { 1.0f, 0.2f, 0.5f });
+				auto& particel = m_World->AddComponent<Frosty::ECS::CParticleSystem>(smoke, "Particles", "particleSmoke", 24, glm::vec3(0.48f, 0.28f, 0.28f), 18.0f);
+				particel.SystemEndColor = glm::vec3(0.36f, 0.35f, 0.26f);
+				//particel.RandomDirection = true;
+				//particel.randSpread = 5.0f;
+				//particel.randMainDir = glm::vec3(0, 1, 0);
+				particel.StaticColor = false;
+				particel.RandomStartPos = true;
+				particel.StartParticleSize = 2.0f;
+				particel.EndParticleSize = 0.0f;
+				particel.EmitRate = 0.2f;
+				particel.EmitCount = 2;
+				particel.MaxLifetime = 3.0f;
+				particel.MinLifetime = 2.0f;
+				particel.FadeInTreshold = 2.573f;
+				particel.FadeTreshold = 2.195f;
+			}
+		}
 	}
 
 	void LevelSystem::OnPlayerUpdateCoordEvent(Frosty::UpdatePlayerRoomCoordEvent& e)
@@ -986,6 +1027,7 @@ namespace MCS
 		if (m_PlayerCoords != e.GetCoords())
 		{
 		//	FY_INFO("Changed Room");
+			FY_INFO("player changed Room to ({0}, {1})", e.GetCoords().x, e.GetCoords().y);
 			m_OtherRoom = m_PlayerCoords;
 			FlipRoomNames();
 			m_World->ChangeCurrentRoom();
@@ -1002,14 +1044,15 @@ namespace MCS
 		m_O_Room = temp;
 	}
 
-
 	void LevelSystem::OnResetEvent(Frosty::ResetEvent& e)
 	{
 		Frosty::ECS::CMesh* weaponMesh = nullptr;
 		Frosty::ECS::CAnimController* animation = nullptr;
 		Frosty::ECS::CPlayer* Player = nullptr;
 		Frosty::ECS::CTransform* PlayerT = nullptr;
-		Frosty::ECS::CWeapon* m_Weapon = nullptr;
+		Frosty::ECS::CWeapon* Weapon = nullptr;
+		Frosty::ECS::CHealth* Health = nullptr;
+		Frosty::ECS::CLight* Torch = nullptr;
 		int weaponID = 0;
 
 		for (size_t i = 1; i < p_Total; i++)
@@ -1022,22 +1065,32 @@ namespace MCS
 					{
 						if (!m_World->HasComponent<Frosty::ECS::CLight>(m_Transform[i]->EntityPtr))
 						{
-							if (!m_World->HasComponent<Frosty::ECS::CGUI>(m_Transform[i]->EntityPtr))
+						}
+						else if (m_World->HasComponent<Frosty::ECS::CLight>(m_Transform[i]->EntityPtr))
+						{
+							auto& light = m_World->GetComponent<Frosty::ECS::CLight>(m_Transform[i]->EntityPtr);
+							if (light.Origin != nullptr)
 							{
-								//if (!m_World->HasComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr))
-								//{
-								//	m_World->AddComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr);
-								//}
+								if (!m_World->HasComponent<Frosty::ECS::CPlayer>(light.Origin->EntityPtr))
+								{
+									if (!m_World->HasComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr))
+									{
+										m_World->AddComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr);
+									}
+								}
+							}
+							else if (light.Origin == nullptr)
+							{
+								if (!m_World->HasComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr))
+								{
+									m_World->AddComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr);
+								}
 							}
 						}
 					}
 				}
 				else if (!m_World->GetComponent<Frosty::ECS::CWeapon>(m_Transform[i]->EntityPtr).IsPlayerWeapon)
 				{
-					//if (!m_World->HasComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr))
-					//{
-					//	m_World->AddComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr);
-					//}
 				}
 				else if (m_World->GetComponent<Frosty::ECS::CWeapon>(m_Transform[i]->EntityPtr).IsPlayerWeapon)
 				{
@@ -1061,10 +1114,10 @@ namespace MCS
 							m_GUI = GetPlayerGUI();
 							if (m_GUI != nullptr)
 							{
-								m_GUI->Layout.sprites[1].SetImage("attackMelee");
-								m_GUI->Layout.sprites[2].SetImage("attackMelee1");
-								m_GUI->Layout.sprites[3].SetImage("attackMelee2");
-								m_GUI->Layout.sprites[4].SetImage("attackMelee3");
+								m_GUI->Layout.sprites[2].SetImage("attackMelee");
+								m_GUI->Layout.sprites[3].SetImage("attackMelee1");
+								m_GUI->Layout.sprites[4].SetImage("attackMelee2");
+								m_GUI->Layout.sprites[5].SetImage("attackMelee3");
 							}
 							Frosty::Renderer::ChangeEntity(m_Transform[i]->EntityPtr->Id, &weaponMat, "Sword", &mesh, m_Transform[i]->EntityPtr->Id, m_Transform[i], nullptr);
 						}
@@ -1085,10 +1138,10 @@ namespace MCS
 							m_GUI = GetPlayerGUI();
 							if (m_GUI != nullptr)
 							{
-								m_GUI->Layout.sprites[1].SetImage("attackRanged");
-								m_GUI->Layout.sprites[2].SetImage("attackRanged1");
-								m_GUI->Layout.sprites[3].SetImage("attackRanged2");
-								m_GUI->Layout.sprites[4].SetImage("attackRanged3");
+								m_GUI->Layout.sprites[2].SetImage("attackRanged");
+								m_GUI->Layout.sprites[3].SetImage("attackRanged1");
+								m_GUI->Layout.sprites[4].SetImage("attackRanged2");
+								m_GUI->Layout.sprites[5].SetImage("attackRanged3");
 							}
 							Frosty::Renderer::ChangeEntity(m_Transform[i]->EntityPtr->Id, &weaponMat, "Bow", &mesh, m_Transform[i]->EntityPtr->Id, m_Transform[i], nullptr);
 						}
@@ -1125,6 +1178,7 @@ namespace MCS
 				animation = &m_World->GetComponent<Frosty::ECS::CAnimController>(m_Transform[i]->EntityPtr);
 				PlayerT = &playerTransform;
 				auto& health = m_World->GetComponent<Frosty::ECS::CHealth>(m_Transform[i]->EntityPtr);
+				int healthSpriteCounter = health.MaxPossibleHealth;
 				health.CurrentHealth = 20;
 				health.MaxHealth = 20;
 				health.MaxPossibleHealth = 40;
@@ -1146,11 +1200,10 @@ namespace MCS
 
 				m_GUI = &m_World->GetComponent<Frosty::ECS::CGUI>(m_Transform[i]->EntityPtr);
 
-				m_GUI->Layout.sprites[14].SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 0.0f));
-				m_GUI->Layout.sprites[15].SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 0.0f));
-				m_GUI->Layout.sprites[16].SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 0.0f));
-				m_GUI->Layout.sprites[17].SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 0.0f));
-				m_GUI->Layout.sprites[18].SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 0.0f));
+				for (int j = 15; j < 20 + (healthSpriteCounter / 4); j++)
+				{
+					m_GUI->Layout.sprites.at(j).SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 0.0f));
+				}
 			}
 		}
 
@@ -1158,6 +1211,12 @@ namespace MCS
 		animation->holdPtr = animation->currAnim->getHoldingJoint();
 		weaponMesh->animOffset = animation->holdPtr;
 		Frosty::Renderer::UpdateCMesh(weaponID, weaponMesh);
+
+		m_BossSpawned = false;
+		m_BossRoomTimer = 2.0f;
+		m_BossTimer = 0.0f;
+		m_PlayerCoords = { 10, 15 };
+		m_Start = true;
 
 		m_World->DestroyGroup(true);
 
@@ -1181,6 +1240,7 @@ namespace MCS
 	{
 		m_BossSpawned = true;
 	}
+
 	void LevelSystem::OnBaitPlacedEvent(Frosty::BaitPlacedEvent& e)
 	{
 		auto& baitTransform = m_World->GetComponent<Frosty::ECS::CTransform>(e.GetEntity());
@@ -1203,6 +1263,145 @@ namespace MCS
 			m_RoomswhithBait.push_back(m_PlayerCoords);
 		}
 	}
+
+	void LevelSystem::BossroomBlock(glm::ivec2 room)
+	{
+		Room currentRoom = m_Map.getRoom(room);
+		float offsetX = (room.x - 10) * 300;
+		float offsetY = (room.y - 15) * 300;
+
+		glm::vec3 pos = glm::vec3(offsetX, 0, offsetY);
+		glm::vec3 rotation = glm::vec3(0, 0, 0);
+		glm::vec3 scaleHittbox = glm::vec3(0, 0, 0);
+		glm::ivec2 roomCoord = room;
+		for (int j = 0; j < 4; j++)
+		{
+			if (currentRoom.sideExits[j])
+			{
+				pos = glm::vec3(offsetX, 0, offsetY);
+				glm::vec3 treePos = pos;
+				if (j == 0)
+				{
+					roomCoord.y -= 1;
+					pos += glm::vec3(0.0f, 0.0f, -300.0f);
+					treePos += glm::vec3(0.0f, 0.0f, -160.0f);
+					rotation = glm::vec3(0, 90, 0);
+					scaleHittbox = glm::vec3(100.0f, 20.0f, 24.0f);
+				}
+				if (j == 1)
+				{
+					roomCoord.y += 1;
+					pos += glm::vec3(0.0f, 0.0f, 300.0f);
+					treePos += glm::vec3(0.0f, 0.0f, 160.0f);
+					rotation = glm::vec3(0, 90, 0);
+					scaleHittbox = glm::vec3(100.0f, 20.0f, 24.0f);
+				}
+				if (j == 2)
+				{
+					roomCoord.x -= 1;
+					pos += glm::vec3(-300.0f, 0.0f, 0.0f);
+					treePos += glm::vec3(-160.0f, 0.0f, 0.0f);
+					rotation = glm::vec3(0, 0, 0);
+					scaleHittbox = glm::vec3(24.0f, 20.0f, 100.0f);
+				}
+				if (j == 3)
+				{
+					roomCoord.x += 1;
+					pos += glm::vec3(300.0f, 0.0f, 0.0f);
+					treePos += glm::vec3(160.0f, 0.0f, 0.0f);
+					rotation = glm::vec3(0, 180, 0);
+					scaleHittbox = glm::vec3(24.0f, 20.0f, 100.0f);
+				}
+				if (roomCoord != m_OtherRoom)
+				{
+					//auto& mushroom = m_World->CreateEntity(treePos, rotation, { 1.0f, 1.0f, 1.0f }, true);
+					//auto& mushroomTransform = m_World->GetComponent<Frosty::ECS::CTransform>(mushroom);
+					//m_World->AddComponent<Frosty::ECS::CMesh>(mushroom, Frosty::AssetManager::GetMesh("treeBunchWall"));
+					//auto& material = m_World->AddComponent<Frosty::ECS::CMaterial>(mushroom, Frosty::AssetManager::GetShader("Texture2D"), true);
+					//material.DiffuseTexture = Frosty::AssetManager::GetTexture2D("Tree7");
+					//auto& hitbox = m_World->CreateEntity(treePos, { 0.0f, 0.0f, 0.0f }, scaleHittbox, true);
+					//auto& hitboxTransform = m_World->GetComponent<Frosty::ECS::CTransform>(hitbox);
+					//m_World->AddComponent<Frosty::ECS::CPhysics>(hitbox, Frosty::AssetManager::GetBoundingBox("pCube1"), hitboxTransform.Scale, 0.0f);
+
+					auto& ground = m_World->CreateEntity();
+					auto& tranform = m_World->GetComponent<Frosty::ECS::CTransform>(ground);
+					tranform.Position = pos;
+					tranform.Scale = glm::vec3(300, 1.0f, 300);
+					m_World->AddComponent<Frosty::ECS::CMesh>(ground, Frosty::AssetManager::GetMesh("pPlane1"));
+					auto& testMaterial = m_World->AddComponent<Frosty::ECS::CMaterial>(ground, Frosty::AssetManager::GetShader("BlendShader"));
+					testMaterial.DiffuseTexture = Frosty::AssetManager::GetTexture2D("ground_test2");
+					testMaterial.NormalTexture = Frosty::AssetManager::GetTexture2D("ground_test_normal");
+					testMaterial.BlendMapTexture = Frosty::AssetManager::GetTexture2D("black");
+					testMaterial.BlendTexture1 = Frosty::AssetManager::GetTexture2D("ground_test2");
+					testMaterial.BlendTexture1 = Frosty::AssetManager::GetTexture2D("ground_test2");
+				}
+				//else
+				//{
+					//hittbox
+					auto& hitbox = m_World->CreateEntity(treePos, { 0.0f, 0.0f, 0.0f }, scaleHittbox, true);
+					auto& hitboxTransform = m_World->GetComponent<Frosty::ECS::CTransform>(hitbox);
+					m_World->AddComponent<Frosty::ECS::CPhysics>(hitbox, Frosty::AssetManager::GetBoundingBox("pCube1"), hitboxTransform.Scale, 0.0f);
+					//for fire block
+					for (int i = 0; i < 6; i++)
+					{
+						pos = glm::vec3(offsetX, 0, offsetY);
+						rotation = glm::vec3(0, 0, 0);
+						if (j == 0)
+						{
+							pos += glm::vec3(-20.0f + (10.0f * i), 1.2f, -150.0f);
+						}
+						if (j == 1)
+						{
+							pos += glm::vec3(-20.0f + (10.0f * i), 1.2f, 150.0f);
+						}
+						if (j == 2)
+						{
+							pos += glm::vec3(-150.0f, 1.2f, -20.0f + (10.0f * i));
+							rotation = glm::vec3(0.0f, 90.0f, 0.0f);
+						}
+						if (j == 3)
+						{
+							pos += glm::vec3(150.0f, 1.2f, -30.0f + (10.0f * i));
+							rotation = glm::vec3(0.0f, 90.0f, 0.0f);
+						}
+
+						auto& fire = m_World->CreateEntity(pos, rotation, { 1.0f, 0.2f, 0.5f });
+						m_World->AddComponent<Frosty::ECS::CLight>(fire, Frosty::ECS::CLight::LightType::Point, 1.0f, glm::vec3(0.99f, 0.4f, 0.1f), 20.0f, glm::vec3(0.f, 1.0f, 0.f));
+						auto& fireParticel = m_World->AddComponent<Frosty::ECS::CParticleSystem>(fire, "Particles", "fire", 100, glm::vec3(1.0f, 0.0f, 0.0f), 17.0f);
+						fireParticel.StaticColor = false;
+						fireParticel.SystemEndColor = glm::vec3(1.0f, 0.82f, 0.0f);
+						fireParticel.RandomStartPos = true;
+						fireParticel.StartParticleSize = 5.0f;
+						fireParticel.EndParticleSize = 1.0f;
+						fireParticel.EmitRate = 0.02f;
+						fireParticel.EmitCount = 1;
+						fireParticel.MaxLifetime = 3.5f;
+						fireParticel.MinLifetime = 3.5f;
+						fireParticel.FadeInTreshold = 2.683f;
+						fireParticel.FadeTreshold = 1.124f;
+
+						auto& smoke = m_World->CreateEntity(pos, rotation, { 1.0f, 0.2f, 0.5f });
+						auto& particel = m_World->AddComponent<Frosty::ECS::CParticleSystem>(smoke, "Particles", "particleSmoke", 24, glm::vec3(0.48f, 0.28f, 0.28f), 18.0f);
+						particel.SystemEndColor = glm::vec3(0.36f, 0.35f, 0.26f);
+						//particel.RandomDirection = true;
+						//particel.randSpread = 5.0f;
+						//particel.randMainDir = glm::vec3(0, 1, 0);
+						particel.StaticColor = false;
+						particel.RandomStartPos = true;
+						particel.StartParticleSize = 2.0f;
+						particel.EndParticleSize = 0.0f;
+						particel.EmitRate = 0.2f;
+						particel.EmitCount = 2;
+						particel.MaxLifetime = 3.0f;
+						particel.MinLifetime = 2.0f;
+						particel.FadeInTreshold = 2.573f;
+						particel.FadeTreshold = 2.195f;
+					}
+				//}
+			}
+		}
+	}
+
 	void LevelSystem::randomBossMovment()
 	{
 		Room bossCurrentRoom = m_Map.getRoom(m_BossPos);
