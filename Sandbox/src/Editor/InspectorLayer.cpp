@@ -962,7 +962,7 @@ namespace MCS
 					if (ImGui::CollapsingHeader("Particle System"))
 					{
 						auto& comp = world->GetComponent<Frosty::ECS::CParticleSystem>(m_SelectedEntity);
-						ImGui::BeginChild("CParticleSystem", ImVec2(EDITOR_INSPECTOR_WIDTH, 560), true);
+						ImGui::BeginChild("CParticleSystem", ImVec2(EDITOR_INSPECTOR_WIDTH, 590), true);
 						ImGui::Text("Active particles: %i", comp.ParticleCount);
 						if (comp.Loop)
 						{
@@ -1073,15 +1073,19 @@ namespace MCS
 						{
 							ImGui::DragFloat3("Start position", glm::value_ptr(comp.ParticleSystemStartPos), 0.1f, 0.0f, 0.0f, "%.2f");
 						}
+						if (comp.AlwaysFaceCamera == false) //Only relevant if particles aren't billboarded since we won't see any difference
+						{
+							ImGui::Checkbox("Rotate over lifetime", &comp.RotateOverLifetime);
+						}
 						ImGui::Checkbox("Random lifetimes", &comp.RandomLifetimes);
 						if (comp.RandomLifetimes == true)
 						{
 							ImGui::InputFloat("Min lifetime", &comp.MinLifetime);
 							ImGui::InputFloat("Max lifetime", &comp.MaxLifetime);
 						}
-						if (comp.AlwaysFaceCamera == false) //Only relevant if particles aren't billboarded since we won't see any difference
+						else
 						{
-							ImGui::Checkbox("Rotate over lifetime", &comp.RotateOverLifetime);
+							ImGui::InputFloat("Lifetime", &comp.MaxLifetime);
 						}
 						if (!Frosty::Application::Get().GameIsRunning())
 						{
@@ -1091,7 +1095,6 @@ namespace MCS
 						ImGui::InputFloat("End size", &comp.EndParticleSize);
 						ImGui::InputFloat("Emit rate", &comp.EmitRate);
 						ImGui::DragInt("Emit count", (int*)& comp.EmitCount, 1, 1, comp.MaxParticles);
-						ImGui::InputFloat("Lifetime", &comp.MaxLifetime);
 						ImGui::SliderFloat("Fade in", &comp.FadeInTreshold, comp.MaxLifetime, 0.0f);
 						ImGui::SliderFloat("Fade out", &comp.FadeTreshold, 0.0f, comp.MaxLifetime);
 
@@ -1313,6 +1316,11 @@ namespace MCS
 			if (ImGui::Button("Fireflies Blue", ImVec2(120.0f, EDITOR_MAIN_MENU_BAR_HEIGHT)))
 			{
 				Frosty::EventBus::GetEventBus()->Publish<Frosty::CreatEntityEvent>(Frosty::CreatEntityEvent(21));
+			}
+			ImGui::SameLine();
+			if (ImGui::Button("Wall Of Fire", ImVec2(120.0f, EDITOR_MAIN_MENU_BAR_HEIGHT)))
+			{
+				Frosty::EventBus::GetEventBus()->Publish<Frosty::CreatEntityEvent>(Frosty::CreatEntityEvent(24));
 			}
 			if (ImGui::Button("Cultist", ImVec2(100.0f, EDITOR_MAIN_MENU_BAR_HEIGHT)))
 			{

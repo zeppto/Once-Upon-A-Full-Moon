@@ -24,7 +24,6 @@ namespace MCS
 	void GamePauseState::Initiate()
 	{
 		m_App = &Frosty::Application::Get();
-		m_App->PushOverlay(FY_NEW(GamePauseLayer));
 
 		if (!m_ButtonsLoaded)
 		{
@@ -38,16 +37,16 @@ namespace MCS
 		float x = Frosty::InputManager::GetMouseX();
 		float y = Frosty::InputManager::GetMouseY();
 
-		if (x > 885.0f && x < 1060.0f && y > 555.0f && y < 605.0f)
+		if (Frosty::InputManager::IsKeyPressed(FY_KEY_ESCAPE))
+		{
+			m_App->GetStateMachine().AddState(Frosty::StateRef(FY_NEW(GameState)), true);
+		}
+		else if (x > 885.0f && x < 1060.0f && y > 555.0f && y < 605.0f)
 		{
 			if (Frosty::InputManager::IsMouseButtonPressed(FY_MOUSE_BUTTON_LEFT))
 			{
 				m_App->GetStateMachine().AddState(Frosty::StateRef(FY_NEW(GameState)), true);
 			}
-		}
-		else if (Frosty::InputManager::IsKeyPressed(FY_KEY_ESCAPE))
-		{
-			m_App->GetStateMachine().AddState(Frosty::StateRef(FY_NEW(GameState)), true);
 		}
 		else if (x > 730.f && x < 1215.0f && y > 460.0f && y < 500.0f)
 		{
@@ -56,6 +55,10 @@ namespace MCS
 				auto& world = Frosty::Application::Get().GetWorld();
 				Frosty::EventBus::GetEventBus()->Publish<Frosty::ResetEvent>(Frosty::ResetEvent());
 				m_App->GetStateMachine().AddState(Frosty::StateRef(FY_NEW(MenuState)), true);
+
+				Frosty::EventBus::GetEventBus()->Publish<Frosty::StopMediaEvent>(Frosty::StopMediaEvent());
+				Frosty::EventBus::GetEventBus()->Publish<Frosty::PlayMusicEvent>(Frosty::PlayMusicEvent("assets/music/Atmo.mp3", 1.0f));
+				Frosty::EventBus::GetEventBus()->Publish<Frosty::PlayMusicEvent>(Frosty::PlayMusicEvent("assets/music/menusong.mp3", 1.0f));
 			}
 		}
 		else if (x > 910.f && x < 1000.0f && y > 355.0f && y < 390.0f)

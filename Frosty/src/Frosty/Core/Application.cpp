@@ -7,7 +7,7 @@
 
 //Particle Branch Includes
 #include "Frosty/RenderEngine/VertexArray.hpp"
-#include "Frosty/UI/UIText.h"
+//#include "Frosty/UI/UIText.h"
 
 namespace Frosty
 {
@@ -106,8 +106,13 @@ namespace Frosty
 
 			float ramMemory = RamUsage();
 			float vramMemory = VramUsage();
+<<<<<<< HEAD
 		//	if (ramMemory > 256) FY_CORE_FATAL("{0} MiB RAM committed.", ramMemory);
 			//if (vramMemory > 256) FY_CORE_FATAL("{0} MiB VRAM used.", vramMemory);
+=======
+			if (ramMemory > 256) FY_CORE_FATAL("{0} MiB RAM committed.", ramMemory);
+			if (vramMemory > 256) FY_CORE_FATAL("{0} MiB VRAM used.", vramMemory);
+>>>>>>> c2debe131513434dc02240f56bfa623a920fec31
 		}
 	}
 

@@ -277,96 +277,96 @@ namespace MCS
 		{
 			*rotation = 90;
 			//return "RoomTempStraght";
-			return "straightRoad_chests_IsStatick_t_p_e_r_h_a";
+			return "straightRoad_chests_IsStatick_t_p_e_r_h_a_bb";
 		}
 		if (!m_TileMap[pos.x][pos.y].sideExits[0] && !m_TileMap[pos.x][pos.y].sideExits[1] && m_TileMap[pos.x][pos.y].sideExits[2] && m_TileMap[pos.x][pos.y].sideExits[3])
 		{
 			*rotation = 0;
 			//return "RoomTempStraght";
-			return "straightRoad_chests_IsStatick_t_p_e_r_h_a";
+			return "straightRoad_chests_IsStatick_t_p_e_r_h_a_bb";
 		}
 		if (m_TileMap[pos.x][pos.y].sideExits[0] && !m_TileMap[pos.x][pos.y].sideExits[1] && m_TileMap[pos.x][pos.y].sideExits[2] && !m_TileMap[pos.x][pos.y].sideExits[3])
 		{
 			*rotation = 90;
 			//return "RoomTempBend";
-			return "turningRoad_chests_IsStatick_t_p_e_r_h_a";
+			return "turningRoad_chests_IsStatick_t_p_e_r_h_a_bb";
 		}
 		if (m_TileMap[pos.x][pos.y].sideExits[0] && !m_TileMap[pos.x][pos.y].sideExits[1] && !m_TileMap[pos.x][pos.y].sideExits[2] && m_TileMap[pos.x][pos.y].sideExits[3])
 		{
 			*rotation = 0;
 			//return "RoomTempBend";
-			return "turningRoad_chests_IsStatick_t_p_e_r_h_a";
+			return "turningRoad_chests_IsStatick_t_p_e_r_h_a_bb";
 		}
 		if (!m_TileMap[pos.x][pos.y].sideExits[0] && m_TileMap[pos.x][pos.y].sideExits[1] && m_TileMap[pos.x][pos.y].sideExits[2] && !m_TileMap[pos.x][pos.y].sideExits[3])
 		{
 			*rotation = 180;
 			//return "RoomTempBend";
-			return "turningRoad_chests_IsStatick_t_p_e_r_h_a";
+			return "turningRoad_chests_IsStatick_t_p_e_r_h_a_bb";
 		}
 		if (!m_TileMap[pos.x][pos.y].sideExits[0] && m_TileMap[pos.x][pos.y].sideExits[1] && !m_TileMap[pos.x][pos.y].sideExits[2] && m_TileMap[pos.x][pos.y].sideExits[3])
 		{
 			*rotation = 270;
 			//return "RoomTempBend";
-			return "turningRoad_chests_IsStatick_t_p_e_r_h_a";
+			return "turningRoad_chests_IsStatick_t_p_e_r_h_a_bb";
 		}
 		if (m_TileMap[pos.x][pos.y].sideExits[0] && !m_TileMap[pos.x][pos.y].sideExits[1] && m_TileMap[pos.x][pos.y].sideExits[2] && m_TileMap[pos.x][pos.y].sideExits[3])
 		{
 			*rotation = 0;
 			//return "RoomTemp3";
-			return "threeWayRoad_chests_IsStatick_t_p_e_r_h_a";
+			return "threeWayRoad_chests_IsStatick_t_p_e_r_h_a_bb";
 		}
 		if (m_TileMap[pos.x][pos.y].sideExits[0] && m_TileMap[pos.x][pos.y].sideExits[1] && m_TileMap[pos.x][pos.y].sideExits[2] && !m_TileMap[pos.x][pos.y].sideExits[3])
 		{
 			*rotation = 90;
 			//return "RoomTemp3";
-			return "threeWayRoad_chests_IsStatick_t_p_e_r_h_a";
+			return "threeWayRoad_chests_IsStatick_t_p_e_r_h_a_bb";
 		}
 		if (!m_TileMap[pos.x][pos.y].sideExits[0] && m_TileMap[pos.x][pos.y].sideExits[1] && m_TileMap[pos.x][pos.y].sideExits[2] && m_TileMap[pos.x][pos.y].sideExits[3])
 		{
 			*rotation = 180;
 			//return "RoomTemp3";
-			return "threeWayRoad_chests_IsStatick_t_p_e_r_h_a";
+			return "threeWayRoad_chests_IsStatick_t_p_e_r_h_a_bb";
 		}
 		if (m_TileMap[pos.x][pos.y].sideExits[0] && m_TileMap[pos.x][pos.y].sideExits[1] && !m_TileMap[pos.x][pos.y].sideExits[2] && m_TileMap[pos.x][pos.y].sideExits[3])
 		{
 			*rotation = 270;
 			//return "RoomTemp3";
-			return "threeWayRoad_chests_IsStatick_t_p_e_r_h_a";
+			return "threeWayRoad_chests_IsStatick_t_p_e_r_h_a_bb";
 		}
 		if (m_TileMap[pos.x][pos.y].sideExits[0] && m_TileMap[pos.x][pos.y].sideExits[1] && m_TileMap[pos.x][pos.y].sideExits[2] && m_TileMap[pos.x][pos.y].sideExits[3])
 		{
 			*rotation = 0;
 			//return "RoomTempCross";
-			return "crossroad_chests_IsStatick_t_p_e_r_h_a";
+			return "crossroad_chests_IsStatick_t_p_e_r_h_a_bb";
 		}
 		//dead ends
 		if (m_TileMap[pos.x][pos.y].sideExits[0] && !m_TileMap[pos.x][pos.y].sideExits[1] && !m_TileMap[pos.x][pos.y].sideExits[2] && !m_TileMap[pos.x][pos.y].sideExits[3])
 		{
 			*rotation = 0;
 			//return "RoomTempDeadEnd";
-			return "deadend_chests_IsStatick_t_p_e_r_h_a";
+			return "deadend_chests_IsStatick_t_p_e_r_h_a_bb";
 		}
 		if (!m_TileMap[pos.x][pos.y].sideExits[0] && !m_TileMap[pos.x][pos.y].sideExits[1] && m_TileMap[pos.x][pos.y].sideExits[2] && !m_TileMap[pos.x][pos.y].sideExits[3])
 		{
 			*rotation = 90;
 			//return "RoomTempDeadEnd";
-			return "deadend_chests_IsStatick_t_p_e_r_h_a";
+			return "deadend_chests_IsStatick_t_p_e_r_h_a_bb";
 		}
 		if (!m_TileMap[pos.x][pos.y].sideExits[0] && m_TileMap[pos.x][pos.y].sideExits[1] && !m_TileMap[pos.x][pos.y].sideExits[2] && !m_TileMap[pos.x][pos.y].sideExits[3])
 		{
 			*rotation = 180;
 			//return "RoomTempDeadEnd";
-			return "deadend_chests_IsStatick_t_p_e_r_h_a";
+			return "deadend_chests_IsStatick_t_p_e_r_h_a_bb";
 		}
 		if (!m_TileMap[pos.x][pos.y].sideExits[0] && !m_TileMap[pos.x][pos.y].sideExits[1] && !m_TileMap[pos.x][pos.y].sideExits[2] && m_TileMap[pos.x][pos.y].sideExits[3])
 		{
 			*rotation = 270;
 			//return "RoomTempDeadEnd";
-			return "deadend_chests_IsStatick_t_p_e_r_h_a";
+			return "deadend_chests_IsStatick_t_p_e_r_h_a_bb";
 		}
 		if (m_TileMap[pos.x][pos.y].Ocupide)
-			return "deadend_chests_IsStatick_t_p_e_r_h_a";
-		return "deadend_chests_IsStatick_t_p_e_r_h_a";
+			return "deadend_chests_IsStatick_t_p_e_r_h_a_bb";
+		return "deadend_chests_IsStatick_t_p_e_r_h_a_bb";
 	}
 
 	std::vector<glm::ivec2> MapGenerator::getPathToTargert(glm::ivec2 startPos, glm::ivec2 endPos)

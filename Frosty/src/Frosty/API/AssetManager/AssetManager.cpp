@@ -8,15 +8,13 @@
 #include <stdio.h>
 #include <direct.h>
 
-
 namespace Frosty
 {
-
 	bool AssetManager::s_AutoLoad = true;
 	AssetManager* AssetManager::s_Instance = nullptr;
 	uint16_t AssetManager::s_Total_Nr_Assets = 0;
 
- std::vector<Luna::Vertex>* AssetManager::s_CurrentVertexArray = nullptr;
+	std::vector<Luna::Vertex>* AssetManager::s_CurrentVertexArray = nullptr;
 
 	std::unordered_map<std::string, Mesh> AssetManager::s_Meshes;
 	std::unordered_map<std::string, Animation> AssetManager::s_Animations;
@@ -34,24 +32,28 @@ namespace Frosty
 	std::map<std::string, std::shared_ptr<Grid>> AssetManager::s_Grid;
 	std::map<std::string, std::shared_ptr<BoolMap>> AssetManager::s_BoolMaps;
 
+	irrklang::ISoundEngine* AssetManager::s_SoundEngine = nullptr;
+
+	std::map<std::string, irrklang::ISoundSource*> AssetManager::s_Media;
+
 	std::vector<std::string> AssetManager::s_FilePath_Vector;
 
 	uint16_t AssetManager::s_Failed_Loading_Attempts = 0;
 	uint16_t AssetManager::s_Success_Loading_Attempts = 0;
-
 
 	AssetManager* AssetManager::Get()
 	{
 		if (!s_Instance)
 		{
 			s_Instance = FY_NEW AssetManager;
+			s_SoundEngine = irrklang::createIrrKlangDevice();
 		}
 		return s_Instance;
 	}
 
 	AssetManager::~AssetManager()
 	{
-		
+		s_SoundEngine->drop();
 	}
 
 	bool AssetManager::LoadFile(const std::string& FullFilePath, const std::string& TagName)
@@ -66,37 +68,36 @@ namespace Frosty
 		{
 			switch (TempFileInfo.Type)
 			{
-			case JPG :
+			case JPG:
 				returnValue = LoadGraphicFile(TempFileInfo);
 				break;
-
 			case PNG:
 				returnValue = LoadGraphicFile(TempFileInfo);
 				break;
-
 			case TGA:
 				returnValue = LoadGraphicFile(TempFileInfo);
 				break;
-
 			case LUNA:
 				returnValue = LoadLunaFile(TempFileInfo);
 				break;
-
 			case TTF:
 				returnValue = LoadTTF_File(TempFileInfo);
 				break;
 			case XML:
 				returnValue = LoadXML(TempFileInfo);
 				break;
-
 			case GRID:
 				returnValue = LoadGrid(TempFileInfo);
 				break;
-
+			case MP3:
+				returnValue = LoadMediaFile(TempFileInfo);
+				break;
+			case WAV:
+				returnValue = LoadMediaFile(TempFileInfo);
+				break;
 			case BMAP:
 				returnValue = LoadBoolMap(TempFileInfo);
 				break;
-
 			default:
 				FY_CORE_WARN("Unknown fileformat, Filepath: {0}", TempFileInfo.FileName);
 				break;
@@ -169,7 +170,8 @@ namespace Frosty
 			std::shared_ptr<VertexBuffer> vertexBuffer;
 			vertexBuffer.reset(VertexBuffer::Create(&vertices.front(), sizeof(Luna::Vertex) * (uint32_t)vertices.size(), BufferType::STATIC));
 
-			BufferLayout layout = {
+			BufferLayout layout = 
+			{
 				{ ShaderDataType::Float3, "a_Position" },
 				{ ShaderDataType::Float2, "a_TextureCoords" },
 				{ ShaderDataType::Float3, "a_Normal" },
@@ -194,6 +196,7 @@ namespace Frosty
 		{
 			FY_CORE_WARN("Mesh: {0}, Is already loaded", MetaData.TagName);
 		}
+
 		return returnValue;
 	}
 
@@ -202,7 +205,6 @@ namespace Frosty
 		bool returnValue = false;
 		if (!MeshLoaded(MetaData.TagName))
 		{
-
 			// Vertex Array
 			s_VertexArrays.emplace(MetaData.TagName, VertexArray::Create());
 
@@ -210,7 +212,8 @@ namespace Frosty
 			std::shared_ptr<VertexBuffer> vertexBuffer;
 			vertexBuffer.reset(VertexBuffer::Create(&vertices.front(), sizeof(AnimVert) * (uint32_t)vertices.size(), BufferType::DYNAMIC));
 
-			BufferLayout layout = {
+			BufferLayout layout = 
+			{
 				{ ShaderDataType::Float3, "a_Position" },
 				{ ShaderDataType::Float2, "a_TextureCoords" },
 				{ ShaderDataType::Float3, "a_Normal" },
@@ -245,6 +248,7 @@ namespace Frosty
 		{
 			FY_CORE_WARN("Mesh: {0}, Is already loaded", MetaData.TagName);
 		}
+
 		return returnValue;
 	}
 
@@ -304,16 +308,28 @@ namespace Frosty
 		}
 		return true;
 	}
-	
+
+	bool AssetManager::AddMedia(const FileMetaData& MetaData)
+	{
+		if (MediaFileLoaded(MetaData.FileName))
+		{
+			FY_CORE_INFO("Media File: {0}, Is already loaded", MetaData.FileName);
+			return false;
+		}
+		else
+		{
+			// Preload media file
+			irrklang::ISoundSource* temp =	s_SoundEngine->addSoundSourceFromFile(MetaData.FullFilePath.c_str(), irrklang::ESM_AUTO_DETECT, true);
+			s_Media[MetaData.FileName] = temp;
+		}
+		return true;
+	}
+
 	bool AssetManager::AddGrid(const FileMetaData& MetaData)
 	{
 		if (GridLoaded(MetaData.FileName))
 		{
 			FY_CORE_INFO("Grid: {0}, Is already loaded", MetaData.FileName);
-			return false;
-		}
-		else
-		{
 			s_Grid.emplace(MetaData.FileName, FY_NEW Grid());
 		}
 		return true;
@@ -456,7 +472,6 @@ namespace Frosty
 		Triangle triangleA = *(Triangle*)a;
 		Triangle triangleB = *(Triangle*)b;
 
-
 		unsigned int indexPosA1 = triangleA.indices[0].vertIndex;
 		unsigned int indexPosA2 = triangleA.indices[0].vertIndex;
 		unsigned int indexPosA3 = triangleA.indices[0].vertIndex;
@@ -477,9 +492,7 @@ namespace Frosty
 
 		float YposB = (YposB1 + YposB2 + YposA3);
 
-
-/*
-		Luna::Index indexA = *(Luna::Index*)a;
+		/*Luna::Index indexA = *(Luna::Index*)a;
 		Luna::Index indexB = *(Luna::Index*)b;
 		
 		unsigned int indexPosA = indexA.vertIndex;
@@ -520,8 +533,6 @@ namespace Frosty
 	std::vector<std::string> AssetManager::GetShaderNames()
 	{
 		std::vector<std::string> returnVector;
-
-
 		std::map<std::string, std::shared_ptr<Shader>>::iterator it;
 
 		for (it = s_Shaders.begin(); it != s_Shaders.end(); it++)
@@ -535,8 +546,6 @@ namespace Frosty
 	std::vector<std::string> AssetManager::GetTexturesNames()
 	{
 		std::vector<std::string> returnVector;
-
-
 		std::map<std::string, std::shared_ptr<Texture2D>>::iterator it;
 
 		for (it = s_Textures2D.begin(); it != s_Textures2D.end(); it++)
@@ -550,8 +559,6 @@ namespace Frosty
 	std::vector<std::string> AssetManager::GetBoundingBoxNames()
 	{
 		std::vector<std::string> returnVector;
-
-
 		std::map<std::string, std::shared_ptr<Luna::BoundingBox>>::iterator it;
 
 		for (it = s_BoundingBoxes.begin(); it != s_BoundingBoxes.end(); it++)
@@ -604,7 +611,6 @@ namespace Frosty
 	{
 		bool returnValue = false;
 
-
 		std::unordered_map<std::string, LinkedMaterial>::iterator it;
 		for (it = s_LinkedMaterials.begin(); it != s_LinkedMaterials.end() && returnValue == false; it++)
 		{
@@ -621,7 +627,6 @@ namespace Frosty
 	{
 		bool returnValue = false;
 
-
 		std::map<std::string, std::shared_ptr<TrueTypeFile>>::iterator it;
 		for (it = s_TruefontTypes.begin(); it != s_TruefontTypes.end() && returnValue == false; it++)
 		{
@@ -637,7 +642,6 @@ namespace Frosty
 	bool AssetManager::XMLLoaded(const std::string& FileName)
 	{
 		bool returnValue = false;
-
 
 		std::map<std::string, std::shared_ptr<WeaponHandler>>::iterator it;
 		for (it = s_WeaponHandler.begin(); it != s_WeaponHandler.end() && returnValue == false; it++)
@@ -700,6 +704,25 @@ namespace Frosty
 		return returnValue;
 	}
 
+
+	bool AssetManager::MediaFileLoaded(const std::string& MeshName)
+	{
+		bool returnValue = false;
+
+
+		std::map<std::string, irrklang::ISoundSource*>::iterator it;
+		for (it = s_Media.begin(); it != s_Media.end() && returnValue == false; it++)
+		{
+			if (it->first == MeshName)
+			{
+				returnValue = true;
+			}
+		}
+
+		return returnValue;
+	}
+
+
 	bool AssetManager::BoundingboxLoaded(const std::string& MeshName)
 	{
 		bool returnValue = false;
@@ -750,7 +773,6 @@ namespace Frosty
 
 	bool AssetManager::LoadLunaFile(const FileMetaData& FileNameInformation, const bool& Reload)
 	{
-
 		bool returnValue = false;
 
 		//temp
@@ -760,14 +782,11 @@ namespace Frosty
 
 		if (tempFile.readFile(FileNameInformation.FullFilePath.c_str()))
 		{
-
 			returnValue = true;
 
 			// for nr of meshes
 			for (uint16_t i = 0; i < tempFile.getMeshCount(); i++)
 			{
-
-
 				//Mesh
 				std::vector<Luna::Vertex> vertices;
 				std::vector<Luna::Index> indices;
@@ -791,27 +810,20 @@ namespace Frosty
 						//GET ANIMATION IS TEMP
 						AddAnimatedMesh(tempMetaData, aVertices, indices, tempFile.getAnimation());
 					}
-
 				}
 				else
 				{
 					FY_CORE_FATAL("Luna Mesh:{0}, has 0 Vertices or Indices ", tempFile.getMesh(i).name);
 				}
 
-
-
 				//Boundingbox;
 				AddBoundingbox(tempMetaData,tempFile.getBoundingBox(tempFile.getMesh(i).id));
 
-
-
 				//Animation
-
 
 				//temp
 				if (!aniLoaded)
 				{
-
 					if (tempFile.animationExist())
 					{
 						AddAnimation(Animation(FileNameInformation, i, tempFile.getAnimation(), 1));
@@ -822,7 +834,6 @@ namespace Frosty
 							GetAnimation(tempFile.getAnimation().animationName)->LoadToGPU();
 							aniLoaded = true;
 						}
-
 					}
 				}
 
@@ -855,13 +866,11 @@ namespace Frosty
 								//Temp can be optimized
 								GetMaterial(TempMatMetaData.FileName)->SetDiffuse(*tempTexfile);
 							}
-
 						}
 						else
 						{
 							FY_CORE_WARN("Luna File: {0}, Does not have a diffuse texture", TempMatMetaData.FileName);
 						}
-
 
 						//Normal
 						if (tempLnk->GetMaterial().hasNormalMap)
@@ -879,14 +888,12 @@ namespace Frosty
 									//Temp can be optimized
 									GetMaterial(TempMatMetaData.FileName)->SetNormal(*tempTexfile);
 								}
-
 							}
 							else
 							{
 								FY_CORE_WARN("Luna File: {0}, Does not have a normal texture (Fault when exported file from Luna)", TempMatMetaData.FileName);
 							}
 						}
-
 
 						//Glow
 						if (tempLnk->GetMaterial().hasGlowMap)
@@ -927,16 +934,12 @@ namespace Frosty
 		bool returnValue = false;
 		if (AddTTF(FileNameInformation))
 		{
-
 			std::shared_ptr<TrueTypeFile> ptr = GetTTF(FileNameInformation.FileName);
 
 			if (ptr->LoadFont())
 			{
-
 				returnValue = true;
 			}
-
-
 		}
 		return returnValue;
 	}
@@ -944,8 +947,6 @@ namespace Frosty
 	bool AssetManager::LoadGraphicFile(const FileMetaData& FileNameInformation, const bool& Reload)
 	{
 		bool returnValue = false;
-
-		
 
 		if (AddTexture(FileNameInformation))
 		{
@@ -956,6 +957,20 @@ namespace Frosty
 			//	GetTexture(FileNameInformation.FileName)->LoadToGPU();
 			//	GetTexture(FileNameInformation.FileName)->DeleteFromMem();
 			//}
+			returnValue = true;
+		}
+
+		return returnValue;
+	}
+	
+	bool AssetManager::LoadMediaFile(const FileMetaData& FileNameInformation, const bool& Reload)
+	{
+		bool returnValue = false;
+
+
+
+		if (AddMedia(FileNameInformation))
+		{
 			returnValue = true;
 		}
 
@@ -990,8 +1005,6 @@ namespace Frosty
 
 				returnValue = true;
 			}
-
-
 		}
 		return returnValue;
 	}
@@ -1015,7 +1028,8 @@ namespace Frosty
 		//can use CutFileName
 		FileNameInformation.Type = GetFileType(temp_Type);
 
-		if (count > 0) {
+		if (count > 0)
+		{
 
 			returnValue = true;
 
@@ -1028,7 +1042,6 @@ namespace Frosty
 				{
 					break;
 				}
-
 			}
 
 			std::reverse(temp_Name.begin(), temp_Name.end());
@@ -1072,6 +1085,14 @@ namespace Frosty
 		{
 			return XML;
 		}
+		else if (fileType == FILE_TYPE_WAV)
+		{
+			return WAV;
+		}
+		else if (fileType == FILE_TYPE_MP3)
+		{
+			return MP3;
+		}
 		else if (fileType == FILE_TYPE_GRID)
 		{
 			return GRID;
@@ -1080,7 +1101,6 @@ namespace Frosty
 		{
 			return BMAP;
 		}
-
 
 		return -1;
 	}
@@ -1169,7 +1189,6 @@ namespace Frosty
 	{
 		std::string returnString = "";
 
-
 		if (*in_char_ptr != '\0')
 		{
 
@@ -1214,5 +1233,4 @@ namespace Frosty
 		}
 		return returnString;
 	}
-
 }

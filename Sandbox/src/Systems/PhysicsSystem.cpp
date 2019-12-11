@@ -31,7 +31,11 @@ namespace MCS
 				glm::vec3 dir = mat * glm::vec4(0.0f, 0.0f, 1.0f, 0.0);
 
 
+<<<<<<< HEAD
 			//	FY_INFO("Direction: ({0}, {1}, {2})", dir.x, dir.y, dir.z);
+=======
+				//FY_INFO("Direction: ({0}, {1}, {2})", dir.x, dir.y, dir.z);
+>>>>>>> c2debe131513434dc02240f56bfa623a920fec31
 			}
 			
 			// Movement
