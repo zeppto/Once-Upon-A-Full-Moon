@@ -85,7 +85,14 @@ void MCS::HighscoreState::InitiateGUI()
 	{
 		while (std::getline(iScores, line))
 		{
-			scores[count] = (std::stoi(line));
+			if (count < scores.size())
+			{
+				scores[count] = (std::stoi(line));
+			}
+			else
+			{
+				scores.push_back((std::stoi(line)));
+			}
 			count++;
 		}
 		iScores.close();

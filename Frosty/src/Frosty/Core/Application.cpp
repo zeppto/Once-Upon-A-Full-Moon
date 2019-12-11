@@ -280,7 +280,6 @@ namespace Frosty
 				//Commit Charge is the total amount of memory that the memory manager has committed for a running process.
 
 			memoryUsage = float(pmc.PagefileUsage / 1024.0 / 1024.0); //MiB
-			memoryUsage = memoryUsage - VramUsage();
 
 			//if (memoryUsage > 256) FY_CORE_FATAL("{0} MiB RAM committed.", memoryUsage);
 		}
