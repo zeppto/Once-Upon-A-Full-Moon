@@ -271,13 +271,14 @@ namespace MCS
 			m_Physics[index]->Direction.z = 0.0f;
 			//m_Physics[index]->Velocity.z = 0.0f;
 		}
+
 		if (Frosty::InputManager::IsKeyReleased(m_Player[index]->MoveLeftKey) || Frosty::InputManager::IsKeyReleased(m_Player[index]->MoveRightKey))
 		{
 			m_Physics[index]->Direction.x = 0.0f;
 			//m_Physics[index]->Velocity.x = 0.0f;
 		}
-
-		if (!animController.isBusy)
+	
+		if (animController.breakable) //Check if current animation is busy/breakable
 		{
 			if (Frosty::InputManager::IsKeyPressed(m_Player[index]->MoveForwardKey))
 			{

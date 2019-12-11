@@ -46,7 +46,7 @@ namespace MCS
 		{
 			if (Frosty::InputManager::IsMouseButtonPressed(FY_MOUSE_BUTTON_LEFT))
 			{
-				m_App->GetStateMachine().AddState(Frosty::StateRef(FY_NEW(HighscoreState)), true);
+				m_App->GetStateMachine().AddState(Frosty::StateRef(FY_NEW(HighscoreState)), false);
 			}
 		}
 		else if (x > 860.f && x < 1090.0f && y > 350.0f && y < 395.0f)

@@ -18,19 +18,23 @@ void MCS::AnimationSystem::OnUpdate()
 	for (size_t i = 1; i < p_Total; i++)
 	{
 		//May want to reset DT for idle and run too.
-		if (!m_AControllers[i]->isBusy)
+
+		if (m_World->HasComponent<Frosty::ECS::CPlayer>(m_AControllers[i]->EntityPtr))
 		{
-			if (m_World->HasComponent<Frosty::ECS::CPlayer>(m_AControllers[i]->EntityPtr))
+			if (m_AControllers[i]->breakable)
 			{
 				if (!m_World->GetComponent<Frosty::ECS::CDash>(m_AControllers[i]->EntityPtr).Active)
 				{
 					auto& physics = m_World->GetComponent<Frosty::ECS::CPhysics>(m_AControllers[i]->EntityPtr);
+					
 					if (physics.Direction.x != 0.0f || physics.Direction.z != 0.0f)
 					{
 						if (m_AControllers[i]->currAnim->GetName() != "Scarlet_Run")
 						{
+							m_AControllers[i]->dt = 0.0f;
 							m_AControllers[i]->currAnim = Frosty::AssetManager::GetAnimation("Scarlet_Run");
-							m_AControllers[i]->animSpeed = 0.7f;
+							m_AControllers[i]->animSpeed = physics.Speed / 24.3f; //Set to Physics speed? To increase animSpeed when speed boost
+							m_AControllers[i]->isBusy = false;
 							UpdateAnimOffset(m_AControllers[i]);
 						}
 					}
@@ -40,8 +44,9 @@ void MCS::AnimationSystem::OnUpdate()
 					}
 					else
 					{
-						if (m_AControllers[i]->currAnim->GetName() != "Scarlet_Idle")
+						if (m_AControllers[i]->currAnim->GetName() != "Scarlet_Idle" && !m_AControllers[i]->isBusy)
 						{
+							m_AControllers[i]->dt = 0.0f;
 							m_AControllers[i]->currAnim->SetIsRepeating(true);
 							m_AControllers[i]->currAnim = Frosty::AssetManager::GetAnimation("Scarlet_Idle");
 							m_AControllers[i]->animSpeed = 1.0f;
@@ -49,9 +54,35 @@ void MCS::AnimationSystem::OnUpdate()
 						}
 					}
 				}
-				
 			}
-			else if (m_World->HasComponent<Frosty::ECS::CEnemy>(m_AControllers[i]->EntityPtr))
+			
+			else if (!m_AControllers[i]->currAnim->GetIsFinished())
+			{
+				if (m_AControllers[i]->currAnim->GetStridePercent() > 0.55f && m_AControllers[i]->currAnim->GetName() == "Scarlet_Attack1")
+				{
+					m_AControllers[i]->breakable = true;
+				}
+				else if (m_AControllers[i]->currAnim->GetStridePercent() > 0.85f && m_AControllers[i]->currAnim->GetName() == "Scarlet_Attack2")
+				{
+					m_AControllers[i]->breakable = true;
+				}
+				else if (m_AControllers[i]->currAnim->GetStridePercent() > 0.45f && m_AControllers[i]->currAnim->GetName() == "Scarlet_Attack3")
+				{
+					m_AControllers[i]->breakable = true;
+				}
+			}
+
+			if (m_AControllers[i]->currAnim->GetIsFinished())
+			{
+				m_AControllers[i]->breakable = true;
+				m_AControllers[i]->isBusy = false;
+
+			}
+
+		}
+		else if (m_World->HasComponent<Frosty::ECS::CEnemy>(m_AControllers[i]->EntityPtr))
+		{
+			if (m_AControllers[i]->breakable)
 			{
 				auto& enemy = m_World->GetComponent<Frosty::ECS::CEnemy>(m_AControllers[i]->EntityPtr);
 				auto& wType = m_World->GetComponent<Frosty::ECS::CEnemy>(m_AControllers[i]->EntityPtr).Weapon->Type;
@@ -83,7 +114,7 @@ void MCS::AnimationSystem::OnUpdate()
 				//If it has bite it is a wolf
 				else if (wType == Frosty::ECS::CWeapon::WeaponType::Bite)
 				{
-					if (enemy.CurrentState == Frosty::ECS::CEnemy::State::Chase || enemy.CurrentState == Frosty::ECS::CEnemy::State::Escape 
+					if (enemy.CurrentState == Frosty::ECS::CEnemy::State::Chase || enemy.CurrentState == Frosty::ECS::CEnemy::State::Escape
 						|| enemy.CurrentState == Frosty::ECS::CEnemy::State::Reset)
 					{
 						if (m_AControllers[i]->currAnim->GetName() != "Wolf_Running")
@@ -131,14 +162,14 @@ void MCS::AnimationSystem::OnUpdate()
 					}
 				}
 			}
-		}
-		else
-		{
-			if (m_AControllers[i]->currAnim->GetIsFinished())
+			else
 			{
-				m_AControllers[i]->isBusy = false;
+				if (m_AControllers[i]->currAnim->GetIsFinished())
+				{
+					m_AControllers[i]->breakable = true;
+				}
 			}
-		}
+		}	
 	}
 }
 
@@ -245,7 +276,7 @@ void MCS::AnimationSystem::OnDashEvent(Frosty::DashEvent& e)
 	auto& world = Frosty::Application::Get().GetWorld();
 
 	Frosty::ECS::CAnimController* controller = &world->GetComponent<Frosty::ECS::CAnimController>(e.GetEntity());
-	if (!controller->isBusy)
+	if (controller->breakable)
 	{
 		controller->currAnim = Frosty::AssetManager::GetAnimation("Scarlet_Dash");
 		controller->dt = 0;
@@ -319,7 +350,7 @@ void MCS::AnimationSystem::OnPlayAnimEvent(Frosty::PlayAnimEvent& e)
 					BeginNewAnim(controller, "Werewolf_Run");
 					controller->animSpeed = 2.0f;
 					controller->currAnim->SetIsRepeating(true);
-					controller->isBusy = false;
+					controller->breakable = false;
 				case 5:
 					controller->animSpeed = 1.0f;
 
@@ -376,6 +407,8 @@ void MCS::AnimationSystem::BeginNewAnim(Frosty::ECS::CAnimController* controller
 	controller->currAnim = Frosty::AssetManager::GetAnimation(animName);
 	controller->currAnim->SetIsRepeating(false);
 	controller->currAnim->SetIsFinished(false);
+	controller->currAnim->SetStridePercent(0.0f);
+	controller->breakable = false;
 	controller->isBusy = true;
 }
 

@@ -57,7 +57,14 @@ namespace MCS
 				{
 					ImGuiTreeNodeFlags node_flags = ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen | ((selection_mask & (1 << counter)) ? ImGuiTreeNodeFlags_Selected : 0); // ImGuiTreeNodeFlags_Bullet
 					Frosty::ECS::EntityID eid = entity->Id;
-					ImGui::TreeNodeEx((void*)(intptr_t)counter, node_flags, "Entity (%d)", eid);
+					if (world->HasComponent<Frosty::ECS::CPlayer>(entity))
+					{
+						ImGui::TreeNodeEx((void*)(intptr_t)counter, node_flags, "Entity (%d) (Player)", eid);
+					}
+					else
+					{
+						ImGui::TreeNodeEx((void*)(intptr_t)counter, node_flags, "Entity (%d)", eid);
+					}
 					if (ImGui::IsItemClicked())
 					{
 						node_clicked = (int)counter;
