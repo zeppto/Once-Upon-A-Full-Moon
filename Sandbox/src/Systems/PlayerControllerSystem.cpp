@@ -1009,6 +1009,7 @@ namespace MCS
 			{
 				auto& world = Frosty::Application::Get().GetWorld();
 				auto& bait = world->CreateEntity();
+				m_World->AddToGroup(bait, true);
 				world->AddComponent<Frosty::ECS::CMesh>(bait, Frosty::AssetManager::GetMesh("meat"));
 				auto& material = world->AddComponent<Frosty::ECS::CMaterial>(bait, Frosty::AssetManager::GetShader("Texture2D"));
 				material.DiffuseTexture = Frosty::AssetManager::GetTexture2D("meat");

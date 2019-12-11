@@ -133,6 +133,10 @@ namespace MCS
 
 			//m_LevelFileFormat.LoadBoolMap("deadend_chests_IsStatick_t_p_e_r_h_a");
 			m_StartTimer = Frosty::Time::CurrentTime();
+			m_RoomswhithBait.clear();
+			m_BossRememberdPath.pathToGo.clear();
+			m_BossRememberdPath.expectedPlayerPos = { -1, -1 };
+			m_BossRememberdPath.lastTile = 1;
 		}
 
 		float time = Frosty::Time::CurrentTime() - m_StartTimer - m_BossStartTimer;
@@ -209,7 +213,7 @@ namespace MCS
 						}
 						if (m_BossRememberdPath.expectedPlayerPos == m_BossPos)
 						{
-							float timeToEate = (5.0f * m_LevelFileFormat.RemoveAllBaitInRoom(m_BossPos));
+							float timeToEate = (12.0f * m_LevelFileFormat.RemoveAllBaitInRoom(m_BossPos));
 							m_BossTimer += timeToEate;
 							for (int i = 0; i < m_RoomswhithBait.size(); i++)
 							{
@@ -934,10 +938,11 @@ namespace MCS
 
 			// ENEMY A
 			auto& enemyA = m_World->CreateEntity({ 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 2.0f, 2.0f, 2.0f });
+			m_World->AddToGroup(enemyA, true);
 			auto& enemyATransform = m_World->GetComponent<Frosty::ECS::CTransform>(enemyA);
-			//world->AddComponent<Frosty::ECS::CAnimController>(enemyA).currAnim = Frosty::AssetManager::GetAnimation("Wolf_Running");
 			m_World->AddComponent<Frosty::ECS::CMesh>(enemyA, Frosty::AssetManager::GetMesh("Cultist"));
-			auto& enemyMatA = m_World->AddComponent<Frosty::ECS::CMaterial>(enemyA, Frosty::AssetManager::GetShader("Texture2D"));
+			m_World->AddComponent<Frosty::ECS::CAnimController>(enemyA).currAnim = Frosty::AssetManager::GetAnimation("Cultist_Idle");
+			auto& enemyMatA = m_World->AddComponent<Frosty::ECS::CMaterial>(enemyA, Frosty::AssetManager::GetShader("Animation"));
 			enemyMatA.DiffuseTexture = Frosty::AssetManager::GetTexture2D("Cult_Diffuse");
 			enemyMatA.NormalTexture = Frosty::AssetManager::GetTexture2D("Cult_defaultMat_Normal");
 			m_World->AddComponent<Frosty::ECS::CPhysics>(enemyA, Frosty::AssetManager::GetBoundingBox("Cultist"), enemyATransform.Scale, 6.0f);
@@ -954,7 +959,7 @@ namespace MCS
 			auto& enemyWeaponA = m_World->CreateEntity({ 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 1.0f, 1.0f, 1.0f });
 			//world->AddComponent<Frosty::ECS::CMesh>(weapon, Frosty::AssetManager::GetMesh("pCube1"));
 			//world->AddComponent<Frosty::ECS::CMaterial>(weapon, Frosty::AssetManager::GetShader("FlatColor"));
-			auto& enemyWeaponCompA = m_World->AddComponent<Frosty::ECS::CWeapon>(enemyWeaponA, Frosty::ECS::CWeapon::WeaponType::Bow, 1, 1.0f);
+			auto& enemyWeaponCompA = m_World->AddComponent<Frosty::ECS::CWeapon>(enemyWeaponA, Frosty::ECS::CWeapon::WeaponType::Bite, 1, 1.0f);
 			enemyWeaponCompA.LVL1AttackCooldown = 3.0f;
 			enemyWeaponCompA.MaxAttackRange = 5.0f;
 			enemyWeaponCompA.MinAttackRange = 0.0f;
@@ -967,10 +972,11 @@ namespace MCS
 
 			// ENEMY A
 			auto& enemyA = m_World->CreateEntity({ 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 2.0f, 2.0f, 2.0f });
+			m_World->AddToGroup(enemyA, true);
 			auto& enemyATransform = m_World->GetComponent<Frosty::ECS::CTransform>(enemyA);
-			//world->AddComponent<Frosty::ECS::CAnimController>(enemyA).currAnim = Frosty::AssetManager::GetAnimation("Wolf_Running");
 			m_World->AddComponent<Frosty::ECS::CMesh>(enemyA, Frosty::AssetManager::GetMesh("Wolf"));
-			auto& enemyMatA = m_World->AddComponent<Frosty::ECS::CMaterial>(enemyA, Frosty::AssetManager::GetShader("Texture2D"));
+			m_World->AddComponent<Frosty::ECS::CAnimController>(enemyA).currAnim = Frosty::AssetManager::GetAnimation("Wolf_Running");
+			auto& enemyMatA = m_World->AddComponent<Frosty::ECS::CMaterial>(enemyA, Frosty::AssetManager::GetShader("Animation"));
 			enemyMatA.DiffuseTexture = Frosty::AssetManager::GetTexture2D("Wolf_Diffuse");
 			enemyMatA.NormalTexture = Frosty::AssetManager::GetTexture2D("wolf_defaultMat_Normal");
 			m_World->AddComponent<Frosty::ECS::CPhysics>(enemyA, Frosty::AssetManager::GetBoundingBox("Wolf"), enemyATransform.Scale, 6.0f);
@@ -1212,7 +1218,6 @@ namespace MCS
 		Frosty::Renderer::UpdateCMesh(weaponID, weaponMesh);
 
 		m_BossSpawned = false;
-		m_BossRoomTimer = 2.0f;
 		m_BossTimer = 0.0f;
 		m_PlayerCoords = { 10, 15 };
 		m_Start = true;
