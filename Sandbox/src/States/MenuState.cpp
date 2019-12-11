@@ -39,6 +39,13 @@ namespace MCS
 		{
 			world->AddComponent<Frosty::ECS::CDestroy>(m_MenuGui);
 		}
+		if (m_InstructionButtonsLoaded)
+		{
+			if (!world->HasComponent<Frosty::ECS::CDestroy>(m_InstructionGui))
+			{
+				world->AddComponent<Frosty::ECS::CDestroy>(m_InstructionGui);
+			}
+		}
 	}
 
 	void MenuState::Initiate()
@@ -62,6 +69,8 @@ namespace MCS
 
 	void MenuState::OnInput()
 	{
+		auto& world = Frosty::Application::Get().GetWorld();
+
 		float x = Frosty::InputManager::GetMouseX();
 		float y = Frosty::InputManager::GetMouseY();
 
@@ -74,19 +83,17 @@ namespace MCS
 			{
 				if (Frosty::InputManager::IsMouseButtonPressed(FY_MOUSE_BUTTON_LEFT))
 				{
-					auto& world = Frosty::Application::Get().GetWorld();
 					auto& menuGui = world->GetComponent<Frosty::ECS::CGUI>(m_MenuGui);
 					menuGui.Layout.texts[1].SetColor(glm::vec4(0.0f, 0.0f, 1.0f, 0.0f));
 
-					world->PlayGame();
-					m_App->GetStateMachine().AddState(Frosty::StateRef(FY_NEW(GameState)), true);
+					m_Instructions = true;
+					InitiateInstructions();
 				}
 			}
 			else if (x > (570.0f * width) && x < (700.0f * width) && y >(335 * height) && y < (365 * height))
 			{
 				if (Frosty::InputManager::IsMouseButtonPressed(FY_MOUSE_BUTTON_LEFT))
 				{
-					auto& world = Frosty::Application::Get().GetWorld();
 					auto& menuGui = world->GetComponent<Frosty::ECS::CGUI>(m_MenuGui);
 					std::string Controls = "Controls";
 					float posX = (960 / 1.5f) - (Controls.size() / 2) * 17;
@@ -116,7 +123,6 @@ namespace MCS
 			{
 				if (Frosty::InputManager::IsMouseButtonPressed(FY_MOUSE_BUTTON_LEFT))
 				{
-					auto& world = Frosty::Application::Get().GetWorld();
 					auto& menuGui = world->GetComponent<Frosty::ECS::CGUI>(m_MenuGui);
 					std::string Exit = "Exit";
 					float posX = (960 / 1.5f) - (Exit.size() / 2) * 17;
@@ -132,6 +138,33 @@ namespace MCS
 					m_ButtonsLoaded = true;
 					m_Controls = false;
 				}
+			}
+			else if (Frosty::InputManager::IsKeyPressed(FY_KEY_ESCAPE))
+			{
+				auto& menuGui = world->GetComponent<Frosty::ECS::CGUI>(m_MenuGui);
+				std::string Exit = "Exit";
+				float posX = (960 / 1.5f) - (Exit.size() / 2) * 17;
+
+				menuGui.Layout.texts[0].SetText("Main Menu");
+				menuGui.Layout.texts[1].SetText("Play");
+				menuGui.Layout.texts[2].SetText("Controls");
+				menuGui.Layout.texts[3].SetText("Exit");
+				menuGui.Layout.texts[3].SetPosition(glm::vec2(posX, 250.0f));
+				menuGui.Layout.sprites[0].SetImage("Background");
+				menuGui.Layout.sprites[0].SetColorSprite(glm::vec4(0.5f, 0.5f, 0.5f, 1.0f));
+
+				m_ButtonsLoaded = true;
+				m_Controls = false;
+			}
+		}
+
+		if (m_Instructions)
+		{
+			if (Frosty::InputManager::IsKeyPressed(FY_KEY_SPACE))
+			{
+				m_Instructions = false;
+				world->PlayGame();
+				m_App->GetStateMachine().AddState(Frosty::StateRef(FY_NEW(GameState)), true);
 			}
 		}
 	}
@@ -178,6 +211,27 @@ namespace MCS
 			{
 				menuGui.Layout.texts[3].SetColor(glm::vec4(0.8f, 0.0f, 0.0f, 0.0f));
 			}
+		}
+		
+		if (m_InstructionButtonsLoaded && m_Instructions)
+		{
+			auto& world = Frosty::Application::Get().GetWorld();
+			auto& menuGui = world->GetComponent<Frosty::ECS::CGUI>(m_MenuGui);
+
+			menuGui.Layout.texts[0].SetText("");
+			menuGui.Layout.texts[1].SetText("");
+			menuGui.Layout.texts[2].SetText("");
+			menuGui.Layout.texts[3].SetText("");
+			m_ButtonsLoaded = false;
+			m_Controls = false;
+		}
+		else if (!m_Instructions && m_InstructionButtonsLoaded)
+		{
+			auto& world = Frosty::Application::Get().GetWorld();
+			auto& insGui = world->GetComponent<Frosty::ECS::CGUI>(m_InstructionGui);
+
+			insGui.Layout.texts[0].SetText("");
+			insGui.Layout.texts[1].SetText("");
 		}
 	}
 
@@ -463,5 +517,29 @@ namespace MCS
 		m_UILayout.AddSprite(glm::vec2(640.0f, 360.0f), glm::vec2(25.6f, 14.4f), "Background", glm::vec4(0.5f, 0.5f, 0.5f, 1.0f));
 
 		world->AddComponent<Frosty::ECS::CGUI>(m_MenuGui, m_UILayout);
+	}
+	
+	void MenuState::InitiateInstructions()
+	{
+		m_App = &Frosty::Application::Get();
+		auto& world = Frosty::Application::Get().GetWorld();
+		m_InstructionGui = m_App->Get().GetWorld()->CreateEntity();
+
+		m_UILayout2 = Frosty::UILayout(2, 0);
+		std::string Instruction = "Instructions";
+		std::string Continue = "Press Space to Continue";
+
+		float width = m_App->GetWindow().GetWidthMultiplier();
+		float height = m_App->GetWindow().GetHeightMultiplier();
+		float middleX = float(m_App->GetWindow().GetWidth() / 2);
+		float middleY = float(m_App->GetWindow().GetHeight() / 2);
+
+		float posX1 = (middleX / width) - (Instruction.size() / 2) * 32;
+		float posX2 = (middleX / width) - (Continue.size()    / 2) * 15;
+
+		m_UILayout2.AddText(glm::vec2(posX1, middleY / height + 175.0f), Instruction, glm::vec3(1.0f, 1.0f, 0.0f), 1.5f);
+		m_UILayout2.AddText(glm::vec2(posX2, middleY / height + 100.0f), Continue, glm::vec3(1.0f, 1.0f, 0.0f), 1.0f);
+		world->AddComponent<Frosty::ECS::CGUI>(m_InstructionGui, m_UILayout2);
+		m_InstructionButtonsLoaded = true;
 	}
 }
