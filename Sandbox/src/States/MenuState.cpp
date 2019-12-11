@@ -424,6 +424,13 @@ namespace MCS
 		int speedBuffPadding = 20;
 		glm::vec2 speedBuffScale = glm::vec2(0.75, 0.75);
 
+
+		//Health
+		int healthXOffset = 30;
+		int healthYOffset = 680;
+		int healthPadding = 45;
+		glm::vec2 healthScale = glm::vec2(0.75, 0.75);
+
 		uiLayout.AddSprite(glm::vec2(speedBuffXOffset + speedBuffPadding * 0, speedBuffYOffset), speedBuffScale, "speedBoots", glm::vec4(1.0f, 1.0f, 1.0f, 0.0f));// 15
 		uiLayout.AddSprite(glm::vec2(speedBuffXOffset + speedBuffPadding * 1, speedBuffYOffset), speedBuffScale, "speedBoots", glm::vec4(1.0f, 1.0f, 1.0f, 0.0f));// 16
 		uiLayout.AddSprite(glm::vec2(speedBuffXOffset + speedBuffPadding * 2, speedBuffYOffset), speedBuffScale, "speedBoots", glm::vec4(1.0f, 1.0f, 1.0f, 0.0f));// 17
@@ -458,11 +465,11 @@ namespace MCS
 		//world->AddComponent<Frosty::ECS::CLight>(light3, Frosty::ECS::CLight::LightType::Point, 1.f, glm::vec3(0.99f, 0.9f, 0.8f), 9.f);
 
 
-		//Test Bool Map
-		auto& planeBmap = world->CreateEntity({ 0.0f, 0.1f, 0.0f }, { 0.f,-90.0f, 0.0f }, { 300.0f, 1.0f, 300.0f });
-		world->AddComponent<Frosty::ECS::CMesh>(planeBmap, Frosty::AssetManager::GetMesh("pPlane1"));
-		auto& planeMat = world->AddComponent<Frosty::ECS::CMaterial>(planeBmap, Frosty::AssetManager::GetShader("Texture2D"));
-		planeMat.DiffuseTexture = Frosty::AssetManager::GetTexture2D("deadend_chests_IsStatick_t_p_e_r_h");
+		////Test Bool Map
+		//auto& planeBmap = world->CreateEntity({ 0.0f, 0.1f, 0.0f }, { 0.f,-90.0f, 0.0f }, { 300.0f, 1.0f, 300.0f });
+		//world->AddComponent<Frosty::ECS::CMesh>(planeBmap, Frosty::AssetManager::GetMesh("pPlane1"));
+		//auto& planeMat = world->AddComponent<Frosty::ECS::CMaterial>(planeBmap, Frosty::AssetManager::GetShader("Texture2D"));
+		//planeMat.DiffuseTexture = Frosty::AssetManager::GetTexture2D("deadend_chests_IsStatick_t_p_e_r_h");
 
 
 		//auto& light8 = world->CreateEntity({ -20.0f, 1.0f, 20.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f });
