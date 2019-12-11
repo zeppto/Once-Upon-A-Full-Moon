@@ -38,6 +38,7 @@ namespace MCS
 			{
 				// Look at point
 				LookAtPoint(point3D, i);
+				m_Physics[i]->SpeedMultiplier = 1.0f;
 
 				// Input
 				if (!m_Dash[i]->Active)
@@ -2118,6 +2119,4 @@ namespace MCS
 			m_Player[i]->BossFearEffectTimer = Frosty::Time::CurrentTime();
 		}
 	}
-
-
 }

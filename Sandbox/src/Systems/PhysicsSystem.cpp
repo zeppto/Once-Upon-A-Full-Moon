@@ -173,7 +173,6 @@ namespace MCS
 		m_Room_Rotation = e.GetRotation();
 	}
 
-
 	void PhysicsSystem::CheckCollision(size_t index)
 	{
 		for (size_t i = 1; i < p_Total; i++)
