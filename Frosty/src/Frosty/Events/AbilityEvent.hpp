@@ -117,6 +117,88 @@ namespace Frosty
 		unsigned int m_AnimID;
 	};
 
+	class PlayMusicEvent : public BaseEvent
+	{
+	public:
+		PlayMusicEvent(const char* filepath, float volume) : m_Filepath(filepath), m_Volume(volume) {}
+
+		const char* GetFilepath() { return m_Filepath; }
+		float GetVolume() { return m_Volume; }
+		EVENT_TYPE(PlayMusic);
+	private:
+		const char* m_Filepath;
+		float m_Volume;
+	};
+
+	/*
+		Effect IDs:
+
+		0 - None
+		1 - Chorus
+		2 - Compressor
+		3 - Distortion
+		4 - Echo
+		5 - Flanger
+		6 - Gargle
+		7 - Reverb
+		8 - ParamEq
+		9 - WavesReverb
+	*/
+
+	class PlayMediaEvent : public BaseEvent
+	{
+	public:
+		PlayMediaEvent(const char* filepath, float volume, float pan, bool enableSoundEffects, int effectID) : 
+			m_Filepath(filepath), m_Volume(volume), m_Pan(pan), m_EnableSoundEffects(enableSoundEffects), m_EffectID(effectID) {}
+
+		const char* GetFilepath() { return m_Filepath; }
+		float GetVolume() { return m_Volume; }
+		float GetPan() { return m_Pan; }
+		bool IsSoundEffectsEnabled() { return m_EnableSoundEffects; }
+		int GetEffectID() { return m_EffectID; }
+
+		EVENT_TYPE(PlayMedia);
+	private:
+		const char* m_Filepath;
+		float m_Volume;
+		float m_Pan;
+		bool m_EnableSoundEffects;
+		int m_EffectID;
+	};
+
+	class PlayMediaEntityEvent : public BaseEvent
+	{
+	public:
+		PlayMediaEntityEvent(const std::shared_ptr<ECS::Entity>& entity, const char* filepath, float volume, float minDist, float maxDist, bool enableSoundEffects, int effectID) : 
+			m_Entity(entity), m_Filepath(filepath), m_Volume(volume), m_MinDistance(minDist), m_MaxDistance(maxDist), m_EnableSoundEffects(enableSoundEffects), m_EffectID(effectID) {}
+
+		const std::shared_ptr<ECS::Entity>& GetEntity() const { return m_Entity; }
+		const char* GetFilepath() { return m_Filepath; }
+		float GetVolume() { return m_Volume; } 
+		float GetMinDistance() { return m_MinDistance; } 
+		float GetMaxDistance() { return m_MaxDistance; }
+		bool IsSoundEffectsEnabled() { return m_EnableSoundEffects; }
+		int GetEffectID() { return m_EffectID; }
+
+		EVENT_TYPE(PlayMediaEntity);
+	private:
+		std::shared_ptr<ECS::Entity> m_Entity;
+		const char* m_Filepath;
+		float m_Volume;
+		float m_MinDistance, m_MaxDistance;
+		bool m_EnableSoundEffects;
+		int m_EffectID;
+	};
+
+	class StopMediaEvent : public BaseEvent
+	{
+	public:
+		StopMediaEvent()  {}
+
+		EVENT_TYPE(StopMedia);
+	private:
+	};
+
 	class ExitLevelEvent : public BaseEvent
 	{
 	public:
@@ -354,9 +436,13 @@ namespace Frosty
 	class GameoverEvent : public BaseEvent
 	{
 	public:
-		GameoverEvent() { }
+		GameoverEvent(const std::shared_ptr<ECS::Entity>& entity) : m_PlayerEntity(entity) { }
+
+		const std::shared_ptr<ECS::Entity>& GetEntity() const { return m_PlayerEntity; }
 
 		EVENT_TYPE(GameOver)
+	private:
+		std::shared_ptr<ECS::Entity> m_PlayerEntity;
 	};
 
 	class WinEvent : public BaseEvent

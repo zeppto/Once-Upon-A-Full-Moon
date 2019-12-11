@@ -38,21 +38,12 @@ namespace Frosty
 
 		struct PointLight
 		{
-			/*glm::vec3 Position;
-			glm::vec3 Color;
-			float Strength;
-			float Radius;*/
-
 			Frosty::ECS::CLight* PointLight;
 			ECS::CTransform* Transform;
 		};
 
 		struct DirectionalLight
 		{
-		/*	glm::vec3 Direction;
-			glm::vec3 Color;
-			float Strength;*/
-
 			Frosty::ECS::CLight* DirectionalLight;
 			ECS::CTransform* Transform;
 		};

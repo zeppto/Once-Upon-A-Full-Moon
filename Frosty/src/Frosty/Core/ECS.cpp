@@ -27,6 +27,7 @@ namespace Frosty
 		std::string CAnimController::NAME = "AnimController";
 		std::string CLevelExit::NAME = "Level Exit";
 		std::string CGUI::NAME = "GUI";
+		std::string CMediaManager::NAME = "MediaManager";
 		std::string CWitchCircle::NAME = "WitchCircle";
 	}
 }

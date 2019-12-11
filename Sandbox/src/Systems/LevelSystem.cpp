@@ -117,9 +117,9 @@ namespace MCS
 			m_Map.getRoomTextur(m_PlayerCoords, &rotate);
 			m_CurrentRoomBool = m_World->GetCurrentRoom();
 			//	Level::MoveToNewRoom(m_CurrentRoome.sideExits[0], m_CurrentRoome.sideExits[1], m_CurrentRoome.sideExits[2], m_CurrentRoome.sideExits[3]);
-			m_LevelFileFormat.OpenFromFile("deadend_chests_IsStatick_t_p_e_r_h_a", !m_NextLevel, m_PlayerCoords, playerTransform, rotate);
+			m_LevelFileFormat.OpenFromFile("deadend_chests_IsStatick_t_p_e_r_h_a_bb", !m_NextLevel, m_PlayerCoords, playerTransform, rotate);
 			
-			m_T_Room.RoomName = "deadend_chests_IsStatick_t_p_e_r_h_a";
+			m_T_Room.RoomName = "deadend_chests_IsStatick_t_p_e_r_h_a_bb";
 
 			m_T_Room.Rotation = rotate;
 			Frosty::EventBus::GetEventBus()->Publish<Frosty::UpdateCurrentRoomEvent>(Frosty::UpdateCurrentRoomEvent(m_T_Room.RoomName, m_T_Room.Rotation));
@@ -288,6 +288,15 @@ namespace MCS
 				glm::vec2 direction = m_BossPos - m_PlayerCoords;
 
 				Frosty::EventBus::GetEventBus()->Publish<Frosty::BossFearEffectEvent>(Frosty::BossFearEffectEvent(direction));
+
+				int rand = std::rand() % 2 + 1;
+				std::string str = "assets/sounds/WolfHowl" + std::to_string(rand) + ".wav";
+				const char* fileName = str.c_str();
+
+				if(m_BossPos.x < m_PlayerCoords.x)
+					Frosty::EventBus::GetEventBus()->Publish<Frosty::PlayMediaEvent>(Frosty::PlayMediaEvent(fileName, 0.5f, 1.0f, false, 0));
+				else if(m_BossPos.x > m_PlayerCoords.x)
+					Frosty::EventBus::GetEventBus()->Publish<Frosty::PlayMediaEvent>(Frosty::PlayMediaEvent(fileName, 0.5f, -1.0f, false, 0));
 			}
 		}
 	}
