@@ -203,7 +203,7 @@ namespace MCS
 					else
 						checkCollision = true;
 				}
-				else if (m_World->HasComponent<Frosty::ECS::CEnemy>(m_Transform[index]->EntityPtr) && (m_World->HasComponent<Frosty::ECS::CPlayer>(m_Transform[i]->EntityPtr) || m_Transform[i]->IsStatic))
+				else if (m_World->HasComponent<Frosty::ECS::CEnemy>(m_Transform[index]->EntityPtr) && (m_World->HasComponent<Frosty::ECS::CPlayer>(m_Transform[i]->EntityPtr)/* || m_Transform[i]->IsStatic*/))
 				{
 					if (m_World->GetComponent<Frosty::ECS::CHealth>(m_Transform[index]->EntityPtr).CurrentHealth > 0)
 					{

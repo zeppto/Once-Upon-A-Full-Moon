@@ -437,7 +437,7 @@ namespace Frosty
 		{
 			auto& tempTransform = m_World->GetComponent<Frosty::ECS::CTransform>(physicsCompData[i].EntityPtr);
 			//if (!m_World->HasComponent<Frosty::ECS::CEnemy>(tempTransform.EntityPtr) && !m_World->HasComponent<Frosty::ECS::CPlayer>(tempTransform.EntityPtr))
-			if (tempTransform.IsStatic)
+			if (tempTransform.IsStatic && !m_World->HasComponent<Frosty::ECS::CLevelExit>(tempTransform.EntityPtr))
 			{
 				// This means that the entity is static and has a CPhysics component
 				auto& tempPhysics = m_World->GetComponent<Frosty::ECS::CPhysics>(tempTransform.EntityPtr);
