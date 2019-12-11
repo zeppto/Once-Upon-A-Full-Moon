@@ -331,7 +331,7 @@ namespace MCS
 					std::string str = "assets/sounds/FootstepMud" + std::to_string(rand) + ".wav";
 					const char* fileName = str.c_str();
 					//Frosty::EventBus::GetEventBus()->Publish<Frosty::PlayMediaEntityEvent>(Frosty::PlayMediaEntityEvent(m_Player[index]->EntityPtr, fileName, 1.0f, 10.0f, 100.0f, false, 0));
-					Frosty::EventBus::GetEventBus()->Publish<Frosty::PlayMediaEvent>(Frosty::PlayMediaEvent(fileName, 0.5f, 0.0f, false, 0));
+					Frosty::EventBus::GetEventBus()->Publish<Frosty::PlayMediaEvent>(Frosty::PlayMediaEvent(fileName, 0.25f, 0.0f, false, 0));
 
 					m_Player[index]->CurrentCooldown = m_Player[index]->COOLDOWN / 1000.0f;
 				}

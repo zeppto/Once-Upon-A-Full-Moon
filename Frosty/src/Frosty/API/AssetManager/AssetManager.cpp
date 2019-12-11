@@ -53,7 +53,8 @@ namespace Frosty
 
 	AssetManager::~AssetManager()
 	{
-		s_SoundEngine->drop();
+		if(s_SoundEngine != nullptr)
+			s_SoundEngine->drop();
 	}
 
 	bool AssetManager::LoadFile(const std::string& FullFilePath, const std::string& TagName)
@@ -318,9 +319,12 @@ namespace Frosty
 		}
 		else
 		{
-			// Preload media file
-			irrklang::ISoundSource* temp =	s_SoundEngine->addSoundSourceFromFile(MetaData.FullFilePath.c_str(), irrklang::ESM_AUTO_DETECT, true);
-			s_Media[MetaData.FileName] = temp;
+			if (s_SoundEngine != nullptr)
+			{
+				// Preload media file
+				irrklang::ISoundSource* temp = s_SoundEngine->addSoundSourceFromFile(MetaData.FullFilePath.c_str(), irrklang::ESM_AUTO_DETECT, true);
+				s_Media[MetaData.FileName] = temp;
+			}
 		}
 		return true;
 	}
