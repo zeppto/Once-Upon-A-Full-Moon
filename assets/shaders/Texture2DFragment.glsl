@@ -32,6 +32,7 @@ uniform bool u_LightCulling;
 uniform sampler2D u_DiffuseTexture;
 uniform sampler2D u_SpecularTexture;
 uniform sampler2D u_NormalTexture;
+uniform sampler2D u_ShadowMap; 
 
 uniform vec3 u_CameraPosition;
 uniform int u_Shininess;
@@ -131,4 +132,41 @@ vec3 CalculateDirectionalLight(DirectionalLight light, vec3 normal)
 	vec3 diffuse = max(dot(normal, lightDir), 0.0) * light.Color * light.Strength;
 	
 	return (ambient + diffuse);
+}
+
+float ShadowCalculation(vec4 fragPosLightSpace, vec3 fragPos, vec3 normal, vec3 lightPos)
+{
+	//Perform perspective divition, usually done automatically.
+	vec3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w;	//Works both with orthographic projection and perspective projection.
+
+	projCoords = projCoords * 0.5 + 0.5;	//Fixes range from -1,1 to 0,1
+	float closestDepth = texture(u_ShadowMap, projCoords.xy).r;
+	float currentDepth = projCoords.z;
+
+	//float shadow = currentDepth > closestDepth ? 1.0 : 0.0;
+	vec3 lightDir = normalize(lightPos - fragPos);
+	vec3 nNormal = normalize(normal);
+
+	float bias = max(0.00005 * (1.0 - dot(nNormal, lightDir)), 0.000005); //Fixes shadow acne.
+	//double bias = 0.00005; //Fixes shadow acne.
+
+	float shadow = 0.0;
+	vec2 texelSize = 1.0 / textureSize(u_ShadowMap, 0);
+	for (int x = -2; x <= 2; ++x)
+	{
+		for (int y = -2; y <= 2; ++y)
+		{
+			float pcfDepth = texture(u_ShadowMap, projCoords.xy + vec2(x, y) * texelSize).r;
+			shadow += currentDepth - bias > pcfDepth ? 1.0 : 0.0;
+		}
+	}
+
+	shadow /= 25.0;	//Sampling 9 values so must divide with 9
+
+	if (projCoords.z > 1.0)
+	{
+		shadow = 0.0;
+	}
+	
+	return shadow;
 }
