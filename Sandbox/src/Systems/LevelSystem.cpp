@@ -1122,6 +1122,7 @@ namespace MCS
 			{
 				auto& playerTransform = m_World->GetComponent<Frosty::ECS::CTransform>(m_Transform[i]->EntityPtr);
 				Player = &m_World->GetComponent<Frosty::ECS::CPlayer>(m_Transform[i]->EntityPtr);
+				Player->BossFearEffectTime = 2.0f;
 				playerTransform.Position = glm::vec3(-104.0f, 0.0f, -15.4f);
 				animation = &m_World->GetComponent<Frosty::ECS::CAnimController>(m_Transform[i]->EntityPtr);
 				PlayerT = &playerTransform;
@@ -1147,6 +1148,8 @@ namespace MCS
 				playerInventory.CurrentWolfsbane = 0;
 
 				m_GUI = &m_World->GetComponent<Frosty::ECS::CGUI>(m_Transform[i]->EntityPtr);
+
+				m_GUI->Layout.sprites.at(1).SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 0.0f));
 
 				for (int j = 15; j < 20 + (healthSpriteCounter / 4); j++)
 				{
