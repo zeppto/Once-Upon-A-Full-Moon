@@ -896,7 +896,7 @@ namespace MCS
 				m_Inventory[index]->HealingTimer = Frosty::Time::CurrentTime();
 
 				// Drinking potion
-				Frosty::EventBus::GetEventBus()->Publish<Frosty::PlayMediaEvent>(Frosty::PlayMediaEvent("assets/sounds/BowDrawShort.wav", 1.0f, 0.0f, false, 0));
+				//Frosty::EventBus::GetEventBus()->Publish<Frosty::PlayMediaEvent>(Frosty::PlayMediaEvent("assets/sounds/BowDrawShort.wav", 1.0f, 0.0f, false, 0));
 			}
 		}
 #pragma endregion Healing Potion
@@ -947,7 +947,7 @@ namespace MCS
 				m_Inventory[index]->SpeedTimer = Frosty::Time::CurrentTime();
 
 				// Drinking potion
-				Frosty::EventBus::GetEventBus()->Publish<Frosty::PlayMediaEvent>(Frosty::PlayMediaEvent("assets/sounds/BowDrawShort.wav", 1.0f, 0.0f, false, 0));
+				//Frosty::EventBus::GetEventBus()->Publish<Frosty::PlayMediaEvent>(Frosty::PlayMediaEvent("assets/sounds/BowDrawShort.wav", 1.0f, 0.0f, false, 0));
 			}
 		}
 #pragma endregion Speed Potion
