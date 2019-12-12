@@ -151,14 +151,24 @@ namespace MCS
 
 			if (x > 910.0f && x < 1005.0f && y > 550.0f && y < 610.0f)
 			{
+				// Menu sounds (if color is not that below, play sound before it changes)
+				if (menuGui.Layout.texts[1].GetColor() != glm::vec3(glm::vec4(0.0f, 1.0f, 0.0f, 0.0f)))
+					Frosty::EventBus::GetEventBus()->Publish<Frosty::PlayMediaEvent>(Frosty::PlayMediaEvent("assets/sounds/ArrowHit1.wav", 1.0f, 0.0f, false, 0));
+
 				menuGui.Layout.texts[1].SetColor(glm::vec4(0.0f, 1.0f, 0.0f, 0.0f));
 			}
 			else if (x > 860.f && x < 1050.0f && y > 445.0f && y < 500.0f)
 			{
+				if (menuGui.Layout.texts[2].GetColor() != glm::vec3(glm::vec4(0.0f, 1.0f, 0.0f, 0.0f)))
+					Frosty::EventBus::GetEventBus()->Publish<Frosty::PlayMediaEvent>(Frosty::PlayMediaEvent("assets/sounds/ArrowHit1.wav", 1.0f, 0.0f, false, 0));
+				
 				menuGui.Layout.texts[2].SetColor(glm::vec4(0.0f, 1.0f, 0.0f, 0.0f));
 			}
 			else if (x > 910.f && x < 1005.0f && y > 350.0f && y < 390.0f)
 			{
+				if (menuGui.Layout.texts[3].GetColor() != glm::vec3(glm::vec4(1.0f, 0.0f, 0.0f, 0.0f)))
+					Frosty::EventBus::GetEventBus()->Publish<Frosty::PlayMediaEvent>(Frosty::PlayMediaEvent("assets/sounds/ArrowHit1.wav", 1.0f, 0.0f, false, 0));
+				
 				menuGui.Layout.texts[3].SetColor(glm::vec4(1.0f, 0.0f, 0.0f, 0.0f));
 			}
 			else

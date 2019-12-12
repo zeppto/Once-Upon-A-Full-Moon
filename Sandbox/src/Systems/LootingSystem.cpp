@@ -179,7 +179,7 @@ namespace MCS
 					light.Color = glm::vec3(1.f, 0.f, 0.f);
 					loot.Type = Frosty::ECS::CLootable::LootType::HealingPotion;
 
-					// Drinking potion
+					// Picking up potion (if such a sound exist)
 					//Frosty::EventBus::GetEventBus()->Publish<Frosty::PlayMediaEntityEvent>(Frosty::PlayMediaEntityEvent(m_World->GetComponent<Frosty::ECS::CMesh>(item).EntityPtr, fileName, 2.0f, 50.0f, 100.0f, false, 0));
 					break;
 				case 1:

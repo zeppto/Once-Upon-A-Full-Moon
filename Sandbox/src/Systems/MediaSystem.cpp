@@ -18,8 +18,8 @@ namespace MCS
 
 		if (m_SoundEngine != nullptr)
 		{
-			playMusic("assets/music/Atmo.mp3", 1.0f);
-			playMusic("assets/music/menusong.mp3", 1.0f);
+			playMusic("assets/music/Atmo.mp3", true);
+			playMusic("assets/music/menusong.mp3", true);
 		}
 	}
 

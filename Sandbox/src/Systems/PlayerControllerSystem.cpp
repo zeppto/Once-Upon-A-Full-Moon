@@ -910,7 +910,7 @@ namespace MCS
 				m_Inventory[index]->HealingTimer = Frosty::Time::CurrentTime();
 
 				// Drinking potion
-				//Frosty::EventBus::GetEventBus()->Publish<Frosty::PlayMediaEvent>(Frosty::PlayMediaEvent("", 2.0f, false, 0));
+				Frosty::EventBus::GetEventBus()->Publish<Frosty::PlayMediaEvent>(Frosty::PlayMediaEvent("assets/sounds/BowDrawShort.wav", 1.0f, 0.0f, false, 0));
 			}
 		}
 #pragma endregion Healing Potion
@@ -961,7 +961,7 @@ namespace MCS
 				m_Inventory[index]->SpeedTimer = Frosty::Time::CurrentTime();
 
 				// Drinking potion
-				//Frosty::EventBus::GetEventBus()->Publish<Frosty::PlayMediaEvent>(Frosty::PlayMediaEvent("", 2.0f, false, 0));
+				Frosty::EventBus::GetEventBus()->Publish<Frosty::PlayMediaEvent>(Frosty::PlayMediaEvent("assets/sounds/BowDrawShort.wav", 1.0f, 0.0f, false, 0));
 			}
 		}
 #pragma endregion Speed Potion
@@ -1028,7 +1028,7 @@ namespace MCS
 				m_Inventory[index]->BaitTimer = Frosty::Time::CurrentTime();
 				
 				// Drop meat (walking sound?)
-				//Frosty::EventBus::GetEventBus()->Publish<Frosty::PlayMediaEvent>(Frosty::PlayMediaEvent("", 2.0f, false, 0));
+				Frosty::EventBus::GetEventBus()->Publish<Frosty::PlayMediaEvent>(Frosty::PlayMediaEvent("assets/sounds/ouch.wav", 2.0f, 0.0f, false, 0));
 			}
 		}
 #pragma endregion Bait

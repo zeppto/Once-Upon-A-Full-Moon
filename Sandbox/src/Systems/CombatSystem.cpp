@@ -215,7 +215,8 @@ namespace MCS
 					rand = std::rand() % 4 + 1;
 					std::string str = "assets/sounds/HitSoundCrit" + std::to_string(rand) + ".wav";
 					const char* fileName = str.c_str();
-					Frosty::EventBus::GetEventBus()->Publish<Frosty::PlayMediaEntityEvent>(Frosty::PlayMediaEntityEvent(entityA, fileName, 1.0f, 50.0f, 100.0f, false, 0));
+					Frosty::EventBus::GetEventBus()->Publish<Frosty::PlayMediaEntityEvent>(Frosty::PlayMediaEntityEvent(entityA, fileName, 1.0f, 100.0f, 200.0f, false, 0));
+					//Frosty::EventBus::GetEventBus()->Publish<Frosty::PlayMediaEntityEvent>(Frosty::PlayMediaEntityEvent(entityA, "assets/sounds/ouch.wav", 1.0f, 100.0f, 200.0f, false, 0));
 				}
 				// Cultist with bow
 				else if (attackComp.Type == Frosty::ECS::CAttack::AttackType::Range)
@@ -223,7 +224,8 @@ namespace MCS
 					rand = std::rand() % 6 + 1;
 					std::string str = "assets/sounds/ArrowHit" + std::to_string(rand) + ".wav";
 					const char* fileName = str.c_str();
-					Frosty::EventBus::GetEventBus()->Publish<Frosty::PlayMediaEntityEvent>(Frosty::PlayMediaEntityEvent(entityA, fileName, 2.0f, 50.0f, 100.0f, false, 0));
+					Frosty::EventBus::GetEventBus()->Publish<Frosty::PlayMediaEntityEvent>(Frosty::PlayMediaEntityEvent(entityA, fileName, 1.0f, 100.0f, 200.0f, false, 0));
+					//Frosty::EventBus::GetEventBus()->Publish<Frosty::PlayMediaEntityEvent>(Frosty::PlayMediaEntityEvent(entityA, "assets/sounds/ouch.wav", 1.0f, 100.0f, 200.0f, false, 0));
 				}
 				// Wolf bite
 				else
@@ -231,7 +233,8 @@ namespace MCS
 					rand = std::rand() % 4 + 1;
 					std::string str = "assets/sounds/HitSoundCrit" + std::to_string(rand) + ".wav";
 					const char* fileName = str.c_str();
-					Frosty::EventBus::GetEventBus()->Publish<Frosty::PlayMediaEntityEvent>(Frosty::PlayMediaEntityEvent(entityA, fileName, 1.0f, 50.0f, 100.0f, false, 0));
+					Frosty::EventBus::GetEventBus()->Publish<Frosty::PlayMediaEntityEvent>(Frosty::PlayMediaEntityEvent(entityA, fileName, 1.0f, 100.0f, 200.0f, false, 0));
+					//Frosty::EventBus::GetEventBus()->Publish<Frosty::PlayMediaEntityEvent>(Frosty::PlayMediaEntityEvent(entityA, "assets/sounds/ouch.wav", 1.0f, 100.0f, 200.0f, false, 0));
 				}
 
 				attackComp.AttackedEntities.emplace_back(it->first->Id);
@@ -252,21 +255,17 @@ namespace MCS
 					int rand = 0;
 					if (attackComp.Type == Frosty::ECS::CAttack::AttackType::Melee) // Is player using a bow or a sword?
 					{						
-						// Chest open sound
-						
 						rand = std::rand() % 4 + 1;
 						std::string str = "assets/sounds/HitSoundCrit" + std::to_string(rand) + ".wav";
 						const char* fileName = str.c_str();
-						Frosty::EventBus::GetEventBus()->Publish<Frosty::PlayMediaEntityEvent>(Frosty::PlayMediaEntityEvent(entityA, fileName, 1.0f, 10.0f, 100.0f, false, 0));
+						Frosty::EventBus::GetEventBus()->Publish<Frosty::PlayMediaEntityEvent>(Frosty::PlayMediaEntityEvent(entityA, fileName, 1.0f, 100.0f, 200.0f, false, 0));
 					}
 					else
 					{
-						// Chest open sound
-						
 						rand = std::rand() % 6 + 1;
 						std::string str = "assets/sounds/ArrowHit" + std::to_string(rand) + ".wav";
 						const char* fileName = str.c_str();
-						Frosty::EventBus::GetEventBus()->Publish<Frosty::PlayMediaEntityEvent>(Frosty::PlayMediaEntityEvent(entityA, fileName, 1.0f, 10.0f, 100.0f, false, 0));
+						Frosty::EventBus::GetEventBus()->Publish<Frosty::PlayMediaEntityEvent>(Frosty::PlayMediaEntityEvent(entityA, fileName, 1.0f, 100.0f, 200.0f, false, 0));
 					}
 
 					// For some realism, wolf will randomly growl from being hit sometimes
