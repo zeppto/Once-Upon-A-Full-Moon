@@ -64,6 +64,7 @@ namespace MCS
 		Frosty::ECS::CGUI* GetPlayerGUI();
 		void OnBossSpawnedEvent(Frosty::BossSpawnedEvent& e);
 		void OnBaitPlacedEvent(Frosty::BaitPlacedEvent& e);
+		void BossroomBlock(glm::ivec2 room);
 
 		void randomBossMovment();
 	private:
@@ -82,15 +83,15 @@ namespace MCS
 		glm::ivec2 m_PlayerCoords = { 10, 15 };//{ 10, 15 };
 		glm::ivec2 m_OtherRoom = { -1, -1 };
 
-		glm::ivec2 m_PlayerPos = { 10, 15 };//{ 10, 15 };
+		//glm::ivec2 m_PlayerPos = { 10, 15 };//{ 10, 15 };
 		glm::ivec2 m_BossPos = { 9, 15 };
 		glm::ivec2 m_BossLastRoom = { -1, -1 };
 		float m_StartTimer = 0.0f;
 		float m_BossTimer = 0.0f;
 		//needs balensing m_BossRoomTimer 
 		//float m_BossRoomTimer = 40.0f;
-		float m_BossRoomTimer = 100.0f; //in sec (max)
-		float m_BossFollowTimer = 2.0f; //in min
+		float m_BossRoomTimer = 20.0f; //in sec (max)
+		float m_BossFollowTimer = 4.0f; //in min
 
 
 		float m_BossHawol = 0.0f;
@@ -118,6 +119,7 @@ namespace MCS
 		Frosty::ECS::CTransform* m_PlayerTransform = nullptr;
 		bool m_CreatNewRoom = false;
 		bool m_LodeNamedRoom = false;
+		bool m_ReStart = false;
 		bool m_BossSpawned{ false };
 
 		bool m_LoadMapBool = false;

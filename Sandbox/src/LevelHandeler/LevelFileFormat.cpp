@@ -3,7 +3,7 @@
 #include "LevelFileFormat.hpp"
 #include "Frosty/API/AssetManager/AssetManager.hpp"
 #include <glm/gtx/matrix_decompose.hpp>
-#include "Frosty/Core/BoolMap/BoolMapGenerator.hpp"
+//#include "Frosty/Core/BoolMap/BoolMapGenerator.hpp"
 #include "Frosty/Events/AbilityEvent.hpp"
 
 namespace MCS
@@ -350,8 +350,12 @@ namespace MCS
 			int RoomX = roomId.x - 10;
 			int RoomY = roomId.y - 15;
 
+			bool SpawnBossBool = true;
+
+
 			glm::vec3 startOffset(RoomX * 300.0f, 0.0f, RoomY * 300.0f);
 
+			glm::vec3 enemyPos = startOffset;
 			for (int i = 0; i < heder.NrOfEntitys; i++)
 			{
 
@@ -586,10 +590,16 @@ namespace MCS
 					//6 = Enemy
 					if (fileEntitys.myEntitys[i].MyComponents[6].HaveComponent)
 					{
+						if (SpawnBossBool)
+						{
+							enemyPos += fileEntitys.myEntitys[i].myTransform.Position;
+							SpawnBossBool = false;
+						}
 						//temp wepond
 						existingFile.read((char*)& fileEntitys.myEntitys[i].myEnemy, sizeof(Level_Enemy));
 						std::string meshName = fileEntitys.myEntitys[i].myMesh.MeshName;
 						auto& enemyWeaponA = m_World->CreateEntity({ 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 1.0f, 1.0f, 1.0f });
+						m_World->AddToGroup(enemyWeaponA, CurrentGroup);
 						auto& weaponHandler = Frosty::AssetManager::GetWeaponHandler("Weapons");
 						Frosty::Weapon loadedWeapon;
 						int lowLevel = 1;
@@ -778,7 +788,7 @@ namespace MCS
 					if (fileEntitys.myEntitys[i].MyComponents[10].HaveComponent)
 					{
 
-				existingFile.read((char*)& fileEntitys.myEntitys[i].myLevelExit, sizeof(Level_LevelExit));
+						existingFile.read((char*)& fileEntitys.myEntitys[i].myLevelExit, sizeof(Level_LevelExit));
 						int newExit = fileEntitys.myEntitys.at(i).myLevelExit.ExitDirection;
 
 						int translatedExitDir = -2;
@@ -979,6 +989,7 @@ namespace MCS
 						m_WitchCirkel.back() = temp;
 					}
 				}
+				rEntitys.firstEnemyPos = enemyPos;
 				m_VisitedRooms.push_back(rEntitys);
 			}
 
@@ -991,7 +1002,7 @@ namespace MCS
 
 		if (planeTransform != nullptr)
 		{
-			uint32_t EntityGroup = CurrentGroup ? m_World->GetCurrentRoom() : ~m_World->GetCurrentRoom() & (uint32_t)1;
+			uint32_t EntityGroup = CurrentGroup ? uint32_t(m_World->GetCurrentRoom()) : ~uint32_t(m_World->GetCurrentRoom()) & (uint32_t)1;
 			Frosty::EventBus::GetEventBus()->Publish<Frosty::InitiateGridEvent>(Frosty::InitiateGridEvent(planeTransform, EntityGroup));
 		}
 		else
@@ -1224,6 +1235,24 @@ namespace MCS
 			}
 		}
 		return toReturn;
+	}
+	void LevelFileFormat::clearVisitedRooms()
+	{
+		//crach?
+		m_VisitedRooms.clear();
+	}
+	const glm::vec3& LevelFileFormat::GetBossSpawnPosition(const glm::ivec2& playerCoords)
+	{
+		
+		for (int i = 0; i < m_VisitedRooms.size(); i++)
+		{
+			if (playerCoords == m_VisitedRooms[i].myRoomId)
+			{
+				return m_VisitedRooms[i].firstEnemyPos;
+			}
+		}
+		FY_CORE_ASSERT(0,"Could not find boss spawn position");
+
 	}
 }
 

@@ -80,7 +80,10 @@ project "Frosty"
 		"%{prj.name}/src/Frosty/Particles/*.cpp",
 		"%{prj.name}/src/Frosty/Particles/*.h",
 		"%{prj.name}/src/Frosty/StateMachine/States/*.cpp",
-		"%{prj.name}/src/Frosty/StateMachine/States/*.h"
+		"%{prj.name}/src/Frosty/StateMachine/States/*.h",
+		"%{prj.name}/src/Frosty/Core/BoolMap/*.hpp",
+		"%{prj.name}/src/Frosty/Core/BoolMap/*.cpp"
+
 	}
 
 	libdirs

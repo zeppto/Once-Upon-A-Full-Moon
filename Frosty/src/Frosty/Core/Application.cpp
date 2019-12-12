@@ -7,7 +7,7 @@
 
 //Particle Branch Includes
 #include "Frosty/RenderEngine/VertexArray.hpp"
-#include "Frosty/UI/UIText.h"
+//#include "Frosty/UI/UIText.h"
 
 namespace Frosty
 {
@@ -20,7 +20,7 @@ namespace Frosty
 
 		FY_CORE_ASSERT(!s_Instance, "Application already exists!");
 		s_Instance = this;
-
+		 
 		EventBus::GetEventBus()->Subscribe<Application, BaseEvent>(this, &Application::OnEvent);
 
 		m_Window.reset(BaseWindow::Create());
@@ -50,7 +50,7 @@ namespace Frosty
 		while (m_Running)
 		{
 			float ramMemory = RamUsage();
-			if (ramMemory > 512) FY_CORE_FATAL("Ram usage is {0}.", ramMemory);
+			if (ramMemory > 512) FY_CORE_FATAL("(Frame Start) - Ram usage is {0}.", ramMemory);
 
 			/// Frame Start
 			Time::OnUpdate();
@@ -107,6 +107,9 @@ namespace Frosty
 			m_ImGuiLayer->End();
 
 			m_Window->OnUpdate();
+
+			ramMemory = RamUsage();
+			if (ramMemory > 512) FY_CORE_FATAL("(Frame Start) - Ram usage is {0}.", ramMemory);
 		}
 	}
 
@@ -279,7 +282,6 @@ namespace Frosty
 				//Commit Charge is the total amount of memory that the memory manager has committed for a running process.
 
 			memoryUsage = float(pmc.PagefileUsage / 1024.0 / 1024.0); //MiB
-			//memoryUsage = memoryUsage - VramUsage();
 		}
 
 		CloseHandle(hProcess);

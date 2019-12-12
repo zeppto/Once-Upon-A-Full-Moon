@@ -59,6 +59,7 @@ namespace Frosty
 		void DrawTargetCell(Frosty::ECS::CTransform* transform);
 		void DrawSeekerCell(Frosty::ECS::CTransform* transform);
 		void DrawPathCells(const std::vector<CellNode*> path);
+		void CheckHCost();
 
 		void SaveFile(const std::string FileName);
 		void LoadFile(const std::string FilePath);

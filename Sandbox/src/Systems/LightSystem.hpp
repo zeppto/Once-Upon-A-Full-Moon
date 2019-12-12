@@ -14,6 +14,7 @@ namespace MCS
 
 		virtual void Init() override;
 		virtual void OnUpdate() override;
+		void BeginScene() override;
 		virtual void Render() override;
 
 		virtual void AddComponent(const std::shared_ptr<Frosty::ECS::Entity>& entity) override;
@@ -24,6 +25,7 @@ namespace MCS
 	private:
 		glm::vec3 ScreenToTerrainPoint();
 		void ShiftTowadsPoint(const glm::vec3& point, size_t index);
+		void UpdateLightCamera(size_t index);
 
 	private:
 		std::array<Frosty::ECS::CTransform*, Frosty::ECS::MAX_ENTITIES_PER_COMPONENT> m_Transform;

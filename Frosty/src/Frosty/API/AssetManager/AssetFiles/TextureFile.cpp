@@ -93,7 +93,7 @@ namespace Frosty
 		//	glActiveTexture(m_GPU_Data_ID);
 			glBindTexture(GL_TEXTURE_2D, m_GPU_Data_ID);
 
-			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, m_Image_Width, m_Image_Height, 0, GL_RGBA, GL_UNSIGNED_BYTE, m_ImageData);
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_COMPRESSED_RGBA, m_Image_Width, m_Image_Height, 0, GL_RGBA, GL_UNSIGNED_BYTE, m_ImageData);
 			glGenerateMipmap(GL_TEXTURE_2D);
 
 			m_OnGPU = true;

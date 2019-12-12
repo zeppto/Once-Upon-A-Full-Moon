@@ -38,6 +38,8 @@ namespace MCS
 
 		Frosty::World* m_World = nullptr;
 
+		glm::vec3 m_PlayerLastMovement;
+
 		std::shared_ptr<Frosty::BoolMap> m_Current_BoolMap{nullptr};
 		int m_Room_Rotation{0};
 
