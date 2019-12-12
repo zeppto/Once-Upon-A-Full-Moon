@@ -243,8 +243,6 @@ namespace MCS
 		}
 		else if (m_World->HasComponent<Frosty::ECS::CEnemy>(it->first))
 		{
-
-
 			auto& enemyComp = m_World->GetComponent<Frosty::ECS::CEnemy>(it->first);
 			if (enemyComp.CurrentState != Frosty::ECS::CEnemy::State::Reset)
 			{
@@ -253,7 +251,9 @@ namespace MCS
 				{
 					int rand = 0;
 					if (attackComp.Type == Frosty::ECS::CAttack::AttackType::Melee) // Is player using a bow or a sword?
-					{
+					{						
+						// Chest open sound
+						
 						rand = std::rand() % 4 + 1;
 						std::string str = "assets/sounds/HitSoundCrit" + std::to_string(rand) + ".wav";
 						const char* fileName = str.c_str();
@@ -261,6 +261,8 @@ namespace MCS
 					}
 					else
 					{
+						// Chest open sound
+						
 						rand = std::rand() % 6 + 1;
 						std::string str = "assets/sounds/ArrowHit" + std::to_string(rand) + ".wav";
 						const char* fileName = str.c_str();
@@ -278,8 +280,6 @@ namespace MCS
 
 					// Send event to heal Player
 					Frosty::EventBus::GetEventBus()->Publish<Frosty::HealAbilityEvent>(Frosty::HealAbilityEvent());
-
-					////////////
 
 					if (m_World->HasComponent<Frosty::ECS::CMaterial>(it->first))
 					{

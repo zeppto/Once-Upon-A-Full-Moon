@@ -308,7 +308,7 @@ namespace MCS
 			int rand = std::rand() % 5 + 1;
 			auto& weaponType = m_Enemy[index]->Weapon->Type;
 			if(weaponType == Frosty::ECS::CWeapon::WeaponType::Bite)
-				if(rand == 5 || rand == 3)
+				if(rand == 5 || rand == 3) // Change to Wolf bite
 					Frosty::EventBus::GetEventBus()->Publish<Frosty::PlayMediaEntityEvent>(Frosty::PlayMediaEntityEvent(m_Enemy[index]->EntityPtr, "assets/sounds/WolfAttack.wav", 1.0f, 10.0f, 100.0f, false, 0));
 
 			Frosty::EventBus::GetEventBus()->Publish <Frosty::PlayAnimEvent>(Frosty::PlayAnimEvent(m_Transform[index]->EntityPtr, 1));

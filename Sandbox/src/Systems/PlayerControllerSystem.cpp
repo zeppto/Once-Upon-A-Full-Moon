@@ -908,6 +908,9 @@ namespace MCS
 				// Decrease number of potions in inventory and activate the timer for cooldown
 				m_Inventory[index]->CurrentHealingPotions--;
 				m_Inventory[index]->HealingTimer = Frosty::Time::CurrentTime();
+
+				// Drinking potion
+				//Frosty::EventBus::GetEventBus()->Publish<Frosty::PlayMediaEvent>(Frosty::PlayMediaEvent("", 2.0f, false, 0));
 			}
 		}
 #pragma endregion Healing Potion
@@ -956,6 +959,9 @@ namespace MCS
 				// Decrease number of potions in inventory and activate the timer for cooldown
 				m_Inventory[index]->CurrentSpeedPotions--;
 				m_Inventory[index]->SpeedTimer = Frosty::Time::CurrentTime();
+
+				// Drinking potion
+				//Frosty::EventBus::GetEventBus()->Publish<Frosty::PlayMediaEvent>(Frosty::PlayMediaEvent("", 2.0f, false, 0));
 			}
 		}
 #pragma endregion Speed Potion
@@ -1020,6 +1026,9 @@ namespace MCS
 
 				m_Inventory[index]->CurrentBaitAmount--;
 				m_Inventory[index]->BaitTimer = Frosty::Time::CurrentTime();
+				
+				// Drop meat (walking sound?)
+				//Frosty::EventBus::GetEventBus()->Publish<Frosty::PlayMediaEvent>(Frosty::PlayMediaEvent("", 2.0f, false, 0));
 			}
 		}
 #pragma endregion Bait
