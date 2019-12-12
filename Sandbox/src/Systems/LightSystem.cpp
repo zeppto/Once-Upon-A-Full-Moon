@@ -24,7 +24,16 @@ namespace MCS
 				{
 					//glm::vec3 point3D = ScreenToTerrainPoint();
 					//ShiftTowadsPoint(point3D, i);
-					m_Transform[i]->Position = m_Light[i]->Origin->Position + m_Light[i]->Offset;
+					//	m_Transform[i]->OffSetRotation = glm::vec3(0.0f, 90.0f, 0.0f);
+
+					float rotation = m_Light[i]->Origin->Rotation.y;
+
+					glm::mat4 tempMat (1.0f);
+					tempMat = glm::rotate(tempMat, glm::radians(rotation), glm::vec3(0.0f, 1.0f, 0.0f));
+
+					glm::vec3 tempVec = tempMat * glm::vec4(m_Light[i]->Offset, 1.0f);
+
+					m_Transform[i]->Position = m_Light[i]->Origin->Position + tempVec;
 				}
 
 			}
@@ -207,6 +216,7 @@ namespace MCS
 		// Shifts the light slightly towards the lookAt position
 
 		m_Transform[index]->Position = m_Light[index]->Origin->Position + m_Light[index]->Offset;
+
 		glm::vec3 pointVector = glm::normalize(point - m_Transform[index]->Position);
 
 		m_Transform[index]->Position += pointVector * glm::vec3(2.f, 0.f, 2.f);
