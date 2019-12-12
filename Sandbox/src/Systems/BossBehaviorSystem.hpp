@@ -16,7 +16,7 @@ namespace MCS
 
 		virtual void Init() override;
 		virtual void OnUpdate() override;
-		virtual void OnEvent(Frosty::BaseEvent& e) override;
+		//virtual void OnEvent(Frosty::BaseEvent& e) override;
 
 		virtual void AddComponent(const std::shared_ptr<Frosty::ECS::Entity>& entity) override;
 		virtual void RemoveEntity(const std::shared_ptr<Frosty::ECS::Entity>& entity) override;
@@ -24,8 +24,8 @@ namespace MCS
 		virtual std::string GetInfo() const override;
 
 	private:
-		void OnBaitPlacedEvent(Frosty::BaitPlacedEvent& e);
-		int FindClosestBait(const glm::vec3& SelfPos, const std::vector<std::shared_ptr<Frosty::ECS::Entity>>& Baits);
+		//void OnBaitPlacedEvent(Frosty::BaitPlacedEvent& e);
+		//int FindClosestBait(const glm::vec3& SelfPos, const std::vector<std::shared_ptr<Frosty::ECS::Entity>>& Baits);
 		float CalcDistance2D(const glm::vec3& pos1, const glm::vec3& pos2);
 
 	private:

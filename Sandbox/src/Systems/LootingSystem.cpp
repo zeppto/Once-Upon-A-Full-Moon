@@ -157,7 +157,7 @@ namespace MCS
 					randomValue = -1;
 			}
 			else
-				randomValue = (rand() % 4) + 3;
+				randomValue = (rand() % 3) + 3;
 
 			if (randomValue != -1)
 			{

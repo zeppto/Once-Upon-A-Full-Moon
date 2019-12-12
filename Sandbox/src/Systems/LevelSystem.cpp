@@ -141,13 +141,13 @@ namespace MCS
 		{
 			if (!m_haveStartedMoving)
 			{
-			//	FY_INFO("The boss have started moving {0}", "!");
+				FY_INFO("The boss have started moving {0}", "!");
 				Room chekRoom = m_Map.getRoom(m_BossPos);
 				if (!chekRoom.Ocupide)
 				{
 					m_BossPos = m_Map.getLastCreatedLevelPos();
 				}
-			//	FY_INFO("The boss starts on ({0}, {1})", m_BossPos.x, m_BossPos.y);
+				FY_INFO("The boss starts on ({0}, {1})", m_BossPos.x, m_BossPos.y);
 				m_haveStartedMoving = true;
 			}
 
@@ -166,7 +166,7 @@ namespace MCS
 				}
 
 				m_BossTimer = time + estematedBossRoomTime;
-			//	FY_INFO("It takes {0} sec until boss moves", estematedBossRoomTime);
+				FY_INFO("It takes {0} sec until boss moves", estematedBossRoomTime);
 				if (m_PlayerCoords != m_BossPos)
 				{
 					if (m_RoomswhithBait.size() > 0)
@@ -199,7 +199,7 @@ namespace MCS
 						{
 							m_BossPos = m_BossRememberdPath.pathToGo[m_BossRememberdPath.lastTile];
 							m_BossRememberdPath.lastTile++;
-				//			FY_INFO("The boss is moving to ({0}, {1})", m_BossPos.x, m_BossPos.y);
+							FY_INFO("The boss is moving to ({0}, {1})", m_BossPos.x, m_BossPos.y);
 							FY_INFO("");
 
 						}
@@ -1378,7 +1378,7 @@ namespace MCS
 						}
 
 						auto& fire = m_World->CreateEntity(pos, rotation, { 1.0f, 0.2f, 0.5f });
-						m_World->AddComponent<Frosty::ECS::CLight>(fire, Frosty::ECS::CLight::LightType::Point, 1.0f, glm::vec3(0.99f, 0.4f, 0.1f), 20.0f, glm::vec3(0.f, 1.0f, 0.f));
+						//m_World->AddComponent<Frosty::ECS::CLight>(fire, Frosty::ECS::CLight::LightType::Point, 1.0f, glm::vec3(0.99f, 0.4f, 0.1f), 20.0f, glm::vec3(0.f, 1.0f, 0.f));
 						auto& fireParticel = m_World->AddComponent<Frosty::ECS::CParticleSystem>(fire, "Particles", "fire", 100, glm::vec3(1.0f, 0.0f, 0.0f), 17.0f);
 						fireParticel.StaticColor = false;
 						fireParticel.SystemEndColor = glm::vec3(1.0f, 0.82f, 0.0f);
