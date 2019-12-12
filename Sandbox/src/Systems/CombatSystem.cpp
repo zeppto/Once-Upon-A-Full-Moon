@@ -74,8 +74,21 @@ namespace MCS
 						}
 						else if (m_World->HasComponent<Frosty::ECS::CBoss>(m_Health[i]->EntityPtr))
 						{
-							// Handle boss death differently
-							Frosty::EventBus::GetEventBus()->Publish<Frosty::WinEvent>(Frosty::WinEvent());
+							int loc = -1;
+							//Find Player
+							for (int j = 1; j < m_Health.size(); j++)
+							{
+								if (m_World->HasComponent<Frosty::ECS::CPlayer>(m_Health[j]->EntityPtr))
+								{
+									loc = j;
+									j = m_Health.size();
+								}
+							}
+							if (loc != -1)
+							{
+								//Handle boss death differently
+								Frosty::EventBus::GetEventBus()->Publish<Frosty::WinEvent>(Frosty::WinEvent(m_Health[loc]->EntityPtr));
+							}
 						}
 						else
 						{

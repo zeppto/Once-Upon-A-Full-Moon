@@ -17,9 +17,11 @@ namespace MCS
 	void NavigationSystem::OnUpdate()
 	{
 		//m_Grid->Reset();
+		if (m_ActiveMap.Grid != nullptr) m_ActiveMap.Grid->Reset();
+		if (m_OtherMap.Grid != nullptr) m_OtherMap.Grid->Reset();
+
 		for (size_t i = 1; i < p_Total; i++)
 		{
-	//		m_Grid->SetNodeUnwalkable(m_Transform[i]->Position);
 			if (m_Transform[i]->EntityPtr->GroupId == m_ActiveMap.EntityGroupID)
 			{
 				m_ActiveMap.Grid->SetNodeUnwalkable(m_Transform[i]->Position);
@@ -34,10 +36,6 @@ namespace MCS
 		for (size_t i = 1; i < p_Total; i++)
 		{
 	//		m_Grid->DrawSeekerCell(m_Transform[i]);
-			if (i == 5)
-			{
-				int j = 0;
-			}
 
 			// Check current state
 			switch (m_Enemy[i]->CurrentState)
@@ -54,6 +52,7 @@ namespace MCS
 				break;
 			case Frosty::ECS::CEnemy::State::Chase:
 				HandlePathfinding(i, m_Enemy[i]->EntityPtr->GroupId);
+				m_ActiveMap.Grid->CheckHCost();
 				break;
 			case Frosty::ECS::CEnemy::State::Reset:
 				HandleReset(i, m_Enemy[i]->EntityPtr->GroupId);
@@ -303,8 +302,16 @@ namespace MCS
 		
 		// Find target cell and set velocity
 		glm::vec3 cellTarget = PathFinding->FindPath(m_Transform[index]->Position, m_Enemy[index]->Target->Position);
-		m_Enemy[index]->CellTarget = cellTarget;
-		m_Physics[index]->Direction = glm::normalize(m_Enemy[index]->CellTarget - glm::vec3(m_Transform[index]->Position.x, 0.0f, m_Transform[index]->Position.z));
+	//	m_ActiveMap.Grid->CheckHCost();
+		if (cellTarget == glm::vec3(-1.0f))
+		{
+			m_Physics[index]->Direction = glm::vec3(0.0f);
+		}
+		else
+		{
+			m_Enemy[index]->CellTarget = cellTarget;
+			m_Physics[index]->Direction = glm::normalize(m_Enemy[index]->CellTarget - glm::vec3(m_Transform[index]->Position.x, 0.0f, m_Transform[index]->Position.z));
+		}
 
 		// Rotate towards target (cell)
 		LookAtPoint(cellTarget, index);
@@ -341,8 +348,12 @@ namespace MCS
 		// Check if enemy is boss
 		if (m_World->HasComponent<Frosty::ECS::CBoss>(m_Transform[index]->EntityPtr)) return;
 		//if (m_Enemy[index]->Weapon->AnimPlaying) return;
-
-		if (glm::distance(m_Transform[index]->Position, m_Enemy[index]->Target->Position) >= m_Enemy[index]->Weapon->MinAttackRange)
+		
+		if (m_Enemy[index]->AttackInit == true)
+		{
+			m_Physics[index]->Direction = glm::vec3(0.0f);
+		}
+		else if (glm::distance(m_Transform[index]->Position, m_Enemy[index]->Target->Position) >= m_Enemy[index]->Weapon->MinAttackRange)
 		{
 			m_Physics[index]->Direction = glm::vec3(0.0f);
 		}

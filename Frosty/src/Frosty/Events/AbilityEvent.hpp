@@ -448,9 +448,13 @@ namespace Frosty
 	class WinEvent : public BaseEvent
 	{
 	public:
-		WinEvent() { }
+		WinEvent(const std::shared_ptr<ECS::Entity>& entity) : m_PlayerEntity(entity) { }
+
+		const std::shared_ptr<ECS::Entity>& GetEntity() const { return m_PlayerEntity; }
 
 		EVENT_TYPE(Win)
+	private:
+		std::shared_ptr<ECS::Entity> m_PlayerEntity;
 	};
 
 	class BossSpawnedEvent : public BaseEvent
@@ -478,13 +482,14 @@ namespace Frosty
 	class SpawnBossEvent : public BaseEvent
 	{
 	public:
-		SpawnBossEvent() { }
+		SpawnBossEvent(const glm::vec3& BossSpawnPosition) : m_BossSpawnPosition(BossSpawnPosition){ }
 
+		inline const glm::vec3& GetSpawnPosition() { return m_BossSpawnPosition; }
 
 		EVENT_TYPE(SpawnBoss)
 
 	private:
-
+		glm::vec3 m_BossSpawnPosition;
 	};
 
 	class BossFearEffectEvent : public BaseEvent

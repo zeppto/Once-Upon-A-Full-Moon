@@ -149,7 +149,7 @@ namespace Frosty
 
 		// Let's define a maximum number of entities that
 		// can have the same component type:
-		constexpr std::size_t MAX_ENTITIES_PER_COMPONENT{ 30024 };
+		constexpr std::size_t MAX_ENTITIES_PER_COMPONENT{ 1024 };
 
 		// Defining the maximum nr of systems
 		constexpr std::size_t MAX_SYSTEMS{ 22 };
@@ -568,10 +568,152 @@ namespace Frosty
 			float Radius{ 20.0f };
 			float Strength{ 1.0f };
 
+			// For ShadowMap
+		private:
+			struct Camera
+			{
+				glm::vec3 Front{ 0.f, 0.f, -1.f };
+				glm::vec3 Background{ 0.2f, 0.2f, 0.2f };
+				float FieldOfView{ 90.0f };
+				float Near{ 0.03f };
+				float Far{ 300.0f };
+				glm::mat4 ViewMatrix{ 1.0f };
+				glm::mat4 ProjectionMatrix{ 1.0f };
+				glm::mat4 ViewProjectionMatrix{ 1.0f };
+
+				Camera() = default;
+				Camera(glm::vec3 front, float fov, float aspect, float zNear, float zFar)
+					: Front(front), FieldOfView(fov), Near(zNear), Far(zFar), ProjectionMatrix(glm::perspective(glm::radians(fov), aspect, zNear, zFar)) { }
+			};
+		public:
+			std::vector<Camera> Cameras;
+			bool HasCamera{ false };
+
 			CLight() = default;
-			CLight(LightType lightType) : Type(lightType) { }
-			CLight(LightType lightType, float strength, glm::vec3 color, float radius, glm::vec3 direction) : Type(lightType), Strength(strength), Color(color), Radius(radius), Direction(direction) { }
-			CLight(LightType lightType, float strength, glm::vec3 color, float radius = 20.f, CTransform* origin = nullptr, const glm::vec3& offset = glm::vec3(0.f)) : Type(lightType), Strength(strength), Color(color), Radius(radius), Origin(origin), Offset(offset) { }
+			CLight(LightType lightType, bool hasCamera = false) : Type(lightType), HasCamera(hasCamera) 
+			{ 
+				if (HasCamera)
+				{
+					glm::vec3 front = { 0.f, 0.f, -1.f };
+
+					if (Type == LightType::Point)
+					{
+						// Create FOUR cameras
+						Cameras.reserve(4);
+
+						for (size_t i = 0; i < 4; i++)
+						{
+							if (i == 1)
+								front = { 0.f, 0.f, 1.f };
+							else if (i == 2)
+								front = { 1.f, 0.f, 0.f };
+							else if (i == 3)
+								front = { -1.f, 0.f, 0.f };
+
+							Cameras.emplace_back(front, 90.f, 0.f, 0.03f, 500.f);
+						}
+					}
+					else if (Type == LightType::Directional)
+					{
+						// Create ONE camera
+						Cameras.reserve(1);
+						Cameras.emplace_back(front, 90.f, 0.f, 0.03f, 500.f);
+					}
+				}
+			}
+			CLight(LightType lightType, float strength, glm::vec3 color, float radius, glm::vec3 direction, bool hasCamera = false) : Type(lightType), Strength(strength), Color(color), Radius(radius), Direction(direction), HasCamera(hasCamera) 
+			{ 
+				if (HasCamera)
+				{
+					glm::vec3 front = { 0.f, 0.f, -1.f };
+
+					if (Type == LightType::Point)
+					{
+						// Create FOUR cameras
+						Cameras.reserve(4);
+
+						for (size_t i = 0; i < 4; i++)
+						{
+							if (i == 1)
+								front = { 0.f, 0.f, 1.f };
+							else if (i == 2)
+								front = { 1.f, 0.f, 0.f };
+							else if (i == 3)
+								front = { -1.f, 0.f, 0.f };
+
+							Cameras.emplace_back(front, 90.f, 0.f, 0.03f, 500.f);
+						}
+					}
+					else if (Type == LightType::Directional)
+					{
+						// Create ONE camera
+						Cameras.reserve(1);
+						Cameras.emplace_back(direction, 90.f, 0.f, 0.03f, 500.f);
+					}
+				}
+			}
+			CLight(LightType lightType, float strength, glm::vec3 color, float radius = 20.f, CTransform* origin = nullptr, const glm::vec3& offset = glm::vec3(0.f), bool hasCamera = false) : Type(lightType), Strength(strength), Color(color), Radius(radius), Origin(origin), Offset(offset), HasCamera(hasCamera) 
+			{ 
+				if (HasCamera)
+				{
+					glm::vec3 front = { 0.f, 0.f, -1.f };
+
+					if (Type == LightType::Point)
+					{
+						// Create FOUR cameras
+						Cameras.reserve(4);
+
+						for (size_t i = 0; i < 4; i++)
+						{
+							if (i == 1)
+								front = { 0.f, 0.f, 1.f };
+							else if (i == 2)
+								front = { 1.f, 0.f, 0.f };
+							else if (i == 3)
+								front = { -1.f, 0.f, 0.f };
+
+							Cameras.emplace_back(front, 90.f, 0.f, 0.03f, 500.f);
+						}
+					}
+					else if (Type == LightType::Directional)
+					{
+						// Create ONE camera
+						Cameras.reserve(1);
+						Cameras.emplace_back(front, 90.f, 0.f, 0.03f, 500.f);
+					}
+				}
+			}
+			CLight(LightType lightType, float strength, glm::vec3 color, CTransform* origin = nullptr, const glm::vec3& offset = glm::vec3(0.f), bool hasCamera = false) : Type(lightType), Strength(strength), Color(color), Origin(origin), Offset(offset), HasCamera(hasCamera)
+			{
+				if (HasCamera)
+				{
+					glm::vec3 front = { 0.f, 0.f, -1.f };
+
+					if (Type == LightType::Point)
+					{
+						// Create FOUR cameras
+						Cameras.reserve(4);
+
+						for (size_t i = 0; i < 4; i++)
+						{
+							if (i == 1)
+								front = { 0.f, 0.f, 1.f };
+							else if (i == 2)
+								front = { 1.f, 0.f, 0.f };
+							else if (i == 3)
+								front = { -1.f, 0.f, 0.f };
+
+							Cameras.emplace_back(front, 90.f, 0.f, 0.03f, 500.f);
+						}
+					}
+					else if (Type == LightType::Directional)
+					{
+						// Create ONE camera
+						Cameras.reserve(1);
+						Cameras.emplace_back(front, 90.f, 0.f, 0.03f, 500.f);
+					}
+				}
+			}
 			CLight(const CLight& org) { FY_CORE_ASSERT(false, "Copy constructor in CLight called."); }
 
 			virtual std::string GetName() const { return NAME; }
@@ -940,7 +1082,7 @@ namespace Frosty
 				float Size{ 1.0f };
 			};
 
-			enum RenderMode
+			enum class RenderMode
 			{
 				NORMAL,
 				ADDITIVE
@@ -948,7 +1090,7 @@ namespace Frosty
 
 			static const uint32_t MAX_PARTICLE_COUNT = 200; //Absolute suported max
 
-			RenderMode RenderMode{ ADDITIVE };
+			RenderMode RenderMode{ RenderMode::ADDITIVE };
 			uint32_t MaxParticles{ 1 }; //User's choice of max particles
 			float StartParticleSize{ 1.0f };
 			float EndParticleSize{ 0.0f };
@@ -1106,8 +1248,9 @@ namespace Frosty
 			float dt{ 0.0f };
 			glm::mat4* holdPtr{ nullptr };
 
-			bool isBusy{ false };
-
+			bool breakable{ true }; //When a new animation are allowed to be played (over another animation)
+			bool isBusy{ false }; //When a action such as Attacks, Dash and Run are running. -Only check this on Idle
+		
 			CAnimController() = default;
 			CAnimController(const CAnimController& org) { FY_CORE_ASSERT(false, "Copy constructor in CAnimController called."); }
 
