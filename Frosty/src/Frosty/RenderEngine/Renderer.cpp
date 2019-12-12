@@ -15,7 +15,7 @@ namespace Frosty
 	std::vector<Renderer::RenderPassData>  Renderer::s_RenderPas;
 	FrustumGrid Renderer::s_ForwardPlus;
 	int Renderer::s_TotalNrOfFrames;
-	bool Renderer::s_DistanceCulling = false;
+	bool Renderer::s_DistanceCulling = true;
 	bool Renderer::s_LightCulling = false;
 
 	void Renderer::Init()
@@ -66,6 +66,11 @@ namespace Frosty
 				//Set most uniforms here
 				shaderData->Shader->UploadUniformMat4("u_ViewProjection", s_SceneData->GameCamera.ViewProjectionMatrix);
 				shaderData->Shader->UploadUniformFloat3("u_CameraPosition", s_SceneData->GameCamera.CameraPosition);
+				//if (s_SceneData->DirectionalLights.size() > 0)
+				//{
+				//	shaderData->Shader->UploadUniformMat4("u_ViewProjection", s_SceneData->DirectionalLights[0].DirectionalLight->Cameras[0].ViewProjectionMatrix);
+				//	shaderData->Shader->UploadUniformFloat3("u_CameraPosition", s_SceneData->DirectionalLights[0].Transform->Position);
+				//}
 
 				if (shaderData->Shader->GetName() == "Texture2D")
 				{
@@ -461,16 +466,11 @@ namespace Frosty
 		float height = float(window.GetHeight());
 		glm::mat4 projection = glm::ortho(0.0f, width, 0.0f, height);
 		shader->UploadUniformMat4("projection", projection);
-		
 
- 		transform[3][0] *=  window.GetWidthMultiplier() ;
+ 		transform[3][0] *=  window.GetWidthMultiplier();
 		transform[3][1] *= window.GetHeightMultiplier();
-
-		for (int i = 0; i < 3; i++)
-		{
-			transform[i][i] *= window.GetWidthMultiplier();
-		}
-		
+		transform[0][0] *= window.GetWidthMultiplier();
+		transform[1][1] *= window.GetHeightMultiplier();
 
 		shader->UploadUniformMat4("transform", transform);
 		shader->UploadUniformFloat4("color", color); //Make sure this number matches the active and sampled texture

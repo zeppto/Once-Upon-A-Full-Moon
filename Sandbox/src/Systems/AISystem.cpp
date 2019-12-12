@@ -166,7 +166,7 @@ namespace MCS
 	void AISystem::OnInitiateGridMap(Frosty::InitiateGridEvent& e)
 	{
 		m_BossSpawn = m_Enemy[1]->SpawnPosition;
-		m_PlayerTransform = m_Enemy[1]->Target;
+		m_PlayerTransform = m_Enemy[1]->Target; 
 	}
 
 	void AISystem::OnResetBossAbilities(Frosty::ResetBossAbilitiesEvent& e)
@@ -180,7 +180,7 @@ namespace MCS
 
 	void AISystem::OnSpawnBossEvent(Frosty::SpawnBossEvent& e)
 	{
-		if (!m_BossSpawned) SpawnBoss();
+		if (!m_BossSpawned) SpawnBoss(e.GetSpawnPosition());
 	}
 
 	void AISystem::CheckState(size_t index)
@@ -241,6 +241,7 @@ namespace MCS
 		{
 			m_Enemy[index]->CurrentState = Frosty::ECS::CEnemy::State::Attack;
 
+
 		//	if (Frosty::Time::GetFrameCount() % 60 == 0) FY_INFO("Attack");
 
 
@@ -253,7 +254,7 @@ namespace MCS
 		}
 
 		// Chase
-		if (glm::distance(m_Transform[index]->Position, m_Enemy[index]->Target->Position) <= m_Enemy[index]->SightRange)
+		if (m_Enemy[index]->AttackInit == false && glm::distance(m_Transform[index]->Position, m_Enemy[index]->Target->Position) <= m_Enemy[index]->SightRange)
 		{
 			bool stopChase = HandleBossAbilities(index);
 			if (!stopChase)
@@ -280,7 +281,8 @@ namespace MCS
 
 		// Rotate towards player
  		LookAtPoint(m_Enemy[index]->Target->Position, index);
-
+		
+		//Cult Range
 		if (m_Enemy[index]->Weapon->Type == Frosty::ECS::CWeapon::WeaponType::Bow)
 		{
 			float check = Frosty::Time::CurrentTime() - m_Enemy[index]->Weapon->LVL1AttackCooldownTimer;
@@ -292,6 +294,7 @@ namespace MCS
 				m_Enemy[index]->AttackDelay = 0.01f;
 			}
 		}
+		//Cult Melee
 		else if (m_Enemy[index]->Weapon->Type == Frosty::ECS::CWeapon::WeaponType::Sword)
 		{
 			if (Frosty::Time::CurrentTime() - m_Enemy[index]->Weapon->LVL1AttackCooldownTimer >= (m_Enemy[index]->Weapon->LVL1AttackCooldown)
@@ -302,6 +305,7 @@ namespace MCS
 				m_Enemy[index]->AttackDelay = 0.5f;
 			}
 		}
+		//Wolf
 		else if(Frosty::Time::CurrentTime() - m_Enemy[index]->Weapon->LVL1AttackCooldownTimer >= (m_Enemy[index]->Weapon->LVL1AttackCooldown)
 			&& m_Enemy[index]->Weapon->AnimPlaying == false)
 		{
@@ -369,8 +373,8 @@ namespace MCS
 			}
 			else if (m_Enemy[index]->Weapon->Type == Frosty::ECS::CWeapon::WeaponType::Sword)
 			{
-				m_World->AddComponent<Frosty::ECS::CMesh>(attack, Frosty::AssetManager::GetMesh("pCube1"));						// Remove later
-				m_World->AddComponent<Frosty::ECS::CMaterial>(attack, Frosty::AssetManager::GetShader("FlatColor"));			// Remove later
+			//	m_World->AddComponent<Frosty::ECS::CMesh>(attack, Frosty::AssetManager::GetMesh("pCube1"));						// Remove later
+			//	m_World->AddComponent<Frosty::ECS::CMaterial>(attack, Frosty::AssetManager::GetShader("FlatColor"));			// Remove later
 				m_World->AddComponent<Frosty::ECS::CPhysics>(attack, Frosty::AssetManager::GetBoundingBox("pCube1"), attackTransform.Scale, 0.0f);
 				m_World->AddComponent<Frosty::ECS::CAttack>(attack, Frosty::ECS::CAttack::AttackType::Melee, (int)m_Enemy[index]->Weapon->Damage, false, m_Enemy[index]->Weapon->Lifetime);
 
@@ -381,8 +385,8 @@ namespace MCS
 			}
 			else
 			{
-				m_World->AddComponent<Frosty::ECS::CMesh>(attack, Frosty::AssetManager::GetMesh("pCube1"));						// Remove later
-				m_World->AddComponent<Frosty::ECS::CMaterial>(attack, Frosty::AssetManager::GetShader("FlatColor"));			// Remove later
+			//	m_World->AddComponent<Frosty::ECS::CMesh>(attack, Frosty::AssetManager::GetMesh("pCube1"));						// Remove later
+			//	m_World->AddComponent<Frosty::ECS::CMaterial>(attack, Frosty::AssetManager::GetShader("FlatColor"));			// Remove later
 				m_World->AddComponent<Frosty::ECS::CPhysics>(attack, Frosty::AssetManager::GetBoundingBox("pCube1"), attackTransform.Scale, 0.0f);
 				m_World->AddComponent<Frosty::ECS::CAttack>(attack, Frosty::ECS::CAttack::AttackType::Melee, (int)m_Enemy[index]->Weapon->Damage, false, m_Enemy[index]->Weapon->Lifetime);
 			}
@@ -512,10 +516,11 @@ namespace MCS
 		return false;
 	}
 	
-	void AISystem::SpawnBoss()
+	void AISystem::SpawnBoss(const glm::vec3& SpawnPosition)
 	{
 		// Boss Weapon
 		auto& bossWeapon = m_World->CreateEntity({ 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 1.0f, 1.0f, 1.0f });
+		m_World->AddToGroup(bossWeapon, true);
 		auto& bossWeaponComp = m_World->AddComponent<Frosty::ECS::CWeapon>(bossWeapon, Frosty::ECS::CWeapon::WeaponType::Sword, 1, 2.0f);
 		bossWeaponComp.LVL1AttackCooldown = 3.0f;
 		bossWeaponComp.MaxAttackRange = 15.0f;
@@ -523,7 +528,8 @@ namespace MCS
 		bossWeaponComp.AttackHitboxScale = glm::vec3(12.0f, 6.0f, 5.0f);
 
 		// Boss
-		auto& boss = m_World->CreateEntity(m_BossSpawn, { 0.0f, 0.0f, 0.0f }, { 1.5f, 1.5f, 1.5f });
+		auto& boss = m_World->CreateEntity(SpawnPosition, { 0.0f, 0.0f, 0.0f }, { 1.5f, 1.5f, 1.5f });
+		m_World->AddToGroup(boss, true);
 		auto& bossTransform = m_World->GetComponent<Frosty::ECS::CTransform>(boss);
 		m_World->AddComponent<Frosty::ECS::CMesh>(boss, Frosty::AssetManager::GetMesh("Werewolf"));
 		m_World->AddComponent<Frosty::ECS::CAnimController>(boss).currAnim = Frosty::AssetManager::GetAnimation("Werewolf_Idle");
@@ -532,9 +538,9 @@ namespace MCS
 		bossMat.NormalTexture = Frosty::AssetManager::GetTexture2D("Werewolf_defaultMat_Normal");
 		m_World->AddComponent<Frosty::ECS::CPhysics>(boss, Frosty::AssetManager::GetBoundingBox("Werewolf"), bossTransform.Scale, 10.0f);
 		auto& enemyComp = m_World->AddComponent<Frosty::ECS::CEnemy>(boss, m_PlayerTransform, &bossWeaponComp);
-		enemyComp.SpawnPosition = m_BossSpawn;
+		enemyComp.SpawnPosition = SpawnPosition;
 		enemyComp.SightRange = 300.0f;
-		m_World->AddComponent<Frosty::ECS::CHealth>(boss, 50);
+		m_World->AddComponent<Frosty::ECS::CHealth>(boss,50);
 		m_World->AddComponent<Frosty::ECS::CHealthBar>(boss, glm::vec3(0.0f, 10.0f, 0.0f));
 		m_World->AddComponent<Frosty::ECS::CDropItem>(boss);
 		m_World->AddComponent<Frosty::ECS::CBoss>(boss);

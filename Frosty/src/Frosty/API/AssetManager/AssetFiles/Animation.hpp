@@ -34,29 +34,45 @@ namespace Frosty
 		glm::vec3 m_HoldingJointOffset;
 		bool isRepeating;
 		bool isFinished;
+		float m_StridePercent;
 
 		JointTransforms m_SkinData;
 
 
 	public:
-		Animation() : m_Mesh_Id(-1), AssetFile(FileMetaData()) {
-			
-			isRepeating = true;
-			isFinished = false;
-			m_HoldingJoint = nullptr;
-			glm::vec3 m_HoldingJointOffset = glm::vec3(0.0f);
-		}
-		Animation(const FileMetaData& MetaData, const uint16_t& MeshId, Luna::Animation LuAni, const bool& HasSkeleton = false)
-			:m_Mesh_Id(MeshId), m_Has_Skeleton(HasSkeleton), AssetFile(MetaData), m_Animation(LuAni)
+		inline Animation() : m_Mesh_Id(-1),
+			isRepeating(true),
+			isFinished(false),
+			m_Has_Skeleton(false),
+			m_HoldingJoint(nullptr),
+			m_HoldingJointOffset(0.0f),
+			m_Skeleton(),
+			m_Joints(),
+			m_Weights(),
+			m_KeyframeMap(),
+			m_SkinData(),
+			AssetFile(FileMetaData()) {}
+
+		inline Animation(const FileMetaData& MetaData, const uint16_t& MeshId, Luna::Animation LuAni, const bool& HasSkeleton = false)
+			:m_Mesh_Id(MeshId),
+			m_Has_Skeleton(HasSkeleton),
+			m_Animation(LuAni),
+			isRepeating(true),
+			isFinished(false),
+			m_HoldingJoint(nullptr),
+			m_HoldingJointOffset(0.0f),
+			m_Skeleton(),
+			m_Joints(),
+			m_Weights(),
+			m_SkinData(),
+			m_KeyframeMap(),
+			AssetFile(MetaData)
 		{
-			isRepeating = true;
-			isFinished = false;
 			for (int i = 0; i < MAX_BONES ; i++)
 			{
 				m_SkinData.jTrans[i] = glm::mat4(1.0f);
 			}
-			m_HoldingJoint = nullptr;
-			glm::vec3 m_HoldingJointOffset = glm::vec3(0.0f);
+
 		}
 		virtual ~Animation();
 
@@ -75,7 +91,8 @@ namespace Frosty
 		void SetIsRepeating(bool isRepeat);
 		void SetIsFinished(bool isFinish);
 		bool GetIsFinished();
-
+		float GetStridePercent();
+		void SetStridePercent(float stride);
 		inline const std::string GetName()const { return m_Animation.animationName;}
 
 		virtual bool LoadToMem(const bool& Reload = false);

@@ -38,6 +38,7 @@ namespace MCS
 			{
 				// Look at point
 				LookAtPoint(point3D, i);
+				m_Physics[i]->SpeedMultiplier = 1.0f;
 
 				// Input
 				if (!m_Dash[i]->Active)
@@ -47,10 +48,9 @@ namespace MCS
 					HandleInventory(i);
 				}
 			}
-			//No movement if dead
+			//No movement if dead (setting speed multiplier to 0 breaks the game since the multiplier is never reset on restart)
 			else
 			{
-				m_Physics[i]->SpeedMultiplier = 0.0f;
 				m_Physics[i]->Direction = glm::vec3(0.0f);
 			}
 		}
@@ -271,13 +271,14 @@ namespace MCS
 			m_Physics[index]->Direction.z = 0.0f;
 			//m_Physics[index]->Velocity.z = 0.0f;
 		}
+
 		if (Frosty::InputManager::IsKeyReleased(m_Player[index]->MoveLeftKey) || Frosty::InputManager::IsKeyReleased(m_Player[index]->MoveRightKey))
 		{
 			m_Physics[index]->Direction.x = 0.0f;
 			//m_Physics[index]->Velocity.x = 0.0f;
 		}
-
-		if (!animController.isBusy)
+	
+		if (animController.breakable) //Check if current animation is busy/breakable
 		{
 			if (Frosty::InputManager::IsKeyPressed(m_Player[index]->MoveForwardKey))
 			{
@@ -320,11 +321,8 @@ namespace MCS
 						m_Dash[index]->CurrentCooldown = m_Dash[index]->COOLDOWN / 1000.0f;
 					}
 				}
-			}
 
-			// Walking sounds
-			if (glm::length(m_Physics[index]->Direction) > 0.0f)
-			{
+				// Walking sounds
 				if (m_Player[index]->CurrentCooldown <= 0.0f)
 				{
 					int rand = std::rand() % 5 + 1;
@@ -749,7 +747,7 @@ namespace MCS
 		m_World->AddComponent<Frosty::ECS::CAttack>(projectile, Frosty::ECS::CAttack::AttackType::Range, totalDamage, true, weaponComp.Lifetime, false);
 		auto& attack = m_World->GetComponent<Frosty::ECS::CAttack>(projectile);
 
-		auto& particles = m_World->AddComponent<Frosty::ECS::CParticleSystem>(projectile, "Particles", "particle", 50, glm::vec3(0.0f, 1.0f, 0.2f), 3.0f);
+		auto& particles = m_World->AddComponent<Frosty::ECS::CParticleSystem>(projectile, "Particles", "particle", 50, glm::vec3(1.0f, 0.8f, 0.2f), 3.0f);
 		particles.ParticleSystemDirection = glm::vec3(0.0f, 0.0f, -1.0f);
 		particles.RandomDirection = true;
 		particles.randMainDir = glm::vec3(0.0f, 0.0f, -1.0f);
@@ -787,20 +785,20 @@ namespace MCS
 	{
 		auto& fireEffect = m_World->CreateEntity({ spawnPos.x, 1.0f, spawnPos.z }, rotation, { 5.0f, 5.0f, 2.0f });
 
-		auto& fireParticles = m_World->AddComponent<Frosty::ECS::CParticleSystem>(fireEffect, "Particles", "particleSpark1", 30, glm::vec3(1.0f, 0.0f, 0.0f), 3.0f);
+		auto& fireParticles = m_World->AddComponent<Frosty::ECS::CParticleSystem>(fireEffect, "Particles", "particle", 63, glm::vec3(1.0f, 0.0f, 0.0f), 3.0f);
 		fireParticles.ParticleSystemDirection = glm::vec3(-1.0f, 0.0f, 0.0f);
 		fireParticles.RandomDirection = true;
-		fireParticles.randMainDir = glm::vec3(0.0f, 0.0f, -1.0f);
-		fireParticles.randSpread = 0.05f;
-		fireParticles.StartParticleSize = 0.4f;
-		fireParticles.EmitCount = 2;
-		fireParticles.EmitRate = 0.05f;
-		fireParticles.MaxLifetime = 1.5f;
-		fireParticles.FadeInTreshold = 1.4f;
-		fireParticles.FadeTreshold = 1.3f;
+		fireParticles.randMainDir = glm::vec3(0.0f, 1.0f, 0.0f);
+		fireParticles.randSpread = 0.5f;
+		fireParticles.StartParticleSize = 0.8f;
+		fireParticles.EmitCount = 3;
+		fireParticles.EmitRate = 0.0f;
+		fireParticles.MaxLifetime = 0.5f;
+		fireParticles.FadeInTreshold = 0.45f;
+		fireParticles.FadeTreshold = 0.16f;
 		fireParticles.StaticColor = false;
-		fireParticles.SystemEndColor = glm::vec3(0.0f, 0.0f, 1.0f);
-		fireParticles.ParticleSystemStartPos = glm::vec3(0.0f, 0.0f, -0.6f);
+		fireParticles.SystemEndColor = glm::vec3(0.5f, 0.6f, 0.2f);
+		fireParticles.ParticleSystemStartPos = glm::vec3(0.0f, -0.05f, 0.5f);
 		fireParticles.HasGravity = true;
 
 		attack.FireEffect = fireEffect;
@@ -814,8 +812,8 @@ namespace MCS
 		earthParticles.ParticleSystemDirection = glm::vec3(-1.0f, 0.0f, 0.0f);
 		earthParticles.RandomDirection = true;
 		earthParticles.randMainDir = glm::vec3(0.0f, 0.0f, -1.0f);
-		earthParticles.randSpread = 0.05f;
-		earthParticles.StartParticleSize = 0.4f;
+		earthParticles.randSpread = 0.5f;
+		earthParticles.StartParticleSize = 1.0f;
 		earthParticles.EmitCount = 2;
 		earthParticles.EmitRate = 0.05f;
 		earthParticles.MaxLifetime = 1.5f;
@@ -837,8 +835,8 @@ namespace MCS
 		windParticles.ParticleSystemDirection = glm::vec3(-1.0f, 0.0f, 0.0f);
 		windParticles.RandomDirection = true;
 		windParticles.randMainDir = glm::vec3(0.0f, 0.0f, -1.0f);
-		windParticles.randSpread = 0.05f;
-		windParticles.StartParticleSize = 0.4f;
+		windParticles.randSpread = 0.5f;
+		windParticles.StartParticleSize = 1.0f;
 		windParticles.EmitCount = 2;
 		windParticles.EmitRate = 0.05f;
 		windParticles.MaxLifetime = 1.5f;
@@ -856,20 +854,20 @@ namespace MCS
 	{
 		auto& waterEffect = m_World->CreateEntity({ spawnPos.x, 1.0f, spawnPos.z }, rotation, { 5.0f, 5.0f, 2.0f });
 
-		auto& waterParticles = m_World->AddComponent<Frosty::ECS::CParticleSystem>(waterEffect, "Particles", "particleSpark1", 30, glm::vec3(0.0f, 0.0f, 1.0f), 3.0f);
+		auto& waterParticles = m_World->AddComponent<Frosty::ECS::CParticleSystem>(waterEffect, "Particles", "particleRing", 30, glm::vec3(0.0f, 0.0f, 1.0f), 3.0f);
 		waterParticles.ParticleSystemDirection = glm::vec3(-1.0f, 0.0f, 0.0f);
 		waterParticles.RandomDirection = true;
 		waterParticles.randMainDir = glm::vec3(0.0f, 0.0f, -1.0f);
-		waterParticles.randSpread = 0.05f;
-		waterParticles.StartParticleSize = 0.4f;
-		waterParticles.EmitCount = 2;
-		waterParticles.EmitRate = 0.05f;
+		waterParticles.randSpread = 0.5f;
+		waterParticles.StartParticleSize = 0.5f;
+		waterParticles.EmitCount = 5;
+		waterParticles.EmitRate = 0.3f;
 		waterParticles.MaxLifetime = 1.5f;
 		waterParticles.FadeInTreshold = 1.4f;
 		waterParticles.FadeTreshold = 1.3f;
 		waterParticles.StaticColor = false;
-		waterParticles.SystemEndColor = glm::vec3(0.0f, 0.0f, 1.0f);
-		waterParticles.ParticleSystemStartPos = glm::vec3(0.0f, 0.0f, -0.6f);
+		waterParticles.SystemEndColor = glm::vec3(1.0f, 1.0f, 1.0f);
+		waterParticles.ParticleSystemStartPos = glm::vec3(0.0f, 0.0f, -0.4f);
 		waterParticles.HasGravity = true;
 
 		attack.WaterEffect = waterEffect;
