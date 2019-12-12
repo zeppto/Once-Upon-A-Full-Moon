@@ -22,9 +22,11 @@ namespace MCS
 
 				if (world->HasComponent<Frosty::ECS::CPlayer>(m_Light[i]->Origin->EntityPtr))
 				{
-					glm::vec3 point3D = ScreenToTerrainPoint();
-					ShiftTowadsPoint(point3D, i);
+					//glm::vec3 point3D = ScreenToTerrainPoint();
+					//ShiftTowadsPoint(point3D, i);
+					m_Transform[i]->Position = m_Light[i]->Origin->Position + m_Light[i]->Offset;
 				}
+
 			}
 			// Check if light has camera
 			if (m_Light[i]->HasCamera)

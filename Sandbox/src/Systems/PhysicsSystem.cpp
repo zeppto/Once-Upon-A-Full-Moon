@@ -213,8 +213,8 @@ namespace MCS
 
 
 				//Test Bmap
-				//if (( m_World->HasComponent<Frosty::ECS::CPlayer>(m_Transform[index]->EntityPtr)))
-				if (0)
+				//if (0)
+				if (( m_World->HasComponent<Frosty::ECS::CPlayer>(m_Transform[index]->EntityPtr)))
 				{
 
 					if (m_World->HasComponent<Frosty::ECS::CInventory>(m_Transform[index]->EntityPtr))
