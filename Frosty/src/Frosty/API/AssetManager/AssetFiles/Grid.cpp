@@ -27,16 +27,20 @@ namespace Frosty
 
 	void Grid::Reset()
 	{
-		if (!m_DrawGizmos) return;
 
 		for (size_t i = 0; i < m_DynamicOccupiedNodes.size(); i++)
 		{
-			auto& cellMat = m_World->GetComponent<Frosty::ECS::CMaterial>(m_World->GetEntityManager()->GetEntityById(m_DynamicOccupiedNodes[i]->CellEntityID));
-			cellMat.DiffuseTexture = Frosty::AssetManager::GetTexture2D("green_square");
+			if (m_DrawGizmos)
+			{
+				auto& cellMat = m_World->GetComponent<Frosty::ECS::CMaterial>(m_World->GetEntityManager()->GetEntityById(m_DynamicOccupiedNodes[i]->CellEntityID));
+				cellMat.DiffuseTexture = Frosty::AssetManager::GetTexture2D("green_square");
+			}
 			m_DynamicOccupiedNodes[i]->Walkable = true;
 			m_DynamicOccupiedNodes[i] = nullptr;
 		}
 		m_DynamicOccupiedNodes.clear();
+
+		if (!m_DrawGizmos) return;
 
 		for (size_t i = 0; i < m_PathNodes.size(); i++)
 		{
@@ -98,7 +102,9 @@ namespace Frosty
 
 	void Grid::SetNodeUnwalkable(const glm::vec3& worldPoint)
 	{
-		WorldPointToNode(worldPoint).Walkable = false;
+		auto& tempNode = WorldPointToNode(worldPoint);
+		tempNode.Walkable = false;
+		m_DynamicOccupiedNodes.emplace_back(&tempNode);
 	}
 
 	void Grid::DrawTargetCell(Frosty::ECS::CTransform* transform)
@@ -136,6 +142,14 @@ namespace Frosty
 			auto& cellMat = m_World->GetComponent<Frosty::ECS::CMaterial>(m_World->GetEntityManager()->GetEntityById(path[i]->CellEntityID));
 			cellMat.DiffuseTexture = Frosty::AssetManager::GetTexture2D("brown_square");
 			m_PathNodes.emplace_back(*path[i]);
+		}
+	}
+
+	void Grid::CheckHCost()
+	{
+		for (int i = 0 ; i < m_CellNodes.size() ; i++)
+		{
+			if (m_CellNodes[i].GCost > 0) __debugbreak();
 		}
 	}
 
@@ -422,8 +436,8 @@ namespace Frosty
 		for (size_t i = 1; i < totalData; i++)
 		{
 			auto& tempTransform = m_World->GetComponent<Frosty::ECS::CTransform>(physicsCompData[i].EntityPtr);
-			//if (tempTransform.IsStatic)
-			if (!m_World->HasComponent<Frosty::ECS::CEnemy>(tempTransform.EntityPtr) && !m_World->HasComponent<Frosty::ECS::CPlayer>(tempTransform.EntityPtr))
+			//if (!m_World->HasComponent<Frosty::ECS::CEnemy>(tempTransform.EntityPtr) && !m_World->HasComponent<Frosty::ECS::CPlayer>(tempTransform.EntityPtr))
+			if (tempTransform.IsStatic && !m_World->HasComponent<Frosty::ECS::CLevelExit>(tempTransform.EntityPtr))
 			{
 				// This means that the entity is static and has a CPhysics component
 				auto& tempPhysics = m_World->GetComponent<Frosty::ECS::CPhysics>(tempTransform.EntityPtr);

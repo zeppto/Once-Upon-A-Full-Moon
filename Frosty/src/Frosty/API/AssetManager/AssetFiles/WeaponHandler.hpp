@@ -49,7 +49,11 @@ namespace Frosty
 	public:
 		WeaponHandler();
 		virtual ~WeaponHandler() {};
-		WeaponHandler(const WeaponHandler& org) { FY_CORE_ASSERT(false, "Copy Constructor in WeaponHandler called."); };
+		inline WeaponHandler(const WeaponHandler& org) :
+			m_LowestWeaponLevel(-1),
+			m_HighestWeaponLevel(-1)
+		
+		{ FY_CORE_ASSERT(false, "Copy Constructor in WeaponHandler called."); };
 		WeaponHandler& operator=(const WeaponHandler& org) { FY_CORE_ASSERT(false, "Assignment Operator in WeaponHandler called."); return *this; };
 
 		bool LoadWeapons(const std::string& filePath);

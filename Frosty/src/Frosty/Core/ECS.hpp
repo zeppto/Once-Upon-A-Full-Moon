@@ -149,7 +149,7 @@ namespace Frosty
 
 		// Let's define a maximum number of entities that
 		// can have the same component type:
-		constexpr std::size_t MAX_ENTITIES_PER_COMPONENT{ 30024 };
+		constexpr std::size_t MAX_ENTITIES_PER_COMPONENT{ 1024 };
 
 		// Defining the maximum nr of systems
 		constexpr std::size_t MAX_SYSTEMS{ 22 };
@@ -1082,7 +1082,7 @@ namespace Frosty
 				float Size{ 1.0f };
 			};
 
-			enum RenderMode
+			enum class RenderMode
 			{
 				NORMAL,
 				ADDITIVE
@@ -1090,7 +1090,7 @@ namespace Frosty
 
 			static const uint32_t MAX_PARTICLE_COUNT = 200; //Absolute suported max
 
-			RenderMode RenderMode{ ADDITIVE };
+			RenderMode RenderMode{ RenderMode::ADDITIVE };
 			uint32_t MaxParticles{ 1 }; //User's choice of max particles
 			float StartParticleSize{ 1.0f };
 			float EndParticleSize{ 0.0f };
@@ -1248,8 +1248,9 @@ namespace Frosty
 			float dt{ 0.0f };
 			glm::mat4* holdPtr{ nullptr };
 
-			bool isBusy{ false };
-
+			bool breakable{ true }; //When a new animation are allowed to be played (over another animation)
+			bool isBusy{ false }; //When a action such as Attacks, Dash and Run are running. -Only check this on Idle
+		
 			CAnimController() = default;
 			CAnimController(const CAnimController& org) { FY_CORE_ASSERT(false, "Copy constructor in CAnimController called."); }
 

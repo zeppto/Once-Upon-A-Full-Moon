@@ -3,6 +3,7 @@
 
 namespace Frosty { 
 				   class GameoverEvent;
+				   class WinEvent;
 				 }
 
 namespace MCS
@@ -22,7 +23,7 @@ namespace MCS
 		void InitiateLight();
 
 		void OnGameOverEvent(Frosty::GameoverEvent& e);
-		void OnGameWinEvent();
+		void OnGameWinEvent(Frosty::WinEvent& e);
 	private:
 		Frosty::Application* m_App = nullptr;
 	};
