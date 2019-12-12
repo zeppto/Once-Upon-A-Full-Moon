@@ -90,6 +90,8 @@ namespace Frosty
 
 		inline static void SetDistanceCulling(bool& distanceCulling) { s_DistanceCulling = distanceCulling; }
 		inline static void SetLightCulling(bool& lightCulling) { s_LightCulling = lightCulling; }
+		inline static void SetRenderShadows(bool& renderShadows) { s_RenderShadows = renderShadows; }
+		inline static void SetRenderFromPointLight(bool& renderFromPointLight) { s_RenderFromPointLight = renderFromPointLight; }
 
 		inline static const GameCameraProps& GetGameCamera() { return s_SceneData->GameCamera; }
 		inline static const std::unordered_map<size_t, PointLight>& GetPointLights() { return s_SceneData->PointLights; }
@@ -173,6 +175,8 @@ namespace Frosty
 		static int s_TotalNrOfFrames;
 		static bool s_DistanceCulling;
 		static bool s_LightCulling;
+		static bool s_RenderShadows;
+		static bool s_RenderFromPointLight;
 
 		static FrustumGrid s_ForwardPlus;
 

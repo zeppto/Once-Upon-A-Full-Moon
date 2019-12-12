@@ -233,8 +233,8 @@ namespace MCS
 			m_Light[index]->Cameras[i].ViewProjectionMatrix = m_Light[index]->Cameras[i].ProjectionMatrix * m_Light[index]->Cameras[i].ViewMatrix;*/
 
 			m_Light[index]->Cameras[i].ViewMatrix = glm::lookAt(m_Transform[index]->Position, m_Transform[index]->Position + m_Light[index]->Cameras[i].Front, { 0.0f, 1.0f, 0.0f });
-			m_Light[index]->Cameras[i].ProjectionMatrix = glm::ortho(-50.0f, 50.0f, -70.0f, 70.0f, m_Light[index]->Cameras[i].Near, m_Light[index]->Cameras[i].Far);
+			m_Light[index]->Cameras[i].ProjectionMatrix = glm::ortho(-40.0f, 50.0f, -10.0f, 80.0f, m_Light[index]->Cameras[i].Near, m_Light[index]->Cameras[i].Far);
 			m_Light[index]->Cameras[i].ViewProjectionMatrix = m_Light[index]->Cameras[i].ProjectionMatrix * m_Light[index]->Cameras[i].ViewMatrix;
 		}
-	}
+	} 
 }

@@ -69,7 +69,7 @@ namespace Frosty
 
 			if (!m_GameRunning)
 			{
-				RenderCommand::SetClearColor({ 0.2f, 0.2f, 0.2f, 1.0f });
+				RenderCommand::SetClearColor({ 0.0f, 0.0f, 0.0f, 1.0f });
 				RenderCommand::Clear();
 			
 				Renderer::BeginScene();
@@ -103,7 +103,7 @@ namespace Frosty
 
 			float ramMemory = RamUsage();
 			float vramMemory = VramUsage();
-		/*	if (ramMemory > 256)*/ FY_CORE_FATAL("{0} MiB RAM committed.", ramMemory);
+		/*	if (ramMemory > 256)*/ //FY_CORE_FATAL("{0} MiB RAM committed.", ramMemory);
 			/*if (vramMemory > 256) FY_CORE_FATAL("{0} MiB VRAM used.", vramMemory);*/
 		}
 	}

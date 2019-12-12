@@ -41,6 +41,7 @@ uniform vec3 u_CameraPosition;
 uniform int u_Shininess;
 uniform vec4 u_ObjectColor;
 uniform float u_Flash;
+uniform int u_RenderShadows;
 
 in vec3 v_FragPosition;
 in vec2 v_TextureCoords;
@@ -144,66 +145,68 @@ vec3 CalculateDirectionalLight(DirectionalLight light, vec3 normal)
 
 float ShadowCalculation(vec4 fragPosLightSpace, vec3 fragPos, vec3 normal, vec3 lightPos)
 {
-//Perform perspective divition, usually done automatically.
-	vec3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w;	//Works both with orthographic projection and perspective projection.
+float shadow = 0.0;
 
-	projCoords = projCoords * 0.5 + 0.5;	//Fixes range from -1,1 to 0,1
-	float closestDepth = texture(u_ShadowMap, projCoords.xy).r;
-	float currentDepth = projCoords.z;
-
-	//float shadow = currentDepth > closestDepth ? 1.0 : 0.0;
-	vec3 lightDir = normalize(lightPos - fragPos);
-	vec3 nNormal = normalize(normal);
-
-
-	//
-	//float bias = max(0.00005 * (1.0 - dot(nNormal, lightDir)), 0.000005); //Fixes shadow acne.
-	
-	//double bias = 0.0001; //Fixes shadow acne.
-	double bias = 0.00022; //Fixes shadow acne.
-
-	float shadow = 0.0;
-	vec2 texelSize = 1.0 / textureSize(u_ShadowMap, 0);
-	for (int x = -4; x <= 4; ++x)
+	if (u_RenderShadows > 0)
 	{
-		for (int y = -4; y <= 4; ++y)
+
+		//Perform perspective divition, usually done automatically.
+		vec3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w;	//Works both with orthographic projection and perspective projection.
+
+		projCoords = projCoords * 0.5 + 0.5;	//Fixes range from -1,1 to 0,1
+		float closestDepth = texture(u_ShadowMap, projCoords.xy).r;
+		float currentDepth = projCoords.z;
+
+		//float shadow = currentDepth > closestDepth ? 1.0 : 0.0;
+		vec3 lightDir = normalize(lightPos - fragPos);
+		vec3 nNormal = normalize(normal);
+
+		//
+		//float bias = max(0.00005 * (1.0 - dot(nNormal, lightDir)), 0.000005); //Fixes shadow acne.
+	
+		//double bias = 0.0001; //Fixes shadow acne.
+		double bias = 0.0015; //Fixes shadow acne.
+
+		vec2 texelSize = 1.0 / textureSize(u_ShadowMap, 0);
+		for (int x = -4; x <= 4; ++x)
 		{
-			float pcfDepth = texture(u_ShadowMap, projCoords.xy + vec2(x, y) * texelSize).r;
-			shadow += currentDepth - bias > pcfDepth ? 1.0 : 0.0;
+			for (int y = -4; y <= 4; ++y)
+			{
+				float pcfDepth = texture(u_ShadowMap, projCoords.xy + vec2(x, y) * texelSize).r;
+				shadow += currentDepth - bias > pcfDepth ? 1.0 : 0.0;
+			}
 		}
-	}
 
-	shadow /= 72;	
+		shadow /=72;	
 
-
-	if (projCoords.z > 1.0)
-	{
-		shadow = 0.0;
-	}
+		if (projCoords.z > 1.0)
+		{
+			shadow = 0.0;
+		}
 	
-//	// perform perspective divide
-//    vec3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w;
-//    // transform to [0,1] range
-//    projCoords = projCoords * 0.5 + 0.5;
-//    // get closest depth value from light's perspective (using [0,1] range fragPosLight as coords)
-//    float closestDepth = texture(u_ShadowMap, projCoords.xy).r; 
-//    // get depth of current fragment from light's perspective
-//    float currentDepth = projCoords.z;
-//    // check whether current frag pos is in shadow
-//    float shadow = currentDepth > (closestDepth +0.00001)  ? 1.0 : 0.0;
+	//	// perform perspective divide
+	//    vec3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w;
+	//    // transform to [0,1] range
+	//    projCoords = projCoords * 0.5 + 0.5;
+	//    // get closest depth value from light's perspective (using [0,1] range fragPosLight as coords)
+	//    float closestDepth = texture(u_ShadowMap, projCoords.xy).r; 
+	//    // get depth of current fragment from light's perspective
+	//    float currentDepth = projCoords.z;
+	//    // check whether current frag pos is in shadow
+	//    float shadow = currentDepth > (closestDepth +0.00001)  ? 1.0 : 0.0;
 
-//   if(closestDepth == currentDepth)
-//	{
-//		color = vec4(1,0,0,1);
-//
-//	}
-//	else
-//	{
-//		color = vec4(0,1,0,1);
-//	}
+	//   if(closestDepth == currentDepth)
+	//	{
+	//		color = vec4(1,0,0,1);
+	//
+	//	}
+	//	else
+	//	{
+	//		color = vec4(0,1,0,1);
+	//	}
 
-	//color = vec4(shadow,0,0,1);
+		//color = vec4(shadow,0,0,1);
 
-
+	}
 	return shadow;
 }
