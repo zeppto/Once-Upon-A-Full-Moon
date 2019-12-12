@@ -747,7 +747,7 @@ namespace MCS
 		m_World->AddComponent<Frosty::ECS::CAttack>(projectile, Frosty::ECS::CAttack::AttackType::Range, totalDamage, true, weaponComp.Lifetime, false);
 		auto& attack = m_World->GetComponent<Frosty::ECS::CAttack>(projectile);
 
-		auto& particles = m_World->AddComponent<Frosty::ECS::CParticleSystem>(projectile, "Particles", "particle", 50, glm::vec3(0.0f, 1.0f, 0.2f), 3.0f);
+		auto& particles = m_World->AddComponent<Frosty::ECS::CParticleSystem>(projectile, "Particles", "particle", 50, glm::vec3(1.0f, 0.8f, 0.2f), 3.0f);
 		particles.ParticleSystemDirection = glm::vec3(0.0f, 0.0f, -1.0f);
 		particles.RandomDirection = true;
 		particles.randMainDir = glm::vec3(0.0f, 0.0f, -1.0f);
@@ -785,20 +785,20 @@ namespace MCS
 	{
 		auto& fireEffect = m_World->CreateEntity({ spawnPos.x, 1.0f, spawnPos.z }, rotation, { 5.0f, 5.0f, 2.0f });
 
-		auto& fireParticles = m_World->AddComponent<Frosty::ECS::CParticleSystem>(fireEffect, "Particles", "particle", 30, glm::vec3(1.0f, 0.0f, 0.0f), 3.0f);
+		auto& fireParticles = m_World->AddComponent<Frosty::ECS::CParticleSystem>(fireEffect, "Particles", "particle", 63, glm::vec3(1.0f, 0.0f, 0.0f), 3.0f);
 		fireParticles.ParticleSystemDirection = glm::vec3(-1.0f, 0.0f, 0.0f);
 		fireParticles.RandomDirection = true;
 		fireParticles.randMainDir = glm::vec3(0.0f, 1.0f, 0.0f);
 		fireParticles.randSpread = 0.5f;
 		fireParticles.StartParticleSize = 0.8f;
 		fireParticles.EmitCount = 3;
-		fireParticles.EmitRate = 0.05f;
+		fireParticles.EmitRate = 0.0f;
 		fireParticles.MaxLifetime = 0.5f;
 		fireParticles.FadeInTreshold = 0.45f;
 		fireParticles.FadeTreshold = 0.16f;
 		fireParticles.StaticColor = false;
-		fireParticles.SystemEndColor = glm::vec3(0.5f, 0.5f, 0.2f);
-		fireParticles.ParticleSystemStartPos = glm::vec3(0.0f, 0.0f, 0.5f);
+		fireParticles.SystemEndColor = glm::vec3(0.5f, 0.6f, 0.2f);
+		fireParticles.ParticleSystemStartPos = glm::vec3(0.0f, -0.05f, 0.5f);
 		fireParticles.HasGravity = true;
 
 		attack.FireEffect = fireEffect;
@@ -2193,4 +2193,6 @@ namespace MCS
 			m_Player[i]->BossFearEffectTimer = Frosty::Time::CurrentTime();
 		}
 	}
+
+
 }
