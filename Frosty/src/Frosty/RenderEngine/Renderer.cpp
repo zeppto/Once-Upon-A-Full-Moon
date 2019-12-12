@@ -57,23 +57,23 @@ namespace Frosty
 		int nrOfDrawnedObjs = 0;
 		int nrOfCulledObjs = 0;
 		bool culling = false;
-
-		//For all render passes
-		for (int i = 0; i < s_RenderPas.size(); i++)
+		 
+		//For all render passes 
+		for (int i = 0; i < s_RenderPas.size(); i++)  
 		{
 			nrOfpasses++;
 			auto passData = s_RenderPas[i];
-
-			if (i != 0)
+			 
+			if (i != 0) 
 			{
 				glm::ivec4 viewP(Application::Get().GetWindow().GetViewport());
 				glViewport(viewP.x, viewP.y, viewP.z, viewP.w);
-			}
+			} 
 			
 			
 
 			//For all shaders
-			for (auto& ShaderIt : passData.ShaderMap)
+			for (auto& ShaderIt : passData.ShaderMap) 
 			{
 				nrOfShaders++;
 				 
@@ -83,7 +83,7 @@ namespace Frosty
 				shaderData->Shader->UploadUniformMat4("u_ViewProjection", s_SceneData->GameCamera.ViewProjectionMatrix);
 				shaderData->Shader->UploadUniformFloat3("u_CameraPosition", s_SceneData->GameCamera.CameraPosition);
 
-				/*for (auto& DLightIt : s_SceneData->DirectionalLights)
+				/*for (auto& DLightIt : s_SceneData->DirectionalLights) 
 				{
 					shaderData->Shader->UploadUniformMat4("u_ViewProjection", s_SceneData->DirectionalLights[DLightIt.first].DirectionalLight->Cameras[0].ViewProjectionMatrix);
 
@@ -94,13 +94,13 @@ namespace Frosty
 				//	shaderData->Shader->UploadUniformFloat3("u_CameraPosition", s_SceneData->DirectionalLights[0].Transform->Position);
 				//} 
 
-				if (shaderData->Shader->GetName() == "Texture2D")
+				if (shaderData->Shader->GetName() == "Texture2D") 
 				{
 					glEnable(GL_BLEND);
 					glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); 
 					RenderCommand::EnableBackfaceCulling();
 					culling = true;
-
+					 
 					glActiveTexture(GL_TEXTURE10);
 					glBindTexture(GL_TEXTURE_2D, s_ShadowMap);
 				}
@@ -269,16 +269,16 @@ namespace Frosty
 									meshData->TransformMap.at(TransformIt.first)->ModelMatrix = *meshData->parentMatrix * meshData->TransformMap.at(TransformIt.first)->ModelMatrix;
 								}
 							}
-
+							 
 							float distance = 0;																	//The scale check is so the plane is not culled
 							if (culling && Time::GetFrameCount() /*&& s_TotalNrOfFrames % 2 == 0*/ && meshData->TransformMap.at(TransformIt.first)->Scale.x < 100 && s_DistanceCulling)
 							{
 								distance = glm::distance(meshData->TransformMap.at(TransformIt.first)->Position, s_SceneData->GameCamera.CameraPosition);
 							}
-
+							  
 							if (distance < 110)
-							{
-								nrOfDrawnedObjs++;
+							{ 
+								nrOfDrawnedObjs++; 
 
 								shaderData->Shader->UploadUniformMat4("u_Transform", meshData->TransformMap.at(TransformIt.first)->ModelMatrix);
 

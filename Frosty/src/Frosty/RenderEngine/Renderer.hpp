@@ -179,8 +179,8 @@ namespace Frosty
 		static unsigned int s_ShadowMapFBO;
 		static unsigned int s_ShadowMap;
 
-		inline static const unsigned int SHADOW_WIDTH = 1280;
-		inline static const unsigned int SHADOW_HEIGHT = 720;
+		inline static const unsigned int SHADOW_WIDTH = (640);
+		inline static const unsigned int SHADOW_HEIGHT = (360);
 		static unsigned int s_FullScreenQuad;
 	};
 }

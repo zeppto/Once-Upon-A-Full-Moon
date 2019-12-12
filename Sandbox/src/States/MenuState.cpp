@@ -18,7 +18,7 @@
 #include "Systems/DestroySystem.hpp"
 #include "Systems/NavigationSystem.hpp"
 #include "Systems/ParticleSystem.hpp"
-#include "Systems/LootingSystem.hpp"
+#include "Systems/LootingSystem.hpp" 
 #include "Systems/LevelSystem.hpp"
 #include "Systems/HealthBarSystem.hpp"
 #include "Systems/BossBehaviorSystem.hpp"
@@ -349,10 +349,10 @@ namespace MCS
 		//Dash
 		uiLayout.AddText(glm::vec2(240, 40 + 35), "[SHIFT]", glm::vec3(1.0f, 1.0f, 0.75f), controlsInfoSize2); //17
 
-		//Items
+		//Items  
 		uiLayout.AddText(hpPotionControl, "[1]", glm::vec3(1.0f, 1.0f, 0.75f), controlsInfoSize2); //18
 		uiLayout.AddText(spPotionControl, "[2]", glm::vec3(1.0f, 1.0f, 0.75f), controlsInfoSize2); //19
-		uiLayout.AddText(baitControl, "[Q]", glm::vec3(1.0f, 1.0f, 0.75f), controlsInfoSize2); //20
+		uiLayout.AddText(baitControl, "[Q]", glm::vec3(1.0f, 1.0f, 0.75f), controlsInfoSize2); //20 
 
 
 		uiLayout.AddSprite(glm::vec2(1280.f / 2, 720.f / 2), glm::vec2(16 * 1.6, 9 * 1.6f), "fearEffect", glm::vec4(0.0f, 0.0f, 0.0f, 0.75f)); // 0
