@@ -49,9 +49,11 @@ namespace Frosty
 	{
 		while (m_Running)
 		{
+			float ramMemory = RamUsage();
+			if (ramMemory > 512) FY_CORE_FATAL("Ram usage is {0}.", ramMemory);
+
 			/// Frame Start
 			Time::OnUpdate();
-
 			m_StateMachine.ProcessStateChanges();
 
 			if (m_CallInput)
@@ -60,18 +62,18 @@ namespace Frosty
 				m_CallInput = false;
 			}
 
+
 			m_EditorCamera.OnUpdate();
 			m_StateMachine.GetActiveState()->OnUpdate();
+
 			for (Layer* layer : m_LayerHandler)
-			{
 				layer->OnUpdate();
-			}
 
 			if (!m_GameRunning)
 			{
 				RenderCommand::SetClearColor({ 0.2f, 0.2f, 0.2f, 1.0f });
 				RenderCommand::Clear();
-			
+
 				Renderer::BeginScene();
 				Renderer::SetCamera(m_EditorCamera.GetPosition(), m_EditorCamera.GetViewMatrix(), m_EditorCamera.GetProjectionMatrix());
 			}
@@ -82,6 +84,8 @@ namespace Frosty
 				m_World->OnUpdate();
 				m_World->BeginScene();
 			}
+
+			
 			//Simon move this
 			//NO :P
 			glm::ivec4 viewP(m_Window->GetViewport());
@@ -103,11 +107,6 @@ namespace Frosty
 			m_ImGuiLayer->End();
 
 			m_Window->OnUpdate();
-
-			float ramMemory = RamUsage();
-			float vramMemory = VramUsage();
-			if (ramMemory > 256) FY_CORE_FATAL("{0} MiB RAM committed.", ramMemory);
-			//if (vramMemory > 256) FY_CORE_FATAL("{0} MiB VRAM used.", vramMemory);
 		}
 	}
 
@@ -280,48 +279,10 @@ namespace Frosty
 				//Commit Charge is the total amount of memory that the memory manager has committed for a running process.
 
 			memoryUsage = float(pmc.PagefileUsage / 1024.0 / 1024.0); //MiB
-			memoryUsage = memoryUsage - VramUsage();
-
-			//if (memoryUsage > 256) FY_CORE_FATAL("{0} MiB RAM committed.", memoryUsage);
+			//memoryUsage = memoryUsage - VramUsage();
 		}
 
 		CloseHandle(hProcess);
-
-		return memoryUsage;
-	}
-	
-	float Application::VramUsage()
-	{
-		IDXGIFactory* dxgifactory = nullptr;
-		HRESULT ret_code = ::CreateDXGIFactory(
-			__uuidof(IDXGIFactory),
-			reinterpret_cast<void**>(&dxgifactory));
-
-		float memoryUsage = 0.0f;
-		if (SUCCEEDED(ret_code))
-		{
-			IDXGIAdapter* dxgiAdapter = nullptr;
-
-			if (SUCCEEDED(dxgifactory->EnumAdapters(0, &dxgiAdapter)))
-			{
-				IDXGIAdapter4* dxgiAdapter4 = NULL;
-				if (SUCCEEDED(dxgiAdapter->QueryInterface(__uuidof(IDXGIAdapter4), (void**)&dxgiAdapter4)))
-				{
-					DXGI_QUERY_VIDEO_MEMORY_INFO info;
-
-					if (SUCCEEDED(dxgiAdapter4->QueryVideoMemoryInfo(0, DXGI_MEMORY_SEGMENT_GROUP_LOCAL, &info)))
-					{
-						memoryUsage = float(info.CurrentUsage / 1024.0 / 1024.0); //MiB
-
-						//if (memoryUsage > 256) FY_CORE_FATAL("{0} MiB VRAM used.", memoryUsage);
-					};
-
-					dxgiAdapter4->Release();
-				}
-				dxgiAdapter->Release();
-			}
-			dxgifactory->Release();
-		}
 
 		return memoryUsage;
 	}

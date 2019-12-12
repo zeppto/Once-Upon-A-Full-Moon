@@ -39,8 +39,9 @@ namespace MCS
 				}
 				while (!closedSet.empty())
 				{
-					closedSet.back().GCost = 0;
-					closedSet.back().HCost = 0;
+					Frosty::CellNode* tempNode = m_Grid->GetNode(closedSet.back().GridX, closedSet.back().GridY);
+					tempNode->GCost = 0;
+					tempNode->HCost = 0;
 					closedSet.erase(closedSet.begin() + closedSet.size() - 1);
 				}
 

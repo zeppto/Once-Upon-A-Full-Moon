@@ -54,6 +54,9 @@ namespace Frosty
 		void SetGameLoad(bool gameLoad);
 
 		inline StateMachine &GetStateMachine() { return m_StateMachine; }
+
+		float RamUsage();
+
 	private:
 		void OnWindowCloseEvent(WindowCloseEvent& e);
 		void OnKeyPressedEvent(KeyPressedEvent& e);
@@ -61,9 +64,6 @@ namespace Frosty
 
 		void OnMousePressedEvent(MouseButtonPressedEvent & e);
 		void OnMouseReleasedEvent(MouseButtonReleasedEvent & e);
-
-		float RamUsage();
-		float VramUsage();
 
 	private:
 		InputManager m_InputManager;

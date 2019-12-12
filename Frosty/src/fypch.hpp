@@ -37,4 +37,5 @@
 #include <Frosty/Core/Log.hpp>
 #include <Frosty/Events/EventSystem.hpp>
 #include <Frosty/Core/Time.hpp>		// Remove
+
 #endif

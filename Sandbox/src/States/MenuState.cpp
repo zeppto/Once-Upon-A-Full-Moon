@@ -46,7 +46,7 @@ namespace MCS
 		auto& world = Frosty::Application::Get().GetWorld();
 		m_App = &Frosty::Application::Get();
 		m_App->PushOverlay(FY_NEW(MenuLayer));
-		
+
 		if (!m_App->MenuLoaded())
 		{
 			InitiateSystems();

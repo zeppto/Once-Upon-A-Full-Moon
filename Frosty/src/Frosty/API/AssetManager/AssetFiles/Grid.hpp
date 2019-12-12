@@ -21,12 +21,11 @@ namespace Frosty
 		int32_t ParentGridY{ -1 };
 		bool ExistsInOpenSet{ false };
 
-
 		// TEMPORARY FOR DEBUGGING
 		size_t CellEntityID{ 0 };
 
-		inline CellNode() {};
-		inline CellNode(const glm::vec3& worldPos, bool walkable, int32_t gridX, int32_t gridY) : WorldPosition(worldPos), Walkable(walkable), GridX(gridX), GridY(gridY) { }
+		CellNode() = default;
+		CellNode(const glm::vec3& worldPos, bool walkable, int32_t gridX, int32_t gridY) : WorldPosition(worldPos), Walkable(walkable), GridX(gridX), GridY(gridY) { }
 		
 		// Operators
 		bool operator==(const CellNode& obj) const { return obj.GridX == GridX && obj.GridY == GridY; }

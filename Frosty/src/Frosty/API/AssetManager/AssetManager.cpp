@@ -98,7 +98,7 @@ namespace Frosty
 				break;
 
 			default:
-				FY_CORE_WARN("Unknown fileformat, Filepath: {0}", TempFileInfo.FileName);
+				//FY_CORE_WARN("Unknown fileformat, Filepath: {0}", TempFileInfo.FileName);
 				break;
 			}
 		}
@@ -192,7 +192,7 @@ namespace Frosty
 		}
 		else
 		{
-			FY_CORE_WARN("Mesh: {0}, Is already loaded", MetaData.TagName);
+			//FY_CORE_WARN("Mesh: {0}, Is already loaded", MetaData.TagName);
 		}
 		return returnValue;
 	}
@@ -243,7 +243,7 @@ namespace Frosty
 		}
 		else
 		{
-			FY_CORE_WARN("Mesh: {0}, Is already loaded", MetaData.TagName);
+			//FY_CORE_WARN("Mesh: {0}, Is already loaded", MetaData.TagName);
 		}
 		return returnValue;
 	}
@@ -252,7 +252,7 @@ namespace Frosty
 	{
 		if (TextureLoaded(MetaData.FileName))
 		{
-			FY_CORE_INFO("BoolMap: {0}, Is already loaded", MetaData.FileName);
+			//FY_CORE_INFO("BoolMap: {0}, Is already loaded", MetaData.FileName);
 			return false;
 		}
 		else
@@ -266,7 +266,7 @@ namespace Frosty
 	{
 		if (TextureLoaded(MetaData.FileName))
 		{
-			FY_CORE_INFO("Texture: {0}, Is already loaded", MetaData.FileName);
+			//FY_CORE_INFO("Texture: {0}, Is already loaded", MetaData.FileName);
 			return false;
 		}
 		else
@@ -280,7 +280,7 @@ namespace Frosty
 	{
 		if (TTFLoaded(MetaData.FileName))
 		{
-			FY_CORE_INFO("TTF: {0}, Is already loaded", MetaData.FileName);
+			//FY_CORE_INFO("TTF: {0}, Is already loaded", MetaData.FileName);
 			return false;
 		}
 		else
@@ -295,7 +295,7 @@ namespace Frosty
 	{
 		if (XMLLoaded(MetaData.FileName))
 		{
-			FY_CORE_INFO("XML: {0}, Is already loaded", MetaData.FileName);
+			//FY_CORE_INFO("XML: {0}, Is already loaded", MetaData.FileName);
 			return false;
 		}
 		else
@@ -309,7 +309,7 @@ namespace Frosty
 	{
 		if (GridLoaded(MetaData.FileName))
 		{
-			FY_CORE_INFO("Grid: {0}, Is already loaded", MetaData.FileName);
+			//FY_CORE_INFO("Grid: {0}, Is already loaded", MetaData.FileName);
 			return false;
 		}
 		else
@@ -323,7 +323,7 @@ namespace Frosty
 	{
 		if (MaterialLoaded(LnkMat.GetfileMetaData().FileName))
 		{
-			FY_CORE_INFO("Material: {0}, Is already loaded", LnkMat.GetfileMetaData().FileName);
+			//FY_CORE_INFO("Material: {0}, Is already loaded", LnkMat.GetfileMetaData().FileName);
 			return false;
 		}
 		else
@@ -337,7 +337,7 @@ namespace Frosty
 	{
 		if (MaterialLoaded(MetaData.FileName))
 		{
-			FY_CORE_INFO("Material: {0}, Is already loaded", MetaData.FileName);
+			//FY_CORE_INFO("Material: {0}, Is already loaded", MetaData.FileName);
 			return false;
 		}
 		else
@@ -420,7 +420,7 @@ namespace Frosty
 		}
 		else
 		{
-			FY_CORE_WARN("BoundingBox: {0}, Is already loaded", MetaData.TagName);
+			//FY_CORE_WARN("BoundingBox: {0}, Is already loaded", MetaData.TagName);
 		}
 		return returnValue;
 	}
@@ -859,7 +859,7 @@ namespace Frosty
 						}
 						else
 						{
-							FY_CORE_WARN("Luna File: {0}, Does not have a diffuse texture", TempMatMetaData.FileName);
+							//FY_CORE_WARN("Luna File: {0}, Does not have a diffuse texture", TempMatMetaData.FileName);
 						}
 
 
@@ -883,7 +883,7 @@ namespace Frosty
 							}
 							else
 							{
-								FY_CORE_WARN("Luna File: {0}, Does not have a normal texture (Fault when exported file from Luna)", TempMatMetaData.FileName);
+								//FY_CORE_WARN("Luna File: {0}, Does not have a normal texture (Fault when exported file from Luna)", TempMatMetaData.FileName);
 							}
 						}
 
@@ -907,7 +907,7 @@ namespace Frosty
 							}
 							else
 							{
-								FY_CORE_WARN("Luna File: {0}, Does not have a Glow texture (Fault when exported file from Luna)", TempMatMetaData.FileName);
+								//FY_CORE_WARN("Luna File: {0}, Does not have a Glow texture (Fault when exported file from Luna)", TempMatMetaData.FileName);
 							}
 						}
 					}
@@ -1037,7 +1037,7 @@ namespace Frosty
 		}
 		else
 		{
-			FY_CORE_WARN("File Has No Name, Filepath {0}", FileNameInformation.FullFilePath);
+			//FY_CORE_WARN("File Has No Name, Filepath {0}", FileNameInformation.FullFilePath);
 		}
 		return returnValue;
 	}
@@ -1160,7 +1160,7 @@ namespace Frosty
 		}
 		else
 		{
-			FY_CORE_WARN("Trying to cut a file extention from a emtpy char ptr");
+			//FY_CORE_WARN("Trying to cut a file extention from a emtpy char ptr");
 		}
 		return returnString;
 	}
@@ -1189,7 +1189,7 @@ namespace Frosty
 		}
 		else
 		{
-			FY_CORE_WARN("Trying to cut a file extention from a emtpy char ptr");
+			//FY_CORE_WARN("Trying to cut a file extention from a emtpy char ptr");
 		}
 		return returnString;
 	}
@@ -1210,7 +1210,7 @@ namespace Frosty
 		}
 		else
 		{
-			FY_CORE_WARN("Trying to convert a emtpy char ptr");
+			//FY_CORE_WARN("Trying to convert a emtpy char ptr");
 		}
 		return returnString;
 	}
