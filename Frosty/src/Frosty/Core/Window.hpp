@@ -24,8 +24,8 @@ namespace Frosty
 		virtual inline std::string GetTitle() const override { return m_Data.Title; }
 		virtual inline unsigned int GetWidth() const override { return m_Data.Width; }
 		virtual inline unsigned int GetHeight() const override { return m_Data.Height; }
-		virtual float GetWidthMultiplier()const override;
-		virtual float GetHeightMultiplier()const override;
+		virtual float GetWidthMultiplier() const override;
+		virtual float GetHeightMultiplier() const override;
 		virtual inline unsigned int GetPositionX() const override { return m_Data.PositionX; }
 		virtual inline unsigned int GetPositionY() const override { return m_Data.PositionY; }
 
@@ -62,13 +62,16 @@ namespace Frosty
 		struct WindowData
 		{
 			std::string Title{ "Frosty Engine" };
-			int Maximized;
-			unsigned int Width, Height;
-			unsigned int PositionX, PositionY;
-			float refWidth, refHeight;
+			int Maximized = 0;
+			unsigned int Width = 0;
+			unsigned int Height = 0;
+			unsigned int PositionX = 0;
+			unsigned int PositionY = 0;
+			float refWidth = 0.0f;
+			float refHeight = 0.0f;
 			float widthMultiplier{ 0.0f }, heightMultiplier{ 0.0f };
 			float lastWidthMultiplier{ 0.0f }, lastHeightMultiplier{ 0.0f };
-			bool VSync;
+			bool VSync = false;
 			glm::vec4 Viewport;
 			bool EditorMode{ true };
 		};

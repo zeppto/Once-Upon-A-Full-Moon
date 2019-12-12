@@ -33,7 +33,10 @@ namespace MCS
 		float x = Frosty::InputManager::GetMouseX();
 		float y = Frosty::InputManager::GetMouseY();
 
-		if (x > 730.0f && x < 1215.0f && y > 565.0f && y < 605.0f)
+		float width = m_App->GetWindow().GetWidthMultiplier();
+		float height = m_App->GetWindow().GetHeightMultiplier();
+
+		if (x > (485.0f * width) && x < (810.0f * width) && y >(410.0f * height) && y < (440.0f * height))
 		{
 			if (Frosty::InputManager::IsMouseButtonPressed(FY_MOUSE_BUTTON_LEFT))
 			{
@@ -42,14 +45,14 @@ namespace MCS
 				m_App->GetStateMachine().AddState(Frosty::StateRef(FY_NEW(MenuState)), true);
 			}
 		}
-		else if (x > 860.f && x < 1085.0f && y > 445.0f && y < 505.0f)
+		else if (x > (570.0f * width) && x < (720.0f * width) && y >(325.0f * height) && y < (370.0f * height))
 		{
 			if (Frosty::InputManager::IsMouseButtonPressed(FY_MOUSE_BUTTON_LEFT))
 			{
 				m_App->GetStateMachine().AddState(Frosty::StateRef(FY_NEW(HighscoreState)), false);
 			}
 		}
-		else if (x > 860.f && x < 1090.0f && y > 350.0f && y < 395.0f)
+		else if (x > (575.0f * width) && x < (725.0f * width) && y >(260.0f * height) && y < (290 * height))
 		{
 			if (Frosty::InputManager::IsMouseButtonPressed(FY_MOUSE_BUTTON_LEFT))
 			{
@@ -66,16 +69,18 @@ namespace MCS
 			auto& gamePauseGui = world->GetComponent<Frosty::ECS::CGUI>(m_GameOverGui);
 			float x = Frosty::InputManager::GetMouseX();
 			float y = Frosty::InputManager::GetMouseY();
+			float width = m_App->GetWindow().GetWidthMultiplier();
+			float height = m_App->GetWindow().GetHeightMultiplier();
 
-			if (x > 730.0f && x < 1215.0f && y > 565.0f && y < 605.0f)
+			if (x > (485.0f * width) && x < (810.0f * width) && y >(410.0f * height) && y < (440.0f * height))
 			{
 				gamePauseGui.Layout.texts[1].SetColor(glm::vec4(0.0f, 1.0f, 0.0f, 0.0f));
 			}
-			else if (x > 860.f && x < 1085.0f && y > 445.0f && y < 505.0f)
+			else if (x > (570.0f * width) && x < (720.0f * width) && y >(325.0f * height) && y < (370.0f * height))
 			{
 				gamePauseGui.Layout.texts[2].SetColor(glm::vec4(0.0f, 1.0f, 0.0f, 0.0f));
 			}
-			else if (x > 860.f && x < 1090.0f && y > 350.0f && y < 395.0f)
+			else if (x > (575.0f * width) && x < (725.0f * width) && y >(260.0f * height) && y < (290 * height))
 			{
 				gamePauseGui.Layout.texts[3].SetColor(glm::vec4(1.0f, 0.0f, 0.0f, 0.0f));
 			}
@@ -100,15 +105,20 @@ namespace MCS
 		std::string Score = "HighScore";
 		std::string Exit = "Exit Game";
 
-		float posX1 = (960 / 1.5f) - (GameOver.size() / 2) * 18;
-		float posX2 = (960 / 1.5f) - (Return.size() / 2) * 17;
-		float posX3 = (960 / 1.5f) - (Score.size() / 2) * 17;
-		float posX4 = (960 / 1.5f) - (Exit.size() / 2) * 17;
+		float width = m_App->GetWindow().GetWidthMultiplier();
+		float height = m_App->GetWindow().GetHeightMultiplier();
+		float middleX = float(m_App->GetWindow().GetWidth() / 2);
+		float middleY = float(m_App->GetWindow().GetHeight() / 2);
 
-		m_UILayout.AddText(glm::vec2(posX1, 525.f), GameOver, glm::vec3(1.0f, 1.0f, 0.0f), 1.0f);
-		m_UILayout.AddText(glm::vec2(posX2, 400.0f), Return, glm::vec3(1.0f, 1.0f, 0.0f), 1.0f);
-		m_UILayout.AddText(glm::vec2(posX3, 325.0f), Score, glm::vec3(1.0f, 1.0f, 0.0f), 1.0f);
-		m_UILayout.AddText(glm::vec2(posX4, 250.0f), Exit, glm::vec3(0.8f, 0.0f, 0.0f), 1.0f);
+		float posX1 = (middleX / width) - (GameOver.size() / 2) * 18;
+		float posX2 = (middleX / width) - (Return.size()   / 2) * 17;
+		float posX3 = (middleX / width) - (Score.size()    / 2) * 17;
+		float posX4 = (middleX / width) - (Exit.size()     / 2) * 17;
+
+		m_UILayout.AddText(glm::vec2(posX1, middleY / height + 175.0f), GameOver, glm::vec3(1.0f, 1.0f, 0.0f), 1.0f);
+		m_UILayout.AddText(glm::vec2(posX2, middleY / height + 50.0f), Return, glm::vec3(1.0f, 1.0f, 0.0f), 1.0f);
+		m_UILayout.AddText(glm::vec2(posX3, middleY / height - 25.0f), Score, glm::vec3(1.0f, 1.0f, 0.0f), 1.0f);
+		m_UILayout.AddText(glm::vec2(posX4, middleY / height - 100.0f), Exit, glm::vec3(0.8f, 0.0f, 0.0f), 1.0f);
 		m_UILayout.AddSprite(glm::vec2(640.0f, 360.0f), glm::vec2(25.6f, 14.4f), "GameOver", glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
 
 		world->AddComponent<Frosty::ECS::CGUI>(m_GameOverGui, m_UILayout);

@@ -31,11 +31,12 @@ namespace MCS
 				glm::vec3 dir = mat * glm::vec4(0.0f, 0.0f, 1.0f, 0.0);
 
 
-				//FY_INFO("Direction: ({0}, {1}, {2})", dir.x, dir.y, dir.z);
+			//	FY_INFO("Direction: ({0}, {1}, {2})", dir.x, dir.y, dir.z);
 			}
 			
 			// Movement
 			glm::vec3 movementOffset = m_Physics[i]->Direction * m_Physics[i]->Speed * m_Physics[i]->SpeedMultiplier * Frosty::Time::DeltaTime();
+			m_PlayerLastMovement = movementOffset;
 			m_Transform[i]->Position += movementOffset;
 			
 			// Collision
@@ -173,7 +174,6 @@ namespace MCS
 		m_Room_Rotation = e.GetRotation();
 	}
 
-
 	void PhysicsSystem::CheckCollision(size_t index)
 	{
 		for (size_t i = 1; i < p_Total; i++)
@@ -203,7 +203,7 @@ namespace MCS
 					else
 						checkCollision = true;
 				}
-				else if (m_World->HasComponent<Frosty::ECS::CEnemy>(m_Transform[index]->EntityPtr) && (m_World->HasComponent<Frosty::ECS::CPlayer>(m_Transform[i]->EntityPtr) || m_Transform[i]->IsStatic))
+				else if (m_World->HasComponent<Frosty::ECS::CEnemy>(m_Transform[index]->EntityPtr) && (m_World->HasComponent<Frosty::ECS::CPlayer>(m_Transform[i]->EntityPtr)/* || m_Transform[i]->IsStatic*/))
 				{
 					if (m_World->GetComponent<Frosty::ECS::CHealth>(m_Transform[index]->EntityPtr).CurrentHealth > 0)
 					{
@@ -212,15 +212,14 @@ namespace MCS
 				}
 
 
-				//Test
-				if (( m_World->HasComponent<Frosty::ECS::CPlayer>(m_Transform[index]->EntityPtr)))
+				//Test Bmap
+				//if (( m_World->HasComponent<Frosty::ECS::CPlayer>(m_Transform[index]->EntityPtr)))
+				if (0)
 				{
 
 					if (m_World->HasComponent<Frosty::ECS::CInventory>(m_Transform[index]->EntityPtr))
 					{
-
-						
-					//	checkCollision = false;
+						checkCollision = false;
 						if (m_World->HasComponent<Frosty::ECS::CLevelExit>(m_Transform[i]->EntityPtr))
 						{
 							checkCollision = true;
@@ -277,6 +276,7 @@ namespace MCS
 
 							if (testBool)
 							{
+								m_Transform[index]->Position -= m_PlayerLastMovement;
 							//	FY_INFO("1");
 							}
 						}
