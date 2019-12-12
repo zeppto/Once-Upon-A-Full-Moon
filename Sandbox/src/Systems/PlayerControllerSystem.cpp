@@ -48,10 +48,9 @@ namespace MCS
 					HandleInventory(i);
 				}
 			}
-			//No movement if dead
+			//No movement if dead (setting speed multiplier to 0 breaks the game since the multiplier is never reset on restart)
 			else
 			{
-				m_Physics[i]->SpeedMultiplier = 0.0f;
 				m_Physics[i]->Direction = glm::vec3(0.0f);
 			}
 		}
@@ -322,11 +321,8 @@ namespace MCS
 						m_Dash[index]->CurrentCooldown = m_Dash[index]->COOLDOWN / 1000.0f;
 					}
 				}
-			}
 
-			// Walking sounds
-			if (glm::length(m_Physics[index]->Direction) > 0.0f)
-			{
+				// Walking sounds
 				if (m_Player[index]->CurrentCooldown <= 0.0f)
 				{
 					int rand = std::rand() % 5 + 1;
