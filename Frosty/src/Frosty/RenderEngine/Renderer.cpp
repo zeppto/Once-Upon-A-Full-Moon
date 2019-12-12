@@ -289,8 +289,8 @@ namespace Frosty
 								}
 							}
 
-							float distance = 0;																	//The scale check is so the plane is not culled
-							if (culling && Time::GetFrameCount() /*&& s_TotalNrOfFrames % 2 == 0*/ && meshData->TransformMap.at(TransformIt.first)->Scale.x < 100 && s_DistanceCulling)
+							float distance = 0;														//The scale check is so the plane is not culled
+							if (culling  && meshData->TransformMap.at(TransformIt.first)->Scale.x < 100 && s_DistanceCulling &&meshData->TransformMap.at(TransformIt.first)->EnableCulling)
 							{
 								distance = glm::distance(meshData->TransformMap.at(TransformIt.first)->Position, s_SceneData->GameCamera.CameraPosition);
 							}

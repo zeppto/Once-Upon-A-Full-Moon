@@ -207,6 +207,8 @@ namespace MCS
 		// WEAPON 1
 		//Sword Offset
 		auto& weapon = world->CreateEntity({ -0.7f, 2.1f, 0.80f }, { 0.0f, 0.0f, 0.0f }, { 1.f, 1.f, 1.f });
+		auto& weaponTransform = world->GetComponent<Frosty::ECS::CTransform>(weapon);
+		weaponTransform.EnableCulling = false;
 		//Bow Offset
 		/*auto& weapon = world->CreateEntity({ -0.7f, 2.3f, 0.2f }, { 0.0f, 60.0f, 0.0f }, { 1.f, 1.f, 1.f });*/
 		auto& weaponHandler = Frosty::AssetManager::GetWeaponHandler("Weapons");

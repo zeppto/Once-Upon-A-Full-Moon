@@ -454,10 +454,11 @@ namespace Frosty
 			glm::vec3 Scale{ 1.0f };
 			glm::mat4 ModelMatrix{ 1.0f };
 			bool IsStatic{ false };
+			bool EnableCulling{ true };
 
 			CTransform() = default;
-			CTransform(const glm::vec3& position, const glm::vec3& rotation, const glm::vec3& scale, bool isStatic = false)
-				: Position(position), Rotation(rotation), Scale(scale), IsStatic(isStatic)
+			CTransform(const glm::vec3& position, const glm::vec3& rotation, const glm::vec3& scale, bool isStatic = false, bool EnableCulling = true)
+				: Position(position), Rotation(rotation), Scale(scale), IsStatic(isStatic), EnableCulling(EnableCulling)
 			{
 
 				if (isStatic)
@@ -490,6 +491,7 @@ namespace Frosty
 			static std::string NAME;
 			std::shared_ptr<VertexArray> Mesh;
 			bool RenderMesh{ true };
+			
 			glm::mat4* parentMatrix = nullptr;
 			glm::mat4* animOffset = nullptr;
 
