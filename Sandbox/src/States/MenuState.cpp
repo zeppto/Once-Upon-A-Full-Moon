@@ -247,7 +247,9 @@ namespace MCS
 		world->AddComponent<Frosty::ECS::CPhysics>(player, Frosty::AssetManager::GetBoundingBox("Scarlet"), playerTransform.Scale, 13.0f);
 		world->AddComponent<Frosty::ECS::CDash>(player);
 		world->AddComponent<Frosty::ECS::CHealth>(player, 20);
-		world->AddComponent<Frosty::ECS::CInventory>(player);
+		auto& playerInventory = world->AddComponent<Frosty::ECS::CInventory>(player);
+		//
+		playerInventory.CurrentWolfsbane = 1;
 
 		//world->AddComponent<Frosty::ECS::CHealthBar>(player, glm::vec3(0.0f, 10.0f, 0.0f));
 		auto& camEntity = world->GetSceneCamera();
@@ -356,7 +358,7 @@ namespace MCS
 
 
 		uiLayout.AddSprite(glm::vec2(1280.f / 2, 720.f / 2), glm::vec2(16 * 1.6, 9 * 1.6f), "fearEffect", glm::vec4(0.0f, 0.0f, 0.0f, 0.75f)); // 0
-
+		//uiLayout.AddSprite(glm::vec2(1280.f / 2, 720.f / 2), glm::vec2(16 * 1.6, 9 * 1.6f), "feerClosingIn", glm::vec4(0.0f, 0.0f, 0.0f, 0.75f)); // 0
 
 
 		uiLayout.AddSprite(glm::vec2(0.f, 0.f), glm::vec2(10, 10), "IndicatorEffect", glm::vec4(0.0f)); // 1 

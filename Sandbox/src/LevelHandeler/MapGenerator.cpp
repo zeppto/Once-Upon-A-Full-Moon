@@ -384,7 +384,6 @@ namespace MCS
 		std::deque<pathOnTile> roomsToGoThrough;
 		roomsToGoThrough.emplace_back(startRoom);
 
-
 		while (roomsToGoThrough.size() > 0)
 		{
 			pathOnTile room = roomsToGoThrough.front();
@@ -427,5 +426,26 @@ namespace MCS
 		}
 		return rooms;
 	}
-
+	bool MapGenerator::isTargetInNextRoom(glm::ivec2 bossPos, glm::ivec2 targetPos)
+	{
+		pathOnTile startRoom;
+		startRoom.pos = bossPos;
+		startRoom.distensTo = 0;
+		pathOnTile room = startRoom;
+		Room currentRoom = getRoom(room.pos);
+		for (int i = 0; i < 4; i++)
+		{
+			if (currentRoom.sideExits[i])
+			{
+				pathOnTile newRoom;
+				newRoom.pos = room.pos + posOffset(i);
+				if (newRoom.pos == targetPos)
+				{
+					return true;
+				}
+			}
+		}
+		return false;
+	}
 }
+

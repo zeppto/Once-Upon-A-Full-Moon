@@ -153,22 +153,22 @@ namespace MCS
 
 			if (time > m_BossTimer)
 			{
-				float estematedBossRoomTime;
-				if (m_LevelFileFormat.NumberOfRoomsVisited() != 0)
-				{
-					estematedBossRoomTime = ((Frosty::Time::CurrentTime() - m_StartTimer + 50.0f) / m_LevelFileFormat.NumberOfRoomsVisited() / 2);
-					if(estematedBossRoomTime > m_BossRoomTimer)
-						estematedBossRoomTime = m_BossRoomTimer;
-				}
-				else
-				{
-					estematedBossRoomTime = m_BossRoomTimer;
-				}
-
-				m_BossTimer = time + estematedBossRoomTime;
-				FY_INFO("It takes {0} sec until boss moves", estematedBossRoomTime);
 				if (m_PlayerCoords != m_BossPos)
 				{
+					float estematedBossRoomTime;
+					if (m_LevelFileFormat.NumberOfRoomsVisited() != 0)
+					{
+						estematedBossRoomTime = ((Frosty::Time::CurrentTime() - m_StartTimer + 50.0f) / m_LevelFileFormat.NumberOfRoomsVisited() / 2) - m_LevelFileFormat.NumberOfRoomsVisited();
+						if(estematedBossRoomTime > m_BossRoomTimer)
+							estematedBossRoomTime = m_BossRoomTimer;
+					}
+					else
+					{
+						estematedBossRoomTime = m_BossRoomTimer;
+					}
+
+					m_BossTimer = time + estematedBossRoomTime;
+					FY_INFO("It takes {0} sec until boss moves", estematedBossRoomTime);
 					if (m_RoomswhithBait.size() > 0)
 					{
 						//follow bait
@@ -281,6 +281,18 @@ namespace MCS
 							FY_INFO("The boss found the player!");
 							FY_INFO("");
 						}
+					}
+					
+					//start fearEffekt
+					if (m_Map.isTargetInNextRoom(m_BossPos, m_PlayerCoords))
+					{
+						FY_INFO("The fear is hear!");
+						FY_INFO("");
+					}
+					else
+					{
+						FY_INFO("No fear!");
+						FY_INFO("");
 					}
 				}
 			}
@@ -1039,8 +1051,28 @@ namespace MCS
 			m_World->ChangeCurrentRoom();
 			Frosty::EventBus::GetEventBus()->Publish<Frosty::UpdateCurrentRoomEvent>(Frosty::UpdateCurrentRoomEvent(m_T_Room.RoomName, m_T_Room.Rotation));
 			Frosty::EventBus::GetEventBus()->Publish<Frosty::SwitchRoomEvent>(Frosty::SwitchRoomEvent());
+			m_PlayerCoords = e.GetCoords();
+			if (m_BossPos == e.GetCoords())
+			{
+				Frosty::EventBus::GetEventBus()->Publish<Frosty::SpawnBossEvent>(Frosty::SpawnBossEvent(m_LevelFileFormat.GetBossSpawnPosition(e.GetCoords())));
+				BossroomBlock(m_BossPos);
+
+				FY_INFO("The boss found the player!");
+				FY_INFO("");
+			}
+			//start fearEffekt
+			if (m_Map.isTargetInNextRoom(m_BossPos, e.GetCoords()))
+			{
+				FY_INFO("The fear is hear!");
+				FY_INFO("");
+			}
+			else
+			{
+				FY_INFO("No fear!");
+				FY_INFO("");
+			}
 		}
-		m_PlayerCoords = e.GetCoords();
+		//m_PlayerCoords = e.GetCoords();
 	}
 
 	void LevelSystem::FlipRoomNames()
@@ -1233,7 +1265,7 @@ namespace MCS
 		m_World->DestroyGroup(true);
 
 		m_ReStart = true;
-		m_PlayerCoords = { 10, 15 };
+		//m_PlayerCoords = { 10, 15 };
 	}
 
 	Frosty::ECS::CGUI* LevelSystem::GetPlayerGUI()
@@ -1336,6 +1368,7 @@ namespace MCS
 					//m_World->AddComponent<Frosty::ECS::CPhysics>(hitbox, Frosty::AssetManager::GetBoundingBox("pCube1"), hitboxTransform.Scale, 0.0f);
 
 					auto& ground = m_World->CreateEntity();
+					m_World->AddToGroup(ground, true);
 					auto& tranform = m_World->GetComponent<Frosty::ECS::CTransform>(ground);
 					tranform.Position = pos;
 					tranform.Scale = glm::vec3(300, 1.0f, 300);
@@ -1351,6 +1384,7 @@ namespace MCS
 				//{
 					//hittbox
 					auto& hitbox = m_World->CreateEntity(treePos, { 0.0f, 0.0f, 0.0f }, scaleHittbox, true);
+					m_World->AddToGroup(hitbox, true);
 					auto& hitboxTransform = m_World->GetComponent<Frosty::ECS::CTransform>(hitbox);
 					m_World->AddComponent<Frosty::ECS::CPhysics>(hitbox, Frosty::AssetManager::GetBoundingBox("pCube1"), hitboxTransform.Scale, 0.0f);
 					//for fire block
@@ -1378,6 +1412,7 @@ namespace MCS
 						}
 
 						auto& fire = m_World->CreateEntity(pos, rotation, { 1.0f, 0.2f, 0.5f });
+						m_World->AddToGroup(fire, true);
 						//m_World->AddComponent<Frosty::ECS::CLight>(fire, Frosty::ECS::CLight::LightType::Point, 1.0f, glm::vec3(0.99f, 0.4f, 0.1f), 20.0f, glm::vec3(0.f, 1.0f, 0.f));
 						auto& fireParticel = m_World->AddComponent<Frosty::ECS::CParticleSystem>(fire, "Particles", "fire", 100, glm::vec3(1.0f, 0.0f, 0.0f), 17.0f);
 						fireParticel.StaticColor = false;
