@@ -1247,7 +1247,6 @@ namespace MCS
 				playerInventory.CurrentWolfsbane = 0;
 
 				m_GUI = &m_World->GetComponent<Frosty::ECS::CGUI>(m_Transform[i]->EntityPtr);
-
 				m_GUI->Layout.sprites.at(1).SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 0.0f));
 
 				for (int j = 15; j < 20 + (healthSpriteCounter / 4); j++)
@@ -1417,7 +1416,7 @@ namespace MCS
 
 						auto& fire = m_World->CreateEntity(pos, rotation, { 1.0f, 0.2f, 0.5f });
 						m_World->AddToGroup(fire, true);
-						m_World->AddComponent<Frosty::ECS::CLight>(fire, Frosty::ECS::CLight::LightType::Point, 1.0f, glm::vec3(0.99f, 0.4f, 0.1f), 20.0f, glm::vec3(0.f, 1.0f, 0.f));
+						//m_World->AddComponent<Frosty::ECS::CLight>(fire, Frosty::ECS::CLight::LightType::Point, 1.0f, glm::vec3(0.99f, 0.4f, 0.1f), 20.0f, glm::vec3(0.f, 1.0f, 0.f));
 						auto& fireParticel = m_World->AddComponent<Frosty::ECS::CParticleSystem>(fire, "Particles", "fire", 100, glm::vec3(1.0f, 0.0f, 0.0f), 17.0f);
 						fireParticel.StaticColor = false;
 						fireParticel.SystemEndColor = glm::vec3(1.0f, 0.82f, 0.0f);

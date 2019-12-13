@@ -103,8 +103,8 @@ namespace Frosty
 
 			float ramMemory = RamUsage();
 			float vramMemory = VramUsage();
-		/*	if (ramMemory > 256)*/ //FY_CORE_FATAL("{0} MiB RAM committed.", ramMemory);
-			/*if (vramMemory > 256) FY_CORE_FATAL("{0} MiB VRAM used.", vramMemory);*/
+		//	if (ramMemory > 256)*/ //FY_CORE_FATAL("{0} MiB RAM committed.", ramMemory);
+		//	if (vramMemory > 256) FY_CORE_FATAL("{0} MiB VRAM used.", vramMemory);
 		}
 	}
 
