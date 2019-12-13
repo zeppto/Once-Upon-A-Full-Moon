@@ -318,7 +318,7 @@ namespace MCS
 
 										// Chest open sound
 										Frosty::EventBus::GetEventBus()->Publish<Frosty::PlayMediaEntityEvent>(Frosty::PlayMediaEntityEvent(
-											m_Transform[i]->EntityPtr, "assets/sounds/WolfGrowl.wav", 1.0f, 100.0f, 200.0f, false, 0));
+											m_Transform[i]->EntityPtr, "assets/sounds/Chest Hurt.wav", false, 1.0f, 100.0f, 200.0f, false, 0));
 
 										if (!m_World->HasComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr))
 										{
@@ -359,7 +359,7 @@ namespace MCS
 
 											// Chest open sound
 											Frosty::EventBus::GetEventBus()->Publish<Frosty::PlayMediaEntityEvent>(Frosty::PlayMediaEntityEvent(
-												m_Transform[i]->EntityPtr, "assets/sounds/WolfGrowl.wav", 1.0f, 100.0f, 200.0f, false, 0));
+												m_Transform[i]->EntityPtr, "assets/sounds/Chest Hurt.wav", false, 1.0f, 100.0f, 200.0f, false, 0));
 
 											if (!m_World->HasComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr))
 											{

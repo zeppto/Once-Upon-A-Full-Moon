@@ -313,7 +313,7 @@ namespace MCS
 			auto& weaponType = m_Enemy[index]->Weapon->Type;
 			if(weaponType == Frosty::ECS::CWeapon::WeaponType::Bite)
 				if(rand == 5 || rand == 3) // Change to Wolf bite
-					Frosty::EventBus::GetEventBus()->Publish<Frosty::PlayMediaEntityEvent>(Frosty::PlayMediaEntityEvent(m_Enemy[index]->EntityPtr, "assets/sounds/WolfAttack.wav", 1.0f, 10.0f, 100.0f, false, 0));
+					Frosty::EventBus::GetEventBus()->Publish<Frosty::PlayMediaEntityEvent>(Frosty::PlayMediaEntityEvent(m_Enemy[index]->EntityPtr, "assets/sounds/WolfAttack.wav", false, 1.0f, 10.0f, 100.0f, false, 0));
 
 			Frosty::EventBus::GetEventBus()->Publish <Frosty::PlayAnimEvent>(Frosty::PlayAnimEvent(m_Transform[index]->EntityPtr, 1));
 			m_Enemy[index]->Weapon->AnimPlaying = true;
@@ -365,11 +365,10 @@ namespace MCS
 				particles.SystemEndColor = glm::vec3(0.6f, 0.4f, 0.0f);
 				particles.HasGravity = true;
 
-				std::string bowSounds[2] = { "Short", "Long" };
-				int rand = std::rand() % 2 + 1;
-				std::string bowStr = "assets/sounds/BowDraw" + bowSounds[rand - 1] + ".wav";
-				const char* fileName_Bow = bowStr.c_str();
-				Frosty::EventBus::GetEventBus()->Publish<Frosty::PlayMediaEntityEvent>(Frosty::PlayMediaEntityEvent(m_Enemy[index]->EntityPtr, fileName_Bow, 2.0f, 30.0f, 100.0f, false, 0));
+				/*std::string castSounds[2] = { "", "Cast" };
+				std::string castStr = "assets/sounds/BowDraw" + castSounds[rand - 1] + ".wav";
+				const char* fileName_Spell = castStr.c_str();*/
+				Frosty::EventBus::GetEventBus()->Publish<Frosty::PlayMediaEntityEvent>(Frosty::PlayMediaEntityEvent(m_Enemy[index]->EntityPtr, "assets/sounds/FirespellCast.wav", false, 1.0f, 100.0f, 200.0f, false, 0));
 			}
 			else if (m_Enemy[index]->Weapon->Type == Frosty::ECS::CWeapon::WeaponType::Sword)
 			{
@@ -381,7 +380,12 @@ namespace MCS
 				int rand = std::rand() % 3 + 1;
 				std::string str = "assets/sounds/SwooshLight" + std::to_string(rand) + ".wav";
 				const char* fileName = str.c_str();
-				Frosty::EventBus::GetEventBus()->Publish<Frosty::PlayMediaEntityEvent>(Frosty::PlayMediaEntityEvent(m_Enemy[index]->EntityPtr, fileName, 2.0f, 30.0f, 100.0f, false, 0));
+				Frosty::EventBus::GetEventBus()->Publish<Frosty::PlayMediaEntityEvent>(Frosty::PlayMediaEntityEvent(m_Enemy[index]->EntityPtr, fileName, false, 1.0f, 100.0f, 200.0f, false, 0));
+
+				rand = std::rand() % 3 + 1;
+				std::string enemyStr = "assets/sounds/Hitsound enemies" + std::to_string(rand) + ".wav";
+				const char* fileName_Enemy = enemyStr.c_str();
+				Frosty::EventBus::GetEventBus()->Publish<Frosty::PlayMediaEntityEvent>(Frosty::PlayMediaEntityEvent(m_Enemy[index]->EntityPtr, fileName_Enemy, false, 1.0f, 100.0f, 200.0f, false, 0));
 			}
 			else
 			{
@@ -467,7 +471,7 @@ namespace MCS
 							bossComp.ActiveAbility = Frosty::ECS::CBoss::AbilityState::Charge;
 
 							// Make wolf growl while he prepares his charge
-							Frosty::EventBus::GetEventBus()->Publish<Frosty::PlayMediaEntityEvent>(Frosty::PlayMediaEntityEvent(m_Enemy[index]->EntityPtr, "assets/sounds/WolfGrowl.wav", 1.0f, 50.0f, 100.0f, false, 0));
+							Frosty::EventBus::GetEventBus()->Publish<Frosty::PlayMediaEntityEvent>(Frosty::PlayMediaEntityEvent(m_Enemy[index]->EntityPtr, "assets/sounds/WolfGrowl.wav", false, 1.0f, 50.0f, 100.0f, false, 0));
 						}
 					}
 				}
@@ -499,7 +503,7 @@ namespace MCS
 					Frosty::EventBus::GetEventBus()->Publish <Frosty::PlayAnimEvent>(Frosty::PlayAnimEvent(m_Transform[index]->EntityPtr, 4));
 					physComp.SpeedMultiplier = 4.0f;
 
-					Frosty::EventBus::GetEventBus()->Publish<Frosty::PlayMediaEntityEvent>(Frosty::PlayMediaEntityEvent(m_Enemy[index]->EntityPtr, "assets/sounds/WolfAttack.wav", 1.0f, 50.0f, 100.0f, false, 0));
+					Frosty::EventBus::GetEventBus()->Publish<Frosty::PlayMediaEntityEvent>(Frosty::PlayMediaEntityEvent(m_Enemy[index]->EntityPtr, "assets/sounds/WolfAttack.wav", false, 1.0f, 50.0f, 100.0f, false, 0));
 				}
 
 				bossComp.DistanceCharged += glm::length(physComp.Direction * physComp.Speed * physComp.SpeedMultiplier * Frosty::Time::DeltaTime());
@@ -552,7 +556,7 @@ namespace MCS
 		int rand = std::rand() % 2 + 1;
 		std::string str = "assets/sounds/WolfHowl" + std::to_string(rand) + ".wav";
 		const char* fileName = str.c_str();
-		Frosty::EventBus::GetEventBus()->Publish<Frosty::PlayMediaEvent>(Frosty::PlayMediaEvent(fileName, 0.75f, 0.0f, false, 0));
+		Frosty::EventBus::GetEventBus()->Publish<Frosty::PlayMediaEvent>(Frosty::PlayMediaEvent(fileName, false, 0.75f, 0.0f, false, 0));
 	}
 	
 	void AISystem::ResetBossAbilities(size_t index)
