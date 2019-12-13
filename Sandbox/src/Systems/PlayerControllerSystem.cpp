@@ -314,7 +314,7 @@ namespace MCS
 						std::string str = "assets/sounds/DodgePrassel" + std::to_string(rand) + ".wav";
 						const char* fileName = str.c_str();
 						//Frosty::EventBus::GetEventBus()->Publish<Frosty::PlayMediaEntityEvent>(Frosty::PlayMediaEntityEvent(m_Player[index]->EntityPtr, fileName, 5.0f, 10.0f, 100.0f, false, 0));
-						Frosty::EventBus::GetEventBus()->Publish<Frosty::PlayMediaEvent>(Frosty::PlayMediaEvent(fileName, 1.0f, 0.0f, false, 0));
+						Frosty::EventBus::GetEventBus()->Publish<Frosty::PlayMediaEvent>(Frosty::PlayMediaEvent(fileName, false, 1.0f, 0.0f, false, 0));
 
 						//m_Physics[index]->Velocity *= m_Dash[index]->SpeedMultiplier;
 						m_Physics[index]->SpeedMultiplier = m_Dash[index]->SpeedMultiplier;
@@ -329,7 +329,7 @@ namespace MCS
 					std::string str = "assets/sounds/FootstepMud" + std::to_string(rand) + ".wav";
 					const char* fileName = str.c_str();
 					//Frosty::EventBus::GetEventBus()->Publish<Frosty::PlayMediaEntityEvent>(Frosty::PlayMediaEntityEvent(m_Player[index]->EntityPtr, fileName, 1.0f, 10.0f, 100.0f, false, 0));
-					Frosty::EventBus::GetEventBus()->Publish<Frosty::PlayMediaEvent>(Frosty::PlayMediaEvent(fileName, 0.25f, 0.0f, false, 0));
+					Frosty::EventBus::GetEventBus()->Publish<Frosty::PlayMediaEvent>(Frosty::PlayMediaEvent(fileName, false, 0.25f, 0.0f, false, 0));
 
 					m_Player[index]->CurrentCooldown = m_Player[index]->COOLDOWN / 1000.0f;
 				}
@@ -394,14 +394,14 @@ namespace MCS
 			{
 			case Frosty::ECS::CWeapon::WeaponType::Sword:
 				//Frosty::EventBus::GetEventBus()->Publish<Frosty::PlayMediaEntityEvent>(Frosty::PlayMediaEntityEvent(weaponCarrier, fileName, 2.0f, 30.0f, 100.0f, false, 0));
-				Frosty::EventBus::GetEventBus()->Publish<Frosty::PlayMediaEvent>(Frosty::PlayMediaEvent(fileName, 1.0f, 0.0f, false, 0));
-				Frosty::EventBus::GetEventBus()->Publish<Frosty::PlayMediaEvent>(Frosty::PlayMediaEvent(fileName_player, 1.0f, 0.0f, false, 0));
+				Frosty::EventBus::GetEventBus()->Publish<Frosty::PlayMediaEvent>(Frosty::PlayMediaEvent(fileName, false, 1.0f, 0.0f, false, 0));
+				Frosty::EventBus::GetEventBus()->Publish<Frosty::PlayMediaEvent>(Frosty::PlayMediaEvent(fileName_player, false, 1.0f, 0.0f, false, 0));
 				Frosty::EventBus::GetEventBus()->Publish <Frosty::PlayAnimEvent>(Frosty::PlayAnimEvent(weaponCarrier, 1));
 				CreateLVL1BoundingBox(weaponCarrier, weaponComp.EntityPtr);
 				break;
 			case Frosty::ECS::CWeapon::WeaponType::Bow:
 				//Frosty::EventBus::GetEventBus()->Publish<Frosty::PlayMediaEntityEvent>(Frosty::PlayMediaEntityEvent(weaponCarrier, fileName_Bow, 2.0f, 30.0f, 100.0f, false, 0));
-				Frosty::EventBus::GetEventBus()->Publish<Frosty::PlayMediaEvent>(Frosty::PlayMediaEvent("assets/sounds/Bowdraw_N_Shoot.wav", 1.0f, 0.0f, false, 0));
+				Frosty::EventBus::GetEventBus()->Publish<Frosty::PlayMediaEvent>(Frosty::PlayMediaEvent("assets/sounds/Bowdraw_N_Shoot.wav", false, 1.0f, 0.0f, false, 0));
 				Frosty::EventBus::GetEventBus()->Publish <Frosty::PlayAnimEvent>(Frosty::PlayAnimEvent(weaponCarrier, 4));
 				CreateLVL1Projectile(weaponCarrier, weaponComp.EntityPtr);
 				break;
@@ -436,14 +436,14 @@ namespace MCS
 			{
 			case Frosty::ECS::CWeapon::WeaponType::Sword:
 				//Frosty::EventBus::GetEventBus()->Publish<Frosty::PlayMediaEntityEvent>(Frosty::PlayMediaEntityEvent(weaponCarrier, fileName, 2.0f, 30.0f, 100.0f, false, 0));
-				Frosty::EventBus::GetEventBus()->Publish<Frosty::PlayMediaEvent>(Frosty::PlayMediaEvent(fileName, 1.0f, 0.0f, false, 0));
-				Frosty::EventBus::GetEventBus()->Publish<Frosty::PlayMediaEvent>(Frosty::PlayMediaEvent(fileName_player, 1.0f, 0.0f, false, 0));
+				Frosty::EventBus::GetEventBus()->Publish<Frosty::PlayMediaEvent>(Frosty::PlayMediaEvent(fileName, false, 1.0f, 0.0f, false, 0));
+				Frosty::EventBus::GetEventBus()->Publish<Frosty::PlayMediaEvent>(Frosty::PlayMediaEvent(fileName_player, false, 1.0f, 0.0f, false, 0));
 				Frosty::EventBus::GetEventBus()->Publish <Frosty::PlayAnimEvent>(Frosty::PlayAnimEvent(weaponCarrier, 2));
 				CreateLVL2BoundingBox(weaponCarrier, weaponComp.EntityPtr);
 				break;
 			case Frosty::ECS::CWeapon::WeaponType::Bow:
 				//Frosty::EventBus::GetEventBus()->Publish<Frosty::PlayMediaEntityEvent>(Frosty::PlayMediaEntityEvent(weaponCarrier, fileName_Bow, 2.0f, 30.0f, 100.0f, false, 0));
-				Frosty::EventBus::GetEventBus()->Publish<Frosty::PlayMediaEvent>(Frosty::PlayMediaEvent("assets/sounds/Bowdraw_N_Shoot.wav", 1.0f, 0.0f, false, 0));
+				Frosty::EventBus::GetEventBus()->Publish<Frosty::PlayMediaEvent>(Frosty::PlayMediaEvent("assets/sounds/Bowdraw_N_Shoot.wav", false, 1.0f, 0.0f, false, 0));
 				Frosty::EventBus::GetEventBus()->Publish <Frosty::PlayAnimEvent>(Frosty::PlayAnimEvent(weaponCarrier, 4));
 				CreateLVL2Projectile(weaponCarrier, weaponComp.EntityPtr);
 				break;
@@ -478,14 +478,14 @@ namespace MCS
 			{
 			case Frosty::ECS::CWeapon::WeaponType::Sword:
 				//Frosty::EventBus::GetEventBus()->Publish<Frosty::PlayMediaEntityEvent>(Frosty::PlayMediaEntityEvent(weaponCarrier, fileName, 2.0f, 30.0f, 100.0f, false, 0));
-				Frosty::EventBus::GetEventBus()->Publish<Frosty::PlayMediaEvent>(Frosty::PlayMediaEvent(fileName, 1.0f, 0.0f, false, 0));
-				Frosty::EventBus::GetEventBus()->Publish<Frosty::PlayMediaEvent>(Frosty::PlayMediaEvent(fileName_player, 1.0f, 0.0f, false, 0));
+				Frosty::EventBus::GetEventBus()->Publish<Frosty::PlayMediaEvent>(Frosty::PlayMediaEvent(fileName, false, 1.0f, 0.0f, false, 0));
+				Frosty::EventBus::GetEventBus()->Publish<Frosty::PlayMediaEvent>(Frosty::PlayMediaEvent(fileName_player, false, 1.0f, 0.0f, false, 0));
 				Frosty::EventBus::GetEventBus()->Publish <Frosty::PlayAnimEvent>(Frosty::PlayAnimEvent(weaponCarrier, 3));
 				CreateLVL3BoundingBox(weaponCarrier, weaponComp.EntityPtr);
 				break;
 			case Frosty::ECS::CWeapon::WeaponType::Bow:
 				//Frosty::EventBus::GetEventBus()->Publish<Frosty::PlayMediaEntityEvent>(Frosty::PlayMediaEntityEvent(weaponCarrier, fileName_Bow, 2.0f, 30.0f, 100.0f, false, 0));
-				Frosty::EventBus::GetEventBus()->Publish<Frosty::PlayMediaEvent>(Frosty::PlayMediaEvent("assets/sounds/Bowdraw_N_Shoot.wav", 1.0f, 0.0f, false, 0));
+				Frosty::EventBus::GetEventBus()->Publish<Frosty::PlayMediaEvent>(Frosty::PlayMediaEvent("assets/sounds/Bowdraw_N_Shoot.wav", false, 1.0f, 0.0f, false, 0));
 				Frosty::EventBus::GetEventBus()->Publish <Frosty::PlayAnimEvent>(Frosty::PlayAnimEvent(weaponCarrier, 4));
 				CreateLVL3Projectile(weaponCarrier, weaponComp.EntityPtr);
 				break;
@@ -1029,7 +1029,7 @@ namespace MCS
 				m_Inventory[index]->BaitTimer = Frosty::Time::CurrentTime();
 				
 				// Drop meat (walking sound?)
-				Frosty::EventBus::GetEventBus()->Publish<Frosty::PlayMediaEvent>(Frosty::PlayMediaEvent("assets/sounds/FootstepMud2.wav", 2.0f, 0.0f, false, 0));
+				Frosty::EventBus::GetEventBus()->Publish<Frosty::PlayMediaEvent>(Frosty::PlayMediaEvent("assets/sounds/FootstepMud2.wav", false, 2.0f, 0.0f, false, 0));
 			}
 		}
 #pragma endregion Bait
@@ -1195,7 +1195,7 @@ namespace MCS
 					int rand = std::rand() % 2 + 1;
 					std::string str = "assets/sounds/WeaponPickup" + std::to_string(rand) + ".wav";
 					const char* fileName = str.c_str();
-					Frosty::EventBus::GetEventBus()->Publish<Frosty::PlayMediaEntityEvent>(Frosty::PlayMediaEntityEvent(loot.EntityPtr, fileName, 2.0f, 30.0f, 100.0f, false, 0));
+					Frosty::EventBus::GetEventBus()->Publish<Frosty::PlayMediaEntityEvent>(Frosty::PlayMediaEntityEvent(loot.EntityPtr, fileName, false, 2.0f, 30.0f, 100.0f, false, 0));
 				}
 				else if (playerWeapon.Type == Frosty::ECS::CWeapon::WeaponType::Bow)
 				{
@@ -1211,7 +1211,7 @@ namespace MCS
 					int rand = std::rand() % 2 + 1;
 					std::string bowStr = "assets/sounds/BowDraw" + bowSounds[rand - 1] + ".wav";
 					const char* fileName_Bow = bowStr.c_str();
-					Frosty::EventBus::GetEventBus()->Publish<Frosty::PlayMediaEntityEvent>(Frosty::PlayMediaEntityEvent(loot.EntityPtr, fileName_Bow, 2.0f, 30.0f, 100.0f, false, 0));
+					Frosty::EventBus::GetEventBus()->Publish<Frosty::PlayMediaEntityEvent>(Frosty::PlayMediaEntityEvent(loot.EntityPtr, fileName_Bow, false, 2.0f, 30.0f, 100.0f, false, 0));
 
 					HUD.Layout.sprites[2].SetImage("attackRanged");
 					HUD.Layout.sprites[3].SetImage("attackRanged1");
@@ -2158,7 +2158,7 @@ namespace MCS
 			m_Player[i]->DamageEffectTimer = Frosty::Time::CurrentTime();
 
 			//Sound of Scarlet taking damage
-			Frosty::EventBus::GetEventBus()->Publish<Frosty::PlayMediaEvent>(Frosty::PlayMediaEvent("assets/sounds/Scarlet hurt.wav", 1.0f, 0.0f, false, 0));
+			Frosty::EventBus::GetEventBus()->Publish<Frosty::PlayMediaEvent>(Frosty::PlayMediaEvent("assets/sounds/Scarlet hurt.wav", false, 1.0f, 0.0f, false, 0));
 		}
 
 	}

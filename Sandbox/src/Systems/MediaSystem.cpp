@@ -132,20 +132,22 @@ namespace MCS
 	void MCS::MediaSystem::OnPlayMediaEvent(Frosty::PlayMediaEvent& e)
 	{
 		const char* filepath = e.GetFilepath();
+		bool loop = e.IsLooping();
 		int effectID = e.GetEffectID();
 		float volume = e.GetVolume();
 		float pan = e.GetPan();
 		bool enableSoundEffects = e.IsSoundEffectsEnabled();
-		play2DSound(filepath, false, false, true, enableSoundEffects, volume, pan, effectID);
+		play2DSound(filepath, loop, false, true, enableSoundEffects, volume, pan, effectID);
 	}
 
 	void MediaSystem::OnPlayMediaEntityEvent(Frosty::PlayMediaEntityEvent& e)
 	{
 		auto& componentPos = m_World->GetComponent<Frosty::ECS::CTransform>(e.GetEntity()).Position;
 		const char* filepath = e.GetFilepath();
+		bool loop = e.IsLooping();
 		float volume = e.GetVolume(); float minDist = e.GetMinDistance(); float maxDist = e.GetMaxDistance();
 		int effectID = e.GetEffectID();
-		play3DSound(filepath, vec3df(componentPos.x, componentPos.y, componentPos.z), false, false, false, true, volume, minDist, maxDist, effectID);
+		play3DSound(filepath, vec3df(componentPos.x, componentPos.y, componentPos.z), loop, false, true, true, volume, minDist, maxDist, effectID);
 	}
 
 	void MediaSystem::OnStopMediaEvent(Frosty::StopMediaEvent& e)

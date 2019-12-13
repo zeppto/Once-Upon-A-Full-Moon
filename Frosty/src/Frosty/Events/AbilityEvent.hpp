@@ -148,10 +148,11 @@ namespace Frosty
 	class PlayMediaEvent : public BaseEvent
 	{
 	public:
-		PlayMediaEvent(const char* filepath, float volume, float pan, bool enableSoundEffects, int effectID) : 
-			m_Filepath(filepath), m_Volume(volume), m_Pan(pan), m_EnableSoundEffects(enableSoundEffects), m_EffectID(effectID) {}
+		PlayMediaEvent(const char* filepath, bool loop, float volume, float pan, bool enableSoundEffects, int effectID) : 
+			m_Filepath(filepath), m_Loop(loop), m_Volume(volume), m_Pan(pan), m_EnableSoundEffects(enableSoundEffects), m_EffectID(effectID) {}
 
 		const char* GetFilepath() { return m_Filepath; }
+		bool IsLooping() { return m_Loop; }
 		float GetVolume() { return m_Volume; }
 		float GetPan() { return m_Pan; }
 		bool IsSoundEffectsEnabled() { return m_EnableSoundEffects; }
@@ -160,6 +161,7 @@ namespace Frosty
 		EVENT_TYPE(PlayMedia);
 	private:
 		const char* m_Filepath;
+		bool m_Loop;
 		float m_Volume;
 		float m_Pan;
 		bool m_EnableSoundEffects;
@@ -169,11 +171,12 @@ namespace Frosty
 	class PlayMediaEntityEvent : public BaseEvent
 	{
 	public:
-		PlayMediaEntityEvent(const std::shared_ptr<ECS::Entity>& entity, const char* filepath, float volume, float minDist, float maxDist, bool enableSoundEffects, int effectID) : 
-			m_Entity(entity), m_Filepath(filepath), m_Volume(volume), m_MinDistance(minDist), m_MaxDistance(maxDist), m_EnableSoundEffects(enableSoundEffects), m_EffectID(effectID) {}
+		PlayMediaEntityEvent(const std::shared_ptr<ECS::Entity>& entity, const char* filepath, bool loop, float volume, float minDist, float maxDist, bool enableSoundEffects, int effectID) : 
+			m_Entity(entity), m_Filepath(filepath), m_Loop(loop), m_Volume(volume), m_MinDistance(minDist), m_MaxDistance(maxDist), m_EnableSoundEffects(enableSoundEffects), m_EffectID(effectID) {}
 
 		const std::shared_ptr<ECS::Entity>& GetEntity() const { return m_Entity; }
 		const char* GetFilepath() { return m_Filepath; }
+		bool IsLooping() { return m_Loop; }
 		float GetVolume() { return m_Volume; } 
 		float GetMinDistance() { return m_MinDistance; } 
 		float GetMaxDistance() { return m_MaxDistance; }
@@ -184,6 +187,7 @@ namespace Frosty
 	private:
 		std::shared_ptr<ECS::Entity> m_Entity;
 		const char* m_Filepath;
+		bool m_Loop;
 		float m_Volume;
 		float m_MinDistance, m_MaxDistance;
 		bool m_EnableSoundEffects;
