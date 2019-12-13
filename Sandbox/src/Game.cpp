@@ -10,11 +10,11 @@ namespace MCS
 		state.AddState(Frosty::StateRef(FY_NEW(MenuState)));
 
 
-#ifdef FY_DEBUG
+//#ifdef FY_DEBUG
 		PushLayer(FY_NEW InspectorLayer());
-#else
-		Application::Get().StartGame(true);
-#endif
+//#else
+//		Application::Get().StartGame(true);
+//#endif
 	}
 
 	Game::~Game()

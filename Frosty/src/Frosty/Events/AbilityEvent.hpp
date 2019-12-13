@@ -508,5 +508,18 @@ namespace Frosty
 	private:
 		glm::ivec2 m_Direction;
 	};
+
+	class BossCloseEffectEvent : public BaseEvent
+	{
+	public:
+		BossCloseEffectEvent(bool bossIsClose) : m_BossIsClose(bossIsClose) {}
+
+		bool IsBossClose() { return m_BossIsClose; }
+
+		EVENT_TYPE(BossCloseEffect)
+
+	private:
+		bool m_BossIsClose;
+	};
 }
 #endif // !ABILITY_EVENT_HPP

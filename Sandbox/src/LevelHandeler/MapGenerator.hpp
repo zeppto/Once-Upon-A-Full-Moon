@@ -66,6 +66,7 @@ namespace MCS
 
 		//for boss
 		std::vector<glm::ivec2> getPathToTargert(glm::ivec2 startPos, glm::ivec2 endPos);
+		bool isTargetInNextRoom(glm::ivec2 bossPos, glm::ivec2 targetPos);
 
 	private:
 		Room m_TileMap[30][30];

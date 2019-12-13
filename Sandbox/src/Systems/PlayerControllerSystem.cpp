@@ -1016,6 +1016,7 @@ namespace MCS
 			{
 				auto& world = Frosty::Application::Get().GetWorld();
 				auto& bait = world->CreateEntity();
+				m_World->AddToGroup(bait, true);
 				world->AddComponent<Frosty::ECS::CMesh>(bait, Frosty::AssetManager::GetMesh("meat"));
 				auto& material = world->AddComponent<Frosty::ECS::CMaterial>(bait, Frosty::AssetManager::GetShader("Texture2D"));
 				material.DiffuseTexture = Frosty::AssetManager::GetTexture2D("meat");
@@ -1186,10 +1187,10 @@ namespace MCS
 					else if (playerWeapon.Level == 3)
 						SetPickUpText(i, "Picked Up Sword Level 3");
 
-					HUD.Layout.sprites.at(1).SetImage("attackMelee");
-					HUD.Layout.sprites.at(2).SetImage("attackMelee1");
-					HUD.Layout.sprites.at(3).SetImage("attackMelee2");
-					HUD.Layout.sprites.at(4).SetImage("attackMelee3");
+					HUD.Layout.sprites.at(2).SetImage("attackMelee");
+					HUD.Layout.sprites.at(3).SetImage("attackMelee1");
+					HUD.Layout.sprites.at(4).SetImage("attackMelee2");
+					HUD.Layout.sprites.at(5).SetImage("attackMelee3");
 					
 					// Audio setup
 					int rand = std::rand() % 2 + 1;
