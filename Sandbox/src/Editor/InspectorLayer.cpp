@@ -1147,11 +1147,45 @@ namespace MCS
 					if (ImGui::CollapsingHeader("GUI"))
 					{
 						auto& comp = world->GetComponent<Frosty::ECS::CGUI>(m_SelectedEntity);
-						ImGui::BeginChild("CGUI", ImVec2(EDITOR_INSPECTOR_WIDTH, 45), true);
+						ImGui::BeginChild("CGUI", ImVec2(EDITOR_INSPECTOR_WIDTH, 145), true);
 						ImGui::Text("The GUI is active."); //TODO: Fill with info
 						ImGui::Checkbox("Render text", &comp.RenderText);
 						ImGui::SameLine();
 						ImGui::Checkbox("Render sprites", &comp.RenderSprites);
+						
+						ImGui::NewLine();
+
+						ImGui::Text("Input text");
+						if (comp.Layout.sprites.empty())
+						{
+							comp.Layout = Frosty::UILayout(1, 1);
+						}
+
+
+						if (ImGui::InputText("text", m_textName, IM_ARRAYSIZE(m_textName), ImGuiInputTextFlags_EnterReturnsTrue))
+						{
+							comp.Layout.AddText(glm::vec2(50, 50), m_textName, glm::vec3(1.0f, 1.0f, 1.0f));
+						}
+
+						ImGui::NewLine();
+
+						ImGui::Text("Input sprite name");
+
+
+						if (ImGui::InputText("sprite", m_spriteName, IM_ARRAYSIZE(m_spriteName), ImGuiInputTextFlags_EnterReturnsTrue))
+						{
+							if (Frosty::AssetManager::GetTexture(m_spriteName))
+							{
+								comp.Layout.AddSprite(glm::vec2(75, 150), glm::vec2(1.0f, 1.0f), m_spriteName, glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+								comp.Layout.sprites[0].SetImage(m_spriteName);
+							}
+							else
+							{
+								FY_CORE_ERROR("Texture does not exist in assetmanager");
+							}
+							//comp.Layout = Frosty::UILayout(1, 1);
+						}
+
 						ImGui::EndChild();
 					}
 				}
@@ -1181,16 +1215,6 @@ namespace MCS
 					{
 						auto& comp = world->GetComponent<Frosty::ECS::CLevelExit>(m_SelectedEntity);
 						ImGui::BeginChild("CLevelExit", ImVec2(EDITOR_INSPECTOR_WIDTH, 100), true);
-						// Parameters
-						ImGui::EndChild();
-					}
-				}
-				if (world->HasComponent<Frosty::ECS::CGUI>(m_SelectedEntity))
-				{
-					if (ImGui::CollapsingHeader("GUI"))
-					{
-						auto& comp = world->GetComponent<Frosty::ECS::CGUI>(m_SelectedEntity);
-						ImGui::BeginChild("CGUI", ImVec2(EDITOR_INSPECTOR_WIDTH, 100), true);
 						// Parameters
 						ImGui::EndChild();
 					}

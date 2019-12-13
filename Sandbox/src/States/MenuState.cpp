@@ -548,7 +548,7 @@ namespace MCS
 		float middleX = float(m_App->GetWindow().GetWidth() / 2);
 		float middleY = float(m_App->GetWindow().GetHeight() / 2);
 		
-		float posX1 = (middleX / width) - (MainMenu.size() / 2) * 32;
+		float posX1 = (middleX / width) - (MainMenu.size() / 2) * 32;	
 		float posX2 = (middleX / width) - (Play.size()     / 2) * 17;
 		float posX3 = (middleX / width) - (Controls.size() / 2) * 17;
 		float posX4 = (middleX / width) - (Exit.size()     / 2) * 17;
