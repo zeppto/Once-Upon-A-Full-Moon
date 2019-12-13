@@ -454,10 +454,11 @@ namespace Frosty
 			glm::vec3 Scale{ 1.0f };
 			glm::mat4 ModelMatrix{ 1.0f };
 			bool IsStatic{ false };
+			bool EnableCulling{ true };
 
 			CTransform() = default;
-			CTransform(const glm::vec3& position, const glm::vec3& rotation, const glm::vec3& scale, bool isStatic = false)
-				: Position(position), Rotation(rotation), Scale(scale), IsStatic(isStatic)
+			CTransform(const glm::vec3& position, const glm::vec3& rotation, const glm::vec3& scale, bool isStatic = false, bool EnableCulling = true)
+				: Position(position), Rotation(rotation), Scale(scale), IsStatic(isStatic), EnableCulling(EnableCulling)
 			{
 
 				if (isStatic)
@@ -490,6 +491,7 @@ namespace Frosty
 			static std::string NAME;
 			std::shared_ptr<VertexArray> Mesh;
 			bool RenderMesh{ true };
+			
 			glm::mat4* parentMatrix = nullptr;
 			glm::mat4* animOffset = nullptr;
 
@@ -507,7 +509,7 @@ namespace Frosty
 			static std::string NAME;
 			CTransform* Target{ nullptr };
 			glm::vec3 Front{ 0.0f, 0.0f, -1.0f };
-			glm::vec3 Background{ 0.12f, 0.23f, 0.005f };
+			glm::vec3 Background{ 0.0f, 0.0f, 0.0f }; 
 			float FieldOfView{ 40.0f };
 			float Near{ 0.03f };
 			float Far{ 1000.0f };
@@ -543,6 +545,7 @@ namespace Frosty
 			glm::vec2 TextureScale{ 1.0f };
 
 			bool HasTransparency{ false };
+			bool CastsShadows{ true };
 
 			CMaterial() = default;
 			CMaterial(const std::shared_ptr<Shader>& shader, bool hasTransparency = false) : UseShader(shader), HasTransparency(hasTransparency){ NormalTexture = AssetManager::GetTexture2D("FlatNormal"); }
@@ -565,28 +568,28 @@ namespace Frosty
 			LightType Type{ LightType::Point };
 			glm::vec3 Color{ 1.0f, 0.96f, 0.84f };
 			glm::vec3 Direction{ 1.0f, 0.0f, 1.0f };
-			float Radius{ 20.0f };
+			float Radius{ 20.0f }; 
 			float Strength{ 1.0f };
 
 			// For ShadowMap
 		private:
-			struct Camera
-			{
+			struct Camera  
+			{ 
 				glm::vec3 Front{ 0.f, 0.f, -1.f };
-				glm::vec3 Background{ 0.2f, 0.2f, 0.2f };
-				float FieldOfView{ 90.0f };
-				float Near{ 0.03f };
+				glm::vec3 Background{ 0.2f, 0.2f, 0.2f }; 
+				float FieldOfView{ 90.0f }; 
+				float Near{ 0.03f }; 
 				float Far{ 300.0f };
-				glm::mat4 ViewMatrix{ 1.0f };
+				glm::mat4 ViewMatrix{ 1.0f }; 
 				glm::mat4 ProjectionMatrix{ 1.0f };
-				glm::mat4 ViewProjectionMatrix{ 1.0f };
-
-				Camera() = default;
+				glm::mat4 ViewProjectionMatrix{ 1.0f }; 
+				  
+				Camera() = default; 
 				Camera(glm::vec3 front, float fov, float aspect, float zNear, float zFar)
 					: Front(front), FieldOfView(fov), Near(zNear), Far(zFar), ProjectionMatrix(glm::perspective(glm::radians(fov), aspect, zNear, zFar)) { }
 			};
 		public:
-			std::vector<Camera> Cameras;
+			std::vector<Camera> Cameras; 
 			bool HasCamera{ false };
 
 			CLight() = default;

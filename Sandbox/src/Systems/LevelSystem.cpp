@@ -130,6 +130,10 @@ namespace MCS
 			m_Start = false;
 			m_haveStartedMoving = false;
 			m_StartTimer = Frosty::Time::CurrentTime();
+			m_RoomswhithBait.clear();
+			m_BossRememberdPath.pathToGo.clear();
+			m_BossRememberdPath.expectedPlayerPos = { -1, -1 };
+			m_BossRememberdPath.lastTile = 1;
 		}
 
 		float time = Frosty::Time::CurrentTime() - m_StartTimer - m_BossStartTimer;
@@ -137,34 +141,34 @@ namespace MCS
 		{
 			if (!m_haveStartedMoving)
 			{
-			//	FY_INFO("The boss have started moving {0}", "!");
+				FY_INFO("The boss have started moving {0}", "!");
 				Room chekRoom = m_Map.getRoom(m_BossPos);
 				if (!chekRoom.Ocupide)
 				{
 					m_BossPos = m_Map.getLastCreatedLevelPos();
 				}
-			//	FY_INFO("The boss starts on ({0}, {1})", m_BossPos.x, m_BossPos.y);
+				FY_INFO("The boss starts on ({0}, {1})", m_BossPos.x, m_BossPos.y);
 				m_haveStartedMoving = true;
 			}
 
 			if (time > m_BossTimer)
 			{
-				float estematedBossRoomTime;
-				if (m_LevelFileFormat.NumberOfRoomsVisited() != 0)
-				{
-					estematedBossRoomTime = ((Frosty::Time::CurrentTime() - m_StartTimer + 50.0f) / m_LevelFileFormat.NumberOfRoomsVisited() / 2);
-					if(estematedBossRoomTime > m_BossRoomTimer)
-						estematedBossRoomTime = m_BossRoomTimer;
-				}
-				else
-				{
-					estematedBossRoomTime = m_BossRoomTimer;
-				}
-
-				m_BossTimer = time + estematedBossRoomTime;
-			//	FY_INFO("It takes {0} sec until boss moves", estematedBossRoomTime);
 				if (m_PlayerCoords != m_BossPos)
 				{
+					float estematedBossRoomTime;
+					if (m_LevelFileFormat.NumberOfRoomsVisited() != 0)
+					{
+						estematedBossRoomTime = ((Frosty::Time::CurrentTime() - m_StartTimer + 50.0f) / m_LevelFileFormat.NumberOfRoomsVisited() / 2) - (m_LevelFileFormat.NumberOfRoomsVisited()*1.5f);
+						if(estematedBossRoomTime > m_BossRoomTimer)
+							estematedBossRoomTime = m_BossRoomTimer;
+					}
+					else
+					{
+						estematedBossRoomTime = m_BossRoomTimer;
+					}
+
+					m_BossTimer = time + estematedBossRoomTime;
+					FY_INFO("It takes {0} sec until boss moves", estematedBossRoomTime);
 					if (m_RoomswhithBait.size() > 0)
 					{
 						//follow bait
@@ -195,7 +199,7 @@ namespace MCS
 						{
 							m_BossPos = m_BossRememberdPath.pathToGo[m_BossRememberdPath.lastTile];
 							m_BossRememberdPath.lastTile++;
-				//			FY_INFO("The boss is moving to ({0}, {1})", m_BossPos.x, m_BossPos.y);
+							FY_INFO("The boss is moving to ({0}, {1})", m_BossPos.x, m_BossPos.y);
 							FY_INFO("");
 
 						}
@@ -206,7 +210,7 @@ namespace MCS
 						}
 						if (m_BossRememberdPath.expectedPlayerPos == m_BossPos)
 						{
-							float timeToEate = (5.0f * m_LevelFileFormat.RemoveAllBaitInRoom(m_BossPos));
+							float timeToEate = (12.0f * m_LevelFileFormat.RemoveAllBaitInRoom(m_BossPos));
 							m_BossTimer += timeToEate;
 							for (int i = 0; i < m_RoomswhithBait.size(); i++)
 							{
@@ -278,6 +282,19 @@ namespace MCS
 							FY_INFO("");
 						}
 					}
+					
+					//start fearEffekt
+					if (m_Map.isTargetInNextRoom(m_BossPos, m_PlayerCoords))
+					{
+						FY_INFO("The fear is hear!");
+						FY_INFO("");
+					}
+					else
+					{
+						FY_INFO("No fear!");
+						FY_INFO("");
+					}
+					Frosty::EventBus::GetEventBus()->Publish<Frosty::BossCloseEffectEvent>(Frosty::BossCloseEffectEvent(m_Map.isTargetInNextRoom(m_BossPos, m_PlayerCoords)));
 				}
 			}
 
@@ -297,9 +314,9 @@ namespace MCS
 				const char* fileName = str.c_str();
 
 				if(m_BossPos.x < m_PlayerCoords.x)
-					Frosty::EventBus::GetEventBus()->Publish<Frosty::PlayMediaEvent>(Frosty::PlayMediaEvent(fileName, 0.5f, 1.0f, false, 0));
+					Frosty::EventBus::GetEventBus()->Publish<Frosty::PlayMediaEvent>(Frosty::PlayMediaEvent(fileName, false, 0.5f, 1.0f, false, 0));
 				else if(m_BossPos.x > m_PlayerCoords.x)
-					Frosty::EventBus::GetEventBus()->Publish<Frosty::PlayMediaEvent>(Frosty::PlayMediaEvent(fileName, 0.5f, -1.0f, false, 0));
+					Frosty::EventBus::GetEventBus()->Publish<Frosty::PlayMediaEvent>(Frosty::PlayMediaEvent(fileName, false, 0.5f, -1.0f, false, 0));
 			}
 		}
 	}
@@ -935,10 +952,11 @@ namespace MCS
 
 			// ENEMY A
 			auto& enemyA = m_World->CreateEntity({ 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 2.0f, 2.0f, 2.0f });
+			m_World->AddToGroup(enemyA, true);
 			auto& enemyATransform = m_World->GetComponent<Frosty::ECS::CTransform>(enemyA);
-			//world->AddComponent<Frosty::ECS::CAnimController>(enemyA).currAnim = Frosty::AssetManager::GetAnimation("Wolf_Running");
 			m_World->AddComponent<Frosty::ECS::CMesh>(enemyA, Frosty::AssetManager::GetMesh("Cultist"));
-			auto& enemyMatA = m_World->AddComponent<Frosty::ECS::CMaterial>(enemyA, Frosty::AssetManager::GetShader("Texture2D"));
+			m_World->AddComponent<Frosty::ECS::CAnimController>(enemyA).currAnim = Frosty::AssetManager::GetAnimation("Cultist_Idle");
+			auto& enemyMatA = m_World->AddComponent<Frosty::ECS::CMaterial>(enemyA, Frosty::AssetManager::GetShader("Animation"));
 			enemyMatA.DiffuseTexture = Frosty::AssetManager::GetTexture2D("Cult_Diffuse");
 			enemyMatA.NormalTexture = Frosty::AssetManager::GetTexture2D("Cult_defaultMat_Normal");
 			m_World->AddComponent<Frosty::ECS::CPhysics>(enemyA, Frosty::AssetManager::GetBoundingBox("Cultist"), enemyATransform.Scale, 6.0f);
@@ -955,7 +973,7 @@ namespace MCS
 			auto& enemyWeaponA = m_World->CreateEntity({ 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 1.0f, 1.0f, 1.0f });
 			//world->AddComponent<Frosty::ECS::CMesh>(weapon, Frosty::AssetManager::GetMesh("pCube1"));
 			//world->AddComponent<Frosty::ECS::CMaterial>(weapon, Frosty::AssetManager::GetShader("FlatColor"));
-			auto& enemyWeaponCompA = m_World->AddComponent<Frosty::ECS::CWeapon>(enemyWeaponA, Frosty::ECS::CWeapon::WeaponType::Bow, 1, 1.0f);
+			auto& enemyWeaponCompA = m_World->AddComponent<Frosty::ECS::CWeapon>(enemyWeaponA, Frosty::ECS::CWeapon::WeaponType::Bite, 1, 1.0f);
 			enemyWeaponCompA.LVL1AttackCooldown = 3.0f;
 			enemyWeaponCompA.MaxAttackRange = 5.0f;
 			enemyWeaponCompA.MinAttackRange = 0.0f;
@@ -968,10 +986,11 @@ namespace MCS
 
 			// ENEMY A
 			auto& enemyA = m_World->CreateEntity({ 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 2.0f, 2.0f, 2.0f });
+			m_World->AddToGroup(enemyA, true);
 			auto& enemyATransform = m_World->GetComponent<Frosty::ECS::CTransform>(enemyA);
-			//world->AddComponent<Frosty::ECS::CAnimController>(enemyA).currAnim = Frosty::AssetManager::GetAnimation("Wolf_Running");
 			m_World->AddComponent<Frosty::ECS::CMesh>(enemyA, Frosty::AssetManager::GetMesh("Wolf"));
-			auto& enemyMatA = m_World->AddComponent<Frosty::ECS::CMaterial>(enemyA, Frosty::AssetManager::GetShader("Texture2D"));
+			m_World->AddComponent<Frosty::ECS::CAnimController>(enemyA).currAnim = Frosty::AssetManager::GetAnimation("Wolf_Running");
+			auto& enemyMatA = m_World->AddComponent<Frosty::ECS::CMaterial>(enemyA, Frosty::AssetManager::GetShader("Animation"));
 			enemyMatA.DiffuseTexture = Frosty::AssetManager::GetTexture2D("Wolf_Diffuse");
 			enemyMatA.NormalTexture = Frosty::AssetManager::GetTexture2D("wolf_defaultMat_Normal");
 			m_World->AddComponent<Frosty::ECS::CPhysics>(enemyA, Frosty::AssetManager::GetBoundingBox("Wolf"), enemyATransform.Scale, 6.0f);
@@ -1033,8 +1052,29 @@ namespace MCS
 			m_World->ChangeCurrentRoom();
 			Frosty::EventBus::GetEventBus()->Publish<Frosty::UpdateCurrentRoomEvent>(Frosty::UpdateCurrentRoomEvent(m_T_Room.RoomName, m_T_Room.Rotation));
 			Frosty::EventBus::GetEventBus()->Publish<Frosty::SwitchRoomEvent>(Frosty::SwitchRoomEvent());
+			m_PlayerCoords = e.GetCoords();
+			if (m_BossPos == e.GetCoords())
+			{
+				Frosty::EventBus::GetEventBus()->Publish<Frosty::SpawnBossEvent>(Frosty::SpawnBossEvent(m_LevelFileFormat.GetBossSpawnPosition(e.GetCoords())));
+				BossroomBlock(m_BossPos);
+
+				FY_INFO("The boss found the player!");
+				FY_INFO("");
+			}
+			//start fearEffekt
+			if (m_Map.isTargetInNextRoom(m_BossPos, e.GetCoords()))
+			{
+				FY_INFO("The fear is hear!");
+				FY_INFO("");
+			}
+			else
+			{
+				FY_INFO("No fear!");
+				FY_INFO("");
+			}
+			Frosty::EventBus::GetEventBus()->Publish<Frosty::BossCloseEffectEvent>(Frosty::BossCloseEffectEvent(m_Map.isTargetInNextRoom(m_BossPos, m_PlayerCoords)));
 		}
-		m_PlayerCoords = e.GetCoords();
+		//m_PlayerCoords = e.GetCoords();
 	}
 
 	void LevelSystem::FlipRoomNames()
@@ -1207,7 +1247,6 @@ namespace MCS
 				playerInventory.CurrentWolfsbane = 0;
 
 				m_GUI = &m_World->GetComponent<Frosty::ECS::CGUI>(m_Transform[i]->EntityPtr);
-
 				m_GUI->Layout.sprites.at(1).SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 0.0f));
 
 				for (int j = 15; j < 20 + (healthSpriteCounter / 4); j++)
@@ -1223,7 +1262,6 @@ namespace MCS
 		Frosty::Renderer::UpdateCMesh(weaponID, weaponMesh);
 
 		m_BossSpawned = false;
-		m_BossRoomTimer = 2.0f;
 		m_BossTimer = 0.0f;
 		m_PlayerCoords = { 10, 15 };
 		m_Start = true;
@@ -1333,6 +1371,7 @@ namespace MCS
 					//m_World->AddComponent<Frosty::ECS::CPhysics>(hitbox, Frosty::AssetManager::GetBoundingBox("pCube1"), hitboxTransform.Scale, 0.0f);
 
 					auto& ground = m_World->CreateEntity();
+					m_World->AddToGroup(ground, true);
 					auto& tranform = m_World->GetComponent<Frosty::ECS::CTransform>(ground);
 					tranform.Position = pos;
 					tranform.Scale = glm::vec3(300, 1.0f, 300);
@@ -1348,6 +1387,7 @@ namespace MCS
 				//{
 					//hittbox
 					auto& hitbox = m_World->CreateEntity(treePos, { 0.0f, 0.0f, 0.0f }, scaleHittbox, true);
+					m_World->AddToGroup(hitbox, true);
 					auto& hitboxTransform = m_World->GetComponent<Frosty::ECS::CTransform>(hitbox);
 					m_World->AddComponent<Frosty::ECS::CPhysics>(hitbox, Frosty::AssetManager::GetBoundingBox("pCube1"), hitboxTransform.Scale, 0.0f);
 					//for fire block
@@ -1375,7 +1415,8 @@ namespace MCS
 						}
 
 						auto& fire = m_World->CreateEntity(pos, rotation, { 1.0f, 0.2f, 0.5f });
-						m_World->AddComponent<Frosty::ECS::CLight>(fire, Frosty::ECS::CLight::LightType::Point, 1.0f, glm::vec3(0.99f, 0.4f, 0.1f), 20.0f, glm::vec3(0.f, 1.0f, 0.f));
+						m_World->AddToGroup(fire, true);
+						//m_World->AddComponent<Frosty::ECS::CLight>(fire, Frosty::ECS::CLight::LightType::Point, 1.0f, glm::vec3(0.99f, 0.4f, 0.1f), 20.0f, glm::vec3(0.f, 1.0f, 0.f));
 						auto& fireParticel = m_World->AddComponent<Frosty::ECS::CParticleSystem>(fire, "Particles", "fire", 100, glm::vec3(1.0f, 0.0f, 0.0f), 17.0f);
 						fireParticel.StaticColor = false;
 						fireParticel.SystemEndColor = glm::vec3(1.0f, 0.82f, 0.0f);
@@ -1405,6 +1446,10 @@ namespace MCS
 						particel.MinLifetime = 2.0f;
 						particel.FadeInTreshold = 2.573f;
 						particel.FadeTreshold = 2.195f;
+
+						// Play fire audio
+						if(i == 3) 
+							Frosty::EventBus::GetEventBus()->Publish<Frosty::PlayMediaEntityEvent>(Frosty::PlayMediaEntityEvent(fireParticel.EntityPtr, "assets/sounds/Boss Fire.wav", true, 1.0f, 50.0f, 100.0f, false, 0));
 					}
 				//}
 			}

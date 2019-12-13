@@ -18,7 +18,7 @@
 #include "Systems/DestroySystem.hpp"
 #include "Systems/NavigationSystem.hpp"
 #include "Systems/ParticleSystem.hpp"
-#include "Systems/LootingSystem.hpp"
+#include "Systems/LootingSystem.hpp" 
 #include "Systems/LevelSystem.hpp"
 #include "Systems/HealthBarSystem.hpp"
 #include "Systems/BossBehaviorSystem.hpp"
@@ -190,14 +190,24 @@ namespace MCS
 
 			if (x > (605.0f * width) && x < (670.0f * width) && y > (400.0f * height) && y < (440.0f * height))
 			{
+				// Menu sounds (if color is not that below, play sound before it changes)
+				if (menuGui.Layout.texts[1].GetColor() != glm::vec3(glm::vec4(0.0f, 1.0f, 0.0f, 0.0f)))
+					Frosty::EventBus::GetEventBus()->Publish<Frosty::PlayMediaEvent>(Frosty::PlayMediaEvent("assets/sounds/LEVEL UP.wav", false, 1.0f, 0.0f, false, 0));
+
 				menuGui.Layout.texts[1].SetColor(glm::vec4(0.0f, 1.0f, 0.0f, 0.0f));
 			}
 			else if (x > (570.0f * width) && x < (700.0f * width) && y > (335 * height) && y < (365 * height))
 			{
+				if (menuGui.Layout.texts[2].GetColor() != glm::vec3(glm::vec4(0.0f, 1.0f, 0.0f, 0.0f)))
+					Frosty::EventBus::GetEventBus()->Publish<Frosty::PlayMediaEvent>(Frosty::PlayMediaEvent("assets/sounds/LEVEL UP.wav", false, 1.0f, 0.0f, false, 0));
+				
 				menuGui.Layout.texts[2].SetColor(glm::vec4(0.0f, 1.0f, 0.0f, 0.0f));
 			}
 			else if (x > (605.0f * width) && x < (665.0f * width) && y > (260.0f * height) && y < (290 * height))
 			{
+				if (menuGui.Layout.texts[3].GetColor() != glm::vec3(glm::vec4(1.0f, 0.0f, 0.0f, 0.0f)))
+					Frosty::EventBus::GetEventBus()->Publish<Frosty::PlayMediaEvent>(Frosty::PlayMediaEvent("assets/sounds/LEVEL UP.wav", false, 1.0f, 0.0f, false, 0));
+				
 				menuGui.Layout.texts[3].SetColor(glm::vec4(1.0f, 0.0f, 0.0f, 0.0f));
 			}
 			else
@@ -278,6 +288,8 @@ namespace MCS
 		// WEAPON 1
 		//Sword Offset
 		auto& weapon = world->CreateEntity({ -0.7f, 2.1f, 0.80f }, { 0.0f, 0.0f, 0.0f }, { 1.f, 1.f, 1.f });
+		auto& weaponTransform = world->GetComponent<Frosty::ECS::CTransform>(weapon);
+		weaponTransform.EnableCulling = false;
 		//Bow Offset
 		/*auto& weapon = world->CreateEntity({ -0.7f, 2.3f, 0.2f }, { 0.0f, 60.0f, 0.0f }, { 1.f, 1.f, 1.f });*/
 		auto& weaponHandler = Frosty::AssetManager::GetWeaponHandler("Weapons");
@@ -318,7 +330,8 @@ namespace MCS
 		world->AddComponent<Frosty::ECS::CPhysics>(player, Frosty::AssetManager::GetBoundingBox("Scarlet"), playerTransform.Scale, 13.0f);
 		world->AddComponent<Frosty::ECS::CDash>(player);
 		world->AddComponent<Frosty::ECS::CHealth>(player, 20);
-		world->AddComponent<Frosty::ECS::CInventory>(player);
+		auto& playerInventory = world->AddComponent<Frosty::ECS::CInventory>(player);
+		//playerInventory.CurrentWolfsbane = 1;
 
 		//world->AddComponent<Frosty::ECS::CHealthBar>(player, glm::vec3(0.0f, 10.0f, 0.0f));
 		auto& camEntity = world->GetSceneCamera();
@@ -419,13 +432,16 @@ namespace MCS
 		//Dash
 		uiLayout.AddText(glm::vec2(240, 40 + 35), "[SHIFT]", glm::vec3(1.0f, 1.0f, 0.75f), controlsInfoSize2); //17
 
-		//Items
+		//Items  
 		uiLayout.AddText(hpPotionControl, "[1]", glm::vec3(1.0f, 1.0f, 0.75f), controlsInfoSize2); //18
 		uiLayout.AddText(spPotionControl, "[2]", glm::vec3(1.0f, 1.0f, 0.75f), controlsInfoSize2); //19
-		uiLayout.AddText(baitControl, "[Q]", glm::vec3(1.0f, 1.0f, 0.75f), controlsInfoSize2); //20
+		uiLayout.AddText(baitControl, "[Q]", glm::vec3(1.0f, 1.0f, 0.75f), controlsInfoSize2); //20 
 
 
 		uiLayout.AddSprite(glm::vec2(1280.f / 2, 720.f / 2), glm::vec2(16 * 1.6, 9 * 1.6f), "fearEffect", glm::vec4(0.0f, 0.0f, 0.0f, 0.75f)); // 0
+		//uiLayout.AddSprite(glm::vec2(1280.f / 2, 720.f / 2), glm::vec2(16 * 1.6, 9 * 1.6f), "feerClosingIn", glm::vec4(0.0f, 0.0f, 0.0f, 0.75f)); // 0
+
+
 		uiLayout.AddSprite(glm::vec2(0.f, 0.f), glm::vec2(10, 10), "IndicatorEffect", glm::vec4(0.0f)); // 1 
 
 		//Weapon
@@ -530,6 +546,8 @@ namespace MCS
 		//auto& quadMat = world->AddComponent<Frosty::ECS::CMaterial>(quad, Frosty::AssetManager::GetShader("HeatMap"));
 		//quadMat.Albedo = glm::vec4(0.f, 0.f, 1.f, 1.f);
 	}
+
+
 
 	void MenuState::InitiateButtons()
 	{

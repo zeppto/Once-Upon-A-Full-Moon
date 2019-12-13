@@ -316,6 +316,10 @@ namespace MCS
 									{
 										Frosty::EventBus::GetEventBus()->Publish<Frosty::DropItemEvent>(Frosty::DropItemEvent(m_Transform[i]->EntityPtr));
 
+										// Chest open sound
+										Frosty::EventBus::GetEventBus()->Publish<Frosty::PlayMediaEntityEvent>(Frosty::PlayMediaEntityEvent(
+											m_Transform[i]->EntityPtr, "assets/sounds/Chest Hurt.wav", false, 1.0f, 100.0f, 200.0f, false, 0));
+
 										if (!m_World->HasComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr))
 										{
 											m_World->AddComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr);
@@ -352,6 +356,10 @@ namespace MCS
 										if (!m_World->HasComponent<Frosty::ECS::CEnemy>(m_Transform[i]->EntityPtr))
 										{
 											Frosty::EventBus::GetEventBus()->Publish<Frosty::DropItemEvent>(Frosty::DropItemEvent(m_Transform[i]->EntityPtr));
+
+											// Chest open sound
+											Frosty::EventBus::GetEventBus()->Publish<Frosty::PlayMediaEntityEvent>(Frosty::PlayMediaEntityEvent(
+												m_Transform[i]->EntityPtr, "assets/sounds/Chest Hurt.wav", false, 1.0f, 100.0f, 200.0f, false, 0));
 
 											if (!m_World->HasComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr))
 											{
