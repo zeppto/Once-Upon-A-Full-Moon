@@ -6,6 +6,7 @@
 #include "Frosty/Core/KeyCodes.h"
 #include "Frosty/Core/MouseButtonCodes.h"
 #include "Frosty/API/AssetManager/AssetFiles/Animation.hpp"
+#include "Frosty/API/AssetManager/AssetManager.hpp"
 
 #include "Frosty/UI/UIText.h"
 #include "Frosty/UI/UISprite.h"
@@ -576,27 +577,11 @@ namespace Frosty
 			bool HasTransparency = false;
 
 			CMaterial() = default;
-			CMaterial(const std::shared_ptr<Shader>& shader) : UseShader(shader) { }
-			CMaterial(const CMaterial& org) { FY_CORE_ASSERT(false, "Copy constructor in CMaterial called."); }
-			CMaterial& operator=(const CMaterial& org)
+			CMaterial(const std::shared_ptr<Shader>& shader) : UseShader(shader)
 			{
-				if (this != &org)
-				{
-					UseShader = org.UseShader;
-					Albedo = org.Albedo;
-					DiffuseTexture = org.DiffuseTexture;
-					SpecularTexture = org.SpecularTexture;
-					NormalTexture = org.NormalTexture;
-					BlendMapTexture = org.BlendMapTexture;
-					BlendTexture1 = org.BlendTexture1;
-					BlendTexture2 = org.BlendTexture2;
-					SpecularStrength = org.SpecularStrength;
-					Shininess = org.Shininess;
-					TextureScale = org.TextureScale;
-				}
-
-				return *this;
+				NormalTexture = AssetManager::GetTexture2D("FlatNormal");
 			}
+			CMaterial(const CMaterial& org) { FY_CORE_ASSERT(false, "Copy constructor in CMaterial called."); }
 			bool operator!=(const CMaterial& org) { return Albedo != org.Albedo; }	// This works best for Flatcolor shader. Talk to W-_-W if you have any questions
 			virtual std::string GetName() const { return NAME; }
 		};
@@ -658,9 +643,9 @@ namespace Frosty
 			CPhysics() = default;
 			CPhysics(const std::shared_ptr<Luna::BoundingBox>& bb, float speed = 0.0f) : BoundingBox(bb), Speed(speed)
 			{
-				BoundingBox->halfSize[0] *= 0.85f;
-				BoundingBox->halfSize[1] *= 0.85f;
-				BoundingBox->halfSize[2] *= 0.85f;
+				//BoundingBox->halfSize[0] *= 0.85f;
+				//BoundingBox->halfSize[1] *= 0.85f;
+				//BoundingBox->halfSize[2] *= 0.85f;
 			}
 			CPhysics(const CPhysics& org) { FY_CORE_ASSERT(false, "Copy constructor in CPhysics called."); }
 			CPhysics& operator=(const CPhysics& org)
@@ -841,14 +826,14 @@ namespace Frosty
 			static const int RESET_DISTANCE = 60;
 
 			enum class State { Idle, Escape, Attack, Chase, Reset };
-			State CurrentState{ State::Idle };
+			State CurrentState{ State::Chase };
 
 			CWeapon* Weapon{ nullptr };
 			CTransform* Target{ nullptr };
 			
 			glm::vec3 SpawnPosition{ 0.0f };
 			glm::vec3 CellTarget{ 0.0f };
-			float SightRange{ 40.0f };
+			float SightRange{ 400.0f };
 
 			float RunOnHealth{ 0.0f };
 

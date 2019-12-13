@@ -19,9 +19,9 @@ namespace MCS
 	{
 		for (size_t i = 1; i < p_Total; i++)
 		{
-			CheckState(i);
+			//CheckState(i);
 
-			HandleAttack(i);
+			//HandleAttack(i);
 		}
 	}
 

@@ -16,21 +16,24 @@ namespace MCS
 
 	void Grid::Reset()
 	{
-		if (!m_DrawGizmos) return;
-
 		for (size_t i = 0; i < m_DynamicOccupiedNodes.size(); i++)
 		{
-			auto& cellMat = m_World->GetComponent<Frosty::ECS::CMaterial>(m_World->GetEntityManager()->GetEntityById(m_DynamicOccupiedNodes[i]->CellEntityID));
-			cellMat.DiffuseTexture = Frosty::AssetManager::GetTexture2D("green_square");
+			if (m_DrawGizmos)
+			{
+				auto& cellMat = m_World->GetComponent<Frosty::ECS::CMaterial>(m_World->GetEntityManager()->GetEntityById(m_DynamicOccupiedNodes[i]->CellEntityID));
+				cellMat.DiffuseTexture = Frosty::AssetManager::GetTexture2D(m_DynamicOccupiedNodes[i]->Walkable ? "green_square" : "red_square");
+			}
 			m_DynamicOccupiedNodes[i]->Walkable = true;
 			m_DynamicOccupiedNodes[i] = nullptr;
 		}
 		m_DynamicOccupiedNodes.clear();
 
+		if (!m_DrawGizmos) return;
+
 		for (size_t i = 0; i < m_PathNodes.size(); i++)
 		{
 			auto& cellMat = m_World->GetComponent<Frosty::ECS::CMaterial>(m_World->GetEntityManager()->GetEntityById(m_PathNodes[i].CellEntityID));
-			cellMat.DiffuseTexture = Frosty::AssetManager::GetTexture2D("green_square");
+			cellMat.DiffuseTexture = Frosty::AssetManager::GetTexture2D(m_PathNodes[i].Walkable ? "green_square" : "red_square");
 		}
 		m_PathNodes.clear();
 	}
@@ -68,8 +71,15 @@ namespace MCS
 	
 	CellNode& Grid::WorldPointToNode(const glm::vec3& worldPoint)
 	{
-		glm::vec2 percentage = glm::vec2((worldPoint.x + m_GridWorldSize.x * 0.5f) / m_GridWorldSize.x, (worldPoint.z + m_GridWorldSize.y * 0.5f) / m_GridWorldSize.y);
+		//glm::vec2 percentage = glm::vec2((worldPoint.x - m_GridWorldSize.x + m_GridWorldSize.x * 0.5f) / m_GridWorldSize.x, (worldPoint.z + m_GridWorldSize.y * 0.5f) / m_GridWorldSize.y);
+
+		glm::vec2 percentage = glm::vec2(
+			(worldPoint.x + m_GridWorldSize.x * 0.5f - m_GridWorldPosition.x) / m_GridWorldSize.x,
+			(worldPoint.z + m_GridWorldSize.y * 0.5f - m_GridWorldPosition.z) / m_GridWorldSize.y);
+
+
 		percentage = glm::clamp(percentage, { 0.01f }, { 0.99f });
+
 
 		uint32_t col = (int)glm::floor(m_GridSize.x * percentage.x);
 		uint32_t row = (int)glm::floor(m_GridSize.y - m_GridSize.y * percentage.y);
@@ -80,7 +90,9 @@ namespace MCS
 
 	void Grid::SetNodeUnwalkable(const glm::vec3& worldPoint)
 	{
-		WorldPointToNode(worldPoint).Walkable = false;
+		auto& tempNode = WorldPointToNode(worldPoint);
+		tempNode.Walkable = false;
+		m_DynamicOccupiedNodes.emplace_back(&tempNode);
 	}
 
 	void Grid::DrawTargetCell(Frosty::ECS::CTransform* transform)
@@ -161,8 +173,8 @@ namespace MCS
 		for (size_t i = 1; i < totalData; i++)
 		{
 			auto& tempTransform = m_World->GetComponent<Frosty::ECS::CTransform>(physicsCompData[i].EntityPtr);
-			//if (tempTransform.IsStatic)
-			if (!m_World->HasComponent<Frosty::ECS::CEnemy>(tempTransform.EntityPtr) && !m_World->HasComponent<Frosty::ECS::CPlayer>(tempTransform.EntityPtr))
+			if (tempTransform.IsStatic)
+			//if (!m_World->HasComponent<Frosty::ECS::CEnemy>(tempTransform.EntityPtr) && !m_World->HasComponent<Frosty::ECS::CPlayer>(tempTransform.EntityPtr))
 			{
 				// This means that the entity is static and has a CPhysics component
 				auto& tempPhysics = m_World->GetComponent<Frosty::ECS::CPhysics>(tempTransform.EntityPtr);

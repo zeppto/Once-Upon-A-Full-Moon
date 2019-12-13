@@ -11,7 +11,7 @@ namespace Frosty
 		Time(const Time&) = delete;
 		Time& operator=(const Time&) = delete;
 
-		static inline float DeltaTime() { return m_DeltaTime; }
+		static inline float DeltaTime() { return glm::min(m_DeltaTime, 0.25f); }
 		static inline int FPS() { return m_LastFPS; }
 		static inline int GetFrameCount() {return m_FPSCounter; }
 		static void StartTimer(const std::string& func);
