@@ -158,7 +158,7 @@ namespace MCS
 					float estematedBossRoomTime;
 					if (m_LevelFileFormat.NumberOfRoomsVisited() != 0)
 					{
-						estematedBossRoomTime = ((Frosty::Time::CurrentTime() - m_StartTimer + 50.0f) / m_LevelFileFormat.NumberOfRoomsVisited() / 2) - m_LevelFileFormat.NumberOfRoomsVisited();
+						estematedBossRoomTime = ((Frosty::Time::CurrentTime() - m_StartTimer + 50.0f) / m_LevelFileFormat.NumberOfRoomsVisited() / 2) - (m_LevelFileFormat.NumberOfRoomsVisited()*1.5f);
 						if(estematedBossRoomTime > m_BossRoomTimer)
 							estematedBossRoomTime = m_BossRoomTimer;
 					}
@@ -294,6 +294,7 @@ namespace MCS
 						FY_INFO("No fear!");
 						FY_INFO("");
 					}
+					Frosty::EventBus::GetEventBus()->Publish<Frosty::BossCloseEffectEvent>(Frosty::BossCloseEffectEvent(m_Map.isTargetInNextRoom(m_BossPos, m_PlayerCoords)));
 				}
 			}
 
@@ -1071,6 +1072,7 @@ namespace MCS
 				FY_INFO("No fear!");
 				FY_INFO("");
 			}
+			Frosty::EventBus::GetEventBus()->Publish<Frosty::BossCloseEffectEvent>(Frosty::BossCloseEffectEvent(m_Map.isTargetInNextRoom(m_BossPos, m_PlayerCoords)));
 		}
 		//m_PlayerCoords = e.GetCoords();
 	}
@@ -1413,7 +1415,7 @@ namespace MCS
 
 						auto& fire = m_World->CreateEntity(pos, rotation, { 1.0f, 0.2f, 0.5f });
 						m_World->AddToGroup(fire, true);
-						//m_World->AddComponent<Frosty::ECS::CLight>(fire, Frosty::ECS::CLight::LightType::Point, 1.0f, glm::vec3(0.99f, 0.4f, 0.1f), 20.0f, glm::vec3(0.f, 1.0f, 0.f));
+						m_World->AddComponent<Frosty::ECS::CLight>(fire, Frosty::ECS::CLight::LightType::Point, 1.0f, glm::vec3(0.99f, 0.4f, 0.1f), 20.0f, glm::vec3(0.f, 1.0f, 0.f));
 						auto& fireParticel = m_World->AddComponent<Frosty::ECS::CParticleSystem>(fire, "Particles", "fire", 100, glm::vec3(1.0f, 0.0f, 0.0f), 17.0f);
 						fireParticel.StaticColor = false;
 						fireParticel.SystemEndColor = glm::vec3(1.0f, 0.82f, 0.0f);

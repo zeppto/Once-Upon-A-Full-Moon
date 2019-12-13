@@ -248,8 +248,7 @@ namespace MCS
 		world->AddComponent<Frosty::ECS::CDash>(player);
 		world->AddComponent<Frosty::ECS::CHealth>(player, 20);
 		auto& playerInventory = world->AddComponent<Frosty::ECS::CInventory>(player);
-		//
-		playerInventory.CurrentWolfsbane = 1;
+		//playerInventory.CurrentWolfsbane = 1;
 
 		//world->AddComponent<Frosty::ECS::CHealthBar>(player, glm::vec3(0.0f, 10.0f, 0.0f));
 		auto& camEntity = world->GetSceneCamera();
