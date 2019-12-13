@@ -33,16 +33,16 @@ namespace MCS
 				}
 				else
 				{
-					//Follow the nearest bait
-					if (m_Boss[i]->TargetList.size() > 2)
-					{
-						int ShortestID = FindClosestBait(m_Transform[i]->Position, m_Boss[i]->TargetList);
+					////Follow the nearest bait
+					//if (m_Boss[i]->TargetList.size() > 2)
+					//{
+					//	int ShortestID = FindClosestBait(m_Transform[i]->Position, m_Boss[i]->TargetList);
 
-						std::swap(m_Boss[i]->TargetList[0], m_Boss[i]->TargetList[ShortestID]);
-					}
-					m_Enemy[i]->Target = &world->GetComponent<Frosty::ECS::CTransform>(m_Boss[i]->TargetList[0]);
-					m_Boss[i]->Hunting = true;
-					//m_Enemy[i]->StopDistance = 0.1f;
+					//	std::swap(m_Boss[i]->TargetList[0], m_Boss[i]->TargetList[ShortestID]);
+					//}
+					//m_Enemy[i]->Target = &world->GetComponent<Frosty::ECS::CTransform>(m_Boss[i]->TargetList[0]);
+					//m_Boss[i]->Hunting = true;
+					////m_Enemy[i]->StopDistance = 0.1f;
 				}
 				//	}
 
@@ -57,31 +57,31 @@ namespace MCS
 
 			float diff = Frosty::Time::CurrentTime() - m_Boss[i]->DistractionTimer;
 
-			//Eat bait
-			if ((m_Boss[i]->Distracted == true) && (Frosty::Time::CurrentTime() - m_Boss[i]->DistractionTimer >= m_Boss[i]->DistractionTime) && m_Boss[i]->TargetList.size() > 1)
-			{
-				world->AddComponent<Frosty::ECS::CDestroy>(m_Boss[i]->TargetList[0]);
-				m_Boss[i]->TargetList.erase(m_Boss[i]->TargetList.begin());
-				m_Boss[i]->Distracted = false;
-				m_Boss[i]->DistractionTimer = Frosty::Time::CurrentTime();
+			////Eat bait
+			//if ((m_Boss[i]->Distracted == true) && (Frosty::Time::CurrentTime() - m_Boss[i]->DistractionTimer >= m_Boss[i]->DistractionTime) && m_Boss[i]->TargetList.size() > 1)
+			//{
+			//	world->AddComponent<Frosty::ECS::CDestroy>(m_Boss[i]->TargetList[0]);
+			//	m_Boss[i]->TargetList.erase(m_Boss[i]->TargetList.begin());
+			//	m_Boss[i]->Distracted = false;
+			//	m_Boss[i]->DistractionTimer = Frosty::Time::CurrentTime();
 
-				//Tried to set new target here but did not work, sets hunting = true instead and the next target is set in next frame
-				m_Boss[i]->Hunting = false;
-			}
+			//	//Tried to set new target here but did not work, sets hunting = true instead and the next target is set in next frame
+			//	m_Boss[i]->Hunting = false;
+			//}
 		}
 	}
 
-	void BossBehaviorSystem::OnEvent(Frosty::BaseEvent& e)
-	{
-		switch (e.GetEventType())
-		{
-		case Frosty::EventType::BaitPlaced:
-			OnBaitPlacedEvent(static_cast<Frosty::BaitPlacedEvent&>(e));
-			break;
-		default:
-			break;
-		}
-	}
+	//void BossBehaviorSystem::OnEvent(Frosty::BaseEvent& e)
+	//{
+	//	switch (e.GetEventType())
+	//	{
+	//	case Frosty::EventType::BaitPlaced:
+	//		OnBaitPlacedEvent(static_cast<Frosty::BaitPlacedEvent&>(e));
+	//		break;
+	//	default:
+	//		break;
+	//	}
+	//}
 
 	void BossBehaviorSystem::AddComponent(const std::shared_ptr<Frosty::ECS::Entity>& entity)
 	{
@@ -164,47 +164,46 @@ namespace MCS
 		return retInfo.str();
 	}
 
-	void BossBehaviorSystem::OnBaitPlacedEvent(Frosty::BaitPlacedEvent& e)
-	{
-		for (size_t i = 1; i < p_Total; i++)
-		{
-			auto& entity = e.GetEntity();
+	//void BossBehaviorSystem::OnBaitPlacedEvent(Frosty::BaitPlacedEvent& e)
+	//{
+	//	for (size_t i = 1; i < p_Total; i++)
+	//	{
+	//		auto& entity = e.GetEntity();
 
-			auto& world = Frosty::Application::Get().GetWorld();
+	//		auto& world = Frosty::Application::Get().GetWorld();
 
-			m_Boss[i]->TargetList.emplace(m_Boss[i]->TargetList.end() - 1, entity);
+	//		m_Boss[i]->TargetList.emplace(m_Boss[i]->TargetList.end() - 1, entity);
 
-			//Follow the nearest bait
-			int ShortestID = FindClosestBait(m_Transform[i]->Position, m_Boss[i]->TargetList);
+	//		//Follow the nearest bait
+	//		int ShortestID = FindClosestBait(m_Transform[i]->Position, m_Boss[i]->TargetList);
 
-			std::swap(m_Boss[i]->TargetList[0], m_Boss[i]->TargetList[ShortestID]);
+	//		std::swap(m_Boss[i]->TargetList[0], m_Boss[i]->TargetList[ShortestID]);
 
-			m_Enemy[i]->Target = &world->GetComponent<Frosty::ECS::CTransform>(m_Boss[i]->TargetList[0]);
-			m_Boss[i]->Hunting = true;
-			//m_Enemy[i]->StopDistance = 0.1f;
+	//		m_Enemy[i]->Target = &world->GetComponent<Frosty::ECS::CTransform>(m_Boss[i]->TargetList[0]);
+	//		m_Boss[i]->Hunting = true;
+	//		//m_Enemy[i]->StopDistance f;
+	//	}
+	//}
 
-		}
-	}
+	//int BossBehaviorSystem::FindClosestBait(const glm::vec3& SelfPos, const std::vector<std::shared_ptr<Frosty::ECS::Entity>>& Baits)
+	//{
+	//	auto& world = Frosty::Application::Get().GetWorld();
 
-	int BossBehaviorSystem::FindClosestBait(const glm::vec3& SelfPos, const std::vector<std::shared_ptr<Frosty::ECS::Entity>>& Baits)
-	{
-		auto& world = Frosty::Application::Get().GetWorld();
+	//	float ShortestDistance = CalcDistance2D(world->GetComponent<Frosty::ECS::CTransform>(Baits[0]).Position, SelfPos);
+	//	int ShortestID = 0;
+	//	float distance = 0;
 
-		float ShortestDistance = CalcDistance2D(world->GetComponent<Frosty::ECS::CTransform>(Baits[0]).Position, SelfPos);
-		int ShortestID = 0;
-		float distance = 0;
-
-		for (uint8_t bait = 1; bait < Baits.size() - 1; bait++)
-		{
-			distance = CalcDistance2D(world->GetComponent<Frosty::ECS::CTransform>(Baits[bait]).Position, SelfPos);
-			if (distance < ShortestDistance)
-			{
-				ShortestID = bait;
-				ShortestDistance = distance;
-			}
-		}
-		return ShortestID;
-	}
+	//	for (uint8_t bait = 1; bait < Baits.size() - 1; bait++)
+	//	{
+	//		distance = CalcDistance2D(world->GetComponent<Frosty::ECS::CTransform>(Baits[bait]).Position, SelfPos);
+	//		if (distance < ShortestDistance)
+	//		{
+	//			ShortestID = bait;
+	//			ShortestDistance = distance;
+	//		}
+	//	}
+	//	return ShortestID;
+	//}
 
 	float BossBehaviorSystem::CalcDistance2D(const glm::vec3& pos1, const glm::vec3& pos2)
 	{

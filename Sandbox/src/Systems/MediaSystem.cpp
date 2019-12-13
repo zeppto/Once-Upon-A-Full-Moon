@@ -12,11 +12,15 @@ namespace MCS
 		p_Signature.set(Frosty::ECS::getComponentTypeID<Frosty::ECS::CTransform>(), true);
 		p_Signature.set(Frosty::ECS::getComponentTypeID<Frosty::ECS::CMediaManager>(), true);
 
+		
 		m_World = Frosty::Application::Get().GetWorld().get();
 		m_SoundEngine = Frosty::AssetManager::GetSoundEngine();
 
-		playMusic("assets/music/Atmo.mp3", 1.0f);
-		playMusic("assets/music/menusong.mp3", 1.0f);
+		if (m_SoundEngine != nullptr)
+		{
+			playMusic("assets/music/Atmo.mp3", true);
+			playMusic("assets/music/menusong.mp3", true);
+		}
 	}
 
 	void MCS::MediaSystem::OnUpdate()
@@ -151,32 +155,35 @@ namespace MCS
 
 	void MediaSystem::playMusic(const char* source, bool loop)
 	{
-		m_SoundEngine->play2D(source, loop, false, false, ESM_AUTO_DETECT, false);
+		if(m_SoundEngine != nullptr)
+			m_SoundEngine->play2D(source, loop, false, false, ESM_AUTO_DETECT, false);
 	}
 
 	void MediaSystem::play2DSound(const char* source, bool loop, bool startPaused, bool track, bool enableSoundEffects, float volume, float pan, int effectID)
 	{
-		//m_SoundEngine->setSoundVolume(volume);
-		ISound* sound2D = m_SoundEngine->play2D(source, loop, startPaused, track, ESM_AUTO_DETECT, enableSoundEffects);
-		sound2D->setVolume(volume);
-		sound2D->setPan(pan);
-		
-		if (enableSoundEffects)
+		if (m_SoundEngine != nullptr)
 		{
-			if (sound2D)
+			ISound* sound2D = m_SoundEngine->play2D(source, loop, startPaused, track, ESM_AUTO_DETECT, enableSoundEffects);
+			sound2D->setVolume(volume);
+			sound2D->setPan(pan);
+
+			if (enableSoundEffects)
 			{
-				ISoundEffectControl* fx = sound2D->getSoundEffectControl();
-				if (fx)
+				if (sound2D)
 				{
-					if (effectID == 1) fx->enableChorusSoundEffect();
-					if (effectID == 2) fx->enableCompressorSoundEffect();
-					if (effectID == 3) fx->enableDistortionSoundEffect();
-					if (effectID == 4) fx->enableEchoSoundEffect();
-					if (effectID == 5) fx->enableFlangerSoundEffect();
-					if (effectID == 6) fx->enableGargleSoundEffect();
-					if (effectID == 7) fx->enableI3DL2ReverbSoundEffect();
-					if (effectID == 8) fx->enableParamEqSoundEffect();
-					if (effectID == 9) fx->enableWavesReverbSoundEffect();
+					ISoundEffectControl* fx = sound2D->getSoundEffectControl();
+					if (fx)
+					{
+						if (effectID == 1) fx->enableChorusSoundEffect();
+						if (effectID == 2) fx->enableCompressorSoundEffect();
+						if (effectID == 3) fx->enableDistortionSoundEffect();
+						if (effectID == 4) fx->enableEchoSoundEffect();
+						if (effectID == 5) fx->enableFlangerSoundEffect();
+						if (effectID == 6) fx->enableGargleSoundEffect();
+						if (effectID == 7) fx->enableI3DL2ReverbSoundEffect();
+						if (effectID == 8) fx->enableParamEqSoundEffect();
+						if (effectID == 9) fx->enableWavesReverbSoundEffect();
+					}
 				}
 			}
 		}
@@ -184,30 +191,30 @@ namespace MCS
 
 	void MediaSystem::play3DSound(const char* source, vec3df position, bool loop, bool startPaused, bool track, bool enableSoundEffects, float volume, float minDist, float maxDist, int effectID)
 	{
-		//m_SoundEngine->setDefault3DSoundMinDistance(minDist);
-		//m_SoundEngine->setDefault3DSoundMaxDistance(maxDist);
-		//m_SoundEngine->setSoundVolume(volume);
-		ISound* sound3D = m_SoundEngine->play3D(source, position, loop, startPaused, track, ESM_AUTO_DETECT, enableSoundEffects);
-		sound3D->setMinDistance(minDist);
-		sound3D->setMaxDistance(maxDist); // So the sound reaches the camera, else its really quiet by default
-		sound3D->setVolume(volume);
-
-		if (enableSoundEffects)
+		if (m_SoundEngine != nullptr)
 		{
-			if (sound3D)
+			ISound* sound3D = m_SoundEngine->play3D(source, position, loop, startPaused, track, ESM_AUTO_DETECT, enableSoundEffects);
+			sound3D->setMinDistance(minDist);
+			sound3D->setMaxDistance(maxDist); // So the sound reaches the camera, else its really quiet by default
+			sound3D->setVolume(volume);
+
+			if (enableSoundEffects)
 			{
-				ISoundEffectControl* fx = sound3D->getSoundEffectControl();
-				if (fx)
+				if (sound3D)
 				{
-					if (effectID == 1) fx->enableChorusSoundEffect();
-					if (effectID == 2) fx->enableCompressorSoundEffect();
-					if (effectID == 3) fx->enableDistortionSoundEffect();
-					if (effectID == 4) fx->enableEchoSoundEffect();
-					if (effectID == 5) fx->enableFlangerSoundEffect();
-					if (effectID == 6) fx->enableGargleSoundEffect();
-					if (effectID == 7) fx->enableI3DL2ReverbSoundEffect();
-					if (effectID == 8) fx->enableParamEqSoundEffect();
-					if (effectID == 9) fx->enableWavesReverbSoundEffect();
+					ISoundEffectControl* fx = sound3D->getSoundEffectControl();
+					if (fx)
+					{
+						if (effectID == 1) fx->enableChorusSoundEffect();
+						if (effectID == 2) fx->enableCompressorSoundEffect();
+						if (effectID == 3) fx->enableDistortionSoundEffect();
+						if (effectID == 4) fx->enableEchoSoundEffect();
+						if (effectID == 5) fx->enableFlangerSoundEffect();
+						if (effectID == 6) fx->enableGargleSoundEffect();
+						if (effectID == 7) fx->enableI3DL2ReverbSoundEffect();
+						if (effectID == 8) fx->enableParamEqSoundEffect();
+						if (effectID == 9) fx->enableWavesReverbSoundEffect();
+					}
 				}
 			}
 		}
@@ -215,6 +222,7 @@ namespace MCS
 
 	void MediaSystem::stopAllSounds()
 	{
-		m_SoundEngine->stopAllSounds();
+		if(m_SoundEngine != nullptr)
+			m_SoundEngine->stopAllSounds();
 	}
 }

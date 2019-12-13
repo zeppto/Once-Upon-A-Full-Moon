@@ -216,8 +216,6 @@ namespace Frosty
 
 	}
 
-	
-
 	float Window::GetWidthMultiplier() const
 	{
 		return  m_Data.Width / m_Data.refWidth;;
@@ -227,8 +225,6 @@ namespace Frosty
 	{
 		return m_Data.Height / m_Data.refHeight;
 	}
-
-	
 
 	const glm::vec4& Window::GetViewport() const
 	{

@@ -71,7 +71,7 @@ namespace Frosty
 
 			if (!m_GameRunning)
 			{
-				RenderCommand::SetClearColor({ 0.2f, 0.2f, 0.2f, 1.0f });
+				RenderCommand::SetClearColor({ 0.0f, 0.0f, 0.0f, 1.0f });
 				RenderCommand::Clear();
 
 				Renderer::BeginScene();
@@ -84,7 +84,6 @@ namespace Frosty
 				m_World->OnUpdate();
 				m_World->BeginScene();
 			}
-
 			
 			//Simon move this
 			//NO :P

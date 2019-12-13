@@ -136,6 +136,12 @@ namespace Frosty
 		glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(matrix));
 	}
 
+	void Shader::UploadUniformMat4Array(const std::string& name, const glm::mat4& matrix)
+	{
+		GLuint location = GetUniformLocation(name);
+		glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(matrix[0]));
+	}
+
 	void Shader::AssignUniformBlock(const std::string& name)
 	{
 		//TODO replace "a_jointDataBlock" with name.
