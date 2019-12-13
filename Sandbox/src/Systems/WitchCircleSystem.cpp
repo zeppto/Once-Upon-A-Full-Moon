@@ -29,7 +29,7 @@ namespace MCS
 					if (witchCircleHealth.CurrentHealth == 5)
 					{
 						// Enchantment sound effect (being used)
-						Frosty::EventBus::GetEventBus()->Publish<Frosty::PlayMediaEvent>(Frosty::PlayMediaEvent("assets/sounds/WeaponPickup1.wav", 2.0f, 0.0f, false, 0));
+						Frosty::EventBus::GetEventBus()->Publish<Frosty::PlayMediaEntityEvent>(Frosty::PlayMediaEntityEvent(m_Transform[m_CurrentActiveWC]->EntityPtr, "assets/sounds/Firespell.wav", 1.0f, 100.0f, 200.0f, true, 5));
 					}
 					
 					witchCircleHealth.CurrentHealth += 1;
@@ -49,7 +49,7 @@ namespace MCS
 					RemoveHealthBar();
 
 					// Enchantment sound effect (finished)
-					Frosty::EventBus::GetEventBus()->Publish<Frosty::PlayMediaEvent>(Frosty::PlayMediaEvent("assets/sounds/WeaponPickup2.wav", 2.0f, 0.0f, false, 0));
+					Frosty::EventBus::GetEventBus()->Publish<Frosty::PlayMediaEvent>(Frosty::PlayMediaEvent("assets/sounds/LEVEL UP.wav", 1.0f, 0.0f, false, 0));
 
 					// Send event to generate an element
 					Frosty::EventBus::GetEventBus()->Publish<Frosty::UpgradeWeaponEvent>(Frosty::UpgradeWeaponEvent());

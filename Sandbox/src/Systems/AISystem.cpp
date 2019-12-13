@@ -365,11 +365,10 @@ namespace MCS
 				particles.SystemEndColor = glm::vec3(0.6f, 0.4f, 0.0f);
 				particles.HasGravity = true;
 
-				std::string bowSounds[2] = { "Short", "Long" };
-				int rand = std::rand() % 2 + 1;
-				std::string bowStr = "assets/sounds/BowDraw" + bowSounds[rand - 1] + ".wav";
-				const char* fileName_Bow = bowStr.c_str();
-				Frosty::EventBus::GetEventBus()->Publish<Frosty::PlayMediaEntityEvent>(Frosty::PlayMediaEntityEvent(m_Enemy[index]->EntityPtr, fileName_Bow, 2.0f, 30.0f, 100.0f, false, 0));
+				/*std::string castSounds[2] = { "", "Cast" };
+				std::string castStr = "assets/sounds/BowDraw" + castSounds[rand - 1] + ".wav";
+				const char* fileName_Spell = castStr.c_str();*/
+				Frosty::EventBus::GetEventBus()->Publish<Frosty::PlayMediaEntityEvent>(Frosty::PlayMediaEntityEvent(m_Enemy[index]->EntityPtr, "assets/sounds/FirespellCast.wav", 1.0f, 100.0f, 200.0f, false, 0));
 			}
 			else if (m_Enemy[index]->Weapon->Type == Frosty::ECS::CWeapon::WeaponType::Sword)
 			{
@@ -381,7 +380,12 @@ namespace MCS
 				int rand = std::rand() % 3 + 1;
 				std::string str = "assets/sounds/SwooshLight" + std::to_string(rand) + ".wav";
 				const char* fileName = str.c_str();
-				Frosty::EventBus::GetEventBus()->Publish<Frosty::PlayMediaEntityEvent>(Frosty::PlayMediaEntityEvent(m_Enemy[index]->EntityPtr, fileName, 2.0f, 30.0f, 100.0f, false, 0));
+				Frosty::EventBus::GetEventBus()->Publish<Frosty::PlayMediaEntityEvent>(Frosty::PlayMediaEntityEvent(m_Enemy[index]->EntityPtr, fileName, 1.0f, 100.0f, 200.0f, false, 0));
+
+				rand = std::rand() % 3 + 1;
+				std::string enemyStr = "assets/sounds/Hitsound enemies" + std::to_string(rand) + ".wav";
+				const char* fileName_Enemy = enemyStr.c_str();
+				Frosty::EventBus::GetEventBus()->Publish<Frosty::PlayMediaEntityEvent>(Frosty::PlayMediaEntityEvent(m_Enemy[index]->EntityPtr, fileName_Enemy, 1.0f, 100.0f, 200.0f, false, 0));
 			}
 			else
 			{

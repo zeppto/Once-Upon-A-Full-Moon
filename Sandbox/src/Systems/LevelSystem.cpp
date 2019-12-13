@@ -1275,6 +1275,9 @@ namespace MCS
 
 	void LevelSystem::BossroomBlock(glm::ivec2 room)
 	{
+		// I've been clumsy, sounds lack loop option so this is temp fix
+		Frosty::EventBus::GetEventBus()->Publish<Frosty::PlayMusicEvent>(Frosty::PlayMusicEvent("assets/sounds/Boss Fire.wav", 1.0f));
+		
 		Room currentRoom = m_Map.getRoom(room);
 		float offsetX = (room.x - 10) * 300;
 		float offsetY = (room.y - 15) * 300;
@@ -1405,6 +1408,10 @@ namespace MCS
 						particel.MinLifetime = 2.0f;
 						particel.FadeInTreshold = 2.573f;
 						particel.FadeTreshold = 2.195f;
+
+						// Play fire audio (ive been clumsy, so this is a temporary fix for the sound which is kind of lame but it works, add loop option for sounds and get this back in)
+						/*if(i == 3) 
+							Frosty::EventBus::GetEventBus()->Publish<Frosty::PlayMediaEntityEvent>(Frosty::PlayMediaEntityEvent(fireParticel.EntityPtr, "assets/sounds/Boss Fire.wav", 0.5, 100.0f, 200.0f, false, 0));*/
 					}
 				//}
 			}
