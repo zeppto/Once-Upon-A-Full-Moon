@@ -16,6 +16,7 @@ out vec3 v_Normal;
 out mat3 v_TBN;
 out vec4 v_MVP_Position;
 
+
 void main()
 {
 	v_FragPosition = vec3(u_Transform * vec4(a_Position, 1.0));
@@ -29,4 +30,6 @@ void main()
 	v_TBN = mat3(T, B, N);
 	v_MVP_Position = u_ViewProjection * u_Transform * vec4(a_Position, 1.0f);
 	gl_Position = u_ViewProjection * u_Transform * vec4(a_Position, 1.0f);
+
+	
 }

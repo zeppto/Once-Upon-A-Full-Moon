@@ -592,7 +592,8 @@ namespace MCS
 					{
 						if (SpawnBossBool)
 						{
-							enemyPos += fileEntitys.myEntitys[i].myTransform.Position;
+							auto& enemyTransform = m_World->GetComponent<Frosty::ECS::CTransform>(entity);
+							enemyPos = enemyTransform.Position;
 							SpawnBossBool = false;
 						}
 						//temp wepond

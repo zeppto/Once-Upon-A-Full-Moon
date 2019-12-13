@@ -130,6 +130,8 @@ namespace Frosty
 		s_Shaders.emplace("Sprite", FY_NEW Shader("assets/shaders/SpriteVertex.glsl", "assets/shaders/SpriteFragment.glsl", "Sprite"));
 		s_Shaders.emplace("HealthBar", FY_NEW Shader("assets/shaders/HealthBarVertex.glsl", "assets/shaders/HealthBarFragment.glsl", "HealthBar"));
 		s_Shaders.emplace("HeatMap", FY_NEW Shader("assets/shaders/TestLightVS.glsl", "assets/shaders/TestLightFS.glsl", "HeatMap"));
+		s_Shaders.emplace("ShadowMap", FY_NEW Shader("assets/shaders/ShadowMapVS.glsl", "assets/shaders/ShadowMaptFS.glsl", "ShadowMap"));
+		s_Shaders.emplace("DebugQuad", FY_NEW Shader("assets/shaders/DebugQuadVS.glsl", "assets/shaders/DebugQuadFS.glsl", "DebugQuad"));
 
 		s_Shaders["Texture2D"]->Bind();
 		s_Shaders["Texture2D"]->UploadUniformInt("u_DiffuseTexture", 0);
@@ -152,6 +154,9 @@ namespace Frosty
 
 		s_Shaders["UI"]->Bind();
 		s_Shaders["UI"]->UploadUniformInt("u_DiffuseTexture", 0);
+
+
+
 
 		LoadDir("assets/");
 		ConnectWatchList();

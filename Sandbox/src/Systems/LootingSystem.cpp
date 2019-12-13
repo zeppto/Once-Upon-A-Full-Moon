@@ -157,7 +157,7 @@ namespace MCS
 					randomValue = -1;
 			}
 			else
-				randomValue = (rand() % 4) + 3;
+				randomValue = (rand() % 3) + 3;
 
 			if (randomValue != -1)
 			{
@@ -178,6 +178,9 @@ namespace MCS
 					material.DiffuseTexture = Frosty::AssetManager::GetTexture2D("hpPotion");
 					light.Color = glm::vec3(1.f, 0.f, 0.f);
 					loot.Type = Frosty::ECS::CLootable::LootType::HealingPotion;
+
+					// Picking up potion (if such a sound exist)
+					//Frosty::EventBus::GetEventBus()->Publish<Frosty::PlayMediaEntityEvent>(Frosty::PlayMediaEntityEvent(m_World->GetComponent<Frosty::ECS::CMesh>(item).EntityPtr, fileName, 2.0f, 50.0f, 100.0f, false, 0));
 					break;
 				case 1:
 					// Speed Potion

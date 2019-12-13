@@ -34,6 +34,7 @@ namespace Frosty
 
 		void UploadUniformMat3(const std::string& name, const glm::mat3& matrix);
 		void UploadUniformMat4(const std::string& name, const glm::mat4& matrix);
+		void UploadUniformMat4Array(const std::string& name, const glm::mat4& matrix);
 
 		void AssignUniformBlock(const std::string& name);
 		uint32_t GetID()const; //Debug

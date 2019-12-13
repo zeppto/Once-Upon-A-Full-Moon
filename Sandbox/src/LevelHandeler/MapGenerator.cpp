@@ -90,139 +90,138 @@ namespace MCS
 		//come from
 		pos = startPos + posOffset(startSide);
 
-		//temp
-		if (pos.x == 12 && pos.y == 15)
-			pos.x = 12;
-
-		int nrOfPotentialExits = 0;
-
-		if (!m_TileMap[pos.x][pos.y].Ocupide)
+		if (pos.x < 30 && pos.y < 30 && pos.x > -1 && pos.y > -1)
 		{
-			for (int i = 0; i < 4; i++)
-			{
-				m_TileMap[pos.x][pos.y].sideExits[i] = false;
-				if (!m_TileMap[pos.x + posOffset(i).x][pos.y + posOffset(i).y].Ocupide)
-				{
-					int isDeadEnd = 0;
-					for (int j = 0; j < 4; j++)
-					{
-						if (m_TileMap[pos.x + posOffset(i).x + posOffset(j).x][pos.y + posOffset(i).y + posOffset(j).y].Ocupide)
-						{
-							isDeadEnd++;
-						}
-					}
-					if (isDeadEnd < 4)
-					{
-						m_TileMap[pos.x][pos.y].sideExits[i] = true;
-						nrOfPotentialExits++;
-					}
-				}
-			}
-			int numberOfExits = 0;
-			if (nrOfPotentialExits != 0)
-			{
-				int nrToRemove = rand() % (nrOfPotentialExits);
-				numberOfExits = nrOfPotentialExits - nrToRemove;
-				while (nrOfPotentialExits != numberOfExits)
-				{
-					int remove = rand() % 4;
-					if (m_TileMap[pos.x][pos.y].sideExits[remove])
-					{
-						m_TileMap[pos.x][pos.y].sideExits[remove] = false;
-						nrOfPotentialExits--;
-					}
-				}
+			int nrOfPotentialExits = 0;
 
-				if (notLastBatch)
-				{
-					for (int i = 0; i < 4; i++)
-					{
-						//m_LoosEndsRooms.push_back(pos);
-						//m_LoosEndsRooms.erase(m_LoosEndsRooms.begin());
-						RoomOnTile temp;
-						temp.pos = pos;
-						if (m_TileMap[pos.x][pos.y].sideExits[i] && !m_TileMap[pos.x + posOffset(i).x][pos.y + posOffset(i).y].Ocupide)
-						{
-							temp.startSide = i;
-							m_LoosEndsRooms.push_back(temp);
-						}
-					}
-				}
-				else
-				{
-					for (int i = 0; i < 4; i++)
-						m_TileMap[pos.x][pos.y].sideExits[i] = false;
-				}
-			}
-
-			for (int i = 0; i < 4; i++)
+			if (!m_TileMap[pos.x][pos.y].Ocupide)
 			{
-				if (m_TileMap[pos.x + posOffset(i).x][pos.y + posOffset(i).y].Ocupide && startSide != (1 + (i / 2) * 4 - i))
+				for (int i = 0; i < 4; i++)
 				{
-					if (m_TileMap[pos.x + posOffset(i).x][pos.y + posOffset(i).y].sideExits[1 + (i / 2) * 4 - i])
+					m_TileMap[pos.x][pos.y].sideExits[i] = false;
+					if (!m_TileMap[pos.x + posOffset(i).x][pos.y + posOffset(i).y].Ocupide)
 					{
-						m_TileMap[pos.x + posOffset(i).x][pos.y + posOffset(i).y].sideExits[1 + (i / 2) * 4 - i] = false;
-
-						int nrOfCloseRoomExits = 0;
-						for (int k = 0; k < 4; k++)
+						int isDeadEnd = 0;
+						for (int j = 0; j < 4; j++)
 						{
-							if (m_TileMap[pos.x + posOffset(i).x][pos.y + posOffset(i).y].sideExits[k])
-								nrOfCloseRoomExits++;
-						}
-						if (nrOfCloseRoomExits < 2 && pos + posOffset(i) != glm::ivec2(10, 15))
-						{
-							int nrToAdd = 2 + nrOfCloseRoomExits;
-							m_TileMap[pos.x][pos.y].sideExits[0];
-							while (nrToAdd != nrOfCloseRoomExits)
+							if (m_TileMap[pos.x + posOffset(i).x + posOffset(j).x][pos.y + posOffset(i).y + posOffset(j).y].Ocupide)
 							{
-								int add = rand() % 4;
-								if (!m_TileMap[pos.x + posOffset(i).x][pos.y + posOffset(i).y].sideExits[add] && pos + posOffset(i) + posOffset(add) != glm::ivec2(10, 15))
-								{
-									m_TileMap[pos.x + posOffset(i).x][pos.y + posOffset(i).y].sideExits[add] = true;
-									m_TileMap[pos.x + posOffset(i).x + posOffset(add).x][pos.y + posOffset(i).y + posOffset(add).y].sideExits[1 + (add / 2) * 4 - add] = true;
+								isDeadEnd++;
+							}
+						}
+						if (isDeadEnd < 4)
+						{
+							m_TileMap[pos.x][pos.y].sideExits[i] = true;
+							nrOfPotentialExits++;
+						}
+					}
+				}
+				int numberOfExits = 0;
+				if (nrOfPotentialExits != 0)
+				{
+					int nrToRemove = rand() % (nrOfPotentialExits);
+					numberOfExits = nrOfPotentialExits - nrToRemove;
+					while (nrOfPotentialExits != numberOfExits)
+					{
+						int remove = rand() % 4;
+						if (m_TileMap[pos.x][pos.y].sideExits[remove])
+						{
+							m_TileMap[pos.x][pos.y].sideExits[remove] = false;
+							nrOfPotentialExits--;
+						}
+					}
+
+					if (notLastBatch)
+					{
+						for (int i = 0; i < 4; i++)
+						{
+							//m_LoosEndsRooms.push_back(pos);
+							//m_LoosEndsRooms.erase(m_LoosEndsRooms.begin());
+							RoomOnTile temp;
+							temp.pos = pos;
+							if (m_TileMap[pos.x][pos.y].sideExits[i] && !m_TileMap[pos.x + posOffset(i).x][pos.y + posOffset(i).y].Ocupide)
+							{
+								temp.startSide = i;
+								m_LoosEndsRooms.push_back(temp);
+							}
+						}
+					}
+					else
+					{
+						for (int i = 0; i < 4; i++)
+							m_TileMap[pos.x][pos.y].sideExits[i] = false;
+					}
+				}
+
+				for (int i = 0; i < 4; i++)
+				{
+					if (m_TileMap[pos.x + posOffset(i).x][pos.y + posOffset(i).y].Ocupide && startSide != (1 + (i / 2) * 4 - i))
+					{
+						if (m_TileMap[pos.x + posOffset(i).x][pos.y + posOffset(i).y].sideExits[1 + (i / 2) * 4 - i])
+						{
+							m_TileMap[pos.x + posOffset(i).x][pos.y + posOffset(i).y].sideExits[1 + (i / 2) * 4 - i] = false;
+
+							int nrOfCloseRoomExits = 0;
+							for (int k = 0; k < 4; k++)
+							{
+								if (m_TileMap[pos.x + posOffset(i).x][pos.y + posOffset(i).y].sideExits[k])
 									nrOfCloseRoomExits++;
+							}
+							if (nrOfCloseRoomExits < 2 && pos + posOffset(i) != glm::ivec2(10, 15))
+							{
+								int nrToAdd = 2 + nrOfCloseRoomExits;
+								m_TileMap[pos.x][pos.y].sideExits[0];
+								while (nrToAdd != nrOfCloseRoomExits)
+								{
+									int add = rand() % 4;
+									if (!m_TileMap[pos.x + posOffset(i).x][pos.y + posOffset(i).y].sideExits[add] && pos + posOffset(i) + posOffset(add) != glm::ivec2(10, 15))
+									{
+										m_TileMap[pos.x + posOffset(i).x][pos.y + posOffset(i).y].sideExits[add] = true;
+										m_TileMap[pos.x + posOffset(i).x + posOffset(add).x][pos.y + posOffset(i).y + posOffset(add).y].sideExits[1 + (add / 2) * 4 - add] = true;
+										nrOfCloseRoomExits++;
+									}
 								}
 							}
 						}
 					}
 				}
-			}
 
-			m_TileMap[pos.x][pos.y].Ocupide = true;
-			m_TileMap[pos.x][pos.y].sideExits[1 + (startSide / 2) * 4 - startSide] = true;
-			numberOfExits = 0;
+				m_TileMap[pos.x][pos.y].Ocupide = true;
+				m_TileMap[pos.x][pos.y].sideExits[1 + (startSide / 2) * 4 - startSide] = true;
+				numberOfExits = 0;
 
-			for (int i = 0; i < 4; i++)
-			{
-				if (m_TileMap[pos.x][pos.y].sideExits[i])
-					numberOfExits++;
-			}
-
-			//fix Deadends
-			if (numberOfExits < 2)
-			{
-				int nrOfEntrensesInParantRoom = 0;
 				for (int i = 0; i < 4; i++)
 				{
-					if (m_TileMap[startPos.x][startPos.y].sideExits[i])
-						nrOfEntrensesInParantRoom++;
+					if (m_TileMap[pos.x][pos.y].sideExits[i])
+						numberOfExits++;
 				}
-				if (nrOfEntrensesInParantRoom < 3 && pos != glm::ivec2(10, 15))
+
+				//fix Deadends
+				if (numberOfExits < 2)
 				{
-					int nrToAdd = 2 + numberOfExits;
-					while (nrToAdd != numberOfExits)
+					int nrOfEntrensesInParantRoom = 0;
+					for (int i = 0; i < 4; i++)
 					{
-						int add = rand() % 4;
-						if (!m_TileMap[pos.x][pos.y].sideExits[add] && pos + posOffset(add) != glm::ivec2(10, 15))
+						if (m_TileMap[startPos.x][startPos.y].sideExits[i])
+							nrOfEntrensesInParantRoom++;
+					}
+					if (nrOfEntrensesInParantRoom < 3 && pos != glm::ivec2(10, 15))
+					{
+						int nrToAdd = 2 + numberOfExits;
+						while (nrToAdd != numberOfExits)
 						{
-							m_TileMap[pos.x + posOffset(add).x][pos.y + posOffset(add).y].sideExits[1 + (add / 2) * 4 - add] = true;
-							m_TileMap[pos.x][pos.y].sideExits[add] = true;
-							numberOfExits++;
+							int add = rand() % 4;
+							if (!m_TileMap[pos.x][pos.y].sideExits[add] && pos + posOffset(add) != glm::ivec2(10, 15))
+							{
+								m_TileMap[pos.x + posOffset(add).x][pos.y + posOffset(add).y].sideExits[1 + (add / 2) * 4 - add] = true;
+								m_TileMap[pos.x][pos.y].sideExits[add] = true;
+								numberOfExits++;
+							}
 						}
 					}
 				}
+				return true;
 			}
-			return true;
 		}
 		return false;
 	}
@@ -385,7 +384,6 @@ namespace MCS
 		std::deque<pathOnTile> roomsToGoThrough;
 		roomsToGoThrough.emplace_back(startRoom);
 
-
 		while (roomsToGoThrough.size() > 0)
 		{
 			pathOnTile room = roomsToGoThrough.front();
@@ -428,5 +426,26 @@ namespace MCS
 		}
 		return rooms;
 	}
-
+	bool MapGenerator::isTargetInNextRoom(glm::ivec2 bossPos, glm::ivec2 targetPos)
+	{
+		pathOnTile startRoom;
+		startRoom.pos = bossPos;
+		startRoom.distensTo = 0;
+		pathOnTile room = startRoom;
+		Room currentRoom = getRoom(room.pos);
+		for (int i = 0; i < 4; i++)
+		{
+			if (currentRoom.sideExits[i])
+			{
+				pathOnTile newRoom;
+				newRoom.pos = room.pos + posOffset(i);
+				if (newRoom.pos == targetPos)
+				{
+					return true;
+				}
+			}
+		}
+		return false;
+	}
 }
+
