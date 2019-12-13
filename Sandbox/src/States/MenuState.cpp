@@ -442,7 +442,7 @@ namespace MCS
 		//uiLayout.AddSprite(glm::vec2(1280.f / 2, 720.f / 2), glm::vec2(16 * 1.6, 9 * 1.6f), "feerClosingIn", glm::vec4(0.0f, 0.0f, 0.0f, 0.75f)); // 0
 
 
-		uiLayout.AddSprite(glm::vec2(0.f, 0.f), glm::vec2(10, 10), "IndicatorEffect", glm::vec4(0.0f)); // 1 
+		uiLayout.AddSprite(glm::vec2(0.f, 0.f), glm::vec2(10, 10), "howlEffekt", glm::vec4(0.0f)); // 1 
 
 		//Weapon
 		glm::vec2 attackScale = glm::vec2(0.75, 0.75);
