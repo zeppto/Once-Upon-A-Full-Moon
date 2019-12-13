@@ -61,7 +61,14 @@ namespace MCS
 				{
 					ImGuiTreeNodeFlags node_flags = ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen | ((selection_mask & (1 << counter)) ? ImGuiTreeNodeFlags_Selected : 0); // ImGuiTreeNodeFlags_Bullet
 					Frosty::ECS::EntityID eid = entity->Id;
-					ImGui::TreeNodeEx((void*)(intptr_t)counter, node_flags, "Entity (%d)", eid);
+					if (world->HasComponent<Frosty::ECS::CPlayer>(entity))
+					{
+						ImGui::TreeNodeEx((void*)(intptr_t)counter, node_flags, "Entity (%d) (Player)", eid);
+					}
+					else
+					{
+						ImGui::TreeNodeEx((void*)(intptr_t)counter, node_flags, "Entity (%d)", eid);
+					}
 					if (ImGui::IsItemClicked())
 					{
 						node_clicked = (int)counter;
@@ -1320,6 +1327,11 @@ namespace MCS
 			if (ImGui::Button("Fireflies Blue", ImVec2(120.0f, EDITOR_MAIN_MENU_BAR_HEIGHT)))
 			{
 				Frosty::EventBus::GetEventBus()->Publish<Frosty::CreatEntityEvent>(Frosty::CreatEntityEvent(21));
+			}
+			ImGui::SameLine();
+			if (ImGui::Button("Wall Of Fire", ImVec2(120.0f, EDITOR_MAIN_MENU_BAR_HEIGHT)))
+			{
+				Frosty::EventBus::GetEventBus()->Publish<Frosty::CreatEntityEvent>(Frosty::CreatEntityEvent(24));
 			}
 			if (ImGui::Button("Cultist", ImVec2(100.0f, EDITOR_MAIN_MENU_BAR_HEIGHT)))
 			{

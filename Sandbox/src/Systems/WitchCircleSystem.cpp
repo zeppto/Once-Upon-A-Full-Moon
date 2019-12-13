@@ -26,6 +26,12 @@ namespace MCS
 
 				if (Frosty::Time::CurrentTime() - m_WitchCircle[m_CurrentActiveWC]->WitchCircleTimer >= 0.05f && witchCircleHealth.CurrentHealth < witchCircleHealth.MaxHealth)
 				{
+					if (witchCircleHealth.CurrentHealth == 5)
+					{
+						// Enchantment sound effect (being used)
+						Frosty::EventBus::GetEventBus()->Publish<Frosty::PlayMediaEvent>(Frosty::PlayMediaEvent("assets/sounds/WeaponPickup1.wav", 2.0f, 0.0f, false, 0));
+					}
+					
 					witchCircleHealth.CurrentHealth += 1;
 
 					if (witchCircleHealthBar.Background == nullptr)
@@ -41,6 +47,9 @@ namespace MCS
 				else if (witchCircleHealth.CurrentHealth >= witchCircleHealth.MaxHealth)
 				{
 					RemoveHealthBar();
+
+					// Enchantment sound effect (finished)
+					Frosty::EventBus::GetEventBus()->Publish<Frosty::PlayMediaEvent>(Frosty::PlayMediaEvent("assets/sounds/WeaponPickup2.wav", 2.0f, 0.0f, false, 0));
 
 					// Send event to generate an element
 					Frosty::EventBus::GetEventBus()->Publish<Frosty::UpgradeWeaponEvent>(Frosty::UpgradeWeaponEvent());
