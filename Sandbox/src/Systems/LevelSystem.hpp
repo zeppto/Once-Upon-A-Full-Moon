@@ -48,8 +48,11 @@ namespace MCS
 
 		struct RoomInfo
 		{
-			std::string RoomName{""};
+			std::string RoomName;
 			int Rotation;
+
+			inline RoomInfo() : RoomName(""), Rotation(-1) {}
+
 		};
 
 

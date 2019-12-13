@@ -36,6 +36,8 @@ namespace MCS
 		static bool s_VSync;
 		static bool s_DistanceCulling;
 		static bool s_LightCulling;
+		static bool s_RenderShadows;
+		static bool s_RenderFromPointLight;
 
 		//FOR OPENING LEVEL
 		char m_LevelName[50] = "name";
