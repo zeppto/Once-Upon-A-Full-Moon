@@ -80,7 +80,7 @@ namespace MCS
 		float width = m_App->GetWindow().GetWidthMultiplier();
 		float height = m_App->GetWindow().GetHeightMultiplier();
 
-		if (!m_Controls)
+		if (!m_Controls && m_ButtonsLoaded)
 		{
 			if (x > (605.0f * width) && x < (670.0f * width) && y >(400.0f * height) && y < (440.0f * height))
 			{
@@ -90,6 +90,7 @@ namespace MCS
 					menuGui.Layout.texts[1].SetColor(glm::vec4(0.0f, 0.0f, 1.0f, 0.0f));
 
 					m_Instructions = true;
+					m_ButtonsLoaded = false;
 					InitiateInstructions();
 				}
 			}
@@ -165,7 +166,7 @@ namespace MCS
 		{
 			if (Frosty::InputManager::IsKeyPressed(FY_KEY_SPACE))
 			{
-				m_Instructions = false;
+				m_Instructions = false;				
 				world->PlayGame();
 				m_App->GetStateMachine().AddState(Frosty::StateRef(FY_NEW(GameState)), true);
 

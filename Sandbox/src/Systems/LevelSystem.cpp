@@ -1242,7 +1242,7 @@ namespace MCS
 				playerInventory.MaxSpeedBoots = 5;
 				playerInventory.CurrentSpeedBoots = 0;
 				playerInventory.MaxBaitAmount = 5;
-				playerInventory.CurrentBaitAmount = 0;
+				playerInventory.CurrentBaitAmount = 3;
 				playerInventory.MaxWolfsbaneAmount = 10;
 				playerInventory.CurrentWolfsbane = 0;
 
