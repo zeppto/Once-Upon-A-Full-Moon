@@ -465,6 +465,8 @@ namespace MCS
 		//world->AddComponent<Frosty::ECS::CLight>(light3, Frosty::ECS::CLight::LightType::Point, 1.f, glm::vec3(0.99f, 0.9f, 0.8f), 9.f);
 
 
+		float vecScale = 0.2;
+
 		//Test Bool Map
 		auto& planeBmap = world->CreateEntity({ 0.0f, 0.1f, 0.0f }, { 0.f,-90.0f, 0.0f }, { 300.0f, 1.0f, 300.0f });
 		world->AddComponent<Frosty::ECS::CMesh>(planeBmap, Frosty::AssetManager::GetMesh("pPlane1"));
@@ -475,43 +477,65 @@ namespace MCS
 		auto& cube0 = world->CreateEntity({ 0.0f, 0.1f, 0.0f }, { 0.f,0.0f, 0.0f }, { 0.1f, 15.1f, 0.1f });
 		world->AddComponent<Frosty::ECS::CMesh>(cube0, Frosty::AssetManager::GetMesh("pCube1"));
 		world->AddComponent<Frosty::ECS::CMaterial>(cube0, Frosty::AssetManager::GetShader("FlatColor"));
-		auto& transform0 = world->GetComponent<Frosty::ECS::CTransform>(cube0);
-		transform0.RotationOffset = glm::vec3(0.0f, 90.0f, 0.0f);
-		world->AddComponent<Frosty::ECS::CLight>(cube0, Frosty::ECS::CLight::LightType::Point, 0.0f, glm::vec3(0.0f), &playerTransform,glm::vec3(0.0f,5.0f,5.0f));
+		world->AddComponent<Frosty::ECS::CLight>(cube0, Frosty::ECS::CLight::LightType::Point, 0.0f, glm::vec3(0.0f), &playerTransform,glm::vec3(0.0f,5.0f,5.0f* vecScale));
 		world->AddComponent<Frosty::ECS::CPhysics>(cube0, Frosty::AssetManager::GetBoundingBox("Scarlet"), glm::vec3(0.0f, 0.0f, 0.0f), 0.0f);
 
 		auto& cube1 = world->CreateEntity({ 0.0f, 0.1f, 0.0f }, { 0.f,0.0f, 0.0f }, { 0.1f, 15.1f, 0.1f });
 		world->AddComponent<Frosty::ECS::CMesh>(cube1, Frosty::AssetManager::GetMesh("pCube1"));
 		world->AddComponent<Frosty::ECS::CMaterial>(cube1, Frosty::AssetManager::GetShader("FlatColor"));
-		auto& transform1 = world->GetComponent<Frosty::ECS::CTransform>(cube1);
-		transform1.RotationOffset = glm::vec3(0.0f, 90.0f, 0.0f);
-		world->AddComponent<Frosty::ECS::CLight>(cube1, Frosty::ECS::CLight::LightType::Point, 0.0f, glm::vec3(0.0f), &playerTransform, glm::vec3(0.0f, 5.0f, -5.0f));
+		world->AddComponent<Frosty::ECS::CLight>(cube1, Frosty::ECS::CLight::LightType::Point, 0.0f, glm::vec3(0.0f), &playerTransform, glm::vec3(0.0f, 5.0f, -5.0f* vecScale));
 		world->AddComponent<Frosty::ECS::CPhysics>(cube1, Frosty::AssetManager::GetBoundingBox("Scarlet"), glm::vec3(0.0f, 0.0f, 0.0f), 0.0f);
 
 		auto& cube2 = world->CreateEntity({ 0.0f, 0.1f, 0.0f }, { 0.f,0.0f, 0.0f }, { 0.1f, 15.1f, 0.1f });
 		world->AddComponent<Frosty::ECS::CMesh>(cube2, Frosty::AssetManager::GetMesh("pCube1"));
 		world->AddComponent<Frosty::ECS::CMaterial>(cube2, Frosty::AssetManager::GetShader("FlatColor"));
-		auto& transform2 = world->GetComponent<Frosty::ECS::CTransform>(cube2);
-		transform2.RotationOffset = glm::vec3(0.0f, 90.0f, 0.0f);
-		world->AddComponent<Frosty::ECS::CLight>(cube2, Frosty::ECS::CLight::LightType::Point, 0.0f, glm::vec3(0.0f), &playerTransform, glm::vec3(5.0f, 5.0f, 0.0f));
+		world->AddComponent<Frosty::ECS::CLight>(cube2, Frosty::ECS::CLight::LightType::Point, 0.0f, glm::vec3(0.0f), &playerTransform, glm::vec3(5.0f* vecScale, 5.0f, 0.0f));
 		world->AddComponent<Frosty::ECS::CPhysics>(cube2, Frosty::AssetManager::GetBoundingBox("Scarlet"), glm::vec3(0.0f, 0.0f, 0.0f), 0.0f);
 
 		auto& cube3 = world->CreateEntity({ 0.0f, 0.1f, 0.0f }, { 0.f,0.0f, 0.0f }, { 0.1f, 15.1f, 0.1f });
 		world->AddComponent<Frosty::ECS::CMesh>(cube3, Frosty::AssetManager::GetMesh("pCube1"));
 		world->AddComponent<Frosty::ECS::CMaterial>(cube3, Frosty::AssetManager::GetShader("FlatColor"));
-		auto& transform3 = world->GetComponent<Frosty::ECS::CTransform>(cube3);
-		transform3.RotationOffset = glm::vec3(0.0f, 90.0f, 0.0f);
-		world->AddComponent<Frosty::ECS::CLight>(cube3, Frosty::ECS::CLight::LightType::Point, 0.0f, glm::vec3(0.0f), &playerTransform, glm::vec3(-5.0f, 5.0f, 0.0f));
+		world->AddComponent<Frosty::ECS::CLight>(cube3, Frosty::ECS::CLight::LightType::Point, 0.0f, glm::vec3(0.0f), &playerTransform, glm::vec3(-5.0f* vecScale, 5.0f, 0.0f));
 		world->AddComponent<Frosty::ECS::CPhysics>(cube3, Frosty::AssetManager::GetBoundingBox("Scarlet"), glm::vec3(0.0f, 0.0f, 0.0f), 0.0f);
 
 
+		//Center Cube 
 		auto& cube4 = world->CreateEntity({ 0.0f, 0.1f, 0.0f }, { 0.f,0.0f, 0.0f }, { 0.1f, 15.1f, 0.1f });
 		world->AddComponent<Frosty::ECS::CMesh>(cube4, Frosty::AssetManager::GetMesh("pCube1"));
 		world->AddComponent<Frosty::ECS::CMaterial>(cube4, Frosty::AssetManager::GetShader("FlatColor"));
-		auto& transform4 = world->GetComponent<Frosty::ECS::CTransform>(cube4);
-		transform4.RotationOffset = glm::vec3(0.0f, 90.0f, 0.0f);
 		world->AddComponent<Frosty::ECS::CLight>(cube4, Frosty::ECS::CLight::LightType::Point, 0.0f, glm::vec3(0.0f), &playerTransform, glm::vec3(0.0f, 5.0f, 0.0f));
 		world->AddComponent<Frosty::ECS::CPhysics>(cube4, Frosty::AssetManager::GetBoundingBox("Scarlet"), glm::vec3(0.0f, 0.0f, 0.0f), 0.0f);
+
+		//corner boxes
+
+		auto& cube5 = world->CreateEntity({ 0.0f, 0.1f, 0.0f }, { 0.f,0.0f, 0.0f }, { 0.1f, 15.1f, 0.1f });
+		world->AddComponent<Frosty::ECS::CMesh>(cube5, Frosty::AssetManager::GetMesh("pCube1"));
+		world->AddComponent<Frosty::ECS::CMaterial>(cube5, Frosty::AssetManager::GetShader("FlatColor"));
+		world->AddComponent<Frosty::ECS::CLight>(cube5, Frosty::ECS::CLight::LightType::Point, 0.0f, glm::vec3(0.0f), &playerTransform, glm::vec3(3.5f* vecScale, 5.0f, -3.5f* vecScale));
+		world->AddComponent<Frosty::ECS::CPhysics>(cube5, Frosty::AssetManager::GetBoundingBox("Scarlet"), glm::vec3(0.0f, 0.0f, 0.0f), 0.0f);
+
+		auto& cube6 = world->CreateEntity({ 0.0f, 0.1f, 0.0f }, { 0.f,0.0f, 0.0f }, { 0.1f, 15.1f, 0.1f });
+		world->AddComponent<Frosty::ECS::CMesh>(cube6, Frosty::AssetManager::GetMesh("pCube1"));
+		world->AddComponent<Frosty::ECS::CMaterial>(cube6, Frosty::AssetManager::GetShader("FlatColor"));
+		world->AddComponent<Frosty::ECS::CLight>(cube6, Frosty::ECS::CLight::LightType::Point, 0.0f, glm::vec3(0.0f), &playerTransform, glm::vec3(3.5f* vecScale, 5.0f, 3.5f* vecScale));
+		world->AddComponent<Frosty::ECS::CPhysics>(cube6, Frosty::AssetManager::GetBoundingBox("Scarlet"), glm::vec3(0.0f, 0.0f, 0.0f), 0.0f);
+
+
+
+		auto& cube7 = world->CreateEntity({ 0.0f, 0.1f, 0.0f }, { 0.f,0.0f, 0.0f }, { 0.1f, 15.1f, 0.1f });
+		world->AddComponent<Frosty::ECS::CMesh>(cube7, Frosty::AssetManager::GetMesh("pCube1"));
+		world->AddComponent<Frosty::ECS::CMaterial>(cube7, Frosty::AssetManager::GetShader("FlatColor"));
+		world->AddComponent<Frosty::ECS::CLight>(cube7, Frosty::ECS::CLight::LightType::Point, 0.0f, glm::vec3(0.0f), &playerTransform, glm::vec3(-3.5f* vecScale, 5.0f, 3.5f* vecScale));
+		world->AddComponent<Frosty::ECS::CPhysics>(cube7, Frosty::AssetManager::GetBoundingBox("Scarlet"), glm::vec3(0.0f, 0.0f, 0.0f), 0.0f);
+
+
+		auto& cube8 = world->CreateEntity({ 0.0f, 0.1f, 0.0f }, { 0.f,0.0f, 0.0f }, { 0.1f, 15.1f, 0.1f });
+		world->AddComponent<Frosty::ECS::CMesh>(cube8, Frosty::AssetManager::GetMesh("pCube1"));
+		world->AddComponent<Frosty::ECS::CMaterial>(cube8, Frosty::AssetManager::GetShader("FlatColor"));
+		world->AddComponent<Frosty::ECS::CLight>(cube8, Frosty::ECS::CLight::LightType::Point, 0.0f, glm::vec3(0.0f), &playerTransform, glm::vec3(-3.5f* vecScale, 5.0f, -3.5f* vecScale));
+		world->AddComponent<Frosty::ECS::CPhysics>(cube8, Frosty::AssetManager::GetBoundingBox("Scarlet"), glm::vec3(0.0f, 0.0f, 0.0f), 0.0f);
+
+
 
 
 		//auto& light8 = world->CreateEntity({ -20.0f, 1.0f, 20.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f });
