@@ -41,6 +41,7 @@ namespace Frosty
 		CreateFullScreenQuad();
 
 		s_RenderShadows = true;
+		s_DistanceCulling = true;
 	}
 
 	void Renderer::BeginScene()

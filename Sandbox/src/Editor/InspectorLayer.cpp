@@ -9,7 +9,7 @@
 namespace MCS
 {
 	bool InspectorLayer::s_VSync = false;
-	bool InspectorLayer::s_DistanceCulling = false;
+	bool InspectorLayer::s_DistanceCulling = true;
 	bool InspectorLayer::s_LightCulling = false;
 	bool InspectorLayer::s_RenderShadows = true;
 	bool InspectorLayer::s_RenderFromPointLight = false;
