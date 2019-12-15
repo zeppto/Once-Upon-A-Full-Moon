@@ -314,9 +314,9 @@ namespace MCS
 				const char* fileName = str.c_str();
 
 				if(m_BossPos.x < m_PlayerCoords.x)
-					Frosty::EventBus::GetEventBus()->Publish<Frosty::PlayMediaEvent>(Frosty::PlayMediaEvent(fileName, 0.5f, 1.0f, false, 0));
+					Frosty::EventBus::GetEventBus()->Publish<Frosty::PlayMediaEvent>(Frosty::PlayMediaEvent(fileName, false, 0.5f, 1.0f, false, 0));
 				else if(m_BossPos.x > m_PlayerCoords.x)
-					Frosty::EventBus::GetEventBus()->Publish<Frosty::PlayMediaEvent>(Frosty::PlayMediaEvent(fileName, 0.5f, -1.0f, false, 0));
+					Frosty::EventBus::GetEventBus()->Publish<Frosty::PlayMediaEvent>(Frosty::PlayMediaEvent(fileName, false, 0.5f, -1.0f, false, 0));
 			}
 		}
 	}
@@ -1242,7 +1242,7 @@ namespace MCS
 				playerInventory.MaxSpeedBoots = 5;
 				playerInventory.CurrentSpeedBoots = 0;
 				playerInventory.MaxBaitAmount = 5;
-				playerInventory.CurrentBaitAmount = 0;
+				playerInventory.CurrentBaitAmount = 3;
 				playerInventory.MaxWolfsbaneAmount = 10;
 				playerInventory.CurrentWolfsbane = 0;
 
@@ -1446,6 +1446,10 @@ namespace MCS
 						particel.MinLifetime = 2.0f;
 						particel.FadeInTreshold = 2.573f;
 						particel.FadeTreshold = 2.195f;
+
+						// Play fire audio
+						if(i == 3) 
+							Frosty::EventBus::GetEventBus()->Publish<Frosty::PlayMediaEntityEvent>(Frosty::PlayMediaEntityEvent(fireParticel.EntityPtr, "assets/sounds/Boss Fire.wav", true, 1.0f, 50.0f, 100.0f, false, 0));
 					}
 				//}
 			}

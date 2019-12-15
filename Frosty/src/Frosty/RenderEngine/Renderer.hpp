@@ -109,6 +109,7 @@ namespace Frosty
 			std::unordered_map<size_t, Frosty::ECS::CTransform*> TransformMap;
 			std::unordered_map<size_t, Frosty::ECS::CAnimController*> AnimMap;
 
+			bool* RenderMesh = nullptr;
 			glm::mat4* parentMatrix = nullptr;
 			const glm::mat4* holdJointTransform = nullptr;
 		};

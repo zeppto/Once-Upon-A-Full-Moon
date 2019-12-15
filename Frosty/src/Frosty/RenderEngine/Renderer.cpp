@@ -19,7 +19,7 @@ namespace Frosty
 	int Renderer::s_TotalNrOfFrames;
 	bool Renderer::s_DistanceCulling;
 	bool Renderer::s_LightCulling;
-	bool Renderer::s_RenderShadows; 
+	bool Renderer::s_RenderShadows;
 	bool Renderer::s_RenderFromPointLight;
 	unsigned int Renderer::s_ShadowMapFBO;
 	unsigned int Renderer::s_ShadowMap;
@@ -102,7 +102,7 @@ namespace Frosty
 				{
 					shaderData->Shader->UploadUniformMat4("u_ViewProjection", s_SceneData->GameCamera.ViewProjectionMatrix);
 				}
-			
+
 
 
 
@@ -228,7 +228,7 @@ namespace Frosty
 					else if (shaderData->Shader->GetName() == "Texture2D" || shaderData->Shader->GetName() == "BlendShader")
 					{
 						shaderData->Shader->UploadUniformFloat2("u_TextureCoordScale", materialData->Material->TextureScale);
-						shaderData->Shader->UploadUniformInt("u_RenderShadows",s_RenderShadows);
+						shaderData->Shader->UploadUniformInt("u_RenderShadows", s_RenderShadows);
 					}
 
 					//Bind all Textures
@@ -271,6 +271,8 @@ namespace Frosty
 						nrOfMeshes++;
 
 						auto& meshData = materialData->MeshMap.at(MeshIt.first);
+
+
 						meshData->VertexArray->Bind();
 
 						//For all Transforms
@@ -323,9 +325,10 @@ namespace Frosty
 										}
 									}
 								}
-
-								RenderCommand::Draw2D(meshData->VertexArray);
-
+								if (*meshData->RenderMesh == true)
+								{
+									RenderCommand::Draw2D(meshData->VertexArray);
+								}
 							}
 							else
 							{
@@ -338,6 +341,9 @@ namespace Frosty
 
 						}
 
+
+
+
 						glBindVertexArray(0);
 					}
 
@@ -345,7 +351,7 @@ namespace Frosty
 				}
 
 				glUseProgram(0);
-				if(shaderData->Shader->GetName() == "ShadowMap")
+				if (shaderData->Shader->GetName() == "ShadowMap")
 				{
 					glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
@@ -550,7 +556,7 @@ namespace Frosty
 		glm::mat4 projection = glm::ortho(0.0f, width, 0.0f, height);
 		shader->UploadUniformMat4("projection", projection);
 
- 		transform[3][0] *=  window.GetWidthMultiplier();
+		transform[3][0] *= window.GetWidthMultiplier();
 		transform[3][1] *= window.GetHeightMultiplier();
 		transform[0][0] *= window.GetWidthMultiplier();
 		transform[1][1] *= window.GetHeightMultiplier();
@@ -868,6 +874,8 @@ namespace Frosty
 		meshData->VertexArray = mesh->Mesh;
 		meshData->TransformMap.emplace(transformID, transform);
 
+		meshData->RenderMesh = &mesh->RenderMesh;
+
 		if (mesh->parentMatrix != nullptr)
 		{
 			meshData->parentMatrix = mesh->parentMatrix;
@@ -1013,6 +1021,7 @@ namespace Frosty
 		if (s_MeshLookUpMap.find(entityID) != s_MeshLookUpMap.end())
 		{
 			auto& meshData = s_MeshLookUpMap.at(entityID)->at(mesh->Mesh->GetName());
+			meshData->RenderMesh = &mesh->RenderMesh;
 			meshData->parentMatrix = mesh->parentMatrix;
 			meshData->holdJointTransform = mesh->animOffset;
 		}
@@ -1023,6 +1032,7 @@ namespace Frosty
 		if (s_MeshLookUpMap.find(entityID) != s_MeshLookUpMap.end())
 		{
 			auto& meshData = s_MeshLookUpMap.at(entityID)->at(mesh->Mesh->GetName());
+			meshData->RenderMesh = &mesh->RenderMesh;
 			meshData->parentMatrix = mesh->parentMatrix;
 			//If it already exists replace. If not emplace.
 			if (meshData->AnimMap.find(entityID) != meshData->AnimMap.end())
