@@ -34,6 +34,8 @@ namespace MCS
 		void InitiateGridMap(const Frosty::ECS::CTransform& planeTransform);
 
 	private:
+		void OnKeyPressedEvent(Frosty::KeyPressedEvent& e);
+		void OnKeyReleasedEvent(Frosty::KeyReleasedEvent& e);
 		void OnInitiateGridMap(Frosty::InitiateGridEvent& e);
 		void OnUpdateCurrentRoomEvent(Frosty::UpdateCurrentRoomEvent& e);
 		void OnSwitchRoomEvent(Frosty::SwitchRoomEvent& e);
@@ -60,6 +62,9 @@ namespace MCS
 		std::shared_ptr<Frosty::Grid> m_CurrentActiveGridMap {nullptr};
 		std::shared_ptr<Pathfinding> m_CurrentActivePathfinding {nullptr};
 		uint16_t m_GroupUpdate;
+
+		// TEMPORARY FOR DEUGGING
+		bool m_KeyReleased{ true };
 
 
 		struct GridMap
