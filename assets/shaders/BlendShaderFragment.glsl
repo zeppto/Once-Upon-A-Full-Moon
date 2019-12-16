@@ -25,8 +25,8 @@ uniform DirectionalLight u_DirectionalLights[10];
 	
 	struct ForwardPlus
 {
-	int LightIndexList[3000];
-	vec2 CellLightInfo[256];
+	int LightIndexList[10];
+	vec2 CellLightInfo[10];
 };
 uniform ForwardPlus forwardPlus;
 uniform bool u_LightCulling;
