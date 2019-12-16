@@ -4,11 +4,8 @@
 namespace ECS { struct Entity; }
 //namespace ECS { struct BoolMap; }
 
-//shuled switch string to const char sizes and maybi glm to flot arrays
-
 
 //------------How to uppdate old files------------------------
-// (intended not tested)
 //	1.	create uppdated structs 
 //	2.	swap so loaded files use Old_ structs
 //	2.	loade old file (coment out in other file what dosent exist)
@@ -24,7 +21,7 @@ namespace MCS
 		int NrOfComponents = 14;
 	};
 
-	//Do this per nrOfEntitys and as meny times as nrOfComponents (to make older files have a higer shans of combadebilety) 
+	//Do this per nrOfEntitys and as meny times as nrOfComponents (to make older files have a higer chans of combadebilety) 
 	//if nrOfComponents = 10 go from 0 - 9 for entetys
 	struct Level_Component
 	{
@@ -91,9 +88,7 @@ namespace MCS
 	//3 = Follow
 	struct Level_Follow
 	{
-		//target player if no tarket
-		//!!! have not chosen how to do this yet
-		float StopDistance{ 0.0f };
+		//emty
 	};
 
 	//4 = Light
@@ -188,7 +183,7 @@ namespace MCS
 	//11 = DropItem
 	struct Level_DropItem
 	{
-		//int ExitDirection = 0;
+		//emty
 	};
 
 	//12 = WitchCircle
@@ -245,9 +240,9 @@ namespace MCS
 		std::vector<int> removeWitchCirkel;
 		std::vector<glm::vec3> addedBait;
 		//not in use
-		std::vector<int> existingIDs;
-		std::vector<int> killedIds;
-		float timePlayerLeft;
+		//std::vector<int> existingIDs;
+		//std::vector<int> killedIds;
+		//float timePlayerLeft;
 	};
 	//________________________________________________
 
@@ -270,15 +265,12 @@ namespace MCS
 		void LoadBoolMap(std::string fileName);
 		int NumberOfRoomsVisited();
 		bool AddBaitToMap(glm::vec3 baitPos, glm::ivec2 room);
-		//std::vector<glm::vec3> GetAllBaitInRoom();
-		//int GetNumberOfBaitInRoom();
 		int RemoveAllBaitInRoom(glm::ivec2 room);
 		void clearVisitedRooms();
 
 		const glm::vec3& GetBossSpawnPosition(const glm::ivec2& playerCoords);
 
 	private:
-		//std::shared_ptr<ECS::Entity> m_ExitEntity;
 		Frosty::World* m_World;
 		Level_Entitys m_Entitys;
 		Level_Header m_Header;

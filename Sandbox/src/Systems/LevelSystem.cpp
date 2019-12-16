@@ -158,7 +158,7 @@ namespace MCS
 					float estematedBossRoomTime;
 					if (m_LevelFileFormat.NumberOfRoomsVisited() != 0)
 					{
-						estematedBossRoomTime = ((Frosty::Time::CurrentTime() - m_StartTimer + 50.0f) / m_LevelFileFormat.NumberOfRoomsVisited() / 2) - (m_LevelFileFormat.NumberOfRoomsVisited()*1.5f);
+						estematedBossRoomTime = ((Frosty::Time::CurrentTime() - m_StartTimer + 50.0f) / m_LevelFileFormat.NumberOfRoomsVisited() / 2) - (m_LevelFileFormat.NumberOfRoomsVisited()*1.2f);
 						if(estematedBossRoomTime > m_BossRoomTimer)
 							estematedBossRoomTime = m_BossRoomTimer;
 					}
@@ -1314,8 +1314,8 @@ namespace MCS
 	void LevelSystem::BossroomBlock(glm::ivec2 room)
 	{
 		Room currentRoom = m_Map.getRoom(room);
-		float offsetX = (room.x - 10) * 300;
-		float offsetY = (room.y - 15) * 300;
+		float offsetX = (room.x - 10.0f) * 300.0f;
+		float offsetY = (room.y - 15.0f) * 300.0f;
 
 		glm::vec3 pos = glm::vec3(offsetX, 0, offsetY);
 		glm::vec3 rotation = glm::vec3(0, 0, 0);
@@ -1431,6 +1431,7 @@ namespace MCS
 						fireParticel.FadeTreshold = 1.124f;
 
 						auto& smoke = m_World->CreateEntity(pos, rotation, { 1.0f, 0.2f, 0.5f });
+						m_World->AddToGroup(smoke, true);
 						auto& particel = m_World->AddComponent<Frosty::ECS::CParticleSystem>(smoke, "Particles", "particleSmoke", 24, glm::vec3(0.48f, 0.28f, 0.28f), 18.0f);
 						particel.SystemEndColor = glm::vec3(0.36f, 0.35f, 0.26f);
 						//particel.RandomDirection = true;

@@ -16,17 +16,33 @@ namespace Frosty
 
 	bool Frosty::SphereHitbox::IsCollidingWith(glm::vec3 length, glm::vec3 center, glm::vec3 rotation, glm::vec3 otherLength, glm::vec3 otherCenter, glm::vec3 otherRotation)
 	{
+		int thisLongestSide = 1;
+		glm::vec4 thisDirection = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
+		
+		int otherLongestSide = 1;
+		glm::vec4 otherDirection = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
+		for (int i = 0; i < 3; i++)
+		{
+			if (length[i] > length[thisLongestSide])
+				thisLongestSide = i;
+			if (otherLength[i] > otherLength[otherLongestSide])
+				otherLongestSide = i;
+		}
+
+		thisDirection[thisLongestSide] = 1.0f;
+		otherDirection[otherLongestSide] = 1.0f;
+
 		glm::vec3 this_Position = center;
 
 		glm::mat4 rotationMatrix(1.0f);
 		rotationMatrix = glm::rotate(rotationMatrix, glm::radians(rotation.x), glm::vec3(1.0f, 0.0f, 0.0f));
 		rotationMatrix = glm::rotate(rotationMatrix, glm::radians(rotation.y), glm::vec3(0.0f, 1.0f, 0.0f));
 		rotationMatrix = glm::rotate(rotationMatrix, glm::radians(rotation.z), glm::vec3(0.0f, 0.0f, 1.0f));
-		glm::vec3 finalRotation = rotationMatrix * glm::vec4(0.0f, 1.0f, 0.0f, 1.0f);
+		glm::vec3 finalRotation = rotationMatrix * thisDirection;
 		glm::vec3 this_Direction = glm::normalize(finalRotation);
 
-		float this_Raduis = (length.x + length.z) / 2;
-		float this_Length = (length.y -this_Raduis) * 2;
+		float this_Raduis = (length[0] + length[1] + length[2] - length[thisLongestSide]) / 2;
+		float this_Length = (length[thisLongestSide] -this_Raduis) * 2;
 
 		glm::vec3 other_Position = otherCenter;
 
@@ -37,8 +53,8 @@ namespace Frosty
 		finalRotation = rotationMatrix * glm::vec4(0.0f, 1.0f, 0.0f, 1.0f);
 		glm::vec3 other_Direction = glm::normalize(finalRotation);
 
-		float other_Raduis = (otherLength.x + otherLength.z) / 2;
-		float other_Length = (otherLength.y -other_Raduis) * 2;
+		float other_Raduis = (otherLength[0] + otherLength[1] + otherLength[2] - otherLength[otherLongestSide]) / 2;
+		float other_Length = (otherLength[otherLongestSide] -other_Raduis) * 2;
 
 		float t_Length = this_Length + this_Raduis;
 		float o_Length = other_Length + other_Raduis;
