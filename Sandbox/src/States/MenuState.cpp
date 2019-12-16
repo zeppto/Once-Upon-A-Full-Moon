@@ -5,6 +5,7 @@
 #include "Frosty/Events/AbilityEvent.hpp"
 
 #include "Frosty/API/AssetManager/AssetManager.hpp"
+#include "Frosty/API/AssetManager/AssetFiles/MaterialHandler.hpp"
 #include "Frosty/Events/CombatEvent.hpp"
 
 #include "Systems/LightSystem.hpp"
@@ -451,41 +452,8 @@ namespace MCS
 		world->AddComponent<Frosty::ECS::CGUI>(player, uiLayout);
 
 
-		////					<<<		FORWARD PLUS TESTING	>>>		plz don't touch		~ W-_-W ~
-		//// LIGHTS
-		//auto& light = world->CreateEntity({ 0.0f, 0.1f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f });
-		//world->AddComponent<Frosty::ECS::CLight>(light, Frosty::ECS::CLight::LightType::Point, 1.f, glm::vec3(0.99f, 0.9f, 0.8f), 20.f);		
-
-		//auto& light2 = world->CreateEntity({ 0.0f, 0.1f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f });
-		//world->AddComponent<Frosty::ECS::CLight>(light2, Frosty::ECS::CLight::LightType::Point, 1.f, glm::vec3(0.99f, 0.9f, 0.8f), 15.f);
-		//
-		//auto& light3 = world->CreateEntity({ 10.0f, 0.1f, -5.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f });
-		//world->AddComponent<Frosty::ECS::CLight>(light3, Frosty::ECS::CLight::LightType::Point, 1.f, glm::vec3(0.99f, 0.9f, 0.8f), 9.f);
-
-		//auto& light4 = world->CreateEntity({ -20.0f, 1.0f, 10.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f });
-		//world->AddComponent<Frosty::ECS::CLight>(light4, Frosty::ECS::CLight::LightType::Point, 1.f, glm::vec3(0.99f, 0.9f, 0.8f), 10.f);
-		//
-		//auto& light5 = world->CreateEntity({ -6.0f, 1.0f, -6.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f });
-		//world->AddComponent<Frosty::ECS::CLight>(light5, Frosty::ECS::CLight::LightType::Point, 1.f, glm::vec3(0.99f, 0.9f, 0.8f), 2.f);
-
-		//auto& light6 = world->CreateEntity({ 0.0f, 1.0f, -6.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f });
-		//world->AddComponent<Frosty::ECS::CLight>(light6, Frosty::ECS::CLight::LightType::Point, 1.f, glm::vec3(0.99f, 0.9f, 0.8f), 22.f);
-
-		//auto& light7 = world->CreateEntity({ 10.0f, 1.0f, 12.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f });
-		//world->AddComponent<Frosty::ECS::CLight>(light7, Frosty::ECS::CLight::LightType::Point, 1.f, glm::vec3(0.99f, 0.9f, 0.8f), 8.f);
-
-		//auto& light8 = world->CreateEntity({ -20.0f, 1.0f, 20.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f });
-		//world->AddComponent<Frosty::ECS::CLight>(light8, Frosty::ECS::CLight::LightType::Point, 1.f, glm::vec3(0.99f, 0.9f, 0.8f), 20.f);
-
-		//auto& light9 = world->CreateEntity({ -15.0f, 1.0f, -15.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f });
-		//world->AddComponent<Frosty::ECS::CLight>(light9, Frosty::ECS::CLight::LightType::Point, 1.f, glm::vec3(0.99f, 0.9f, 0.8f), 5.f);
-
-		//// QUAD
-		//auto& quad = world->CreateEntity({ 0.f, 0.05f, 0.f }, { 0.f, 0.f, 0.f }, { 1000.f, 1.f, 1000.f });
-		//auto& quadTransform = world->GetComponent<Frosty::ECS::CTransform>(quad);
-		//world->AddComponent<Frosty::ECS::CMesh>(quad, Frosty::AssetManager::GetMesh("pPlane1"));
-		//auto& quadMat = world->AddComponent<Frosty::ECS::CMaterial>(quad, Frosty::AssetManager::GetShader("HeatMap"));
-		//quadMat.Albedo = glm::vec4(0.f, 0.f, 1.f, 1.f);
+		//auto& materialHandler = Frosty::AssetManager::GetMaterialHandler("Materials");
+		//Frosty::Material material = materialHandler->GetMaterialByName("Scarlet");
 	}
 
 	void MenuState::InitiateButtons()

@@ -42,6 +42,23 @@ namespace MCS
 			world->PauseGame();
 			m_App->GetStateMachine().AddState(Frosty::StateRef(FY_NEW(GamePauseState)), true);
 		}
+
+
+		//if (Frosty::InputManager::IsKeyPressed(FY_KEY_F1))
+		//{
+		//	if (HeatMap && (Frosty::Time::CurrentTime() - ClickButtonTimer >= 0.2f))
+		//	{
+		//		HeatMap = false;
+		//		Frosty::Renderer::SetHeatMap(HeatMap);
+		//		ClickButtonTimer = Frosty::Time::CurrentTime();
+		//	}
+		//	else if (!HeatMap && (Frosty::Time::CurrentTime() - ClickButtonTimer >= 0.2f))
+		//	{
+		//		HeatMap = true;
+		//		Frosty::Renderer::SetHeatMap(HeatMap);
+		//		ClickButtonTimer = Frosty::Time::CurrentTime();
+		//	}
+		//}
 	}
 
 	void GameState::OnUpdate()

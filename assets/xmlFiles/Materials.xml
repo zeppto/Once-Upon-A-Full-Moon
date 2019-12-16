@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
+<materials>
+	<!-- Scarlet -->
+	<material type="scarlet" shader="Animation" diffuseTexture="Scarlet_diffuse" specularTexture="Scarlet_specular" normalTexture="Scarlet_normal" specularStrength="0.5" shininess="16">
+		<color r="0.0" g="0.0" b="1.0" a="1.0"/>
+		<textureScale x="1.0" y="1.0"/>
+	</material>
+	
+	
+	<!-- Cultist -->
+	<material type="Cult_Diffuse" shader="Animation" diffuseTexture="Cult_Diffuse" normalTexture="Cult_defaultMat_Normal" specularStrength="0.5" shininess="16">
+		<color r="0.0" g="0.0" b="1.0" a="1.0"/>
+		<textureScale x="1.0" y="1.0"/>
+	</material>
+	
+	
+	<!-- Wolf -->
+	<material type="Wolf_Diffuse" shader="Animation" diffuseTexture="Wolf_Diffuse" normalTexture="wolf_defaultMat_Normal" specularStrength="0.5" shininess="16">
+		<color r="0.0" g="0.0" b="1.0" a="1.0"/>
+		<textureScale x="1.0" y="1.0"/>
+	</material>
+	
+	
+	<!-- Boss -->
+	<material type="boss" shader="Animation" diffuseTexture="Werewolf_Diffuse" normalTexture="Werewolf_defaultMat_Normal" specularStrength="0.5" shininess="16">
+		<color r="0.0" g="0.0" b="1.0" a="1.0"/>
+		<textureScale x="1.0" y="1.0"/>
+	</material>
+	
+	
+	<!-- Sword -->
+	<material type="sword1" shader="Texture2D" diffuseTexture="sword_lvl1_diffuse" normalTexture="sword_normal" specularStrength="0.5" shininess="16">
+		<color r="0.0" g="0.0" b="1.0" a="1.0"/>
+		<textureScale x="1.0" y="1.0"/>
+	</material>
+	
+	<material type="sword2" shader="Texture2D" diffuseTexture="sword_lvl2_diffuse" normalTexture="sword_normal" specularStrength="0.5" shininess="16">
+		<color r="0.0" g="0.0" b="1.0" a="1.0"/>
+		<textureScale x="1.0" y="1.0"/>
+	</material>	
+	
+	<material type="sword3" shader="Texture2D" diffuseTexture="sword_lvl3_diffuse" normalTexture="sword_normal" specularStrength="0.5" shininess="16">
+		<color r="0.0" g="0.0" b="1.0" a="1.0"/>
+		<textureScale x="1.0" y="1.0"/>
+	</material>	
+		
+		
+	<!-- Bow -->
+	<material type="bow1" shader="Texture2D" diffuseTexture="bow_lvl1_diffuse" normalTexture="bow_normal" specularStrength="0.5" shininess="16">
+		<color r="0.0" g="0.0" b="1.0" a="1.0"/>
+		<textureScale x="1.0" y="1.0"/>
+	</material>
+		
+	<material type="bow2" shader="Texture2D" diffuseTexture="bow_lvl2_diffuse" normalTexture="bow_normal" specularStrength="0.5" shininess="16">
+		<color r="0.0" g="0.0" b="1.0" a="1.0"/>
+		<textureScale x="1.0" y="1.0"/>
+	</material>
+		
+	<material type="bo3" shader="Texture2D" diffuseTexture="bow_lvl3_diffuse" normalTexture="bow_normal" specularStrength="0.5" shininess="16">
+		<color r="0.0" g="0.0" b="1.0" a="1.0"/>
+		<textureScale x="1.0" y="1.0"/>
+	</material>
+	
+	
+	<!-- Inventory Items -->
+	<material type="HealingPotion" shader="Texture2D" diffuseTexture="hpPotion" normalTexture="FlatNormal" specularStrength="0.5" shininess="16" hasTransparency="1">
+		<color r="0.0" g="0.0" b="1.0" a="1.0"/>
+		<textureScale x="1.0" y="1.0"/>
+	</material>
+	
+	<material type="IncreaseHP" shader="Texture2D" diffuseTexture="highlightHeart" normalTexture="FlatNormal" specularStrength="0.5" shininess="16" hasTransparency="1">
+		<color r="0.0" g="0.0" b="1.0" a="1.0"/>
+		<textureScale x="1.0" y="1.0"/>
+	</material>
+	
+	<material type="SpeedPotion" shader="Texture2D" diffuseTexture="spPotion" normalTexture="FlatNormal" specularStrength="0.5" shininess="16" hasTransparency="1">
+		<color r="0.0" g="0.0" b="1.0" a="1.0"/>
+		<textureScale x="1.0" y="1.0"/>
+	</material>
+	
+	<material type="SpeedBoots" shader="Texture2D" diffuseTexture="speedBoots" normalTexture="FlatNormal" specularStrength="0.5" shininess="16" hasTransparency="1">
+		<color r="0.0" g="0.0" b="1.0" a="1.0"/>
+		<textureScale x="1.0" y="1.0"/>
+	</material>
+	
+	<material type="Bait" shader="Texture2D" diffuseTexture="meat" normalTexture="FlatNormal" specularStrength="0.5" shininess="16">
+		<color r="0.0" g="0.0" b="1.0" a="1.0"/>
+		<textureScale x="1.0" y="1.0"/>
+	</material>
+	
+	<material type="Wolfsbane" shader="Texture2D" diffuseTexture="wolfsbane" normalTexture="FlatNormal" specularStrength="0.5" shininess="16" hasTransparency="1">
+		<color r="0.0" g="0.0" b="1.0" a="1.0"/>
+		<textureScale x="1.0" y="1.0"/>
+	</material>		
+		
+		
+	<!-- Destructible Items -->
+	<material type="chest" shader="Texture2D" diffuseTexture="chest" specularTexture="FlatNormal" specularStrength="0.5" shininess="16">
+		<color r="0.0" g="0.0" b="1.0" a="1.0"/>
+		<textureScale x="1.0" y="1.0"/>
+	</material>		
+		
+		
+	<!-- Terrain -->
+	<material type="blend_road_straight" shader="BlendShader" diffuseTexture="ground_test2" normalTexture="ground_test_normal" blendMapTexture="blend_road_straight" blendTexture1="road_test2" specularStrength="0.5" shininess="16">
+		<color r="0.0" g="0.0" b="1.0" a="1.0"/>
+		<textureScale x="1.0" y="1.0"/>
+	</material>
+	
+	<material type="blend_road_cross" shader="BlendShader" diffuseTexture="ground_test2" normalTexture="ground_test_normal" blendMapTexture="blend_road_cross" blendTexture1="road_test2" specularStrength="0.5" shininess="16">
+		<color r="0.0" g="0.0" b="1.0" a="1.0"/>
+		<textureScale x="1.0" y="1.0"/>
+	</material>
+	
+	<material type="blend_road_threeway" shader="BlendShader" diffuseTexture="ground_test2" normalTexture="ground_test_normal" blendMapTexture="blend_road_threeway" blendTexture1="road_test2" specularStrength="0.5" shininess="16">
+		<color r="0.0" g="0.0" b="1.0" a="1.0"/>
+		<textureScale x="1.0" y="1.0"/>
+	</material>
+	
+	<material type="blend_road_turn" shader="BlendShader" diffuseTexture="ground_test2" normalTexture="ground_test_normal" blendMapTexture="blend_road_turn" blendTexture1="road_test2" specularStrength="0.5" shininess="16">
+		<color r="0.0" g="0.0" b="1.0" a="1.0"/>
+		<textureScale x="1.0" y="1.0"/>
+	</material>
+	
+	<material type="blend_road_deadend" shader="BlendShader" diffuseTexture="ground_test2" normalTexture="ground_test_normal" blendMapTexture="blend_road_deadend" blendTexture1="road_test2" specularStrength="0.5" shininess="16">
+		<color r="0.0" g="0.0" b="1.0" a="1.0"/>
+		<textureScale x="1.0" y="1.0"/>
+	</material>	
+	
+	
+	<!-- Tree-->
+	<material type="Tree1" shader="Texture2D" diffuseTexture="Tree1" normalTexture="FlatNormal" specularStrength="0.5" shininess="16" hasTransparency="1">
+		<color r="0.0" g="0.0" b="1.0" a="1.0"/>
+		<textureScale x="1.0" y="1.0"/>
+	</material>
+	
+	<material type="Tree2" shader="Texture2D" diffuseTexture="Tree2" normalTexture="FlatNormal" specularStrength="0.5" shininess="16" hasTransparency="1">
+		<color r="0.0" g="0.0" b="1.0" a="1.0"/>
+		<textureScale x="1.0" y="1.0"/>
+	</material>
+	
+	<material type="Tree3" shader="Texture2D" diffuseTexture="Tree3" normalTexture="FlatNormal" specularStrength="0.5" shininess="16" hasTransparency="1">
+		<color r="0.0" g="0.0" b="1.0" a="1.0"/>
+		<textureScale x="1.0" y="1.0"/>
+	</material>
+	
+	<material type="Tree5" shader="Texture2D" diffuseTexture="Tree5" normalTexture="FlatNormal" specularStrength="0.5" shininess="16" hasTransparency="1">
+		<color r="0.0" g="0.0" b="1.0" a="1.0"/>
+		<textureScale x="1.0" y="1.0"/>
+	</material>
+	
+	<material type="Tree6" shader="Texture2D" diffuseTexture="Tree6" normalTexture="FlatNormal" specularStrength="0.5" shininess="16" hasTransparency="1">
+		<color r="0.0" g="0.0" b="1.0" a="1.0"/>
+		<textureScale x="1.0" y="1.0"/>
+	</material>
+	
+	<material type="Tree7" shader="Texture2D" diffuseTexture="Tree7" normalTexture="FlatNormal" specularStrength="0.5" shininess="16" hasTransparency="1">
+		<color r="0.0" g="0.0" b="1.0" a="1.0"/>
+		<textureScale x="1.0" y="1.0"/>
+	</material>
+	
+	<material type="Tree8" shader="Texture2D" diffuseTexture="Tree8" normalTexture="FlatNormal" specularStrength="0.5" shininess="16" hasTransparency="1">
+		<color r="0.0" g="0.0" b="1.0" a="1.0"/>
+		<textureScale x="1.0" y="1.0"/>
+	</material>
+	
+	<material type="Tree9" shader="Texture2D" diffuseTexture="Tree9" normalTexture="FlatNormal" specularStrength="0.5" shininess="16" hasTransparency="1">
+		<color r="0.0" g="0.0" b="1.0" a="1.0"/>
+		<textureScale x="1.0" y="1.0"/>
+	</material>		
+	
+	<material type="Tree10" shader="Texture2D" diffuseTexture="Tree10" normalTexture="FlatNormal" specularStrength="0.5" shininess="16" hasTransparency="1">
+		<color r="0.0" g="0.0" b="1.0" a="1.0"/>
+		<textureScale x="1.0" y="1.0"/>
+	</material>		
+		
+		
+	<!-- Stones and Mushrooms -->
+	<material type="stoneTexture" shader="Texture2D" diffuseTexture="stoneTexture" normalTexture="FlatNormal" specularStrength="0.5" shininess="16">
+		<color r="0.0" g="0.0" b="1.0" a="1.0"/>
+		<textureScale x="1.0" y="1.0"/>
+	</material>
+	
+	<material type="stoneTexture2" shader="Texture2D" diffuseTexture="stoneTexture2" normalTexture="FlatNormal" specularStrength="0.5" shininess="16">
+		<color r="0.0" g="0.0" b="1.0" a="1.0"/>
+		<textureScale x="1.0" y="1.0"/>
+	</material>
+	
+	<material type="stoneAndMushRooms" shader="Texture2D" diffuseTexture="stoneAndMushRooms" normalTexture="FlatNormal" specularStrength="0.5" shininess="16">
+		<color r="0.0" g="0.0" b="1.0" a="1.0"/>
+		<textureScale x="1.0" y="1.0"/>
+	</material>
+	
+	<material type="mashRoomCirkel" shader="Texture2D" diffuseTexture="mashRoomCirkel" normalTexture="FlatNormal" specularStrength="0.5" shininess="16">
+		<color r="0.0" g="0.0" b="1.0" a="1.0"/>
+		<textureScale x="1.0" y="1.0"/>
+	</material>
+</materials>
+
+		<!--<material type="" shader="" diffuseTexture="" specularTexture="" normalTexture="" blendMapTexture="" blendTexture1="" blendTexture2="" flash="0.0" specularStrength="0.5" shininess="16">
+		<color r="0.0" g="0.0" b="1.0" a="1.0">
+		<textureScale x="1.0" y="1.0"> -->

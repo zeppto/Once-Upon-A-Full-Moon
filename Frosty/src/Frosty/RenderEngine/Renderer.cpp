@@ -16,7 +16,8 @@ namespace Frosty
 	FrustumGrid Renderer::s_ForwardPlus;
 	int Renderer::s_TotalNrOfFrames;
 	bool Renderer::s_DistanceCulling = true;
-	bool Renderer::s_LightCulling = false;
+	bool Renderer::s_LightCulling = true;
+	bool Renderer::s_HeatMap = false;
 
 	void Renderer::Init()
 	{
@@ -124,6 +125,15 @@ namespace Frosty
 					shaderData->Shader->UploadUniformFloatArray("u_DirectionalLights[" + std::to_string(DirectLI) + "].Strength", s_SceneData->DirectionalLights[DLightIt.first].DirectionalLight->Strength);
 					DirectLI++;
 				}
+
+				if (s_LightCulling)
+					shaderData->Shader->UploadUniformInt("u_LightCulling", 1);
+				else if (!s_LightCulling)
+					shaderData->Shader->UploadUniformInt("u_LightCulling", 0);
+				if (s_HeatMap)
+					shaderData->Shader->UploadUniformInt("u_HeatMap", 1);
+				else if (!s_HeatMap)
+					shaderData->Shader->UploadUniformInt("u_HeatMap", 0);
 
 				shaderData->Shader->UploadUniformInt("u_LightCulling", s_LightCulling);
 				if (s_LightCulling)

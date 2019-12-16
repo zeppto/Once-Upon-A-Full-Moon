@@ -83,7 +83,8 @@ namespace Frosty
 	
 	const Weapon& WeaponHandler::GetWeaponAt(size_t index)
 	{
-		FY_CORE_ASSERT(index >= int(m_Weapons.size()), "WeaponHandler: Invalid index in GetWeaponAt().");
+		FY_CORE_ASSERT(index >= m_Weapons.size(), "WeaponHandler: Invalid index in GetWeaponAt().");
+		FY_CORE_ASSERT(index < 0, "WeaponHandler: Invalid index in GetWeaponAt().");
 
 		return m_Weapons[index];
 	}

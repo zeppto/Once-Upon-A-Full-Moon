@@ -11,6 +11,7 @@
 #include "AssetFiles/TrueTypeFile.hpp"
 #include"AssetFiles/WeaponHandler.hpp"
 
+
 #include "AssetFiles/BoolMap.hpp"
 #include "AssetFiles/Grid.hpp"
 
@@ -40,6 +41,7 @@
 
 namespace Frosty
 {
+	class MaterialHandler;
 
 	enum FileType
 	{
@@ -98,6 +100,7 @@ namespace Frosty
 		static std::map<std::string, std::shared_ptr<Luna::BoundingBox>> s_BoundingBoxes;
 		static std::map<std::string, std::shared_ptr<TrueTypeFile>> s_TruefontTypes;
 		static std::map<std::string, std::shared_ptr<WeaponHandler>> s_WeaponHandler;
+		static std::map<std::string, std::shared_ptr<MaterialHandler>> s_MaterialHandler;
 
 		static std::map<std::string, irrklang::ISoundSource*> s_Media;
 		static irrklang::ISoundEngine* s_SoundEngine;
@@ -171,6 +174,11 @@ namespace Frosty
 		inline static std::shared_ptr<BoolMap>& GetBoolMap(const std::string& FileName) { FY_CORE_ASSERT(s_BoolMaps.count(FileName), "BoolMap error!\n{0} doesn't exist!", FileName); return s_BoolMaps[FileName]; }
 		inline static std::map<std::string, std::shared_ptr<BoolMap>>& GetBoolMaps() { return s_BoolMaps; }
 
+
+		//Use File Name
+		inline static std::shared_ptr<MaterialHandler>& GetMaterialHandler(const std::string& FileName) { FY_CORE_ASSERT(s_MaterialHandler.count(FileName), "MaterialHandler error!\n{0} doesn't exist!", FileName); return s_MaterialHandler[FileName]; }
+
+
 		static std::vector<std::string> GetMeshNames();
 		static std::vector<std::string> GetShaderNames();
 		static std::vector<std::string> GetTexturesNames();
@@ -203,6 +211,7 @@ namespace Frosty
 		static bool MediaFileLoaded(const std::string& MeshName);
 		static bool GridLoaded(const std::string& FileName);
 		static bool BoolMapLoaded(const std::string& FileName);
+		static bool MaterialHandlerLoaded(const std::string& FileName);
 
 		static void LoadDir(const std::string& dir);
 		static bool LoadBoolMap(const FileMetaData& FileNameInformation, const bool& Reload = false);
@@ -210,6 +219,7 @@ namespace Frosty
 		static 	bool LoadTTF_File(const FileMetaData& FileNameInformation, const bool& Reload = false);
 		static 	bool LoadMediaFile(const FileMetaData& FileNameInformation, const bool& Reload = false);
 		static 	bool LoadGraphicFile(const FileMetaData& FileNameInformation, const bool& Reload = false);
+		static 	bool LoadMaterialHandler(const FileMetaData& FileNameInformation, const bool& Reload = false);
 		static bool LoadXML(const FileMetaData& FileNameInformation, const bool& Reload = false);
 		static bool LoadGrid(const FileMetaData& FileNameInformation, const bool& Reload = false);
 		static 	bool GetFileInformation(FileMetaData& FileNameInformation);
@@ -234,6 +244,7 @@ namespace Frosty
 		static bool AddGrid(const FileMetaData& MetaData);
 		static bool AddTTF(const FileMetaData& MetaData);
 		static bool AddXML(const FileMetaData& MetaData);
+		static bool AddMaterialHandler(const FileMetaData& MetaData);
 		static bool AddMedia(const FileMetaData& MetaData);
 
 		static bool AddMaterial(LinkedMaterial& LnkMat);

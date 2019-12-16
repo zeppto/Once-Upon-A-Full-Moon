@@ -27,7 +27,7 @@ struct ForwardPlus
 	vec2 CellLightInfo[256];
 };
 uniform ForwardPlus forwardPlus;
-uniform bool u_LightCulling;
+uniform int u_LightCulling;
 
 uniform vec3 u_CameraPosition;
 uniform vec4 u_ObjectColor;
@@ -45,7 +45,7 @@ void main()
 {
 	vec3 result = vec3(0.0, 0.0, 0.0);
 
-	if(u_LightCulling)
+	if(u_LightCulling == 1)
 	{
 		vec3 NDC = v_MVP_Position.xyz / v_MVP_Position.w;					// Perspective divide/normalize
 		vec2 viewportCoord = NDC.xy * 0.5 + 0.5;							// NDC is -1 to 1 in GL. scale for 0 to 1

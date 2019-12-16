@@ -27,6 +27,7 @@ struct ForwardPlus
 	vec2 CellLightInfo[256];
 };
 uniform ForwardPlus forwardPlus;
+uniform int u_HeatMap;
 
 uniform vec3 u_CameraPosition;
 uniform vec4 u_ObjectColor;
@@ -51,60 +52,194 @@ void main()
 //	int cellLocation = (16 * int(floor(gl_FragCoord.y / 62.5f))) + int(floor(gl_FragCoord.x / 120.f));	// (gridSize * minY * cellHeight) + minX / cellWidth
 	int cellLocation = int(16 * floor(16 * viewportCoord.y) + floor(16 * viewportCoord.x));
 //	
-//	if (cellLocation >= 0 && cellLocation <= 255)
-//	{
-//		// CellLocation x = offset		CellLocation y = size
-//		for(int i = int(forwardPlus.CellLightInfo[cellLocation].x); i < int(forwardPlus.CellLightInfo[cellLocation].x) + int(forwardPlus.CellLightInfo[cellLocation].y); i++)
-//		{
-//			result += CalculatePointLight(u_PointLights[forwardPlus.LightIndexList[i]]);
-//		}
-//	}
-//	color = vec4(result, 1.f);
+	if(u_HeatMap == 0)
+	{
+		if (cellLocation >= 0 && cellLocation <= 255)
+		{
+			// CellLocation x = offset		CellLocation y = size
+			for(int i = int(forwardPlus.CellLightInfo[cellLocation].x); i < int(forwardPlus.CellLightInfo[cellLocation].x) + int(forwardPlus.CellLightInfo[cellLocation].y); i++)
+			{
+				result += CalculatePointLight(u_PointLights[forwardPlus.LightIndexList[i]]);
+			}
+		}
+		color = vec4(result, 1.f);
+	}
 
 
 //				 <<< HEAT MAP >>>
-
-	if (cellLocation >= 0 && cellLocation <= 255)
+	else if(u_HeatMap == 1)
 	{
-		if(forwardPlus.CellLightInfo[cellLocation].y == 1)
+		if (cellLocation >= 0 && cellLocation <= 255)
 		{
-			color = vec4(0.f, 0.5f, 0.f, 1.f);
-		}
-		else if (forwardPlus.CellLightInfo[cellLocation].y == 2)
-		{
-			color = vec4(0.1f, 0.7f, 0.f, 1.f);
-		}
-		else if (forwardPlus.CellLightInfo[cellLocation].y == 3)
-		{
-			color = vec4(0.4f, 1.f, 0.f, 1.f);
-		}
-		else if (forwardPlus.CellLightInfo[cellLocation].y == 4)
-		{
-			color = vec4(0.7f, 1.f, 0.f, 1.f);
-		}
-		else if (forwardPlus.CellLightInfo[cellLocation].y == 5)
-		{
-			color = vec4(1.f, 1.f, 0.f, 1.f);
-		}
-		else if (forwardPlus.CellLightInfo[cellLocation].y == 6)
-		{
-			color = vec4(1.f, 0.7f, 0.f, 1.f);
-		}
-		else if (forwardPlus.CellLightInfo[cellLocation].y == 7)
-		{
-			color = vec4(1.f, 0.4f, 0.f, 1.f);
-		}
-		else if (forwardPlus.CellLightInfo[cellLocation].y == 8)
-		{
-			color = vec4(1.f, 0.0f, 0.f, 1.f);
-		}
-		else if (forwardPlus.CellLightInfo[cellLocation].y == 9)
-		{
-			color = vec4(1.f, 0.0f, 0.5f, 1.f);
-		}
-		else if (forwardPlus.CellLightInfo[cellLocation].y == 0)
-		{
-			color = vec4(0.f, 0.f, 0.f, 1.f);
+			if(forwardPlus.CellLightInfo[cellLocation].y == 1)
+			{
+				color = vec4(0.f, 0.f, 0.5f, 1.f);
+			}
+			else if (forwardPlus.CellLightInfo[cellLocation].y == 2)
+			{
+				color = vec4(0.1f, 0.f, 1.f, 1.f);
+			}
+			else if (forwardPlus.CellLightInfo[cellLocation].y == 3)
+			{
+				color = vec4(0.f, 0.3f, 1.f, 1.f);
+			}
+			else if (forwardPlus.CellLightInfo[cellLocation].y == 4)
+			{
+				color = vec4(0.f, 0.5f, 1.f, 1.f);
+			}
+			else if (forwardPlus.CellLightInfo[cellLocation].y == 5)
+			{
+				color = vec4(0.f, 0.5f, 0.5f, 1.f);
+			}
+			else if (forwardPlus.CellLightInfo[cellLocation].y == 6)
+			{
+				color = vec4(0.f, 0.5f, 0.1f, 1.f);
+			}
+			else if(forwardPlus.CellLightInfo[cellLocation].y == 7)
+			{
+				color = vec4(0.f, 0.5f, 0.f, 1.f);
+			}
+			else if (forwardPlus.CellLightInfo[cellLocation].y == 8)
+			{
+				color = vec4(0.1f, 0.7f, 0.f, 1.f);
+			}
+			else if (forwardPlus.CellLightInfo[cellLocation].y == 9)
+			{
+				color = vec4(0.4f, 1.f, 0.f, 1.f);
+			}
+			else if (forwardPlus.CellLightInfo[cellLocation].y == 10)
+			{
+				color = vec4(0.7f, 1.f, 0.f, 1.f);
+			}
+			else if (forwardPlus.CellLightInfo[cellLocation].y == 11)
+			{
+				color = vec4(1.f, 1.f, 0.f, 1.f);
+			}
+			else if (forwardPlus.CellLightInfo[cellLocation].y == 12)
+			{
+				color = vec4(1.f, 0.7f, 0.f, 1.f);
+			}
+			else if (forwardPlus.CellLightInfo[cellLocation].y == 13)
+			{
+				color = vec4(1.f, 0.4f, 0.f, 1.f);
+			}
+			else if (forwardPlus.CellLightInfo[cellLocation].y == 14)
+			{
+				color = vec4(1.f, 0.0f, 0.f, 1.f);
+			}
+			else if (forwardPlus.CellLightInfo[cellLocation].y == 15)
+			{
+				color = vec4(1.f, 0.0f, 0.5f, 1.f);
+			}
+			else if (forwardPlus.CellLightInfo[cellLocation].y == 16)
+			{
+				color = vec4(1.f, 0.0f, 0.7f, 1.f);
+			}
+			else if (forwardPlus.CellLightInfo[cellLocation].y == 17)
+			{
+				color = vec4(1.f, 0.0f, 1.f, 1.f);
+			}
+			else if (forwardPlus.CellLightInfo[cellLocation].y == 18)
+			{
+				color = vec4(0.7f, 0.0f, 1.f, 1.f);
+			}
+			else if (forwardPlus.CellLightInfo[cellLocation].y == 19)
+			{
+				color = vec4(0.5f, 0.0f, 1.f, 1.f);
+			}
+			else if (forwardPlus.CellLightInfo[cellLocation].y == 20)
+			{
+				color = vec4(0.1f, 0.0f, 1.f, 1.f);
+			}
+			else if (forwardPlus.CellLightInfo[cellLocation].y == 0)
+			{
+				color = vec4(0.f, 0.f, 0.f, 1.f);
+			}
+
+//			if(u_TotalPointLights == 1)
+//			{
+//				color = vec4(0.f, 0.f, 0.5f, 1.f);
+//			}
+//			else if (u_TotalPointLights == 2)
+//			{
+//				color = vec4(0.1f, 0.f, 1.f, 1.f);
+//			}
+//			else if (u_TotalPointLights == 3)
+//			{
+//				color = vec4(0.f, 0.3f, 1.f, 1.f);
+//			}
+//			else if (u_TotalPointLights == 4)
+//			{
+//				color = vec4(0.f, 0.5f, 1.f, 1.f);
+//			}
+//			else if (u_TotalPointLights == 5)
+//			{
+//				color = vec4(0.f, 0.5f, 0.5f, 1.f);
+//			}
+//			else if (u_TotalPointLights == 6)
+//			{
+//				color = vec4(0.f, 0.5f, 0.1f, 1.f);
+//			}
+//			else if(u_TotalPointLights == 7)
+//			{
+//				color = vec4(0.f, 0.5f, 0.f, 1.f);
+//			}
+//			else if (u_TotalPointLights == 8)
+//			{
+//				color = vec4(0.1f, 0.7f, 0.f, 1.f);
+//			}
+//			else if (u_TotalPointLights == 9)
+//			{
+//				color = vec4(0.4f, 1.f, 0.f, 1.f);
+//			}
+//			else if (u_TotalPointLights == 10)
+//			{
+//				color = vec4(0.7f, 1.f, 0.f, 1.f);
+//			}
+//			else if (u_TotalPointLights == 11)
+//			{
+//				color = vec4(1.f, 1.f, 0.f, 1.f);
+//			}
+//			else if (u_TotalPointLights == 12)
+//			{
+//				color = vec4(1.f, 0.7f, 0.f, 1.f);
+//			}
+//			else if (u_TotalPointLights == 13)
+//			{
+//				color = vec4(1.f, 0.4f, 0.f, 1.f);
+//			}
+//			else if (u_TotalPointLights == 14)
+//			{
+//				color = vec4(1.f, 0.0f, 0.f, 1.f);
+//			}
+//			else if (u_TotalPointLights == 15)
+//			{
+//				color = vec4(1.f, 0.0f, 0.5f, 1.f);
+//			}
+//			else if (u_TotalPointLights == 16)
+//			{
+//				color = vec4(1.f, 0.0f, 0.7f, 1.f);
+//			}
+//			else if (u_TotalPointLights == 17)
+//			{
+//				color = vec4(1.f, 0.0f, 1.f, 1.f);
+//			}
+//			else if (u_TotalPointLights == 18)
+//			{
+//				color = vec4(0.7f, 0.0f, 1.f, 1.f);
+//			}
+//			else if (u_TotalPointLights == 19)
+//			{
+//				color = vec4(0.5f, 0.0f, 1.f, 1.f);
+//			}
+//			else if (u_TotalPointLights == 20)
+//			{
+//				color = vec4(1.f, 0.0f, 1.f, 1.f);
+//			}
+//			else if (u_TotalPointLights == 0)
+//			{
+//				color = vec4(0.f, 0.f, 0.f, 1.f);
+//			}
 		}
 	}
 }

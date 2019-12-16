@@ -86,6 +86,7 @@ namespace Frosty
 
 		inline static void SetDistanceCulling(bool& distanceCulling) { s_DistanceCulling = distanceCulling; }
 		inline static void SetLightCulling(bool& lightCulling) { s_LightCulling = lightCulling; }
+		inline static void SetHeatMap(bool& heatMap) { s_HeatMap = heatMap; }
 
 		inline static const GameCameraProps& GetGameCamera() { return s_SceneData->GameCamera; }
 		inline static const std::unordered_map<size_t, PointLight>& GetPointLights() { return s_SceneData->PointLights; }
@@ -131,27 +132,6 @@ namespace Frosty
 		static std::unordered_map<size_t, std::unordered_map<size_t, std::shared_ptr<MaterialData>>*> s_MaterialLookUpMap;
 		static std::vector<RenderPassData> s_RenderPas;
 
-		//struct PointLight
-		//{
-		//	glm::vec3 Position;
-		//	glm::vec3 Color;
-		//	float Strength;
-		//	float Radius;
-
-		//	Frosty::ECS::CLight* PointLight;
-		//	ECS::CTransform* Transform;
-		//};
-
-		//struct DirectionalLight
-		//{
-		//	glm::vec3 Direction;
-		//	glm::vec3 Color;
-		//	float Strength;
-
-		//	Frosty::ECS::CLight* DirectionalLight;
-		//	ECS::CTransform* Transform;
-		//};
-
 		struct SceneData
 		{
 			GameCameraProps GameCamera;
@@ -166,6 +146,7 @@ namespace Frosty
 		static int s_TotalNrOfFrames;
 		static bool s_DistanceCulling;
 		static bool s_LightCulling;
+		static bool s_HeatMap;
 
 		static FrustumGrid s_ForwardPlus;
 	};

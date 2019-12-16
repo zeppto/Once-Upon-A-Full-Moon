@@ -25,6 +25,10 @@ namespace MCS
 		void OnGameWinEvent();
 	private:
 		Frosty::Application* m_App = nullptr;
+
+		//// Temp
+		//bool HeatMap;
+		//float ClickButtonTimer = Frosty::Time::CurrentTime();
 	};
 }
 #endif
