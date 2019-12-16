@@ -424,7 +424,7 @@ namespace Frosty
 	void RenderEngine::RenderTestTriangle()
 	{
 
-		m_Transform.setRotate(glm::vec3(0.0f, m_Rotation += 0.1, 0.0f));//Temp
+		m_Transform.setRotate(glm::vec3(0.0f, m_Rotation += 0.1, m_Rotation));//Temp
 
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -494,7 +494,7 @@ namespace Frosty
 
 		glBindVertexArray(this->m_testTriangleVBO);
 
-		glDrawArrays(GL_TRIANGLES, 0, 6);
+		//glDrawArrays(GL_TRIANGLES, 0, 6);
 
 
 		if (m_RenderTestModel)

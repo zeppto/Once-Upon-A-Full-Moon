@@ -139,7 +139,7 @@ public:
 	void OnUpdate() override
 	{
 
-		m_Player.UpdatePlayer();
+	//	m_Player.UpdatePlayer();
 
 			//if (m_CollisionDetection.AABBIntersect(m_Player.GetHitBoxLength(),
 			//	m_Player.GetHitBoxCenter(), m_Collidable1.GetHitBoxLength(), m_Collidable1.GetHitBoxCenter()))
@@ -152,11 +152,12 @@ public:
 			//	m_Player.GetHitBoxCenter(), m_Collidable3.GetHitBoxLength(), m_Collidable3.GetHitBoxCenter()));
 
 			m_SphereOne.SetPos(glm::vec3(0.0f,0.0f,0.0f));
-			m_SphereOne.SetRotation(glm::vec3(0.0f, 0.0f,m_Temp_Rot));
+			m_SphereOne.SetRotation(glm::vec3(0.0f, m_Temp_Rot,m_Temp_Rot));
 			m_SphereOne.UpdateWorldMatrix();
 			
-			m_SphereTwo.SetPos(glm::vec3(2.5f,0.0f,0.0f));
+			m_SphereTwo.SetPos(glm::vec3(2.2f,0.0f,0.0f));
 			//m_SphereTwo.SetRotation(glm::vec3(0.0f, 0.0f, -m_Temp_Rot));
+			//m_SphereTwo.SetRotation(glm::vec3(m_Temp_Rot, m_Temp_Rot, 0.0f));
 			m_SphereTwo.UpdateWorldMatrix();
 
 
