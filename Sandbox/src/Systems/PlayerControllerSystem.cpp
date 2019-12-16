@@ -1636,7 +1636,7 @@ namespace MCS
 				//Frosty::EventBus::GetEventBus()->Publish<Frosty::UpgradeWeaponEvent>(Frosty::UpgradeWeaponEvent());
 			}
 
-
+			HUD.Layout.texts[21].SetText(std::string("FPS: "+std::to_string(Frosty::Time::FPS())));
 
 			//Items
 			HUD.Layout.texts[0].SetText(std::string(std::to_string(m_Inventory[index]->CurrentHealingPotions) + "/" + std::string(std::to_string(m_Inventory[index]->MaxHealingPotions))));
