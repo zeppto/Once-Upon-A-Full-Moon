@@ -479,7 +479,7 @@ namespace MCS
 		m_World->AddComponent<Frosty::ECS::CLight>(torch, Frosty::ECS::CLight::LightType::Point, 0.5f, glm::vec3(0.99f, 0.9f, 0.8f), 15.f, &playerTransform, glm::vec3(0.f, 7.f, 0.f), true);
 
 		//Player HUD
-		Frosty::UILayout uiLayout(21, 30);
+		Frosty::UILayout uiLayout(22, 30);
 
 		//Items
 		float padding = 200.0f;
@@ -641,6 +641,8 @@ namespace MCS
 		uiLayout.AddSprite(glm::vec2(healthXOffset + healthPadding * 7, healthYOffset), healthScale, "Heart_0", glm::vec4(1.0f, 1.0f, 1.0f, 0.0f));// 27
 		uiLayout.AddSprite(glm::vec2(healthXOffset + healthPadding * 8, healthYOffset), healthScale, "Heart_0", glm::vec4(1.0f, 1.0f, 1.0f, 0.0f));// 28
 		uiLayout.AddSprite(glm::vec2(healthXOffset + healthPadding * 9, healthYOffset), healthScale, "Heart_0", glm::vec4(1.0f, 1.0f, 1.0f, 0.0f));// 29
+
+		uiLayout.AddText(glm::vec2(900, 675), "Fps:", glm::vec3(1.0f, 1.0f, 0.75f), 1.0f); //21
 
 		//uiLayout.AddSprite(glm::vec2(25.0f + testOffset * 0, 620.0f), glm::vec2(1, 1), "higlightHart", glm::vec4(1.0f));
 		m_World->AddComponent<Frosty::ECS::CGUI>(player, uiLayout);
