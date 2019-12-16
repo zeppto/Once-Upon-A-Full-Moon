@@ -1,7 +1,7 @@
 #include"fypch.hpp"
 #include "MaterialHandler.hpp"
 #include <PugiXML/pugixml.hpp>
-
+#include "Frosty/API/AssetManager/AssetManager.hpp"
 namespace Frosty
 {
 	bool MaterialHandler::LoadMaterial(const std::string& filePath)
@@ -47,6 +47,8 @@ namespace Frosty
 			line = m.attribute("normalTexture").as_string();
 			if (line != "")
 				material.NormalTexture = AssetManager::GetTexture2D(line);
+			else
+				material.NormalTexture = AssetManager::GetTexture2D("FlatNormal");
 			
 			line = m.attribute("blendMapTexture").as_string();
 			if (line != "")

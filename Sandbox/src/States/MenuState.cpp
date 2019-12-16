@@ -451,9 +451,9 @@ namespace MCS
 		//uiLayout.AddSprite(glm::vec2(25.0f + testOffset * 0, 620.0f), glm::vec2(1, 1), "higlightHart", glm::vec4(1.0f));
 		world->AddComponent<Frosty::ECS::CGUI>(player, uiLayout);
 
-
-		//auto& materialHandler = Frosty::AssetManager::GetMaterialHandler("Materials");
-		//Frosty::Material material = materialHandler->GetMaterialByName("Scarlet");
+		// HOW TO FETCH MATERIAL	~ W-_-W ~
+		auto& materialHandler = Frosty::AssetManager::GetMaterialHandler("Materials");
+		Frosty::Material material = materialHandler->GetMaterialByName("Scarlet");
 	}
 
 	void MenuState::InitiateButtons()

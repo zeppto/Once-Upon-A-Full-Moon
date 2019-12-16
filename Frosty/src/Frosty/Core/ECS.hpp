@@ -6,6 +6,7 @@
 #include "Frosty/Core/KeyCodes.h"
 #include "Frosty/Core/MouseButtonCodes.h"
 #include "Frosty/API/AssetManager/AssetFiles/Animation.hpp"
+#include "Frosty/API/AssetManager/AssetFiles/MaterialHandler.hpp"
 #include "Frosty/API/AssetManager/AssetManager.hpp"
 #include "Frosty/API/MediaManager.h"
 #include "Frosty/UI/UIText.h"
@@ -544,8 +545,12 @@ namespace Frosty
 
 			bool HasTransparency{ false };
 
+			// NEW - under construction		~ W-_-W ~
+			std::shared_ptr<Material> Material;
+
 			CMaterial() = default;
 			CMaterial(const std::shared_ptr<Shader>& shader, bool hasTransparency = false) : UseShader(shader), HasTransparency(hasTransparency){ NormalTexture = AssetManager::GetTexture2D("FlatNormal"); }
+			CMaterial(std::shared_ptr<Frosty::Material> material) : Material(material){ }
 			CMaterial(const CMaterial& org) { FY_CORE_ASSERT(false, "Copy constructor in CMaterial called."); }
 			
 			bool operator!=(const CMaterial& org) { return  DiffuseTexture != org.DiffuseTexture; }	// This works best for Flatcolor shader. Talk to W-_-W if you have any questions

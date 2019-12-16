@@ -10,6 +10,7 @@
 #include "Frosty/RenderEngine/Texture.hpp"
 #include "AssetFiles/TrueTypeFile.hpp"
 #include"AssetFiles/WeaponHandler.hpp"
+#include"AssetFiles/MaterialHandler.hpp"
 
 
 #include "AssetFiles/BoolMap.hpp"
@@ -41,7 +42,7 @@
 
 namespace Frosty
 {
-	class MaterialHandler;
+	//class MaterialHandler;
 
 	enum FileType
 	{

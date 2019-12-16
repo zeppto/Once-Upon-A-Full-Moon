@@ -1,9 +1,9 @@
 #ifndef MATERIALHANDLER_HPP
 #define MATERIALHANDLER_HPP
 
-#include "Frosty/API/AssetManager/AssetManager.hpp"
-//#include "Frosty/RenderEngine/Shader.hpp"
-//#include "Frosty/RenderEngine/Texture.hpp"
+
+#include "Frosty/RenderEngine/Shader.hpp"
+#include "Frosty/RenderEngine/Texture.hpp"
 
 namespace Frosty
 {

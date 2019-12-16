@@ -1,7 +1,6 @@
 #include"fypch.hpp"
 #include "AssetManager.hpp"
 #include"Luna/include/Reader.h"
-#include"AssetFiles/MaterialHandler.hpp"
 #include"..\..\DEFINITIONS.hpp"
 
 #include <cstring>
