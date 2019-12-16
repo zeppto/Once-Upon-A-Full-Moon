@@ -19,6 +19,7 @@ namespace MCS
 		void InitiateInstructions();
 	private:
 		Frosty::Application* m_App = nullptr;
+		Frosty::World* m_World{ nullptr };
 		std::shared_ptr<Frosty::ECS::Entity> m_MenuGui = nullptr;
 		std::shared_ptr<Frosty::ECS::Entity> m_InstructionGui = nullptr;
 		Frosty::UILayout m_UILayout;

@@ -52,7 +52,7 @@ namespace MCS
 				break;
 			case Frosty::ECS::CEnemy::State::Chase:
 				HandlePathfinding(i, m_Enemy[i]->EntityPtr->GroupId);
-				m_ActiveMap.Grid->CheckHCost();
+				//m_ActiveMap.Grid->CheckErrors();
 				break;
 			case Frosty::ECS::CEnemy::State::Reset:
 				HandleReset(i, m_Enemy[i]->EntityPtr->GroupId);
@@ -70,6 +70,12 @@ namespace MCS
 	{
 		switch (e.GetEventType())
 		{
+		case Frosty::EventType::KeyPressed:
+			OnKeyPressedEvent(static_cast<Frosty::KeyPressedEvent&>(e));
+			break;
+		case Frosty::EventType::KeyReleased:
+			OnKeyReleasedEvent(static_cast<Frosty::KeyReleasedEvent&>(e));
+			break;
 		case Frosty::EventType::InitiateGridMap:
 			OnInitiateGridMap(static_cast<Frosty::InitiateGridEvent&>(e));
 			break;
@@ -167,15 +173,15 @@ namespace MCS
 
 	void NavigationSystem::InitiateGridMap(const Frosty::ECS::CTransform& planeTransform)
 	{
-
-		m_Grid.reset(FY_NEW Frosty::Grid());
+		m_OtherMap.Grid.reset(FY_NEW Frosty::Grid());
 
 		Frosty::Time::StartTimer("Grid::Init()");
-		m_Grid->Init(planeTransform);
+		m_OtherMap.Grid->Init(planeTransform);
 		Frosty::Time::EndTimer("Grid::Init()");
 
-		m_Pathfinding.reset(FY_NEW Pathfinding());
-		m_Pathfinding->Init(m_Grid.get());
+		m_OtherMap.PathFinder.reset(FY_NEW Pathfinding());
+		m_OtherMap.PathFinder->Init(m_OtherMap.Grid.get());
+		m_OtherMap.EntityGroupID = 0;
 	}
 
 	void NavigationSystem::OnUpdateCurrentRoomEvent(Frosty::UpdateCurrentRoomEvent& e)
@@ -199,6 +205,27 @@ namespace MCS
 		m_OtherMap = temp;
 
 
+	}
+
+	void NavigationSystem::OnKeyPressedEvent(Frosty::KeyPressedEvent& e)
+	{
+		if (e.GetKeyCode() == FY_KEY_SPACE)
+		{
+			if (m_KeyReleased)
+			{
+				if (m_ActiveMap.Grid != nullptr) m_ActiveMap.Grid->FlipGizmos();
+				if (m_OtherMap.Grid != nullptr) m_OtherMap.Grid->FlipGizmos();
+				m_KeyReleased = false;
+			}
+		}
+	}
+
+	void NavigationSystem::OnKeyReleasedEvent(Frosty::KeyReleasedEvent& e)
+	{
+		if (e.GetKeyCode() == FY_KEY_SPACE)
+		{
+			m_KeyReleased = true;
+		}
 	}
 
 	void NavigationSystem::OnInitiateGridMap(Frosty::InitiateGridEvent& e)
@@ -285,6 +312,7 @@ namespace MCS
 			auto& bossComp = m_World->GetComponent<Frosty::ECS::CBoss>(m_Transform[index]->EntityPtr);
 			if (bossComp.ActiveAbility != Frosty::ECS::CBoss::AbilityState::None) return;
 		}
+		if (m_Enemy[index]->Target == nullptr) return;
 
 
 

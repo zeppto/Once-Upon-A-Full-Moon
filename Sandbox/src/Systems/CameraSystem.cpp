@@ -23,16 +23,19 @@ namespace MCS
 			// Follow player
 			if (m_Cameras[i]->Target)
 			{
+				//m_Cameras[i]->ViewMatrix = glm::lookAt(m_Transform[i]->Position, glm::vec3(0.0f, 0.0f, 0.0f), { 0.0f, 1.0f, 0.0f });
 				m_Transform[i]->Position = m_Cameras[i]->Target->Position + glm::vec3(0.0f, 40.0f, 15.0f);
 				m_Cameras[i]->ViewMatrix = glm::lookAt(m_Transform[i]->Position, m_Cameras[i]->Target->Position, { 0.0f, 1.0f, 0.0f });
 			}
 			else
 			{
+				//m_Transform[i]->Position = glm::vec3(0.0f, 125.0f, 0.1f);
+				//m_Cameras[i]->ViewMatrix = glm::lookAt(m_Transform[i]->Position, glm::vec3(0.0f, 0.0f, 0.0f), { 0.0f, 1.0f, 0.0f });
 				front.x = cos(glm::radians(m_Transform[i]->Rotation.x)) * cos(glm::radians(m_Transform[i]->Rotation.y));
 				front.y = sin(glm::radians(m_Transform[i]->Rotation.y));
 				front.z = sin(glm::radians(m_Transform[i]->Rotation.x)) * cos(glm::radians(m_Transform[i]->Rotation.y));
 				m_Cameras[i]->Front = glm::normalize(front);
-
+				
 				m_Cameras[i]->ViewMatrix = glm::lookAt(m_Transform[i]->Position, m_Transform[i]->Position + m_Cameras[i]->Front, { 0.0f, 1.0f, 0.0f });
 			}
 			m_Cameras[i]->ViewProjectionMatrix = m_Cameras[i]->ProjectionMatrix * m_Cameras[i]->ViewMatrix;
