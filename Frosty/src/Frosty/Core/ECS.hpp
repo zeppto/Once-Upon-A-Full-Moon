@@ -7,6 +7,7 @@
 #include "Frosty/Core/MouseButtonCodes.h"
 #include "Frosty/API/AssetManager/AssetFiles/Animation.hpp"
 #include "Frosty/API/AssetManager/AssetManager.hpp"
+#include "Frosty/API/MediaManager.h"
 #include "Frosty/UI/UIText.h"
 #include "Frosty/UI/UISprite.h"
 #include "Frosty/UI/UILayout.hpp"
@@ -144,14 +145,14 @@ namespace Frosty
 #pragma region Settings
 
 		// Let's define a maximum number of unique components:
-		constexpr std::size_t MAX_COMPONENTS{ 23 };
+		constexpr std::size_t MAX_COMPONENTS{ 25 };
 
 		// Let's define a maximum number of entities that
 		// can have the same component type:
-		constexpr std::size_t MAX_ENTITIES_PER_COMPONENT{ 30024 };
+		constexpr std::size_t MAX_ENTITIES_PER_COMPONENT{ 10024 };
 
 		// Defining the maximum nr of systems
-		constexpr std::size_t MAX_SYSTEMS{ 20 };
+		constexpr std::size_t MAX_SYSTEMS{ 22 };
 
 #pragma endregion Settings
 
@@ -453,10 +454,11 @@ namespace Frosty
 			glm::vec3 Scale{ 1.0f };
 			glm::mat4 ModelMatrix{ 1.0f };
 			bool IsStatic{ false };
+			bool EnableCulling{ true };
 
 			CTransform() = default;
-			CTransform(const glm::vec3& position, const glm::vec3& rotation, const glm::vec3& scale, bool isStatic = false)
-				: Position(position), Rotation(rotation), Scale(scale), IsStatic(isStatic)
+			CTransform(const glm::vec3& position, const glm::vec3& rotation, const glm::vec3& scale, bool isStatic = false, bool EnableCulling = true)
+				: Position(position), Rotation(rotation), Scale(scale), IsStatic(isStatic), EnableCulling(EnableCulling)
 			{
 
 				if (isStatic)
@@ -489,6 +491,7 @@ namespace Frosty
 			static std::string NAME;
 			std::shared_ptr<VertexArray> Mesh;
 			bool RenderMesh{ true };
+			
 			glm::mat4* parentMatrix = nullptr;
 			glm::mat4* animOffset = nullptr;
 
@@ -506,7 +509,7 @@ namespace Frosty
 			static std::string NAME;
 			CTransform* Target{ nullptr };
 			glm::vec3 Front{ 0.0f, 0.0f, -1.0f };
-			glm::vec3 Background{ 0.12f, 0.23f, 0.005f };
+			glm::vec3 Background{ 0.0f, 0.0f, 0.0f }; 
 			float FieldOfView{ 40.0f };
 			float Near{ 0.03f };
 			float Far{ 1000.0f };
@@ -542,9 +545,10 @@ namespace Frosty
 			glm::vec2 TextureScale{ 1.0f };
 
 			bool HasTransparency{ false };
+			bool CastsShadows{ true };
 
 			CMaterial() = default;
-			CMaterial(const std::shared_ptr<Shader>& shader, bool hasTransparency = false) : UseShader(shader), HasTransparency(hasTransparency){ NormalTexture = AssetManager::GetTexture2D("FlatNormal"); }
+			CMaterial(const std::shared_ptr<Shader>& shader, bool hasTransparency = false) : UseShader(shader), HasTransparency(hasTransparency) { NormalTexture = AssetManager::GetTexture2D("FlatNormal"); }
 			CMaterial(const CMaterial& org) { FY_CORE_ASSERT(false, "Copy constructor in CMaterial called."); }
 			
 			bool operator!=(const CMaterial& org) { return  DiffuseTexture != org.DiffuseTexture; }	// This works best for Flatcolor shader. Talk to W-_-W if you have any questions
@@ -564,13 +568,155 @@ namespace Frosty
 			LightType Type{ LightType::Point };
 			glm::vec3 Color{ 1.0f, 0.96f, 0.84f };
 			glm::vec3 Direction{ 1.0f, 0.0f, 1.0f };
-			float Radius{ 20.0f };
+			float Radius{ 20.0f }; 
 			float Strength{ 1.0f };
 
+			// For ShadowMap
+		private:
+			struct Camera  
+			{ 
+				glm::vec3 Front{ 0.f, 0.f, -1.f };
+				glm::vec3 Background{ 0.2f, 0.2f, 0.2f }; 
+				float FieldOfView{ 90.0f }; 
+				float Near{ 0.03f }; 
+				float Far{ 300.0f };
+				glm::mat4 ViewMatrix{ 1.0f }; 
+				glm::mat4 ProjectionMatrix{ 1.0f };
+				glm::mat4 ViewProjectionMatrix{ 1.0f }; 
+				  
+				Camera() = default; 
+				Camera(glm::vec3 front, float fov, float aspect, float zNear, float zFar)
+					: Front(front), FieldOfView(fov), Near(zNear), Far(zFar), ProjectionMatrix(glm::perspective(glm::radians(fov), aspect, zNear, zFar)) { }
+			};
+		public:
+			std::vector<Camera> Cameras; 
+			bool HasCamera{ false };
+
 			CLight() = default;
-			CLight(LightType lightType) : Type(lightType) { }
-			CLight(LightType lightType, float strength, glm::vec3 color, float radius, glm::vec3 direction) : Type(lightType), Strength(strength), Color(color), Radius(radius), Direction(direction) { }
-			CLight(LightType lightType, float strength, glm::vec3 color, float radius = 20.f, CTransform* origin = nullptr, const glm::vec3& offset = glm::vec3(0.f)) : Type(lightType), Strength(strength), Color(color), Radius(radius), Origin(origin), Offset(offset) { }
+			CLight(LightType lightType, bool hasCamera = false) : Type(lightType), HasCamera(hasCamera) 
+			{ 
+				if (HasCamera)
+				{
+					glm::vec3 front = { 0.f, 0.f, -1.f };
+
+					if (Type == LightType::Point)
+					{
+						// Create FOUR cameras
+						Cameras.reserve(4);
+
+						for (size_t i = 0; i < 4; i++)
+						{
+							if (i == 1)
+								front = { 0.f, 0.f, 1.f };
+							else if (i == 2)
+								front = { 1.f, 0.f, 0.f };
+							else if (i == 3)
+								front = { -1.f, 0.f, 0.f };
+
+							Cameras.emplace_back(front, 90.f, 0.f, 0.03f, 500.f);
+						}
+					}
+					else if (Type == LightType::Directional)
+					{
+						// Create ONE camera
+						Cameras.reserve(1);
+						Cameras.emplace_back(front, 90.f, 0.f, 0.03f, 500.f);
+					}
+				}
+			}
+			CLight(LightType lightType, float strength, glm::vec3 color, float radius, glm::vec3 direction, bool hasCamera = false) : Type(lightType), Strength(strength), Color(color), Radius(radius), Direction(direction), HasCamera(hasCamera) 
+			{ 
+				if (HasCamera)
+				{
+					glm::vec3 front = { 0.f, 0.f, -1.f };
+
+					if (Type == LightType::Point)
+					{
+						// Create FOUR cameras
+						Cameras.reserve(4);
+
+						for (size_t i = 0; i < 4; i++)
+						{
+							if (i == 1)
+								front = { 0.f, 0.f, 1.f };
+							else if (i == 2)
+								front = { 1.f, 0.f, 0.f };
+							else if (i == 3)
+								front = { -1.f, 0.f, 0.f };
+
+							Cameras.emplace_back(front, 90.f, 0.f, 0.03f, 500.f);
+						}
+					}
+					else if (Type == LightType::Directional)
+					{
+						// Create ONE camera
+						Cameras.reserve(1);
+						Cameras.emplace_back(direction, 90.f, 0.f, 0.03f, 500.f);
+					}
+				}
+			}
+			CLight(LightType lightType, float strength, glm::vec3 color, float radius = 20.f, CTransform* origin = nullptr, const glm::vec3& offset = glm::vec3(0.f), bool hasCamera = false) : Type(lightType), Strength(strength), Color(color), Radius(radius), Origin(origin), Offset(offset), HasCamera(hasCamera) 
+			{ 
+				if (HasCamera)
+				{
+					glm::vec3 front = { 0.f, 0.f, -1.f };
+
+					if (Type == LightType::Point)
+					{
+						// Create FOUR cameras
+						Cameras.reserve(4);
+
+						for (size_t i = 0; i < 4; i++)
+						{
+							if (i == 1)
+								front = { 0.f, 0.f, 1.f };
+							else if (i == 2)
+								front = { 1.f, 0.f, 0.f };
+							else if (i == 3)
+								front = { -1.f, 0.f, 0.f };
+
+							Cameras.emplace_back(front, 90.f, 0.f, 0.03f, 500.f);
+						}
+					}
+					else if (Type == LightType::Directional)
+					{
+						// Create ONE camera
+						Cameras.reserve(1);
+						Cameras.emplace_back(front, 90.f, 0.f, 0.03f, 500.f);
+					}
+				}
+			}
+			CLight(LightType lightType, float strength, glm::vec3 color, CTransform* origin = nullptr, const glm::vec3& offset = glm::vec3(0.f), bool hasCamera = false) : Type(lightType), Strength(strength), Color(color), Origin(origin), Offset(offset), HasCamera(hasCamera)
+			{
+				if (HasCamera)
+				{
+					glm::vec3 front = { 0.f, 0.f, -1.f };
+
+					if (Type == LightType::Point)
+					{
+						// Create FOUR cameras
+						Cameras.reserve(4);
+
+						for (size_t i = 0; i < 4; i++)
+						{
+							if (i == 1)
+								front = { 0.f, 0.f, 1.f };
+							else if (i == 2)
+								front = { 1.f, 0.f, 0.f };
+							else if (i == 3)
+								front = { -1.f, 0.f, 0.f };
+
+							Cameras.emplace_back(front, 90.f, 0.f, 0.03f, 500.f);
+						}
+					}
+					else if (Type == LightType::Directional)
+					{
+						// Create ONE camera
+						Cameras.reserve(1);
+						Cameras.emplace_back(front, 90.f, 0.f, 0.03f, 500.f);
+					}
+				}
+			}
 			CLight(const CLight& org) { FY_CORE_ASSERT(false, "Copy constructor in CLight called."); }
 
 			virtual std::string GetName() const { return NAME; }
@@ -642,6 +788,13 @@ namespace Frosty
 			float WindSpeed{ 0.f };							// Wind (+ Speed)
 			int WaterHealing{ 0 };							// Water (+ Heal)
 			bool IsFullyUpgraded{ false };
+
+			//For HUD
+			bool HasDoneFireSprite{ false };
+			bool HasDoneEarthSprite{ false };
+			bool HasDoneWindSprite{ false };
+			bool HasDoneWaterSprite{ false };
+
 
 			// Special Attribute for Bow
 			float ProjectileSpeed{ 0.f };
@@ -725,13 +878,24 @@ namespace Frosty
 			int DropBaitKey{ FY_KEY_Q };
 
 			int Score{ 0 };
+			
 			float PickUpTextTime{ 2.0f };
 			float PickUpTextTimer{ Frosty::Time::CurrentTime() };
 
 			float DamageEffectTime{ 2.0f };
 			float DamageEffectTimer{ Frosty::Time::CurrentTime() };
 
+			static const int COOLDOWN = 375;
+			float CurrentCooldown{ 0.0f };
 
+			float ElementMoveTime{ 1.0f };
+			float ElementMoveTimer{ Frosty::Time::CurrentTime() };
+
+			float ElementDisplayTime{ 2.0f };
+			float ElementDisplayTimer{ Frosty::Time::CurrentTime() };
+
+			float BossFearEffectTime{ 2.0f };
+			float BossFearEffectTimer{ Frosty::Time::CurrentTime() };
 
 			CPlayer() = default;
 			CPlayer(CWeapon* weapon) : Weapon(weapon) { }
@@ -821,7 +985,7 @@ namespace Frosty
 
 			// BAIT - chunks of meat used to distract the wolf
 			int MaxBaitAmount{ 5 };
-			int CurrentBaitAmount{ 0 };
+			int CurrentBaitAmount{ 3 };
 			float BaitCooldown{ 1.f };
 			float BaitTimer{ Frosty::Time::CurrentTime() };
 
@@ -921,7 +1085,7 @@ namespace Frosty
 				float Size{ 1.0f };
 			};
 
-			enum RenderMode
+			enum class RenderMode
 			{
 				NORMAL,
 				ADDITIVE
@@ -929,7 +1093,7 @@ namespace Frosty
 
 			static const uint32_t MAX_PARTICLE_COUNT = 200; //Absolute suported max
 
-			RenderMode RenderMode{ ADDITIVE };
+			RenderMode RenderMode{ RenderMode::ADDITIVE };
 			uint32_t MaxParticles{ 1 }; //User's choice of max particles
 			float StartParticleSize{ 1.0f };
 			float EndParticleSize{ 0.0f };
@@ -1087,8 +1251,9 @@ namespace Frosty
 			float dt{ 0.0f };
 			glm::mat4* holdPtr{ nullptr };
 
-			bool isBusy{ false };
-
+			bool breakable{ true }; //When a new animation are allowed to be played (over another animation)
+			bool isBusy{ false }; //When a action such as Attacks, Dash and Run are running. -Only check this on Idle
+		
 			CAnimController() = default;
 			CAnimController(const CAnimController& org) { FY_CORE_ASSERT(false, "Copy constructor in CAnimController called."); }
 
@@ -1143,6 +1308,30 @@ namespace Frosty
 			virtual std::string GetName() const { return NAME; }
 		};
 
+		struct CMediaManager : public BaseComponent
+		{
+			static std::string NAME;
+
+			ISoundEngine* SoundEngine;
+			ISound* Sound;
+			ISound* Music;
+
+			CMediaManager() = default;
+			CMediaManager(const CMediaManager& org) { FY_CORE_ASSERT(false, "Copy constructor in CMediaManager called."); }
+			CMediaManager& operator=(const CMediaManager& org)
+			{
+				if (this != &org)
+				{
+					SoundEngine = org.SoundEngine;
+					Sound = org.Sound;
+					Music = org.Music;
+				}
+				return *this;
+			}
+
+			virtual std::string GetName() const { return NAME; }
+		};
+
 		static std::string GetComponentName(size_t i)
 		{
 			switch (i)
@@ -1169,7 +1358,9 @@ namespace Frosty
 			case 19:	return "AnimController";
 			case 20:	return "LevelExit";
 			case 21:	return "GUI";
-			case 22:	return "WitchCircle";
+			case 22:	return "AnimController";
+			case 23:	return "WitchCircle";
+			case 24:	return "MediaManager";
 			default:	return "";
 			}
 		}

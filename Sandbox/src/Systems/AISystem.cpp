@@ -19,8 +19,8 @@ namespace MCS
 		int maxMinute = 5;
 
 		int spawnMinute = rand() % (maxMinute - minMinute + 1) + minMinute;
-		m_BossSpawnTime = spawnMinute * 60.0f + 20.0f;
-		//BossSpawnTime = 50.0f;
+		/*m_BossSpawnTime = spawnMinute * 60.0f + 20.0f;*/
+		m_BossSpawnTime = 10.0f;
 	}
 
 	void AISystem::OnUpdate()
@@ -91,6 +91,11 @@ namespace MCS
 
 		if (it != p_EntityMap.end())
 		{
+			if (m_World->HasComponent<Frosty::ECS::CBoss>(it->first))
+			{
+				m_BossSpawned = false;
+			}
+
 			p_Total--;
 			auto& entityToUpdate = m_Transform[p_Total]->EntityPtr;
 			m_Transform[p_Total] = nullptr;
@@ -161,7 +166,7 @@ namespace MCS
 	void AISystem::OnInitiateGridMap(Frosty::InitiateGridEvent& e)
 	{
 		m_BossSpawn = m_Enemy[1]->SpawnPosition;
-		m_PlayerTransform = m_Enemy[1]->Target;
+		m_PlayerTransform = m_Enemy[1]->Target; 
 	}
 
 	void AISystem::OnResetBossAbilities(Frosty::ResetBossAbilitiesEvent& e)
@@ -175,7 +180,7 @@ namespace MCS
 
 	void AISystem::OnSpawnBossEvent(Frosty::SpawnBossEvent& e)
 	{
-		if (!m_BossSpawned) SpawnBoss();
+		if (!m_BossSpawned) SpawnBoss(e.GetSpawnPosition());
 	}
 
 	void AISystem::CheckState(size_t index)
@@ -236,6 +241,7 @@ namespace MCS
 		{
 			m_Enemy[index]->CurrentState = Frosty::ECS::CEnemy::State::Attack;
 
+
 		//	if (Frosty::Time::GetFrameCount() % 60 == 0) FY_INFO("Attack");
 
 
@@ -248,7 +254,7 @@ namespace MCS
 		}
 
 		// Chase
-		if (glm::distance(m_Transform[index]->Position, m_Enemy[index]->Target->Position) <= m_Enemy[index]->SightRange)
+		if (m_Enemy[index]->AttackInit == false && glm::distance(m_Transform[index]->Position, m_Enemy[index]->Target->Position) <= m_Enemy[index]->SightRange)
 		{
 			bool stopChase = HandleBossAbilities(index);
 			if (!stopChase)
@@ -275,7 +281,8 @@ namespace MCS
 
 		// Rotate towards player
  		LookAtPoint(m_Enemy[index]->Target->Position, index);
-
+		
+		//Cult Range
 		if (m_Enemy[index]->Weapon->Type == Frosty::ECS::CWeapon::WeaponType::Bow)
 		{
 			float check = Frosty::Time::CurrentTime() - m_Enemy[index]->Weapon->LVL1AttackCooldownTimer;
@@ -287,6 +294,7 @@ namespace MCS
 				m_Enemy[index]->AttackDelay = 0.01f;
 			}
 		}
+		//Cult Melee
 		else if (m_Enemy[index]->Weapon->Type == Frosty::ECS::CWeapon::WeaponType::Sword)
 		{
 			if (Frosty::Time::CurrentTime() - m_Enemy[index]->Weapon->LVL1AttackCooldownTimer >= (m_Enemy[index]->Weapon->LVL1AttackCooldown)
@@ -297,9 +305,15 @@ namespace MCS
 				m_Enemy[index]->AttackDelay = 0.5f;
 			}
 		}
+		//Wolf
 		else if(Frosty::Time::CurrentTime() - m_Enemy[index]->Weapon->LVL1AttackCooldownTimer >= (m_Enemy[index]->Weapon->LVL1AttackCooldown)
 			&& m_Enemy[index]->Weapon->AnimPlaying == false)
 		{
+			int rand = std::rand() % 5 + 1;
+			auto& weaponType = m_Enemy[index]->Weapon->Type;
+			if(weaponType == Frosty::ECS::CWeapon::WeaponType::Bite)
+				if(rand == 5 || rand == 3) // Change to Wolf bite
+					Frosty::EventBus::GetEventBus()->Publish<Frosty::PlayMediaEntityEvent>(Frosty::PlayMediaEntityEvent(m_Enemy[index]->EntityPtr, "assets/sounds/WolfAttack.wav", false, 1.0f, 10.0f, 100.0f, false, 0));
 
 			Frosty::EventBus::GetEventBus()->Publish <Frosty::PlayAnimEvent>(Frosty::PlayAnimEvent(m_Transform[index]->EntityPtr, 1));
 			m_Enemy[index]->Weapon->AnimPlaying = true;
@@ -350,18 +364,33 @@ namespace MCS
 				particles.StaticColor = false;
 				particles.SystemEndColor = glm::vec3(0.6f, 0.4f, 0.0f);
 				particles.HasGravity = true;
+
+				/*std::string castSounds[2] = { "", "Cast" };
+				std::string castStr = "assets/sounds/BowDraw" + castSounds[rand - 1] + ".wav";
+				const char* fileName_Spell = castStr.c_str();*/
+				Frosty::EventBus::GetEventBus()->Publish<Frosty::PlayMediaEntityEvent>(Frosty::PlayMediaEntityEvent(m_Enemy[index]->EntityPtr, "assets/sounds/FirespellCast.wav", false, 1.0f, 100.0f, 200.0f, false, 0));
 			}
 			else if (m_Enemy[index]->Weapon->Type == Frosty::ECS::CWeapon::WeaponType::Sword)
 			{
-				m_World->AddComponent<Frosty::ECS::CMesh>(attack, Frosty::AssetManager::GetMesh("pCube1"));						// Remove later
-				m_World->AddComponent<Frosty::ECS::CMaterial>(attack, Frosty::AssetManager::GetShader("FlatColor"));			// Remove later
+			//	m_World->AddComponent<Frosty::ECS::CMesh>(attack, Frosty::AssetManager::GetMesh("pCube1"));						// Remove later
+			//	m_World->AddComponent<Frosty::ECS::CMaterial>(attack, Frosty::AssetManager::GetShader("FlatColor"));			// Remove later
 				m_World->AddComponent<Frosty::ECS::CPhysics>(attack, Frosty::AssetManager::GetBoundingBox("pCube1"), attackTransform.Scale, 0.0f);
 				m_World->AddComponent<Frosty::ECS::CAttack>(attack, Frosty::ECS::CAttack::AttackType::Melee, (int)m_Enemy[index]->Weapon->Damage, false, m_Enemy[index]->Weapon->Lifetime);
+
+				int rand = std::rand() % 3 + 1;
+				std::string str = "assets/sounds/SwooshLight" + std::to_string(rand) + ".wav";
+				const char* fileName = str.c_str();
+				Frosty::EventBus::GetEventBus()->Publish<Frosty::PlayMediaEntityEvent>(Frosty::PlayMediaEntityEvent(m_Enemy[index]->EntityPtr, fileName, false, 1.0f, 100.0f, 200.0f, false, 0));
+
+				rand = std::rand() % 3 + 1;
+				std::string enemyStr = "assets/sounds/Hitsound enemies" + std::to_string(rand) + ".wav";
+				const char* fileName_Enemy = enemyStr.c_str();
+				Frosty::EventBus::GetEventBus()->Publish<Frosty::PlayMediaEntityEvent>(Frosty::PlayMediaEntityEvent(m_Enemy[index]->EntityPtr, fileName_Enemy, false, 1.0f, 100.0f, 200.0f, false, 0));
 			}
 			else
 			{
-				m_World->AddComponent<Frosty::ECS::CMesh>(attack, Frosty::AssetManager::GetMesh("pCube1"));						// Remove later
-				m_World->AddComponent<Frosty::ECS::CMaterial>(attack, Frosty::AssetManager::GetShader("FlatColor"));			// Remove later
+			//	m_World->AddComponent<Frosty::ECS::CMesh>(attack, Frosty::AssetManager::GetMesh("pCube1"));						// Remove later
+			//	m_World->AddComponent<Frosty::ECS::CMaterial>(attack, Frosty::AssetManager::GetShader("FlatColor"));			// Remove later
 				m_World->AddComponent<Frosty::ECS::CPhysics>(attack, Frosty::AssetManager::GetBoundingBox("pCube1"), attackTransform.Scale, 0.0f);
 				m_World->AddComponent<Frosty::ECS::CAttack>(attack, Frosty::ECS::CAttack::AttackType::Melee, (int)m_Enemy[index]->Weapon->Damage, false, m_Enemy[index]->Weapon->Lifetime);
 			}
@@ -440,6 +469,9 @@ namespace MCS
 							physComp.Direction = glm::normalize(bossComp.ChargeTargetPosition - m_Transform[index]->Position);
 							LookAtPoint(bossComp.ChargeTargetPosition, index);
 							bossComp.ActiveAbility = Frosty::ECS::CBoss::AbilityState::Charge;
+
+							// Make wolf growl while he prepares his charge
+							Frosty::EventBus::GetEventBus()->Publish<Frosty::PlayMediaEntityEvent>(Frosty::PlayMediaEntityEvent(m_Enemy[index]->EntityPtr, "assets/sounds/WolfGrowl.wav", false, 1.0f, 50.0f, 100.0f, false, 0));
 						}
 					}
 				}
@@ -470,6 +502,8 @@ namespace MCS
 					// Loading charge completed
 					Frosty::EventBus::GetEventBus()->Publish <Frosty::PlayAnimEvent>(Frosty::PlayAnimEvent(m_Transform[index]->EntityPtr, 4));
 					physComp.SpeedMultiplier = 4.0f;
+
+					Frosty::EventBus::GetEventBus()->Publish<Frosty::PlayMediaEntityEvent>(Frosty::PlayMediaEntityEvent(m_Enemy[index]->EntityPtr, "assets/sounds/WolfAttack.wav", false, 1.0f, 50.0f, 100.0f, false, 0));
 				}
 
 				bossComp.DistanceCharged += glm::length(physComp.Direction * physComp.Speed * physComp.SpeedMultiplier * Frosty::Time::DeltaTime());
@@ -486,10 +520,11 @@ namespace MCS
 		return false;
 	}
 	
-	void AISystem::SpawnBoss()
+	void AISystem::SpawnBoss(const glm::vec3& SpawnPosition)
 	{
 		// Boss Weapon
 		auto& bossWeapon = m_World->CreateEntity({ 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 1.0f, 1.0f, 1.0f });
+		m_World->AddToGroup(bossWeapon, true);
 		auto& bossWeaponComp = m_World->AddComponent<Frosty::ECS::CWeapon>(bossWeapon, Frosty::ECS::CWeapon::WeaponType::Sword, 1, 2.0f);
 		bossWeaponComp.LVL1AttackCooldown = 3.0f;
 		bossWeaponComp.MaxAttackRange = 15.0f;
@@ -497,7 +532,8 @@ namespace MCS
 		bossWeaponComp.AttackHitboxScale = glm::vec3(12.0f, 6.0f, 5.0f);
 
 		// Boss
-		auto& boss = m_World->CreateEntity(m_BossSpawn, { 0.0f, 0.0f, 0.0f }, { 1.5f, 1.5f, 1.5f });
+		auto& boss = m_World->CreateEntity(SpawnPosition, { 0.0f, 0.0f, 0.0f }, { 1.5f, 1.5f, 1.5f });
+		m_World->AddToGroup(boss, true);
 		auto& bossTransform = m_World->GetComponent<Frosty::ECS::CTransform>(boss);
 		m_World->AddComponent<Frosty::ECS::CMesh>(boss, Frosty::AssetManager::GetMesh("Werewolf"));
 		m_World->AddComponent<Frosty::ECS::CAnimController>(boss).currAnim = Frosty::AssetManager::GetAnimation("Werewolf_Idle");
@@ -506,9 +542,9 @@ namespace MCS
 		bossMat.NormalTexture = Frosty::AssetManager::GetTexture2D("Werewolf_defaultMat_Normal");
 		m_World->AddComponent<Frosty::ECS::CPhysics>(boss, Frosty::AssetManager::GetBoundingBox("Werewolf"), bossTransform.Scale, 10.0f);
 		auto& enemyComp = m_World->AddComponent<Frosty::ECS::CEnemy>(boss, m_PlayerTransform, &bossWeaponComp);
-		enemyComp.SpawnPosition = m_BossSpawn;
+		enemyComp.SpawnPosition = SpawnPosition;
 		enemyComp.SightRange = 300.0f;
-		m_World->AddComponent<Frosty::ECS::CHealth>(boss, 50);
+		m_World->AddComponent<Frosty::ECS::CHealth>(boss,50);
 		m_World->AddComponent<Frosty::ECS::CHealthBar>(boss, glm::vec3(0.0f, 10.0f, 0.0f));
 		m_World->AddComponent<Frosty::ECS::CDropItem>(boss);
 		m_World->AddComponent<Frosty::ECS::CBoss>(boss);
@@ -516,6 +552,11 @@ namespace MCS
 		m_BossSpawned = true;
 
 		Frosty::EventBus::GetEventBus()->Publish<Frosty::BossSpawnedEvent>(Frosty::BossSpawnedEvent());
+
+		int rand = std::rand() % 2 + 1;
+		std::string str = "assets/sounds/WolfHowl" + std::to_string(rand) + ".wav";
+		const char* fileName = str.c_str();
+		Frosty::EventBus::GetEventBus()->Publish<Frosty::PlayMediaEvent>(Frosty::PlayMediaEvent(fileName, false, 0.75f, 0.0f, false, 0));
 	}
 	
 	void AISystem::ResetBossAbilities(size_t index)

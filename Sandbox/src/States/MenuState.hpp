@@ -1,6 +1,5 @@
 #ifndef MENUSTATE_HPP
 #define MENUSTATE_HPP
-#include "Layers/MenuLayer.hpp"
 
 namespace MCS
 {
@@ -17,17 +16,20 @@ namespace MCS
 		void InitiateSystems();
 		void InitiateObjects();
 		void InitiateButtons();
-		void InitiateLight();
-		void InitiateTorch();
+		void InitiateInstructions();
 	private:
 		Frosty::Application* m_App = nullptr;
+		Frosty::World* m_World{ nullptr };
 		std::shared_ptr<Frosty::ECS::Entity> m_MenuGui = nullptr;
-		std::shared_ptr<Frosty::ECS::Entity> m_Player = nullptr;
-		std::shared_ptr<Frosty::ECS::Entity> m_Weapon = nullptr;
+		std::shared_ptr<Frosty::ECS::Entity> m_InstructionGui = nullptr;
 		Frosty::UILayout m_UILayout;
+		Frosty::UILayout m_UILayout2;
 
 		bool m_ButtonsLoaded = false;
 		bool m_Controls = false;
+
+		bool m_Instructions = false;
+		bool m_InstructionButtonsLoaded = false;
 	};
 }
 #endif

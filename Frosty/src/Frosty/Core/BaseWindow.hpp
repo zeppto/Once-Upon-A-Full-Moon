@@ -23,8 +23,10 @@ namespace Frosty
 		virtual ~BaseWindow() = default;
 
 		virtual std::string GetTitle() const = 0;
-		virtual unsigned int GetWidth() const = 0;
-		virtual unsigned int GetHeight() const = 0;
+		virtual float GetWidth() const = 0;
+		virtual float GetHeight() const = 0;
+		virtual float GetHeightMultiplier()const = 0;
+		virtual float GetWidthMultiplier()const = 0;
 		virtual unsigned int GetPositionX() const = 0;
 		virtual unsigned int GetPositionY() const = 0;
 		virtual std::pair<unsigned int, unsigned int> GetPosition() const = 0;

@@ -16,20 +16,6 @@ namespace Frosty
 		return 0;
 	}
 
-	//Shader::Shader(const std::string& filepath, const std::string& shaderName)
-	//	: m_Name(shaderName)
-	//{
-	//	std::string source = ReadFile(filepath);
-	//	auto shaderSource = PreProcess(source);
-	//	Compile(shaderSource);
-
-	//	// Extract name from filepath
-	//	auto lastSlash = filepath.find_last_of("/\\");
-	//	lastSlash = lastSlash == std::string::npos ? 0 : lastSlash + 1;
-	//	auto lastDot = filepath.rfind('.');
-	//	auto count = lastDot == std::string::npos ? filepath.size() - lastSlash : lastDot - lastSlash;
-	//}
-
 	Shader::Shader(const std::string& vertexSrc, const std::string& fragmentSrc, const std::string& shaderName)
 		: m_Name(shaderName)
 	{
@@ -148,6 +134,12 @@ namespace Frosty
 	{
 		GLuint location = GetUniformLocation(name);
 		glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(matrix));
+	}
+
+	void Shader::UploadUniformMat4Array(const std::string& name, const glm::mat4& matrix)
+	{
+		GLuint location = GetUniformLocation(name);
+		glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(matrix[0]));
 	}
 
 	void Shader::AssignUniformBlock(const std::string& name)
@@ -313,14 +305,6 @@ namespace Frosty
 		FY_CORE_ASSERT(!Exists(name), "Shader already exists!");
 		m_Shaders[name] = shader;
 	}
-
-	//std::shared_ptr<Shader> ShaderLibrary::Load(const std::string& filepathVertex, const std::string& filepathFragment)
-	//{
-	//	std::shared_ptr<Shader> shader;
-	//	shader.reset(FY_NEW Shader(filepathVertex, filepathFragment));
-	//	Add(shader);
-	//	return shader;
-	//}
 
 	std::shared_ptr<Shader> ShaderLibrary::Load(const std::string& name, const std::string& filepathVertex, const std::string& filepathFragment)
 	{

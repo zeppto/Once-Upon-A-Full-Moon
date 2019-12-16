@@ -5,6 +5,8 @@
 #include "Frosty/Core/Application.hpp"
 #include <glad/glad.h>
 
+#define BUFFER_OFFSET(i) ((char *)nullptr + (i))
+
 namespace Frosty
 {
 	Renderer::SceneData* Renderer::s_SceneData = FY_NEW Renderer::SceneData;
@@ -15,8 +17,15 @@ namespace Frosty
 	std::vector<Renderer::RenderPassData>  Renderer::s_RenderPas;
 	FrustumGrid Renderer::s_ForwardPlus;
 	int Renderer::s_TotalNrOfFrames;
-	bool Renderer::s_DistanceCulling = false;
-	bool Renderer::s_LightCulling = false;
+	bool Renderer::s_DistanceCulling;
+	bool Renderer::s_LightCulling;
+	bool Renderer::s_RenderShadows;
+	bool Renderer::s_RenderFromPointLight;
+	unsigned int Renderer::s_ShadowMapFBO;
+	unsigned int Renderer::s_ShadowMap;
+	unsigned int Renderer::s_FullScreenQuad;
+
+
 
 	void Renderer::Init()
 	{
@@ -28,6 +37,11 @@ namespace Frosty
 		}
 
 		s_ForwardPlus.Initiate();
+		CreateDepthMap();
+		CreateFullScreenQuad();
+
+		s_RenderShadows = true;
+		s_DistanceCulling = true;
 	}
 
 	void Renderer::BeginScene()
@@ -50,11 +64,21 @@ namespace Frosty
 		int nrOfCulledObjs = 0;
 		bool culling = false;
 
-		//For all render passes
+		//For all render passes 
 		for (int i = 0; i < s_RenderPas.size(); i++)
 		{
 			nrOfpasses++;
 			auto passData = s_RenderPas[i];
+
+			if (i != 0)
+			{
+				glm::ivec4 viewP(Application::Get().GetWindow().GetViewport());
+				glViewport(viewP.x, viewP.y, viewP.z, viewP.w);
+			}
+
+
+
+
 
 			//For all shaders
 			for (auto& ShaderIt : passData.ShaderMap)
@@ -64,8 +88,26 @@ namespace Frosty
 				auto& shaderData = passData.ShaderMap.at(ShaderIt.first);
 				shaderData->Shader->Bind();
 				//Set most uniforms here
-				shaderData->Shader->UploadUniformMat4("u_ViewProjection", s_SceneData->GameCamera.ViewProjectionMatrix);
+
 				shaderData->Shader->UploadUniformFloat3("u_CameraPosition", s_SceneData->GameCamera.CameraPosition);
+
+				if (s_RenderFromPointLight)
+				{
+					for (auto& DLightIt : s_SceneData->DirectionalLights)
+					{
+						shaderData->Shader->UploadUniformMat4("u_ViewProjection", s_SceneData->DirectionalLights[DLightIt.first].DirectionalLight->Cameras[0].ViewProjectionMatrix);
+					}
+				}
+				else
+				{
+					shaderData->Shader->UploadUniformMat4("u_ViewProjection", s_SceneData->GameCamera.ViewProjectionMatrix);
+				}
+
+
+
+
+
+
 
 				if (shaderData->Shader->GetName() == "Texture2D")
 				{
@@ -73,6 +115,9 @@ namespace Frosty
 					glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 					RenderCommand::EnableBackfaceCulling();
 					culling = true;
+
+					glActiveTexture(GL_TEXTURE10);
+					glBindTexture(GL_TEXTURE_2D, s_ShadowMap);
 				}
 				else if (shaderData->Shader->GetName() == "Animation")
 				{
@@ -91,6 +136,25 @@ namespace Frosty
 				{
 					RenderCommand::EnableBackfaceCulling();
 					culling = true;
+					glActiveTexture(GL_TEXTURE10);
+					glBindTexture(GL_TEXTURE_2D, s_ShadowMap);
+				}
+				else if (shaderData->Shader->GetName() == "ShadowMap")
+				{
+
+
+					RenderCommand::EnableBackfaceCulling();
+					culling = true;
+
+					glViewport(0, 0, SHADOW_WIDTH, SHADOW_HEIGHT);
+					glBindFramebuffer(GL_FRAMEBUFFER, s_ShadowMapFBO);
+					glClear(GL_DEPTH_BUFFER_BIT);
+					for (auto& DLightIt : s_SceneData->DirectionalLights)
+					{
+						shaderData->Shader->UploadUniformMat4("u_LightSpaceMatrix", s_SceneData->DirectionalLights[DLightIt.first].DirectionalLight->Cameras[0].ViewProjectionMatrix);
+
+					}
+
 				}
 				else
 				{
@@ -109,14 +173,17 @@ namespace Frosty
 					PointLI++;
 				}
 
-				// Directional Lights
+				// Directional Lights  
 				shaderData->Shader->UploadUniformInt("u_TotalDirectionalLights", (int)s_SceneData->DirectionalLights.size());
 				int DirectLI = 0;
 				for (auto& DLightIt : s_SceneData->DirectionalLights)
 				{
 					shaderData->Shader->UploadUniformFloat3Array("u_DirectionalLights[" + std::to_string(DirectLI) + "].Color", s_SceneData->DirectionalLights[DLightIt.first].DirectionalLight->Color);
+					shaderData->Shader->UploadUniformFloat3Array("u_DirectionalLights[" + std::to_string(DirectLI) + "].Position", s_SceneData->DirectionalLights[DLightIt.first].Transform->Position);
 					shaderData->Shader->UploadUniformFloat3Array("u_DirectionalLights[" + std::to_string(DirectLI) + "].Direction", s_SceneData->DirectionalLights[DLightIt.first].DirectionalLight->Direction);
 					shaderData->Shader->UploadUniformFloatArray("u_DirectionalLights[" + std::to_string(DirectLI) + "].Strength", s_SceneData->DirectionalLights[DLightIt.first].DirectionalLight->Strength);
+					shaderData->Shader->UploadUniformMat4("u_DirectionalLights[" + std::to_string(DirectLI) + "].LightSpaceMatrix", s_SceneData->DirectionalLights[DLightIt.first].DirectionalLight->Cameras[0].ViewProjectionMatrix);
+
 					DirectLI++;
 				}
 
@@ -155,10 +222,13 @@ namespace Frosty
 					{
 						shaderData->Shader->UploadUniformFloat("u_Flash", materialData->Material->Flash);
 						shaderData->Shader->UploadUniformFloat2("u_TextureCoordScale", materialData->Material->TextureScale);
+						shaderData->Shader->UploadUniformInt("u_RenderShadows", s_RenderShadows);
+
 					}
 					else if (shaderData->Shader->GetName() == "Texture2D" || shaderData->Shader->GetName() == "BlendShader")
 					{
 						shaderData->Shader->UploadUniformFloat2("u_TextureCoordScale", materialData->Material->TextureScale);
+						shaderData->Shader->UploadUniformInt("u_RenderShadows", s_RenderShadows);
 					}
 
 					//Bind all Textures
@@ -187,6 +257,9 @@ namespace Frosty
 						materialData->Material->BlendTexture1->Bind(5);
 					}
 
+
+
+
 					if (materialData->Material->HasTransparency)
 					{
 						int test = 0;
@@ -198,6 +271,8 @@ namespace Frosty
 						nrOfMeshes++;
 
 						auto& meshData = materialData->MeshMap.at(MeshIt.first);
+
+
 						meshData->VertexArray->Bind();
 
 						//For all Transforms
@@ -217,8 +292,8 @@ namespace Frosty
 								}
 							}
 
-							float distance = 0;																	//The scale check is so the plane is not culled
-							if (culling && Time::GetFrameCount() /*&& s_TotalNrOfFrames % 2 == 0*/ && meshData->TransformMap.at(TransformIt.first)->Scale.x < 100 && s_DistanceCulling)
+							float distance = 0;														//The scale check is so the plane is not culled
+							if (culling  && meshData->TransformMap.at(TransformIt.first)->Scale.x < 100 && s_DistanceCulling &&meshData->TransformMap.at(TransformIt.first)->EnableCulling)
 							{
 								distance = glm::distance(meshData->TransformMap.at(TransformIt.first)->Position, s_SceneData->GameCamera.CameraPosition);
 							}
@@ -226,7 +301,9 @@ namespace Frosty
 							if (distance < 110)
 							{
 								nrOfDrawnedObjs++;
+
 								shaderData->Shader->UploadUniformMat4("u_Transform", meshData->TransformMap.at(TransformIt.first)->ModelMatrix);
+
 								if (shaderData->Shader->GetName() == "Animation")
 								{
 									if (meshData->AnimMap.find(TransformIt.first) != meshData->AnimMap.end())
@@ -248,8 +325,10 @@ namespace Frosty
 										}
 									}
 								}
-								RenderCommand::Draw2D(meshData->VertexArray);
-
+								if (*meshData->RenderMesh == true)
+								{
+									RenderCommand::Draw2D(meshData->VertexArray);
+								}
 							}
 							else
 							{
@@ -262,13 +341,21 @@ namespace Frosty
 
 						}
 
+
+
+
 						glBindVertexArray(0);
 					}
 
 					glBindTexture(GL_TEXTURE_2D, 0);
 				}
-				glUseProgram(0);
 
+				glUseProgram(0);
+				if (shaderData->Shader->GetName() == "ShadowMap")
+				{
+					glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+				}
 				if (shaderData->Shader->GetName() == "Texture2D" || shaderData->Shader->GetName() == "FlatColor" || shaderData->Shader->GetName() == "Animation")
 				{
 					glDisable(GL_BLEND);
@@ -276,8 +363,15 @@ namespace Frosty
 				}
 			}
 
+
 		}
 		s_TotalNrOfFrames++;
+
+
+		//DrawToFullScreenQuad(s_ShadowMap);
+
+		//DrawToFullScreenQuad(AssetManager::GetTexture2D("green_square")->GetRenderID());
+
 	}
 
 	void Renderer::EndScene()
@@ -402,9 +496,9 @@ namespace Frosty
 		glDisable(GL_DEPTH_TEST);
 		shader->Bind();
 		vertexArray->Bind();
-
-		float width = 1280.0f;
-		float height = 720.0f;
+		auto& window = Frosty::Application::Get().GetWindow();
+		float width = float(window.GetWidth());
+		float height = float(window.GetHeight());
 		glm::mat4 projection = glm::ortho(0.0f, width, 0.0f, height);
 
 		shader->UploadUniformMat4("projection", projection);
@@ -412,8 +506,10 @@ namespace Frosty
 		shader->UploadUniformFloat3("textColor", color);
 
 		std::string::const_iterator c;
-		float x = pos.x;
-		float y = pos.y;
+		float x = pos.x * window.GetWidthMultiplier();
+		float y = pos.y * window.GetHeightMultiplier();
+		scale = scale * window.GetWidthMultiplier();
+
 		for (c = text.begin(); c != text.end(); c++) {
 			Character ch = Frosty::AssetManager::GetTTF("Gabriola")->m_characters[*c];
 			float xpos = x + ch.bearing.x * scale;
@@ -454,11 +550,17 @@ namespace Frosty
 	{
 		shader->Bind();
 		vertexArray->Bind();
-
-		float width = 1280.0f;
-		float height = 720.0f;
+		auto& window = Frosty::Application::Get().GetWindow();
+		float width = float(window.GetWidth());
+		float height = float(window.GetHeight());
 		glm::mat4 projection = glm::ortho(0.0f, width, 0.0f, height);
 		shader->UploadUniformMat4("projection", projection);
+
+		transform[3][0] *= window.GetWidthMultiplier();
+		transform[3][1] *= window.GetHeightMultiplier();
+		transform[0][0] *= window.GetWidthMultiplier();
+		transform[1][1] *= window.GetHeightMultiplier();
+
 		shader->UploadUniformMat4("transform", transform);
 		shader->UploadUniformFloat4("color", color); //Make sure this number matches the active and sampled texture
 
@@ -711,22 +813,26 @@ namespace Frosty
 	void Renderer::AddToRenderer(ECS::CMaterial* mat, ECS::CMesh* mesh, ECS::CTransform* transform, ECS::CAnimController* controller)
 	{
 
-			// at(0) will be for dept sampling for shadow map
-			int RenderPassID = 0;
-			if (mat->HasTransparency)
-			{
-				RenderPassID = 2;
-			}
-			else
-			{
-				RenderPassID = 1;
-			}
+		// at(0) will be for dept sampling for shadow map
+		int RenderPassID = 0;
 
-			// Forward Plus Temp
-			if (mat->UseShader->GetName() == "HeatMap")
-			{
-				RenderPassID = 3;
-			}
+
+		if (mat->HasTransparency)
+		{
+			RenderPassID = 2;
+		}
+		else
+		{
+			RenderPassID = 1;
+		}
+
+		// Forward Plus Temp
+		if (mat->UseShader->GetName() == "HeatMap")
+		{
+			RenderPassID = 3;
+		}
+
+
 
 
 		counter++;
@@ -768,6 +874,8 @@ namespace Frosty
 		meshData->VertexArray = mesh->Mesh;
 		meshData->TransformMap.emplace(transformID, transform);
 
+		meshData->RenderMesh = &mesh->RenderMesh;
+
 		if (mesh->parentMatrix != nullptr)
 		{
 			meshData->parentMatrix = mesh->parentMatrix;
@@ -775,7 +883,7 @@ namespace Frosty
 		}
 
 		if (controller != nullptr)
-		{	
+		{
 			meshData->AnimMap.emplace(transformID, controller);
 		}
 		//Add the mesh to the MeshLookUpMap
@@ -784,6 +892,28 @@ namespace Frosty
 		//Add the tranform to the TransformLookUpMap
 		auto& transformMap = meshData->TransformMap;
 		s_TransformLookUpMap.emplace(transformID, &transformMap);
+
+		//For Shadows
+		if (mat->CastsShadows)
+		{
+			//Check if the shader key is already in the map, if not add it.
+			std::string ShaderName = "ShadowMap";
+			if (s_RenderPas[0].ShaderMap.find(ShaderName) == s_RenderPas[0].ShaderMap.end())
+			{
+				s_RenderPas[0].ShaderMap.emplace(ShaderName, FY_NEW ShaderData);
+
+			}
+			auto& shaderData2 = s_RenderPas[0].ShaderMap.at(ShaderName);
+			shaderData2->Shader = AssetManager::GetShader(ShaderName);
+
+
+
+			//Check if the material key is already in the map, if not add it.
+			if (shaderData2->MaterialMap.find(matID) == shaderData2->MaterialMap.end())
+			{
+				shaderData2->MaterialMap.emplace(matID, materialData);
+			}
+		}
 
 		s_RenderPas[RenderPassID].ShaderMap; //For debugging
 	}
@@ -891,6 +1021,7 @@ namespace Frosty
 		if (s_MeshLookUpMap.find(entityID) != s_MeshLookUpMap.end())
 		{
 			auto& meshData = s_MeshLookUpMap.at(entityID)->at(mesh->Mesh->GetName());
+			meshData->RenderMesh = &mesh->RenderMesh;
 			meshData->parentMatrix = mesh->parentMatrix;
 			meshData->holdJointTransform = mesh->animOffset;
 		}
@@ -901,6 +1032,7 @@ namespace Frosty
 		if (s_MeshLookUpMap.find(entityID) != s_MeshLookUpMap.end())
 		{
 			auto& meshData = s_MeshLookUpMap.at(entityID)->at(mesh->Mesh->GetName());
+			meshData->RenderMesh = &mesh->RenderMesh;
 			meshData->parentMatrix = mesh->parentMatrix;
 			//If it already exists replace. If not emplace.
 			if (meshData->AnimMap.find(entityID) != meshData->AnimMap.end())
@@ -912,5 +1044,77 @@ namespace Frosty
 				meshData->AnimMap.emplace(entityID, ctrlPtr);
 			}
 		}
+	}
+
+	void Renderer::CreateDepthMap()
+	{
+		glGenFramebuffers(1, &s_ShadowMapFBO);
+
+		glGenTextures(1, &s_ShadowMap);
+		glBindTexture(GL_TEXTURE_2D, s_ShadowMap);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, SHADOW_WIDTH, SHADOW_HEIGHT, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+		int err = 1;
+
+		if (glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE)
+		{
+			err = 0;
+		}
+		else
+		{
+			err = -1;
+		}
+
+		glBindFramebuffer(GL_FRAMEBUFFER, s_ShadowMapFBO);
+		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, s_ShadowMap, 0);
+		glDrawBuffer(GL_NONE);
+		glReadBuffer(GL_NONE);
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	}
+
+	void Renderer::CreateFullScreenQuad()
+	{
+		struct Pos2UV
+		{
+			float x, y;
+			float u, v;
+		};
+		Pos2UV myQuad[6] =
+		{
+			-1,-1, 0, 0,
+			-1,+1, 0, 1,
+			+1,+1, 1, 1,
+			-1,-1, 0, 0,
+			+1,+1, 1, 1,
+			+1,-1, 1, 0,
+		};
+
+		glGenVertexArrays(1, &s_FullScreenQuad);
+		glBindVertexArray(s_FullScreenQuad);
+
+		glEnableVertexAttribArray(0);
+		glEnableVertexAttribArray(1);
+
+		glGenBuffers(1, &s_FullScreenQuad);
+		glBindBuffer(GL_ARRAY_BUFFER, s_FullScreenQuad);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(myQuad), myQuad, GL_STATIC_DRAW);
+
+		glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(Pos2UV), BUFFER_OFFSET(0));
+		glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(Pos2UV), BUFFER_OFFSET(sizeof(float) * 2));
+	}
+
+	void Renderer::DrawToFullScreenQuad(unsigned int TextureID)
+	{
+		glDisable(GL_DEPTH_TEST);
+		AssetManager::GetShader("DebugQuad")->Bind();
+		glBindVertexArray(s_FullScreenQuad);
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, TextureID);
+		glDrawArrays(GL_TRIANGLES, 0, 6);
+		glEnable(GL_DEPTH_TEST);
 	}
 }

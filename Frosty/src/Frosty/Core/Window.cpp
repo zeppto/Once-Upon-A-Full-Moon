@@ -92,6 +92,8 @@ namespace Frosty
 		m_Data.Height = props.Height;
 		m_Data.PositionX = props.PositionX;
 		m_Data.PositionY = props.PositionY;
+		m_Data.refWidth = 1280.f;
+		m_Data.refHeight = 720.f;
 		m_Data.Viewport = glm::vec4(0, 0, m_Data.Width, m_Data.Height);
 
 		glfwMakeContextCurrent(m_Window);
@@ -212,6 +214,16 @@ namespace Frosty
 			}
 		});
 
+	}
+
+	float Window::GetWidthMultiplier() const
+	{
+		return  m_Data.Width / m_Data.refWidth;;
+	}
+
+	float Window::GetHeightMultiplier() const
+	{
+		return m_Data.Height / m_Data.refHeight;
 	}
 
 	const glm::vec4& Window::GetViewport() const

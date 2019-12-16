@@ -69,8 +69,9 @@ namespace Frosty
 
 	void Animation::CalculateAnimMatrix(float* currentAnimTime)
 	{
-		float duration = m_Animation.duration;
-		if (*currentAnimTime > m_Animation.duration)
+		m_StridePercent = *currentAnimTime / m_Animation.duration;
+
+		if (*currentAnimTime >= m_Animation.duration)
 		{
 			if (isRepeating == true)
 			{
@@ -79,6 +80,7 @@ namespace Frosty
 			else
 			{
 				isFinished = true;
+				m_StridePercent = 0.0f;
 				return;
 			}
 		}
@@ -184,6 +186,16 @@ namespace Frosty
 	bool Animation::GetIsFinished()
 	{
 		return isFinished;
+	}
+
+	float Animation::GetStridePercent()
+	{
+		return m_StridePercent;
+	}
+
+	void Animation::SetStridePercent(float stride)
+	{
+		m_StridePercent = stride;
 	}
 
 	bool Animation::LoadToMem(const bool& Reload)

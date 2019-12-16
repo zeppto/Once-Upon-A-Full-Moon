@@ -17,6 +17,8 @@
 
 #include <Luna/include/Reader.h>
 
+#include <irrKlang/include/irrKlang.h>
+
 #include"KeyLabel.hpp"
 #include"BaseKey.hpp"
 
@@ -28,6 +30,8 @@
 #define FILE_TYPE_TGA "tga"
 #define FILE_TYPE_GLSL "glsl"
 #define FILE_TYPE_XML "xml"
+#define FILE_TYPE_WAV "wav"
+#define FILE_TYPE_MP3 "mp3"
 #define FILE_TYPE_GRID "gmap"
 #define FILE_TYPE_BOOLMAP "bmap"
 
@@ -46,6 +50,8 @@ namespace Frosty
 		TGA,
 		GLSL,
 		XML,
+		WAV,
+		MP3,
 		GRID,
 		BMAP
 	};
@@ -93,9 +99,11 @@ namespace Frosty
 		static std::map<std::string, std::shared_ptr<TrueTypeFile>> s_TruefontTypes;
 		static std::map<std::string, std::shared_ptr<WeaponHandler>> s_WeaponHandler;
 
+		static std::map<std::string, irrklang::ISoundSource*> s_Media;
+		static irrklang::ISoundEngine* s_SoundEngine;
+
 		static std::map<std::string, std::shared_ptr<Grid>> s_Grid;
 		static std::map<std::string, std::shared_ptr<BoolMap>> s_BoolMaps;
-
 
 		static std::unordered_map <std::string, std::list<TextureFile**>> s_TextureWatchList;
 
@@ -169,6 +177,13 @@ namespace Frosty
 		static std::vector<std::string> GetBoundingBoxNames();
 
 
+		//Use File Name
+		inline static irrklang::ISoundSource* GetMediaFile(const std::string& FileName) { FY_CORE_ASSERT(s_Media.count(FileName), "Media error!\n{0} doesn't exist!", FileName); return s_Media[FileName]; }
+		inline static irrklang::ISoundEngine* GetSoundEngine() { return s_SoundEngine; }
+	//	inline static std::map<std::string, std::shared_ptr<WeaponHandler>>& GetWeaponHandlers() { return s_WeaponHandler; }
+
+
+
 	private:	//Functions
 
 		inline static void Delete() { if (s_Instance != nullptr) { delete s_Instance; } }
@@ -185,6 +200,7 @@ namespace Frosty
 		static bool AnimationLoaded(const std::string& AssetName);
 		static bool MeshLoaded(const std::string& AssetName);
 		static bool BoundingboxLoaded(const std::string& MeshName);
+		static bool MediaFileLoaded(const std::string& MeshName);
 		static bool GridLoaded(const std::string& FileName);
 		static bool BoolMapLoaded(const std::string& FileName);
 
@@ -192,6 +208,7 @@ namespace Frosty
 		static bool LoadBoolMap(const FileMetaData& FileNameInformation, const bool& Reload = false);
 		static 	bool LoadLunaFile(const FileMetaData& FileNameInformation, const bool& Reload = false);
 		static 	bool LoadTTF_File(const FileMetaData& FileNameInformation, const bool& Reload = false);
+		static 	bool LoadMediaFile(const FileMetaData& FileNameInformation, const bool& Reload = false);
 		static 	bool LoadGraphicFile(const FileMetaData& FileNameInformation, const bool& Reload = false);
 		static bool LoadXML(const FileMetaData& FileNameInformation, const bool& Reload = false);
 		static bool LoadGrid(const FileMetaData& FileNameInformation, const bool& Reload = false);
@@ -217,6 +234,7 @@ namespace Frosty
 		static bool AddGrid(const FileMetaData& MetaData);
 		static bool AddTTF(const FileMetaData& MetaData);
 		static bool AddXML(const FileMetaData& MetaData);
+		static bool AddMedia(const FileMetaData& MetaData);
 
 		static bool AddMaterial(LinkedMaterial& LnkMat);
 		static bool AddMaterial(const FileMetaData& MetaData, const Luna::Material& LunMat);

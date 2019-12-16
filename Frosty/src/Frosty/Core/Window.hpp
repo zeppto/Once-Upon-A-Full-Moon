@@ -22,10 +22,13 @@ namespace Frosty
 		Window& operator=(const Window& org) { FY_CORE_ASSERT(false, "Assignment operator in Window called."); return *this; }
 
 		virtual inline std::string GetTitle() const override { return m_Data.Title; }
-		virtual inline unsigned int GetWidth() const override { return m_Data.Width; }
-		virtual inline unsigned int GetHeight() const override { return m_Data.Height; }
+		virtual inline float GetWidth() const override { return m_Data.Width; }
+		virtual inline float GetHeight() const override { return m_Data.Height; }
+		virtual float GetWidthMultiplier() const override;
+		virtual float GetHeightMultiplier() const override;
 		virtual inline unsigned int GetPositionX() const override { return m_Data.PositionX; }
 		virtual inline unsigned int GetPositionY() const override { return m_Data.PositionY; }
+
 		virtual std::pair<unsigned int, unsigned int> GetPosition() const override { return { m_Data.PositionX, m_Data.PositionY }; }
 		virtual const glm::vec4& GetViewport() const override;
 
@@ -59,10 +62,16 @@ namespace Frosty
 		struct WindowData
 		{
 			std::string Title{ "Frosty Engine" };
-			int Maximized;
-			unsigned int Width, Height;
-			unsigned int PositionX, PositionY;
-			bool VSync;
+			int Maximized = 0;
+			float Width = 0.0f;
+			float Height = 0.0f;
+			unsigned int PositionX = 0;
+			unsigned int PositionY = 0;
+			float refWidth = 0.0f;
+			float refHeight = 0.0f;
+			float widthMultiplier{ 0.0f }, heightMultiplier{ 0.0f };
+			float lastWidthMultiplier{ 0.0f }, lastHeightMultiplier{ 0.0f };
+			bool VSync = false;
 			glm::vec4 Viewport;
 			bool EditorMode{ true };
 		};

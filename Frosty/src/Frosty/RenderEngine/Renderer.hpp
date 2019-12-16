@@ -6,6 +6,8 @@
 #include "Frosty/RenderEngine/Shader.hpp"
 #include "ForwardPlus.hpp"
 
+
+
 namespace Frosty
 {
 	namespace ECS
@@ -24,6 +26,8 @@ namespace Frosty
 
 
 	public:
+	
+
 		struct GameCameraProps
 		{
 			glm::vec3 CameraPosition;
@@ -34,21 +38,12 @@ namespace Frosty
 
 		struct PointLight
 		{
-			/*glm::vec3 Position;
-			glm::vec3 Color;
-			float Strength;
-			float Radius;*/
-
 			Frosty::ECS::CLight* PointLight;
 			ECS::CTransform* Transform;
 		};
 
 		struct DirectionalLight
 		{
-		/*	glm::vec3 Direction;
-			glm::vec3 Color;
-			float Strength;*/
-
 			Frosty::ECS::CLight* DirectionalLight;
 			ECS::CTransform* Transform;
 		};
@@ -95,10 +90,15 @@ namespace Frosty
 
 		inline static void SetDistanceCulling(bool& distanceCulling) { s_DistanceCulling = distanceCulling; }
 		inline static void SetLightCulling(bool& lightCulling) { s_LightCulling = lightCulling; }
+		inline static void SetRenderShadows(bool& renderShadows) { s_RenderShadows = renderShadows; }
+		inline static void SetRenderFromPointLight(bool& renderFromPointLight) { s_RenderFromPointLight = renderFromPointLight; }
 
 		inline static const GameCameraProps& GetGameCamera() { return s_SceneData->GameCamera; }
 		inline static const std::unordered_map<size_t, PointLight>& GetPointLights() { return s_SceneData->PointLights; }
 
+		static void CreateDepthMap();
+		static void CreateFullScreenQuad();
+		static void DrawToFullScreenQuad(unsigned int TextureID);
 	private:
 
 
@@ -109,6 +109,7 @@ namespace Frosty
 			std::unordered_map<size_t, Frosty::ECS::CTransform*> TransformMap;
 			std::unordered_map<size_t, Frosty::ECS::CAnimController*> AnimMap;
 
+			bool* RenderMesh = nullptr;
 			glm::mat4* parentMatrix = nullptr;
 			const glm::mat4* holdJointTransform = nullptr;
 		};
@@ -175,8 +176,17 @@ namespace Frosty
 		static int s_TotalNrOfFrames;
 		static bool s_DistanceCulling;
 		static bool s_LightCulling;
+		static bool s_RenderShadows;
+		static bool s_RenderFromPointLight;
 
 		static FrustumGrid s_ForwardPlus;
+
+		static unsigned int s_ShadowMapFBO;
+		static unsigned int s_ShadowMap;
+
+		inline static const unsigned int SHADOW_WIDTH = (640);
+		inline static const unsigned int SHADOW_HEIGHT = (360);
+		static unsigned int s_FullScreenQuad;
 	};
 }
 #endif // !RENDERER_HPP

@@ -26,7 +26,32 @@ namespace MCS
 					ShiftTowadsPoint(point3D, i);
 				}
 			}
+			// Check if light has camera
+			if (m_Light[i]->HasCamera)
+			{
+				UpdateLightCamera(i);
+			}
 		}
+	}
+
+	void LightSystem::BeginScene()
+	{
+		//Frosty::RenderCommand::SetClearColor({ 0.2f, 0.2f, 0.2f, 1.0f });
+		//Frosty::RenderCommand::Clear();
+		//Frosty::Renderer::BeginScene();
+		//Frosty::Renderer::SetCamera(glm::vec3(0.0f, 0.0f, -5.0f), glm::mat4(1.0f), glm::mat4(1.0f));
+
+		//for (size_t i = 1; i < p_Total; i++)
+		//{
+		//	if (m_Light[i]->Type == Frosty::ECS::CLight::LightType::Directional)
+		//	{
+		//		auto& win = Frosty::Application::Get().GetWindow();
+		//		Frosty::RenderCommand::SetClearColor({ 0.2f, 0.2f, 0.2f, 1.0f });
+		//		Frosty::RenderCommand::Clear();
+
+		//		Frosty::Renderer::SetCamera(m_Transform[i]->Position, m_Light[i]->Cameras[0].ViewMatrix, m_Light[i]->Cameras[0].ProjectionMatrix);
+		//	}
+		//}
 	}
 
 	void LightSystem::Render()
@@ -80,7 +105,7 @@ namespace MCS
 		if (it != p_EntityMap.end())
 		{
 			p_Total--;
-			
+
 			//UpdateEntityComponent(entity);
 			Frosty::Renderer::RemoveLight(entity);
 
@@ -184,4 +209,32 @@ namespace MCS
 
 		m_Transform[index]->Position += pointVector * glm::vec3(2.f, 0.f, 2.f);
 	}
+
+	void LightSystem::UpdateLightCamera(size_t index)
+	{
+		auto& world = Frosty::Application::Get().GetWorld();
+		auto& win = Frosty::Application::Get().GetWindow();
+
+
+
+
+
+		for (size_t i = 0; i < m_Light[index]->Cameras.size(); i++)
+		{
+			if (m_Light[index]->Type == Frosty::ECS::CLight::LightType::Directional)
+				m_Light[index]->Cameras[i].Front = m_Light[index]->Direction;
+
+			if (!world->HasComponent<Frosty::ECS::CPlayer>(m_Light[index]->Origin->EntityPtr) && m_Light[index]->Origin != nullptr)
+				m_Transform[index]->Position = m_Light[index]->Origin->Position + m_Light[index]->Offset;
+
+
+			/*m_Light[index]->Cameras[i].ViewMatrix = glm::lookAt(m_Transform[index]->Position, m_Transform[index]->Position + m_Light[index]->Cameras[i].Front, { 0.0f, 1.0f, 0.0f });
+			m_Light[index]->Cameras[i].ProjectionMatrix = glm::perspective(glm::radians(m_Light[index]->Cameras[i].FieldOfView), float(win.GetViewport().z / win.GetViewport().w), m_Light[index]->Cameras[i].Near, m_Light[index]->Cameras[i].Far);
+			m_Light[index]->Cameras[i].ViewProjectionMatrix = m_Light[index]->Cameras[i].ProjectionMatrix * m_Light[index]->Cameras[i].ViewMatrix;*/
+
+			m_Light[index]->Cameras[i].ViewMatrix = glm::lookAt(m_Transform[index]->Position, m_Transform[index]->Position + m_Light[index]->Cameras[i].Front, { 0.0f, 1.0f, 0.0f });
+			m_Light[index]->Cameras[i].ProjectionMatrix = glm::ortho(-40.0f, 50.0f, -10.0f, 80.0f, m_Light[index]->Cameras[i].Near, m_Light[index]->Cameras[i].Far);
+			m_Light[index]->Cameras[i].ViewProjectionMatrix = m_Light[index]->Cameras[i].ProjectionMatrix * m_Light[index]->Cameras[i].ViewMatrix;
+		}
+	} 
 }
