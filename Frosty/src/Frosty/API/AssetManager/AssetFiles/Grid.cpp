@@ -145,12 +145,44 @@ namespace Frosty
 		}
 	}
 
-	void Grid::CheckHCost()
+	void Grid::CheckErrors()
 	{
 		for (int i = 0 ; i < m_CellNodes.size() ; i++)
 		{
 			if (m_CellNodes[i].GCost > 0) __debugbreak();
+			//if (!m_CellNodes[i].Walkable && m_CellNodes[i].ExtraCost == 0) __debugbreak();
 		}
+	}
+
+	void Grid::FlipGizmos()
+	{
+		if (m_CellNodes[0].CellEntityID == 0) return;
+
+		if (m_DrawGizmos)
+		{
+			m_DrawGizmos = false;
+
+			for (int i = 0; i < m_CellNodes.size(); i++)
+			{
+				m_World->GetComponent<ECS::CTransform>(m_World->GetEntityManager()->GetEntityById(m_CellNodes[i].CellEntityID)).Position.y = -1.0f;
+			}
+		}
+		else
+		{
+			m_DrawGizmos = true;
+
+			for (int i = 0; i < m_CellNodes.size(); i++)
+			{
+				m_World->GetComponent<ECS::CTransform>(m_World->GetEntityManager()->GetEntityById(m_CellNodes[i].CellEntityID)).Position.y = 0.5f;
+			}
+		}
+
+		//m_DrawGizmos == 0 ? m_DrawGizmos = 1 : m_DrawGizmos = 0;
+		//
+		//for (int i = 0; i < m_CellNodes.size(); i++)
+		//{
+		//	m_World->GetComponent<ECS::CMesh>(m_World->GetEntityManager()->GetEntityById(m_CellNodes[i].CellEntityID)).RenderMesh = m_DrawGizmos;
+		//}
 	}
 
 	void Grid::CreateGrid()
@@ -185,11 +217,13 @@ namespace Frosty
 
 		for (size_t i = 0; i < m_CellNodes.size(); i++)
 		{
-			auto& cell = m_World->CreateEntity({ m_CellNodes[i].WorldPosition.x, 0.05, m_CellNodes[i].WorldPosition.z }, { 0.0f,0.0f,0.0f }, { CELL_SIZE, 1.0f, CELL_SIZE }, true);
+			auto& cell = m_World->CreateEntity({ m_CellNodes[i].WorldPosition.x, 0.5f, m_CellNodes[i].WorldPosition.z }, { 0.0f,0.0f,0.0f }, { CELL_SIZE, 1.0f, CELL_SIZE }, false);
 			cell->ShowInEditor = false;
-			m_World->AddComponent<Frosty::ECS::CMesh>(cell, Frosty::AssetManager::GetMesh("pPlane1"));
+			auto& cellMesh = m_World->AddComponent<Frosty::ECS::CMesh>(cell, Frosty::AssetManager::GetMesh("pPlane1"));
+			//cellMesh.RenderMesh = false;
 			auto& cellMat = m_World->AddComponent<Frosty::ECS::CMaterial>(cell, Frosty::AssetManager::GetShader("Texture2D"));
 			cellMat.DiffuseTexture = Frosty::AssetManager::GetTexture2D(m_CellNodes[i].Walkable ? "green_square" : "red_square");
+			if (!m_CellNodes[i].Walkable) m_CellNodes[i].ExtraCost = -1;
 			m_CellNodes[i].CellEntityID = cell->Id;
 		}
 	}
@@ -436,7 +470,6 @@ namespace Frosty
 		for (size_t i = 1; i < totalData; i++)
 		{
 			auto& tempTransform = m_World->GetComponent<Frosty::ECS::CTransform>(physicsCompData[i].EntityPtr);
-			//if (!m_World->HasComponent<Frosty::ECS::CEnemy>(tempTransform.EntityPtr) && !m_World->HasComponent<Frosty::ECS::CPlayer>(tempTransform.EntityPtr))
 			if (tempTransform.IsStatic && !m_World->HasComponent<Frosty::ECS::CLevelExit>(tempTransform.EntityPtr))
 			{
 				// This means that the entity is static and has a CPhysics component

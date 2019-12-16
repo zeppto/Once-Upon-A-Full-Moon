@@ -21,17 +21,16 @@ namespace Frosty
 		int32_t ParentGridY{ -1 };
 		bool ExistsInOpenSet{ false };
 
-
 		// TEMPORARY FOR DEBUGGING
 		size_t CellEntityID{ 0 };
 
-		inline CellNode() {};
-		inline CellNode(const glm::vec3& worldPos, bool walkable, int32_t gridX, int32_t gridY) : WorldPosition(worldPos), Walkable(walkable), GridX(gridX), GridY(gridY) { }
+		CellNode() = default;
+		CellNode(const glm::vec3& worldPos, bool walkable, int32_t gridX, int32_t gridY) : WorldPosition(worldPos), Walkable(walkable), GridX(gridX), GridY(gridY) { }
 		
 		// Operators
 		bool operator==(const CellNode& obj) const { return obj.GridX == GridX && obj.GridY == GridY; }
 		bool operator!=(const CellNode& obj) const { return !(obj.GridX == GridX && obj.GridY == GridY); }
-		bool operator<(const CellNode& obj) const { return GetFCost() > obj.GetFCost() || GetFCost() == obj.GetFCost() && HCost > obj.HCost; }
+		bool operator<(const CellNode& obj) const { return GetFCost() > obj.GetFCost() || GetFCost() == obj.GetFCost() && GCost > obj.GCost; }
 
 		int32_t GetFCost() const { return GCost + HCost; }
 	};
@@ -60,7 +59,7 @@ namespace Frosty
 		void DrawTargetCell(Frosty::ECS::CTransform* transform);
 		void DrawSeekerCell(Frosty::ECS::CTransform* transform);
 		void DrawPathCells(const std::vector<CellNode*> path);
-		void CheckHCost();
+		void CheckErrors();
 
 		void SaveFile(const std::string FileName);
 		void LoadFile(const std::string FilePath);
@@ -71,6 +70,9 @@ namespace Frosty
 
 		inline void SetFileName(const std::string& FileName) { m_FileName = FileName; }
 		inline void SetFilePath(const std::string& FilePath) { m_FilePath = FilePath; }
+
+		// TEMPORARY FOR DEUGGING
+		void FlipGizmos();
 
 	private:
 		void CreateGrid();

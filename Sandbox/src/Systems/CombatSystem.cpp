@@ -74,9 +74,7 @@ namespace MCS
 									std::string str = "assets/sounds/Deathsound enemies" + std::to_string(rand) + ".wav";
 									const char* fileName = str.c_str();
 									
-									if(m_World->HasComponent<Frosty::ECS::CBoss>(m_Health[i]->EntityPtr))
-										Frosty::EventBus::GetEventBus()->Publish<Frosty::PlayMediaEntityEvent>(Frosty::PlayMediaEntityEvent(m_Health[i]->EntityPtr, fileName, false, 1.0f, 100.0f, 200.0f, true, 7));
-									else
+									if(!m_World->HasComponent<Frosty::ECS::CBoss>(m_Health[i]->EntityPtr))
 										Frosty::EventBus::GetEventBus()->Publish<Frosty::PlayMediaEntityEvent>(Frosty::PlayMediaEntityEvent(m_Health[i]->EntityPtr, fileName, false, 1.0f, 100.0f, 200.0f, false, 0));
 								}
 								else if (whichEnemy == Frosty::ECS::CWeapon::WeaponType::Bite) // If a wolf is dying
@@ -89,7 +87,7 @@ namespace MCS
 								int rand = std::rand() % 2 + 1;
 								std::string str = "assets/sounds/Deathsound Scarlet" + std::to_string(rand) + ".wav";
 								const char* fileName = str.c_str();
-								Frosty::EventBus::GetEventBus()->Publish<Frosty::PlayMediaEntityEvent>(Frosty::PlayMediaEntityEvent(m_Health[i]->EntityPtr, fileName, false, 1.0f, 100.0f, 200.0f, false, 0));
+								Frosty::EventBus::GetEventBus()->Publish<Frosty::PlayMediaEntityEvent>(Frosty::PlayMediaEntityEvent(m_Health[i]->EntityPtr, fileName, false, 0.75f, 100.0f, 200.0f, false, 0));
 							}
 						}
 					}

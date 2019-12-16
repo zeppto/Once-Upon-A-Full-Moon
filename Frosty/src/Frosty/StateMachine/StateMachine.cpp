@@ -1,6 +1,9 @@
 #include <fypch.hpp>
 #include "StateMachine.hpp"
 
+// TEMPORARY
+#include "Frosty/Core/Application.hpp"
+
 namespace Frosty
 {
 	std::stack<Frosty::StateRef> StateMachine::m_States;

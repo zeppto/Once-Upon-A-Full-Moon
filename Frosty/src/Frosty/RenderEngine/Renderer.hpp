@@ -109,6 +109,7 @@ namespace Frosty
 			std::unordered_map<size_t, Frosty::ECS::CTransform*> TransformMap;
 			std::unordered_map<size_t, Frosty::ECS::CAnimController*> AnimMap;
 
+			bool* RenderMesh = nullptr;
 			glm::mat4* parentMatrix = nullptr;
 			const glm::mat4* holdJointTransform = nullptr;
 		};
@@ -183,7 +184,7 @@ namespace Frosty
 		static unsigned int s_ShadowMapFBO;
 		static unsigned int s_ShadowMap;
 
-		inline static const unsigned int SHADOW_WIDTH = (640);
+		inline static const unsigned int SHADOW_WIDTH = (640); 
 		inline static const unsigned int SHADOW_HEIGHT = (360);
 		static unsigned int s_FullScreenQuad;
 	};
