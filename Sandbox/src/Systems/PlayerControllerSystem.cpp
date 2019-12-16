@@ -313,7 +313,11 @@ namespace MCS
 						std::string str = "assets/sounds/DodgePrassel" + std::to_string(rand) + ".wav";
 						const char* fileName = str.c_str();
 						//Frosty::EventBus::GetEventBus()->Publish<Frosty::PlayMediaEntityEvent>(Frosty::PlayMediaEntityEvent(m_Player[index]->EntityPtr, fileName, 5.0f, 10.0f, 100.0f, false, 0));
-						Frosty::EventBus::GetEventBus()->Publish<Frosty::PlayMediaEvent>(Frosty::PlayMediaEvent(fileName, false, 1.0f, 0.0f, false, 0));
+						int newRand = std::rand() % 2 + 1;
+						if(newRand == 1)
+							Frosty::EventBus::GetEventBus()->Publish<Frosty::PlayMediaEvent>(Frosty::PlayMediaEvent(fileName, false, 2.0f, 1.0f, false, 0));
+						else
+							Frosty::EventBus::GetEventBus()->Publish<Frosty::PlayMediaEvent>(Frosty::PlayMediaEvent(fileName, false, 2.0f, -1.0f, false, 0));
 
 						//m_Physics[index]->Velocity *= m_Dash[index]->SpeedMultiplier;
 						m_Physics[index]->SpeedMultiplier = m_Dash[index]->SpeedMultiplier;
@@ -387,6 +391,8 @@ namespace MCS
 		std::string str_player = "assets/sounds/Hitsound Scarlet" + std::to_string(rand) + ".wav";
 		const char* fileName_player = str_player.c_str();
 
+		int newRand = std::rand() % 9 + 1;
+
 		if (Frosty::Time::CurrentTime() - weaponComp.LVL1AttackCooldownTimer >= weaponComp.LVL1AttackCooldown - weaponComp.WindSpeed)
 		{
 			switch (weaponComp.Type)
@@ -394,7 +400,7 @@ namespace MCS
 			case Frosty::ECS::CWeapon::WeaponType::Sword:
 				//Frosty::EventBus::GetEventBus()->Publish<Frosty::PlayMediaEntityEvent>(Frosty::PlayMediaEntityEvent(weaponCarrier, fileName, 2.0f, 30.0f, 100.0f, false, 0));
 				Frosty::EventBus::GetEventBus()->Publish<Frosty::PlayMediaEvent>(Frosty::PlayMediaEvent(fileName, false, 1.0f, 0.0f, false, 0));
-				Frosty::EventBus::GetEventBus()->Publish<Frosty::PlayMediaEvent>(Frosty::PlayMediaEvent(fileName_player, false, 0.5f, 0.0f, false, 0));
+				Frosty::EventBus::GetEventBus()->Publish<Frosty::PlayMediaEvent>(Frosty::PlayMediaEvent(fileName_player, false, 0.5f, 0.0f, true, newRand));
 				Frosty::EventBus::GetEventBus()->Publish <Frosty::PlayAnimEvent>(Frosty::PlayAnimEvent(weaponCarrier, 1));
 				CreateLVL1BoundingBox(weaponCarrier, weaponComp.EntityPtr);
 				break;

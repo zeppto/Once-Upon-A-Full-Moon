@@ -368,7 +368,8 @@ namespace MCS
 				/*std::string castSounds[2] = { "", "Cast" };
 				std::string castStr = "assets/sounds/BowDraw" + castSounds[rand - 1] + ".wav";
 				const char* fileName_Spell = castStr.c_str();*/
-				Frosty::EventBus::GetEventBus()->Publish<Frosty::PlayMediaEntityEvent>(Frosty::PlayMediaEntityEvent(m_Enemy[index]->EntityPtr, "assets/sounds/FirespellCast.wav", false, 1.0f, 100.0f, 200.0f, false, 0));
+				int rand = std::rand() % 9 + 1;
+				Frosty::EventBus::GetEventBus()->Publish<Frosty::PlayMediaEntityEvent>(Frosty::PlayMediaEntityEvent(m_Enemy[index]->EntityPtr, "assets/sounds/FirespellCast.wav", false, 1.0f, 100.0f, 200.0f, true, rand));
 			}
 			else if (m_Enemy[index]->Weapon->Type == Frosty::ECS::CWeapon::WeaponType::Sword)
 			{

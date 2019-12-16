@@ -42,6 +42,7 @@ namespace Frosty
 
 		s_RenderShadows = true;
 		s_DistanceCulling = true;
+		s_LightCulling = false;
 	}
 
 	void Renderer::BeginScene()
