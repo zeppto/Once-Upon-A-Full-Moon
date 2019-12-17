@@ -28,6 +28,7 @@ namespace MCS
 			Level_Components myComponents;
 			myComponents.MyComponents.resize(m_Header.NrOfComponents);
 			m_Header.NrOfEntitys++;
+
 			//Transform
 			if (m_World->HasComponent<Frosty::ECS::CTransform>(entity))
 			{
@@ -44,9 +45,8 @@ namespace MCS
 			if (m_World->HasComponent<Frosty::ECS::CMesh>(entity))
 			{
 				myComponents.MyComponents[1].HaveComponent = true;
-				auto& mesh = m_World->GetComponent<Frosty::ECS::CMesh>(entity);
-				std::string meskhh = mesh.Mesh->GetName().c_str();
-				strcpy_s(myComponents.myMesh.MeshName, mesh.Mesh->GetName().c_str());
+					auto& mesh = m_World->GetComponent<Frosty::ECS::CMesh>(entity);
+					strcpy_s(myComponents.myMesh.MeshName, mesh.Mesh->GetName().c_str());
 			}
 			else
 				myComponents.MyComponents[1].HaveComponent = false;
@@ -233,70 +233,78 @@ namespace MCS
 		{
 			for (int j = 0; j < m_Header.NrOfComponents; j++)
 				myFile.write((const char*)& m_Entitys.myEntitys[i].MyComponents[j].HaveComponent, sizeof(bool));
-			for (int j = 0; j < m_Header.NrOfComponents; j++)
-				if (m_Entitys.myEntitys[i].MyComponents[j].HaveComponent)
-				{
-					switch (j)
-					{
-						//0 = Transform
-					case 0:
-						myFile.write((const char*)& m_Entitys.myEntitys[i].myTransform, sizeof(Level_Transform));
-						break;
-						//1 = Mesh
-					case 1:
-						myFile.write((const char*)& m_Entitys.myEntitys[i].myMesh, sizeof(Level_Mesh));
-						break;
-						//2 = Material
-					case 2:
-						myFile.write((const char*)& m_Entitys.myEntitys[i].myMaterial, sizeof(Level_Material));
-						break;
-						//3 = Follow
-					case 3:
-						myFile.write((const char*)& m_Entitys.myEntitys[i].myFollow, sizeof(Level_Follow));
-						break;
-						//4 = Light
-					case 4:
-						myFile.write((const char*)& m_Entitys.myEntitys[i].myLight, sizeof(Level_Light));
-						break;
-						//5 = Physics
-					case 5:
-						myFile.write((const char*)& m_Entitys.myEntitys[i].myPhysics, sizeof(Level_Physics));
-						break;
-						//6 = Enemy
-					case 6:
-						myFile.write((const char*)& m_Entitys.myEntitys[i].myEnemy, sizeof(Level_Enemy));
-						break;
-						//7 = Health
-					case 7:
-						myFile.write((const char*)& m_Entitys.myEntitys[i].myHealth, sizeof(Level_Health));
-						break;
-						//8 = HealthBar
-					case 8:
-						myFile.write((const char*)& m_Entitys.myEntitys[i].myHealthBar, sizeof(Level_HealthBar));
-						break;
-						//9 = ParticleSystem
-					case 9:
-						myFile.write((const char*)& m_Entitys.myEntitys[i].myParticleSystem, sizeof(Level_ParticleSystem));
-						break;
-						//10 = LevelExit
-					case 10:
-						myFile.write((const char*)& m_Entitys.myEntitys[i].myLevelExit, sizeof(Level_LevelExit));
-						break;
-						//11 = DropItem
-					case 11:
-						myFile.write((const char*)& m_Entitys.myEntitys[i].myDropItem, sizeof(Level_DropItem));
-						break;
-						//12 = WitchCircle
-					case 12:
-						myFile.write((const char*)& m_Entitys.myEntitys[i].myWitchCircle, sizeof(Level_WitchCircle));
-						break;
-					case 13:
-						myFile.write((const char*)& m_Entitys.myEntitys[i].myAnimController, sizeof(Level_AnimController));
-						break;
-					default:
-						break;
-					}
-				}
+
+			//0 = Transform
+			if (m_Entitys.myEntitys[i].MyComponents[0].HaveComponent)
+			{
+				myFile.write((const char*)& m_Entitys.myEntitys[i].myTransform, sizeof(Level_Transform));
+			}
+			//1 = Mesh
+			if (m_Entitys.myEntitys[i].MyComponents[1].HaveComponent)
+			{
+				myFile.write((const char*)& m_Entitys.myEntitys[i].myMesh, sizeof(Level_Mesh));
+			}
+			//2 = Material
+			if (m_Entitys.myEntitys[i].MyComponents[2].HaveComponent)
+			{
+				myFile.write((const char*)& m_Entitys.myEntitys[i].myMaterial, sizeof(Level_Material));
+			}
+			//3 = Follow
+			if (m_Entitys.myEntitys[i].MyComponents[3].HaveComponent)
+			{
+				myFile.write((const char*)& m_Entitys.myEntitys[i].myFollow, sizeof(Level_Follow));
+			}
+			//4 = Light
+			if (m_Entitys.myEntitys[i].MyComponents[4].HaveComponent)
+			{
+				myFile.write((const char*)& m_Entitys.myEntitys[i].myLight, sizeof(Level_Light));
+			}
+			//5 = Physics
+			if (m_Entitys.myEntitys[i].MyComponents[5].HaveComponent)
+			{
+				myFile.write((const char*)& m_Entitys.myEntitys[i].myPhysics, sizeof(Level_Physics));
+			}
+			//6 = Enemy
+			if (m_Entitys.myEntitys[i].MyComponents[6].HaveComponent)
+			{
+				myFile.write((const char*)& m_Entitys.myEntitys[i].myEnemy, sizeof(Level_Enemy));
+			}
+			//7 = Health
+			if (m_Entitys.myEntitys[i].MyComponents[7].HaveComponent)
+			{
+				myFile.write((const char*)& m_Entitys.myEntitys[i].myHealth, sizeof(Level_Health));
+			}
+			//8 = HealthBar
+			if (m_Entitys.myEntitys[i].MyComponents[8].HaveComponent)
+			{
+				myFile.write((const char*)& m_Entitys.myEntitys[i].myHealthBar, sizeof(Level_HealthBar));
+			}
+			//9 = ParticleSystem
+			if (m_Entitys.myEntitys[i].MyComponents[9].HaveComponent)
+			{
+				myFile.write((const char*)& m_Entitys.myEntitys[i].myParticleSystem, sizeof(Level_ParticleSystem));
+			}
+			//10 = LevelExit
+			if (m_Entitys.myEntitys[i].MyComponents[10].HaveComponent)
+			{
+				myFile.write((const char*)& m_Entitys.myEntitys[i].myLevelExit, sizeof(Level_LevelExit));
+			}
+			//11 = DropItem
+			if (m_Entitys.myEntitys[i].MyComponents[11].HaveComponent)
+			{
+				myFile.write((const char*)& m_Entitys.myEntitys[i].myDropItem, sizeof(Level_DropItem));
+			}
+			//12 = WitchCircle
+			if (m_Entitys.myEntitys[i].MyComponents[12].HaveComponent)
+			{
+				myFile.write((const char*)& m_Entitys.myEntitys[i].myWitchCircle, sizeof(Level_WitchCircle));
+			}
+			//13 = animationController
+			if (m_Entitys.myEntitys[i].MyComponents[13].HaveComponent)
+			{
+				myFile.write((const char*)& m_Entitys.myEntitys[i].myAnimController, sizeof(Level_AnimController));
+			}
+
 		}
 		myFile.close();
 		m_Entitys.myEntitys.clear();
@@ -407,8 +415,8 @@ namespace MCS
 						if (fileEntitys.myEntitys[i].MyComponents[10].HaveComponent || !fileEntitys.myEntitys[i].MyComponents[1].HaveComponent)
 						{
 							float savedX = fileEntitys.myEntitys[i].myTransform.Scale.x;
-							fileEntitys.myEntitys[i].myTransform.Scale.x = fileEntitys.myEntitys[i].myTransform.Scale.z *1.25f;
-							fileEntitys.myEntitys[i].myTransform.Scale.z = savedX * 1.25f;
+							fileEntitys.myEntitys[i].myTransform.Scale.x = fileEntitys.myEntitys[i].myTransform.Scale.z;
+							fileEntitys.myEntitys[i].myTransform.Scale.z = savedX;
 						}
 						else
 						{
@@ -421,8 +429,8 @@ namespace MCS
 					}
 
 					//created entety
-					auto& entity = m_World->CreateEntity((glm::vec3(matrix[3].x, matrix[3].y, matrix[3].z) + startOffset), tempRotation, fileEntitys.myEntitys.at(i).myTransform.Scale, fileEntitys.myEntitys.at(i).myTransform.IsStatic);
-					//auto& entity = m_World->CreateEntity((glm::vec3(matrix[3].x, matrix[3].y, matrix[3].z)), tempRotation, fileEntitys.myEntitys.at(i).myTransform.Scale, fileEntitys.myEntitys.at(i).myTransform.IsStatic);
+					//auto& entity = m_World->CreateEntity((glm::vec3(matrix[3].x, matrix[3].y, matrix[3].z) + startOffset), tempRotation, fileEntitys.myEntitys.at(i).myTransform.Scale, fileEntitys.myEntitys.at(i).myTransform.IsStatic);
+					auto& entity = m_World->CreateEntity((glm::vec3(matrix[3].x, matrix[3].y, matrix[3].z)), tempRotation, fileEntitys.myEntitys.at(i).myTransform.Scale, fileEntitys.myEntitys.at(i).myTransform.IsStatic);
 					m_World->AddToGroup(entity, CurrentGroup);
 
 					auto& newlyTreansform = m_World->GetComponent<Frosty::ECS::CTransform>(entity);
@@ -443,6 +451,12 @@ namespace MCS
 								Frosty::AssetManager::GetMesh(fileEntitys.myEntitys[i].myMesh.MeshName));
 						}
 					}
+					//to se colition boxes
+					//else if (fileEntitys.myEntitys[i].MyComponents[5].HaveComponent && !fileEntitys.myEntitys[i].MyComponents[2].HaveComponent)
+					//{
+					//	m_World->AddComponent<Frosty::ECS::CMesh>(entity, Frosty::AssetManager::GetMesh("pCube1"));
+					//	m_World->AddComponent<Frosty::ECS::CMaterial>(entity, Frosty::AssetManager::GetShader("FlatColor"));
+					//}
 					//2 = Material
 					if (fileEntitys.myEntitys[i].MyComponents[2].HaveComponent)
 					{
@@ -473,7 +487,6 @@ namespace MCS
 						material.Shininess = fileEntitys.myEntitys[i].myMaterial.Shininess;
 						material.TextureScale = fileEntitys.myEntitys[i].myMaterial.TextureScale;
 						material.HasTransparency = fileEntitys.myEntitys[i].myMaterial.HasTransparency;
-					
 					}
 					//3 = Follow
 					if (fileEntitys.myEntitys[i].MyComponents[3].HaveComponent)
@@ -494,7 +507,6 @@ namespace MCS
 					if (fileEntitys.myEntitys[i].MyComponents[5].HaveComponent)
 					{
 						existingFile.read((char*)& fileEntitys.myEntitys[i].myPhysics, sizeof(Level_Physics));
-
 						physCounter++;
 						auto& physics = m_World->AddComponent<Frosty::ECS::CPhysics>(entity,
 							Frosty::AssetManager::GetBoundingBox(fileEntitys.myEntitys[i].MyComponents[1].HaveComponent ?
@@ -1062,7 +1074,7 @@ namespace MCS
 			}
 		}
 		FY_CORE_ASSERT(0,"Could not find boss spawn position");
-
+		return glm::vec3(0.0f, 0.0f, 0.0f);
 	}
 }
 
