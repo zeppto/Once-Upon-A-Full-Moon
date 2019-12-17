@@ -39,6 +39,10 @@ namespace MCS
 		static bool s_RenderShadows;
 		static bool s_RenderFromPointLight;
 
+		// GUI
+		char m_textName[50] = "";
+		char m_spriteName[50] = "";
+
 		//FOR OPENING LEVEL
 		char m_LevelName[50] = "name";
 

@@ -79,9 +79,15 @@ namespace Frosty
 			unsigned int middle = 0;
 			int index = -1;
 			unsigned int bSearchLimit = 5;
+			int whileCount = 0;
 
 			while (index == -1 && last >= first)
 			{
+				if (last == -1)
+				{
+					int u = whileCount;
+				}
+
 				middle = (last + first) / 2;
 
 				if (v[middle] == value)
@@ -93,7 +99,13 @@ namespace Frosty
 				{
 					// Value is less. Not found
 					// Move last
+
 					last = middle - 1;
+					if (last == -1)
+					{
+						last = 0;
+					}
+
 				}
 				else if (v[middle] < value)
 				{
@@ -112,7 +124,10 @@ namespace Frosty
 							index = i;
 						}
 					}
+					break;
 				}
+
+				whileCount++;
 			}
 
 			return index;
@@ -1258,7 +1273,7 @@ namespace Frosty
 
 			bool breakable{ true }; //When a new animation are allowed to be played (over another animation)
 			bool isBusy{ false }; //When a action such as Attacks, Dash and Run are running. -Only check this on Idle
-		
+
 			CAnimController() = default;
 			CAnimController(const CAnimController& org) { FY_CORE_ASSERT(false, "Copy constructor in CAnimController called."); }
 
