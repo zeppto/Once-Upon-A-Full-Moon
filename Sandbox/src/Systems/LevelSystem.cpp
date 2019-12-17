@@ -116,9 +116,9 @@ namespace MCS
 			m_Map.getRoomTextur(m_PlayerCoords, &rotate);
 			m_CurrentRoomBool = m_World->GetCurrentRoom();
 			//	Level::MoveToNewRoom(m_CurrentRoome.sideExits[0], m_CurrentRoome.sideExits[1], m_CurrentRoome.sideExits[2], m_CurrentRoome.sideExits[3]);
-			m_LevelFileFormat.OpenFromFile("deadend_chests_IsStatick_t_p_e_r_h_a_bb", !m_NextLevel, m_PlayerCoords, playerTransform, rotate);
+			m_LevelFileFormat.OpenFromFile("deadend_chests_IsStatick_t_p_e_r_h_a_bb_h", !m_NextLevel, m_PlayerCoords, playerTransform, rotate);
 			
-			m_T_Room.RoomName = "deadend_chests_IsStatick_t_p_e_r_h_a_bb";
+			m_T_Room.RoomName = "deadend_chests_IsStatick_t_p_e_r_h_a_bb_h";
 
 			m_T_Room.Rotation = rotate;
 			Frosty::EventBus::GetEventBus()->Publish<Frosty::UpdateCurrentRoomEvent>(Frosty::UpdateCurrentRoomEvent(m_T_Room.RoomName, m_T_Room.Rotation));
