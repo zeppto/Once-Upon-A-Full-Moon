@@ -329,7 +329,7 @@ namespace MCS
 						Frosty::EventBus::GetEventBus()->Publish<Frosty::PlayMediaEvent>(Frosty::PlayMediaEvent(fileName, false, 1.0f, 0.0f, false, 0));
 
 						//m_Physics[index]->Velocity *= m_Dash[index]->SpeedMultiplier;
-						m_Physics[index]->SpeedMultiplier = m_Dash[index]->SpeedMultiplier;
+						//m_Physics[index]->SpeedMultiplier = m_Dash[index]->SpeedMultiplier;  // Affected usage of speed potion
 						m_Dash[index]->CurrentCooldown = m_Dash[index]->COOLDOWN / 1000.0f;
 					}
 				}
