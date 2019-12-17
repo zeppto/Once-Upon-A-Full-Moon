@@ -20,7 +20,7 @@ namespace MCS
 		auto& world = Frosty::Application::Get().GetWorld();
 		if (!world->HasComponent<Frosty::ECS::CDestroy>(m_GameOverGui))
 		{
-			world->AddComponent<Frosty::ECS::CDestroy>(m_GameOverGui);
+			world->AddComponent<Frosty::ECS::CDestroy>(m_GameOverGui); 
 		}
 	}
 

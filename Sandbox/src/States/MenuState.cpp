@@ -642,7 +642,7 @@ namespace MCS
 		uiLayout.AddSprite(glm::vec2(healthXOffset + healthPadding * 8, healthYOffset), healthScale, "Heart_0", glm::vec4(1.0f, 1.0f, 1.0f, 0.0f));// 28
 		uiLayout.AddSprite(glm::vec2(healthXOffset + healthPadding * 9, healthYOffset), healthScale, "Heart_0", glm::vec4(1.0f, 1.0f, 1.0f, 0.0f));// 29
 
-		uiLayout.AddText(glm::vec2(900, 675), "Fps:", glm::vec3(1.0f, 1.0f, 0.75f), 1.0f); //21
+		uiLayout.AddText(glm::vec2(900, 675), "Fps:", glm::vec3(1.0f, 1.0f, 0.75f),0.0f); //21
 
 		//uiLayout.AddSprite(glm::vec2(25.0f + testOffset * 0, 620.0f), glm::vec2(1, 1), "higlightHart", glm::vec4(1.0f));
 		m_World->AddComponent<Frosty::ECS::CGUI>(player, uiLayout);
