@@ -107,6 +107,9 @@ namespace MCS
 		case Frosty::EventType::BossFearEffect:
 			OnBossFearEffect(static_cast<Frosty::BossFearEffectEvent&>(e));
 			break;
+		case Frosty::EventType::BossCloseEffect:
+			OnBossCloseEffectEvent(static_cast<Frosty::BossCloseEffectEvent&>(e));
+			break;
 		default:
 			break;
 		}
@@ -276,7 +279,7 @@ namespace MCS
 			m_Physics[index]->Direction.x = 0.0f;
 			//m_Physics[index]->Velocity.x = 0.0f;
 		}
-	
+
 		if (animController.breakable) //Check if current animation is busy/breakable
 		{
 			if (Frosty::InputManager::IsKeyPressed(m_Player[index]->MoveForwardKey))
@@ -307,7 +310,7 @@ namespace MCS
 					if (m_Dash[index]->CurrentCooldown <= 0.0f)
 					{
 						m_Dash[index]->Active = true;
-						Frosty::EventBus::GetEventBus()->Publish<Frosty::DashEvent>(Frosty::DashEvent(m_Player[index]->EntityPtr));		
+						Frosty::EventBus::GetEventBus()->Publish<Frosty::DashEvent>(Frosty::DashEvent(m_Player[index]->EntityPtr));
 
 						int rand = std::rand() % 3 + 1;
 						std::string str = "assets/sounds/DodgePrassel" + std::to_string(rand) + ".wav";
@@ -1027,7 +1030,7 @@ namespace MCS
 
 				m_Inventory[index]->CurrentBaitAmount--;
 				m_Inventory[index]->BaitTimer = Frosty::Time::CurrentTime();
-				
+
 				// Drop meat (walking sound?)
 				Frosty::EventBus::GetEventBus()->Publish<Frosty::PlayMediaEvent>(Frosty::PlayMediaEvent("assets/sounds/FootstepMud2.wav", false, 2.0f, 0.0f, false, 0));
 			}
@@ -1186,11 +1189,11 @@ namespace MCS
 					else if (playerWeapon.Level == 3)
 						SetPickUpText(i, "Picked Up Sword Level 3");
 
-					HUD.Layout.sprites.at(2).SetImage("attackMelee");
-					HUD.Layout.sprites.at(3).SetImage("attackMelee1");
-					HUD.Layout.sprites.at(4).SetImage("attackMelee2");
-					HUD.Layout.sprites.at(5).SetImage("attackMelee3");
-					
+					HUD.Layout.sprites[3].SetImage("attackMelee");
+					HUD.Layout.sprites[3].SetImage("attackMelee1");
+					HUD.Layout.sprites[3].SetImage("attackMelee2");
+					HUD.Layout.sprites[3].SetImage("attackMelee3");
+
 					// Audio setup
 					int rand = std::rand() % 2 + 1;
 					std::string str = "assets/sounds/WeaponPickup" + std::to_string(rand) + ".wav";
@@ -1213,10 +1216,10 @@ namespace MCS
 					const char* fileName_Bow = bowStr.c_str();
 					Frosty::EventBus::GetEventBus()->Publish<Frosty::PlayMediaEntityEvent>(Frosty::PlayMediaEntityEvent(loot.EntityPtr, fileName_Bow, false, 2.0f, 30.0f, 100.0f, false, 0));
 
-					HUD.Layout.sprites[2].SetImage("attackRanged");
-					HUD.Layout.sprites[3].SetImage("attackRanged1");
-					HUD.Layout.sprites[4].SetImage("attackRanged2");
-					HUD.Layout.sprites[5].SetImage("attackRanged3");
+					HUD.Layout.sprites[3].SetImage("attackRanged");
+					HUD.Layout.sprites[4].SetImage("attackRanged1");
+					HUD.Layout.sprites[5].SetImage("attackRanged2");
+					HUD.Layout.sprites[6].SetImage("attackRanged3");
 				}
 
 
@@ -1258,7 +1261,7 @@ namespace MCS
 				{
 
 					weaponComp.FireCriticalHitChance += 0.1f;
-					HUD.Layout.sprites[7].SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+					HUD.Layout.sprites[8].SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
 					//HUD.Layout.sprites.at(6).SetTranslateSprite(glm::vec2(960 / 1.5f, (540 / 1.5f) + 500));
 					//HUD.Layout.sprites.at(6).SetScaleSprite(glm::vec2(1.5, 1.5));
 					m_Player[p_Total - 1]->ElementDisplayTimer = Frosty::Time::CurrentTime();
@@ -1272,7 +1275,7 @@ namespace MCS
 				{
 					weaponComp.EarthDamage += 1.f;
 
-					HUD.Layout.sprites[6].SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+					HUD.Layout.sprites[7].SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
 					//HUD.Layout.sprites.at(5).SetTranslateSprite(glm::vec2(960 / 1.5f, (540 / 1.5f) + 500));
 					//HUD.Layout.sprites.at(5).SetScaleSprite(glm::vec2(1.5, 1.5));
 					m_Player[p_Total - 1]->ElementDisplayTimer = Frosty::Time::CurrentTime();
@@ -1286,7 +1289,7 @@ namespace MCS
 				{
 					weaponComp.WindSpeed += 0.4f;
 
-					HUD.Layout.sprites[9].SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+					HUD.Layout.sprites[10].SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
 					//HUD.Layout.sprites.at(8).SetTranslateSprite(glm::vec2(960 / 1.5f, (540 / 1.5f) + 500));
 					//HUD.Layout.sprites.at(8).SetScaleSprite(glm::vec2(1.5, 1.5));
 					m_Player[p_Total - 1]->ElementDisplayTimer = Frosty::Time::CurrentTime();
@@ -1300,7 +1303,7 @@ namespace MCS
 				{
 					weaponComp.WaterHealing += 1;
 
-					HUD.Layout.sprites[8].SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+					HUD.Layout.sprites[9].SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
 					//HUD.Layout.sprites.at(7).SetTranslateSprite(glm::vec2(960 / 1.5f, (540 / 1.5f) + 500));
 					//HUD.Layout.sprites.at(7).SetScaleSprite(glm::vec2(1.5, 1.5));
 					m_Player[p_Total - 1]->ElementDisplayTimer = Frosty::Time::CurrentTime();
@@ -1591,7 +1594,7 @@ namespace MCS
 
 			auto& HUD = m_World->GetComponent<Frosty::ECS::CGUI>(m_Transform[index]->EntityPtr);
 
-			if (Frosty::InputManager::IsKeyPressed(FY_KEY_P))
+			if (Frosty::InputManager::IsKeyPressed(FY_KEY_O))
 			{
 				/*auto& weaponComp = (m_World->GetComponent<Frosty::ECS::CWeapon>(m_Player[index]->Weapon->EntityPtr));
 				weaponComp.FireCriticalHitChance += 0.1f;
@@ -1603,9 +1606,15 @@ namespace MCS
 				SetPickUpText(index, "tjena");*/
 
 				//Frosty::EventBus::GetEventBus()->Publish<Frosty::UpgradeWeaponEvent>(Frosty::UpgradeWeaponEvent());
+				//Frosty::EventBus::GetEventBus()->Publish<Frosty::BossCloseEffectEvent>(Frosty::BossCloseEffectEvent(true));
 			}
 
-			HUD.Layout.texts[21].SetText(std::string("FPS: "+std::to_string(Frosty::Time::FPS())));
+			//if (Frosty::InputManager::IsKeyPressed(FY_KEY_P))
+			//{
+			//	Frosty::EventBus::GetEventBus()->Publish<Frosty::BossCloseEffectEvent>(Frosty::BossCloseEffectEvent(false));
+			//}
+
+			HUD.Layout.texts[21].SetText(std::string("FPS: " + std::to_string(Frosty::Time::FPS())));
 
 			//Items
 			HUD.Layout.texts[0].SetText(std::string(std::to_string(m_Inventory[index]->CurrentHealingPotions) + "/" + std::string(std::to_string(m_Inventory[index]->MaxHealingPotions))));
@@ -1615,13 +1624,13 @@ namespace MCS
 
 			if (m_Inventory[index]->CurrentHealingPotions == 0)
 			{
-				HUD.Layout.sprites[10].SetColorSprite(glm::vec4(0.3f, 0.3f, 0.3f, 1.0f));
+				HUD.Layout.sprites[11].SetColorSprite(glm::vec4(0.3f, 0.3f, 0.3f, 1.0f));
 				HUD.Layout.texts[18].SetText(std::string(""));
 				HUD.Layout.texts[0].SetColor(glm::vec3(0.75f, 0.75f, 0.50f));
 			}
 			else
 			{
-				HUD.Layout.sprites[10].SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+				HUD.Layout.sprites[11].SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
 				HUD.Layout.texts[18].SetText(std::string("[1]"));
 				HUD.Layout.texts[0].SetColor(glm::vec3(1.0f, 1.0f, 0.75f));
 
@@ -1629,14 +1638,14 @@ namespace MCS
 
 			if (m_Inventory[index]->CurrentSpeedPotions == 0)
 			{
-				HUD.Layout.sprites[11].SetColorSprite(glm::vec4(0.3f, 0.3f, 0.3f, 1.0f));
+				HUD.Layout.sprites[12].SetColorSprite(glm::vec4(0.3f, 0.3f, 0.3f, 1.0f));
 				HUD.Layout.texts[19].SetText(std::string(""));
 				HUD.Layout.texts[1].SetColor(glm::vec3(0.75f, 0.75f, 0.50f));
 
 			}
 			else
 			{
-				HUD.Layout.sprites[11].SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+				HUD.Layout.sprites[12].SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
 				HUD.Layout.texts[19].SetText(std::string("[2]"));
 				HUD.Layout.texts[1].SetColor(glm::vec3(1.0f, 1.0f, 0.75f));
 
@@ -1644,14 +1653,14 @@ namespace MCS
 
 			if (m_Inventory[index]->CurrentBaitAmount == 0)
 			{
-				HUD.Layout.sprites[12].SetColorSprite(glm::vec4(0.3f, 0.3f, 0.3f, 1.0f));
+				HUD.Layout.sprites[13].SetColorSprite(glm::vec4(0.3f, 0.3f, 0.3f, 1.0f));
 				HUD.Layout.texts[20].SetText(std::string(""));
 				HUD.Layout.texts[2].SetColor(glm::vec3(0.5f, 0.5f, 0.25f));
 
 			}
 			else
 			{
-				HUD.Layout.sprites[12].SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+				HUD.Layout.sprites[13].SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
 				HUD.Layout.texts[20].SetText(std::string("[Q]"));
 				HUD.Layout.texts[2].SetColor(glm::vec3(1.0f, 1.0f, 0.75f));
 
@@ -1670,11 +1679,11 @@ namespace MCS
 				currentHealth = m_Health[index]->CurrentHealth;
 			}
 
-
+			//Health
 			int nrOfFilledHearts = currentHealth / 4;
 			int nrOfHeartQuadrants = currentHealth % 4;
 
-			int healthSpriteID = 20;
+			int healthSpriteID = 21;
 			for (int i = 0; i < nrOfFilledHearts && nrOfFilledHearts <= m_Health[index]->MaxHealth; i++)
 			{
 				if (healthSpriteID < 30)
@@ -1687,7 +1696,7 @@ namespace MCS
 
 			if (nrOfHeartQuadrants == 1)
 			{
-				if (healthSpriteID < 30)
+				if (healthSpriteID < 31)
 				{
 					HUD.Layout.sprites[healthSpriteID].SetImage("Heart_1");
 					HUD.Layout.sprites[healthSpriteID].SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
@@ -1695,7 +1704,7 @@ namespace MCS
 			}
 			else if (nrOfHeartQuadrants == 2)
 			{
-				if (healthSpriteID < 30)
+				if (healthSpriteID < 31)
 				{
 					HUD.Layout.sprites[healthSpriteID].SetImage("Heart_2");
 					HUD.Layout.sprites[healthSpriteID].SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
@@ -1703,7 +1712,7 @@ namespace MCS
 			}
 			else if (nrOfHeartQuadrants == 3)
 			{
-				if (healthSpriteID < 30)
+				if (healthSpriteID < 31)
 				{
 					HUD.Layout.sprites[healthSpriteID].SetImage("Heart_3");
 					HUD.Layout.sprites[healthSpriteID].SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
@@ -1719,7 +1728,7 @@ namespace MCS
 			}
 
 			int nrOfEmptyHearts = (m_Health[index]->MaxHealth - currentHealth) / 4;
-			healthSpriteID = 20 + currentHealth / 4;
+			healthSpriteID = 21 + currentHealth / 4;
 
 			if (nrOfHeartQuadrants > 0)
 			{
@@ -1728,7 +1737,7 @@ namespace MCS
 
 			for (int i = 0; i < nrOfEmptyHearts; i++)
 			{
-				if (healthSpriteID < 30)
+				if (healthSpriteID < 31)
 				{
 					HUD.Layout.sprites[healthSpriteID].SetImage("Heart_0");
 					HUD.Layout.sprites[healthSpriteID].SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
@@ -1757,19 +1766,19 @@ namespace MCS
 					int cooldown1 = (int)cooldown;
 					int cooldown2 = (int)((cooldown - cooldown1) * 10);
 					HUD.Layout.texts[7].SetText(std::string(std::to_string(cooldown1) + "." + std::to_string(cooldown2)));
-					HUD.Layout.sprites[5].SetColorSprite(glm::vec4(0.1f, 0.1f, 0.1f, 0.90f));
+					HUD.Layout.sprites[6].SetColorSprite(glm::vec4(0.1f, 0.1f, 0.1f, 0.90f));
 				}
 				else
 				{
 					HUD.Layout.texts[7].SetText(std::string(""));
-					HUD.Layout.sprites[5].SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+					HUD.Layout.sprites[6].SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
 
 				}
 			}
 			else
 			{
 				HUD.Layout.texts[14].SetText(std::string(""));
-				HUD.Layout.sprites[5].SetColorSprite(glm::vec4(0.1f, 0.1f, 0.1f, 0.50f));
+				HUD.Layout.sprites[6].SetColorSprite(glm::vec4(0.1f, 0.1f, 0.1f, 0.50f));
 
 			}
 
@@ -1786,21 +1795,21 @@ namespace MCS
 					int cooldown1 = (int)cooldown;
 					int cooldown2 = (int)((cooldown - cooldown1) * 10);
 					HUD.Layout.texts[8].SetText(std::string(std::to_string(cooldown1) + "." + std::to_string(cooldown2)));
-					HUD.Layout.sprites[4].SetColorSprite(glm::vec4(0.1f, 0.1f, 0.1f, 0.90f));
+					HUD.Layout.sprites[5].SetColorSprite(glm::vec4(0.1f, 0.1f, 0.1f, 0.90f));
 
 
 				}
 				else
 				{
 					HUD.Layout.texts[8].SetText(std::string(""));
-					HUD.Layout.sprites[4].SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+					HUD.Layout.sprites[5].SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
 
 				}
 			}
 			else
 			{
 				HUD.Layout.texts[15].SetText(std::string(""));
-				HUD.Layout.sprites[4].SetColorSprite(glm::vec4(0.1f, 0.1f, 0.1f, 0.50f));
+				HUD.Layout.sprites[5].SetColorSprite(glm::vec4(0.1f, 0.1f, 0.1f, 0.50f));
 
 			}
 
@@ -1817,21 +1826,21 @@ namespace MCS
 					int cooldown1 = (int)cooldown;
 					int cooldown2 = (int)((cooldown - cooldown1) * 10);
 					HUD.Layout.texts[9].SetText(std::string(std::to_string(cooldown1) + "." + std::to_string(cooldown2)));
-					HUD.Layout.sprites[3].SetColorSprite(glm::vec4(0.1f, 0.1f, 0.1f, 0.90f));
+					HUD.Layout.sprites[4].SetColorSprite(glm::vec4(0.1f, 0.1f, 0.1f, 0.90f));
 
 
 				}
 				else
 				{
 					HUD.Layout.texts[9].SetText(std::string(""));
-					HUD.Layout.sprites[3].SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+					HUD.Layout.sprites[4].SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
 
 				}
 			}
 			else
 			{
 				HUD.Layout.texts[16].SetText(std::string(""));
-				HUD.Layout.sprites[3].SetColorSprite(glm::vec4(0.1f, 0.1f, 0.1f, 0.50f));
+				HUD.Layout.sprites[4].SetColorSprite(glm::vec4(0.1f, 0.1f, 0.1f, 0.50f));
 
 			}
 
@@ -1843,13 +1852,13 @@ namespace MCS
 				int cooldown2 = (int)(((m_Dash[index]->CurrentCooldown - cooldown1) * 10));
 
 				HUD.Layout.texts[10].SetText(std::string(std::to_string(cooldown1) + "." + std::to_string(cooldown2)));
-				HUD.Layout.sprites[14].SetColorSprite(glm::vec4(0.1f, 0.1f, 0.1f, 0.90f));
+				HUD.Layout.sprites[15].SetColorSprite(glm::vec4(0.1f, 0.1f, 0.1f, 0.90f));
 
 			}
 			else
 			{
 				HUD.Layout.texts[10].SetText(std::string(""));
-				HUD.Layout.sprites[14].SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+				HUD.Layout.sprites[15].SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
 
 			}
 
@@ -1869,7 +1878,7 @@ namespace MCS
 				int cooldown1 = (int)cooldown;
 				int cooldown2 = (int)((cooldown - cooldown1) * 10);
 				HUD.Layout.texts[11].SetText(std::string(std::to_string(cooldown1) + "." + std::to_string(cooldown2)));
-				HUD.Layout.sprites[10].SetColorSprite(glm::vec4(0.2f, 0.2f, 0.2f, 0.75f));
+				HUD.Layout.sprites[11].SetColorSprite(glm::vec4(0.2f, 0.2f, 0.2f, 0.75f));
 
 			}
 			else
@@ -1877,7 +1886,7 @@ namespace MCS
 				HUD.Layout.texts[11].SetText(std::string(""));
 				if (m_Inventory[index]->CurrentHealingPotions != 0)
 				{
-					HUD.Layout.sprites[10].SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+					HUD.Layout.sprites[11].SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
 				}
 
 			}
@@ -1892,7 +1901,7 @@ namespace MCS
 				int cooldown1 = (int)cooldown;
 				int cooldown2 = (int)((cooldown - cooldown1) * 10);
 				HUD.Layout.texts[12].SetText(std::string(std::to_string(cooldown1) + "." + std::to_string(cooldown2)));
-				HUD.Layout.sprites[11].SetColorSprite(glm::vec4(0.2f, 0.2f, 0.2f, 0.75f));
+				HUD.Layout.sprites[12].SetColorSprite(glm::vec4(0.2f, 0.2f, 0.2f, 0.75f));
 
 			}
 			else
@@ -1900,7 +1909,7 @@ namespace MCS
 				HUD.Layout.texts[12].SetText(std::string(""));
 				if (m_Inventory[index]->CurrentSpeedPotions != 0)
 				{
-					HUD.Layout.sprites[11].SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+					HUD.Layout.sprites[12].SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
 				}
 
 			}
@@ -1915,7 +1924,7 @@ namespace MCS
 				int cooldown1 = (int)cooldown;
 				int cooldown2 = (int)((cooldown - cooldown1) * 10);
 				HUD.Layout.texts[13].SetText(std::string(std::to_string(cooldown1) + "." + std::to_string(cooldown2)));
-				HUD.Layout.sprites[12].SetColorSprite(glm::vec4(0.2f, 0.2f, 0.2f, 0.75f));
+				HUD.Layout.sprites[13].SetColorSprite(glm::vec4(0.2f, 0.2f, 0.2f, 0.75f));
 
 			}
 			else
@@ -1923,13 +1932,13 @@ namespace MCS
 				HUD.Layout.texts[13].SetText(std::string(""));
 				if (m_Inventory[index]->CurrentBaitAmount != 0)
 				{
-					HUD.Layout.sprites[12].SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+					HUD.Layout.sprites[13].SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
 				}
 
 			}
 
 			//Speed boots
-			int bootSpriteID = 15;
+			int bootSpriteID = 16;
 			for (int i = 0; i < m_Inventory[index]->CurrentSpeedBoots && m_Inventory[index]->CurrentSpeedBoots <= 5; i++)
 			{
 
@@ -1964,23 +1973,23 @@ namespace MCS
 					glm::vec2 scaleB{ 0.5 * m_WidthMultiplier, 0.5 * m_HeightMultiplier };
 					glm::vec2 scaleDif = scaleA - scaleB;
 
-					HUD.Layout.sprites[6].SetTranslateSprite(posA - posDif * percentage);
-					HUD.Layout.sprites[6].SetScaleSprite(scaleA - scaleDif * percentage);
+					HUD.Layout.sprites[7].SetTranslateSprite(posA - posDif * percentage);
+					HUD.Layout.sprites[7].SetScaleSprite(scaleA - scaleDif * percentage);
 
 
 				}
 				else
 				{
-					HUD.Layout.sprites[6].SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
-					HUD.Layout.sprites[6].SetTranslateSprite(glm::vec2(30 * m_WidthMultiplier, 30 * m_HeightMultiplier));
-					HUD.Layout.sprites[6].SetScaleSprite(glm::vec2(0.5 * m_WidthMultiplier, 0.5 * m_HeightMultiplier));
+					HUD.Layout.sprites[7].SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+					HUD.Layout.sprites[7].SetTranslateSprite(glm::vec2(30 * m_WidthMultiplier, 30 * m_HeightMultiplier));
+					HUD.Layout.sprites[7].SetScaleSprite(glm::vec2(0.5 * m_WidthMultiplier, 0.5 * m_HeightMultiplier));
 					m_Player[index]->Weapon->HasDoneEarthSprite = true;
 				}
 
 			}
 			else
 			{
-				HUD.Layout.sprites[6].SetColorSprite(glm::vec4(0.1f, 0.1f, 0.1f, 0.50f));
+				HUD.Layout.sprites[7].SetColorSprite(glm::vec4(0.1f, 0.1f, 0.1f, 0.50f));
 			}
 
 			//Fire
@@ -2000,22 +2009,22 @@ namespace MCS
 					glm::vec2 scaleB{ 0.5 * m_WidthMultiplier, 0.5 * m_HeightMultiplier };
 					glm::vec2 scaleDif = scaleA - scaleB;
 
-					HUD.Layout.sprites[7].SetTranslateSprite(posA - posDif * percentage);
-					HUD.Layout.sprites[7].SetScaleSprite(scaleA - scaleDif * percentage);
+					HUD.Layout.sprites[8].SetTranslateSprite(posA - posDif * percentage);
+					HUD.Layout.sprites[8].SetScaleSprite(scaleA - scaleDif * percentage);
 
 
 				}
 				else
 				{
-					HUD.Layout.sprites[7].SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
-					HUD.Layout.sprites[7].SetTranslateSprite(glm::vec2(50 * m_WidthMultiplier, 30 * m_HeightMultiplier));
-					HUD.Layout.sprites[7].SetScaleSprite(glm::vec2(0.5 * m_WidthMultiplier, 0.5 * m_HeightMultiplier));
+					HUD.Layout.sprites[8].SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+					HUD.Layout.sprites[8].SetTranslateSprite(glm::vec2(50 * m_WidthMultiplier, 30 * m_HeightMultiplier));
+					HUD.Layout.sprites[8].SetScaleSprite(glm::vec2(0.5 * m_WidthMultiplier, 0.5 * m_HeightMultiplier));
 					m_Player[index]->Weapon->HasDoneFireSprite = true;
 				}
 			}
 			else
 			{
-				HUD.Layout.sprites[7].SetColorSprite(glm::vec4(0.1f, 0.1f, 0.1f, 0.50f));
+				HUD.Layout.sprites[8].SetColorSprite(glm::vec4(0.1f, 0.1f, 0.1f, 0.50f));
 			}
 			//Water
 			if (m_Player[index]->Weapon->WaterHealing > 0.0f)
@@ -2034,22 +2043,22 @@ namespace MCS
 					glm::vec2 scaleB{ 0.5 * m_WidthMultiplier, 0.5 * m_HeightMultiplier };
 					glm::vec2 scaleDif = scaleA - scaleB;
 
-					HUD.Layout.sprites[8].SetTranslateSprite(posA - posDif * percentage);
-					HUD.Layout.sprites[8].SetScaleSprite(scaleA - scaleDif * percentage);
+					HUD.Layout.sprites[9].SetTranslateSprite(posA - posDif * percentage);
+					HUD.Layout.sprites[9].SetScaleSprite(scaleA - scaleDif * percentage);
 
 
 				}
 				else
 				{
-					HUD.Layout.sprites[8].SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
-					HUD.Layout.sprites[8].SetTranslateSprite(glm::vec2(70 * m_WidthMultiplier, 30 * m_HeightMultiplier));
-					HUD.Layout.sprites[8].SetScaleSprite(glm::vec2(0.5 * m_WidthMultiplier, 0.5 * m_HeightMultiplier));
+					HUD.Layout.sprites[9].SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+					HUD.Layout.sprites[9].SetTranslateSprite(glm::vec2(70 * m_WidthMultiplier, 30 * m_HeightMultiplier));
+					HUD.Layout.sprites[9].SetScaleSprite(glm::vec2(0.5 * m_WidthMultiplier, 0.5 * m_HeightMultiplier));
 					m_Player[index]->Weapon->HasDoneWaterSprite = true;
 				}
 			}
 			else
 			{
-				HUD.Layout.sprites[8].SetColorSprite(glm::vec4(0.1f, 0.1f, 0.1f, 0.50f));
+				HUD.Layout.sprites[9].SetColorSprite(glm::vec4(0.1f, 0.1f, 0.1f, 0.50f));
 			}
 			//Wind
 			if (m_Player[index]->Weapon->WindSpeed > 0.0f)
@@ -2068,22 +2077,22 @@ namespace MCS
 					glm::vec2 scaleB{ 0.5 * m_WidthMultiplier, 0.5 * m_HeightMultiplier };
 					glm::vec2 scaleDif = scaleA - scaleB;
 
-					HUD.Layout.sprites[9].SetTranslateSprite(posA - posDif * percentage);
-					HUD.Layout.sprites[9].SetScaleSprite(scaleA - scaleDif * percentage);
+					HUD.Layout.sprites[10].SetTranslateSprite(posA - posDif * percentage);
+					HUD.Layout.sprites[10].SetScaleSprite(scaleA - scaleDif * percentage);
 
 
 				}
 				else
 				{
-					HUD.Layout.sprites[9].SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
-					HUD.Layout.sprites[9].SetTranslateSprite(glm::vec2(90 * m_WidthMultiplier, 30 * m_HeightMultiplier));
-					HUD.Layout.sprites[9].SetScaleSprite(glm::vec2(0.5 * m_WidthMultiplier, 0.5 * m_HeightMultiplier));
+					HUD.Layout.sprites[10].SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+					HUD.Layout.sprites[10].SetTranslateSprite(glm::vec2(90 * m_WidthMultiplier, 30 * m_HeightMultiplier));
+					HUD.Layout.sprites[10].SetScaleSprite(glm::vec2(0.5 * m_WidthMultiplier, 0.5 * m_HeightMultiplier));
 					m_Player[index]->Weapon->HasDoneWindSprite = true;
 				}
 			}
 			else
 			{
-				HUD.Layout.sprites[9].SetColorSprite(glm::vec4(0.1f, 0.1f, 0.1f, 0.50f));
+				HUD.Layout.sprites[10].SetColorSprite(glm::vec4(0.1f, 0.1f, 0.1f, 0.50f));
 			}
 
 			//Damage Effect
@@ -2116,8 +2125,24 @@ namespace MCS
 			if (timeLeft <= m_Player[index]->BossFearEffectTime && timeLeft >= 0)
 			{
 				float percentage = (Frosty::Time::CurrentTime() - m_Player[index]->BossFearEffectTimer) / m_Player[index]->BossFearEffectTime;
-				HUD.Layout.sprites[1].SetColorSprite(glm::vec4(1.0f , 1.0f, 1.0f, 1.0f - 1.0f* percentage));
+				HUD.Layout.sprites[2].SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f - 1.0f * percentage));
 				//FY_INFO("OnBossFearEffect reset");
+			}
+
+			//BossClossEffect
+			timeLeft = Frosty::Time::CurrentTime() - m_Player[index]->BossCloseEffectTimer;
+			if (timeLeft <= m_Player[index]->BossCloseEffectTime)
+			{
+				float percentage = (Frosty::Time::CurrentTime() - m_Player[index]->BossCloseEffectTimer) / m_Player[index]->BossCloseEffectTime;
+				if (m_Player[index]->interperlationDirection == 1)
+				{
+					HUD.Layout.sprites[1].SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 0.0f + 1 * 1.0f * percentage));
+				}
+				else
+				{
+					HUD.Layout.sprites[1].SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f - 1 * 1.0f * percentage));
+				}
+				
 			}
 		}
 	}
@@ -2180,7 +2205,7 @@ namespace MCS
 		}
 		else
 		{
-			pos.x = width/2; //Midle
+			pos.x = width / 2; //Midle
 		}
 
 		if (e.GetDirectionToBoss().y > 0)
@@ -2197,17 +2222,40 @@ namespace MCS
 			pos.y = height / 2; //Midle
 		}
 
+		
 
 		for (size_t i = 1; i < p_Total; i++)
 		{
 			auto& HUD = m_World->GetComponent<Frosty::ECS::CGUI>(m_Transform[i]->EntityPtr);
-			HUD.Layout.sprites[1].SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
-			HUD.Layout.sprites[1].SetTranslateSprite(pos);
-			HUD.Layout.sprites[1].SetScaleSprite(glm::vec2(10,10));
-			
+			HUD.Layout.sprites[2].SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+			HUD.Layout.sprites[2].SetTranslateSprite(pos);
+			HUD.Layout.sprites[2].SetScaleSprite(glm::vec2(10, 10));
+
 			m_Player[i]->BossFearEffectTimer = Frosty::Time::CurrentTime();
 		}
 	}
 
+	void PlayerControllerSystem::OnBossCloseEffectEvent(Frosty::BossCloseEffectEvent& e)
+	{
 
+		for (size_t i = 1; i < p_Total; i++)
+		{
+			auto& HUD = m_World->GetComponent<Frosty::ECS::CGUI>(m_Transform[i]->EntityPtr);
+
+			if (e.IsBossClose())
+			{
+				m_Player[i]->interperlationDirection = 1;
+				m_Player[i]->BossCloseEffectTimer = Frosty::Time::CurrentTime();
+			}
+			else
+			{
+				float timeLeft = Frosty::Time::CurrentTime() - m_Player[i]->BossCloseEffectTimer;
+				if (timeLeft >= m_Player[i]->BossCloseEffectTime && m_Player[i]->interperlationDirection == 1)
+				{
+					m_Player[i]->BossCloseEffectTimer = Frosty::Time::CurrentTime();
+					m_Player[i]->interperlationDirection = -1;
+				}
+			}
+		}
+	}
 }
