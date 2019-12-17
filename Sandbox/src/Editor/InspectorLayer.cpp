@@ -1221,7 +1221,7 @@ namespace MCS
 		ImGui::Begin("Assets", NULL, window_flags);
 		{
 			//for fast creation of entitys
-			if (ImGui::Button("Enemy", ImVec2(80.0f, EDITOR_MAIN_MENU_BAR_HEIGHT)))
+			if (ImGui::Button("hittbox", ImVec2(80.0f, EDITOR_MAIN_MENU_BAR_HEIGHT)))
 			{
 				Frosty::EventBus::GetEventBus()->Publish<Frosty::CreatEntityEvent>(Frosty::CreatEntityEvent(0));
 			}

@@ -137,188 +137,8 @@ namespace MCS
 		}
 
 		float time = Frosty::Time::CurrentTime() - m_StartTimer - m_BossStartTimer;
-		if (time > 0)
-		{
-			if (!m_haveStartedMoving)
-			{
-				FY_INFO("The boss have started moving {0}", "!");
-				Room chekRoom = m_Map.getRoom(m_BossPos);
-				if (!chekRoom.Ocupide)
-				{
-					m_BossPos = m_Map.getLastCreatedLevelPos();
-				}
-				FY_INFO("The boss starts on ({0}, {1})", m_BossPos.x, m_BossPos.y);
-				m_haveStartedMoving = true;
-			}
+		//
 
-			if (time > m_BossTimer)
-			{
-				if (m_PlayerCoords != m_BossPos)
-				{
-					float estematedBossRoomTime;
-					if (m_LevelFileFormat.NumberOfRoomsVisited() != 0)
-					{
-						estematedBossRoomTime = ((Frosty::Time::CurrentTime() - m_StartTimer + 50.0f) / m_LevelFileFormat.NumberOfRoomsVisited() / 2) - (m_LevelFileFormat.NumberOfRoomsVisited()*1.2f);
-						if(estematedBossRoomTime > m_BossRoomTimer)
-							estematedBossRoomTime = m_BossRoomTimer;
-					}
-					else
-					{
-						estematedBossRoomTime = m_BossRoomTimer;
-					}
-
-					m_BossTimer = time + estematedBossRoomTime;
-					FY_INFO("It takes {0} sec until boss moves", estematedBossRoomTime);
-					if (m_RoomswhithBait.size() > 0)
-					{
-						//follow bait
-						FY_INFO("The boss is following bait");
-						Room bossCurrentRoom = m_Map.getRoom(m_BossPos);
-						glm::ivec2 expectedBossPos = glm::ivec2(-1, -1);
-						if (m_BossRememberdPath.pathToGo.size() > m_BossRememberdPath.lastTile)
-							expectedBossPos = m_BossRememberdPath.pathToGo[m_BossRememberdPath.lastTile - 1];
-						//the boss follows bait
-						for (int i = 0; i < m_RoomswhithBait.size(); i++)
-						{
-							if (m_BossRememberdPath.expectedPlayerPos != m_RoomswhithBait[i] || m_BossPos != expectedBossPos)
-							{
-								bossRememberdPath baitTarget;
-								baitTarget.pathToGo = m_Map.getPathToTargert(m_BossPos, m_RoomswhithBait[i]);
-								baitTarget.lastTile = 1;
-								baitTarget.expectedPlayerPos = m_RoomswhithBait[i];
-								if (baitTarget.pathToGo.size() - baitTarget.lastTile < m_BossRememberdPath.pathToGo.size() - m_BossRememberdPath.lastTile || m_BossRememberdPath.pathToGo.size() - m_BossRememberdPath.lastTile == 0)
-								{
-									FY_INFO("The boss found a closer bait");
-									m_BossRememberdPath.pathToGo = baitTarget.pathToGo;
-									m_BossRememberdPath.lastTile = baitTarget.lastTile;
-									m_BossRememberdPath.expectedPlayerPos = baitTarget.expectedPlayerPos;
-								}
-							}
-						}
-						if (m_BossRememberdPath.pathToGo.size() > m_BossRememberdPath.lastTile)
-						{
-							m_BossPos = m_BossRememberdPath.pathToGo[m_BossRememberdPath.lastTile];
-							m_BossRememberdPath.lastTile++;
-							FY_INFO("The boss is moving to ({0}, {1})", m_BossPos.x, m_BossPos.y);
-							FY_INFO("");
-
-						}
-						else
-						{
-							FY_INFO("Somthing is wrong and the boss did don't move");
-							FY_INFO("");
-						}
-						if (m_BossRememberdPath.expectedPlayerPos == m_BossPos)
-						{
-							float timeToEate = (12.0f * m_LevelFileFormat.RemoveAllBaitInRoom(m_BossPos));
-							m_BossTimer += timeToEate;
-							for (int i = 0; i < m_RoomswhithBait.size(); i++)
-							{
-								if (m_RoomswhithBait[i] == m_BossPos)
-									m_RoomswhithBait.erase(m_RoomswhithBait.begin() + i);
-							}
-							FY_INFO("The boss found the bait! and is eating for {0} sec", timeToEate);
-							FY_INFO("");
-						}
-
-						if (m_BossPos == m_PlayerCoords)
-						{
-
-							Frosty::EventBus::GetEventBus()->Publish<Frosty::SpawnBossEvent>(Frosty::SpawnBossEvent(m_LevelFileFormat.GetBossSpawnPosition(m_PlayerCoords)));
-							BossroomBlock(m_BossPos);
-
-							FY_INFO("The boss found the player!");
-							FY_INFO("");
-						}
-					}
-					else
-					{
-						//ther is no bait so move to player
-						int moveToPlayerChanse = rand() % 100;
-						FY_INFO("The boss hase {0} % chans to move to player", time / ((m_BossFollowTimer * 60.0f) / 100.0f));
-						if (moveToPlayerChanse < time / ((m_BossFollowTimer * 60.0f) / 100.0f))
-						{
-							FY_INFO("The boss knowes wher you are and moves");
-							Room bossCurrentRoom = m_Map.getRoom(m_BossPos);
-							glm::ivec2 expectedBossPos = glm::ivec2(-1, -1);
-							if (m_BossRememberdPath.pathToGo.size() > m_BossRememberdPath.lastTile)
-								expectedBossPos = m_BossRememberdPath.pathToGo[m_BossRememberdPath.lastTile - 1];
-							//the boss follows player
-							if (m_BossRememberdPath.expectedPlayerPos != m_PlayerCoords || m_BossPos != expectedBossPos)
-							{
-								m_BossRememberdPath.pathToGo = m_Map.getPathToTargert(m_BossPos, m_PlayerCoords);
-								m_BossRememberdPath.lastTile = 1;
-								m_BossRememberdPath.expectedPlayerPos = m_PlayerCoords;
-
-							}
-							if (m_BossRememberdPath.pathToGo.size() > m_BossRememberdPath.lastTile)
-							{
-								m_BossPos = m_BossRememberdPath.pathToGo[m_BossRememberdPath.lastTile];
-								m_BossRememberdPath.lastTile++;
-								FY_INFO("The boss is moving to ({0}, {1})", m_BossPos.x, m_BossPos.y);
-								FY_INFO("");
-
-							}
-							else
-							{
-								FY_INFO("Somthing is wrong and the boss did don't move");
-								FY_INFO("");
-							}
-						}
-						else
-						{
-							FY_INFO("The boss lost track of you and is serching");
-							randomBossMovment();
-							FY_INFO("");
-						}
-
-						if (m_BossPos == m_PlayerCoords)
-						{
-
-							Frosty::EventBus::GetEventBus()->Publish<Frosty::SpawnBossEvent>(Frosty::SpawnBossEvent(m_LevelFileFormat.GetBossSpawnPosition(m_PlayerCoords)));
-							BossroomBlock(m_BossPos);
-
-							FY_INFO("The boss found the player!");
-							FY_INFO("");
-						}
-					}
-					
-					//start fearEffekt
-					if (m_Map.isTargetInNextRoom(m_BossPos, m_PlayerCoords))
-					{
-						FY_INFO("The fear is hear!");
-						FY_INFO("");
-					}
-					else
-					{
-						FY_INFO("No fear!");
-						FY_INFO("");
-					}
-					Frosty::EventBus::GetEventBus()->Publish<Frosty::BossCloseEffectEvent>(Frosty::BossCloseEffectEvent(m_Map.isTargetInNextRoom(m_BossPos, m_PlayerCoords)));
-				}
-			}
-
-			//howel
-			if(time > m_BossHawol && m_PlayerCoords != m_BossPos)
-			{
-				FY_INFO("The boss haoweld");
-				FY_INFO("");
-				int nextHawol = (rand() % 10) + 20;
-				m_BossHawol = time + nextHawol;
-				glm::vec2 direction = m_BossPos - m_PlayerCoords;
-
-				Frosty::EventBus::GetEventBus()->Publish<Frosty::BossFearEffectEvent>(Frosty::BossFearEffectEvent(direction));
-
-				int rand = std::rand() % 2 + 1;
-				std::string str = "assets/sounds/WolfHowl" + std::to_string(rand) + ".wav";
-				const char* fileName = str.c_str();
-
-				if(m_BossPos.x < m_PlayerCoords.x)
-					Frosty::EventBus::GetEventBus()->Publish<Frosty::PlayMediaEvent>(Frosty::PlayMediaEvent(fileName, false, 0.5f, 1.0f, false, 0));
-				else if(m_BossPos.x > m_PlayerCoords.x)
-					Frosty::EventBus::GetEventBus()->Publish<Frosty::PlayMediaEvent>(Frosty::PlayMediaEvent(fileName, false, 0.5f, -1.0f, false, 0));
-			}
-		}
 	}
 
 	void LevelSystem::AddComponent(const std::shared_ptr<Frosty::ECS::Entity>& entity)
@@ -618,14 +438,16 @@ namespace MCS
 								m_World->AddComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr);
 							}
 						}
-						else if (m_World->HasComponent<Frosty::ECS::CPhysics>(m_Transform[i]->EntityPtr))
-						{
-							if (!m_World->HasComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr))
-							{
-								m_World->AddComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr);
-							}
-						}
 						else if (m_World->HasComponent<Frosty::ECS::CMesh>(m_Transform[i]->EntityPtr))
+						{
+							auto& mesh = m_World->GetComponent<Frosty::ECS::CMesh>(m_Transform[i]->EntityPtr);
+							//if("pCube1" != mesh.Mesh->GetName())
+								if (!m_World->HasComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr))
+								{
+									m_World->AddComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr);
+								}
+						}
+						else if (m_World->HasComponent<Frosty::ECS::CPhysics>(m_Transform[i]->EntityPtr))
 						{
 							if (!m_World->HasComponent<Frosty::ECS::CDestroy>(m_Transform[i]->EntityPtr))
 							{
@@ -670,17 +492,17 @@ namespace MCS
 
 	void LevelSystem::OnCreatEntityEvent(Frosty::CreatEntityEvent& e)
 	{
-		//Enemy
+		//hittbox
 		if (e.GetEntityType() == 0)
 		{
-			auto& enemy = m_World->CreateEntity({ 0.0f, 1.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 2.0f, 2.0f, 2.0f });
+			auto& enemy = m_World->CreateEntity({ 0.0f, 1.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 20.0f, 20.0f, 20.0f });
 			auto& enemyTransform = m_World->GetComponent<Frosty::ECS::CTransform>(enemy);
 			m_World->AddComponent<Frosty::ECS::CMesh>(enemy, Frosty::AssetManager::GetMesh("pCube1"));
 			m_World->AddComponent<Frosty::ECS::CMaterial>(enemy, Frosty::AssetManager::GetShader("FlatColor"));
 			m_World->AddComponent<Frosty::ECS::CPhysics>(enemy, Frosty::AssetManager::GetBoundingBox("pCube1"), enemyTransform.Scale, 6.0f);
-			m_World->AddComponent<Frosty::ECS::CEnemy>(enemy);
+			//m_World->AddComponent<Frosty::ECS::CEnemy>(enemy);
 			//m_World->AddComponent<Frosty::ECS::CFollow>(enemy);
-			m_World->AddComponent<Frosty::ECS::CHealth>(enemy);
+			//m_World->AddComponent<Frosty::ECS::CHealth>(enemy);
 		}
 		//Stone
 		if (e.GetEntityType() == 1)
