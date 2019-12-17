@@ -1161,10 +1161,10 @@ namespace MCS
 							m_GUI = GetPlayerGUI();
 							if (m_GUI != nullptr)
 							{
-								m_GUI->Layout.sprites[2].SetImage("attackMelee");
-								m_GUI->Layout.sprites[3].SetImage("attackMelee1");
-								m_GUI->Layout.sprites[4].SetImage("attackMelee2");
-								m_GUI->Layout.sprites[5].SetImage("attackMelee3");
+								m_GUI->Layout.sprites[3].SetImage("attackMelee");
+								m_GUI->Layout.sprites[4].SetImage("attackMelee1");
+								m_GUI->Layout.sprites[5].SetImage("attackMelee2");
+								m_GUI->Layout.sprites[6].SetImage("attackMelee3");
 							}
 							Frosty::Renderer::ChangeEntity(m_Transform[i]->EntityPtr->Id, &weaponMat, "Sword", &mesh, m_Transform[i]->EntityPtr->Id, m_Transform[i], nullptr);
 						}
@@ -1185,10 +1185,10 @@ namespace MCS
 							m_GUI = GetPlayerGUI();
 							if (m_GUI != nullptr)
 							{
-								m_GUI->Layout.sprites[2].SetImage("attackRanged");
-								m_GUI->Layout.sprites[3].SetImage("attackRanged1");
-								m_GUI->Layout.sprites[4].SetImage("attackRanged2");
-								m_GUI->Layout.sprites[5].SetImage("attackRanged3");
+								m_GUI->Layout.sprites[3].SetImage("attackRanged");
+								m_GUI->Layout.sprites[4].SetImage("attackRanged1");
+								m_GUI->Layout.sprites[5].SetImage("attackRanged2");
+								m_GUI->Layout.sprites[6].SetImage("attackRanged3");
 							}
 							Frosty::Renderer::ChangeEntity(m_Transform[i]->EntityPtr->Id, &weaponMat, "Bow", &mesh, m_Transform[i]->EntityPtr->Id, m_Transform[i], nullptr);
 						}
@@ -1247,9 +1247,9 @@ namespace MCS
 				playerInventory.CurrentWolfsbane = 0;
 
 				m_GUI = &m_World->GetComponent<Frosty::ECS::CGUI>(m_Transform[i]->EntityPtr);
-				m_GUI->Layout.sprites.at(1).SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 0.0f));
+				m_GUI->Layout.sprites.at(2).SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 0.0f));
 
-				for (int j = 15; j < 20 + (healthSpriteCounter / 4); j++)
+				for (int j = 16; j < 21 + (healthSpriteCounter / 4); j++)
 				{
 					m_GUI->Layout.sprites.at(j).SetColorSprite(glm::vec4(1.0f, 1.0f, 1.0f, 0.0f));
 				}
