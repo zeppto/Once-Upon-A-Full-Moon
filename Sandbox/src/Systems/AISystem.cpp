@@ -222,7 +222,6 @@ namespace MCS
 			m_Enemy[index]->CurrentState = Frosty::ECS::CEnemy::State::Escape;
 
 		//	if (Frosty::Time::GetFrameCount() % 60 == 0) FY_INFO("Escape");
-
 			return;
 		}
 
@@ -271,13 +270,13 @@ namespace MCS
 	{
 		// Preconditions
 		//if (m_Enemy[index]->CurrentState != Frosty::ECS::CEnemy::State::Attack) return;
+		if (m_Enemy[index]->CurrentState == Frosty::ECS::CEnemy::State::Dead) return;
+		if (m_Enemy[index]->CurrentState == Frosty::ECS::CEnemy::State::Escape) return;
+		if (HandleBossAbilities(index)) return;
 		if (m_Enemy[index]->CurrentState == Frosty::ECS::CEnemy::State::Attack) m_Enemy[index]->AttackInit = true;
 		if (m_Enemy[index]->AttackInit == false) return;
-		if (m_Enemy[index]->CurrentState == Frosty::ECS::CEnemy::State::Escape) return;
-		if (m_Enemy[index]->CurrentState == Frosty::ECS::CEnemy::State::Dead) return;
 		if (m_Enemy[index]->Target == nullptr) return;
-		if (m_Enemy[index]->Weapon == nullptr) return;
-		if (HandleBossAbilities(index)) return;
+		//if (m_Enemy[index]->Weapon == nullptr) return;
 
 		// Rotate towards player
  		LookAtPoint(m_Enemy[index]->Target->Position, index);
@@ -349,7 +348,7 @@ namespace MCS
 				//m_World->AddComponent<Frosty::ECS::CMaterial>(attack, Frosty::AssetManager::GetShader("FlatColor"));
 				auto& physComp = m_World->AddComponent<Frosty::ECS::CPhysics>(attack, Frosty::AssetManager::GetBoundingBox("pSphere1"), attackTransform.Scale, 20.0f);
 				m_World->AddComponent<Frosty::ECS::CAttack>(attack, Frosty::ECS::CAttack::AttackType::Range, (int)m_Enemy[index]->Weapon->Damage, false, m_Enemy[index]->Weapon->Lifetime);
-				physComp.Direction = direction;
+				//physComp.Direction = direction;
 
 				auto& particles = m_World->AddComponent<Frosty::ECS::CParticleSystem>(attack, "Particles", "particle", 30, glm::vec3(1.0f, 0.0f, 0.0f), 2.0f);
 				particles.ParticleSystemDirection = glm::vec3(-1.0f, 0.0f, 0.0f);
@@ -449,7 +448,7 @@ namespace MCS
 						abilityCastSuccess = true;
 					}
 				}
-
+		
 				bossComp.LeapIntervalTime = Frosty::Time::CurrentTime();
 			}
 			if (Frosty::Time::CurrentTime() - bossComp.ChargeCooldownTime >= bossComp.ChargeCooldown &&
