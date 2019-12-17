@@ -94,8 +94,8 @@ namespace MCS
 		//needs balensing m_BossRoomTimer 
 		//float m_BossRoomTimer = 40.0f;
 
-		float m_BossRoomTimer = 100.0f; //in sec (max)
-		float m_BossFollowTimer = 5.0f; //in min
+		float m_BossRoomTimer = 0.0f; //in sec (max)
+		float m_BossFollowTimer = 0.0f; //in min
 
 
 		float m_BossHawol = 0.0f;

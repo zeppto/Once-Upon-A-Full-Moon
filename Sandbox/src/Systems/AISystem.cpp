@@ -162,11 +162,11 @@ namespace MCS
 
 		return retInfo.str();
 	}
-	
+
 	void AISystem::OnInitiateGridMap(Frosty::InitiateGridEvent& e)
 	{
 		m_BossSpawn = m_Enemy[1]->SpawnPosition;
-		m_PlayerTransform = m_Enemy[1]->Target; 
+		m_PlayerTransform = m_Enemy[1]->Target;
 	}
 
 	void AISystem::OnResetBossAbilities(Frosty::ResetBossAbilitiesEvent& e)
@@ -203,7 +203,7 @@ namespace MCS
 			else
 			{
 
-		//		if (Frosty::Time::GetFrameCount() % 60 == 0) FY_INFO("Reset");
+				//		if (Frosty::Time::GetFrameCount() % 60 == 0) FY_INFO("Reset");
 
 				return;
 			}
@@ -213,6 +213,11 @@ namespace MCS
 		if (m_Health[index]->CurrentHealth <= 0)
 		{
 			m_Enemy[index]->CurrentState = Frosty::ECS::CEnemy::State::Dead;
+			//auto& enemyAnim = m_World->GetComponent<Frosty::ECS::CAnimController>(m_Enemy[index]->EntityPtr);
+			//if (enemyAnim.currAnim->GetIsFinished())
+			//{
+			//	m_World->AddComponent<Frosty::ECS::CDestroy>(m_Enemy[index]->EntityPtr);
+			//}
 			return;
 		}
 
@@ -221,7 +226,7 @@ namespace MCS
 		{
 			m_Enemy[index]->CurrentState = Frosty::ECS::CEnemy::State::Escape;
 
-		//	if (Frosty::Time::GetFrameCount() % 60 == 0) FY_INFO("Escape");
+			//	if (Frosty::Time::GetFrameCount() % 60 == 0) FY_INFO("Escape");
 			return;
 		}
 
@@ -230,7 +235,7 @@ namespace MCS
 		{
 			m_Enemy[index]->CurrentState = Frosty::ECS::CEnemy::State::Idle;
 
-		//	if (Frosty::Time::GetFrameCount() % 60 == 0) FY_INFO("Idle");
+			//	if (Frosty::Time::GetFrameCount() % 60 == 0) FY_INFO("Idle");
 
 			return;
 		}
@@ -241,13 +246,13 @@ namespace MCS
 			m_Enemy[index]->CurrentState = Frosty::ECS::CEnemy::State::Attack;
 
 
-		//	if (Frosty::Time::GetFrameCount() % 60 == 0) FY_INFO("Attack");
+			//	if (Frosty::Time::GetFrameCount() % 60 == 0) FY_INFO("Attack");
 
 
-			//if (glm::distance(m_Transform[index]->Position, m_Enemy[index]->Target->Position) < m_Enemy[index]->Weapon->MinAttackRange)
-			//{
-			//	KeepDistanceFromTarget(index, m_Enemy[index]->Weapon->MinAttackRange);
-			//}
+				//if (glm::distance(m_Transform[index]->Position, m_Enemy[index]->Target->Position) < m_Enemy[index]->Weapon->MinAttackRange)
+				//{
+				//	KeepDistanceFromTarget(index, m_Enemy[index]->Weapon->MinAttackRange);
+				//}
 
 			return;
 		}
@@ -260,7 +265,7 @@ namespace MCS
 			{
 				m_Enemy[index]->CurrentState = Frosty::ECS::CEnemy::State::Chase;
 
-		//		if (Frosty::Time::GetFrameCount() % 60 == 0) FY_INFO("Chase");
+				//		if (Frosty::Time::GetFrameCount() % 60 == 0) FY_INFO("Chase");
 
 			}
 		}
@@ -279,8 +284,8 @@ namespace MCS
 		//if (m_Enemy[index]->Weapon == nullptr) return;
 
 		// Rotate towards player
- 		LookAtPoint(m_Enemy[index]->Target->Position, index);
-		
+		LookAtPoint(m_Enemy[index]->Target->Position, index);
+
 		//Cult Range
 		if (m_Enemy[index]->Weapon->Type == Frosty::ECS::CWeapon::WeaponType::Bow)
 		{
@@ -305,13 +310,13 @@ namespace MCS
 			}
 		}
 		//Wolf
-		else if(Frosty::Time::CurrentTime() - m_Enemy[index]->Weapon->LVL1AttackCooldownTimer >= (m_Enemy[index]->Weapon->LVL1AttackCooldown)
+		else if (Frosty::Time::CurrentTime() - m_Enemy[index]->Weapon->LVL1AttackCooldownTimer >= (m_Enemy[index]->Weapon->LVL1AttackCooldown)
 			&& m_Enemy[index]->Weapon->AnimPlaying == false)
 		{
 			int rand = std::rand() % 5 + 1;
 			auto& weaponType = m_Enemy[index]->Weapon->Type;
-			if(weaponType == Frosty::ECS::CWeapon::WeaponType::Bite)
-				if(rand == 5 || rand == 3) // Change to Wolf bite
+			if (weaponType == Frosty::ECS::CWeapon::WeaponType::Bite)
+				if (rand == 5 || rand == 3) // Change to Wolf bite
 					Frosty::EventBus::GetEventBus()->Publish<Frosty::PlayMediaEntityEvent>(Frosty::PlayMediaEntityEvent(m_Enemy[index]->EntityPtr, "assets/sounds/WolfAttack.wav", false, 1.0f, 10.0f, 100.0f, false, 0));
 
 			Frosty::EventBus::GetEventBus()->Publish <Frosty::PlayAnimEvent>(Frosty::PlayAnimEvent(m_Transform[index]->EntityPtr, 1));
@@ -348,7 +353,7 @@ namespace MCS
 				//m_World->AddComponent<Frosty::ECS::CMaterial>(attack, Frosty::AssetManager::GetShader("FlatColor"));
 				auto& physComp = m_World->AddComponent<Frosty::ECS::CPhysics>(attack, Frosty::AssetManager::GetBoundingBox("pSphere1"), attackTransform.Scale, 20.0f);
 				m_World->AddComponent<Frosty::ECS::CAttack>(attack, Frosty::ECS::CAttack::AttackType::Range, (int)m_Enemy[index]->Weapon->Damage, false, m_Enemy[index]->Weapon->Lifetime);
-				//physComp.Direction = direction;
+				physComp.Direction = direction;
 
 				auto& particles = m_World->AddComponent<Frosty::ECS::CParticleSystem>(attack, "Particles", "particle", 30, glm::vec3(1.0f, 0.0f, 0.0f), 2.0f);
 				particles.ParticleSystemDirection = glm::vec3(-1.0f, 0.0f, 0.0f);
@@ -371,8 +376,8 @@ namespace MCS
 			}
 			else if (m_Enemy[index]->Weapon->Type == Frosty::ECS::CWeapon::WeaponType::Sword)
 			{
-			//	m_World->AddComponent<Frosty::ECS::CMesh>(attack, Frosty::AssetManager::GetMesh("pCube1"));						// Remove later
-			//	m_World->AddComponent<Frosty::ECS::CMaterial>(attack, Frosty::AssetManager::GetShader("FlatColor"));			// Remove later
+				//	m_World->AddComponent<Frosty::ECS::CMesh>(attack, Frosty::AssetManager::GetMesh("pCube1"));						// Remove later
+				//	m_World->AddComponent<Frosty::ECS::CMaterial>(attack, Frosty::AssetManager::GetShader("FlatColor"));			// Remove later
 				m_World->AddComponent<Frosty::ECS::CPhysics>(attack, Frosty::AssetManager::GetBoundingBox("pCube1"), attackTransform.Scale, 0.0f);
 				m_World->AddComponent<Frosty::ECS::CAttack>(attack, Frosty::ECS::CAttack::AttackType::Melee, (int)m_Enemy[index]->Weapon->Damage, false, m_Enemy[index]->Weapon->Lifetime);
 
@@ -388,8 +393,8 @@ namespace MCS
 			}
 			else
 			{
-			//	m_World->AddComponent<Frosty::ECS::CMesh>(attack, Frosty::AssetManager::GetMesh("pCube1"));						// Remove later
-			//	m_World->AddComponent<Frosty::ECS::CMaterial>(attack, Frosty::AssetManager::GetShader("FlatColor"));			// Remove later
+				//	m_World->AddComponent<Frosty::ECS::CMesh>(attack, Frosty::AssetManager::GetMesh("pCube1"));						// Remove later
+				//	m_World->AddComponent<Frosty::ECS::CMaterial>(attack, Frosty::AssetManager::GetShader("FlatColor"));			// Remove later
 				m_World->AddComponent<Frosty::ECS::CPhysics>(attack, Frosty::AssetManager::GetBoundingBox("pCube1"), attackTransform.Scale, 0.0f);
 				m_World->AddComponent<Frosty::ECS::CAttack>(attack, Frosty::ECS::CAttack::AttackType::Melee, (int)m_Enemy[index]->Weapon->Damage, false, m_Enemy[index]->Weapon->Lifetime);
 			}
@@ -429,7 +434,7 @@ namespace MCS
 		if (bossComp.ActiveAbility == Frosty::ECS::CBoss::AbilityState::None)
 		{
 			bool abilityCastSuccess = false;
-			int randomNr = rand() % 100 +1;
+			int randomNr = rand() % 100 + 1;
 			//int randomNr = 2;
 			if (Frosty::Time::CurrentTime() - bossComp.LeapCooldownTime >= bossComp.LeapCooldown &&
 				Frosty::Time::CurrentTime() - bossComp.LeapIntervalTime >= bossComp.LeapInterval)
@@ -448,7 +453,7 @@ namespace MCS
 						abilityCastSuccess = true;
 					}
 				}
-		
+
 				bossComp.LeapIntervalTime = Frosty::Time::CurrentTime();
 			}
 			if (Frosty::Time::CurrentTime() - bossComp.ChargeCooldownTime >= bossComp.ChargeCooldown &&
@@ -518,7 +523,7 @@ namespace MCS
 
 		return false;
 	}
-	
+
 	void AISystem::SpawnBoss(const glm::vec3& SpawnPosition)
 	{
 		// Boss Weapon
@@ -543,10 +548,11 @@ namespace MCS
 		auto& enemyComp = m_World->AddComponent<Frosty::ECS::CEnemy>(boss, m_PlayerTransform, &bossWeaponComp);
 		enemyComp.SpawnPosition = SpawnPosition;
 		enemyComp.SightRange = 300.0f;
-		m_World->AddComponent<Frosty::ECS::CHealth>(boss,50);
+		m_World->AddComponent<Frosty::ECS::CHealth>(boss, 50);
 		m_World->AddComponent<Frosty::ECS::CHealthBar>(boss, glm::vec3(0.0f, 10.0f, 0.0f));
 		m_World->AddComponent<Frosty::ECS::CDropItem>(boss);
 		m_World->AddComponent<Frosty::ECS::CBoss>(boss);
+		enemyComp.WeaponEntityID = bossWeapon->Id;
 
 		m_BossSpawned = true;
 
@@ -557,7 +563,7 @@ namespace MCS
 		const char* fileName = str.c_str();
 		Frosty::EventBus::GetEventBus()->Publish<Frosty::PlayMediaEvent>(Frosty::PlayMediaEvent(fileName, false, 0.75f, 0.0f, false, 0));
 	}
-	
+
 	void AISystem::ResetBossAbilities(size_t index)
 	{
 		auto& bossComp = m_World->GetComponent<Frosty::ECS::CBoss>(m_Enemy[index]->EntityPtr);
