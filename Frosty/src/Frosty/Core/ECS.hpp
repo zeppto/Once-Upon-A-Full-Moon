@@ -897,6 +897,10 @@ namespace Frosty
 			float BossFearEffectTime{ 2.0f };
 			float BossFearEffectTimer{ Frosty::Time::CurrentTime() };
 
+			float BossCloseEffectTime{ 2.0f };
+			float BossCloseEffectTimer{ Frosty::Time::CurrentTime() };
+			int interperlationDirection{ 0 };
+
 			CPlayer() = default;
 			CPlayer(CWeapon* weapon) : Weapon(weapon) { }
 			CPlayer(const CPlayer& org) { FY_CORE_ASSERT(false, "Copy constructor in CPlayer called."); }
