@@ -35,7 +35,7 @@ namespace MCS
 					//kan bli optimeserat
 					if (testTime > enemy.FlashTime)
 					{
-						enemyMaterial.Flash = 0.0f;
+						enemyMaterial.Material->Flash = 0.0f;
 					}
 				}
 			}
@@ -284,7 +284,7 @@ namespace MCS
 					if (m_World->HasComponent<Frosty::ECS::CMaterial>(it->first))
 					{
 						auto& enemyMaterial = m_World->GetComponent<Frosty::ECS::CMaterial>(it->first);
-						enemyMaterial.Flash = 1.0f;
+						enemyMaterial.Material->Flash = 1.0f;
 						enemyComp.FlashTimer = Frosty::Time::CurrentTime();
 					}
 				}

@@ -275,6 +275,9 @@ namespace MCS
 		void clearVisitedRooms();
 
 	private:
+		void AddMaterial(const std::shared_ptr<Frosty::ECS::Entity>& entity, const Level_Entitys& fileEntities, const size_t index);
+
+	private:
 		//std::shared_ptr<ECS::Entity> m_ExitEntity;
 		Frosty::World* m_World;
 		Level_Entitys m_Entitys;

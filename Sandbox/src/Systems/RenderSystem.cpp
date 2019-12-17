@@ -135,7 +135,7 @@ namespace MCS
 		{
 			p_Total--;
 
-			Frosty::Renderer::RemoveFromRenderer(m_Materials[it->second]->EntityPtr->Id,m_Meshes[it->second]->Mesh->GetName(),m_Transform[it->second]->EntityPtr->Id);
+			Frosty::Renderer::RemoveFromRenderer(m_Materials[it->second]->Material->Name,m_Meshes[it->second]->Mesh->GetName(),m_Transform[it->second]->EntityPtr->Id);
 
 			auto& entityToUpdate = m_Transform[p_Total]->EntityPtr;
 			m_Transform[p_Total] = nullptr;
@@ -168,7 +168,7 @@ namespace MCS
 			m_Meshes[it->second] = meshPtr;
 			m_Materials[it->second] = materialPtr;
 
-			Frosty::Renderer::UpdateEntity(m_Materials[it->second]->EntityPtr->Id, m_Materials[it->second], m_Meshes[it->second]->Mesh->GetName(), m_Meshes[it->second]->Mesh, m_Transform[it->second]->EntityPtr->Id, m_Transform[it->second]);
+			Frosty::Renderer::UpdateEntity(m_Materials[it->second]->Material->Name, m_Materials[it->second], m_Meshes[it->second]->Mesh->GetName(), m_Meshes[it->second]->Mesh, m_Transform[it->second]->EntityPtr->Id, m_Transform[it->second]);
 		}
 	}
 

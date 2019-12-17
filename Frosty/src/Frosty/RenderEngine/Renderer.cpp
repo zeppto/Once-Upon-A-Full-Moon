@@ -11,12 +11,12 @@ namespace Frosty
 	std::unordered_map<std::string, std::shared_ptr<Renderer::ShaderData>> Renderer::s_ShaderMap;
 	std::unordered_map<size_t, std::unordered_map<size_t, Frosty::ECS::CTransform*>*> Renderer::s_TransformLookUpMap;
 	std::unordered_map<size_t, std::unordered_map<std::string, std::shared_ptr<Renderer::MeshData>>*> Renderer::s_MeshLookUpMap;
-	std::unordered_map<size_t, std::unordered_map<size_t, std::shared_ptr<Renderer::MaterialData>>*> Renderer::s_MaterialLookUpMap;
+	std::unordered_map<size_t, std::unordered_map<std::string, std::shared_ptr<Renderer::MaterialData>>*> Renderer::s_MaterialLookUpMap;
 	std::vector<Renderer::RenderPassData>  Renderer::s_RenderPas;
 	FrustumGrid Renderer::s_ForwardPlus;
 	int Renderer::s_TotalNrOfFrames;
 	bool Renderer::s_DistanceCulling = true;
-	bool Renderer::s_LightCulling = true;
+	bool Renderer::s_LightCulling = false;
 	bool Renderer::s_HeatMap = false;
 
 	void Renderer::Init()
@@ -157,52 +157,52 @@ namespace Frosty
 
 					auto& materialData = shaderData->MaterialMap.at(MaterialIt.first);
 
-					shaderData->Shader->UploadUniformInt("u_Shininess", materialData->Material->Shininess);
+					shaderData->Shader->UploadUniformInt("u_Shininess", materialData->Material->Material->Shininess);
 
 
 					if (shaderData->Shader->GetName() == "FlatColor" || shaderData->Shader->GetName() == "HeatMap")
 					{
-						shaderData->Shader->UploadUniformFloat4("u_ObjectColor", materialData->Material->Albedo);
-						shaderData->Shader->UploadUniformFloat("u_SpecularStrength", materialData->Material->SpecularStrength);
+						shaderData->Shader->UploadUniformFloat4("u_ObjectColor", materialData->Material->Material->Albedo);
+						shaderData->Shader->UploadUniformFloat("u_SpecularStrength", materialData->Material->Material->SpecularStrength);
 
 					}
 					else if (shaderData->Shader->GetName() == "Animation")
 					{
-						shaderData->Shader->UploadUniformFloat("u_Flash", materialData->Material->Flash);
-						shaderData->Shader->UploadUniformFloat2("u_TextureCoordScale", materialData->Material->TextureScale);
+						shaderData->Shader->UploadUniformFloat("u_Flash", materialData->Material->Material->Flash);
+						shaderData->Shader->UploadUniformFloat2("u_TextureCoordScale", materialData->Material->Material->TextureScale);
 					}
 					else if (shaderData->Shader->GetName() == "Texture2D" || shaderData->Shader->GetName() == "BlendShader")
 					{
-						shaderData->Shader->UploadUniformFloat2("u_TextureCoordScale", materialData->Material->TextureScale);
+						shaderData->Shader->UploadUniformFloat2("u_TextureCoordScale", materialData->Material->Material->TextureScale);
 					}
 
 					//Bind all Textures
-					if (materialData->Material->DiffuseTexture != nullptr)
+					if (materialData->Material->Material->DiffuseTexture != nullptr)
 					{
-						materialData->Material->DiffuseTexture->Bind(0);
+						materialData->Material->Material->DiffuseTexture->Bind(0);
 					}
-					if (materialData->Material->NormalTexture != nullptr)
+					if (materialData->Material->Material->NormalTexture != nullptr)
 					{
-						materialData->Material->NormalTexture->Bind(1);
+						materialData->Material->Material->NormalTexture->Bind(1);
 					}
-					if (materialData->Material->SpecularTexture != nullptr)
+					if (materialData->Material->Material->SpecularTexture != nullptr)
 					{
-						materialData->Material->SpecularTexture->Bind(2);
+						materialData->Material->Material->SpecularTexture->Bind(2);
 					}
-					if (materialData->Material->BlendMapTexture != nullptr)
+					if (materialData->Material->Material->BlendMapTexture != nullptr)
 					{
-						materialData->Material->BlendMapTexture->Bind(3);
+						materialData->Material->Material->BlendMapTexture->Bind(3);
 					}
-					if (materialData->Material->BlendTexture1 != nullptr)
+					if (materialData->Material->Material->BlendTexture1 != nullptr)
 					{
-						materialData->Material->BlendTexture1->Bind(4);
+						materialData->Material->Material->BlendTexture1->Bind(4);
 					}
-					if (materialData->Material->BlendTexture1 != nullptr)
+					if (materialData->Material->Material->BlendTexture1 != nullptr)
 					{
-						materialData->Material->BlendTexture1->Bind(5);
+						materialData->Material->Material->BlendTexture1->Bind(5);
 					}
 
-					if (materialData->Material->HasTransparency)
+					if (materialData->Material->Material->HasTransparency)
 					{
 						int test = 0;
 					}
@@ -457,7 +457,7 @@ namespace Frosty
 
 			RenderCommand::DrawUIText(vertexArray); //Will probably change later
 
-			x += (ch.advance >> 6) * scale;
+			x += (ch.advance >> 6)* scale;
 		}
 		glBindTexture(GL_TEXTURE_2D, 0);
 
@@ -476,16 +476,16 @@ namespace Frosty
 		float height = float(window.GetHeight());
 		glm::mat4 projection = glm::ortho(0.0f, width, 0.0f, height);
 		shader->UploadUniformMat4("projection", projection);
-		
 
- 		transform[3][0] *=  window.GetWidthMultiplier() ;
+
+		transform[3][0] *= window.GetWidthMultiplier();
 		transform[3][1] *= window.GetHeightMultiplier();
 
 		for (int i = 0; i < 3; i++)
 		{
 			transform[i][i] *= window.GetWidthMultiplier();
 		}
-		
+
 
 		shader->UploadUniformMat4("transform", transform);
 		shader->UploadUniformFloat4("color", color); //Make sure this number matches the active and sampled texture
@@ -547,24 +547,24 @@ namespace Frosty
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-		mat->UseShader->Bind();
-		mat->UseShader->UploadUniformMat4("u_ViewProjection", s_SceneData->GameCamera.ViewProjectionMatrix);
-		mat->UseShader->UploadUniformMat4("u_Transform", transform);
-		mat->UseShader->UploadUniformFloat3("u_CameraPosition", s_SceneData->GameCamera.CameraPosition);
-		mat->UseShader->UploadUniformInt("u_Shininess", mat->Shininess);
+		mat->Material->UseShader->Bind();
+		mat->Material->UseShader->UploadUniformMat4("u_ViewProjection", s_SceneData->GameCamera.ViewProjectionMatrix);
+		mat->Material->UseShader->UploadUniformMat4("u_Transform", transform);
+		mat->Material->UseShader->UploadUniformFloat3("u_CameraPosition", s_SceneData->GameCamera.CameraPosition);
+		mat->Material->UseShader->UploadUniformInt("u_Shininess", mat->Material->Shininess);
 
 		SubmitLightUniforms(mat);
 		SubmitForwardPlusUniforms(mat);
 
-		if (mat->UseShader->GetName() == "FlatColor" || mat->UseShader->GetName() == "HeatMap")
+		if (mat->Material->UseShader->GetName() == "FlatColor" || mat->Material->UseShader->GetName() == "HeatMap")
 		{
-			mat->UseShader->UploadUniformFloat4("u_ObjectColor", mat->Albedo);
-			mat->UseShader->UploadUniformFloat("u_SpecularStrength", mat->SpecularStrength);
+			mat->Material->UseShader->UploadUniformFloat4("u_ObjectColor", mat->Material->Albedo);
+			mat->Material->UseShader->UploadUniformFloat("u_SpecularStrength", mat->Material->SpecularStrength);
 
 		}
-		else if (mat->UseShader->GetName() == "Texture2D" || mat->UseShader->GetName() == "BlendShader")
+		else if (mat->Material->UseShader->GetName() == "Texture2D" || mat->Material->UseShader->GetName() == "BlendShader")
 		{
-			mat->UseShader->UploadUniformFloat2("u_TextureCoordScale", mat->TextureScale);
+			mat->Material->UseShader->UploadUniformFloat2("u_TextureCoordScale", mat->Material->TextureScale);
 		}
 		vertexArray->Bind();
 		RenderCommand::EnableBackfaceCulling();
@@ -576,25 +576,25 @@ namespace Frosty
 	void Renderer::SubmitLightUniforms(ECS::CMaterial* mat)
 	{
 		// Point Lights
-		mat->UseShader->UploadUniformInt("u_TotalPointLights", (int)s_SceneData->PointLights.size());
+		mat->Material->UseShader->UploadUniformInt("u_TotalPointLights", (int)s_SceneData->PointLights.size());
 		int PointLI = 0;
 		for (auto& pointLIt : s_SceneData->PointLights)
 		{
-			mat->UseShader->UploadUniformFloat3Array("u_PointLights[" + std::to_string(PointLI) + "].Color", s_SceneData->PointLights[pointLIt.first].PointLight->Color);
-			mat->UseShader->UploadUniformFloat3Array("u_PointLights[" + std::to_string(PointLI) + "].Position", s_SceneData->PointLights[pointLIt.first].Transform->Position);
-			mat->UseShader->UploadUniformFloatArray("u_PointLights[" + std::to_string(PointLI) + "].Radius", s_SceneData->PointLights[pointLIt.first].PointLight->Radius);
-			mat->UseShader->UploadUniformFloatArray("u_PointLights[" + std::to_string(PointLI) + "].Strength", s_SceneData->PointLights[pointLIt.first].PointLight->Strength);
+			mat->Material->UseShader->UploadUniformFloat3Array("u_PointLights[" + std::to_string(PointLI) + "].Color", s_SceneData->PointLights[pointLIt.first].PointLight->Color);
+			mat->Material->UseShader->UploadUniformFloat3Array("u_PointLights[" + std::to_string(PointLI) + "].Position", s_SceneData->PointLights[pointLIt.first].Transform->Position);
+			mat->Material->UseShader->UploadUniformFloatArray("u_PointLights[" + std::to_string(PointLI) + "].Radius", s_SceneData->PointLights[pointLIt.first].PointLight->Radius);
+			mat->Material->UseShader->UploadUniformFloatArray("u_PointLights[" + std::to_string(PointLI) + "].Strength", s_SceneData->PointLights[pointLIt.first].PointLight->Strength);
 			PointLI++;
 		}
 
 		// Directional Lights
-		mat->UseShader->UploadUniformInt("u_TotalDirectionalLights", (int)s_SceneData->DirectionalLights.size());
+		mat->Material->UseShader->UploadUniformInt("u_TotalDirectionalLights", (int)s_SceneData->DirectionalLights.size());
 		int dirLI = 0;
 		for (auto& DirLIt : s_SceneData->DirectionalLights)
 		{
-			mat->UseShader->UploadUniformFloat3Array("u_DirectionalLights[" + std::to_string(dirLI) + "].Color", s_SceneData->DirectionalLights[DirLIt.first].DirectionalLight->Color);
-			mat->UseShader->UploadUniformFloat3Array("u_DirectionalLights[" + std::to_string(dirLI) + "].Direction", s_SceneData->DirectionalLights[DirLIt.first].DirectionalLight->Direction);
-			mat->UseShader->UploadUniformFloatArray("u_DirectionalLights[" + std::to_string(dirLI) + "].Strength", s_SceneData->DirectionalLights[DirLIt.first].DirectionalLight->Strength);
+			mat->Material->UseShader->UploadUniformFloat3Array("u_DirectionalLights[" + std::to_string(dirLI) + "].Color", s_SceneData->DirectionalLights[DirLIt.first].DirectionalLight->Color);
+			mat->Material->UseShader->UploadUniformFloat3Array("u_DirectionalLights[" + std::to_string(dirLI) + "].Direction", s_SceneData->DirectionalLights[DirLIt.first].DirectionalLight->Direction);
+			mat->Material->UseShader->UploadUniformFloatArray("u_DirectionalLights[" + std::to_string(dirLI) + "].Strength", s_SceneData->DirectionalLights[DirLIt.first].DirectionalLight->Strength);
 			dirLI++;
 		}
 	}
@@ -604,13 +604,13 @@ namespace Frosty
 		// LightIndex
 		for (int i = 0; i < int(s_ForwardPlus.GetLightIndexList().size()); i++)
 		{
-			mat->UseShader->UploadUniformInt(("forwardPlus.LightIndexList[" + std::to_string(i) + "]").c_str(), s_ForwardPlus.GetLightIndexList()[i]);
+			mat->Material->UseShader->UploadUniformInt(("forwardPlus.LightIndexList[" + std::to_string(i) + "]").c_str(), s_ForwardPlus.GetLightIndexList()[i]);
 		}
 
 		// CellLightInfo
 		for (int i = 0; i < s_ForwardPlus.GetNrOfGrids(); i++)
 		{
-			mat->UseShader->UploadUniformFloat2(("forwardPlus.CellLightInfo[" + std::to_string(i) + "]").c_str(), s_ForwardPlus.GetCellLightInfoAt(i));
+			mat->Material->UseShader->UploadUniformFloat2(("forwardPlus.CellLightInfo[" + std::to_string(i) + "]").c_str(), s_ForwardPlus.GetCellLightInfoAt(i));
 		}
 	}
 
@@ -739,40 +739,36 @@ namespace Frosty
 	void Renderer::AddToRenderer(ECS::CMaterial* mat, ECS::CMesh* mesh, ECS::CTransform* transform, ECS::CAnimController* controller)
 	{
 
-			// at(0) will be for dept sampling for shadow map
-			int RenderPassID = 0;
-			if (mat->HasTransparency)
-			{
-				RenderPassID = 2;
-			}
-			else
-			{
-				RenderPassID = 1;
-			}
+		// at(0) will be for dept sampling for shadow map
+		int RenderPassID = 0;
 
-			// Forward Plus Temp
-			if (mat->UseShader->GetName() == "HeatMap")
-			{
-				RenderPassID = 3;
-			}
+
+		if (mat->Material->HasTransparency)
+		{
+			RenderPassID = 2;
+		}
+		else
+		{
+			RenderPassID = 1;
+		}
 
 
 		counter++;
 		//Set up IDs
-		size_t matID = transform->EntityPtr->Id; //Works but can be improved whith a real material ID
+		std::string matID = mat->Material->Name; //Works but can be improved whith a real material ID
 		std::string meshID = mesh->Mesh->GetName();
 		size_t transformID = transform->EntityPtr->Id;
 
 
 		//Check if the shader key is already in the map, if not add it.
-		std::string ShaderName = mat->UseShader->GetName();
-		if (s_RenderPas[RenderPassID].ShaderMap.find(mat->UseShader->GetName()) == s_RenderPas[RenderPassID].ShaderMap.end())
+		std::string ShaderName = mat->Material->UseShader->GetName();
+		if (s_RenderPas[RenderPassID].ShaderMap.find(mat->Material->UseShader->GetName()) == s_RenderPas[RenderPassID].ShaderMap.end())
 		{
-			s_RenderPas[RenderPassID].ShaderMap.emplace(mat->UseShader->GetName(), FY_NEW ShaderData);
+			s_RenderPas[RenderPassID].ShaderMap.emplace(mat->Material->UseShader->GetName(), FY_NEW ShaderData);
 
 		}
 		auto& shaderData = s_RenderPas[RenderPassID].ShaderMap.at(ShaderName);
-		shaderData->Shader = mat->UseShader;
+		shaderData->Shader = mat->Material->UseShader;
 
 
 
@@ -816,7 +812,8 @@ namespace Frosty
 		s_RenderPas[RenderPassID].ShaderMap; //For debugging
 	}
 
-	void Renderer::RemoveFromRenderer(const size_t& matID, const std::string& meshName, const size_t& transformID)
+
+	void Renderer::RemoveFromRenderer(const std::string& matID, const std::string& meshName, const size_t& transformID)
 	{
 		if (s_TransformLookUpMap.find(transformID) != s_TransformLookUpMap.end())
 		{
@@ -860,7 +857,7 @@ namespace Frosty
 
 	}
 
-	void Renderer::UpdateEntity(const size_t& matID, ECS::CMaterial* mat, const std::string& meshName, std::shared_ptr<VertexArray> vertexArray, const size_t& transformID, ECS::CTransform* transform)
+	void Renderer::UpdateEntity(const std::string& matID, ECS::CMaterial* mat, const std::string& meshName, std::shared_ptr<VertexArray> vertexArray, const size_t& transformID, ECS::CTransform* transform)
 	{
 		if (s_TransformLookUpMap.find(transformID) != s_TransformLookUpMap.end())
 		{
@@ -896,11 +893,11 @@ namespace Frosty
 			ECS::CAnimController* controllerB = &world->GetComponent<ECS::CAnimController>(EntityB);
 		}
 
-		ChangeEntity(EntityA->Id, matA, meshB->Mesh->GetName(), meshA, EntityA->Id, &world->GetComponent<ECS::CTransform>(EntityA), controllerA);
-		ChangeEntity(EntityB->Id, matB, meshA->Mesh->GetName(), meshB, EntityB->Id, &world->GetComponent<ECS::CTransform>(EntityB), controllerB);
+		ChangeEntity(matB->Material->Name, matA, meshB->Mesh->GetName(), meshA, EntityA->Id, &world->GetComponent<ECS::CTransform>(EntityA), controllerA);
+		ChangeEntity(matA->Material->Name, matB, meshA->Mesh->GetName(), meshB, EntityB->Id, &world->GetComponent<ECS::CTransform>(EntityB), controllerB);
 	}
 
-	void Renderer::ChangeEntity(const size_t& OldMatID, ECS::CMaterial* mat, const std::string& OldMeshName, ECS::CMesh* mesh, const size_t& transformID, ECS::CTransform* transform, ECS::CAnimController* newController)
+	void Renderer::ChangeEntity(const std::string& OldMatID, ECS::CMaterial* mat, const std::string& OldMeshName, ECS::CMesh* mesh, const size_t& transformID, ECS::CTransform* transform, ECS::CAnimController* newController)
 	{
 		//Not the best but it works
 

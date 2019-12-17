@@ -54,25 +54,25 @@ namespace MCS
 			{
 				myComponents.MyComponents[2].HaveComponent = true;
 				auto& material = m_World->GetComponent<Frosty::ECS::CMaterial>(entity);
-				strcpy_s(myComponents.myMaterial.UseShaderName, material.UseShader->GetName().c_str());
-				myComponents.myMaterial.Albedo = material.Albedo;
-				if (material.DiffuseTexture != nullptr)
-					strcpy_s(myComponents.myMaterial.DiffuseTextureName, material.DiffuseTexture->GetName().c_str());
-				if (material.SpecularTexture != nullptr)
-					strcpy_s(myComponents.myMaterial.SpecularTextureName, material.SpecularTexture->GetName().c_str());
-				if (material.NormalTexture != nullptr)
-					strcpy_s(myComponents.myMaterial.NormalTextureName, material.NormalTexture->GetName().c_str());
-				if (material.BlendMapTexture != nullptr)
-					strcpy_s(myComponents.myMaterial.BlendMapTextureName, material.BlendMapTexture->GetName().c_str());
-				if (material.BlendTexture1 != nullptr)
-					strcpy_s(myComponents.myMaterial.BlendTexture1Name, material.BlendTexture1->GetName().c_str());
-				if (material.BlendTexture2 != nullptr)
-					strcpy_s(myComponents.myMaterial.BlendTexture2Name, material.BlendTexture2->GetName().c_str());
-				myComponents.myMaterial.SpecularStrength = material.SpecularStrength;
-				myComponents.myMaterial.Shininess = material.Shininess;
-				myComponents.myMaterial.TextureScale = material.TextureScale;
+				strcpy_s(myComponents.myMaterial.UseShaderName, material.Material->UseShader->GetName().c_str());
+				myComponents.myMaterial.Albedo = material.Material->Albedo;
+				if (material.Material->DiffuseTexture != nullptr)
+					strcpy_s(myComponents.myMaterial.DiffuseTextureName, material.Material->DiffuseTexture->GetName().c_str());
+				if (material.Material->SpecularTexture != nullptr)
+					strcpy_s(myComponents.myMaterial.SpecularTextureName, material.Material->SpecularTexture->GetName().c_str());
+				if (material.Material->NormalTexture != nullptr)
+					strcpy_s(myComponents.myMaterial.NormalTextureName, material.Material->NormalTexture->GetName().c_str());
+				if (material.Material->BlendMapTexture != nullptr)
+					strcpy_s(myComponents.myMaterial.BlendMapTextureName, material.Material->BlendMapTexture->GetName().c_str());
+				if (material.Material->BlendTexture1 != nullptr)
+					strcpy_s(myComponents.myMaterial.BlendTexture1Name, material.Material->BlendTexture1->GetName().c_str());
+				if (material.Material->BlendTexture2 != nullptr)
+					strcpy_s(myComponents.myMaterial.BlendTexture2Name, material.Material->BlendTexture2->GetName().c_str());
+				myComponents.myMaterial.SpecularStrength = material.Material->SpecularStrength;
+				myComponents.myMaterial.Shininess = material.Material->Shininess;
+				myComponents.myMaterial.TextureScale = material.Material->TextureScale;
 				std::string meshName = myComponents.myMesh.MeshName;
-				myComponents.myMaterial.HasTransparency = material.HasTransparency;
+				myComponents.myMaterial.HasTransparency = material.Material->HasTransparency;
 
 				/*if (m_World->HasComponent<Frosty::ECS::CMesh>(entity) && meshName.find("tree") != std::string::npos)
 					myComponents.myMaterial.HasTransparency = true;
@@ -235,7 +235,7 @@ namespace MCS
 		do
 		{
 			x++;
-			filePath = "../../../assets/levels/" + fileName + "_" + std::to_string(x) + ".lvl";
+			filePath = "../../../assets/zLevels/" + fileName + "_" + std::to_string(x) + ".lvl";
 			existingFile.open(filePath);
 			existingFile.close();
 		} while (existingFile.good());
@@ -331,7 +331,7 @@ namespace MCS
 		int physCounter = 0;
 		Frosty::ECS::CTransform* planeTransform = nullptr;
 		std::ifstream existingFile;
-		existingFile.open("../../../assets/levels/" + fileName + ".lvl", std::ios::binary);
+		existingFile.open("../../../assets/zLevels/" + fileName + ".lvl", std::ios::binary);
 		Level_Header heder;
 		Level_Entitys fileEntitys;
 		std::vector<std::shared_ptr<Frosty::ECS::Entity>> m_Chests;
@@ -525,25 +525,27 @@ namespace MCS
 						if (m_World->HasComponent<Frosty::ECS::CMesh>(entity) && meshName.find("Tree") != std::string::npos)
 							hasTransparency = true;
 
-						auto& material = m_World->AddComponent<Frosty::ECS::CMaterial>(entity,
-							Frosty::AssetManager::GetShader(fileEntitys.myEntitys[i].myMaterial.UseShaderName), hasTransparency);
-						material.Albedo = fileEntitys.myEntitys[i].myMaterial.Albedo;
-						if ((std::string)fileEntitys.myEntitys[i].myMaterial.DiffuseTextureName != "")
-							material.DiffuseTexture = Frosty::AssetManager::GetTexture2D(fileEntitys.myEntitys[i].myMaterial.DiffuseTextureName);
-						if ((std::string)fileEntitys.myEntitys[i].myMaterial.SpecularTextureName != "")
-							material.SpecularTexture = Frosty::AssetManager::GetTexture2D(fileEntitys.myEntitys[i].myMaterial.SpecularTextureName);
-						if ((std::string)fileEntitys.myEntitys[i].myMaterial.NormalTextureName != "")
-							material.NormalTexture = Frosty::AssetManager::GetTexture2D(fileEntitys.myEntitys[i].myMaterial.NormalTextureName);
-						if ((std::string)fileEntitys.myEntitys[i].myMaterial.BlendMapTextureName != "")
-							material.BlendMapTexture = Frosty::AssetManager::GetTexture2D(fileEntitys.myEntitys[i].myMaterial.BlendMapTextureName);
-						if ((std::string)fileEntitys.myEntitys[i].myMaterial.BlendTexture1Name != "")
-							material.BlendTexture1 = Frosty::AssetManager::GetTexture2D(fileEntitys.myEntitys[i].myMaterial.BlendTexture1Name);
-						if ((std::string)fileEntitys.myEntitys[i].myMaterial.BlendTexture2Name != "")
-							material.BlendTexture2 = Frosty::AssetManager::GetTexture2D(fileEntitys.myEntitys[i].myMaterial.BlendTexture2Name);
-						material.SpecularStrength = fileEntitys.myEntitys[i].myMaterial.SpecularStrength;
-						material.Shininess = fileEntitys.myEntitys[i].myMaterial.Shininess;
-						material.TextureScale = fileEntitys.myEntitys[i].myMaterial.TextureScale;
-						material.HasTransparency = fileEntitys.myEntitys[i].myMaterial.HasTransparency;
+						//auto& material = m_World->AddComponent<Frosty::ECS::CMaterial>(entity,
+						//	Frosty::AssetManager::GetShader(fileEntitys.myEntitys[i].myMaterial.UseShaderName), hasTransparency);
+						//material.Albedo = fileEntitys.myEntitys[i].myMaterial.Albedo;
+						//if ((std::string)fileEntitys.myEntitys[i].myMaterial.DiffuseTextureName != "")
+						//	material.DiffuseTexture = Frosty::AssetManager::GetTexture2D(fileEntitys.myEntitys[i].myMaterial.DiffuseTextureName);
+						//if ((std::string)fileEntitys.myEntitys[i].myMaterial.SpecularTextureName != "")
+						//	material.SpecularTexture = Frosty::AssetManager::GetTexture2D(fileEntitys.myEntitys[i].myMaterial.SpecularTextureName);
+						//if ((std::string)fileEntitys.myEntitys[i].myMaterial.NormalTextureName != "")
+						//	material.NormalTexture = Frosty::AssetManager::GetTexture2D(fileEntitys.myEntitys[i].myMaterial.NormalTextureName);
+						//if ((std::string)fileEntitys.myEntitys[i].myMaterial.BlendMapTextureName != "")
+						//	material.BlendMapTexture = Frosty::AssetManager::GetTexture2D(fileEntitys.myEntitys[i].myMaterial.BlendMapTextureName);
+						//if ((std::string)fileEntitys.myEntitys[i].myMaterial.BlendTexture1Name != "")
+						//	material.BlendTexture1 = Frosty::AssetManager::GetTexture2D(fileEntitys.myEntitys[i].myMaterial.BlendTexture1Name);
+						//if ((std::string)fileEntitys.myEntitys[i].myMaterial.BlendTexture2Name != "")
+						//	material.BlendTexture2 = Frosty::AssetManager::GetTexture2D(fileEntitys.myEntitys[i].myMaterial.BlendTexture2Name);
+						//material.SpecularStrength = fileEntitys.myEntitys[i].myMaterial.SpecularStrength;
+						//material.Shininess = fileEntitys.myEntitys[i].myMaterial.Shininess;
+						//material.TextureScale = fileEntitys.myEntitys[i].myMaterial.TextureScale;
+						//material.HasTransparency = fileEntitys.myEntitys[i].myMaterial.HasTransparency;
+
+						AddMaterial(entity, fileEntitys, size_t(i));
 					
 					}
 					//3 = Follow
@@ -932,10 +934,11 @@ namespace MCS
 				//add existing meat
 				for (int i = 0; i < m_VisitedRooms[enteredRoomId].addedBait.size(); i++)
 				{
+					auto& materialHandler = Frosty::AssetManager::GetMaterialHandler("Materials");
 					auto& bait = m_World->CreateEntity(m_VisitedRooms[enteredRoomId].addedBait[i]);
 					m_World->AddComponent<Frosty::ECS::CMesh>(bait, Frosty::AssetManager::GetMesh("meat"));
-					auto& material = m_World->AddComponent<Frosty::ECS::CMaterial>(bait, Frosty::AssetManager::GetShader("Texture2D"));
-					material.DiffuseTexture = Frosty::AssetManager::GetTexture2D("meat");
+					auto& material = m_World->AddComponent<Frosty::ECS::CMaterial>(bait, materialHandler->GetMaterialByName("bait"));
+					material.Material->DiffuseTexture = Frosty::AssetManager::GetTexture2D("meat");
 				}
 			}
 			else
@@ -1230,6 +1233,47 @@ namespace MCS
 	{
 		//crach?
 		m_VisitedRooms.clear();
+	}
+	
+	void LevelFileFormat::AddMaterial(const std::shared_ptr<Frosty::ECS::Entity>& entity, const Level_Entitys& fileEntities, const size_t index)
+	{
+		auto& materialHandler = Frosty::AssetManager::GetMaterialHandler("Materials");
+		std::string diffuseName = (std::string)fileEntities.myEntitys[index].myMaterial.DiffuseTextureName;
+
+		if (diffuseName != "ground_test2" && diffuseName != "")
+		{
+			m_World->AddComponent<Frosty::ECS::CMaterial>(entity, materialHandler->GetMaterialByName(diffuseName));
+		}
+		else
+		{
+			std::string blendMapName = (std::string)fileEntities.myEntitys[index].myMaterial.BlendMapTextureName;
+
+			if (blendMapName == "blend_road_straight")
+			{
+				m_World->AddComponent<Frosty::ECS::CMaterial>(entity, materialHandler->GetMaterialByName(blendMapName));
+
+			}
+			else if (blendMapName == "blend_road_cross")
+			{
+				m_World->AddComponent<Frosty::ECS::CMaterial>(entity, materialHandler->GetMaterialByName(blendMapName));
+
+			}
+			else if (blendMapName == "blend_road_threeway")
+			{
+				m_World->AddComponent<Frosty::ECS::CMaterial>(entity, materialHandler->GetMaterialByName(blendMapName));
+
+			}
+			else if (blendMapName == "blend_road_turn")
+			{
+				m_World->AddComponent<Frosty::ECS::CMaterial>(entity, materialHandler->GetMaterialByName(blendMapName));
+
+			}
+			else if (blendMapName == "blend_road_deadend")
+			{
+				m_World->AddComponent<Frosty::ECS::CMaterial>(entity, materialHandler->GetMaterialByName(blendMapName));
+
+			}
+		}
 	}
 }
 

@@ -579,6 +579,7 @@ namespace MCS
 		// Get necessary info
 		auto& weaponComp = m_World->GetComponent<Frosty::ECS::CWeapon>(weapon);
 		auto& attackerTransform = m_World->GetComponent<Frosty::ECS::CTransform>(weaponCarrier);
+		auto& materialHandler = Frosty::AssetManager::GetMaterialHandler("Materials");
 
 		// Calculate direction vector
 		glm::mat4 mat = glm::mat4(1.0f);
@@ -593,8 +594,7 @@ namespace MCS
 		auto& projectile = m_World->CreateEntity({ spawnPos.x, 1.0f, spawnPos.z }, attackerTransform.Rotation, { 5.0f, 5.0f, 2.0f });
 		auto& projectileTransform = m_World->GetComponent<Frosty::ECS::CTransform>(projectile);
 		m_World->AddComponent<Frosty::ECS::CMesh>(projectile, Frosty::AssetManager::GetMesh("player_arrow"));
-		m_World->AddComponent<Frosty::ECS::CMaterial>(projectile, Frosty::AssetManager::GetShader("Texture2D"));
-		m_World->GetComponent<Frosty::ECS::CMaterial>(projectile).DiffuseTexture = Frosty::AssetManager::GetTexture2D("arrow_diffuse");
+		m_World->AddComponent<Frosty::ECS::CMaterial>(projectile, materialHandler->GetMaterialByName("bow1"));
 		auto& projectilePhysics = m_World->AddComponent<Frosty::ECS::CPhysics>(projectile, Frosty::AssetManager::GetBoundingBox("player_arrow"), projectileTransform.Scale, weaponComp.ProjectileSpeed);
 		projectilePhysics.Direction = direction;
 
@@ -645,6 +645,7 @@ namespace MCS
 		// Get necessary info
 		auto& weaponComp = m_World->GetComponent<Frosty::ECS::CWeapon>(weapon);
 		auto& attackerTransform = m_World->GetComponent<Frosty::ECS::CTransform>(weaponCarrier);
+		auto& materialHandler = Frosty::AssetManager::GetMaterialHandler("Materials");
 
 		glm::mat4 mat = glm::mat4(1.0f);
 		mat = glm::rotate(mat, glm::radians(attackerTransform.Rotation.x), { 1.0f, 0.0f, 0.0f });
@@ -669,8 +670,7 @@ namespace MCS
 			auto& projectile = m_World->CreateEntity({ spawnPos.x, 1.0f, spawnPos.z }, attackerTransform.Rotation, { 5.0f, 5.0f, 2.0f });
 			auto& projectileTransform = m_World->GetComponent<Frosty::ECS::CTransform>(projectile);
 			m_World->AddComponent<Frosty::ECS::CMesh>(projectile, Frosty::AssetManager::GetMesh("player_arrow"));
-			m_World->AddComponent<Frosty::ECS::CMaterial>(projectile, Frosty::AssetManager::GetShader("Texture2D"));
-			m_World->GetComponent<Frosty::ECS::CMaterial>(projectile).DiffuseTexture = Frosty::AssetManager::GetTexture2D("arrow_diffuse");
+			m_World->AddComponent<Frosty::ECS::CMaterial>(projectile, materialHandler->GetMaterialByName("bow2"));
 			auto& projectilePhysics = m_World->AddComponent<Frosty::ECS::CPhysics>(projectile, Frosty::AssetManager::GetBoundingBox("player_arrow"), projectileTransform.Scale, weaponComp.ProjectileSpeed);
 			projectilePhysics.Direction = direction;
 
@@ -722,6 +722,7 @@ namespace MCS
 		// Get necessary info
 		auto& weaponComp = m_World->GetComponent<Frosty::ECS::CWeapon>(weapon);
 		auto& attackerTransform = m_World->GetComponent<Frosty::ECS::CTransform>(weaponCarrier);
+		auto& materialHandler = Frosty::AssetManager::GetMaterialHandler("Materials");
 
 		// Calculate direction vector
 		glm::mat4 mat = glm::mat4(1.0f);
@@ -736,8 +737,7 @@ namespace MCS
 		auto& projectile = m_World->CreateEntity({ spawnPos.x, 1.0f, spawnPos.z }, attackerTransform.Rotation, { 5.0f, 5.0f, 2.0f });
 		auto& projectileTransform = m_World->GetComponent<Frosty::ECS::CTransform>(projectile);
 		m_World->AddComponent<Frosty::ECS::CMesh>(projectile, Frosty::AssetManager::GetMesh("player_arrow"));
-		m_World->AddComponent<Frosty::ECS::CMaterial>(projectile, Frosty::AssetManager::GetShader("Texture2D"));
-		m_World->GetComponent<Frosty::ECS::CMaterial>(projectile).DiffuseTexture = Frosty::AssetManager::GetTexture2D("arrow_diffuse");
+		m_World->AddComponent<Frosty::ECS::CMaterial>(projectile, materialHandler->GetMaterialByName("bow3"));
 		auto& projectilePhysics = m_World->AddComponent<Frosty::ECS::CPhysics>(projectile, Frosty::AssetManager::GetBoundingBox("player_arrow"), projectileTransform.Scale, weaponComp.ProjectileSpeed);
 		projectilePhysics.Direction = direction;
 
@@ -1007,11 +1007,12 @@ namespace MCS
 			// If player has bait AND bait timer is bigger than cooldown--> Lay down bait
 			if ((m_Inventory[index]->CurrentBaitAmount > 0) && (Frosty::Time::CurrentTime() - m_Inventory[index]->BaitTimer >= m_Inventory[index]->BaitCooldown))
 			{
+				auto& materialHandler = Frosty::AssetManager::GetMaterialHandler("Materials");
+
 				auto& world = Frosty::Application::Get().GetWorld();
 				auto& bait = world->CreateEntity();
 				world->AddComponent<Frosty::ECS::CMesh>(bait, Frosty::AssetManager::GetMesh("meat"));
-				auto& material = world->AddComponent<Frosty::ECS::CMaterial>(bait, Frosty::AssetManager::GetShader("Texture2D"));
-				material.DiffuseTexture = Frosty::AssetManager::GetTexture2D("meat");
+				world->AddComponent<Frosty::ECS::CMaterial>(bait,materialHandler->GetMaterialByName("bait"));
 				auto& transform = world->GetComponent<Frosty::ECS::CTransform>(bait);
 				transform.Position = m_Transform[index]->Position;
 
@@ -1492,45 +1493,48 @@ namespace MCS
 				auto& playerWeaponComp = m_World->GetComponent<Frosty::ECS::CMaterial>(playerWeapon);
 				auto& lootWeaponComp = m_World->GetComponent<Frosty::ECS::CMaterial>(lootWeapon);
 
-				std::shared_ptr<Frosty::Shader>& shader = playerWeaponComp.UseShader;
-				glm::vec4 albedo = playerWeaponComp.Albedo;
-				std::shared_ptr<Frosty::Texture2D> diffuseTex = playerWeaponComp.DiffuseTexture;
-				std::shared_ptr<Frosty::Texture2D> specularTex = playerWeaponComp.SpecularTexture;
-				std::shared_ptr<Frosty::Texture2D> normalTex = playerWeaponComp.NormalTexture;
-				std::shared_ptr<Frosty::Texture2D> blendMapTex = playerWeaponComp.BlendMapTexture;
-				std::shared_ptr<Frosty::Texture2D> blendTex1 = playerWeaponComp.BlendTexture1;
-				std::shared_ptr<Frosty::Texture2D> blendTex2 = playerWeaponComp.BlendTexture2;
-				float specStrength = playerWeaponComp.SpecularStrength;
-				int shininess = playerWeaponComp.Shininess;
-				glm::vec2 texScale = playerWeaponComp.TextureScale;
-				bool transparency = playerWeaponComp.HasTransparency;
+				//std::shared_ptr<Frosty::Shader>& shader = playerWeaponComp.UseShader;
+				//glm::vec4 albedo = playerWeaponComp.Albedo;
+				//std::shared_ptr<Frosty::Texture2D> diffuseTex = playerWeaponComp.DiffuseTexture;
+				//std::shared_ptr<Frosty::Texture2D> specularTex = playerWeaponComp.SpecularTexture;
+				//std::shared_ptr<Frosty::Texture2D> normalTex = playerWeaponComp.NormalTexture;
+				//std::shared_ptr<Frosty::Texture2D> blendMapTex = playerWeaponComp.BlendMapTexture;
+				//std::shared_ptr<Frosty::Texture2D> blendTex1 = playerWeaponComp.BlendTexture1;
+				//std::shared_ptr<Frosty::Texture2D> blendTex2 = playerWeaponComp.BlendTexture2;
+				//float specStrength = playerWeaponComp.SpecularStrength;
+				//int shininess = playerWeaponComp.Shininess;
+				//glm::vec2 texScale = playerWeaponComp.TextureScale;
+				//bool transparency = playerWeaponComp.HasTransparency;
 
-				playerWeaponComp.UseShader = lootWeaponComp.UseShader;
-				playerWeaponComp.Albedo = lootWeaponComp.Albedo;
-				playerWeaponComp.DiffuseTexture = lootWeaponComp.DiffuseTexture;
-				playerWeaponComp.SpecularTexture = lootWeaponComp.SpecularTexture;
-				playerWeaponComp.NormalTexture = lootWeaponComp.NormalTexture;
-				playerWeaponComp.BlendMapTexture = lootWeaponComp.BlendMapTexture;
-				playerWeaponComp.BlendTexture1 = lootWeaponComp.BlendTexture1;
-				playerWeaponComp.BlendTexture2 = lootWeaponComp.BlendTexture2;
-				playerWeaponComp.SpecularStrength = lootWeaponComp.SpecularStrength;
-				playerWeaponComp.Shininess = lootWeaponComp.Shininess;
-				playerWeaponComp.TextureScale = lootWeaponComp.TextureScale;
-				playerWeaponComp.HasTransparency = lootWeaponComp.HasTransparency;
+				//playerWeaponComp.UseShader = lootWeaponComp.UseShader;
+				//playerWeaponComp.Albedo = lootWeaponComp.Albedo;
+				//playerWeaponComp.DiffuseTexture = lootWeaponComp.DiffuseTexture;
+				//playerWeaponComp.SpecularTexture = lootWeaponComp.SpecularTexture;
+				//playerWeaponComp.NormalTexture = lootWeaponComp.NormalTexture;
+				//playerWeaponComp.BlendMapTexture = lootWeaponComp.BlendMapTexture;
+				//playerWeaponComp.BlendTexture1 = lootWeaponComp.BlendTexture1;
+				//playerWeaponComp.BlendTexture2 = lootWeaponComp.BlendTexture2;
+				//playerWeaponComp.SpecularStrength = lootWeaponComp.SpecularStrength;
+				//playerWeaponComp.Shininess = lootWeaponComp.Shininess;
+				//playerWeaponComp.TextureScale = lootWeaponComp.TextureScale;
+				//playerWeaponComp.HasTransparency = lootWeaponComp.HasTransparency;
 
-				lootWeaponComp.UseShader = shader;
-				lootWeaponComp.Albedo = albedo;
-				lootWeaponComp.DiffuseTexture = diffuseTex;
-				lootWeaponComp.SpecularTexture = specularTex;
-				lootWeaponComp.NormalTexture = normalTex;
-				lootWeaponComp.BlendMapTexture = blendMapTex;
-				lootWeaponComp.BlendTexture1 = blendTex1;
-				lootWeaponComp.BlendTexture2 = blendTex2;
-				lootWeaponComp.SpecularStrength = specStrength;
-				lootWeaponComp.Shininess = shininess;
-				lootWeaponComp.TextureScale = texScale;
-				lootWeaponComp.HasTransparency = transparency;
+				//lootWeaponComp.UseShader = shader;
+				//lootWeaponComp.Albedo = albedo;
+				//lootWeaponComp.DiffuseTexture = diffuseTex;
+				//lootWeaponComp.SpecularTexture = specularTex;
+				//lootWeaponComp.NormalTexture = normalTex;
+				//lootWeaponComp.BlendMapTexture = blendMapTex;
+				//lootWeaponComp.BlendTexture1 = blendTex1;
+				//lootWeaponComp.BlendTexture2 = blendTex2;
+				//lootWeaponComp.SpecularStrength = specStrength;
+				//lootWeaponComp.Shininess = shininess;
+				//lootWeaponComp.TextureScale = texScale;
+				//lootWeaponComp.HasTransparency = transparency;
 
+				auto& tempMaterial = playerWeaponComp.Material;
+				playerWeaponComp.Material = lootWeaponComp.Material;
+				lootWeaponComp.Material = tempMaterial;
 
 				//Frosty::ECS::CMaterial tempMaterial;
 				//tempMaterial = m_World->GetComponent<Frosty::ECS::CMaterial>(playerWeapon);

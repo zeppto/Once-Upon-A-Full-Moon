@@ -28,7 +28,10 @@ namespace Frosty
 
 			material.Name = m.attribute("type").as_string();
 			line = m.attribute("shader").as_string();
-			material.UseShader = AssetManager::GetShader(line);
+			if(line != "")
+				material.UseShader = AssetManager::GetShader(line);
+			else
+				material.UseShader = AssetManager::GetShader("FlatColor");
 			
 			pugi::xml_node color = m.child("color");
 			material.Albedo.r = color.attribute("r").as_float();
@@ -37,12 +40,16 @@ namespace Frosty
 			material.Albedo.a = color.attribute("a").as_float();
 
 			line = m.attribute("diffuseTexture").as_string();
-			if(line != "")
+			if (line != "")
 				material.DiffuseTexture = AssetManager::GetTexture2D(line);
+			else
+				material.DiffuseTexture = nullptr;
 			
 			line = m.attribute("specularTexture").as_string();
 			if (line != "")
 				material.SpecularTexture = AssetManager::GetTexture2D(line);
+			else
+				material.SpecularTexture = nullptr;
 			
 			line = m.attribute("normalTexture").as_string();
 			if (line != "")
@@ -52,18 +59,24 @@ namespace Frosty
 			
 			line = m.attribute("blendMapTexture").as_string();
 			if (line != "")
-				material.BlendMapTexture = AssetManager::GetTexture2D(line);			
+				material.BlendMapTexture = AssetManager::GetTexture2D(line);	
+			else
+				material.BlendMapTexture = nullptr;
 			
 			line = m.attribute("blendTexture1").as_string();
 			if (line != "")
-				material.BlendTexture1 = AssetManager::GetTexture2D(line);			
+				material.BlendTexture1 = AssetManager::GetTexture2D(line);
+			else
+				material.BlendTexture1 = nullptr;
 			
 			line = m.attribute("blendTexture2").as_string();
 			if (line != "")
 				material.BlendTexture2 = AssetManager::GetTexture2D(line);
+			else
+				material.BlendTexture2 = nullptr;
 
 			material.Flash = m.attribute("flash").as_float();
-			material.SpecularStrength = m.attribute("SpecularStrength").as_float();
+			material.SpecularStrength = m.attribute("specularStrength").as_float();
 			material.Shininess = m.attribute("shininess").as_int();
 
 			pugi::xml_node textureScale = m.child("textureScale");
@@ -72,41 +85,43 @@ namespace Frosty
 
 			material.HasTransparency = m.attribute("hasTransparency").as_bool();
 
-			m_Materials.emplace_back(material.Name, material.UseShader, material.Albedo, material.DiffuseTexture, material.SpecularTexture, material.NormalTexture, material.BlendMapTexture, material.BlendTexture1, material.BlendTexture2, material.Flash, material.SpecularStrength, material.Shininess, material.TextureScale, material.HasTransparency);
+			m_Materials.emplace_back(std::make_shared<Material>(material.Name, material.UseShader, material.Albedo, material.DiffuseTexture, material.SpecularTexture, material.NormalTexture, material.BlendMapTexture, material.BlendTexture1, material.BlendTexture2, material.Flash, material.SpecularStrength, material.Shininess, material.TextureScale, material.HasTransparency));
 		}
 
 		return true;
 	}
 	
-	const int MaterialHandler::GetNumberOfMaterials()
-	{
-		return int(m_Materials.size());
-	}
+	//const int MaterialHandler::GetNumberOfMaterials()
+	//{
+	//	return int(m_Materials.size());
+	//}
 	
-	const Material& MaterialHandler::GetMaterialAt(size_t index)
-	{
-		FY_CORE_ASSERT(index >= m_Materials.size(), "MaterialHandler: Invalid index in GetMaterialAt().");
-		FY_CORE_ASSERT(index < 0, "MaterialHandler: Invalid index in GetMaterialAt().");
+	//const Material& MaterialHandler::GetMaterialAt(size_t index)
+	//{
+	//	FY_CORE_ASSERT(index >= m_Materials.size(), "MaterialHandler: Invalid index in GetMaterialAt().");
+	//	FY_CORE_ASSERT(index < 0, "MaterialHandler: Invalid index in GetMaterialAt().");
 
-		return m_Materials[index];
-	}
+	//	return *m_Materials[index];
+	//}
+	//
+	//const std::vector<std::shared_ptr<Material>&>& MaterialHandler::GetAllMaterials()
+	//{
+	//	return m_Materials;
+	//}
 	
-	const std::vector<Material>& MaterialHandler::GetAllMaterials()
-	{
-		return m_Materials;
-	}
-	
-	const Material& MaterialHandler::GetMaterialByName(std::string name)
+	const std::shared_ptr<Material>& MaterialHandler::GetMaterialByName(std::string name)
 	{
 		size_t index = -1;
 
 		for (size_t i = 0; i < m_Materials.size() && index == -1; i++)
 		{
-			if (m_Materials[i].Name == name)
+			if (m_Materials[i]->Name == name)
+			{
 				index = i;
+			}
 		}
 		
-		FY_CORE_ASSERT(index == -1, "MaterialHandler: Invalid name in GetMaterialByName().");
+		FY_CORE_ASSERT(int(index) >= 0, "MaterialHandler: Invalid name in GetMaterialByName().");
 
 		return m_Materials[index];
 	}

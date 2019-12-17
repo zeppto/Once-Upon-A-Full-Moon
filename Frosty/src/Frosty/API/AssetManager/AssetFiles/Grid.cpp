@@ -29,21 +29,21 @@ namespace Frosty
 	{
 		if (!m_DrawGizmos) return;
 
-		for (size_t i = 0; i < m_DynamicOccupiedNodes.size(); i++)
-		{
-			auto& cellMat = m_World->GetComponent<Frosty::ECS::CMaterial>(m_World->GetEntityManager()->GetEntityById(m_DynamicOccupiedNodes[i]->CellEntityID));
-			cellMat.DiffuseTexture = Frosty::AssetManager::GetTexture2D("green_square");
-			m_DynamicOccupiedNodes[i]->Walkable = true;
-			m_DynamicOccupiedNodes[i] = nullptr;
-		}
-		m_DynamicOccupiedNodes.clear();
+		//for (size_t i = 0; i < m_DynamicOccupiedNodes.size(); i++)
+		//{
+		//	auto& cellMat = m_World->GetComponent<Frosty::ECS::CMaterial>(m_World->GetEntityManager()->GetEntityById(m_DynamicOccupiedNodes[i]->CellEntityID));
+		//	cellMat.DiffuseTexture = Frosty::AssetManager::GetTexture2D("green_square");
+		//	m_DynamicOccupiedNodes[i]->Walkable = true;
+		//	m_DynamicOccupiedNodes[i] = nullptr;
+		//}
+		//m_DynamicOccupiedNodes.clear();
 
-		for (size_t i = 0; i < m_PathNodes.size(); i++)
-		{
-			auto& cellMat = m_World->GetComponent<Frosty::ECS::CMaterial>(m_World->GetEntityManager()->GetEntityById(m_PathNodes[i].CellEntityID));
-			cellMat.DiffuseTexture = Frosty::AssetManager::GetTexture2D("green_square");
-		}
-		m_PathNodes.clear();
+		//for (size_t i = 0; i < m_PathNodes.size(); i++)
+		//{
+		//	auto& cellMat = m_World->GetComponent<Frosty::ECS::CMaterial>(m_World->GetEntityManager()->GetEntityById(m_PathNodes[i].CellEntityID));
+		//	cellMat.DiffuseTexture = Frosty::AssetManager::GetTexture2D("green_square");
+		//}
+		//m_PathNodes.clear();
 	}
 
 	std::vector<CellNode*> Grid::GetNeighbours(CellNode* cellNode)
@@ -103,40 +103,40 @@ namespace Frosty
 
 	void Grid::DrawTargetCell(Frosty::ECS::CTransform* transform)
 	{
-		if (!m_DrawGizmos) return;
+		//if (!m_DrawGizmos) return;
 
-		auto& player = m_World->GetComponentManager<Frosty::ECS::CPlayer>()->GetAll();
-		auto& playerTransform = m_World->GetComponent<Frosty::ECS::CTransform>(player[1].EntityPtr);
-		CellNode& playerNode = WorldPointToNode(playerTransform.Position);
-		
-		auto& cellMat = m_World->GetComponent<Frosty::ECS::CMaterial>(m_World->GetEntityManager()->GetEntityById(playerNode.CellEntityID));
-		cellMat.DiffuseTexture = Frosty::AssetManager::GetTexture2D("blue_square");
+		//auto& player = m_World->GetComponentManager<Frosty::ECS::CPlayer>()->GetAll();
+		//auto& playerTransform = m_World->GetComponent<Frosty::ECS::CTransform>(player[1].EntityPtr);
+		//CellNode& playerNode = WorldPointToNode(playerTransform.Position);
+		//
+		//auto& cellMat = m_World->GetComponent<Frosty::ECS::CMaterial>(m_World->GetEntityManager()->GetEntityById(playerNode.CellEntityID));
+		//cellMat.DiffuseTexture = Frosty::AssetManager::GetTexture2D("blue_square");
 	}
 
 	void Grid::DrawSeekerCell(Frosty::ECS::CTransform* transform)
 	{
-		if (!m_DrawGizmos) return;
+		//if (!m_DrawGizmos) return;
 
-		CellNode& enemyNode = WorldPointToNode(transform->Position);
+		//CellNode& enemyNode = WorldPointToNode(transform->Position);
 
-		//if (enemyNode.Walkable)
-		{
-			auto& cellMat = m_World->GetComponent<Frosty::ECS::CMaterial>(m_World->GetEntityManager()->GetEntityById(enemyNode.CellEntityID));
-			cellMat.DiffuseTexture = Frosty::AssetManager::GetTexture2D("purple_square");
-			m_DynamicOccupiedNodes.emplace_back(&enemyNode);
-		}
+		////if (enemyNode.Walkable)
+		//{
+		//	auto& cellMat = m_World->GetComponent<Frosty::ECS::CMaterial>(m_World->GetEntityManager()->GetEntityById(enemyNode.CellEntityID));
+		//	cellMat.DiffuseTexture = Frosty::AssetManager::GetTexture2D("purple_square");
+		//	m_DynamicOccupiedNodes.emplace_back(&enemyNode);
+		//}
 	}
 
 	void Grid::DrawPathCells(const std::vector<CellNode*> path)
 	{
-		if (!m_DrawGizmos) return;
+		//if (!m_DrawGizmos) return;
 
-		for (size_t i = 0; i < path.size(); i++)
-		{
-			auto& cellMat = m_World->GetComponent<Frosty::ECS::CMaterial>(m_World->GetEntityManager()->GetEntityById(path[i]->CellEntityID));
-			cellMat.DiffuseTexture = Frosty::AssetManager::GetTexture2D("brown_square");
-			m_PathNodes.emplace_back(*path[i]);
-		}
+		//for (size_t i = 0; i < path.size(); i++)
+		//{
+		//	auto& cellMat = m_World->GetComponent<Frosty::ECS::CMaterial>(m_World->GetEntityManager()->GetEntityById(path[i]->CellEntityID));
+		//	cellMat.DiffuseTexture = Frosty::AssetManager::GetTexture2D("brown_square");
+		//	m_PathNodes.emplace_back(*path[i]);
+		//}
 	}
 
 	void Grid::CreateGrid()
@@ -167,17 +167,17 @@ namespace Frosty
 		//LoadFile("TestGmap.Gmap");
 
 
-		if (!m_DrawGizmos) return;
+		//if (!m_DrawGizmos) return;
 
-		for (size_t i = 0; i < m_CellNodes.size(); i++)
-		{
-			auto& cell = m_World->CreateEntity({ m_CellNodes[i].WorldPosition.x, 0.05, m_CellNodes[i].WorldPosition.z }, { 0.0f,0.0f,0.0f }, { CELL_SIZE, 1.0f, CELL_SIZE }, true);
-			cell->ShowInEditor = false;
-			m_World->AddComponent<Frosty::ECS::CMesh>(cell, Frosty::AssetManager::GetMesh("pPlane1"));
-			auto& cellMat = m_World->AddComponent<Frosty::ECS::CMaterial>(cell, Frosty::AssetManager::GetShader("Texture2D"));
-			cellMat.DiffuseTexture = Frosty::AssetManager::GetTexture2D(m_CellNodes[i].Walkable ? "green_square" : "red_square");
-			m_CellNodes[i].CellEntityID = cell->Id;
-		}
+		//for (size_t i = 0; i < m_CellNodes.size(); i++)
+		//{
+		//	auto& cell = m_World->CreateEntity({ m_CellNodes[i].WorldPosition.x, 0.05, m_CellNodes[i].WorldPosition.z }, { 0.0f,0.0f,0.0f }, { CELL_SIZE, 1.0f, CELL_SIZE }, true);
+		//	cell->ShowInEditor = false;
+		//	m_World->AddComponent<Frosty::ECS::CMesh>(cell, Frosty::AssetManager::GetMesh("pPlane1"));
+		//	auto& cellMat = m_World->AddComponent<Frosty::ECS::CMaterial>(cell, Frosty::AssetManager::GetShader("Texture2D"));
+		//	cellMat.DiffuseTexture = Frosty::AssetManager::GetTexture2D(m_CellNodes[i].Walkable ? "green_square" : "red_square");
+		//	m_CellNodes[i].CellEntityID = cell->Id;
+		//}
 	}
 
 	void Grid::SaveFile(const std::string FileName)

@@ -56,39 +56,39 @@
 		<textureScale x="1.0" y="1.0"/>
 	</material>
 		
-	<material type="bo3" shader="Texture2D" diffuseTexture="bow_lvl3_diffuse" specularTexture="" normalTexture="bow_normal" blendMapTexture="" blendTexture1="" blendTexture2="" flash="0.0" specularStrength="0.5" shininess="16">
+	<material type="bow3" shader="Texture2D" diffuseTexture="bow_lvl3_diffuse" specularTexture="" normalTexture="bow_normal" blendMapTexture="" blendTexture1="" blendTexture2="" flash="0.0" specularStrength="0.5" shininess="16">
 		<color r="0.0" g="0.0" b="1.0" a="1.0"/>
 		<textureScale x="1.0" y="1.0"/>
 	</material>
 	
 	
 	<!-- Inventory Items -->
-	<material type="HealingPotion" shader="Texture2D" diffuseTexture="hpPotion" specularTexture="" normalTexture="FlatNormal" blendMapTexture="" blendTexture1="" blendTexture2="" flash="0.0" specularStrength="0.5" shininess="16" hasTransparency="1">
+	<material type="healingPotion" shader="Texture2D" diffuseTexture="hpPotion" specularTexture="" normalTexture="FlatNormal" blendMapTexture="" blendTexture1="" blendTexture2="" flash="0.0" specularStrength="0.5" shininess="16" hasTransparency="1">
 		<color r="0.0" g="0.0" b="1.0" a="1.0"/>
 		<textureScale x="1.0" y="1.0"/>
 	</material>
 	
-	<material type="IncreaseHP" shader="Texture2D" diffuseTexture="highlightHeart" specularTexture="" normalTexture="FlatNormal" blendMapTexture="" blendTexture1="" blendTexture2="" flash="0.0" specularStrength="0.5" shininess="16" hasTransparency="1">
+	<material type="increaseHP" shader="Texture2D" diffuseTexture="highlightHeart" specularTexture="" normalTexture="FlatNormal" blendMapTexture="" blendTexture1="" blendTexture2="" flash="0.0" specularStrength="0.5" shininess="16" hasTransparency="1">
 		<color r="0.0" g="0.0" b="1.0" a="1.0"/>
 		<textureScale x="1.0" y="1.0"/>
 	</material>
 	
-	<material type="SpeedPotion" shader="Texture2D" diffuseTexture="spPotion" specularTexture="" normalTexture="FlatNormal" blendMapTexture="" blendTexture1="" blendTexture2="" flash="0.0" specularStrength="0.5" shininess="16" hasTransparency="1">
+	<material type="speedPotion" shader="Texture2D" diffuseTexture="spPotion" specularTexture="" normalTexture="FlatNormal" blendMapTexture="" blendTexture1="" blendTexture2="" flash="0.0" specularStrength="0.5" shininess="16" hasTransparency="1">
 		<color r="0.0" g="0.0" b="1.0" a="1.0"/>
 		<textureScale x="1.0" y="1.0"/>
 	</material>
 	
-	<material type="SpeedBoots" shader="Texture2D" diffuseTexture="speedBoots" specularTexture="" normalTexture="FlatNormal" blendMapTexture="" blendTexture1="" blendTexture2="" flash="0.0" specularStrength="0.5" shininess="16" hasTransparency="1">
+	<material type="speedBoots" shader="Texture2D" diffuseTexture="speedBoots" specularTexture="" normalTexture="FlatNormal" blendMapTexture="" blendTexture1="" blendTexture2="" flash="0.0" specularStrength="0.5" shininess="16" hasTransparency="1">
 		<color r="0.0" g="0.0" b="1.0" a="1.0"/>
 		<textureScale x="1.0" y="1.0"/>
 	</material>
 	
-	<material type="Bait" shader="Texture2D" diffuseTexture="meat" specularTexture="" normalTexture="FlatNormal" blendMapTexture="" blendTexture1="" blendTexture2="" flash="0.0" specularStrength="0.5" shininess="16">
+	<material type="bait" shader="Texture2D" diffuseTexture="meat" specularTexture="" normalTexture="FlatNormal" blendMapTexture="" blendTexture1="" blendTexture2="" flash="0.0" specularStrength="0.5" shininess="16">
 		<color r="0.0" g="0.0" b="1.0" a="1.0"/>
 		<textureScale x="1.0" y="1.0"/>
 	</material>
 	
-	<material type="Wolfsbane" shader="Texture2D" diffuseTexture="wolfsbane" specularTexture="" normalTexture="FlatNormal" blendMapTexture="" blendTexture1="" blendTexture2="" flash="0.0" specularStrength="0.5" shininess="16" hasTransparency="1">
+	<material type="wolfsbane" shader="Texture2D" diffuseTexture="wolfsbane" specularTexture="" normalTexture="FlatNormal" blendMapTexture="" blendTexture1="" blendTexture2="" flash="0.0" specularStrength="0.5" shininess="16" hasTransparency="1">
 		<color r="0.0" g="0.0" b="1.0" a="1.0"/>
 		<textureScale x="1.0" y="1.0"/>
 	</material>		
@@ -127,6 +127,10 @@
 		<textureScale x="1.0" y="1.0"/>
 	</material>	
 	
+	<material type="emptyGround" shader="Texture2D" diffuseTexture="ground_test2" specularTexture="" normalTexture="ground_test_normal" blendMapTexture="" blendTexture1="" specularStrength="0.5" shininess="16">
+		<color r="0.0" g="0.0" b="1.0" a="1.0"/>
+		<textureScale x="1.0" y="1.0"/>
+	</material>
 	
 	<!-- Tree-->
 	<material type="Tree1" shader="Texture2D" diffuseTexture="Tree1" specularTexture="" normalTexture="FlatNormal" blendMapTexture="" blendTexture1="" blendTexture2="" flash="0.0" specularStrength="0.5" shininess="16" hasTransparency="1">
@@ -140,6 +144,11 @@
 	</material>
 	
 	<material type="Tree3" shader="Texture2D" diffuseTexture="Tree3" specularTexture="" normalTexture="FlatNormal" blendMapTexture="" blendTexture1="" blendTexture2="" flash="0.0" specularStrength="0.5" shininess="16" hasTransparency="1">
+		<color r="0.0" g="0.0" b="1.0" a="1.0"/>
+		<textureScale x="1.0" y="1.0"/>
+	</material>
+	
+	<material type="Tree4" shader="Texture2D" diffuseTexture="Tree4" specularTexture="" normalTexture="FlatNormal" blendMapTexture="" blendTexture1="" blendTexture2="" flash="0.0" specularStrength="0.5" shininess="16" hasTransparency="1">
 		<color r="0.0" g="0.0" b="1.0" a="1.0"/>
 		<textureScale x="1.0" y="1.0"/>
 	</material>
@@ -192,6 +201,12 @@
 	</material>
 	
 	<material type="mashRoomCirkel" shader="Texture2D" diffuseTexture="mashRoomCirkel" specularTexture="" normalTexture="FlatNormal" blendMapTexture="" blendTexture1="" blendTexture2="" flash="0.0" specularStrength="0.5" shininess="16">
+		<color r="0.0" g="0.0" b="1.0" a="1.0"/>
+		<textureScale x="1.0" y="1.0"/>
+	</material>
+	
+	<!-- Default -->
+	<material type="default" shader="FlatColor" diffuseTexture="" specularTexture="" normalTexture="FlatNormal" blendMapTexture="" blendTexture1="" blendTexture2="" flash="0.0" specularStrength="0.5" shininess="16">
 		<color r="0.0" g="0.0" b="1.0" a="1.0"/>
 		<textureScale x="1.0" y="1.0"/>
 	</material>

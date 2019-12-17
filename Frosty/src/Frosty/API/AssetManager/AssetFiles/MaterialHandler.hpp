@@ -57,15 +57,15 @@ namespace Frosty
 
 		bool LoadMaterial(const std::string& filePath);
 
-		const int GetNumberOfMaterials();
-		const Material& GetMaterialAt(size_t index);
-		const std::vector<Material>& GetAllMaterials();
+		//const int GetNumberOfMaterials();
+		//const Material& GetMaterialAt(size_t index);
+		//const std::vector<std::shared_ptr<Material>&>& GetAllMaterials();
 
 		// Returns a material depending on the name required
-		const Material& GetMaterialByName(std::string name);
+		const std::shared_ptr<Material>& GetMaterialByName(std::string name);
 
 	private:
-		std::vector<Material> m_Materials;
+		std::vector<std::shared_ptr<Material>> m_Materials;
 	};
 }
 #endif // !MATERIALHANDLER_HPP

@@ -527,33 +527,14 @@ namespace Frosty
 
 		struct CMaterial : public BaseComponent
 		{
-			static const unsigned int MAXIMUM_SHININESS = 256;
 			static std::string NAME;
-			std::shared_ptr<Shader> UseShader;
-			glm::vec4 Albedo{ 1.0f, 0.0f, 1.0f, 1.0f };
-			std::shared_ptr<Texture2D> DiffuseTexture;
-			std::shared_ptr<Texture2D> SpecularTexture;
-			std::shared_ptr<Texture2D> NormalTexture;
-			std::shared_ptr<Texture2D> BlendMapTexture;
-			std::shared_ptr<Texture2D> BlendTexture1;
-			std::shared_ptr<Texture2D> BlendTexture2;
 
-			float Flash{ 0.0f };
-			float SpecularStrength{ 0.5f };
-			int Shininess{ 16 };
-			glm::vec2 TextureScale{ 1.0f };
-
-			bool HasTransparency{ false };
-
-			// NEW - under construction		~ W-_-W ~
-			std::shared_ptr<Material> Material;
+			std::shared_ptr<Frosty::Material> Material;
 
 			CMaterial() = default;
-			CMaterial(const std::shared_ptr<Shader>& shader, bool hasTransparency = false) : UseShader(shader), HasTransparency(hasTransparency){ NormalTexture = AssetManager::GetTexture2D("FlatNormal"); }
-			CMaterial(std::shared_ptr<Frosty::Material> material) : Material(material){ }
+			CMaterial(const std::shared_ptr<Frosty::Material> material) : Material(material){ }
 			CMaterial(const CMaterial& org) { FY_CORE_ASSERT(false, "Copy constructor in CMaterial called."); }
-			
-			bool operator!=(const CMaterial& org) { return  DiffuseTexture != org.DiffuseTexture; }	// This works best for Flatcolor shader. Talk to W-_-W if you have any questions
+			bool operator!=(const CMaterial& org) { return  Material->DiffuseTexture != org.Material->DiffuseTexture; }	// This works best for Flatcolor shader. Talk to W-_-W if you have any questions
 			
 			virtual std::string GetName() const { return NAME; }
 		};

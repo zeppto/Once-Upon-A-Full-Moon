@@ -72,13 +72,13 @@ namespace Frosty
 		static void Submit2d(const std::shared_ptr<Shader>& shader, const std::shared_ptr<VertexArray>& vertexArray, const glm::mat4& transform);
 		static void SubmitHealthBar(const std::shared_ptr<Shader>& shader, const std::shared_ptr<VertexArray>& vertexArray, const glm::vec3& translate, const glm::vec3& scale, const glm::vec3& HealthBarSpace);
 		static void AddToRenderer(ECS::CMaterial* mat, ECS::CMesh* mesh, ECS::CTransform* transform, ECS::CAnimController* controller);
-		static void RemoveFromRenderer(const size_t& matID, const std::string& meshName, const size_t& transformID);
-		static void UpdateEntity(const size_t& matID, ECS::CMaterial* mat, const std::string& meshName, std::shared_ptr<VertexArray> vertexArray, const size_t& transformID, ECS::CTransform* transform);
+		static void RemoveFromRenderer(const std::string& matID, const std::string& meshName, const size_t& transformID);
+		static void UpdateEntity(const std::string& matID, ECS::CMaterial* mat, const std::string& meshName, std::shared_ptr<VertexArray> vertexArray, const size_t& transformID, ECS::CTransform* transform);
 
 		static void SwapEntity(const std::shared_ptr<ECS::Entity>& EntityA, const std::shared_ptr<ECS::Entity>& EntityB);
 
 		//Suggestion: Overload this for each individual trait. That way we need not replace everything.
-		static void ChangeEntity(const size_t& OldMatID, ECS::CMaterial* mat, const std::string& OldMeshName, ECS::CMesh* mesh, const size_t& transformID, ECS::CTransform* transform, ECS::CAnimController* controller);
+		static void ChangeEntity(const std::string& OldMatID, ECS::CMaterial* mat, const std::string& OldMeshName, ECS::CMesh* mesh, const size_t& transformID, ECS::CTransform* transform, ECS::CAnimController* controller);
 		static void UpdateCMesh(const size_t& entityID, ECS::CMesh* mesh);
 		static void UpdateCMesh(const size_t& entityID, ECS::CMesh* mesh, ECS::CAnimController * ctrlPtr);
 
@@ -115,7 +115,7 @@ namespace Frosty
 		struct ShaderData
 		{
 			std::shared_ptr < Shader> Shader;
-			std::unordered_map<size_t, std::shared_ptr<MaterialData>> MaterialMap;
+			std::unordered_map<std::string, std::shared_ptr<MaterialData>> MaterialMap;
 		};
 
 		struct RenderPassData
@@ -123,13 +123,13 @@ namespace Frosty
 			std::unordered_map<std::string, std::shared_ptr<ShaderData>> ShaderMap;
 			std::unordered_map<size_t, std::unordered_map<size_t, Frosty::ECS::CTransform*>*> TransformLookUpMap;
 			std::unordered_map<size_t, std::unordered_map<std::string, std::shared_ptr<MeshData>>*> MeshLookUpMap;
-			std::unordered_map<size_t, std::unordered_map<size_t, std::shared_ptr<MaterialData>>*> MaterialLookUpMap;
+			std::unordered_map<size_t, std::unordered_map<std::string, std::shared_ptr<MaterialData>>*> MaterialLookUpMap;
 		};
 
 		static std::unordered_map<std::string, std::shared_ptr<ShaderData>> s_ShaderMap;
 		static std::unordered_map<size_t, std::unordered_map<size_t, Frosty::ECS::CTransform*>*> s_TransformLookUpMap;
 		static std::unordered_map<size_t, std::unordered_map<std::string, std::shared_ptr<MeshData>>*> s_MeshLookUpMap;
-		static std::unordered_map<size_t, std::unordered_map<size_t, std::shared_ptr<MaterialData>>*> s_MaterialLookUpMap;
+		static std::unordered_map<size_t, std::unordered_map<std::string, std::shared_ptr<MaterialData>>*> s_MaterialLookUpMap;
 		static std::vector<RenderPassData> s_RenderPas;
 
 		struct SceneData

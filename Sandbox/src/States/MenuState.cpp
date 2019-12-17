@@ -216,20 +216,27 @@ namespace MCS
 		auto& weaponComp = world->GetComponent<Frosty::ECS::CWeapon>(weapon);
 		Frosty::ECS::CMesh* weaponMesh;
 
+		// Fetches material
+		auto& materialHandler = Frosty::AssetManager::GetMaterialHandler("Materials");
+
 		if (weaponComp.Type == Frosty::ECS::CWeapon::WeaponType::Bow)
 		{
 			/*world->GetComponent<Frosty::ECS::CTransform>*/
 			weaponMesh = &world->AddComponent<Frosty::ECS::CMesh>(weapon, Frosty::AssetManager::GetMesh("Bow"));
-			auto& weaponMat = world->AddComponent<Frosty::ECS::CMaterial>(weapon, Frosty::AssetManager::GetShader("Texture2D"));
-			weaponMat.DiffuseTexture = Frosty::AssetManager::GetTexture2D("bow_lvl1_diffuse");
-			weaponMat.NormalTexture = Frosty::AssetManager::GetTexture2D("bow_normal");
+			world->AddComponent<Frosty::ECS::CMaterial>(weapon, materialHandler->GetMaterialByName("bow1"));
+
+			//auto& weaponMat = world->AddComponent<Frosty::ECS::CMaterial>(weapon, Frosty::AssetManager::GetShader("Texture2D"));
+			//weaponMat.DiffuseTexture = Frosty::AssetManager::GetTexture2D("bow_lvl1_diffuse");
+			//weaponMat.NormalTexture = Frosty::AssetManager::GetTexture2D("bow_normal");
 		}
 		else
 		{
 			weaponMesh = &world->AddComponent<Frosty::ECS::CMesh>(weapon, Frosty::AssetManager::GetMesh("sword"));
-			auto& weaponMat = world->AddComponent<Frosty::ECS::CMaterial>(weapon, Frosty::AssetManager::GetShader("Texture2D"));
-			weaponMat.DiffuseTexture = Frosty::AssetManager::GetTexture2D("sword_lvl1_diffuse");
-			weaponMat.NormalTexture = Frosty::AssetManager::GetTexture2D("sword_normal");
+			world->AddComponent<Frosty::ECS::CMaterial>(weapon, materialHandler->GetMaterialByName("sword1"));
+
+			//auto& weaponMat = world->AddComponent<Frosty::ECS::CMaterial>(weapon, Frosty::AssetManager::GetShader("Texture2D"));
+			//weaponMat.DiffuseTexture = Frosty::AssetManager::GetTexture2D("sword_lvl1_diffuse");
+			//weaponMat.NormalTexture = Frosty::AssetManager::GetTexture2D("sword_normal");
 		}
 
 		// PLAYER
@@ -239,12 +246,8 @@ namespace MCS
 		world->AddComponent<Frosty::ECS::CAnimController>(player).currAnim = Frosty::AssetManager::GetAnimation("Scarlet_Idle");
 		auto& animation = world->GetComponent<Frosty::ECS::CAnimController>(player);
 		animation.animSpeed = 0.7f;
-		auto& playerMat = world->AddComponent<Frosty::ECS::CMaterial>(player, Frosty::AssetManager::GetShader("Animation"));
-		playerMat.DiffuseTexture = Frosty::AssetManager::GetTexture2D("Scarlet_diffuse");
-		playerMat.NormalTexture = Frosty::AssetManager::GetTexture2D("Scarlet_normal");
-		playerMat.SpecularTexture = Frosty::AssetManager::GetTexture2D("Scarlet_specular");
+		world->AddComponent<Frosty::ECS::CMaterial>(player, materialHandler->GetMaterialByName("scarlet"));
 		world->AddComponent<Frosty::ECS::CPlayer>(player, &weaponComp);	// <-- Give player a weapon
-		//weaponTransform.Position += playerTransform.Position;//Check this
 		world->AddComponent<Frosty::ECS::CPhysics>(player, Frosty::AssetManager::GetBoundingBox("Scarlet"), playerTransform.Scale, 13.0f);
 		world->AddComponent<Frosty::ECS::CDash>(player);
 		world->AddComponent<Frosty::ECS::CHealth>(player, 20);
@@ -452,8 +455,8 @@ namespace MCS
 		world->AddComponent<Frosty::ECS::CGUI>(player, uiLayout);
 
 		// HOW TO FETCH MATERIAL	~ W-_-W ~
-		auto& materialHandler = Frosty::AssetManager::GetMaterialHandler("Materials");
-		Frosty::Material material = materialHandler->GetMaterialByName("Scarlet");
+		//auto& materialHandler = Frosty::AssetManager::GetMaterialHandler("Materials");
+		//std::shared_ptr<Frosty::Material> material = materialHandler->GetMaterialByName("scarlet");
 	}
 
 	void MenuState::InitiateButtons()

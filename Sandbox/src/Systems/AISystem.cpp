@@ -369,8 +369,9 @@ namespace MCS
 			}
 			else if (m_Enemy[index]->Weapon->Type == Frosty::ECS::CWeapon::WeaponType::Sword)
 			{
+				auto& materialHandler = Frosty::AssetManager::GetMaterialHandler("Materials");
 				m_World->AddComponent<Frosty::ECS::CMesh>(attack, Frosty::AssetManager::GetMesh("pCube1"));						// Remove later
-				m_World->AddComponent<Frosty::ECS::CMaterial>(attack, Frosty::AssetManager::GetShader("FlatColor"));			// Remove later
+				m_World->AddComponent<Frosty::ECS::CMaterial>(attack, materialHandler->GetMaterialByName("default"));			// Remove later
 				m_World->AddComponent<Frosty::ECS::CPhysics>(attack, Frosty::AssetManager::GetBoundingBox("pCube1"), attackTransform.Scale, 0.0f);
 				m_World->AddComponent<Frosty::ECS::CAttack>(attack, Frosty::ECS::CAttack::AttackType::Melee, (int)m_Enemy[index]->Weapon->Damage, false, m_Enemy[index]->Weapon->Lifetime);
 
@@ -381,8 +382,9 @@ namespace MCS
 			}
 			else
 			{
+				auto& materialHandler = Frosty::AssetManager::GetMaterialHandler("Materials");
 				m_World->AddComponent<Frosty::ECS::CMesh>(attack, Frosty::AssetManager::GetMesh("pCube1"));						// Remove later
-				m_World->AddComponent<Frosty::ECS::CMaterial>(attack, Frosty::AssetManager::GetShader("FlatColor"));			// Remove later
+				m_World->AddComponent<Frosty::ECS::CMaterial>(attack, materialHandler->GetMaterialByName("default"));			// Remove later
 				m_World->AddComponent<Frosty::ECS::CPhysics>(attack, Frosty::AssetManager::GetBoundingBox("pCube1"), attackTransform.Scale, 0.0f);
 				m_World->AddComponent<Frosty::ECS::CAttack>(attack, Frosty::ECS::CAttack::AttackType::Melee, (int)m_Enemy[index]->Weapon->Damage, false, m_Enemy[index]->Weapon->Lifetime);
 			}
@@ -524,14 +526,13 @@ namespace MCS
 		bossWeaponComp.AttackHitboxScale = glm::vec3(12.0f, 6.0f, 5.0f);
 
 		// Boss
+		auto& materialHandler = Frosty::AssetManager::GetMaterialHandler("Materials");
 		auto& boss = m_World->CreateEntity(m_BossSpawn, { 0.0f, 0.0f, 0.0f }, { 1.5f, 1.5f, 1.5f });
 		m_World->AddToGroup(boss, true);
 		auto& bossTransform = m_World->GetComponent<Frosty::ECS::CTransform>(boss);
 		m_World->AddComponent<Frosty::ECS::CMesh>(boss, Frosty::AssetManager::GetMesh("Werewolf"));
 		m_World->AddComponent<Frosty::ECS::CAnimController>(boss).currAnim = Frosty::AssetManager::GetAnimation("Werewolf_Idle");
-		auto& bossMat = m_World->AddComponent<Frosty::ECS::CMaterial>(boss, Frosty::AssetManager::GetShader("Animation"));
-		bossMat.DiffuseTexture = Frosty::AssetManager::GetTexture2D("Werewolf_Diffuse");
-		bossMat.NormalTexture = Frosty::AssetManager::GetTexture2D("Werewolf_defaultMat_Normal");
+		auto& bossMat = m_World->AddComponent<Frosty::ECS::CMaterial>(boss, materialHandler->GetMaterialByName("boss"));
 		m_World->AddComponent<Frosty::ECS::CPhysics>(boss, Frosty::AssetManager::GetBoundingBox("Werewolf"), bossTransform.Scale, 10.0f);
 		auto& enemyComp = m_World->AddComponent<Frosty::ECS::CEnemy>(boss, m_PlayerTransform, &bossWeaponComp);
 		enemyComp.SpawnPosition = m_BossSpawn;

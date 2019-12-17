@@ -149,7 +149,10 @@ namespace MCS
 					if (ImGui::MenuItem("Material", "", &toggles[3]))
 					{
 						if (!world->HasComponent<Frosty::ECS::CMaterial>(m_SelectedEntity))
-							world->AddComponent<Frosty::ECS::CMaterial>(m_SelectedEntity, Frosty::AssetManager::GetShader("FlatColor"));
+						{
+							auto& materialHandler = Frosty::AssetManager::GetMaterialHandler("Materials");
+							world->AddComponent<Frosty::ECS::CMaterial>(m_SelectedEntity, materialHandler->GetMaterialByName("default"));
+						}
 						else
 							world->RemoveComponent<Frosty::ECS::CMaterial>(m_SelectedEntity);
 					}
@@ -324,15 +327,17 @@ namespace MCS
 
 									if (world->HasComponent<Frosty::ECS::CMaterial>(m_SelectedEntity))
 									{
+										auto mat = &world->GetComponent<Frosty::ECS::CMaterial>(m_SelectedEntity);
 										if (!world->HasComponent<Frosty::ECS::CAnimController>(m_SelectedEntity))
 										{
-											Frosty::Renderer::ChangeEntity(m_SelectedEntity->Id, &world->GetComponent<Frosty::ECS::CMaterial>(m_SelectedEntity),
+											
+											Frosty::Renderer::ChangeEntity(mat->Material->Name, &world->GetComponent<Frosty::ECS::CMaterial>(m_SelectedEntity),
 												oldMeshName, &world->GetComponent<Frosty::ECS::CMesh>(m_SelectedEntity),
 												m_SelectedEntity->Id, &world->GetComponent<Frosty::ECS::CTransform>(m_SelectedEntity),nullptr);
 										}
 										else
 										{
-											Frosty::Renderer::ChangeEntity(m_SelectedEntity->Id, &world->GetComponent<Frosty::ECS::CMaterial>(m_SelectedEntity),
+											Frosty::Renderer::ChangeEntity(mat->Material->Name, &world->GetComponent<Frosty::ECS::CMaterial>(m_SelectedEntity),
 												oldMeshName, &world->GetComponent<Frosty::ECS::CMesh>(m_SelectedEntity),
 												m_SelectedEntity->Id, &world->GetComponent<Frosty::ECS::CTransform>(m_SelectedEntity),
 												&world->GetComponent<Frosty::ECS::CAnimController>(m_SelectedEntity));
@@ -386,14 +391,14 @@ namespace MCS
 					{
 						auto& comp = world->GetComponent<Frosty::ECS::CMaterial>(m_SelectedEntity);
 						float compHeight = 0.0f;
-						if (comp.UseShader->GetName() == "FlatColor") compHeight = 125.0f;
-						else if (comp.UseShader->GetName() == "Texture2D") compHeight = 300.0f;
-						else if (comp.UseShader->GetName() == "UI") compHeight = 125.0f;
+						if (comp.Material->UseShader->GetName() == "FlatColor") compHeight = 125.0f;
+						else if (comp.Material->UseShader->GetName() == "Texture2D") compHeight = 300.0f;
+						else if (comp.Material->UseShader->GetName() == "UI") compHeight = 125.0f;
 						ImGui::BeginChild("Material", ImVec2(EDITOR_INSPECTOR_WIDTH, compHeight), true);
 
 						if (ImGui::Button("Shader")) ImGui::OpenPopup("shader_select_popup");
 						ImGui::SameLine();
-						ImGui::TextUnformatted(comp.UseShader->GetName().c_str());
+						ImGui::TextUnformatted(comp.Material->UseShader->GetName().c_str());
 						if (ImGui::BeginPopup("shader_select_popup"))
 						{
 							ImGui::Separator();
@@ -401,20 +406,21 @@ namespace MCS
 							{
 								if (ImGui::Selectable(shader.first.c_str()))
 								{
-									comp.UseShader = shader.second;
+									comp.Material->UseShader = shader.second;
 
 									//Updates the renderer
 									if (world->HasComponent<Frosty::ECS::CMesh>(m_SelectedEntity))
 									{
+										auto mat = &world->GetComponent<Frosty::ECS::CMaterial>(m_SelectedEntity);
 										if (!world->HasComponent<Frosty::ECS::CAnimController>(m_SelectedEntity))
 										{
-											Frosty::Renderer::ChangeEntity(m_SelectedEntity->Id, &world->GetComponent<Frosty::ECS::CMaterial>(m_SelectedEntity),
+											Frosty::Renderer::ChangeEntity(mat->Material->Name, &world->GetComponent<Frosty::ECS::CMaterial>(m_SelectedEntity),
 												world->GetComponent<Frosty::ECS::CMesh>(m_SelectedEntity).Mesh->GetName(), &world->GetComponent<Frosty::ECS::CMesh>(m_SelectedEntity),
 												m_SelectedEntity->Id, &world->GetComponent<Frosty::ECS::CTransform>(m_SelectedEntity), nullptr);
 										}
 										else
 										{
-											Frosty::Renderer::ChangeEntity(m_SelectedEntity->Id, &world->GetComponent<Frosty::ECS::CMaterial>(m_SelectedEntity),
+											Frosty::Renderer::ChangeEntity(mat->Material->Name, &world->GetComponent<Frosty::ECS::CMaterial>(m_SelectedEntity),
 												world->GetComponent<Frosty::ECS::CMesh>(m_SelectedEntity).Mesh->GetName(), &world->GetComponent<Frosty::ECS::CMesh>(m_SelectedEntity),
 												m_SelectedEntity->Id, &world->GetComponent<Frosty::ECS::CTransform>(m_SelectedEntity), &world->GetComponent<Frosty::ECS::CAnimController>(m_SelectedEntity));
 										}
@@ -426,19 +432,19 @@ namespace MCS
 						ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 20.f);
 
 						// Parameters
-						if (comp.UseShader->GetName() == "FlatColor")
+						if (comp.Material->UseShader->GetName() == "FlatColor")
 						{
-							ImGui::ColorEdit4("Albedo", glm::value_ptr(comp.Albedo));
-							ImGui::DragFloat("Specular Strength", &comp.SpecularStrength, 0.01f, 0.0f, 1.0f, "%.2f");
-							ImGui::SliderInt("Shininess", &comp.Shininess, 2, 256);
+							ImGui::ColorEdit4("Albedo", glm::value_ptr(comp.Material->Albedo));
+							ImGui::DragFloat("Specular Strength", &comp.Material->SpecularStrength, 0.01f, 0.0f, 1.0f, "%.2f");
+							ImGui::SliderInt("Shininess", &comp.Material->Shininess, 2, 256);
 						}
-						if (comp.UseShader->GetName() == "Texture2D")
+						if (comp.Material->UseShader->GetName() == "Texture2D")
 						{
 							// Diffuse // 
 							ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(10, 10));
 							//uint32_t selDiffuseID = 0;
 							//comp.DiffuseTexture ? selDiffuseID = comp.DiffuseTexture->GetRenderID() : selDiffuseID = Frosty::AssetManager::GetTexture2D("Checkerboard")->GetRenderID();
-							ImGui::Image(comp.DiffuseTexture ? comp.DiffuseTexture->GetRenderID() : Frosty::AssetManager::GetTexture2D("Checkerboard")->GetRenderID(), ImVec2(64, 64));
+							ImGui::Image(comp.Material->DiffuseTexture ? comp.Material->DiffuseTexture->GetRenderID() : Frosty::AssetManager::GetTexture2D("Checkerboard")->GetRenderID(), ImVec2(64, 64));
 							ImGui::PopStyleVar();
 							if (ImGui::IsItemClicked()) ImGui::OpenPopup("diffuse_texture_selector");
 							ImGui::SetNextWindowSize(ImVec2(160, 370));
@@ -459,12 +465,12 @@ namespace MCS
 									{
 										if (texture.first == "Checkerboard")
 										{
-											comp.DiffuseTexture->Unbind();
-											comp.DiffuseTexture.reset();
+											comp.Material->DiffuseTexture->Unbind();
+											comp.Material->DiffuseTexture.reset();
 										}
 										else
 										{
-											comp.DiffuseTexture = texture.second;
+											comp.Material->DiffuseTexture = texture.second;
 										}
 									}
 								}
@@ -478,7 +484,7 @@ namespace MCS
 							// Specular // 
 							ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 10.f);
 							ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(10, 10));
-							ImGui::Image(comp.SpecularTexture ? comp.SpecularTexture->GetRenderID() : Frosty::AssetManager::GetTexture2D("Checkerboard")->GetRenderID(), ImVec2(64, 64));
+							ImGui::Image(comp.Material->SpecularTexture ? comp.Material->SpecularTexture->GetRenderID() : Frosty::AssetManager::GetTexture2D("Checkerboard")->GetRenderID(), ImVec2(64, 64));
 							ImGui::PopStyleVar();
 							if (ImGui::IsItemClicked()) ImGui::OpenPopup("specular_texture_selector");
 							ImGui::SetNextWindowSize(ImVec2(160, 370));
@@ -499,12 +505,12 @@ namespace MCS
 									{
 										if (texture.first == "Checkerboard")
 										{
-											comp.SpecularTexture->Unbind();
-											comp.SpecularTexture.reset();
+											comp.Material->SpecularTexture->Unbind();
+											comp.Material->SpecularTexture.reset();
 										}
 										else
 										{
-											comp.SpecularTexture = texture.second;
+											comp.Material->SpecularTexture = texture.second;
 										}
 									}
 								}
@@ -514,12 +520,12 @@ namespace MCS
 							}
 							ImGui::SameLine();
 							ImGui::Text("Specular");
-							ImGui::SliderInt("Shininess", &comp.Shininess, 2, 256);
+							ImGui::SliderInt("Shininess", &comp.Material->Shininess, 2, 256);
 
 							// Normal // 
 							ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 10.f);
 							ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(10, 10));
-							ImGui::Image(comp.NormalTexture ? comp.NormalTexture->GetRenderID() : Frosty::AssetManager::GetTexture2D("Checkerboard")->GetRenderID(), ImVec2(64, 64));
+							ImGui::Image(comp.Material->NormalTexture ? comp.Material->NormalTexture->GetRenderID() : Frosty::AssetManager::GetTexture2D("Checkerboard")->GetRenderID(), ImVec2(64, 64));
 							ImGui::PopStyleVar();
 							if (ImGui::IsItemClicked()) ImGui::OpenPopup("normal_texture_selector");
 							ImGui::SetNextWindowSize(ImVec2(160, 370));
@@ -540,12 +546,12 @@ namespace MCS
 									{
 										if (texture.first == "Checkerboard")
 										{
-											comp.NormalTexture->Unbind();
-											comp.NormalTexture.reset();
+											comp.Material->NormalTexture->Unbind();
+											comp.Material->NormalTexture.reset();
 										}
 										else
 										{
-											comp.NormalTexture = texture.second;
+											comp.Material->NormalTexture = texture.second;
 										}
 									}
 								}
@@ -557,13 +563,13 @@ namespace MCS
 							ImGui::Text("Normal");
 						}
 
-						if (comp.UseShader->GetName() == "UI")
+						if (comp.Material->UseShader->GetName() == "UI")
 						{
 							// Diffuse // 
 							ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(10, 10));
 							//uint32_t selDiffuseID = 0;
 							//comp.DiffuseTexture ? selDiffuseID = comp.DiffuseTexture->GetRenderID() : selDiffuseID = Frosty::AssetManager::GetTexture2D("Checkerboard")->GetRenderID();
-							ImGui::Image(comp.DiffuseTexture ? comp.DiffuseTexture->GetRenderID() : Frosty::AssetManager::GetTexture2D("Checkerboard")->GetRenderID(), ImVec2(64, 64));
+							ImGui::Image(comp.Material->DiffuseTexture ? comp.Material->DiffuseTexture->GetRenderID() : Frosty::AssetManager::GetTexture2D("Checkerboard")->GetRenderID(), ImVec2(64, 64));
 							ImGui::PopStyleVar();
 							if (ImGui::IsItemClicked()) ImGui::OpenPopup("texture_selector");
 							if (ImGui::BeginPopupModal("texture_selector", NULL))
@@ -579,12 +585,12 @@ namespace MCS
 									{
 										if (texture.first == "Checkerboard")
 										{
-											comp.DiffuseTexture->Unbind();
-											comp.DiffuseTexture.reset();
+											comp.Material->DiffuseTexture->Unbind();
+											comp.Material->DiffuseTexture.reset();
 										}
 										else
 										{
-											comp.DiffuseTexture = texture.second;
+											comp.Material->DiffuseTexture = texture.second;
 										}
 									}
 								}
@@ -596,7 +602,7 @@ namespace MCS
 							ImGui::Text("Texture");
 						}
 
-						if (comp.UseShader->GetName() == "Animation")
+						if (comp.Material->UseShader->GetName() == "Animation")
 						{
 							// Diffuse // 
 							ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(10, 10));
@@ -626,7 +632,7 @@ namespace MCS
 										//}
 										//uint32_t selDiffuseID = 0;
 										//comp.DiffuseTexture ? selDiffuseID = comp.DiffuseTexture->GetRenderID() : selDiffuseID = Frosty::AssetManager::GetTexture2D("Checkerboard")->GetRenderID();
-							ImGui::Image(comp.DiffuseTexture ? comp.DiffuseTexture->GetRenderID() : Frosty::AssetManager::GetTexture2D("Checkerboard")->GetRenderID(), ImVec2(64, 64));
+							ImGui::Image(comp.Material->DiffuseTexture ? comp.Material->DiffuseTexture->GetRenderID() : Frosty::AssetManager::GetTexture2D("Checkerboard")->GetRenderID(), ImVec2(64, 64));
 							ImGui::PopStyleVar();
 							if (ImGui::IsItemClicked()) ImGui::OpenPopup("diffuse_texture_selector");
 							ImGui::SetNextWindowSize(ImVec2(160, 370));
@@ -647,12 +653,12 @@ namespace MCS
 									{
 										if (texture.first == "Checkerboard")
 										{
-											comp.DiffuseTexture->Unbind();
-											comp.DiffuseTexture.reset();
+											comp.Material->DiffuseTexture->Unbind();
+											comp.Material->DiffuseTexture.reset();
 										}
 										else
 										{
-											comp.DiffuseTexture = texture.second;
+											comp.Material->DiffuseTexture = texture.second;
 										}
 									}
 								}
@@ -666,7 +672,7 @@ namespace MCS
 							// Specular // 
 							ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 10.f);
 							ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(10, 10));
-							ImGui::Image(comp.SpecularTexture ? comp.SpecularTexture->GetRenderID() : Frosty::AssetManager::GetTexture2D("Checkerboard")->GetRenderID(), ImVec2(64, 64));
+							ImGui::Image(comp.Material->SpecularTexture ? comp.Material->SpecularTexture->GetRenderID() : Frosty::AssetManager::GetTexture2D("Checkerboard")->GetRenderID(), ImVec2(64, 64));
 							ImGui::PopStyleVar();
 							if (ImGui::IsItemClicked()) ImGui::OpenPopup("specular_texture_selector");
 							if (ImGui::BeginPopupModal("specular_texture_selector", NULL))
@@ -686,12 +692,12 @@ namespace MCS
 									{
 										if (texture.first == "Checkerboard")
 										{
-											comp.SpecularTexture->Unbind();
-											comp.SpecularTexture.reset();
+											comp.Material->SpecularTexture->Unbind();
+											comp.Material->SpecularTexture.reset();
 										}
 										else
 										{
-											comp.SpecularTexture = texture.second;
+											comp.Material->SpecularTexture = texture.second;
 										}
 									}
 								}
@@ -701,12 +707,12 @@ namespace MCS
 							}
 							ImGui::SameLine();
 							ImGui::Text("Specular");
-							ImGui::SliderInt("Shininess", &comp.Shininess, 2, 256);
+							ImGui::SliderInt("Shininess", &comp.Material->Shininess, 2, 256);
 
 							// Normal // 
 							ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 10.f);
 							ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(10, 10));
-							ImGui::Image(comp.NormalTexture ? comp.NormalTexture->GetRenderID() : Frosty::AssetManager::GetTexture2D("Checkerboard")->GetRenderID(), ImVec2(64, 64));
+							ImGui::Image(comp.Material->NormalTexture ? comp.Material->NormalTexture->GetRenderID() : Frosty::AssetManager::GetTexture2D("Checkerboard")->GetRenderID(), ImVec2(64, 64));
 							ImGui::PopStyleVar();
 							if (ImGui::IsItemClicked()) ImGui::OpenPopup("normal_texture_selector");
 							if (ImGui::BeginPopupModal("normal_texture_selector", NULL))
@@ -726,12 +732,12 @@ namespace MCS
 									{
 										if (texture.first == "Checkerboard")
 										{
-											comp.NormalTexture->Unbind();
-											comp.NormalTexture.reset();
+											comp.Material->NormalTexture->Unbind();
+											comp.Material->NormalTexture.reset();
 										}
 										else
 										{
-											comp.NormalTexture = texture.second;
+											comp.Material->NormalTexture = texture.second;
 										}
 									}
 								}
@@ -743,7 +749,7 @@ namespace MCS
 							ImGui::Text("Normal");
 						}
 
-						if (comp.HasTransparency)
+						if (comp.Material->HasTransparency)
 						{
 							ImGui::Text("Has transparency");
 						}
