@@ -29,8 +29,6 @@ namespace MCS
 				mat = glm::rotate(mat, glm::radians(m_Transform[i]->Rotation.y), { 0.0f, 1.0f, 0.0f });
 				mat = glm::rotate(mat, glm::radians(m_Transform[i]->Rotation.z), { 0.0f, 0.0f, 1.0f });
 				glm::vec3 dir = mat * glm::vec4(0.0f, 0.0f, 1.0f, 0.0);
-
-
 			//	FY_INFO("Direction: ({0}, {1}, {2})", dir.x, dir.y, dir.z);
 			}
 			

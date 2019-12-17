@@ -31,13 +31,13 @@ namespace MCS
 
 			// Maybe move these functions somewhere else so they can be used by other systems as well.
 			// Get the point on our terrain
-			glm::vec3 point3D = ScreenToTerrainPoint();
+			//glm::vec3 point3D = ScreenToTerrainPoint();
 
 			//Is player dead?
 			if (m_Health[i]->CurrentHealth > 0)
 			{
 				// Look at point
-				LookAtPoint(point3D, i);
+				//LookAtPoint(point3D, i);
 
 				// Input
 				if (!m_Dash[i]->Active)
@@ -281,24 +281,37 @@ namespace MCS
 		{
 			if (Frosty::InputManager::IsKeyPressed(m_Player[index]->MoveForwardKey))
 			{
+				// North
+				m_Transform[index]->Rotation.y = 180.0f;
 				m_Physics[index]->Direction.z = -1.0f;
 			}
 			else if (Frosty::InputManager::IsKeyPressed(m_Player[index]->MoveBackKey))
 			{
+				// South
+				m_Transform[index]->Rotation.y = 0.0f;
 				m_Physics[index]->Direction.z = 1.0f;
 			}
 			if (Frosty::InputManager::IsKeyPressed(m_Player[index]->MoveLeftKey))
 			{
+				// East
+				if (m_Physics[index]->Direction.z == 1.0f) m_Transform[index]->Rotation.y = 315.0f;
+				else if (m_Physics[index]->Direction.z == -1.0f) m_Transform[index]->Rotation.y = 225.0f;
+				else m_Transform[index]->Rotation.y = 270.0f;
+				
 				m_Physics[index]->Direction.x = -1.0f;
 			}
 			else if (Frosty::InputManager::IsKeyPressed(m_Player[index]->MoveRightKey))
 			{
+				// West
+				if (m_Physics[index]->Direction.z == 1.0f) m_Transform[index]->Rotation.y = 45.0f;
+				else if (m_Physics[index]->Direction.z == -1.0f) m_Transform[index]->Rotation.y = 135.0f;
+				else m_Transform[index]->Rotation.y = 90.0f;
+
 				m_Physics[index]->Direction.x = 1.0f;
 			}
 
 			if (glm::length(m_Physics[index]->Direction) > 0.0f)
 			{
-				//m_Physics[index]->Velocity = glm::normalize(m_Physics[index]->Direction) * m_Physics[index]->Speed * m_Physics[index]->SpeedMultiplier;
 				m_Physics[index]->Direction = glm::normalize(m_Physics[index]->Direction);
 
 				if (Frosty::InputManager::IsKeyPressed(m_Player[index]->DashKey))
@@ -316,7 +329,7 @@ namespace MCS
 						Frosty::EventBus::GetEventBus()->Publish<Frosty::PlayMediaEvent>(Frosty::PlayMediaEvent(fileName, false, 1.0f, 0.0f, false, 0));
 
 						//m_Physics[index]->Velocity *= m_Dash[index]->SpeedMultiplier;
-						m_Physics[index]->SpeedMultiplier = m_Dash[index]->SpeedMultiplier;
+						//m_Physics[index]->SpeedMultiplier = m_Dash[index]->SpeedMultiplier;  // Affected usage of speed potion
 						m_Dash[index]->CurrentCooldown = m_Dash[index]->COOLDOWN / 1000.0f;
 					}
 				}
@@ -389,6 +402,12 @@ namespace MCS
 
 		if (Frosty::Time::CurrentTime() - weaponComp.LVL1AttackCooldownTimer >= weaponComp.LVL1AttackCooldown - weaponComp.WindSpeed)
 		{
+			// Get the point on our terrain
+			glm::vec3 point3D = ScreenToTerrainPoint();
+
+			// Look at point
+			LookAtPoint(point3D, index);
+
 			switch (weaponComp.Type)
 			{
 			case Frosty::ECS::CWeapon::WeaponType::Sword:
@@ -431,6 +450,12 @@ namespace MCS
 
 		if (Frosty::Time::CurrentTime() - weaponComp.LVL2AttackCooldownTimer >= weaponComp.LVL2AttackCooldown - weaponComp.WindSpeed)
 		{
+			// Get the point on our terrain
+			glm::vec3 point3D = ScreenToTerrainPoint();
+
+			// Look at point
+			LookAtPoint(point3D, index);
+
 			switch (weaponComp.Type)
 			{
 			case Frosty::ECS::CWeapon::WeaponType::Sword:
@@ -473,6 +498,12 @@ namespace MCS
 
 		if (Frosty::Time::CurrentTime() - weaponComp.LVL3AttackCooldownTimer >= weaponComp.LVL3AttackCooldown - weaponComp.WindSpeed)
 		{
+			// Get the point on our terrain
+			glm::vec3 point3D = ScreenToTerrainPoint();
+
+			// Look at point
+			LookAtPoint(point3D, index);
+
 			switch (weaponComp.Type)
 			{
 			case Frosty::ECS::CWeapon::WeaponType::Sword:

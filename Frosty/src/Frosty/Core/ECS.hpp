@@ -149,7 +149,7 @@ namespace Frosty
 
 		// Let's define a maximum number of entities that
 		// can have the same component type:
-		constexpr std::size_t MAX_ENTITIES_PER_COMPONENT{ 10024 };
+		constexpr std::size_t MAX_ENTITIES_PER_COMPONENT{ 1024 };
 
 		// Defining the maximum nr of systems
 		constexpr std::size_t MAX_SYSTEMS{ 22 };
@@ -491,14 +491,14 @@ namespace Frosty
 			static std::string NAME;
 			std::shared_ptr<VertexArray> Mesh;
 			bool RenderMesh{ true };
-			
+
 			glm::mat4* parentMatrix = nullptr;
 			glm::mat4* animOffset = nullptr;
 
 			CMesh() = default;
 			CMesh(std::shared_ptr<VertexArray> mesh, bool render = true) : Mesh(mesh), RenderMesh(render) { }
 			CMesh(const CMesh& org) { FY_CORE_ASSERT(false, "Copy constructor in CMesh called."); }
-			
+
 			bool operator!=(const CMesh& org) { return Mesh != org.Mesh; }
 
 			virtual std::string GetName() const { return NAME; }
@@ -509,7 +509,7 @@ namespace Frosty
 			static std::string NAME;
 			CTransform* Target{ nullptr };
 			glm::vec3 Front{ 0.0f, 0.0f, -1.0f };
-			glm::vec3 Background{ 0.0f, 0.0f, 0.0f }; 
+			glm::vec3 Background{ 0.0f, 0.0f, 0.0f };
 			float FieldOfView{ 40.0f };
 			float Near{ 0.03f };
 			float Far{ 1000.0f };
@@ -550,9 +550,9 @@ namespace Frosty
 			CMaterial() = default;
 			CMaterial(const std::shared_ptr<Shader>& shader, bool hasTransparency = false) : UseShader(shader), HasTransparency(hasTransparency) { NormalTexture = AssetManager::GetTexture2D("FlatNormal"); }
 			CMaterial(const CMaterial& org) { FY_CORE_ASSERT(false, "Copy constructor in CMaterial called."); }
-			
+
 			bool operator!=(const CMaterial& org) { return  DiffuseTexture != org.DiffuseTexture; }	// This works best for Flatcolor shader. Talk to W-_-W if you have any questions
-			
+
 			virtual std::string GetName() const { return NAME; }
 		};
 
@@ -568,33 +568,33 @@ namespace Frosty
 			LightType Type{ LightType::Point };
 			glm::vec3 Color{ 1.0f, 0.96f, 0.84f };
 			glm::vec3 Direction{ 1.0f, 0.0f, 1.0f };
-			float Radius{ 20.0f }; 
+			float Radius{ 20.0f };
 			float Strength{ 1.0f };
 
 			// For ShadowMap
 		private:
-			struct Camera  
-			{ 
+			struct Camera
+			{
 				glm::vec3 Front{ 0.f, 0.f, -1.f };
-				glm::vec3 Background{ 0.2f, 0.2f, 0.2f }; 
-				float FieldOfView{ 90.0f }; 
-				float Near{ 0.03f }; 
+				glm::vec3 Background{ 0.2f, 0.2f, 0.2f };
+				float FieldOfView{ 90.0f };
+				float Near{ 0.03f };
 				float Far{ 300.0f };
-				glm::mat4 ViewMatrix{ 1.0f }; 
+				glm::mat4 ViewMatrix{ 1.0f };
 				glm::mat4 ProjectionMatrix{ 1.0f };
-				glm::mat4 ViewProjectionMatrix{ 1.0f }; 
-				  
-				Camera() = default; 
+				glm::mat4 ViewProjectionMatrix{ 1.0f };
+
+				Camera() = default;
 				Camera(glm::vec3 front, float fov, float aspect, float zNear, float zFar)
 					: Front(front), FieldOfView(fov), Near(zNear), Far(zFar), ProjectionMatrix(glm::perspective(glm::radians(fov), aspect, zNear, zFar)) { }
 			};
 		public:
-			std::vector<Camera> Cameras; 
+			std::vector<Camera> Cameras;
 			bool HasCamera{ false };
 
 			CLight() = default;
-			CLight(LightType lightType, bool hasCamera = false) : Type(lightType), HasCamera(hasCamera) 
-			{ 
+			CLight(LightType lightType, bool hasCamera = false) : Type(lightType), HasCamera(hasCamera)
+			{
 				if (HasCamera)
 				{
 					glm::vec3 front = { 0.f, 0.f, -1.f };
@@ -624,8 +624,8 @@ namespace Frosty
 					}
 				}
 			}
-			CLight(LightType lightType, float strength, glm::vec3 color, float radius, glm::vec3 direction, bool hasCamera = false) : Type(lightType), Strength(strength), Color(color), Radius(radius), Direction(direction), HasCamera(hasCamera) 
-			{ 
+			CLight(LightType lightType, float strength, glm::vec3 color, float radius, glm::vec3 direction, bool hasCamera = false) : Type(lightType), Strength(strength), Color(color), Radius(radius), Direction(direction), HasCamera(hasCamera)
+			{
 				if (HasCamera)
 				{
 					glm::vec3 front = { 0.f, 0.f, -1.f };
@@ -655,8 +655,8 @@ namespace Frosty
 					}
 				}
 			}
-			CLight(LightType lightType, float strength, glm::vec3 color, float radius = 20.f, CTransform* origin = nullptr, const glm::vec3& offset = glm::vec3(0.f), bool hasCamera = false) : Type(lightType), Strength(strength), Color(color), Radius(radius), Origin(origin), Offset(offset), HasCamera(hasCamera) 
-			{ 
+			CLight(LightType lightType, float strength, glm::vec3 color, float radius = 20.f, CTransform* origin = nullptr, const glm::vec3& offset = glm::vec3(0.f), bool hasCamera = false) : Type(lightType), Strength(strength), Color(color), Radius(radius), Origin(origin), Offset(offset), HasCamera(hasCamera)
+			{
 				if (HasCamera)
 				{
 					glm::vec3 front = { 0.f, 0.f, -1.f };
@@ -738,7 +738,7 @@ namespace Frosty
 			CPhysics() = default;
 			CPhysics(const std::shared_ptr<Luna::BoundingBox>& bb, const glm::vec3& scale, float speed = 0.0f) : BoundingBox(bb), Speed(speed)
 			{
-				Radius = (BoundingBox->halfSize[0] * scale.x  + BoundingBox->halfSize[2] * scale.z) * 0.5f;
+				Radius = (BoundingBox->halfSize[0] * scale.x + BoundingBox->halfSize[2] * scale.z) * 0.5f;
 			}
 			CPhysics(const CPhysics& org) { FY_CORE_ASSERT(false, "Copy constructor in CPhysics called."); }
 
@@ -756,7 +756,7 @@ namespace Frosty
 			std::string Speciality{ "Default" };
 
 			// Range
-			float MaxAttackRange{ 0.0f };	
+			float MaxAttackRange{ 0.0f };
 			float MinAttackRange{ 0.0f };
 
 			// Damage
@@ -776,12 +776,12 @@ namespace Frosty
 			float LVL1AttackCooldownTimer{ Frosty::Time::CurrentTime() };
 			float LVL2AttackCooldownTimer{ Frosty::Time::CurrentTime() };
 			float LVL3AttackCooldownTimer{ Frosty::Time::CurrentTime() };
-			
+
 			float Lifetime{ 2.f };
 			glm::vec3 AttackHitboxScale{ 0.f };
 
 			bool IsPlayerWeapon{ false };
-			
+
 			// Special Effect / Elemental Abilities
 			float FireCriticalHitChance{ 0.f };				// Fire (+ CriticalChance)
 			float EarthDamage{ 0.f };						// Earth (+ Damage)
@@ -802,13 +802,13 @@ namespace Frosty
 			CWeapon() = default;
 			CWeapon(WeaponType type, unsigned int level, float damage, bool isPlayerWeapon = false) : Type(type), Level(level), Damage(damage), IsPlayerWeapon(isPlayerWeapon) { }
 			CWeapon(Frosty::Weapon weapon, bool isPlayerWeapon = false) : Level(weapon.Level), Speciality(weapon.Speciality), MaxAttackRange(weapon.MaxAttackRange), MinAttackRange(weapon.MinAttackRange),
-				Damage(weapon.Damage), CriticalHit(weapon.CriticalHit), CriticalHitChance(weapon.CriticalHitChance), LVL1AttackCooldown(weapon.LVL1AttackCooldown), 
+				Damage(weapon.Damage), CriticalHit(weapon.CriticalHit), CriticalHitChance(weapon.CriticalHitChance), LVL1AttackCooldown(weapon.LVL1AttackCooldown),
 				LVL2AttackCooldown(weapon.LVL2AttackCooldown), LVL3AttackCooldown(weapon.LVL3AttackCooldown), Lifetime(weapon.Lifetime), AttackHitboxScale(weapon.AttackHitboxScale), IsPlayerWeapon(isPlayerWeapon), ProjectileSpeed(weapon.ProjectileSpeed)
-			{  
+			{
 				switch (weapon.Type)
 				{
 				case Frosty::Weapon::WeaponType::Sword:
-						Type = WeaponType::Sword;
+					Type = WeaponType::Sword;
 					break;
 				case Frosty::Weapon::WeaponType::Bow:
 					Type = WeaponType::Bow;
@@ -821,9 +821,9 @@ namespace Frosty
 				}
 			}
 			CWeapon(const CWeapon& org) { FY_CORE_ASSERT(false, "Copy constructor in CWeapon called."); }
-			
+
 			bool operator!=(const CWeapon& org) { return Level != org.Level && Type != Type; }
-			
+
 			virtual std::string GetName() const { return NAME; }
 		};
 
@@ -878,7 +878,7 @@ namespace Frosty
 			int DropBaitKey{ FY_KEY_Q };
 
 			int Score{ 0 };
-			
+
 			float PickUpTextTime{ 2.0f };
 			float PickUpTextTimer{ Frosty::Time::CurrentTime() };
 
@@ -1026,7 +1026,7 @@ namespace Frosty
 		{
 			static std::string NAME;
 			static const int COOLDOWN = 3000;
-			static const int DISTANCE = 7000;
+			inline static const float DISTANCE = 7000.0f;
 			bool Active{ false };
 			float CurrentCooldown{ 0.0f };
 			float DistanceDashed{ 0.0f };
@@ -1037,6 +1037,7 @@ namespace Frosty
 
 			virtual std::string GetName() const { return NAME; }
 		};
+
 
 		struct CDestroy : public BaseComponent
 		{
