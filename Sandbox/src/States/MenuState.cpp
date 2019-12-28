@@ -32,8 +32,6 @@ namespace MCS
 {
 	MenuState::MenuState()
 	{
-		m_App = &Frosty::Application::Get();
-		m_World = m_App->GetWorld().get();
 	}
 
 	MenuState::~MenuState()
@@ -53,6 +51,9 @@ namespace MCS
 
 	void MenuState::Initiate()
 	{
+		m_App = &Frosty::Application::Get();
+		m_World = m_App->GetWorld().get();
+
 		if (!m_App->MenuLoaded())
 		{
 			m_World->PauseGame();
@@ -76,7 +77,7 @@ namespace MCS
 		float width = m_App->GetWindow().GetWidthMultiplier();
 		float height = m_App->GetWindow().GetHeightMultiplier();
 
-		if (!m_Controls && m_ButtonsLoaded)
+		if (!m_Controls)
 		{
 			if (x > (605.0f * width) && x < (670.0f * width) && y >(400.0f * height) && y < (440.0f * height))
 			{
@@ -86,7 +87,6 @@ namespace MCS
 					menuGui.Layout.texts[1].SetColor(glm::vec4(0.0f, 0.0f, 1.0f, 0.0f));
 
 					m_Instructions = true;
-					m_ButtonsLoaded = false;
 					InitiateInstructions();
 				}
 			}
@@ -227,8 +227,8 @@ namespace MCS
 		
 		if (m_InstructionButtonsLoaded && m_Instructions)
 		{
-			auto& world = Frosty::Application::Get().GetWorld();
-			auto& menuGui = world->GetComponent<Frosty::ECS::CGUI>(m_MenuGui);
+			auto& m_World = Frosty::Application::Get().GetWorld();
+			auto& menuGui = m_World->GetComponent<Frosty::ECS::CGUI>(m_MenuGui);
 
 			menuGui.Layout.texts[0].SetText("");
 			menuGui.Layout.texts[1].SetText("");
@@ -239,8 +239,8 @@ namespace MCS
 		}
 		else if (!m_Instructions && m_InstructionButtonsLoaded)
 		{
-			auto& world = Frosty::Application::Get().GetWorld();
-			auto& insGui = world->GetComponent<Frosty::ECS::CGUI>(m_InstructionGui);
+			auto& m_World = Frosty::Application::Get().GetWorld();
+			auto& insGui = m_World->GetComponent<Frosty::ECS::CGUI>(m_InstructionGui);
 
 			insGui.Layout.texts[0].SetText("");
 			insGui.Layout.texts[1].SetText("");
@@ -249,7 +249,6 @@ namespace MCS
 
 	void MenuState::InitiateSystems()
 	{
-		auto& m_World = Frosty::Application::Get().GetWorld();
 		m_World->AddSystem<LevelSystem>();
 		m_World->AddSystem<CameraSystem>();
 		m_World->AddSystem<LightSystem>();
@@ -267,9 +266,6 @@ namespace MCS
 		Frosty::ECS::BaseSystem* retSystem = m_World->AddSystem<ParticleSystem>();
 		ParticleSystem* particleSystem = dynamic_cast<ParticleSystem*>(retSystem);
 
-		//retSystem = m_World->AddSystem<NavigationSystem>();
-		//NavigationSystem* navSystem = dynamic_cast<NavigationSystem*>(retSystem);
-
 		m_World->AddSystem<BossBehaviorSystem>();
 		m_World->AddSystem<GUISystem>();
 		m_World->AddSystem<LootingSystem>();
@@ -278,138 +274,6 @@ namespace MCS
 
 		m_World->Awake();
 		particleSystem->AttachGameCamera(&m_World->GetComponent<Frosty::ECS::CTransform>(m_World->GetSceneCamera()));
-
-
-		
-		// TEMPORARY - A* video //
-		{
-			/*
-			// Plane
-			auto& plane = m_World->CreateEntity({ 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 200.0f, 1.0f, 144.0f }, true);
-			m_World->AddComponent<Frosty::ECS::CMesh>(plane, Frosty::AssetManager::GetMesh("pPlane1"));
-			auto& planeMat = m_World->AddComponent<Frosty::ECS::CMaterial>(plane, Frosty::AssetManager::GetShader("Texture2D"));
-			planeMat.DiffuseTexture = Frosty::AssetManager::GetTexture2D("ground_test2");
-
-			// Player (Target)
-			auto& target = m_World->CreateEntity({ -90.0f, 2.0f, 62.0f }, { 0.0f, 0.0f, 0.0f }, { 2.0f, 4.0f, 2.0f });
-			m_World->AddComponent<Frosty::ECS::CMesh>(target, Frosty::AssetManager::GetMesh("pCube1"));
-			auto& targetMat = m_World->AddComponent<Frosty::ECS::CMaterial>(target, Frosty::AssetManager::GetShader("FlatColor"));
-			targetMat.Albedo = glm::vec4(0.2f, 0.3f, 0.8f, 1.0f);
-
-
-			// Enemy 1 (Seeker)
-			auto& seeker1 = m_World->CreateEntity({ 91.0f, 2.0f, -54.0f }, { 0.0f, 0.0f, 0.0f }, { 2.0f, 4.0f, 2.0f });
-			m_World->AddComponent<Frosty::ECS::CMesh>(seeker1, Frosty::AssetManager::GetMesh("pCube1"));
-			auto& seeker1Mat = m_World->AddComponent<Frosty::ECS::CMaterial>(seeker1, Frosty::AssetManager::GetShader("FlatColor"));
-			seeker1Mat.Albedo = glm::vec4(0.8f, 0.2f, 0.3f, 1.0f);
-			m_World->AddComponent<Frosty::ECS::CPhysics>(seeker1, Frosty::AssetManager::GetBoundingBox("pCube1"), m_World->GetComponent<Frosty::ECS::CTransform>(seeker1).Scale, 0.0f);
-			m_World->AddComponent<Frosty::ECS::CEnemy>(seeker1, &m_World->GetComponent<Frosty::ECS::CTransform>(target), nullptr);
-
-			
-			// Obstacles
-			auto& obs1 = m_World->CreateEntity({ 66.0f, 3.0f, -4.0f }, { 0.0f, 0.0f, 0.0f }, { 17.0f, 6.0f, 37.0f }, true);
-			m_World->AddComponent<Frosty::ECS::CMesh>(obs1, Frosty::AssetManager::GetMesh("pCube1"));
-			auto& obs1Mat = m_World->AddComponent<Frosty::ECS::CMaterial>(obs1, Frosty::AssetManager::GetShader("FlatColor"));
-			m_World->AddComponent<Frosty::ECS::CPhysics>(obs1, Frosty::AssetManager::GetBoundingBox("pCube1"), m_World->GetComponent<Frosty::ECS::CTransform>(obs1).Scale);
-
-			auto& obs3 = m_World->CreateEntity({ 54.0f, 3.0f, -40.0f }, { 0.0f, 0.0f, 0.0f }, { 33.0f, 6.0f, 13.0f }, true);
-			m_World->AddComponent<Frosty::ECS::CMesh>(obs3, Frosty::AssetManager::GetMesh("pCube1"));
-			auto& obs3Mat = m_World->AddComponent<Frosty::ECS::CMaterial>(obs3, Frosty::AssetManager::GetShader("FlatColor"));
-			m_World->AddComponent<Frosty::ECS::CPhysics>(obs3, Frosty::AssetManager::GetBoundingBox("pCube1"), m_World->GetComponent<Frosty::ECS::CTransform>(obs3).Scale);
-
-			auto& obs4 = m_World->CreateEntity({ 30.0f, 3.0f, 18.5f }, { 0.0f, 0.0f, 0.0f }, { 34.0f, 6.0f, 40.0f }, true);
-			m_World->AddComponent<Frosty::ECS::CMesh>(obs4, Frosty::AssetManager::GetMesh("pCube1"));
-			auto& obs4Mat = m_World->AddComponent<Frosty::ECS::CMaterial>(obs4, Frosty::AssetManager::GetShader("FlatColor"));
-			m_World->AddComponent<Frosty::ECS::CPhysics>(obs4, Frosty::AssetManager::GetBoundingBox("pCube1"), m_World->GetComponent<Frosty::ECS::CTransform>(obs4).Scale);
-
-			auto& obs5 = m_World->CreateEntity({ 18.0f, 3.0f, 60.0f }, { 0.0f, 0.0f, 0.0f }, { 65.0f, 6.0f, 22.0f }, true);
-			m_World->AddComponent<Frosty::ECS::CMesh>(obs5, Frosty::AssetManager::GetMesh("pCube1"));
-			auto& obs5Mat = m_World->AddComponent<Frosty::ECS::CMaterial>(obs5, Frosty::AssetManager::GetShader("FlatColor"));
-			m_World->AddComponent<Frosty::ECS::CPhysics>(obs5, Frosty::AssetManager::GetBoundingBox("pCube1"), m_World->GetComponent<Frosty::ECS::CTransform>(obs5).Scale);
-
-			auto& obs6 = m_World->CreateEntity({ 72.0f, 3.0f, 42.0f }, { 0.0f, 0.0f, 0.0f }, { 20.0f, 6.0f, 25.0f }, true);
-			m_World->AddComponent<Frosty::ECS::CMesh>(obs6, Frosty::AssetManager::GetMesh("pCube1"));
-			auto& obs6Mat = m_World->AddComponent<Frosty::ECS::CMaterial>(obs6, Frosty::AssetManager::GetShader("FlatColor"));
-			m_World->AddComponent<Frosty::ECS::CPhysics>(obs6, Frosty::AssetManager::GetBoundingBox("pCube1"), m_World->GetComponent<Frosty::ECS::CTransform>(obs6).Scale);
-
-			auto& obs7 = m_World->CreateEntity({ 22.0f, 3.0f, -28.0f }, { 0.0f, 0.0f, 0.0f }, { 10.0f, 6.0f, 30.0f }, true);
-			m_World->AddComponent<Frosty::ECS::CMesh>(obs7, Frosty::AssetManager::GetMesh("pCube1"));
-			auto& obs7Mat = m_World->AddComponent<Frosty::ECS::CMaterial>(obs7, Frosty::AssetManager::GetShader("FlatColor"));
-			m_World->AddComponent<Frosty::ECS::CPhysics>(obs7, Frosty::AssetManager::GetBoundingBox("pCube1"), m_World->GetComponent<Frosty::ECS::CTransform>(obs7).Scale);
-
-			auto& obs8 = m_World->CreateEntity({ -34.0f, 3.0f, 34.0f }, { 0.0f, 0.0f, 0.0f }, { 34.0f, 6.0f, 42.0f }, true);
-			m_World->AddComponent<Frosty::ECS::CMesh>(obs8, Frosty::AssetManager::GetMesh("pCube1"));
-			auto& obs8Mat = m_World->AddComponent<Frosty::ECS::CMaterial>(obs8, Frosty::AssetManager::GetShader("FlatColor"));
-			m_World->AddComponent<Frosty::ECS::CPhysics>(obs8, Frosty::AssetManager::GetBoundingBox("pCube1"), m_World->GetComponent<Frosty::ECS::CTransform>(obs8).Scale);
-
-			auto& obs9 = m_World->CreateEntity({ -2.0f, 3.0f, 32.0f }, { 0.0f, 0.0f, 0.0f }, { 10.0f, 6.0f, 13.0f }, true);
-			m_World->AddComponent<Frosty::ECS::CMesh>(obs9, Frosty::AssetManager::GetMesh("pCube1"));
-			auto& obs9Mat = m_World->AddComponent<Frosty::ECS::CMaterial>(obs9, Frosty::AssetManager::GetShader("FlatColor"));
-			m_World->AddComponent<Frosty::ECS::CPhysics>(obs9, Frosty::AssetManager::GetBoundingBox("pCube1"), m_World->GetComponent<Frosty::ECS::CTransform>(obs9).Scale);
-
-			auto& obs10 = m_World->CreateEntity({ -74.0f, 3.0f, 38.0f }, { 0.0f, 0.0f, 0.0f }, { 24.0f, 6.0f, 17.0f }, true);
-			m_World->AddComponent<Frosty::ECS::CMesh>(obs10, Frosty::AssetManager::GetMesh("pCube1"));
-			auto& obs10Mat = m_World->AddComponent<Frosty::ECS::CMaterial>(obs10, Frosty::AssetManager::GetShader("FlatColor"));
-			m_World->AddComponent<Frosty::ECS::CPhysics>(obs10, Frosty::AssetManager::GetBoundingBox("pCube1"), m_World->GetComponent<Frosty::ECS::CTransform>(obs10).Scale);
-
-			auto& obs11 = m_World->CreateEntity({ -16.0f, 3.0f, -12.0f }, { 0.0f, 0.0f, 0.0f }, { 37.0f, 6.0f, 29.0f }, true);
-			m_World->AddComponent<Frosty::ECS::CMesh>(obs11, Frosty::AssetManager::GetMesh("pCube1"));
-			auto& obs11Mat = m_World->AddComponent<Frosty::ECS::CMaterial>(obs11, Frosty::AssetManager::GetShader("FlatColor"));
-			m_World->AddComponent<Frosty::ECS::CPhysics>(obs11, Frosty::AssetManager::GetBoundingBox("pCube1"), m_World->GetComponent<Frosty::ECS::CTransform>(obs11).Scale);
-
-			auto& obs12 = m_World->CreateEntity({ -70.0f, 3.0f, -12.0f }, { 0.0f, 0.0f, 0.0f }, { 10.0f, 6.0f, 62.0f }, true);
-			m_World->AddComponent<Frosty::ECS::CMesh>(obs12, Frosty::AssetManager::GetMesh("pCube1"));
-			auto& obs12Mat = m_World->AddComponent<Frosty::ECS::CMaterial>(obs12, Frosty::AssetManager::GetShader("FlatColor"));
-			m_World->AddComponent<Frosty::ECS::CPhysics>(obs12, Frosty::AssetManager::GetBoundingBox("pCube1"), m_World->GetComponent<Frosty::ECS::CTransform>(obs12).Scale);
-
-			auto& obs13 = m_World->CreateEntity({ -50.0f, 3.0f, -12.0f }, { 0.0f, 0.0f, 0.0f }, { 10.0f, 6.0f, 13.0f }, true);
-			m_World->AddComponent<Frosty::ECS::CMesh>(obs13, Frosty::AssetManager::GetMesh("pCube1"));
-			auto& obs13Mat = m_World->AddComponent<Frosty::ECS::CMaterial>(obs13, Frosty::AssetManager::GetShader("FlatColor"));
-			m_World->AddComponent<Frosty::ECS::CPhysics>(obs13, Frosty::AssetManager::GetBoundingBox("pCube1"), m_World->GetComponent<Frosty::ECS::CTransform>(obs13).Scale);
-			
-			auto& obs14 = m_World->CreateEntity({ -28.0f, 3.0f, -60.0f }, { 0.0f, 0.0f, 0.0f }, { 30.0f, 6.0f, 14.0f }, true);
-			m_World->AddComponent<Frosty::ECS::CMesh>(obs14, Frosty::AssetManager::GetMesh("pCube1"));
-			auto& obs14Mat = m_World->AddComponent<Frosty::ECS::CMaterial>(obs14, Frosty::AssetManager::GetShader("FlatColor"));
-			obs1Mat.Albedo = glm::vec4(0.436f, 0.295f, 0.0f, 1.0f);
-			obs3Mat.Albedo = glm::vec4(0.436f, 0.295f, 0.0f, 1.0f);
-			obs4Mat.Albedo = glm::vec4(0.436f, 0.295f, 0.0f, 1.0f);
-			obs5Mat.Albedo = glm::vec4(0.436f, 0.295f, 0.0f, 1.0f);
-			obs6Mat.Albedo = glm::vec4(0.436f, 0.295f, 0.0f, 1.0f);
-			obs7Mat.Albedo = glm::vec4(0.436f, 0.295f, 0.0f, 1.0f);
-			obs8Mat.Albedo = glm::vec4(0.436f, 0.295f, 0.0f, 1.0f);
-			obs9Mat.Albedo = glm::vec4(0.436f, 0.295f, 0.0f, 1.0f);
-			obs10Mat.Albedo = glm::vec4(0.436f, 0.295f, 0.0f, 1.0f);
-			obs11Mat.Albedo = glm::vec4(0.436f, 0.295f, 0.0f, 1.0f);
-			obs12Mat.Albedo = glm::vec4(0.436f, 0.295f, 0.0f, 1.0f);
-			obs13Mat.Albedo = glm::vec4(0.436f, 0.295f, 0.0f, 1.0f);
-			obs14Mat.Albedo = glm::vec4(0.436f, 0.295f, 0.0f, 1.0f);
-			m_World->AddComponent<Frosty::ECS::CPhysics>(obs14, Frosty::AssetManager::GetBoundingBox("pCube1"), m_World->GetComponent<Frosty::ECS::CTransform>(obs14).Scale);
-
-
-			
-			// Enemy 2 (Seeker)
-			auto& seeker2 = m_World->CreateEntity({ -5.0f, 2.0f, -66.0f }, { 0.0f, 0.0f, 0.0f }, { 2.0f, 4.0f, 2.0f });
-			m_World->AddComponent<Frosty::ECS::CMesh>(seeker2, Frosty::AssetManager::GetMesh("pCube1"));
-			auto& seeker2Mat = m_World->AddComponent<Frosty::ECS::CMaterial>(seeker2, Frosty::AssetManager::GetShader("FlatColor"));
-			seeker2Mat.Albedo = glm::vec4(0.8f, 0.2f, 0.3f, 1.0f);
-			m_World->AddComponent<Frosty::ECS::CPhysics>(seeker2, Frosty::AssetManager::GetBoundingBox("pCube1"), m_World->GetComponent<Frosty::ECS::CTransform>(seeker2).Scale, 0.0f);
-			m_World->AddComponent<Frosty::ECS::CEnemy>(seeker2, &m_World->GetComponent<Frosty::ECS::CTransform>(target), nullptr);
-
-			// Enemy 3 (Seeker)
-			auto& seeker3 = m_World->CreateEntity({ 90.0f, 2.0f, 58.0f }, { 0.0f, 0.0f, 0.0f }, { 2.0f, 4.0f, 2.0f });
-			m_World->AddComponent<Frosty::ECS::CMesh>(seeker3, Frosty::AssetManager::GetMesh("pCube1"));
-			auto& seeker3Mat = m_World->AddComponent<Frosty::ECS::CMaterial>(seeker3, Frosty::AssetManager::GetShader("FlatColor"));
-			seeker3Mat.Albedo = glm::vec4(0.8f, 0.2f, 0.3f, 1.0f);
-			m_World->AddComponent<Frosty::ECS::CPhysics>(seeker3, Frosty::AssetManager::GetBoundingBox("pCube1"), m_World->GetComponent<Frosty::ECS::CTransform>(seeker3).Scale, 0.0f);
-			m_World->AddComponent<Frosty::ECS::CEnemy>(seeker3, &m_World->GetComponent<Frosty::ECS::CTransform>(target), nullptr);
-
-			
-			
-			// Initiate grid
-			auto& planeTransform = m_World->GetComponent<Frosty::ECS::CTransform>(plane);
-			navSystem->InitiateGridMap(planeTransform);*/
-		}
-		
 	}
 
 	void MenuState::InitiateObjects()
@@ -420,7 +284,7 @@ namespace MCS
 		auto& weaponTransform = m_World->GetComponent<Frosty::ECS::CTransform>(weapon);
 		weaponTransform.EnableCulling = false;
 		//Bow Offset
-		/*auto& weapon = world->CreateEntity({ -0.7f, 2.3f, 0.2f }, { 0.0f, 60.0f, 0.0f }, { 1.f, 1.f, 1.f });*/
+		/*auto& weapon = m_World->CreateEntity({ -0.7f, 2.3f, 0.2f }, { 0.0f, 60.0f, 0.0f }, { 1.f, 1.f, 1.f });*/
 		auto& weaponHandler = Frosty::AssetManager::GetWeaponHandler("Weapons");
 		Frosty::Weapon loadedWeapon = weaponHandler->GetAPlayerWeapon(1, 1);
 		m_World->AddComponent<Frosty::ECS::CWeapon>(weapon, loadedWeapon, true);
@@ -429,7 +293,7 @@ namespace MCS
 
 		if (weaponComp.Type == Frosty::ECS::CWeapon::WeaponType::Bow)
 		{
-			/*world->GetComponent<Frosty::ECS::CTransform>*/
+			/*m_World->GetComponent<Frosty::ECS::CTransform>*/
 			weaponMesh = &m_World->AddComponent<Frosty::ECS::CMesh>(weapon, Frosty::AssetManager::GetMesh("Bow"));
 			auto& weaponMat = m_World->AddComponent<Frosty::ECS::CMaterial>(weapon, Frosty::AssetManager::GetShader("Texture2D"));
 			weaponMat.DiffuseTexture = Frosty::AssetManager::GetTexture2D("bow_lvl1_diffuse");
@@ -478,8 +342,9 @@ namespace MCS
 		auto& torch = m_World->CreateEntity({ 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f });
 		m_World->AddComponent<Frosty::ECS::CLight>(torch, Frosty::ECS::CLight::LightType::Point, 0.5f, glm::vec3(0.99f, 0.9f, 0.8f), 15.f, &playerTransform, glm::vec3(0.f, 0.3f, 0.f), true);
 
+
 		//Player HUD
-		Frosty::UILayout uiLayout(22, 30);
+		Frosty::UILayout uiLayout(22, 31);
 
 		//Items
 		float padding = 200.0f;
@@ -568,27 +433,27 @@ namespace MCS
 
 
 		uiLayout.AddSprite(glm::vec2(1280.f / 2, 720.f / 2), glm::vec2(16 * 1.6, 9 * 1.6f), "fearEffect", glm::vec4(0.0f, 0.0f, 0.0f, 0.75f)); // 0
-		//uiLayout.AddSprite(glm::vec2(1280.f / 2, 720.f / 2), glm::vec2(16 * 1.6, 9 * 1.6f), "feerClosingIn", glm::vec4(0.0f, 0.0f, 0.0f, 0.75f)); // 0
 
+		uiLayout.AddSprite(glm::vec2(1280.f / 2, 720.f / 2), glm::vec2(16 * 1.6, 9 * 1.6f), "feerClosingIn", glm::vec4(0.0f, 0.0f, 0.0f, 0.0f)); // 1
 
-		uiLayout.AddSprite(glm::vec2(0.f, 0.f), glm::vec2(10, 10), "IndicatorEffect", glm::vec4(0.0f)); // 1 
+		uiLayout.AddSprite(glm::vec2(0.f, 0.f), glm::vec2(10, 10), "IndicatorEffect", glm::vec4(0.0f)); // 2 
 
 		//Weapon
 		glm::vec2 attackScale = glm::vec2(0.75, 0.75);
 
 		if (weaponComp.Type == Frosty::ECS::CWeapon::WeaponType::Bow)
 		{
-			uiLayout.AddSprite(glm::vec2(55.0f, 75.0f), glm::vec2(1, 1), "attackRanged", glm::vec4(1.0f));// 2
-			uiLayout.AddSprite(glm::vec2(130, 50.0f), attackScale, "attackRanged1", glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));// 3
-			uiLayout.AddSprite(glm::vec2(105, 110.0f), attackScale, "attackRanged2", glm::vec4(0.1f, 0.1f, 0.1f, 0.50f));// 4
-			uiLayout.AddSprite(glm::vec2(50.0f, 140.0f), attackScale, "attackRanged3", glm::vec4(0.1f, 0.1f, 0.1f, 0.50f));// 5
+			uiLayout.AddSprite(glm::vec2(55.0f, 75.0f), glm::vec2(1, 1), "attackRanged", glm::vec4(1.0f));// 3
+			uiLayout.AddSprite(glm::vec2(130, 50.0f), attackScale, "attackRanged1", glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));// 4
+			uiLayout.AddSprite(glm::vec2(105, 110.0f), attackScale, "attackRanged2", glm::vec4(0.1f, 0.1f, 0.1f, 0.50f));// 5
+			uiLayout.AddSprite(glm::vec2(50.0f, 140.0f), attackScale, "attackRanged3", glm::vec4(0.1f, 0.1f, 0.1f, 0.50f));// 6
 		}
 		else
 		{
-			uiLayout.AddSprite(glm::vec2(55.0f, 75.0f), glm::vec2(1, 1), "attackMelee", glm::vec4(1.0f));// 2
-			uiLayout.AddSprite(glm::vec2(130, 50.0f), attackScale, "attackMelee1", glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));// 3
-			uiLayout.AddSprite(glm::vec2(105, 110.0f), attackScale, "attackMelee2", glm::vec4(0.1f, 0.1f, 0.1f, 0.50f));// 4
-			uiLayout.AddSprite(glm::vec2(50.0f, 140.0f), attackScale, "attackMelee3", glm::vec4(0.1f, 0.1f, 0.1f, 0.50f));// 5
+			uiLayout.AddSprite(glm::vec2(55.0f, 75.0f), glm::vec2(1, 1), "attackMelee", glm::vec4(1.0f));// 3
+			uiLayout.AddSprite(glm::vec2(130, 50.0f), attackScale, "attackMelee1", glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));// 4
+			uiLayout.AddSprite(glm::vec2(105, 110.0f), attackScale, "attackMelee2", glm::vec4(0.1f, 0.1f, 0.1f, 0.50f));// 5
+			uiLayout.AddSprite(glm::vec2(50.0f, 140.0f), attackScale, "attackMelee3", glm::vec4(0.1f, 0.1f, 0.1f, 0.50f));// 6
 		}
 
 		int elementXOffset = 30;
@@ -599,18 +464,18 @@ namespace MCS
 
 		//Element
 		//Normal
-		uiLayout.AddSprite(glm::vec2(elementXOffset + elementPadding * 0, elementyOffset), elementScale, "elementEarth", glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));// 6
-		uiLayout.AddSprite(glm::vec2(elementXOffset + elementPadding * 1, elementyOffset), elementScale, "elementFire", glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));// 7
-		uiLayout.AddSprite(glm::vec2(elementXOffset + elementPadding * 2, elementyOffset), elementScale, "elementWater", glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));// 8
-		uiLayout.AddSprite(glm::vec2(elementXOffset + elementPadding * 3, elementyOffset), elementScale, "elementWind", glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));// 9
+		uiLayout.AddSprite(glm::vec2(elementXOffset + elementPadding * 0, elementyOffset), elementScale, "elementEarth", glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));// 7
+		uiLayout.AddSprite(glm::vec2(elementXOffset + elementPadding * 1, elementyOffset), elementScale, "elementFire", glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));// 8
+		uiLayout.AddSprite(glm::vec2(elementXOffset + elementPadding * 2, elementyOffset), elementScale, "elementWater", glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));// 9
+		uiLayout.AddSprite(glm::vec2(elementXOffset + elementPadding * 3, elementyOffset), elementScale, "elementWind", glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));// 10
 
-		uiLayout.AddSprite(hpPotionSprite, glm::vec2(1, 1), "hpPotion", glm::vec4(1.0f));// 10
-		uiLayout.AddSprite(spPotionSprite, glm::vec2(1, 1), "spPotion", glm::vec4(1.0f));// 11
-		uiLayout.AddSprite(baitSprite, glm::vec2(1, 1), "bait", glm::vec4(1.0f));// 12
-		uiLayout.AddSprite(wolfsbainSprite, glm::vec2(1, 1), "wolfsbane", glm::vec4(1.0f));// 13
+		uiLayout.AddSprite(hpPotionSprite, glm::vec2(1, 1), "hpPotion", glm::vec4(1.0f));// 11
+		uiLayout.AddSprite(spPotionSprite, glm::vec2(1, 1), "spPotion", glm::vec4(1.0f));// 12
+		uiLayout.AddSprite(baitSprite, glm::vec2(1, 1), "bait", glm::vec4(1.0f));// 13
+		uiLayout.AddSprite(wolfsbainSprite, glm::vec2(1, 1), "wolfsbane", glm::vec4(1.0f));// 14
 
 		////Need to change this sprite to a "dodge" sprite ////
-		uiLayout.AddSprite(glm::vec2(215, 45), glm::vec2(1, 1), "attackRanged3", glm::vec4(1.0f));// 14
+		uiLayout.AddSprite(glm::vec2(215, 45), glm::vec2(1, 1), "attackRanged3", glm::vec4(1.0f));// 15
 
 		//Speed boot
 		int speedBuffXOffset = 30;
@@ -624,63 +489,63 @@ namespace MCS
 		int healthPadding = 45;
 		glm::vec2 healthScale = glm::vec2(0.75, 0.75);
 
-		uiLayout.AddSprite(glm::vec2(speedBuffXOffset + speedBuffPadding * 0, speedBuffYOffset), speedBuffScale, "speedBoots", glm::vec4(1.0f, 1.0f, 1.0f, 0.0f));// 15
-		uiLayout.AddSprite(glm::vec2(speedBuffXOffset + speedBuffPadding * 1, speedBuffYOffset), speedBuffScale, "speedBoots", glm::vec4(1.0f, 1.0f, 1.0f, 0.0f));// 16
-		uiLayout.AddSprite(glm::vec2(speedBuffXOffset + speedBuffPadding * 2, speedBuffYOffset), speedBuffScale, "speedBoots", glm::vec4(1.0f, 1.0f, 1.0f, 0.0f));// 17
-		uiLayout.AddSprite(glm::vec2(speedBuffXOffset + speedBuffPadding * 3, speedBuffYOffset), speedBuffScale, "speedBoots", glm::vec4(1.0f, 1.0f, 1.0f, 0.0f));// 18
-		uiLayout.AddSprite(glm::vec2(speedBuffXOffset + speedBuffPadding * 4, speedBuffYOffset), speedBuffScale, "speedBoots", glm::vec4(1.0f, 1.0f, 1.0f, 0.0f));// 19
+		uiLayout.AddSprite(glm::vec2(speedBuffXOffset + speedBuffPadding * 0, speedBuffYOffset), speedBuffScale, "speedBoots", glm::vec4(1.0f, 1.0f, 1.0f, 0.0f));// 16
+		uiLayout.AddSprite(glm::vec2(speedBuffXOffset + speedBuffPadding * 1, speedBuffYOffset), speedBuffScale, "speedBoots", glm::vec4(1.0f, 1.0f, 1.0f, 0.0f));// 17
+		uiLayout.AddSprite(glm::vec2(speedBuffXOffset + speedBuffPadding * 2, speedBuffYOffset), speedBuffScale, "speedBoots", glm::vec4(1.0f, 1.0f, 1.0f, 0.0f));// 18
+		uiLayout.AddSprite(glm::vec2(speedBuffXOffset + speedBuffPadding * 3, speedBuffYOffset), speedBuffScale, "speedBoots", glm::vec4(1.0f, 1.0f, 1.0f, 0.0f));// 19
+		uiLayout.AddSprite(glm::vec2(speedBuffXOffset + speedBuffPadding * 4, speedBuffYOffset), speedBuffScale, "speedBoots", glm::vec4(1.0f, 1.0f, 1.0f, 0.0f));// 20
 
 
-		uiLayout.AddSprite(glm::vec2(healthXOffset + healthPadding * 0, healthYOffset), healthScale, "Heart_0", glm::vec4(1.0f, 1.0f, 1.0f, 0.0f));// 20
-		uiLayout.AddSprite(glm::vec2(healthXOffset + healthPadding * 1, healthYOffset), healthScale, "Heart_0", glm::vec4(1.0f, 1.0f, 1.0f, 0.0f));// 21
-		uiLayout.AddSprite(glm::vec2(healthXOffset + healthPadding * 2, healthYOffset), healthScale, "Heart_0", glm::vec4(1.0f, 1.0f, 1.0f, 0.0f));// 22
-		uiLayout.AddSprite(glm::vec2(healthXOffset + healthPadding * 3, healthYOffset), healthScale, "Heart_0", glm::vec4(1.0f, 1.0f, 1.0f, 0.0f));// 23
-		uiLayout.AddSprite(glm::vec2(healthXOffset + healthPadding * 4, healthYOffset), healthScale, "Heart_0", glm::vec4(1.0f, 1.0f, 1.0f, 0.0f));// 24
-		uiLayout.AddSprite(glm::vec2(healthXOffset + healthPadding * 5, healthYOffset), healthScale, "Heart_0", glm::vec4(1.0f, 1.0f, 1.0f, 0.0f));// 25
-		uiLayout.AddSprite(glm::vec2(healthXOffset + healthPadding * 6, healthYOffset), healthScale, "Heart_0", glm::vec4(1.0f, 1.0f, 1.0f, 0.0f));// 26
-		uiLayout.AddSprite(glm::vec2(healthXOffset + healthPadding * 7, healthYOffset), healthScale, "Heart_0", glm::vec4(1.0f, 1.0f, 1.0f, 0.0f));// 27
-		uiLayout.AddSprite(glm::vec2(healthXOffset + healthPadding * 8, healthYOffset), healthScale, "Heart_0", glm::vec4(1.0f, 1.0f, 1.0f, 0.0f));// 28
-		uiLayout.AddSprite(glm::vec2(healthXOffset + healthPadding * 9, healthYOffset), healthScale, "Heart_0", glm::vec4(1.0f, 1.0f, 1.0f, 0.0f));// 29
+		uiLayout.AddSprite(glm::vec2(healthXOffset + healthPadding * 0, healthYOffset), healthScale, "Heart_0", glm::vec4(1.0f, 1.0f, 1.0f, 0.0f));// 21
+		uiLayout.AddSprite(glm::vec2(healthXOffset + healthPadding * 1, healthYOffset), healthScale, "Heart_0", glm::vec4(1.0f, 1.0f, 1.0f, 0.0f));// 22
+		uiLayout.AddSprite(glm::vec2(healthXOffset + healthPadding * 2, healthYOffset), healthScale, "Heart_0", glm::vec4(1.0f, 1.0f, 1.0f, 0.0f));// 23
+		uiLayout.AddSprite(glm::vec2(healthXOffset + healthPadding * 3, healthYOffset), healthScale, "Heart_0", glm::vec4(1.0f, 1.0f, 1.0f, 0.0f));// 24
+		uiLayout.AddSprite(glm::vec2(healthXOffset + healthPadding * 4, healthYOffset), healthScale, "Heart_0", glm::vec4(1.0f, 1.0f, 1.0f, 0.0f));// 25
+		uiLayout.AddSprite(glm::vec2(healthXOffset + healthPadding * 5, healthYOffset), healthScale, "Heart_0", glm::vec4(1.0f, 1.0f, 1.0f, 0.0f));// 26
+		uiLayout.AddSprite(glm::vec2(healthXOffset + healthPadding * 6, healthYOffset), healthScale, "Heart_0", glm::vec4(1.0f, 1.0f, 1.0f, 0.0f));// 27
+		uiLayout.AddSprite(glm::vec2(healthXOffset + healthPadding * 7, healthYOffset), healthScale, "Heart_0", glm::vec4(1.0f, 1.0f, 1.0f, 0.0f));// 28
+		uiLayout.AddSprite(glm::vec2(healthXOffset + healthPadding * 8, healthYOffset), healthScale, "Heart_0", glm::vec4(1.0f, 1.0f, 1.0f, 0.0f));// 29
+		uiLayout.AddSprite(glm::vec2(healthXOffset + healthPadding * 9, healthYOffset), healthScale, "Heart_0", glm::vec4(1.0f, 1.0f, 1.0f, 0.0f));// 30
 
-		uiLayout.AddText(glm::vec2(900, 675), "Fps:", glm::vec3(1.0f, 1.0f, 0.75f), 1.0f); //21
+		uiLayout.AddText(glm::vec2(900, 675), "Fps:", glm::vec3(1.0f, 1.0f, 0.75f),0.0f); //21
 
 		//uiLayout.AddSprite(glm::vec2(25.0f + testOffset * 0, 620.0f), glm::vec2(1, 1), "higlightHart", glm::vec4(1.0f));
 		m_World->AddComponent<Frosty::ECS::CGUI>(player, uiLayout);
 
 		////					<<<		FORWARD PLUS TESTING	>>>		plz don't touch		~ W-_-W ~
 		//// LIGHTS
-		//auto& light = world->CreateEntity({ 0.0f, 0.1f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f });
-		//world->AddComponent<Frosty::ECS::CLight>(light, Frosty::ECS::CLight::LightType::Point, 1.f, glm::vec3(0.99f, 0.9f, 0.8f), 20.f);		
+		//auto& light = m_World->CreateEntity({ 0.0f, 0.1f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f });
+		//m_World->AddComponent<Frosty::ECS::CLight>(light, Frosty::ECS::CLight::LightType::Point, 1.f, glm::vec3(0.99f, 0.9f, 0.8f), 20.f);		
 
-		//auto& light2 = world->CreateEntity({ 0.0f, 0.1f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f });
-		//world->AddComponent<Frosty::ECS::CLight>(light2, Frosty::ECS::CLight::LightType::Point, 1.f, glm::vec3(0.99f, 0.9f, 0.8f), 15.f);
+		//auto& light2 = m_World->CreateEntity({ 0.0f, 0.1f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f });
+		//m_World->AddComponent<Frosty::ECS::CLight>(light2, Frosty::ECS::CLight::LightType::Point, 1.f, glm::vec3(0.99f, 0.9f, 0.8f), 15.f);
 		//
-		//auto& light3 = world->CreateEntity({ 10.0f, 0.1f, -5.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f });
-		//world->AddComponent<Frosty::ECS::CLight>(light3, Frosty::ECS::CLight::LightType::Point, 1.f, glm::vec3(0.99f, 0.9f, 0.8f), 9.f);
+		//auto& light3 = m_World->CreateEntity({ 10.0f, 0.1f, -5.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f });
+		//m_World->AddComponent<Frosty::ECS::CLight>(light3, Frosty::ECS::CLight::LightType::Point, 1.f, glm::vec3(0.99f, 0.9f, 0.8f), 9.f);
 
 		////Test Bool Map
-		//auto& planeBmap = world->CreateEntity({ 0.0f, 0.1f, 0.0f }, { 0.f,-90.0f, 0.0f }, { 300.0f, 1.0f, 300.0f });
-		//world->AddComponent<Frosty::ECS::CMesh>(planeBmap, Frosty::AssetManager::GetMesh("pPlane1"));
-		//auto& planeMat = world->AddComponent<Frosty::ECS::CMaterial>(planeBmap, Frosty::AssetManager::GetShader("Texture2D"));
+		//auto& planeBmap = m_World->CreateEntity({ 0.0f, 0.1f, 0.0f }, { 0.f,-90.0f, 0.0f }, { 300.0f, 1.0f, 300.0f });
+		//m_World->AddComponent<Frosty::ECS::CMesh>(planeBmap, Frosty::AssetManager::GetMesh("pPlane1"));
+		//auto& planeMat = m_World->AddComponent<Frosty::ECS::CMaterial>(planeBmap, Frosty::AssetManager::GetShader("Texture2D"));
 		//planeMat.DiffuseTexture = Frosty::AssetManager::GetTexture2D("deadend_chests_IsStatick_t_p_e_r_h");
 
-		//auto& light8 = world->CreateEntity({ -20.0f, 1.0f, 20.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f });
-		//world->AddComponent<Frosty::ECS::CLight>(light8, Frosty::ECS::CLight::LightType::Point, 1.f, glm::vec3(0.99f, 0.9f, 0.8f), 20.f);
+		//auto& light8 = m_World->CreateEntity({ -20.0f, 1.0f, 20.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f });
+		//m_World->AddComponent<Frosty::ECS::CLight>(light8, Frosty::ECS::CLight::LightType::Point, 1.f, glm::vec3(0.99f, 0.9f, 0.8f), 20.f);
 
-		//auto& light9 = world->CreateEntity({ -15.0f, 1.0f, -15.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f });
-		//world->AddComponent<Frosty::ECS::CLight>(light9, Frosty::ECS::CLight::LightType::Point, 1.f, glm::vec3(0.99f, 0.9f, 0.8f), 5.f);
+		//auto& light9 = m_World->CreateEntity({ -15.0f, 1.0f, -15.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f });
+		//m_World->AddComponent<Frosty::ECS::CLight>(light9, Frosty::ECS::CLight::LightType::Point, 1.f, glm::vec3(0.99f, 0.9f, 0.8f), 5.f);
 
 		//// QUAD
-		//auto& quad = world->CreateEntity({ 0.f, 0.05f, 0.f }, { 0.f, 0.f, 0.f }, { 1000.f, 1.f, 1000.f });
-		//auto& quadTransform = world->GetComponent<Frosty::ECS::CTransform>(quad);
-		//world->AddComponent<Frosty::ECS::CMesh>(quad, Frosty::AssetManager::GetMesh("pPlane1"));
-		//auto& quadMat = world->AddComponent<Frosty::ECS::CMaterial>(quad, Frosty::AssetManager::GetShader("HeatMap"));
+		//auto& quad = m_World->CreateEntity({ 0.f, 0.05f, 0.f }, { 0.f, 0.f, 0.f }, { 1000.f, 1.f, 1000.f });
+		//auto& quadTransform = m_World->GetComponent<Frosty::ECS::CTransform>(quad);
+		//m_World->AddComponent<Frosty::ECS::CMesh>(quad, Frosty::AssetManager::GetMesh("pPlane1"));
+		//auto& quadMat = m_World->AddComponent<Frosty::ECS::CMaterial>(quad, Frosty::AssetManager::GetShader("HeatMap"));
 		//quadMat.Albedo = glm::vec4(0.f, 0.f, 1.f, 1.f);
 	}
 
 	void MenuState::InitiateButtons()
 	{
-		m_MenuGui = m_World->CreateEntity();
+		m_MenuGui = m_App->Get().GetWorld()->CreateEntity();
 		
 		m_UILayout = Frosty::UILayout(4, 1);
 		std::string MainMenu = "Main Menu";
@@ -693,7 +558,7 @@ namespace MCS
 		float middleX = float(m_App->GetWindow().GetWidth() / 2);
 		float middleY = float(m_App->GetWindow().GetHeight() / 2);
 		
-		float posX1 = (middleX / width) - (MainMenu.size() / 2) * 32;
+		float posX1 = (middleX / width) - (MainMenu.size() / 2) * 32;	
 		float posX2 = (middleX / width) - (Play.size()     / 2) * 17;
 		float posX3 = (middleX / width) - (Controls.size() / 2) * 17;
 		float posX4 = (middleX / width) - (Exit.size()     / 2) * 17;
@@ -709,7 +574,7 @@ namespace MCS
 	
 	void MenuState::InitiateInstructions()
 	{
-		m_InstructionGui = m_World->CreateEntity();
+		m_InstructionGui = m_App->Get().GetWorld()->CreateEntity();
 
 		m_UILayout2 = Frosty::UILayout(2, 0);
 		std::string Instruction = "Instructions";

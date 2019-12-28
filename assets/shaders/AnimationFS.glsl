@@ -177,7 +177,7 @@ float shadow = 0.0;
 			}
 		}
 
-		shadow /=72;	
+		shadow /=9;	
 
 		if (projCoords.z > 1.0)
 		{

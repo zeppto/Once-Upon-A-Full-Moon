@@ -436,8 +436,8 @@ namespace MCS
 						if (fileEntitys.myEntitys[i].MyComponents[10].HaveComponent || !fileEntitys.myEntitys[i].MyComponents[1].HaveComponent)
 						{
 							float savedX = fileEntitys.myEntitys[i].myTransform.Scale.x;
-							fileEntitys.myEntitys[i].myTransform.Scale.x = fileEntitys.myEntitys[i].myTransform.Scale.z *1.25f;
-							fileEntitys.myEntitys[i].myTransform.Scale.z = savedX * 1.25f;
+							fileEntitys.myEntitys[i].myTransform.Scale.x = fileEntitys.myEntitys[i].myTransform.Scale.z;
+							fileEntitys.myEntitys[i].myTransform.Scale.z = savedX;
 						}
 						else
 						{

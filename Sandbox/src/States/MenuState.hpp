@@ -24,6 +24,7 @@ namespace MCS
 		std::shared_ptr<Frosty::ECS::Entity> m_InstructionGui = nullptr;
 		Frosty::UILayout m_UILayout;
 		Frosty::UILayout m_UILayout2;
+		float x;
 
 		bool m_ButtonsLoaded = false;
 		bool m_Controls = false;

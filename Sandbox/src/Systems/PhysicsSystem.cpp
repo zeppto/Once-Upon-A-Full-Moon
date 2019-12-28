@@ -29,8 +29,6 @@ namespace MCS
 				mat = glm::rotate(mat, glm::radians(m_Transform[i]->Rotation.y), { 0.0f, 1.0f, 0.0f });
 				mat = glm::rotate(mat, glm::radians(m_Transform[i]->Rotation.z), { 0.0f, 0.0f, 1.0f });
 				glm::vec3 dir = mat * glm::vec4(0.0f, 0.0f, 1.0f, 0.0);
-
-
 			//	FY_INFO("Direction: ({0}, {1}, {2})", dir.x, dir.y, dir.z);
 			}
 			
@@ -170,7 +168,7 @@ namespace MCS
 
 	void PhysicsSystem::OnUpdateCurrentRoomEvent(Frosty::UpdateCurrentRoomEvent& e)
 	{
-		m_Current_BoolMap = Frosty::AssetManager::GetBoolMap(e.GetCurrentRoom());
+		//m_Current_BoolMap = Frosty::AssetManager::GetBoolMap(e.GetCurrentRoom());
 		m_Room_Rotation = e.GetRotation();
 	}
 
@@ -214,76 +212,76 @@ namespace MCS
 
 				//Test Bmap
 				//if (( m_World->HasComponent<Frosty::ECS::CPlayer>(m_Transform[index]->EntityPtr)))
-				if (0)
-				{
+				//if (0)
+				//{
 
-					if (m_World->HasComponent<Frosty::ECS::CInventory>(m_Transform[index]->EntityPtr))
-					{
-						checkCollision = false;
-						if (m_World->HasComponent<Frosty::ECS::CLevelExit>(m_Transform[i]->EntityPtr))
-						{
-							checkCollision = true;
-						}
+				//	if (m_World->HasComponent<Frosty::ECS::CInventory>(m_Transform[index]->EntityPtr))
+				//	{
+				//		checkCollision = false;
+				//		if (m_World->HasComponent<Frosty::ECS::CLevelExit>(m_Transform[i]->EntityPtr))
+				//		{
+				//			checkCollision = true;
+				//		}
 
-						if (m_Current_BoolMap != nullptr)
-						{
-							
-					
+				//		if (m_Current_BoolMap != nullptr)
+				//		{
+				//			
+				//	
 
-							glm::vec3 tempPos = m_Transform[index]->Position + glm::vec3(static_cast<float>((m_Current_BoolMap->GetCoordWidth() >> 1)), 0.0f, static_cast<float>(m_Current_BoolMap->GetCoordHeight() >> 1));
+				//			glm::vec3 tempPos = m_Transform[index]->Position + glm::vec3(static_cast<float>((m_Current_BoolMap->GetCoordWidth() >> 1)), 0.0f, static_cast<float>(m_Current_BoolMap->GetCoordHeight() >> 1));
 
-							float tempX = glm::floor(std::abs(tempPos.x));
-							int intXcoord = static_cast<int>(tempX) % m_Current_BoolMap->GetCoordWidth();
-							float newXcoord = static_cast<float>(intXcoord) + (std::abs(tempPos.x) - tempX);
+				//			float tempX = glm::floor(std::abs(tempPos.x));
+				//			int intXcoord = static_cast<int>(tempX) % m_Current_BoolMap->GetCoordWidth();
+				//			float newXcoord = static_cast<float>(intXcoord) + (std::abs(tempPos.x) - tempX);
 
-							if (tempPos.x < 0.0f)
-							{
-								newXcoord = static_cast<float>(m_Current_BoolMap->GetCoordWidth()) - newXcoord;
-							}
+				//			if (tempPos.x < 0.0f)
+				//			{
+				//				newXcoord = static_cast<float>(m_Current_BoolMap->GetCoordWidth()) - newXcoord;
+				//			}
 
-							float tempZ = glm::floor(std::abs(tempPos.z));
-							int intZcoord = static_cast<int>(tempZ) % m_Current_BoolMap->GetCoordHeight();
-							float newZcoord = static_cast<float>(intZcoord) + (std::abs(tempPos.z) - tempZ);
+				//			float tempZ = glm::floor(std::abs(tempPos.z));
+				//			int intZcoord = static_cast<int>(tempZ) % m_Current_BoolMap->GetCoordHeight();
+				//			float newZcoord = static_cast<float>(intZcoord) + (std::abs(tempPos.z) - tempZ);
 
-							if (tempPos.z < 0.0f)
-							{
-								newZcoord = static_cast<float>(m_Current_BoolMap->GetCoordHeight()) - newZcoord;
-							}
+				//			if (tempPos.z < 0.0f)
+				//			{
+				//				newZcoord = static_cast<float>(m_Current_BoolMap->GetCoordHeight()) - newZcoord;
+				//			}
 
-							if (m_Room_Rotation != 0.0f)
-							{
-								if (m_Room_Rotation == 90.0f)
-								{
-									float temp = newXcoord;
-									newXcoord = 300.0f - newZcoord;
-									newZcoord = temp;
-								}
-								else if (m_Room_Rotation == 180.0f)
-								{
-									newXcoord = 300.0f - newXcoord;
-									newZcoord = 300.0f - newZcoord;
-								}
-								else if (m_Room_Rotation == 270.0f)
-								{
-									float temp = newXcoord;
-									newXcoord = newZcoord;
-									newZcoord = 300.0f - temp;
-								}
-							}
+				//			if (m_Room_Rotation != 0.0f)
+				//			{
+				//				if (m_Room_Rotation == 90.0f)
+				//				{
+				//					float temp = newXcoord;
+				//					newXcoord = 300.0f - newZcoord;
+				//					newZcoord = temp;
+				//				}
+				//				else if (m_Room_Rotation == 180.0f)
+				//				{
+				//					newXcoord = 300.0f - newXcoord;
+				//					newZcoord = 300.0f - newZcoord;
+				//				}
+				//				else if (m_Room_Rotation == 270.0f)
+				//				{
+				//					float temp = newXcoord;
+				//					newXcoord = newZcoord;
+				//					newZcoord = 300.0f - temp;
+				//				}
+				//			}
 
-							bool testBool = m_Current_BoolMap->CheckCollision(glm::vec3(newXcoord, 0.0f, newZcoord));
-
-
-							if (testBool)
-							{
-								m_Transform[index]->Position -= m_PlayerLastMovement;
-							//	FY_INFO("1");
-							}
-						}
+				//			bool testBool = m_Current_BoolMap->CheckCollision(glm::vec3(newXcoord, 0.0f, newZcoord));
 
 
-					}
-				}
+				//			if (testBool)
+				//			{
+				//				m_Transform[index]->Position -= m_PlayerLastMovement;
+				//			//	FY_INFO("1");
+				//			}
+				//		}
+
+
+				//	}
+				//}
 
 
 

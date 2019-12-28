@@ -369,7 +369,14 @@ namespace MCS
 	void NavigationSystem::HandleDistance(size_t index)
 	{
 		// Check if enemy is boss
-		if (m_World->HasComponent<Frosty::ECS::CBoss>(m_Transform[index]->EntityPtr)) return;
+		if (m_World->HasComponent<Frosty::ECS::CBoss>(m_Transform[index]->EntityPtr))
+		{
+			auto& bossComp = m_World->GetComponent<Frosty::ECS::CBoss>(m_Transform[index]->EntityPtr);
+			if (bossComp.ActiveAbility != Frosty::ECS::CBoss::AbilityState::None)
+			{
+				return;
+			}
+		}
 		//if (m_Enemy[index]->Weapon->AnimPlaying) return;
 		
 		if (m_Enemy[index]->AttackInit == true)
