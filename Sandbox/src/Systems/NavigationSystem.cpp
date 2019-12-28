@@ -16,7 +16,6 @@ namespace MCS
 
 	void NavigationSystem::OnUpdate()
 	{
-		//m_Grid->Reset();
 		if (m_ActiveMap.Grid != nullptr) m_ActiveMap.Grid->Reset();
 		if (m_OtherMap.Grid != nullptr) m_OtherMap.Grid->Reset();
 
@@ -35,8 +34,6 @@ namespace MCS
 
 		for (size_t i = 1; i < p_Total; i++)
 		{
-	//		m_Grid->DrawSeekerCell(m_Transform[i]);
-
 			// Check current state
 			switch (m_Enemy[i]->CurrentState)
 			{
@@ -52,7 +49,6 @@ namespace MCS
 				break;
 			case Frosty::ECS::CEnemy::State::Chase:
 				HandlePathfinding(i, m_Enemy[i]->EntityPtr->GroupId);
-				//m_ActiveMap.Grid->CheckErrors();
 				break;
 			case Frosty::ECS::CEnemy::State::Reset:
 				HandleReset(i, m_Enemy[i]->EntityPtr->GroupId);
@@ -330,7 +326,6 @@ namespace MCS
 		
 		// Find target cell and set velocity
 		glm::vec3 cellTarget = PathFinding->FindPath(m_Transform[index]->Position, m_Enemy[index]->Target->Position);
-	//	m_ActiveMap.Grid->CheckHCost();
 		if (cellTarget == glm::vec3(-1.0f))
 		{
 			m_Physics[index]->Direction = glm::vec3(0.0f);

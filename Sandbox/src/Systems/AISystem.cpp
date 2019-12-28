@@ -30,25 +30,7 @@ namespace MCS
 			if (m_Enemy[i]->Target == nullptr) continue;
 
 			CheckState(i);
-
 			HandleAttack(i);
-
-			//if (Frosty::Time::GetFrameCount() % 20 == 0)
-			//{
-			//	if (m_World->HasComponent<Frosty::ECS::CBoss>(m_Enemy[i]->EntityPtr));
-			//	{
-			//		auto& bossComp = m_World->GetComponent<Frosty::ECS::CBoss>(m_Enemy[i]->EntityPtr);
-			//		if (bossComp.ActiveAbility == Frosty::ECS::CBoss::AbilityState::None) FY_INFO("AbilityState::None");
-			//		else if (bossComp.ActiveAbility == Frosty::ECS::CBoss::AbilityState::Leap) FY_INFO("AbilityState::Leap");
-			//		else if (bossComp.ActiveAbility == Frosty::ECS::CBoss::AbilityState::Charge) FY_INFO("AbilityState::Charge");
-			//	}
-			//}
-
-			//Boss Timer For Debug
-			if (Frosty::Time::CurrentTime() - m_BossTimer >= m_BossSpawnTime)
-			{
-				//if (!m_BossSpawned) SpawnBoss();
-			}
 		}
 	}
 
